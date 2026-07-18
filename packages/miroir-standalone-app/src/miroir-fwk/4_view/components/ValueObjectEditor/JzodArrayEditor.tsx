@@ -35,7 +35,12 @@ import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
+import {
+  NOOP_RENDER_COUNTS,
+  renderInsightRegistry,
+} from "../../tools/renderInsightRegistry.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import {
@@ -379,6 +384,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 ) => {
   jzodArrayEditorRenderCount++;
   const context = useMiroirContextService();
+  const renderStartTime = context.showPerformanceDisplay ? performance.now() : 0;
   
   const formik = useFormikContext<Record<string, any>>();
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
@@ -786,6 +792,21 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
   ;
   // ##############################################################################################
+  const schemaType =
+    localResolvedElementJzodSchemaBasedOnValue?.type ??
+    currentTypeCheckKeyMap?.resolvedSchema?.type ??
+    currentRawJzodSchema?.type;
+  const insightRole = schemaType === "tuple" ? "tuple" : "array";
+  const insightCounts = context.showPerformanceDisplay
+    ? renderInsightRegistry.trackRender({
+        componentId: insightRole === "tuple" ? "JzodTupleEditor" : "JzodArrayEditor",
+        navigationKey: `${currentDeploymentUuid ?? ""}-${currentApplicationSection ?? ""}`,
+        formikPath: formikRootLessListKey,
+        enabled: true,
+        durationMs: performance.now() - renderStartTime,
+      })
+    : NOOP_RENDER_COUNTS;
+
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <JsonDisplayHelper debug={true}
@@ -799,6 +820,13 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       />
       <div>
         <ThemedFlexRow justify="start" align="center">
+          <RenderInsightHeader
+            componentName={insightRole}
+            navigationCount={insightCounts.navigationCount}
+            totalCount={insightCounts.totalCount}
+            formikPath={formikRootLessListKey}
+            lastRenderTime={insightCounts.lastRenderTime}
+          />
           <span>
             <ThemedFlexRow align="center">
               {label}

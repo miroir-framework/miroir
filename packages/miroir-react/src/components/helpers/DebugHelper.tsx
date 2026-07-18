@@ -71,6 +71,8 @@ export const JsonDisplayHelper: React.FC<{
 
   return (
     <div
+      data-testid={debug ? "visual-debug-overlay" : undefined}
+      data-miroir-overlay={debug ? "visual-debug" : undefined}
       style={{
         border: `1px solid ${borderColor}`,
         borderRadius: currentTheme.borderRadius.sm,

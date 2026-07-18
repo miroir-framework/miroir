@@ -1,6 +1,14 @@
 import React from "react";
 import { useMiroirContextService } from "miroir-react";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { getPerformanceConfig } from "../tools/performanceConfig.js";
+import {
+  RENDER_INSIGHT_OVERLAY_ATTR,
+  RENDER_INSIGHT_OVERLAY_VALUE,
+  getRenderInsightChromeStyle,
+  resolveRenderInsightTheme,
+  shortenFormikPath,
+} from "../tools/renderInsightChrome.js";
 import type { RenderInsightAggregate } from "../tools/renderInsightSummarize.js";
 
 export interface RenderInsightHeaderProps {
@@ -11,24 +19,20 @@ export interface RenderInsightHeaderProps {
   formikPath?: string;
   /** Subtree summary when this node is the maxDepth boundary. */
   aggregate?: RenderInsightAggregate;
+  /** Last render duration (ms); shown when ≥ display threshold. */
+  lastRenderTime?: number;
 }
 
 function formatAggregate(aggregate: RenderInsightAggregate): string {
   const avg = Number.isInteger(aggregate.avgNavigationRenders)
     ? String(aggregate.avgNavigationRenders)
     : aggregate.avgNavigationRenders.toFixed(1);
-  const minLabel = aggregate.min.path.includes("@")
-    ? aggregate.min.path.split("@").pop()
-    : aggregate.min.path;
-  const maxLabel = aggregate.max.path.includes("@")
-    ? aggregate.max.path.split("@").pop()
-    : aggregate.max.path;
-  return `▾ ${aggregate.descendantCount} below · avg ${avg} · min ${minLabel} ×${aggregate.min.navigationCount} · max ${maxLabel} ×${aggregate.max.navigationCount}`;
+  return `▾${aggregate.descendantCount} avg${avg} min×${aggregate.min.navigationCount} max×${aggregate.max.navigationCount}`;
 }
 
 /**
- * Inline visual-debug chrome for render counts (timer mode).
- * Sibling to JsonDisplayHelper — not gated by showDebugInfo.
+ * Compact render-insight chip (timer mode).
+ * Styling from `theme.components.renderInsight` — same pattern as appBar/tooltip.
  */
 export const RenderInsightHeader: React.FC<RenderInsightHeaderProps> = ({
   componentName,
@@ -36,6 +40,7 @@ export const RenderInsightHeader: React.FC<RenderInsightHeaderProps> = ({
   totalCount,
   formikPath,
   aggregate,
+  lastRenderTime,
 }) => {
   const context = useMiroirContextService();
   const { currentTheme } = useMiroirTheme();
@@ -44,50 +49,63 @@ export const RenderInsightHeader: React.FC<RenderInsightHeaderProps> = ({
     return null;
   }
 
-  const borderColor = currentTheme.colors.warning ?? "#f59e0b";
-  const bgColor = currentTheme.colors.warningLight ?? "#fffbeb";
-  const headerColor = currentTheme.colors.textSecondary ?? "#484746";
-  const label =
-    formikPath && formikPath.length > 0
-      ? `${componentName} ${formikPath}`
-      : componentName;
+  const chrome = resolveRenderInsightTheme(currentTheme);
+  const shortPath = shortenFormikPath(formikPath);
+  const threshold = getPerformanceConfig().renderThresholdMs;
+  const showTiming =
+    typeof lastRenderTime === "number" &&
+    Number.isFinite(lastRenderTime) &&
+    lastRenderTime >= threshold;
 
   return (
     <div
       data-testid="render-insight-header"
-      style={{
-        border: `1px solid ${borderColor}`,
-        borderRadius: currentTheme.borderRadius.sm,
-        margin: "4px 0",
-        padding: "4px 8px",
-        backgroundColor: bgColor,
-        fontFamily: "monospace",
-        fontSize: "12px",
-        fontWeight: "bold",
-        color: headerColor,
-        display: "flex",
-        flexWrap: "wrap",
-        alignItems: "center",
-        gap: 6,
-      }}
+      title={formikPath && formikPath.length > 0 ? `${componentName} @ ${formikPath}` : componentName}
+      {...{ [RENDER_INSIGHT_OVERLAY_ATTR]: RENDER_INSIGHT_OVERLAY_VALUE }}
+      style={getRenderInsightChromeStyle(chrome, { compact: true })}
     >
-      <span>⏱ {label}</span>
       <span
+        data-testid="render-insight-badge"
         style={{
-          color: currentTheme.colors.textSecondary,
-          fontWeight: "normal",
-          fontSize: "11px",
+          backgroundColor: chrome.badgeBackground,
+          color: chrome.badgeTextColor,
+          fontSize: "10px",
+          fontWeight: 800,
+          letterSpacing: "0.05em",
+          textTransform: "uppercase",
+          padding: "0 5px",
+          borderRadius: "999px",
+          lineHeight: "18px",
         }}
       >
-        ×{navigationCount} · Σ{totalCount}
+        perf
+      </span>
+      <span style={{ fontWeight: 700 }}>{componentName}</span>
+      {shortPath ? (
+        <span style={{ color: chrome.textMuted, fontWeight: 500 }}>{shortPath}</span>
+      ) : null}
+      <span
+        style={{
+          color: chrome.textColor,
+          fontWeight: 700,
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
+        ×{navigationCount}
+        <span style={{ color: chrome.textMuted, fontWeight: 500 }}> Σ{totalCount}</span>
+        {showTiming ? (
+          <span style={{ color: chrome.textMuted, fontWeight: 600 }}>
+            {" "}
+            {lastRenderTime!.toFixed(1)}ms
+          </span>
+        ) : null}
       </span>
       {aggregate && (
         <span
           data-testid="render-insight-aggregate"
           style={{
-            color: currentTheme.colors.textSecondary,
-            fontWeight: "normal",
-            fontSize: "11px",
+            color: chrome.textMuted,
+            fontWeight: 500,
           }}
         >
           {formatAggregate(aggregate)}

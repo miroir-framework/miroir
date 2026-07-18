@@ -40,6 +40,11 @@ import {
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext";
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
+import {
+  NOOP_RENDER_COUNTS,
+  renderInsightRegistry,
+} from "../../tools/renderInsightRegistry.js";
 import {
   getUnitTestKind,
   HIGHLIGHTED_UNIT_TEST_STYLE,
@@ -635,6 +640,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     count,
     "JzodElementEditor"
   );
+
+  const renderStartTime = context.showPerformanceDisplay ? performance.now() : 0;
 
   const reportContext = useReportPageContext();
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
@@ -1320,6 +1327,20 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     reportContext.foldedObjectAttributeOrArrayItems, // This is the key addition!
   ]);
 
+  const schemaType =
+    currentTypeCheckKeyMap?.resolvedSchema?.type ??
+    currentTypeCheckKeyMap?.rawSchema?.type;
+  const insightRole = schemaType === "record" ? "record" : "object";
+  const insightCounts = context.showPerformanceDisplay
+    ? renderInsightRegistry.trackRender({
+        componentId: insightRole === "record" ? "JzodRecordEditor" : "JzodObjectEditor",
+        navigationKey: `${currentDeploymentUuid ?? ""}-${currentApplicationSection ?? ""}`,
+        formikPath: formikRootLessListKey,
+        enabled: true,
+        durationMs: performance.now() - renderStartTime,
+      })
+    : NOOP_RENDER_COUNTS;
+
   return (
     <div
       id={unitTestLabel ? unitTestAnchorId(unitTestLabel) : rootLessListKey}
@@ -1348,6 +1369,13 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             useCodeBlock: true,
           },
         ]}
+      />
+      <RenderInsightHeader
+        componentName={insightRole}
+        navigationCount={insightCounts.navigationCount}
+        totalCount={insightCounts.totalCount}
+        formikPath={formikRootLessListKey}
+        lastRenderTime={insightCounts.lastRenderTime}
       />
       {/* Performance statistics */}
       {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectWithoutHeader && (

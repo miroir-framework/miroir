@@ -15,20 +15,26 @@ import {
 } from "../tools/renderInsightSummarize.js";
 import { getPerformanceConfig } from "../tools/performanceConfig.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
+import {
+  RENDER_INSIGHT_OVERLAY_ATTR,
+  RENDER_INSIGHT_OVERLAY_VALUE,
+  getRenderInsightChromeStyle,
+  resolveRenderInsightTheme,
+} from "../tools/renderInsightChrome.js";
 
 const EMPTY_STATE =
   "Interact with the report — instrumented components will appear here.";
 
 /**
  * Docked (non-floating) session summary for render insights.
- * Replaces the default DraggableContainer Performance Stats modal.
+ * Styling from `theme.components.renderInsight`. Folded by default.
  */
 export const RenderInsightSummary: React.FC = () => {
   const context = useMiroirContextService();
   const { currentTheme } = useMiroirTheme();
   const [maxDepth, setMaxDepthState] = useState(() => getRenderInsightMaxDepth());
   const [nodes, setNodes] = useState<RenderInsightNode[]>([]);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
 
   useEffect(() => {
     if (!context.showPerformanceDisplay) {
@@ -77,22 +83,17 @@ export const RenderInsightSummary: React.FC = () => {
     return null;
   }
 
-  const summarized: SummarizedInsightNode[] = summarizeTree(nodes, { maxDepth });
+  const summarized: SummarizedInsightNode[] = summarizeTree(nodes, { maxDepth }).slice().sort(
+    (a, b) => (b.totalRenderTime ?? 0) - (a.totalRenderTime ?? 0)
+  );
   const totalNav = nodes.reduce((sum, n) => sum + n.navigationCount, 0);
+  const chrome = resolveRenderInsightTheme(currentTheme);
 
   return (
     <div
       data-testid="render-insight-summary"
-      style={{
-        border: `1px solid ${currentTheme.colors.warning ?? "#f59e0b"}`,
-        borderRadius: currentTheme.borderRadius.sm,
-        margin: "8px 0",
-        padding: currentTheme.spacing?.sm ?? "8px",
-        backgroundColor: currentTheme.colors.warningLight ?? "#fffbeb",
-        fontFamily: "monospace",
-        fontSize: currentTheme.typography?.fontSize?.sm ?? "13px",
-        color: currentTheme.colors.text ?? "#111827",
-      }}
+      {...{ [RENDER_INSIGHT_OVERLAY_ATTR]: RENDER_INSIGHT_OVERLAY_VALUE }}
+      style={getRenderInsightChromeStyle(chrome, { compact: false })}
     >
       <div
         style={{
@@ -101,24 +102,54 @@ export const RenderInsightSummary: React.FC = () => {
           alignItems: "center",
           gap: 8,
           marginBottom: collapsed ? 0 : 8,
-          borderBottom: collapsed
-            ? "none"
-            : `1px solid ${currentTheme.colors.divider ?? "#e5e7eb"}`,
+          borderBottom: collapsed ? "none" : `1px dashed ${chrome.borderColor}`,
           paddingBottom: collapsed ? 0 : 6,
         }}
       >
+        <span
+          data-testid="render-insight-badge"
+          style={{
+            backgroundColor: chrome.badgeBackground,
+            color: chrome.badgeTextColor,
+            fontSize: "10px",
+            fontWeight: 800,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            padding: "0 5px",
+            borderRadius: "999px",
+            lineHeight: "18px",
+          }}
+        >
+          perf
+        </span>
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
           aria-label={collapsed ? "Expand render insight summary" : "Collapse render insight summary"}
-          style={{ fontSize: "0.85em", cursor: "pointer" }}
+          style={{
+            fontSize: chrome.fontSizeSummary,
+            cursor: "pointer",
+            color: chrome.textColor,
+            background: "transparent",
+            border: `1px solid ${chrome.borderColor}`,
+            borderRadius: "4px",
+            padding: "2px 6px",
+          }}
         >
           {collapsed ? "▸" : "▾"} Render insights
         </button>
-        <span style={{ color: currentTheme.colors.textSecondary, fontSize: "11px" }}>
+        <span style={{ color: chrome.textMuted, fontSize: chrome.fontSize }}>
           {nodes.length} nodes · Σnav {totalNav}
         </span>
-        <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "11px" }}>
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            fontSize: chrome.fontSize,
+            color: chrome.textColor,
+          }}
+        >
           Max depth
           <input
             type="number"
@@ -130,14 +161,35 @@ export const RenderInsightSummary: React.FC = () => {
             style={{ width: 48 }}
           />
         </label>
-        <button type="button" onClick={handleClear} style={{ fontSize: "0.8em" }}>
+        <button
+          type="button"
+          onClick={handleClear}
+          style={{
+            fontSize: chrome.fontSize,
+            color: chrome.textColor,
+            background: "transparent",
+            border: `1px solid ${chrome.borderColor}`,
+            borderRadius: "4px",
+            padding: "2px 6px",
+            cursor: "pointer",
+          }}
+        >
           Clear
         </button>
         <button
           type="button"
           onClick={handleExport}
           disabled={nodes.length === 0}
-          style={{ fontSize: "0.8em" }}
+          style={{
+            fontSize: chrome.fontSize,
+            color: chrome.textColor,
+            background: "transparent",
+            border: `1px solid ${chrome.borderColor}`,
+            borderRadius: "4px",
+            padding: "2px 6px",
+            cursor: nodes.length === 0 ? "not-allowed" : "pointer",
+            opacity: nodes.length === 0 ? 0.5 : 1,
+          }}
         >
           Export JSON
         </button>
@@ -148,8 +200,8 @@ export const RenderInsightSummary: React.FC = () => {
           {nodes.length === 0 ? (
             <div
               style={{
-                color: currentTheme.colors.textSecondary,
-                fontSize: "12px",
+                color: chrome.textMuted,
+                fontSize: chrome.fontSize,
                 padding: "8px 0",
               }}
             >
@@ -170,15 +222,24 @@ export const RenderInsightSummary: React.FC = () => {
                 <li
                   key={node.pathKey}
                   style={{
-                    fontSize: "11px",
-                    color: currentTheme.colors.textSecondary,
+                    fontSize: chrome.fontSize,
+                    color: chrome.textMuted,
                   }}
                 >
-                  <strong style={{ color: currentTheme.colors.text }}>
+                  <strong style={{ color: chrome.textColor }}>
                     {node.componentId}
                     {node.formikPath ? ` @${node.formikPath}` : ""}
                   </strong>{" "}
                   ×{node.navigationCount} · Σ{node.totalCount}
+                  {typeof node.averageRenderTime === "number" && (
+                    <span>
+                      {" "}
+                      · avg {node.averageRenderTime.toFixed(1)}ms
+                      {typeof node.lastRenderTime === "number"
+                        ? ` · last ${node.lastRenderTime.toFixed(1)}ms`
+                        : ""}
+                    </span>
+                  )}
                   {node.aggregate && (
                     <span>
                       {" "}

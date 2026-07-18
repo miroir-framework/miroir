@@ -125,6 +125,9 @@ Refresh storms on ReportPage / Jzod editors have been diagnosed repeatedly (`cod
 | D9 | React Profiler | Optional later for automated performance tests (`JzodElementEditorTestTools` already wraps `<Profiler>`). Not required for interactive visual debug | Keep interactive path simple |
 | D10 | Persistence | Session only (counts + UI prefs including `maxDepth`). Long-term store = future sub-issue | Keep scope tight |
 | D11 | Debug vs timer toggles | **Independent**: bug (`showDebugInfo`) and timer (`showPerformanceDisplay`) stay separate AppBar toggles — no shared tabbed panel. | User decision Phase 0 |
+| D12 | Perf vs visual-debug chrome | **Themable + compact**: `theme.components.renderInsight` (resolved like appBar/tooltip; teal defaults; never warning). Inline chips (`fit-content` pills); summary docked **at top**, **folded by default**. Chip font ~12px / summary ~13px. Overlay attrs distinct from visual-debug. | Prevent mixup + legibility; homogeneous theming |
+
+
 
 ### 3.1 Articulation: maxDepth vs other detail-hiding mechanisms
 
@@ -224,7 +227,7 @@ Phase 2 — Paths, depth, subtree aggregates                     slices 2.1–2.
 Phase 3 — Visual-debug inline header                           slices 3.1–3.3   [DONE]
 Phase 4 — Migrate Report-tree call sites (replace text ruins)  slices 4.1–4.3   [DONE]
 Phase 5 — Docked summary (retire default floating modal)       slices 5.1–5.3   [DONE]
-Phase 6 — Timing + threshold + export                          slices 6.1–6.3
+Phase 6 — Timing + threshold + export                          slices 6.1–6.3   [DONE]
 Phase 7 — Acceptance: footprint + docs note                    slices 7.1–7.2
 ```
 
@@ -320,7 +323,7 @@ Phase 7 — Acceptance: footprint + docs note                    slices 7.1–7.
 
 | Slice | Deliverable |
 |---|---|
-| 3.1 | `RenderInsightHeader` — null when timer off; warning chrome; `×N · ΣM` |
+| 3.1 | `RenderInsightHeader` — null when timer off; **info** chrome (D12, not warning); `×N · ΣM` |
 | 3.2 | Aggregate chip when `aggregate` prop set |
 | 3.3 | **Option B**: sibling to `JsonDisplayHelper`; independent of `showDebugInfo` |
 
@@ -329,7 +332,7 @@ Phase 7 — Acceptance: footprint + docs note                    slices 7.1–7.
 **Behavior**:
 
 - Renders nothing when performance mode is off.
-- When on: warning-styled bar consistent with `JsonDisplayHelper` (border/bg from theme warning tokens).
+- When on: **info**-styled bar (D12) — cool palette / dashed left rail / `perf` badge — deliberately *not* the amber `JsonDisplayHelper` warning chrome.
 - Shows `componentName`, `navigationCount`, `totalCount` (compact: `×4 · Σ38`).
 
 **Progress (RED)** → RTL test: off → null; on → accessible text / test id.
@@ -400,7 +403,15 @@ Do not leave half-enabled `performance.now()` in hot editors without the gate.
 
 ---
 
-## Phase 6 — Timing stats (secondary)
+## Phase 6 — Timing stats (secondary) ✅
+
+**Status (2026-07-18)**: slices 6.1–6.3 green.
+
+| Slice | Deliverable |
+|---|---|
+| 6.1 | `durationMs` on `trackRender` → last/min/max/avg on snapshot |
+| 6.2 | Header shows last ms ≥ threshold; summary sorts by `totalRenderTime` |
+| 6.3 | `ValueObjectGrid` feeds registry with gated `durationMs` (pattern) |
 
 ### 6.1  Optional duration recording behind same gate
 

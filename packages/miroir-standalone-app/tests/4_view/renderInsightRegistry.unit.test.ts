@@ -112,4 +112,51 @@ describe("RenderInsightRegistry (Phase 1–2)", () => {
       expect(snapshot[0].formikPath).toBeUndefined();
     });
   });
+
+  describe("6.1 optional durationMs", () => {
+    it("records timing when enabled and durationMs is provided", () => {
+      registry.trackRender({
+        componentId: "ReportPage",
+        navigationKey: "nav",
+        enabled: true,
+        durationMs: 4,
+      });
+      registry.trackRender({
+        componentId: "ReportPage",
+        navigationKey: "nav",
+        enabled: true,
+        durationMs: 12,
+      });
+
+      const node = registry.getSnapshot()[0];
+      expect(node.navigationCount).toBe(2);
+      expect(node.lastRenderTime).toBe(12);
+      expect(node.minRenderTime).toBe(4);
+      expect(node.maxRenderTime).toBe(12);
+      expect(node.totalRenderTime).toBe(16);
+      expect(node.averageRenderTime).toBe(8);
+    });
+
+    it("ignores durationMs entirely when enabled is false", () => {
+      registry.trackRender({
+        componentId: "ReportPage",
+        navigationKey: "nav",
+        enabled: false,
+        durationMs: 50,
+      });
+      expect(registry.size()).toBe(0);
+    });
+
+    it("updates counts without timing when durationMs is omitted", () => {
+      registry.trackRender({
+        componentId: "ReportPage",
+        navigationKey: "nav",
+        enabled: true,
+      });
+      const node = registry.getSnapshot()[0];
+      expect(node.navigationCount).toBe(1);
+      expect(node.lastRenderTime).toBeUndefined();
+      expect(node.totalRenderTime).toBeUndefined();
+    });
+  });
 });

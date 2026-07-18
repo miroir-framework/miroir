@@ -23,9 +23,24 @@ vi.mock("../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js", () => ({
         surface: "#ffffff",
         divider: "#e5e7eb",
       },
+      components: {
+        renderInsight: {
+          background: "#134e4a",
+          textColor: "#f0fdfa",
+          textMuted: "#99f6e4",
+          accent: "#0f766e",
+          borderColor: "#0f766e",
+          badgeBackground: "#99f6e4",
+          badgeTextColor: "#042f2e",
+          fontSize: "12px",
+          fontSizeSummary: "13px",
+          borderRadius: "999px",
+          borderRadiusSummary: "6px",
+        },
+      },
       borderRadius: { sm: "4px" },
       spacing: { xs: "4px", sm: "8px" },
-      typography: { fontSize: { xs: "11px", sm: "13px" } },
+      typography: { fontSize: { xs: "11px", sm: "12px", md: "13px" } },
     },
   }),
 }));
@@ -57,6 +72,8 @@ describe("RenderInsightSummary (Phase 5)", () => {
     render(<RenderInsightSummary />);
 
     expect(screen.getByTestId("render-insight-summary")).toBeInTheDocument();
+    // folded by default — expand to see empty-state copy
+    fireEvent.click(screen.getByRole("button", { name: /expand render insight summary/i }));
     expect(
       screen.getByText(/Interact with the report — instrumented components will appear here/i)
     ).toBeInTheDocument();
@@ -83,6 +100,7 @@ describe("RenderInsightSummary (Phase 5)", () => {
     });
 
     render(<RenderInsightSummary />);
+    fireEvent.click(screen.getByRole("button", { name: /expand render insight summary/i }));
 
     expect(screen.getByTestId("render-insight-summary")).toHaveTextContent("RootComponent");
     // default maxDepth 2 → attribute leaves at depth 2 are visible
@@ -101,6 +119,7 @@ describe("RenderInsightSummary (Phase 5)", () => {
     });
 
     render(<RenderInsightSummary />);
+    fireEvent.click(screen.getByRole("button", { name: /expand render insight summary/i }));
     expect(screen.getByTestId("render-insight-summary")).toHaveTextContent("ReportPage");
 
     fireEvent.click(screen.getByRole("button", { name: /clear/i }));
@@ -108,5 +127,44 @@ describe("RenderInsightSummary (Phase 5)", () => {
       screen.getByText(/Interact with the report — instrumented components will appear here/i)
     ).toBeInTheDocument();
     expect(renderInsightRegistry.size()).toBe(0);
+  });
+
+  it("lists hotter timings first when durationMs was recorded", () => {
+    showPerformanceDisplayRef.current = true;
+    renderInsightRegistry.trackRender({
+      componentId: "SlowGrid",
+      navigationKey: "nav",
+      enabled: true,
+      durationMs: 40,
+    });
+    renderInsightRegistry.trackRender({
+      componentId: "FastPage",
+      navigationKey: "nav",
+      enabled: true,
+      durationMs: 2,
+    });
+
+    render(<RenderInsightSummary />);
+    fireEvent.click(screen.getByRole("button", { name: /expand render insight summary/i }));
+    const items = screen.getByTestId("render-insight-summary").querySelectorAll("li");
+    expect(items[0]).toHaveTextContent("SlowGrid");
+    expect(items[0]).toHaveTextContent("avg 40.0ms");
+    expect(items[1]).toHaveTextContent("FastPage");
+  });
+
+  it("uses themed render-insight chrome and starts folded", () => {
+    showPerformanceDisplayRef.current = true;
+    render(<RenderInsightSummary />);
+
+    const summary = screen.getByTestId("render-insight-summary");
+    expect(summary).toHaveAttribute("data-miroir-overlay", "render-insight");
+    expect(screen.getByTestId("render-insight-badge")).toHaveTextContent("perf");
+    expect(summary.style.backgroundColor).toBe("#134e4a");
+    expect(summary.style.fontSize).toBe("13px");
+    expect(summary.style.backgroundColor).not.toBe("#fffbeb");
+    expect(
+      screen.getByRole("button", { name: /expand render insight summary/i })
+    ).toBeInTheDocument();
+    expect(summary.querySelectorAll("li")).toHaveLength(0);
   });
 });

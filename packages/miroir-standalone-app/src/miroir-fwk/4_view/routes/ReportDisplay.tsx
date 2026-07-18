@@ -157,6 +157,7 @@ export const ReportDisplay: React.FC<{
                 />
               )}
             >
+              <RenderInsightSummary />
               <ReportViewWithEditor
                 applicationSection={pageParams.applicationSection as ApplicationSection}
                 application={application}
@@ -167,7 +168,6 @@ export const ReportDisplay: React.FC<{
                 storedQueryData={currentStoredQueryData}
                 reportDefinition={currentMiroirReport}
               />
-              <RenderInsightSummary />
             </ErrorBoundary>
           </>
         )}

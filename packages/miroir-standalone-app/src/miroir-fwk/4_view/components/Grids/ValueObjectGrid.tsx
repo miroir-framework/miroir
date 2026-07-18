@@ -20,6 +20,7 @@ import {
 } from "../../adaptiveColumnWidths.js";
 import { cleanLevel } from "../../constants.js";
 import { useMiroirTableTheme } from "../../contexts/MiroirThemeContext.js";
+import { renderInsightRegistry } from "../../tools/renderInsightRegistry.js";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import {
   JsonObjectEditFormDialogInputs
@@ -569,10 +570,16 @@ export const ValueObjectGrid: FC<any> = (
     </div>
   );
 
-  // Track render performance at end of render (ifThenElse)
+  // Track render performance at end of render (gated — near-zero when timer off)
   if (context.showPerformanceDisplay) {
     const renderEndTime = performance.now();
     const renderDuration = renderEndTime - renderStartTime;
+    renderInsightRegistry.trackRender({
+      componentId: "ValueObjectGrid",
+      navigationKey: componentKey,
+      enabled: true,
+      durationMs: renderDuration,
+    });
     RenderPerformanceMetrics.trackRenderPerformance(componentKey, renderDuration);
   }
 };

@@ -13,7 +13,7 @@
 // ################################################################################################
 
 import type { MiroirThemeFull } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
-import { defaultMiroirTheme, MiroirTheme, ResolvedMiroirTheme } from "./MiroirTheme.js";
+import { defaultMiroirTheme, MiroirTheme } from "./MiroirTheme.js";
 import { ResolvedTableTheme, TableTheme } from './TableTheme.js';
 
 // ################################################################################################
@@ -87,6 +87,16 @@ import { ResolvedTableTheme, TableTheme } from './TableTheme.js';
 //   colorPrimary         →  colors.accent            (primary icon = accent)
 //   colorSecondary       →  colors.textSecondary     (secondary icon)
 //   colorDisabled        →  colors.textDisabled      (disabled icon)
+//
+// components.renderInsight:  (timer-mode overlays; never warning — visual-debug owns amber)
+//   background           →  literal teal-900 default (high-contrast chip)
+//   textColor            →  literal teal-50
+//   textMuted            →  literal teal-200
+//   accent / borderColor →  literal teal-700 (or colors.info when present)
+//   badgeBackground      →  literal teal-200
+//   badgeTextColor       →  literal teal-950
+//   fontSize             →  typography.fontSize.sm (chip; default 12px)
+//   fontSizeSummary      →  typography.fontSize.md (summary; default 13px)
 //
 // ═══════════════════════════════════════════════════════════════════════════════
 // TABLE
@@ -192,7 +202,8 @@ const colors: MiroirThemeFull['definition']['colors'] = {
   // ──────────────────────────────────────────────────
   // Resolve components
   // ──────────────────────────────────────────────────
-  const resolvedComponents: MiroirThemeFull['definition']['components'] = {
+  // Built then cast: root color fallbacks are typed optional on MiroirThemeFull.
+  const resolvedComponents = {
     appBar: {
       background: theme?.components?.appBar?.background ?? colors.primaryDark,
       textColor: theme?.components?.appBar?.textColor ?? colors.backgroundPaper,
@@ -290,6 +301,39 @@ const colors: MiroirThemeFull['definition']['colors'] = {
         lg: theme?.components?.icon?.size?.lg ?? '32px',
       },
     },
+
+    // Not yet on StoredMiroirTheme schema — read optional overrides via cast until schema catches up.
+    renderInsight: (() => {
+      const ri = (theme?.components as { renderInsight?: Record<string, string> } | undefined)
+        ?.renderInsight;
+      const infoAccent =
+        (colors as { info?: string }).info ?? "#0f766e";
+      return {
+        background: ri?.background ?? "#134e4a",
+        textColor: ri?.textColor ?? "#f0fdfa",
+        textMuted: ri?.textMuted ?? "#99f6e4",
+        accent: ri?.accent ?? infoAccent,
+        borderColor: ri?.borderColor ?? infoAccent,
+        badgeBackground: ri?.badgeBackground ?? "#99f6e4",
+        badgeTextColor: ri?.badgeTextColor ?? "#042f2e",
+        fontSize:
+          ri?.fontSize ??
+          theme.typography?.fontSize?.sm ??
+          defaultMiroirTheme.typography?.fontSize?.sm ??
+          "12px",
+        fontSizeSummary:
+          ri?.fontSizeSummary ??
+          theme.typography?.fontSize?.md ??
+          defaultMiroirTheme.typography?.fontSize?.md ??
+          "13px",
+        borderRadius: ri?.borderRadius ?? "999px",
+        borderRadiusSummary:
+          ri?.borderRadiusSummary ??
+          theme.borderRadius?.md ??
+          defaultMiroirTheme.borderRadius?.md ??
+          "6px",
+      };
+    })(),
   };
 
   // ──────────────────────────────────────────────────
@@ -340,7 +384,7 @@ const colors: MiroirThemeFull['definition']['colors'] = {
     borderRadius: resolvedBorderRadius,
     breakpoints: resolvedBreakpoints,
     transitions: resolvedTransitions,
-    components: resolvedComponents,
+    components: resolvedComponents as MiroirThemeFull['definition']['components'],
     table: resolvedTable,
   };
 }

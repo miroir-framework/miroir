@@ -19,10 +19,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 // Re-export for convenience
 export type { MiroirThemeOption };
 
-// Context interface - always provides a ResolvedMiroirTheme
+// Context interface — resolved theme (colors filled); renderInsight lives on components via resolver.
 interface MiroirThemeContextType {
-  // currentTheme: ResolvedMiroirTheme;
-  currentTheme: MiroirThemeFull['definition'];
+  currentTheme: MiroirThemeFull["definition"];
   currentThemeId: string;
   currentThemeOption: MiroirThemeOption;
   selectTheme: (themeId: string) => void;
