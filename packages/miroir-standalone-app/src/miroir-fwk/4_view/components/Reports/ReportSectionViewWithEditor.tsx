@@ -310,15 +310,17 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     <>
       <div style={{ position: "relative" }}>
         {/* {props.generalEditMode && <IconBar />} */}
-        <RenderInsightHeader
-          componentName="ReportSectionViewWithEditor"
-          navigationCount={navigationCount}
-          totalCount={totalCount}
-          formikPath={
-            props.formikReportDefinitionPathString ||
-            props.reportSectionPath?.join(".")
-          }
-        />
+        {showPerformanceDisplay && (
+          <RenderInsightHeader
+            componentName="ReportSectionViewWithEditor"
+            navigationCount={navigationCount}
+            totalCount={totalCount}
+            formikPath={
+              props.formikReportDefinitionPathString ||
+              props.reportSectionPath?.join(".")
+            }
+          />
+        )}
         <JsonDisplayHelper
           debug={true}
           componentName={`ReportSectionViewWithEditor ${reportSectionDefinitionFromFormik?.type} ${props.reportSectionPath?.join(".")}`}

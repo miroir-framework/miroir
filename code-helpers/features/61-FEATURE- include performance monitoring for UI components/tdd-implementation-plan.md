@@ -445,6 +445,98 @@ Do not leave half-enabled `performance.now()` in hot editors without the gate.
 
 ---
 
+## Phase 8 — Regression fix: mount-time off-path cost (D8 hardening) ✅
+
+**Reported symptom**: after wiring `RenderInsightHeader` into `JzodObjectEditor` /
+`JzodArrayEditor` (object/record + array/tuple level), report rendering felt
+slower even though the insight counts themselves stayed low.
+
+**Root cause**: `RenderInsightHeader` called `useMiroirContextService()` and
+`useMiroirTheme()` *before* its `if (!showPerformanceDisplay) return null`
+guard. D8 only gated the registry/`performance.now()` cost, not the React
+reconciliation cost of mounting the header's fiber + two context
+subscriptions on every render. Since `JzodObjectEditor` / `JzodArrayEditor`
+recurse for every nested object/record/array/tuple in a schema, this
+mounting cost was paid at every such node, on every render, even with the
+timer fully off — most noticeable on schema-heavy screens with many nested
+editors.
+
+**Fix**: gate the `<RenderInsightHeader />` *element itself* at call sites
+that read the live context flag directly (`context.showPerformanceDisplay`
+from `useMiroirContextService()`), so the component isn't instantiated at
+all when the timer is off:
+
+- `JzodObjectEditor.tsx`, `JzodArrayEditor.tsx` (recursive — primary fix target)
+- `ReportSectionEntityInstance.tsx`, `ReportSectionViewWithEditor.tsx`,
+  `ReportSectionListDisplay.tsx`, `RootComponent.tsx`, `ReportPage.tsx`
+  (singleton-per-page — hardened for consistency)
+
+Call sites that only receive `showPerformanceDisplay` as a **prop** (not a
+live context read) — `GraphReportSectionView.tsx`,
+`ModelDiagramReportSectionView.tsx`, `ReportSectionMarkdown.tsx` — were left
+unguarded at the call site, since the prop isn't guaranteed to be threaded
+through by every caller (confirmed by an existing test that renders these
+components without passing the prop, relying on `RenderInsightHeader`'s own
+internal context read). `RenderInsightHeader`'s internal guard still covers
+these; only the extra call-site optimization was skipped for them.
+
+Note: this is a genuine, separate finding from the reported "9284ms 'focus'
+handler" console entry — that violation lives in `copilotkit_react-ui.js`,
+outside this feature's code paths, and is most consistent with a DevTools
+breakpoint/pause artifact rather than a real synchronous block.
+
+---
+
+## Phase 9 — Root cause of the "staggered attribute-by-attribute" slowness
+
+**User's hypothesis**: a "progressive"/viewport-style rendering mechanism used
+to make deep object/array trees reveal smoothly, and recent changes may have
+made it inoperative.
+
+**Finding**: the mechanism is real and still fully operative — it's
+`ProgressiveAttribute` (`JzodObjectEditor.tsx`) and `ProgressiveArrayItem`
+(`JzodArrayEditor.tsx`), predating #61 (introduced around #112/#138/#187).
+It is **not** viewport/IntersectionObserver-based (no such code exists or
+ever existed in this repo per `git log -S`); it is `requestIdleCallback`
+based: every single object attribute and array item mounts showing a
+"Loading…" placeholder, then swaps to real content once
+`requestIdleCallback(..., { timeout: 1000 })` fires (or a `setTimeout(…, 500)`
+fallback).
+
+Because `JzodObjectEditor` / `JzodArrayEditor` recurse, and a nested node's
+own `ProgressiveAttribute`/`ProgressiveArrayItem` children don't mount (and
+thus don't start their own idle-callback timer) until the **parent's**
+timer has already fired, this is a **cascade that compounds with nesting
+depth** — up to `depth × 1000ms` in the worst case (when the main thread
+never truly goes idle, so every level hits its timeout instead of firing
+early). A captured render-insight snapshot
+(`render-insights-2026-07-18.json`) showed schema nodes at **depth 7–8** for
+the Report `Transformer`/`Action` structures introduced by #199
+(`extractorTemplates` → `combinerTemplates` → `applyTransformer` →
+`definition` → `authorName` → `referencePath`), while `averageRenderTime` for
+nearly every node was **well under 1ms** (one exception at ~39ms). In other
+words: rendering itself is fast; the entire perceived slowness is
+**artificial wait time**, not actual render cost — and it scales with schema
+depth, so it got much worse once #199 introduced deep Transformer nesting,
+independent of the render-insight monitoring feature.
+
+**Fix** (`progressiveRenderConfig.ts` + `useViewportReveal.ts`):
+**viewport-gated** mount via `IntersectionObserver` (rootMargin prefetch).
+Unfolding mounts cheap placeholders; real `JzodElementEditor` trees mount only
+when the sentinel intersects the scrollport. Fold/unfold uses
+`startTransition` so the click handler returns before heavy work.
+Off-screen siblings stay unmounted until scrolled into view.
+
+Also: render-insight accrual is **async** (`scheduleTrackRender` → idle flush;
+`useSyncExternalStore` for reads) so Map writes / timing no longer run
+synchronously during React render of every nested editor.
+
+Prior approaches (idle-only cascade; sibling-count sync; eager-first-N) were
+insufficient: click freezes of multiple seconds remained when opening nested
+`miroirCoreTransformers` sections (`[Violation] 'click' handler took 17953ms`).
+
+---
+
 ## 7. Suggested first tracer bullet (start here)
 
 1. **RED**: unit test — registry ignores tracks when `enabled: false`.

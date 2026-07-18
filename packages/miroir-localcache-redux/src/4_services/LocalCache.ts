@@ -121,9 +121,16 @@ export class LocalCache implements LocalCacheInterface {
       reducer: this.staticReducers as any, // TODO: determine real type! now it says state parameter can be ReduxStoreWithUndoRedo | undefined. How could it be undefined?
       middleware: (getDefaultMiddleware) => {
         return getDefaultMiddleware({
+          // Large local-cache snapshots make the default 32ms warn threshold noisy in
+          // development (SerializableStateInvariantMiddleware / immutableCheck).
+          // Both checks are already off in production builds.
           serializableCheck: {
             ignoredActions: ignoredActionsList, // Ignore these action types
             ignoredActionPaths: ["meta.promiseActions", "pastModelPatches.0.action.asyncDispatch"], // Ignore these field paths in all actions
+            warnAfter: 256,
+          },
+          immutableCheck: {
+            warnAfter: 256,
           },
         })
           .concat(promiseMiddleware)

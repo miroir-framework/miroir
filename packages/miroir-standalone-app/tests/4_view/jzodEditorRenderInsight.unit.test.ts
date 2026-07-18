@@ -6,7 +6,8 @@ import {
 
 /**
  * Documents the object/record + array/tuple instrumentation contract used by
- * JzodObjectEditor / JzodArrayEditor (gated trackRender + durationMs + formik path).
+ * JzodObjectEditor / JzodArrayEditor (gated trackRender + durationMs + formik
+ * path; sync accrual so progressive-reveal chips stay live).
  */
 describe("Jzod editor render-insight contract", () => {
   beforeEach(() => {

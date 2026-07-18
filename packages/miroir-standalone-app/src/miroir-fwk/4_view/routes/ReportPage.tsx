@@ -108,11 +108,13 @@ export const ReportPage = () => {
                 {pageParams.instanceUuid}
               </ThemedBox>
             )}
-            <RenderInsightHeader
-              componentName="ReportPage"
-              navigationCount={navigationCount}
-              totalCount={totalCount}
-            />
+            {context.showPerformanceDisplay && (
+              <RenderInsightHeader
+                componentName="ReportPage"
+                navigationCount={navigationCount}
+                totalCount={totalCount}
+              />
+            )}
           </ThemedBox>
           <ReportDisplay
             pageParams={pageParams}

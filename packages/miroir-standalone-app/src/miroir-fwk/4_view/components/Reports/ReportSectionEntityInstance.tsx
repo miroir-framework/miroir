@@ -158,7 +158,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const formikContext = useFormikContext<Record<string, any>>();
   const formikValuePathAsString = props.formikValuePath?.join("_") || "";
   
-  log.info("ReportSectionEntityInstance formikValuePathAsString", formikValuePathAsString);
+  // log.info("ReportSectionEntityInstance formikValuePathAsString", formikValuePathAsString);
 
   const reportDefinitionFromFormik: Report  | undefined =
     formikContext.values &&
@@ -417,17 +417,19 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  log.info("ReportSectionEntityInstance: rendering with instance:", instance);
+  // log.info("ReportSectionEntityInstance: rendering with instance:", instance);
   if (instance) {
     return (
       // <ThemedContainer style={{ width: '100%' }}>
       <ThemedContainer>
-        <RenderInsightHeader
-          componentName="ReportSectionEntityInstance"
-          navigationCount={navigationCount}
-          totalCount={totalCount}
-          formikPath={formikValuePathAsString}
-        />
+        {showPerformanceDisplay && (
+          <RenderInsightHeader
+            componentName="ReportSectionEntityInstance"
+            navigationCount={navigationCount}
+            totalCount={totalCount}
+            formikPath={formikValuePathAsString}
+          />
+        )}
 
         <ThemedHeaderSection>
           <ThemedTitle>

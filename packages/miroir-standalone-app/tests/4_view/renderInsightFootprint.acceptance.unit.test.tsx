@@ -75,6 +75,7 @@ describe("Phase 7.1 footprint acceptance (timer off)", () => {
 
   it("keeps registry empty and mounts no insight UI after many renders when timer is off", () => {
     const trackSpy = vi.spyOn(renderInsightRegistry, "trackRender");
+    const scheduleSpy = vi.spyOn(renderInsightRegistry, "scheduleTrackRender");
 
     const { rerender, container } = render(
       <>
@@ -94,6 +95,7 @@ describe("Phase 7.1 footprint acceptance (timer off)", () => {
 
     expect(renderInsightRegistry.size()).toBe(0);
     expect(trackSpy).not.toHaveBeenCalled();
+    expect(scheduleSpy).not.toHaveBeenCalled();
     expect(screen.queryByTestId("render-insight-header")).not.toBeInTheDocument();
     expect(screen.queryByTestId("render-insight-summary")).not.toBeInTheDocument();
     expect(container.querySelector("[data-miroir-overlay='render-insight']")).toBeNull();

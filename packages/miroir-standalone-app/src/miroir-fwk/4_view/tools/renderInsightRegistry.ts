@@ -76,10 +76,89 @@ export function formikPathDepth(formikPath?: string): number {
 
 export class RenderInsightRegistry {
   private componentData = new Map<string, ComponentRenderData>();
+  private listeners = new Set<() => void>();
+  private pendingTracks: TrackRenderArgs[] = [];
+  private flushIdleId: number | null = null;
+  private flushTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  /** Subscribe to registry mutations (used by useSyncExternalStore). */
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  private notifySubscribers(): void {
+    for (const listener of this.listeners) {
+      listener();
+    }
+  }
+
+  /**
+   * Queue a track for idle/async flush (tests / non-UI batching).
+   * Prefer {@link trackRender} from React render paths that display chips —
+   * idle flush leaves counts at 0 until a later re-render, which progressive
+   * reveal often never schedules.
+   * No-op when `enabled` is false.
+   */
+  scheduleTrackRender(args: TrackRenderArgs): void {
+    if (!args.enabled) {
+      return;
+    }
+    this.pendingTracks.push(args);
+    if (this.flushIdleId != null || this.flushTimeoutId != null) {
+      return;
+    }
+    const flush = () => {
+      this.flushIdleId = null;
+      this.flushTimeoutId = null;
+      const batch = this.pendingTracks;
+      this.pendingTracks = [];
+      if (batch.length === 0) {
+        return;
+      }
+      for (const item of batch) {
+        this.trackRender(item);
+      }
+      // Intentionally no notifySubscribers() here: components that both
+      // schedule and subscribe would re-render → re-schedule → infinite loop.
+      // RenderInsightSummary polls; inline chips refresh on the next natural render.
+    };
+    if (typeof requestIdleCallback !== "undefined") {
+      this.flushIdleId = requestIdleCallback(flush, { timeout: 120 });
+    } else {
+      this.flushTimeoutId = setTimeout(flush, 0);
+    }
+  }
+
+  /** Flush pending scheduled tracks synchronously (tests / teardown). */
+  flushScheduledTracks(): void {
+    if (this.flushIdleId != null && typeof cancelIdleCallback !== "undefined") {
+      cancelIdleCallback(this.flushIdleId);
+      this.flushIdleId = null;
+    }
+    if (this.flushTimeoutId != null) {
+      clearTimeout(this.flushTimeoutId);
+      this.flushTimeoutId = null;
+    }
+    if (this.pendingTracks.length === 0) {
+      return;
+    }
+    const batch = this.pendingTracks;
+    this.pendingTracks = [];
+    for (const item of batch) {
+      this.trackRender(item);
+    }
+  }
 
   /**
    * Track a render when enabled. When disabled, returns NOOP_RENDER_COUNTS
    * without touching the map.
+   *
+   * Call from React render paths that display insight chips so returned
+   * counts match this render. Use {@link scheduleTrackRender} only when
+   * display can lag (e.g. polled summary-only tooling).
    */
   trackRender(args: TrackRenderArgs): RenderCounts {
     if (!args.enabled) {
@@ -187,11 +266,14 @@ export class RenderInsightRegistry {
   }
 
   resetAll(): void {
+    this.flushScheduledTracks();
     this.componentData.clear();
+    this.notifySubscribers();
   }
 
   resetComponent(pathKey: string): void {
     this.componentData.delete(pathKey);
+    this.notifySubscribers();
   }
 }
 

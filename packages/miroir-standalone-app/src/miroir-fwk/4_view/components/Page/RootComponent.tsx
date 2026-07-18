@@ -861,11 +861,13 @@ export const RootComponent = (props: RootComponentProps) => {
                 {transactions && transactions.length > 0 && (
                   <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
                 )}
-                <RenderInsightHeader
-                  componentName="RootComponent"
-                  navigationCount={navigationCount}
-                  totalCount={totalCount}
-                />
+                {context.showPerformanceDisplay && (
+                  <RenderInsightHeader
+                    componentName="RootComponent"
+                    navigationCount={navigationCount}
+                    totalCount={totalCount}
+                  />
+                )}
                 {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
                 <Outlet></Outlet>
               </ThemedMainPanel>

@@ -159,4 +159,27 @@ describe("RenderInsightRegistry (Phase 1–2)", () => {
       expect(node.totalRenderTime).toBeUndefined();
     });
   });
+
+  describe("async scheduleTrackRender", () => {
+    it("does not mutate the map until flushed", () => {
+      registry.scheduleTrackRender({
+        componentId: "ReportPage",
+        navigationKey: "nav",
+        enabled: true,
+      });
+      expect(registry.size()).toBe(0);
+      registry.flushScheduledTracks();
+      expect(registry.size()).toBe(1);
+    });
+
+    it("ignores disabled schedules", () => {
+      registry.scheduleTrackRender({
+        componentId: "ReportPage",
+        navigationKey: "nav",
+        enabled: false,
+      });
+      registry.flushScheduledTracks();
+      expect(registry.size()).toBe(0);
+    });
+  });
 });

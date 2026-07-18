@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { startTransition, useCallback, useMemo, useState } from "react";
 
 import {
   ExpandLess,
@@ -155,27 +155,32 @@ export const FoldUnfoldObjectOrArray = (props: {
       // const pathArray = props.listKey.split('.').filter(Boolean);
       
       if (isCurrentlyFolded) {
-        // Unfolding
-        reportContext.setNodeFolded(pathArray, "unfold");
-        
-        // Handle infinite depth unfolding
-        if (props.unfoldingDepth === Infinity) {
-          // Nothing else needed - setNodeFolded will remove the node and children
-        } else {
-          // For finite depth unfolding - fold the immediate children
-          // If currentValue is an array, fold all items
-          if (Array.isArray(props.currentValue)) {
-            const childIndices = props.currentValue.map((_, index) => index);
-            reportContext.foldAllChildren(pathArray, childIndices);
-          } else if (typeof props.currentValue === 'object' && props.currentValue !== null) {
-            // If currentValue is an object, fold all attributes
-            const childKeys = Object.keys(props.currentValue);
-            reportContext.foldAllChildren(pathArray, childKeys);
+        // Unfolding — transition so React can paint cheap placeholders before
+        // mounting heavy editors (viewport-gated ProgressiveAttribute/ArrayItem).
+        startTransition(() => {
+          reportContext.setNodeFolded(pathArray, "unfold");
+
+          // Handle infinite depth unfolding
+          if (props.unfoldingDepth === Infinity) {
+            // Nothing else needed - setNodeFolded will remove the node and children
+          } else {
+            // For finite depth unfolding - fold the immediate children
+            // If currentValue is an array, fold all items
+            if (Array.isArray(props.currentValue)) {
+              const childIndices = props.currentValue.map((_, index) => index);
+              reportContext.foldAllChildren(pathArray, childIndices);
+            } else if (typeof props.currentValue === "object" && props.currentValue !== null) {
+              // If currentValue is an object, fold all attributes
+              const childKeys = Object.keys(props.currentValue);
+              reportContext.foldAllChildren(pathArray, childKeys);
+            }
           }
-        }
+        });
       } else {
         // Folding
-        reportContext.setNodeFolded(pathArray, "fold");
+        startTransition(() => {
+          reportContext.setNodeFolded(pathArray, "fold");
+        });
       }
     },
     [

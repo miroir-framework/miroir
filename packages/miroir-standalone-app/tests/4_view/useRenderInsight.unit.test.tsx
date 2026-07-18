@@ -28,6 +28,7 @@ describe("useRenderInsight (Phase 1.2)", () => {
 
   it("does not call the registry when showPerformanceDisplay is false", () => {
     const trackSpy = vi.spyOn(renderInsightRegistry, "trackRender");
+    const scheduleSpy = vi.spyOn(renderInsightRegistry, "scheduleTrackRender");
 
     const { result } = renderHook(() =>
       useRenderInsight("ReportPage", "dep-data")
@@ -35,19 +36,21 @@ describe("useRenderInsight (Phase 1.2)", () => {
 
     expect(result.current).toEqual(NOOP_RENDER_COUNTS);
     expect(trackSpy).not.toHaveBeenCalled();
+    expect(scheduleSpy).not.toHaveBeenCalled();
     expect(renderInsightRegistry.size()).toBe(0);
   });
 
-  it("records a render when showPerformanceDisplay is true", () => {
+  it("tracks synchronously when showPerformanceDisplay is true so chips see live counts", () => {
     showPerformanceDisplayRef.current = true;
     const trackSpy = vi.spyOn(renderInsightRegistry, "trackRender");
+    const scheduleSpy = vi.spyOn(renderInsightRegistry, "scheduleTrackRender");
 
-    const { result } = renderHook(() =>
-      useRenderInsight("ReportPage", "dep-data")
-    );
+    const { result } = renderHook(() => useRenderInsight("ReportPage", "dep-data"));
 
-    expect(result.current).toEqual({ navigationCount: 1, totalCount: 1 });
-    expect(trackSpy).toHaveBeenCalledTimes(1);
+    expect(scheduleSpy).not.toHaveBeenCalled();
+    expect(trackSpy).toHaveBeenCalled();
     expect(renderInsightRegistry.size()).toBe(1);
+    expect(result.current.navigationCount).toBe(1);
+    expect(result.current.totalCount).toBe(1);
   });
 });

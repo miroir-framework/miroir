@@ -722,11 +722,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
   return (
     <ThemedBox className="MiroirReport-global" display="block">
-      <RenderInsightHeader
-        componentName="ReportSectionListDisplay"
-        navigationCount={navigationCount}
-        totalCount={totalCount}
-      />
+      {context.showPerformanceDisplay && (
+        <RenderInsightHeader
+          componentName="ReportSectionListDisplay"
+          navigationCount={navigationCount}
+          totalCount={totalCount}
+        />
+      )}
       <JsonDisplayHelper
         debug={true}
         componentName="ReportSectionListDisplay"

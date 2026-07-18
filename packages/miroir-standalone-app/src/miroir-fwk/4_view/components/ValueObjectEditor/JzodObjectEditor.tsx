@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Clear } from "../Themes/MaterialSymbolWrappers";
 
@@ -45,6 +45,7 @@ import {
   NOOP_RENDER_COUNTS,
   renderInsightRegistry,
 } from "../../tools/renderInsightRegistry.js";
+import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import {
   getUnitTestKind,
   HIGHLIGHTED_UNIT_TEST_STYLE,
@@ -233,23 +234,10 @@ const ProgressiveAttribute: FC<{
   anyRootLessListKey,
   displayError,
 }) => {
-  const isTestMode = process.env.VITE_TEST_MODE === 'true';
-  const [isRendered, setIsRendered] = useState(isTestMode);
-  
-  if (!isTestMode) {
-    useEffect(() => {
-      // Use requestIdleCallback for better performance, fallback to setTimeout
-      const scheduleRender = () => {
-        if ('requestIdleCallback' in window) {
-          (window as any).requestIdleCallback(() => setIsRendered(true), { timeout: 1000 });
-        } else {
-          setTimeout(() => setIsRendered(true), 500);
-        }
-      };
-      
-      scheduleRender();
-    }, []); // Empty dependency array to run once on mount
-  }
+  // Viewport-gated: cheap placeholder until this attribute intersects the
+  // scrollport. Unfolding a huge parent then only mounts editors that are
+  // actually (nearly) visible — avoids multi-second click freezes.
+  const { ref: viewportRef, revealed: isRendered } = useViewportReveal();
 
   const currentAttributeDefinition =
     localResolvedElementJzodSchemaBasedOnValue.definition[attribute[0]];
@@ -350,7 +338,7 @@ const ProgressiveAttribute: FC<{
   );
 
   return (
-    <div key={attributeListKey}>
+    <div key={attributeListKey} ref={viewportRef}>
       {!isRendered ? (
         <ThemedLoadingCard message={`Loading ${attribute[0]}...`} />
       ) : (
@@ -641,7 +629,10 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     "JzodElementEditor"
   );
 
-  const renderStartTime = context.showPerformanceDisplay ? performance.now() : 0;
+  const renderStartRef = useRef(0);
+  if (context.showPerformanceDisplay) {
+    renderStartRef.current = performance.now();
+  }
 
   const reportContext = useReportPageContext();
   const currentTypeCheckKeyMap = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
@@ -1331,13 +1322,17 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     currentTypeCheckKeyMap?.resolvedSchema?.type ??
     currentTypeCheckKeyMap?.rawSchema?.type;
   const insightRole = schemaType === "record" ? "record" : "object";
-  const insightCounts = context.showPerformanceDisplay
+  const insightComponentId =
+    insightRole === "record" ? "JzodRecordEditor" : "JzodObjectEditor";
+  const insightEnabled = !!context.showPerformanceDisplay;
+  // Sync accrual: chips need live counts; progressive mount limits fan-out.
+  const insightCounts = insightEnabled
     ? renderInsightRegistry.trackRender({
-        componentId: insightRole === "record" ? "JzodRecordEditor" : "JzodObjectEditor",
+        componentId: insightComponentId,
         navigationKey: `${currentDeploymentUuid ?? ""}-${currentApplicationSection ?? ""}`,
         formikPath: formikRootLessListKey,
         enabled: true,
-        durationMs: performance.now() - renderStartTime,
+        durationMs: performance.now() - renderStartRef.current,
       })
     : NOOP_RENDER_COUNTS;
 
@@ -1370,13 +1365,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           },
         ]}
       />
-      <RenderInsightHeader
-        componentName={insightRole}
-        navigationCount={insightCounts.navigationCount}
-        totalCount={insightCounts.totalCount}
-        formikPath={formikRootLessListKey}
-        lastRenderTime={insightCounts.lastRenderTime}
-      />
+      {context.showPerformanceDisplay && (
+        <RenderInsightHeader
+          componentName={insightRole}
+          navigationCount={insightCounts.navigationCount}
+          totalCount={insightCounts.totalCount}
+          formikPath={formikRootLessListKey}
+          lastRenderTime={insightCounts.lastRenderTime}
+        />
+      )}
       {/* Performance statistics */}
       {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectWithoutHeader && (
         <ThemedFlexRow justify="start" align="center">
