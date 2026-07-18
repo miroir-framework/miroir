@@ -19,11 +19,16 @@ import {
   book4,
   book5,
   book6,
+  Country1,
+  Country2,
+  Country3,
   defaultLibraryAppModel,
   entityAuthor,
   entityBook,
+  entityCountry,
   entityDefinitionAuthor,
   entityDefinitionBook,
+  entityDefinitionCountry,
   entityDefinitionPublisher,
   entityPublisher,
   folio as publisher1,
@@ -36,6 +41,9 @@ import {
 
 /** Suite registry key for DomainController Data CRUD action MiroirTest. */
 export const DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY = "domain_controller_data_crud";
+
+/** Suite registry key for DomainController Model CRUD action MiroirTest. */
+export const DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY = "domain_controller_model_crud";
 
 /**
  * Seed payload for `RunnerTestSessionOptions.libraryPlayfieldSeed` /
@@ -138,4 +146,61 @@ export const domainControllerDataCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed 
 
 export function isDomainControllerDataCrudSuite(suiteKey: string): boolean {
   return suiteKey === DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY;
+}
+
+/** Publisher + Country only — Model.CRUD beforeEach seed. */
+export const libraryEntitiesAndInstancesPublisherAndCountry: ApplicationEntitiesAndInstances = [
+  {
+    entity: entityPublisher as Entity,
+    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    instances: [
+      publisher1 as EntityInstance,
+      publisher2 as EntityInstance,
+      publisher3 as EntityInstance,
+    ],
+  },
+  {
+    entity: entityCountry as Entity,
+    entityDefinition: entityDefinitionCountry as EntityDefinition,
+    instances: [
+      Country1 as EntityInstance,
+      Country2 as EntityInstance,
+      Country3 as EntityInstance,
+    ],
+  },
+];
+
+export const domainControllerModelCrudFilterEntities: Uuid[] = [
+  entityPublisher.uuid,
+  entityCountry.uuid,
+];
+
+/**
+ * Session playfield seed for `domain_controller_model_crud`.
+ * Matches imperative Model.CRUD beforeEach (Publisher + Country).
+ */
+export const domainControllerModelCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
+  libraryEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
+  librarySeedInitParams: libraryPlayfieldSeedInitParams,
+  librarySeedMetaModel: defaultLibraryAppModel as MetaModel,
+};
+
+export function isDomainControllerModelCrudSuite(suiteKey: string): boolean {
+  return suiteKey === DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY;
+}
+
+export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
+  return isDomainControllerDataCrudSuite(suiteKey) || isDomainControllerModelCrudSuite(suiteKey);
+}
+
+export function libraryPlayfieldSeedForActionSuite(
+  suiteKey: string,
+): LibraryPlayfieldSeed | undefined {
+  if (isDomainControllerDataCrudSuite(suiteKey)) {
+    return domainControllerDataCrudLibraryPlayfieldSeed;
+  }
+  if (isDomainControllerModelCrudSuite(suiteKey)) {
+    return domainControllerModelCrudLibraryPlayfieldSeed;
+  }
+  return undefined;
 }

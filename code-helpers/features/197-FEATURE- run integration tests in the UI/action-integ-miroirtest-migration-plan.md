@@ -292,7 +292,7 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 | 2.4 | Parity checklist vs imperative file (same assertions / counts) | Keep both green; document known deltas if any | — | ✅ |
 
 **Phase 2 notes:**
-- Suite key: `domain_controller_data_crud` (`miroirTest_domain_controller_data_crud`).
+- Suite key: `domain_controller_data_crud` (`miroirTest_domain_controller_data_crud` in **deployment-miroir** `miroir_data`; Library remains `runTarget` only).
 - Seed uses `libraryEntitiesAndInstancesWithoutBook3` + `defaultLibraryAppModel` (not `defaultMiroirMetaModel`).
 - Imperative `DomainController.integ.Data.CRUD.test.tsx` untouched; both paths green.
 - Lifecycle already on session playfield (`RunnerTestSession.libraryPlayfieldSeed`) — Phase 3.1 largely pre-satisfied.
@@ -314,11 +314,17 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 | Slice | Work | Tests first | Nonreg | Status |
 |-------|------|-------------|--------|--------|
 | 4.1 ★ | **Deprecate** (do **not** delete) `DomainController.integ.Data.CRUD.test.tsx`; docs + nonreg prefer `testMiroir --suites domain_controller_data_crud`; legacy stays in nonreg via `DomainController.integ` | Both paths green | **nonreg** | ✅ |
-| 4.2+ | Migrate Model / PK / noParentUuid CRUD files using the same leaf + session | One file per slice | nonreg per file or batch | — |
+| 4.2 ★ | Port Model.CRUD → `domain_controller_model_crud` (`actionTest`); Publisher+Country playfield seed; deprecate imperative Model.CRUD | Integ 8/8 + legacy green | **nonreg** | ✅ |
+| 4.3+ | Migrate PK / noParentUuid CRUD files using the same leaf + session | One file per slice | nonreg per file or batch | — |
 
 **Phase 4.1 notes:**
-- Legacy file marked `@deprecated` with preferred CLI; **must remain runnable** until MiroirTest is accepted as sole owner (later deletion slice — not 4.1).
+- Legacy Data.CRUD marked `@deprecated` with preferred CLI; **must remain runnable** until MiroirTest is accepted as sole owner (later deletion slice — not 4.1).
 - Nonreg adds `integ-action-domain_controller_data_crud` while keeping `appstack-DomainController.integ`.
+
+**Phase 4.2 notes:**
+- Suite key: `domain_controller_model_crud` (`miroirTest_domain_controller_model_crud` in **deployment-miroir** `miroir_data`; Library remains `runTarget` only); generator: `generate_domain_controller_model_crud_miroir_test.py`.
+- Seed: `domainControllerModelCrudLibraryPlayfieldSeed` (Publisher + Country).
+- Imperative Model.CRUD deprecated, not deleted.
 
 ### Phase 5 — UI (#197 Phase B follow-on)
 
@@ -385,5 +391,6 @@ Do **not** weaken assertions to get green; fix executor / param bank instead.
 - [gap-E-refactoring-plan.md](./gap-E-refactoring-plan.md) (DC session migration already done for bootstrap)
 - [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) (UI integ after CLI)
 - [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md)
-- Source pilot: `packages/miroir-standalone-app/tests/3_controllers/DomainController.integ.Data.CRUD.test.tsx`
+- Source pilot (deprecated imperative): `packages/miroir-standalone-app/tests/3_controllers/DomainController.integ.Data.CRUD.test.tsx`
+- Canonical MiroirTest: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/c8e2a104-….json` (`domain_controller_data_crud`; Library `runTarget`)
 - Runner reference: `packages/miroir-test-app_deployment-library/.../b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c.json` (`runner_library`)

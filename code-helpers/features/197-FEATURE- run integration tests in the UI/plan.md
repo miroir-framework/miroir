@@ -91,7 +91,7 @@ sequenceDiagram
 
 **Still open for #197:** Phase B (UI launcher + reporting). Phase R complete ✅ ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)). UI runs **domainController-based** MiroirTest integ first; PersistenceStoreController-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
 
-**Action integ → MiroirTest:** Data CRUD pilot on `actionTest` (`domain_controller_data_crud`). Imperative `DomainController.integ.Data.CRUD.test.tsx` is **deprecated** but kept green until full replacement. Plan: [action-integ-miroirtest-migration-plan.md](./action-integ-miroirtest-migration-plan.md).
+**Action integ → MiroirTest:** Data CRUD pilot on `actionTest` (`domain_controller_data_crud` in **deployment-miroir**; Library is `runTarget` only). Imperative `DomainController.integ.Data.CRUD.test.tsx` is **deprecated** but kept green until full replacement. Plan: [action-integ-miroirtest-migration-plan.md](./action-integ-miroirtest-migration-plan.md).
 
 ### Legacy imperative runner files (not yet on MiroirTest JSON)
 

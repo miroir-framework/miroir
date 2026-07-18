@@ -95,7 +95,7 @@ export { default as user3 } from "./assets/library_data/ca794e28-b2dc-45b3-8137-
 
 // Library Model - MiroirTest instances (parentUuid = entityMiroirTest = a311f363-…)
 export { default as miroirTest_runner_library } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c.json" assert { type: "json" };
-export { default as miroirTest_domain_controller_data_crud } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/c8e2a104-5b6d-4f91-a2c3-9d0e1f2a3b4c.json" assert { type: "json" };
+export { default as miroirTest_domain_controller_model_crud } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/a1b2c3d4-5e6f-4789-a0b1-c2d3e4f5a6b7.json" assert { type: "json" };
 
 export {
   RUNNER_LIBRARY_RUNNER_REGISTRY,

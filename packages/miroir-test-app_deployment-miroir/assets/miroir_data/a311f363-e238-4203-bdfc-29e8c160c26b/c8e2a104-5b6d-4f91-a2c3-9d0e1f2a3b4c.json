@@ -2,10 +2,10 @@
   "uuid": "c8e2a104-5b6d-4f91-a2c3-9d0e1f2a3b4c",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "domain_controller_data_crud",
-  "description": "DomainController Data CRUD action integration tests (Feature 197). Lifecycle: session libraryPlayfieldSeed (no suite hooks).",
+  "description": "DomainController Data CRUD action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session libraryPlayfieldSeed (no suite hooks).",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "domainController.data.crud",

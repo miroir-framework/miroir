@@ -3,10 +3,14 @@ import { defaultLibraryAppModel, entityAuthor, entityBook, entityPublisher } fro
 
 import {
   DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,
+  DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY,
   domainControllerDataCrudFilterEntities,
   domainControllerDataCrudLibraryPlayfieldSeed,
+  domainControllerModelCrudLibraryPlayfieldSeed,
   isDomainControllerDataCrudSuite,
+  isDomainControllerModelCrudSuite,
   libraryEntitiesAndInstancesWithoutBook3,
+  libraryPlayfieldSeedForActionSuite,
   libraryPlayfieldSeedInitParams,
 } from "./libraryPlayfieldSeeds.js";
 
@@ -33,5 +37,16 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
   it("isDomainControllerDataCrudSuite matches registry key only", () => {
     expect(isDomainControllerDataCrudSuite(DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY)).toBe(true);
     expect(isDomainControllerDataCrudSuite("runner_library")).toBe(false);
+  });
+
+  it("domainControllerModelCrudLibraryPlayfieldSeed uses Publisher+Country only", () => {
+    const seed = domainControllerModelCrudLibraryPlayfieldSeed;
+    expect(seed.libraryEntitiesAndInstances).toHaveLength(2);
+    expect(seed.libraryEntitiesAndInstances.map((b) => b.entity.name).sort()).toEqual([
+      "Country",
+      "Publisher",
+    ]);
+    expect(isDomainControllerModelCrudSuite(DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY)).toBe(true);
+    expect(libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY)).toBe(seed);
   });
 });

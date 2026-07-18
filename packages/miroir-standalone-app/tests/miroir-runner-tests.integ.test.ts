@@ -30,8 +30,8 @@ import {
 } from "./helpers/runMiroirRunnerTestsFromCLI.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 import {
-  domainControllerDataCrudLibraryPlayfieldSeed,
-  isDomainControllerDataCrudSuite,
+  libraryPlayfieldSeedForActionSuite,
+  isDomainControllerActionCrudSuite,
 } from "./helpers/libraryPlayfieldSeeds.js";
 
 const pageLabel = "miroir-runner-tests.integ";
@@ -73,13 +73,14 @@ if (config.filter?.testList) {
 
 function sessionOptionsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   const runTarget = resolveRunnerTestRunTarget({ suite });
-  if (isDomainControllerDataCrudSuite(suiteKey)) {
+  const playfieldSeed = libraryPlayfieldSeedForActionSuite(suiteKey);
+  if (isDomainControllerActionCrudSuite(suiteKey) && playfieldSeed) {
     return {
       pageLabel,
       runTarget,
       suiteTestParams: suite.testParams,
       runnerRegistry: {},
-      libraryPlayfieldSeed: domainControllerDataCrudLibraryPlayfieldSeed,
+      libraryPlayfieldSeed: playfieldSeed,
     };
   }
   return {
