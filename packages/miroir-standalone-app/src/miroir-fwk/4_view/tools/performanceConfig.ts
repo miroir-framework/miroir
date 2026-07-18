@@ -9,9 +9,9 @@ export interface PerformanceConfig {
   persistMetricsAcrossNavigation: boolean;
 }
 
-// Default configuration
+// Default configuration — tracking off until AppBar timer enables it
 const defaultConfig: PerformanceConfig = {
-  enabled: true, // Available in both development and production
+  enabled: false,
   renderThresholdMs: 1.0, // Only track renders above this threshold (ms)
   persistMetricsAcrossNavigation: true, // Keep metrics across page changes
 };
@@ -43,6 +43,18 @@ export function initializePerformanceConfig(): void {
         performanceConfig = { ...performanceConfig, ...parsed };
       } catch (e) {
         console.warn('Failed to parse saved performance config:', e);
+      }
+    }
+  }
+
+  // Align enabled with AppBar timer session flag (source of truth for collection gate)
+  if (typeof sessionStorage !== 'undefined') {
+    const savedDisplay = sessionStorage.getItem('showPerformanceDisplay');
+    if (savedDisplay !== null) {
+      try {
+        performanceConfig.enabled = JSON.parse(savedDisplay) === true;
+      } catch {
+        // keep prior value
       }
     }
   }
