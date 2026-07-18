@@ -38,13 +38,11 @@ npm run nonreg:unit
 # Stop at first failure
 npm run nonreg:fail-fast
 
-# Compare this run against a previous snapshot
-npm run nonreg -- --tier default --run-all --compare test-results/nonreg/<stamp>/summary.json
+# Run + compare against previous (`latest` resolved before this run updates it)
+npm run nonreg -- --compare latest
 
-# Compare two existing snapshots (no re-run)
-python scripts/run-nonreg.py --compare-only \
-  test-results/nonreg/<newer>/summary.json \
-  test-results/nonreg/<older>/summary.json
+# Compare two existing snapshots only (no re-run)
+npm run nonreg -- --compare test-results/nonreg/<newer> test-results/nonreg/<older>
 ```
 
 Snapshots land in `test-results/nonreg/<UTC-stamp>/` (`summary.json`, `summary.md`, per-step `logs/`). End-of-run prints passed / failed / skipped / not_run. Edit the step list in [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Full detail: [reference/testing.md § Repo-wide non-regression](../reference/testing.md#repo-wide-non-regression-npm-run-nonreg).

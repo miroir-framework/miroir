@@ -56,14 +56,14 @@ Each run writes a **timestamped snapshot** under `test-results/nonreg/<UTC-stamp
 | `logs/<step-id>.log` | Full stdout+stderr per step |
 
 ```bash
-# Diff current run vs an older snapshot
-npm run nonreg -- --tier default --run-all \
-  --compare test-results/nonreg/20260717T190000Z/summary.json
+# Run + diff vs previous snapshot (`latest` is resolved BEFORE this run rewrites it)
+npm run nonreg -- --compare latest
+npm run nonreg -- --compare test-results/nonreg/20260717T234407Z
 
-# Diff two existing snapshots
-python scripts/run-nonreg.py --compare-only \
-  test-results/nonreg/20260717T200000Z/summary.json \
-  test-results/nonreg/20260717T190000Z/summary.json
+# Diff two existing snapshots only (no re-run) — PATH = stamp dir or summary.json
+npm run nonreg -- --compare \
+  test-results/nonreg/20260718T010600Z \
+  test-results/nonreg/20260717T234407Z
 ```
 
 Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--profile`).

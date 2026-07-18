@@ -280,9 +280,57 @@ def print_synthetic_report(summary: dict[str, Any]) -> None:
     print("=" * 72)
 
 
+def read_latest_stamp() -> str | None:
+    """Return the stamp currently pointed at by latest / latest.txt, if any."""
+    latest_link = RESULTS_ROOT / "latest"
+    latest_txt = RESULTS_ROOT / "latest.txt"
+    try:
+        if latest_link.is_symlink():
+            return Path(os.readlink(latest_link)).name.rstrip("/\\")
+    except OSError:
+        pass
+    if latest_txt.is_file():
+        stamp = latest_txt.read_text(encoding="utf-8").strip()
+        return stamp or None
+    return None
+
+
+def resolve_summary_json(path_like: str | Path) -> Path:
+    """Resolve stamp dir, summary.json, or `latest` → a concrete summary.json file."""
+    raw = str(path_like).strip().replace("\\", "/")
+    if raw in ("latest", "test-results/nonreg/latest", "./test-results/nonreg/latest"):
+        stamp = read_latest_stamp()
+        if not stamp:
+            raise FileNotFoundError(
+                "No previous nonreg snapshot (test-results/nonreg/latest missing). "
+                "Run once without --compare first."
+            )
+        path = RESULTS_ROOT / stamp
+    else:
+        path = Path(path_like)
+        if not path.is_absolute():
+            path = ROOT / path
+
+    path = path.resolve()
+    if path.is_dir():
+        path = path / "summary.json"
+    if not path.is_file():
+        raise FileNotFoundError(f"summary.json not found: {path}")
+    return path
+
+
+def load_summary(path: Path) -> dict[str, Any]:
+    with path.open(encoding="utf-8") as fh:
+        data = json.load(fh)
+    try:
+        data["summary_json"] = str(path.relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        data["summary_json"] = str(path)
+    return data
+
+
 def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
-    with baseline_path.open(encoding="utf-8") as fh:
-        baseline = json.load(fh)
+    baseline = load_summary(baseline_path)
 
     def by_id(steps: Iterable[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         return {s["id"]: s for s in steps}
@@ -321,8 +369,10 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
     print("\n" + "=" * 72)
     print("NON-REG COMPARE")
     print("=" * 72)
-    print(f"baseline: {baseline_path}")
+    print(f"baseline: {baseline.get('summary_json', baseline_path)}")
     print(f"current:  {current.get('summary_json', '(in-memory)')}")
+    if current.get("stamp") and baseline.get("stamp") and current["stamp"] == baseline["stamp"]:
+        print("warning: current and baseline are the same stamp (self-compare)")
     print(f"new failures ({len(new_fails)}): {', '.join(new_fails) or '—'}")
     print(f"fixed ({len(fixed)}): {', '.join(fixed) or '—'}")
     print(f"still failing ({len(still_failing)}): {', '.join(still_failing) or '—'}")
@@ -333,8 +383,32 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
     return 1 if new_fails or still_failing else 0
 
 
+def update_latest_pointer(stamp: str) -> None:
+    latest_link = RESULTS_ROOT / "latest"
+    try:
+        if latest_link.is_symlink() or latest_link.is_file():
+            latest_link.unlink(missing_ok=True)
+        if latest_link.exists():
+            # Existing non-symlink directory — fall back to latest.txt
+            (RESULTS_ROOT / "latest.txt").write_text(stamp + "\n", encoding="utf-8")
+            return
+        latest_link.symlink_to(stamp, target_is_directory=True)
+    except OSError:
+        (RESULTS_ROOT / "latest.txt").write_text(stamp + "\n", encoding="utf-8")
+
+
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(description="Run Miroir repo non-regression tiers.")
+    p = argparse.ArgumentParser(
+        description="Run Miroir repo non-regression tiers.",
+        epilog=(
+            "Compare examples:\n"
+            "  npm run nonreg -- --compare latest\n"
+            "  npm run nonreg -- --compare test-results/nonreg/20260717T234407Z\n"
+            "  npm run nonreg -- --compare path/to/A/summary.json path/to/B/summary.json\n"
+            "  python scripts/run-nonreg.py --compare A B   # compare only, no re-run\n"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     p.add_argument(
         "--tier",
         choices=["unit", "default", "full"],
@@ -369,14 +443,19 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--compare",
-        metavar="SUMMARY_JSON",
-        help="Compare the latest snapshot (or --compare-with-current) against this baseline",
+        nargs="+",
+        metavar="PATH",
+        help=(
+            "One path: run then compare against that baseline "
+            "(accepts summary.json, stamp dir, or 'latest' — resolved BEFORE this run updates latest). "
+            "Two paths: compare-only, no re-run (current baseline)."
+        ),
     )
     p.add_argument(
         "--compare-only",
         nargs=2,
         metavar=("CURRENT", "BASELINE"),
-        help="Compare two existing summary.json files without running",
+        help="Deprecated alias for --compare CURRENT BASELINE",
     )
     return p
 
@@ -386,13 +465,33 @@ def main(argv: list[str] | None = None) -> int:
     manifest = load_manifest()
     profile = args.profile or manifest.get("defaultProfile") or "emulatedServer-sql"
 
+    compare_paths: list[str] = list(args.compare or [])
     if args.compare_only:
-        current_path = Path(args.compare_only[0])
-        baseline_path = Path(args.compare_only[1])
-        with current_path.open(encoding="utf-8") as fh:
-            current = json.load(fh)
-        current["summary_json"] = str(current_path)
-        return compare_summaries(current, baseline_path)
+        compare_paths = list(args.compare_only)
+
+    # Two paths → compare only (no test run).
+    if len(compare_paths) == 2:
+        try:
+            current_path = resolve_summary_json(compare_paths[0])
+            baseline_path = resolve_summary_json(compare_paths[1])
+        except FileNotFoundError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        return compare_summaries(load_summary(current_path), baseline_path)
+
+    if len(compare_paths) > 2:
+        print("error: --compare accepts 1 path (run+diff) or 2 paths (diff only)", file=sys.stderr)
+        return 2
+
+    # Resolve baseline BEFORE this run creates a new stamp / rewrites `latest`.
+    baseline_path: Path | None = None
+    if len(compare_paths) == 1:
+        try:
+            baseline_path = resolve_summary_json(compare_paths[0])
+        except FileNotFoundError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        print(f"compare baseline (resolved before run): {baseline_path}", flush=True)
 
     selected_tier: TierName = args.tier  # type: ignore[assignment]
     fail_fast = bool(args.fail_fast)
@@ -479,27 +578,16 @@ def main(argv: list[str] | None = None) -> int:
     summary_json_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     write_summary_md(summary, summary_md_path)
 
-    # Convenience pointer to latest run
-    latest_link = RESULTS_ROOT / "latest"
-    try:
-        if latest_link.is_symlink() or latest_link.exists():
-            if latest_link.is_dir() and not latest_link.is_symlink():
-                pass
-            else:
-                latest_link.unlink()
-        # Relative symlink when possible
-        try:
-            latest_link.symlink_to(stamp, target_is_directory=True)
-        except OSError:
-            (RESULTS_ROOT / "latest.txt").write_text(stamp + "\n", encoding="utf-8")
-    except OSError:
-        (RESULTS_ROOT / "latest.txt").write_text(stamp + "\n", encoding="utf-8")
-
     print_synthetic_report(summary)
 
     exit_code = 0 if counts["failed"] == 0 else 1
-    if args.compare:
-        exit_code = max(exit_code, compare_summaries(summary, Path(args.compare)))
+    # Compare against the pre-resolved baseline (before rewriting `latest`).
+    if baseline_path is not None:
+        exit_code = max(exit_code, compare_summaries(summary, baseline_path))
+
+    # Update latest only after compare, so `--compare latest` means previous run.
+    if not args.dry_run:
+        update_latest_pointer(stamp)
     return exit_code
 
 
