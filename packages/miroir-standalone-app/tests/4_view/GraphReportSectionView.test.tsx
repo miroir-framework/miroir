@@ -16,6 +16,20 @@ import { GraphReportSectionView } from "../../src/miroir-fwk/4_view/components/G
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
+
+const showPerformanceDisplayRef = { current: false };
+
+vi.mock("miroir-react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("miroir-react")>();
+  return {
+    ...actual,
+    useMiroirContextService: () => ({
+      showPerformanceDisplay: showPerformanceDisplayRef.current,
+      showDebugInfo: false,
+    }),
+  };
+});
 
 // Setup logger
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -23,7 +37,7 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GraphReportSectionView.test")
 ).then((logger: LoggerInterface) => {log = logger});
 
-// Mock d3 similar to GraphComponent tests
+// Mock d3 to avoid DOM manipulation issues in tests (aligned with GraphComponent.test)
 vi.mock('d3', () => ({
   select: vi.fn(() => ({
     selectAll: vi.fn(() => ({
@@ -38,46 +52,61 @@ vi.mock('d3', () => ({
             html: vi.fn(() => ({ html: vi.fn() })),
             transition: vi.fn(() => ({ duration: vi.fn() })),
             selectAll: vi.fn(() => ({ style: vi.fn() })),
-            call: vi.fn(() => ({ selectAll: vi.fn(() => ({ style: vi.fn() })) })),
-            datum: vi.fn(() => ({ attr: vi.fn() }))
+            call: vi.fn(() => ({ selectAll: vi.fn(() => ({ style: vi.fn() })) }))
           }))
         }))
       }))
     })),
     append: vi.fn(() => ({
-      attr: vi.fn(() => ({ attr: vi.fn() })),
-      style: vi.fn(() => ({ style: vi.fn() })),
-      text: vi.fn(() => ({ text: vi.fn() })),
-      datum: vi.fn(() => ({ attr: vi.fn() })),
+      attr: vi.fn().mockReturnThis(),
+      style: vi.fn().mockReturnThis(),
+      text: vi.fn().mockReturnThis(),
+      datum: vi.fn().mockReturnThis(),
       selectAll: vi.fn(() => ({ 
         data: vi.fn(() => ({
           enter: vi.fn(() => ({
             append: vi.fn(() => ({
-              attr: vi.fn(() => ({ attr: vi.fn() })),
-              style: vi.fn(() => ({ style: vi.fn() })),
-              on: vi.fn(() => ({ on: vi.fn() })),
-              text: vi.fn(() => ({ text: vi.fn() }))
+              attr: vi.fn().mockReturnThis(),
+              style: vi.fn().mockReturnThis(),
+              on: vi.fn().mockReturnThis(),
+              text: vi.fn().mockReturnThis()
             }))
           }))
         }))
       })),
-      call: vi.fn(() => ({ selectAll: vi.fn(() => ({ style: vi.fn() })) }))
+      call: vi.fn().mockReturnThis()
     })),
-    attr: vi.fn(() => ({ attr: vi.fn() }))
+    attr: vi.fn().mockReturnThis()
   })),
-  scaleBand: vi.fn(() => ({
-    domain: vi.fn(() => ({ range: vi.fn(() => ({ padding: vi.fn() })) })),
-    bandwidth: vi.fn(() => 50)
+  selectAll: vi.fn(() => ({
+    remove: vi.fn(),
   })),
-  scaleLinear: vi.fn(() => ({
-    domain: vi.fn(() => ({ range: vi.fn() }))
-  })),
-  scalePoint: vi.fn(() => ({
-    domain: vi.fn(() => ({ range: vi.fn() }))
-  })),
-  scaleOrdinal: vi.fn(() => ({
-    domain: vi.fn(() => ({ range: vi.fn() }))
-  })),
+  scaleBand: vi.fn(() => {
+    const scale: any = vi.fn(() => 0);
+    scale.domain = vi.fn(() => scale);
+    scale.range = vi.fn(() => scale);
+    scale.padding = vi.fn(() => scale);
+    scale.bandwidth = vi.fn(() => 50);
+    return scale;
+  }),
+  scaleLinear: vi.fn(() => {
+    const scale: any = vi.fn(() => 0);
+    scale.domain = vi.fn(() => scale);
+    scale.range = vi.fn(() => scale);
+    return scale;
+  }),
+  scalePoint: vi.fn(() => {
+    const scale: any = vi.fn(() => 0);
+    scale.domain = vi.fn(() => scale);
+    scale.range = vi.fn(() => scale);
+    return scale;
+  }),
+  scaleOrdinal: vi.fn(() => {
+    const scale: any = vi.fn(() => '#1f77b4');
+    scale.domain = vi.fn(() => scale);
+    scale.range = vi.fn(() => scale);
+    return scale;
+  }),
   axisBottom: vi.fn(),
   axisLeft: vi.fn(),
   max: vi.fn(() => 100),
@@ -164,9 +193,18 @@ const pieChartReportSection: GraphReportSection = {
   }
 };
 
+const testThemeOptions = [
+  {
+    id: "default",
+    name: "Default Theme",
+    description: "Test theme",
+    theme: defaultStoredMiroirTheme.definition,
+  },
+];
+
 const renderWithTheme = (component: React.ReactElement) => {
   return render(
-    <MiroirThemeProvider>
+    <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
       {component}
     </MiroirThemeProvider>
   );
@@ -176,6 +214,7 @@ describe('GraphReportSectionView Integration Tests', () => {
   beforeEach(() => {
     // Clear any existing DOM elements that d3 might have created
     document.body.innerHTML = '';
+    showPerformanceDisplayRef.current = false;
   });
 
   describe('Bar Chart Report Section', () => {
@@ -185,6 +224,7 @@ describe('GraphReportSectionView Integration Tests', () => {
       };
 
       await act(async () => {
+        showPerformanceDisplayRef.current = true;
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
@@ -200,8 +240,9 @@ describe('GraphReportSectionView Integration Tests', () => {
       const graphElement = screen.getByTestId('graph-bar-entities');
       expect(graphElement).toBeInTheDocument();
 
-      // Check for performance display
-      expect(screen.getByText(/GraphReportSectionView renders:/)).toBeInTheDocument();
+      // Check for performance display (RenderInsightHeader)
+      expect(screen.getByTestId('render-insight-header')).toBeInTheDocument();
+      expect(screen.getByTestId('render-insight-header')).toHaveTextContent('GraphReportSectionView');
     });
 
     it('renders bar chart with indexed data', async () => {
@@ -582,6 +623,7 @@ describe('GraphReportSectionView Integration Tests', () => {
       };
 
       await act(async () => {
+        showPerformanceDisplayRef.current = true;
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
@@ -593,7 +635,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         );
       });
 
-      expect(screen.getByText(/GraphReportSectionView renders:/)).toBeInTheDocument();
+      expect(screen.getByTestId('render-insight-header')).toBeInTheDocument();
     });
 
     it('hides performance metrics when disabled', async () => {
@@ -602,6 +644,7 @@ describe('GraphReportSectionView Integration Tests', () => {
       };
 
       await act(async () => {
+        showPerformanceDisplayRef.current = false;
         renderWithTheme(
           <GraphReportSectionView
             applicationSection={"data" as ApplicationSection}
@@ -613,7 +656,7 @@ describe('GraphReportSectionView Integration Tests', () => {
         );
       });
 
-      expect(screen.queryByText(/GraphReportSectionView renders:/)).not.toBeInTheDocument();
+      expect(screen.queryByTestId('render-insight-header')).not.toBeInTheDocument();
     });
   });
 });

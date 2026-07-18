@@ -222,7 +222,7 @@ Phase 0 — Lock design decisions D1–D11                         [DONE]
 Phase 1 — Gated registry + noop when off                       slices 1.1–1.4   [DONE]
 Phase 2 — Paths, depth, subtree aggregates                     slices 2.1–2.4   [DONE]
 Phase 3 — Visual-debug inline header                           slices 3.1–3.3   [DONE]
-Phase 4 — Migrate Report-tree call sites (replace text ruins)  slices 4.1–4.3
+Phase 4 — Migrate Report-tree call sites (replace text ruins)  slices 4.1–4.3   [DONE]
 Phase 5 — Docked summary (retire default floating modal)       slices 5.1–5.3
 Phase 6 — Timing + threshold + export                          slices 6.1–6.3
 Phase 7 — Acceptance: footprint + docs note                    slices 7.1–7.2
@@ -346,23 +346,25 @@ Phase 7 — Acceptance: footprint + docs note                    slices 7.1–7.
 
 ---
 
-## Phase 4 — Migrate Report-tree call sites (kill the text ruins)
+## Phase 4 — Migrate Report-tree call sites (kill the text ruins) ✅
 
-Order (tracer bullet = ReportPage spine):
+**Status (2026-07-18)**: slices 4.1–4.3 done.
 
-1. `RootComponent`
-2. `ReportPage` / `ReportDisplay`
-3. `ReportSectionViewWithEditor`
-4. `ReportSectionEntityInstance`
-5. Remaining section views (`ListDisplay`, `Markdown`, `Graph`, `ModelDiagram`)
+| Slice | Deliverable |
+|---|---|
+| 4.1 | `RootComponent`, `ReportPage` → `RenderInsightHeader` |
+| 4.2 | `ReportSectionViewWithEditor` (+ formik path), `ReportSectionEntityInstance` (+ formik path) |
+| 4.3 | `ListDisplay`, `Markdown`, `Graph`, `ModelDiagram`; coverage via `GraphReportSectionView.renderInsight.unit.test.tsx` |
+
+Plain `"X renders: N (total: M)"` text removed from Report-tree sources.
 
 ### 4.1  Replace plain `<ThemedText>… renders: …</ThemedText>` with `RenderInsightHeader`
 
-**Progress (RED)** → update `GraphReportSectionView.test.tsx` (and any siblings) to assert new chrome / test id instead of `/renders:/` regex **in the same slice** that changes that component.
+**Progress (RED)** → update GraphReport assertions / dedicated unit test for `render-insight-header` test id.
 
 ### 4.2  Pass stable paths
 
-Use existing identity hints already in debug names, e.g. `reportSectionPath`, `formikValuePathAsString`, deployment/section keys.
+Use **formik path** for identity (`ReportSectionEntityInstance`, section formik definition path where available).
 
 ### 4.3  Remove dead commented timing blocks or re-wire them in Phase 6
 

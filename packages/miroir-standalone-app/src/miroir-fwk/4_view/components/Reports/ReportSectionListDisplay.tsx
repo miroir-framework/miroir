@@ -63,6 +63,7 @@ import {
 import { cleanLevel } from "../../constants.js";
 import { getMDataGridColumnDefinitionsFromEntityDefinition } from "../../getColumnDefinitionsFromEntityAttributes.js";
 import { deleteCascade } from "../../scripts.js";
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import { analyzeForeignKeyAttributes, convertToLegacyFormat } from "../../utils/foreignKeyAttributeAnalyzer.js";
 import { EntityInstanceGrid } from "../Grids/EntityInstanceGrid.js";
@@ -721,12 +722,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
   return (
     <ThemedBox className="MiroirReport-global" display="block">
-      {context.showPerformanceDisplay && (
-        <div>
-          {" "}
-          ReportSectionListDisplay renders: {navigationCount} (total: {totalCount}) times.
-        </div>
-      )}
+      <RenderInsightHeader
+        componentName="ReportSectionListDisplay"
+        navigationCount={navigationCount}
+        totalCount={totalCount}
+      />
       <JsonDisplayHelper
         debug={true}
         componentName="ReportSectionListDisplay"
