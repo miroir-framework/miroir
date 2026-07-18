@@ -91,6 +91,8 @@ sequenceDiagram
 
 **Still open for #197:** Phase B (UI launcher + reporting). Phase R complete ✅ ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)). UI runs **domainController-based** MiroirTest integ first; PersistenceStoreController-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
 
+**Action integ → MiroirTest (planned):** Migrate DomainController Action-centered CRUD integ (`DomainController.integ.Data.CRUD` pilot) onto an `actionTest` leaf — a simpler sibling of `runnerTest` sharing the composite-action executor. Plan: [action-integ-miroirtest-migration-plan.md](./action-integ-miroirtest-migration-plan.md).
+
 ### Legacy imperative runner files (not yet on MiroirTest JSON)
 
 | Piece | Location | Role |
@@ -898,6 +900,7 @@ Plan: [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md)
 
 - [Integration test setup — gap analysis](./integ-test-setup-gaps.md) (bootstrap gaps A–E)
 - [Gap D — unified integration test profiles](./gap-D-refactoring-plan.md)
+- [Action integ → MiroirTest migration](./action-integ-miroirtest-migration-plan.md) (DomainController CRUD → `actionTest` leaf)
 - [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md)
 - [Feature 195 — Unit tests in UI](../195-FEATURE-%20enable%20execution%20of%20miroir-core%20unit%20tests%20in%20UI/plan.md) (superseded for unit tests; still relevant for `Test` entity distinction)
 - [Feature 157 — Startup sequence](../157-FEATURE-%20harden%20startup%20sequence%20%26%20enable%20admin%20deployment%20choice%20on%20client%20-%20server/PLAN.md) (shared setup/teardown alignment)

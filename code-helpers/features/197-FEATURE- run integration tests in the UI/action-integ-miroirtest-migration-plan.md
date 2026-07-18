@@ -1,0 +1,352 @@
+# Action integ → MiroirTest migration plan
+
+**Parent:** [plan.md](./plan.md) (Feature #197)  
+**Pilot source:** `packages/miroir-standalone-app/tests/3_controllers/DomainController.integ.Data.CRUD.test.tsx`  
+**Status:** Plan only (not started)  
+**Method:** TDD; run `npm run nonreg` (or targeted profile integ + unit gate) after each impactful slice
+
+## Goal
+
+Migrate DomainController **Action-centered** integration tests (composite-action CRUD suites) onto **`MiroirTest` instances**, so they share the same CLI / orchestrator / (later) UI integ path as Runner and Transformer MiroirTests — without duplicating bootstrap or assertion machinery.
+
+**DRY principle:** Runner integ = Actions + Runner/UI composition. Action integ should be a **slightly simpler form of Runner integ**, not a parallel stack.
+
+---
+
+## 1. Inventory — what exists today
+
+### 1.1 MiroirTest leaf kinds (Feature 196 + 197)
+
+| Leaf | Mode | Session kind | Executor |
+|------|------|--------------|----------|
+| `functionCallTest` | unit only | n/a | `FunctionCallTestTools` |
+| `queryTest` | unit only | n/a | `QueryRunnerTestTools` |
+| `transformerTest` | unit and/or integ | `transformer` | `MiroirTransformerTestTools` |
+| `runnerTest` | **integ only** | `runner` | `RunnerTestTools` → `testBuildPlusRuntimeCompositeActionSuite` |
+
+There is **no** `actionTest` (or equivalent) leaf. `inferIntegrationSessionKind` only recognizes `runnerTest` → `"runner"` and integ `transformerTest` → `"transformer"`.
+
+### 1.2 Runner MiroirTest shape (canonical target to stay close to)
+
+Pilot instance: `miroirTest_runner_library` (`runner_library`).
+
+```text
+MiroirTestSuite
+  runTarget { applicationUuid, applicationName, deploymentUuid }
+  testParams { …param bank… }
+  miroirTests[]:
+    runnerTest {
+      runnerRef, initialModel,
+      preTestCompositeActions?, preRunnerCompositeActions?,
+      testCompositeActionAssertions?,
+      testParams?, skipCreateDeployment?, …
+    }
+```
+
+Execution path:
+
+1. Vitest entry → `StandaloneAppIntegrationOrchestrator.createSession("runner", …)`
+2. `RunnerTestSession.initSession` → `MiroirTestExecutionEnvironment` + `runnerTestContext`
+3. `runMiroirTest` → `runMiroirRunnerTest` → `resolveRunnerTestLeaf` → `runRunnerTestCompositeAction`
+4. `domainController.handleTestCompositeActionSuite` with **`testBuildPlusRuntimeCompositeActionSuite`**
+
+Session `beforeEach` resets the library playfield (`resetLibraryPlayfield`).
+
+### 1.3 DomainController Data.CRUD shape (pilot to migrate)
+
+File still owns:
+
+- Module-level startups + config load (partially shared with other integ families)
+- `DomainControllerIntegrationTestSession` with profile **`miroirPlatform`** (library lifecycle **not** in session `beforeEach`)
+- One imperative `TestCompositeActionParams` with `testActionType: **"testCompositeActionSuite"**` containing:
+  - Suite hooks: `beforeAll` (create library deployment), `beforeEach` (reset+seed without book3), `afterEach` / `afterAll`
+  - Six cases under `testCompositeActions`: Refresh / Add / Add+rollback / Remove / Remove+rollback / Update
+- Vitest: `it.each` → `runTestOrTestSuite` (standalone-app helper)
+
+**Semantic overlap with Runner:** same `domainController.handleTestCompositeActionSuite` + `compositeRunTestAssertion` + boxed queries.  
+**Differences:** no `Runner` entity / `runnerRef` / `initialModel` / build-plus-runtime templates; uses plain `testCompositeAction` + `compositeActionSequence`; lifecycle hooks live **inside** the suite JSON/TS object, not in session playfield + leaf flags.
+
+### 1.4 Related siblings (later migration, same pattern)
+
+| File | Notes |
+|------|--------|
+| `DomainController.integ.Model.CRUD.test.tsx` | Larger; model section; `skipResetMiroirModelInInit` |
+| `DomainController.integ.compositePK.CRUD.test.tsx` | Data (+ model variants elsewhere) |
+| `DomainController.integ.nonUuidPK.CRUD.test.tsx` | Model + Data suites |
+| `DomainController.integ.noParentUuid.CRUD.test.tsx` | Model + Data suites |
+
+This plan **pilots Data.CRUD only**; siblings follow after the leaf + shared executor are stable.
+
+---
+
+## 2. Gap analysis — what must close for Action MiroirTests
+
+### Gap A — Schema / leaf type
+
+| Need | Today | Gap |
+|------|-------|-----|
+| Declare Action integ as MiroirTest JSON | Only `runnerTest` / transformer / unit leaves | Add **`actionTest`** (or agreed name) to `miroirTestLeaf` union + Jzod entity schema + codegen |
+| Case-level fields | n/a | Sequence + assertions (+ optional leaf params); **no** `runnerRef` / `initialModel` / `preRunner*` |
+| Suite-level run scope | Runner has `runTarget` + `testParams` | Reuse the same suite fields for Action suites |
+
+**Locked direction:** new leaf is a **subset of `runnerTest`**, not a revival of the legacy `Test` entity (`d2842a84-…`). Legacy `Test` stays out of scope (same as #197 G1 for runners).
+
+### Gap B — Shared composite-action executor (DRY)
+
+| Need | Today | Gap |
+|------|-------|-----|
+| Run `testCompositeActionSuite` from MiroirTest | `runTestOrTestSuite` in **standalone-app** | Logic is outside `miroir-core` MiroirTest dispatch |
+| Run `testBuildPlusRuntimeCompositeActionSuite` | `runRunnerTestCompositeAction` in **miroir-core** | Nearly duplicate of `runTestOrTestSuite` suite branch |
+| Single status / tracker contract | Both call `handleTestCompositeActionSuite` | Extract **one** core helper used by `runnerTest` and `actionTest` |
+
+**Target:** `CompositeActionTestTools` (name flexible) in `miroir-core/src/5_tests/`:
+
+- `runCompositeActionTestParams(domainController, testAction, applicationDeploymentMap, tracker, paramBank)` — supports both suite action types (lift from `runTestOrTestSuite`)
+- `runMiroirRunnerTest` becomes: resolve leaf → call shared helper
+- `runMiroirActionTest` becomes: resolve leaf → call shared helper
+
+Standalone-app `runTestOrTestSuite` either thins to a re-export or stays as a deprecated facade until CRUD files are gone.
+
+### Gap C — Leaf → `TestCompositeActionParams` resolve
+
+| Need | Today | Gap |
+|------|-------|-----|
+| Runner resolve | `resolveRunnerTestLeaf` → build-plus-runtime suite via `testBuildPlusRuntimeCompositeActionSuiteForRunner` | Action needs a **simpler** builder: leaf → `testCompositeAction` / suite entry **without** Runner registry |
+| Suite hooks | Runner: session reset + leaf skipCreate/skipDrop | Data.CRUD: hooks embedded in one big suite |
+
+**Two-step migration (recommended):**
+
+1. **Bridge shape (pilot green fast):** one MiroirTest suite whose leaves (or a single suite-shaped node) still express `beforeAll` / `beforeEach` / … as composite actions — closest 1:1 to current TS.
+2. **Runner-aligned shape (DRY end state):** move library create/reset/seed into **session playfield** (`miroirAndLibrary` / `resetLibraryPlayfield` + shared seeds such as `LIBRARY_ENTITIES_WITHOUT_BOOK3`), so each `actionTest` leaf is only **sequence + assertions** — same mental model as `runnerTest` without Runner fields.
+
+Do not invent a third lifecycle system.
+
+### Gap D — Session / orchestrator wiring
+
+| Need | Today | Gap |
+|------|-------|-----|
+| Session for Action suites | `DomainControllerIntegrationTestSession` used by imperative files; orchestrator already has `"domainController"` | MiroirTest CLI/UI path never creates this session for a MiroirTest suite |
+| `runnerTestContext` | Required only for `runnerTest` | Action tests need **param bank + runTarget + domainController**, not `runnerRegistry` |
+| Infer kind | `inferIntegrationSessionKind` | Must return a kind for suites that contain `actionTest` |
+
+**Decision (prefer DRY with Runner):**
+
+- Prefer routing Action MiroirTest suites through the **same app-stack bootstrap as Runner** (`libraryDeployment` playfield), with a thinner context (`actionTestContext` **or** a generalized `compositeActionTestContext` without `runnerRegistry`).
+- Keep `DomainControllerIntegrationTestSession` for **legacy** imperative files and for Model.CRUD quirks (`skipResetMiroirModelInInit`) until those migrate.
+
+Avoid: Action path that re-implements `runAppStackIntegrationBootstrap` differently from Runner.
+
+### Gap E — CLI / registry / Vitest entry
+
+| Need | Today | Gap |
+|------|-------|-----|
+| `testMiroir --suites … --mode integ` | transformer + `runner_library` | No suite key / export for DomainController Data CRUD |
+| Suite registry | library export `miroirTest_runner_library` | Add e.g. `miroirTest_domainController_data_crud` (name TBD) under library (or miroir) deployment model section |
+| Vitest entry | `miroir-runner-tests.integ.test.ts` hardcodes runner suite | Generalize CLI loader to select session kind from suite (already partly done in UI launcher via `inferIntegrationSessionKind`) |
+
+### Gap F — Fixture / param bank (Phase R parity)
+
+Data.CRUD currently imports `book1`…`book6`, entity UUIDs, etc. as **TS module literals**.
+
+Runner leaves use **`getFromParameters` / suite `testParams`**. For UI-editable, DRY suites:
+
+- Expected book lists and counts should move toward param-bank / context references where practical.
+- Accept **literal expected instances in the pilot** if needed for green parity; schedule a follow-up “R-for-actions” pass (same pattern as Phase R for runners).
+
+### Gap G — UI integ catalog (#197 Phase B)
+
+Once CLI MiroirTest Action suites exist:
+
+- `classifyMiroirTestSuiteExecutionCapabilities` / `inferIntegrationSessionKind` must mark them **integration-only**
+- UI launcher must create the correct session (not unit mode)
+- Deferred until Gaps A–E green on CLI (same order as Runner: CLI first, UI second)
+
+---
+
+## 3. Design decisions (locked for this plan)
+
+| # | Topic | Decision |
+|---|--------|----------|
+| A1 | Leaf type | **`actionTest`** — simpler sibling of `runnerTest`; not legacy `Test` entity |
+| A2 | Relationship to Runner | Action = Runner minus Runner entity / build-plus-runtime / `preRunner*`; **shared executor** |
+| A3 | Suite home | Library application **model** section MiroirTest instance(s), same home pattern as `runner_library` |
+| A4 | Pilot | **Data.CRUD only**; keep imperative file until MiroirTest parity proven |
+| A5 | Lifecycle end state | Align with Runner: **session playfield + leaf body**; bridge may keep suite hooks for first green |
+| A6 | Context object | Prefer generalized **`compositeActionTestContext`** (runTarget, testParams, deployments, domainController); `runnerTestContext` = that + `runnerRegistry` + pageLabel |
+| A7 | Testing method | **TDD**; after schema/dispatch/session/CLI slices → **`npm run nonreg`** (or documented subset + full nonreg before merge) |
+| A8 | Profiles | Reuse `--profile` / Gap D (pilot: `emulatedServer-sql`) |
+
+---
+
+## 4. Target architecture
+
+```mermaid
+flowchart TB
+  subgraph json [MiroirTest JSON]
+    S[miroirTestSuite + runTarget + testParams]
+    AT[actionTest leaves]
+    RT[runnerTest leaves]
+    S --> AT
+    S --> RT
+  end
+
+  subgraph core [miroir-core]
+    MT[MiroirTestTools.runMiroirTest]
+    CAT[CompositeActionTestTools shared run]
+    RES_A[resolveActionTestLeaf]
+    RES_R[resolveRunnerTestLeaf]
+    MT -->|actionTest| RES_A
+    MT -->|runnerTest| RES_R
+    RES_A --> CAT
+    RES_R --> CAT
+    CAT --> DC[domainController.handleTestCompositeActionSuite]
+  end
+
+  subgraph session [standalone-app]
+    ORCH[StandaloneAppIntegrationOrchestrator]
+    SESS[Runner or domainController session with library playfield]
+    ORCH --> SESS
+    SESS -->|executionEnvironment| MT
+  end
+```
+
+**Leaf sketch (illustrative):**
+
+```typescript
+// actionTest — subset of runnerTest
+{
+  miroirTestType: "actionTest",
+  miroirTestLabel: "Add Book instance",
+  testParams?: Record<string, unknown>,
+  // End-state fields (Runner-like):
+  compositeActionSequence: CompositeActionSequence, // or templates once ready
+  testCompositeActionAssertions: CompositeRunTestAssertion[],
+  // Bridge-only / optional:
+  beforeTestSetupAction?: CompositeActionSequence,
+  afterTestCleanupAction?: CompositeActionSequence,
+}
+```
+
+Suite-level `beforeAll` / `beforeEach` / … either:
+
+- live on an extended `miroirTestSuite` (if we add them once for Action + Runner), or
+- stay in session playfield helpers (preferred for Runner alignment).
+
+---
+
+## 5. Implementation plan (TDD slices)
+
+Each slice: **failing test → implement → green → commit**. After slices marked **★**, run global nonreg.
+
+### Phase 0 — Spec & shared executor (no Data.CRUD move yet)
+
+| Slice | Work | Tests first | Nonreg |
+|-------|------|-------------|--------|
+| 0.1 | Document `actionTest` fields vs `runnerTest` in this plan (done) + schema draft in Jzod source | Unit: schema parse accepts minimal `actionTest`, rejects missing label | — |
+| 0.2 ★ | Extract `runCompositeActionTestParams` from `runTestOrTestSuite` + thin `runRunnerTestCompositeAction` | Unit: both action types still succeed against mocks / existing runner unit tests | **nonreg** |
+| 0.3 | `runMiroirActionTest` stub + `MiroirTestTools` dispatch (`executionMode: "integration"` only) | Unit: unknown leaf gone; actionTest without env throws; with env calls shared helper | — |
+
+### Phase 1 — Schema + session context generalization
+
+| Slice | Work | Tests first | Nonreg |
+|-------|------|-------------|--------|
+| 1.1 ★ | Add `miroirTestForAction` to fundamental schema; regenerate types; union into `miroirTestLeaf` | Schema / zod unit tests; existing MiroirTest instances still validate | **nonreg** |
+| 1.2 | Introduce `compositeActionTestContext`; make `runnerTestContext` extend it; Action path does not require `runnerRegistry` | Unit: orchestrator / resolve context construction | — |
+| 1.3 | `inferIntegrationSessionKind` + capabilities: `actionTest` → integ (kind: `"runner"` **or** `"domainController"` — pick one in 1.3 and stick to it; default recommendation: **reuse `"runner"` session kind with empty/no registry**, or add `"action"` alias that shares Runner bootstrap) | Extend `inferIntegrationSessionKind.unit.test.ts` | — |
+
+**Open micro-decision in 1.3 (resolve before coding):**  
+- **1.3-a:** Action suites use session kind `"runner"` with optional registry → maximum DRY, slight naming stretch.  
+- **1.3-b:** New kind `"action"` factory that constructs the same bootstrap as Runner without registry → clearer catalog, tiny duplication in orchestrator switch.
+
+Recommendation: **1.3-b** if UI catalog labels matter; **1.3-a** if we want zero new session class.
+
+### Phase 2 — Pilot MiroirTest instance (parity with Data.CRUD)
+
+| Slice | Work | Tests first | Nonreg |
+|-------|------|-------------|--------|
+| 2.1 | Add deployment JSON suite with **one** leaf (“Refresh all Instances”) + suite hooks or playfield seed | Integ: `testMiroir --suites <key> --mode integ --profile emulatedServer-sql --filter Refresh` | — |
+| 2.2 | Port remaining five cases as `actionTest` leaves | Filter each leaf; then full suite | — |
+| 2.3 ★ | Wire suite into `testMiroir` / registry export (library package) | CLI entry green for full Data.CRUD suite | **nonreg** |
+| 2.4 | Parity checklist vs imperative file (same assertions / counts) | Keep both green; document known deltas if any | — |
+
+### Phase 3 — Lifecycle alignment (DRY with Runner)
+
+| Slice | Work | Tests first | Nonreg |
+|-------|------|-------------|--------|
+| 3.1 | Move library create/reset/seed from suite hooks → session `beforeEach` / playfield helpers (reuse Gap B seeds) | Integ: suite still green with hooks removed from JSON | — |
+| 3.2 ★ | Delete redundant hook builders from pilot JSON; share seed constant with imperative file until deletion | Integ + unit for playfield helpers | **nonreg** |
+
+### Phase 4 — Cutover & siblings
+
+| Slice | Work | Tests first | Nonreg |
+|-------|------|-------------|--------|
+| 4.1 | Deprecate / delete `DomainController.integ.Data.CRUD.test.tsx` when MiroirTest is sole owner | Confirm CI / docs point to `testMiroir` | **nonreg** |
+| 4.2+ | Migrate Model / PK / noParentUuid CRUD files using the same leaf + session | One file per slice | nonreg per file or batch |
+
+### Phase 5 — UI (#197 Phase B follow-on)
+
+| Slice | Work | Depends |
+|-------|------|---------|
+| 5.1 | UI launcher routes `actionTest` suites via inferred session kind | Phase B launcher + Phases 0–2 |
+| 5.2 | Reporting / troubleshooting same as Runner integ | Phase B reporting |
+
+---
+
+## 6. Mapping — Data.CRUD cases → leaves
+
+| Imperative `testCompositeActions` key | Proposed `miroirTestLabel` |
+|---------------------------------------|----------------------------|
+| Refresh all Instances | `Refresh all Instances` |
+| Add Book instance | `Add Book instance` |
+| Add Book instance then rollback | `Add Book instance then rollback` |
+| Remove Book instance | `Remove Book instance` |
+| Remove Book instance then rollback | `Remove Book instance then rollback` |
+| Update Book instance | `Update Book instance` |
+
+Suite label suggestion: `domainController.data.crud` (registry key e.g. `domain_controller_data_crud`).
+
+---
+
+## 7. Non-regression policy
+
+| Trigger | Command |
+|---------|---------|
+| After ★ slices (schema, shared executor, CLI pilot, lifecycle move, cutover) | `npm run nonreg` from repo root |
+| During leaf porting | `npm run testMiroir -w miroir-standalone-app -- --suites <key> --mode integ --profile emulatedServer-sql` |
+| Until cutover | Also keep `npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-sql DomainController.integ.Data.CRUD` green |
+| Sibling migrations | Same profile; then nonreg |
+
+Do **not** weaken assertions to get green; fix executor / param bank instead.
+
+---
+
+## 8. Out of scope (this plan)
+
+- Migrating all `Runner_*.integ.test.tsx` (still G8 on parent plan)
+- Deleting legacy `Test` entity
+- PersistenceStoreController-direct `4_storage` → MiroirTest
+- Full Phase R-style param-bank cleanup for every book literal in the pilot (optional follow-up)
+- Changing CRUD semantics (undo/redo React tests, Model.CRUD behaviour)
+
+---
+
+## 9. Success criteria
+
+- [ ] `actionTest` is a first-class `MiroirTest` leaf; dispatch lives in `miroir-core`
+- [ ] Runner and Action integ share one composite-action execution helper
+- [ ] Data.CRUD coverage runs via `testMiroir --mode integ` with parity to the imperative suite
+- [ ] Imperative Data.CRUD file removed or permanently skipped after cutover
+- [ ] `inferIntegrationSessionKind` / UI capabilities understand Action suites
+- [ ] Documented in [docs/reference/testing.md](../../../docs/reference/testing.md) under MiroirTest integ families
+
+---
+
+## 10. Related
+
+- [Feature 197 plan](./plan.md)
+- [integ-test-setup-gaps.md](./integ-test-setup-gaps.md) (session catalogue; DomainController row)
+- [gap-E-refactoring-plan.md](./gap-E-refactoring-plan.md) (DC session migration already done for bootstrap)
+- [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) (UI integ after CLI)
+- [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md)
+- Source pilot: `packages/miroir-standalone-app/tests/3_controllers/DomainController.integ.Data.CRUD.test.tsx`
+- Runner reference: `packages/miroir-test-app_deployment-library/.../b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c.json` (`runner_library`)
