@@ -5,6 +5,7 @@ import {
   DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY,
+  DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY,
   DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY,
@@ -12,6 +13,7 @@ import {
   domainControllerDataCrudLibraryPlayfieldSeed,
   domainControllerModelCrudLibraryPlayfieldSeed,
   domainControllerCompositePkCrudLibraryPlayfieldSeed,
+  domainControllerModelUndoRedoLibraryPlayfieldSeed,
   domainControllerNoParentUuidCrudLibraryPlayfieldSeed,
   domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed,
   domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed,
@@ -106,6 +108,15 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
     expect(noParent?.instances).toHaveLength(3);
     expect(
       libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY),
+    ).toBe(seed);
+  });
+
+  it("domainControllerModelUndoRedoLibraryPlayfieldSeed starts empty", () => {
+    const seed = domainControllerModelUndoRedoLibraryPlayfieldSeed;
+    expect(seed.libraryEntitiesAndInstances).toEqual([]);
+    expect(seed.librarySeedMetaModel.entities).toEqual([]);
+    expect(
+      libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY),
     ).toBe(seed);
   });
 });

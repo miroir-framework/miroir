@@ -61,6 +61,10 @@ export const DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY =
 export const DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY =
   "domain_controller_no_parent_uuid_crud";
 
+/** Suite registry key for DomainController Model undo/redo action MiroirTest. */
+export const DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY =
+  "domain_controller_model_undo_redo";
+
 /**
  * Seed payload for `RunnerTestSessionOptions.libraryPlayfieldSeed` /
  * `resetLibraryPlayfield` (Action Data.CRUD playfield).
@@ -590,6 +594,37 @@ export function isDomainControllerNoParentUuidCrudSuite(suiteKey: string): boole
   return suiteKey === DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY;
 }
 
+/**
+ * Empty Library playfield — Model undo/redo starts with no Author/Book entities
+ * (matches imperative undo-redo `resetLibraryPlayfield` without seed instances).
+ */
+export const emptyLibraryPlayfieldMetaModel: MetaModel = {
+  applicationUuid: selfApplicationLibrary.uuid,
+  applicationName: selfApplicationLibrary.name,
+  entities: [],
+  entityDefinitions: [],
+  endpoints: [],
+  jzodSchemas: [],
+  menus: [],
+  runners: [],
+  themes: [],
+  applicationVersions: [],
+  reports: [],
+  storedQueries: [],
+  applicationVersionCrossEntityDefinition: [],
+  applications: [],
+};
+
+export const domainControllerModelUndoRedoLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
+  libraryEntitiesAndInstances: [],
+  librarySeedInitParams: libraryPlayfieldSeedInitParams,
+  librarySeedMetaModel: emptyLibraryPlayfieldMetaModel,
+};
+
+export function isDomainControllerModelUndoRedoSuite(suiteKey: string): boolean {
+  return suiteKey === DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY;
+}
+
 export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
   return (
     isDomainControllerDataCrudSuite(suiteKey) ||
@@ -597,7 +632,8 @@ export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
     isDomainControllerCompositePkCrudSuite(suiteKey) ||
     isDomainControllerNonUuidPkModelCrudSuite(suiteKey) ||
     isDomainControllerNonUuidPkDataCrudSuite(suiteKey) ||
-    isDomainControllerNoParentUuidCrudSuite(suiteKey)
+    isDomainControllerNoParentUuidCrudSuite(suiteKey) ||
+    isDomainControllerModelUndoRedoSuite(suiteKey)
   );
 }
 
@@ -621,6 +657,9 @@ export function libraryPlayfieldSeedForActionSuite(
   }
   if (isDomainControllerNoParentUuidCrudSuite(suiteKey)) {
     return domainControllerNoParentUuidCrudLibraryPlayfieldSeed;
+  }
+  if (isDomainControllerModelUndoRedoSuite(suiteKey)) {
+    return domainControllerModelUndoRedoLibraryPlayfieldSeed;
   }
   return undefined;
 }

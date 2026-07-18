@@ -317,7 +317,9 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 | 4.2 ★ | Port Model.CRUD → `domain_controller_model_crud` (`actionTest`); Publisher+Country playfield seed; deprecate imperative Model.CRUD | Integ 8/8 + legacy green | **nonreg** | ✅ |
 | 4.3 ★ | Port compositePK.CRUD → `domain_controller_composite_pk_crud` (`actionTest`); custom TestEntityCompositePK playfield seed; deprecate imperative compositePK | Integ 4/4 + legacy green | **nonreg** | ✅ |
 | 4.4 ★ | Port nonUuidPK.CRUD → `domain_controller_non_uuid_pk_{model,data}_crud` (`actionTest`); Publisher-only + CodeNumber seeds; deprecate imperative nonUuidPK | Integ 1+4 + legacy green | **nonreg** | ✅ |
-| 4.5+ | Migrate remaining noParentUuid / other CRUD files using the same leaf + session | One file per slice | nonreg per file or batch | — |
+| 4.5 ★ | Port noParentUuid.CRUD → single `domain_controller_no_parent_uuid_crud` (`actionTest`); Publisher+NoParentUuid seed; deprecate imperative noParentUuid | Integ 6/6 + legacy green | **nonreg** | ✅ |
+| 4.6 ★ | Port React Model undo-redo → single `domain_controller_model_undo_redo` (`actionTest`); empty Library seed; deprecate React undo-redo | Integ 1/1 + legacy green | **nonreg** | ✅ |
+| 4.7+ | Migrate any remaining Action integ siblings using the same leaf + session | One file per slice | nonreg per file or batch | — |
 
 **Phase 4.1 notes:**
 - Legacy Data.CRUD marked `@deprecated` with preferred CLI; **must remain runnable** until MiroirTest is accepted as sole owner (later deletion slice — not 4.1).
@@ -338,6 +340,19 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 - Two suite keys (different playfield seeds): `domain_controller_non_uuid_pk_model_crud` (Publisher only; leaf creates TestEntityCodeNumber) and `domain_controller_non_uuid_pk_data_crud` (TestEntityCodeNumber + 3 instances; `idAttribute: "code"`).
 - Generator: `generate_domain_controller_non_uuid_pk_crud_miroir_test.py` writes both JSON assets into Miroir `miroir_data`.
 - Imperative nonUuidPK.CRUD deprecated, not deleted.
+
+**Phase 4.5 notes:**
+- Single suite key: `domain_controller_no_parent_uuid_crud` (Model create + Data CRUD leaves together).
+- Seed: Publisher + TestEntityNoParentUuid (instances omit `parentUuid`; payload.parentUuid fallback).
+- Model leaf drops+recreates the seeded entity so `createEntity` is still exercised under the shared seed.
+- Generator: `generate_domain_controller_no_parent_uuid_crud_miroir_test.py`.
+- Imperative noParentUuid.CRUD deprecated, not deleted.
+
+**Phase 4.6 notes:**
+- Single suite key: `domain_controller_model_undo_redo` (one stateful leaf covering createEntity Author/Book + undo/redo + commit).
+- Seed: empty Library (`domainControllerModelUndoRedoLibraryPlayfieldSeed`).
+- Domain-action + entity-list assertions only; React UI / `currentTransaction` remain on the deprecated legacy file.
+- Generator: `generate_domain_controller_model_undo_redo_miroir_test.py`.
 
 ### Phase 5 — UI (#197 Phase B follow-on)
 

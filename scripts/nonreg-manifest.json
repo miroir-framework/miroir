@@ -137,6 +137,18 @@
       ]
     },
     {
+      "id": "integ-action-domain_controller_model_undo_redo",
+      "tier": "default",
+      "title": "MiroirTest integ — domain_controller_model_undo_redo (actionTest)",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testMiroir", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "--suites", "domain_controller_model_undo_redo",
+        "--mode", "integ"
+      ]
+    },
+    {
       "id": "appstack-DomainController.integ",
       "tier": "default",
       "title": "App-stack — DomainController.integ (all; Data.CRUD deprecated but kept green)",

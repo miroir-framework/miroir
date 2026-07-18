@@ -213,7 +213,7 @@ Use **`--profile`** so one preset sets both `VITE_MIROIR_*` (app-stack / runner)
 |------|------------------------|---------|-----------------|
 | **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` (synthetic `testApplication`) | `emulatedServer-sql` |
 | **Runner** | `runner_library` | `RunnerTestSession` (library playfield + runners) | `emulatedServer-sql` |
-| **Action** | `domain_controller_data_crud`, `domain_controller_model_crud`, `domain_controller_composite_pk_crud`, `domain_controller_non_uuid_pk_{model,data}_crud`, `domain_controller_no_parent_uuid_crud` (all Miroir `miroir_data`) | `RunnerTestSession` + `libraryPlayfieldSeed` (`actionTest` leaves); Library is `runTarget`/testbed | `emulatedServer-sql` |
+| **Action** | `domain_controller_data_crud`, `domain_controller_model_crud`, `domain_controller_composite_pk_crud`, `domain_controller_non_uuid_pk_{model,data}_crud`, `domain_controller_no_parent_uuid_crud`, `domain_controller_model_undo_redo` (all Miroir `miroir_data`) | `RunnerTestSession` + `libraryPlayfieldSeed` (`actionTest` leaves); Library is `runTarget`/testbed | `emulatedServer-sql` |
 
 ```bash
 # Transformer integ
@@ -250,6 +250,11 @@ npm run testMiroir -w miroir-standalone-app -- \
 # (preferred over DomainController.integ.noParentUuid.CRUD.test.tsx)
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites domain_controller_no_parent_uuid_crud --mode integ
+
+# Action Model undo/redo integ — Miroir-owned; Library is runTarget only
+# (preferred over DomainController.React.Model.undo-redo.test.tsx for domain actions)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_model_undo_redo --mode integ
 ```
 
 Filter keys use the suite **`miroirTestLabel`**, not the registry key (see [Filtering](#filtering-miroirtest-cases)):

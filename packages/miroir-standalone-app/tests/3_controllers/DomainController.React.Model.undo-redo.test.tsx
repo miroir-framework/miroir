@@ -1,3 +1,10 @@
+/**
+ * @deprecated Prefer MiroirTest suite `domain_controller_model_undo_redo` via
+ * `npm run testMiroir -w miroir-standalone-app -- --suites domain_controller_model_undo_redo --mode integ --profile emulatedServer-sql`.
+ * Canonical leaves: `miroirTest_domain_controller_model_undo_redo` (deployment-miroir; Library is runTarget only).
+ * Domain-action undo/redo coverage is in the MiroirTest; this file keeps React UI /
+ * currentTransaction assertions until accepted as sole owner — do not delete.
+ */
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
