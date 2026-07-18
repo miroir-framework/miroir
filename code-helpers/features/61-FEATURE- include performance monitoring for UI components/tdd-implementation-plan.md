@@ -221,7 +221,7 @@ Vertical slices only (one behaviour → one test → minimal code). Do **not** w
 Phase 0 — Lock design decisions D1–D11                         [DONE]
 Phase 1 — Gated registry + noop when off                       slices 1.1–1.4   [DONE]
 Phase 2 — Paths, depth, subtree aggregates                     slices 2.1–2.4   [DONE]
-Phase 3 — Visual-debug inline header                           slices 3.1–3.3
+Phase 3 — Visual-debug inline header                           slices 3.1–3.3   [DONE]
 Phase 4 — Migrate Report-tree call sites (replace text ruins)  slices 4.1–4.3
 Phase 5 — Docked summary (retire default floating modal)       slices 5.1–5.3
 Phase 6 — Timing + threshold + export                          slices 6.1–6.3
@@ -314,7 +314,15 @@ Phase 7 — Acceptance: footprint + docs note                    slices 7.1–7.
 
 ---
 
-## Phase 3 — Visual-debug inline header
+## Phase 3 — Visual-debug inline header ✅
+
+**Status (2026-07-18)**: slices 3.1–3.3 green.
+
+| Slice | Deliverable |
+|---|---|
+| 3.1 | `RenderInsightHeader` — null when timer off; warning chrome; `×N · ΣM` |
+| 3.2 | Aggregate chip when `aggregate` prop set |
+| 3.3 | **Option B**: sibling to `JsonDisplayHelper`; independent of `showDebugInfo` |
 
 ### 3.1  `RenderInsightHeader` component
 
@@ -332,14 +340,9 @@ Phase 7 — Acceptance: footprint + docs note                    slices 7.1–7.
 
 ### 3.3  Optional merge with `JsonDisplayHelper`
 
-**Behavior** (prefer small step): either
+**Behavior**: **B** — keep `RenderInsightHeader` as a sibling immediately above/below existing debug bars (no merge into `JsonDisplayHelper` yet).
 
-- **A)** `JsonDisplayHelper` accepts optional `renderInsight` prop and appends counts next to `(N items)`, or
-- **B)** keep `RenderInsightHeader` as a sibling immediately above/below existing debug bars.
-
-Recommendation: **B first** (less coupling), then **A** if chrome duplication is noisy.
-
-**Non-regression**: existing debug-info tests / behaviour unchanged when timer is off.
+**Non-regression**: existing debug-info tests / behaviour unchanged when timer is off; insight header does not require `showDebugInfo`.
 
 ---
 
