@@ -14,12 +14,14 @@ import type {
   Runner,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirTestForAction } from "../0_interfaces/5-tests/miroirTestActionTypes";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
   MiroirActivityTrackerInterface,
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
+import { runMiroirActionTest } from "./ActionTestTools.js";
 import { runMiroirFunctionCallTestInMemory } from "./FunctionCallTestTools";
 import {
   runMiroirTransformerIntegrationTest,
@@ -34,6 +36,7 @@ import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import type { RunnerTestRunTarget } from "./RunnerTestRunTarget.js";
 
+export type MiroirTestLeafExecutable = MiroirTestLeaf | MiroirTestForAction;
 export type RunnerTestContext = {
   domainController: DomainControllerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
@@ -72,7 +75,7 @@ export type MiroirTestExecutionOptions = {
 };
 
 
-function miroirTestLeafLabel(leaf: MiroirTestLeaf): string {
+function miroirTestLeafLabel(leaf: MiroirTestLeafExecutable): string {
   return leaf.miroirTestLabel;
 }
 
@@ -81,7 +84,7 @@ export type RunMiroirTest = (
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: MiroirTestRunFilter | undefined,
-  leaf: MiroirTestLeaf,
+  leaf: MiroirTestLeafExecutable,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   parentTrackingId: string | undefined,
@@ -105,7 +108,7 @@ export async function runMiroirTest(
   localVitest: VitestNamespace,
   testNamePath: string[],
   filter: MiroirTestRunFilter | undefined,
-  leaf: MiroirTestLeaf,
+  leaf: MiroirTestLeafExecutable,
   modelEnvironment: MiroirModelEnvironment,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   _parentTrackingId: string | undefined,
@@ -116,6 +119,24 @@ export async function runMiroirTest(
   parentSkip?: boolean,
 ): Promise<void> {
   const executionMode = executionOptions?.executionMode ?? "unit";
+
+  if (leaf.miroirTestType === "actionTest") {
+    if (executionOptions?.executionMode !== "integration") {
+      throw new Error(
+        "runMiroirTestInMemory: actionTest leaves require executionMode integration",
+      );
+    }
+    return runMiroirActionTest(
+      localVitest,
+      testNamePath,
+      filter,
+      leaf,
+      miroirActivityTracker,
+      testAssertionPath,
+      parentSkip,
+      executionOptions.executionEnvironment,
+    );
+  }
 
   switch (leaf.miroirTestType) {
     case "transformerTest": {

@@ -5,14 +5,12 @@ import {
   DomainControllerInterface,
   LoggerInterface,
   MiroirLoggerFactory,
+  runCompositeActionTestParams,
   type ApplicationDeploymentMap,
-  type MiroirActivityTrackerInterface
+  type MiroirActivityTrackerInterface,
+  type TestCompositeActionParams,
 } from "miroir-core";
 
-
-import {
-  TestCompositeActionParams,
-} from "miroir-core";
 import { packageName } from '../../constants';
 import { cleanLevel } from '../4_view/constants';
 
@@ -33,109 +31,22 @@ export async function runTestOrTestSuite(
   log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ STARTING test:", fullTestName, );
 
   try {
-    const currentModelEnvironment = domainController.currentModelEnvironment(
-      testAction.application,
+    const queryResult: Action2ReturnType | undefined = await runCompositeActionTestParams(
+      domainController,
+      testAction,
       applicationDeploymentMap,
+      miroirActivityTracker,
+      testActionParamValues,
     );
-
-    switch (testAction.testActionType) {
-      case 'testBuildPlusRuntimeCompositeActionSuite':
-      case "testCompositeActionSuite": {
-        const newParams = {
-          ...(testActionParamValues ?? {}),
-          ...(testAction.testActionType == "testBuildPlusRuntimeCompositeActionSuite"
-            ? (testAction.testParams ?? {})
-            : {}),
-        };
-        log.info(
-          "running test testCompositeActionSuite",
-          fullTestName,
-          "with params",
-          newParams,
-          // JSON.stringify(newParams, null, 2)
-        );
-        const queryResult: Action2ReturnType = await miroirActivityTracker.trackTestSuite(
-          fullTestName,
-          fullTestName,
-          undefined, // parentTrackId
-          async () =>
-            await domainController.handleTestCompositeActionSuite(
-              testAction.application,
-              testAction.testCompositeAction as any, // TODO: remove cast
-              applicationDeploymentMap,
-              currentModelEnvironment,
-              newParams
-            )
-        ); 
-        log.info(
-          "received results for test testCompositeActionSuite",
-          fullTestName,
-          ": queryResult=",
-          JSON.stringify(queryResult, null, 2),
-          "TestContextResults",
-          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([]), null, 2)
-        );
-        // log.info(
-        //   "received results for test testCompositeActionSuite",
-        //   fullTestName,
-        //   ": queryResult=",
-        //   JSON.stringify(queryResult, null, 2)
-        // );
-        return queryResult;
-      }
-      case 'testBuildPlusRuntimeCompositeAction':
-      case "testCompositeAction": {
-        const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
-          fullTestName,
-          miroirActivityTracker.getCurrentActivityId(),
-          async () =>
-            await domainController.handleTestCompositeAction(
-              testAction.testCompositeAction as any, // TODO: remove cast
-              applicationDeploymentMap,
-              currentModelEnvironment,
-              {},
-            )
-        );
-        // const queryResult: Action2ReturnType = await domainController.handleTestCompositeAction(
-        //   testAction.testCompositeAction as any, // TODO: remove cast
-        //   {},
-        //   domainController.currentModel(testAction.deploymentUuid)
-        // );
-        log.info(
-          "test testCompositeAction",
-          fullTestName,
-          ": queryResult=",
-          JSON.stringify(queryResult, null, 2)
-        );
-        return queryResult;
-      }
-      case "testCompositeActionTemplateSuite": {
-        log.info("testCompositeActionTemplateSuite", fullTestName, "running for testActionParamValues", testActionParamValues);
-        const queryResult: Action2ReturnType = await miroirActivityTracker.trackTest(
-          fullTestName,
-          miroirActivityTracker.getCurrentActivityId(),
-          async() => await domainController.handleTestCompositeActionTemplateSuite(
-            testAction.testCompositeActionSuite,
-            applicationDeploymentMap,
-            currentModelEnvironment,
-            testActionParamValues??{},
-          )
-        )
-        log.info(
-          "received results for test testCompositeActionSuite",
-          fullTestName,
-          ": queryResult=",
-          JSON.stringify(queryResult, null, 2),
-          "TestContextResults",
-          // JSON.stringify(miroirActivityTracker.getTestAssertionsResults([{testSuite: testAction.testActionLabel}]), null, 2)
-          JSON.stringify(miroirActivityTracker.getTestAssertionsResults([]), null, 2)
-        );
-        return queryResult;
-      }
-      case "testCompositeActionTemplate": {
-        throw new Error("testCompositeActionTemplate not implemented yet!");
-      }
-    }
+    log.info(
+      "received results for test",
+      fullTestName,
+      ": queryResult=",
+      JSON.stringify(queryResult, null, 2),
+      "TestContextResults",
+      JSON.stringify(miroirActivityTracker.getTestAssertionsResults([]), null, 2)
+    );
+    return queryResult;
   } catch (error) {
     log.error(
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ERROR test:",

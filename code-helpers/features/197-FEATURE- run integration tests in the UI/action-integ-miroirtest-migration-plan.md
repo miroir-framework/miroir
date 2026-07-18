@@ -2,8 +2,22 @@
 
 **Parent:** [plan.md](./plan.md) (Feature #197)  
 **Pilot source:** `packages/miroir-standalone-app/tests/3_controllers/DomainController.integ.Data.CRUD.test.tsx`  
-**Status:** Plan only (not started)  
+**Status:** Phase 0 ✅ (shared executor + provisional `actionTest` draft + dispatch stub)  
 **Method:** TDD; run `npm run nonreg` (or targeted profile integ + unit gate) after each impactful slice
+
+### Hard constraint — legacy file untouched until wrap-up
+
+- **Do not modify** `DomainController.integ.Data.CRUD.test.tsx` during Phases 0–3 (or any earlier slice).
+- This command must **keep passing throughout** the migration:
+
+```bash
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
+```
+
+- Delete / retire the legacy file **only in Phase 4 wrap-up**, after MiroirTest parity is proven.
+- After `miroir-core` source changes that standalone-app imports from `dist`, run `npm run build -w miroir-core` before re-checking the legacy command.
 
 ## Goal
 
@@ -238,13 +252,15 @@ Suite-level `beforeAll` / `beforeEach` / … either:
 
 Each slice: **failing test → implement → green → commit**. After slices marked **★**, run global nonreg.
 
-### Phase 0 — Spec & shared executor (no Data.CRUD move yet)
+### Phase 0 — Spec & shared executor (no Data.CRUD move yet) ✅
 
-| Slice | Work | Tests first | Nonreg |
-|-------|------|-------------|--------|
-| 0.1 | Document `actionTest` fields vs `runnerTest` in this plan (done) + schema draft in Jzod source | Unit: schema parse accepts minimal `actionTest`, rejects missing label | — |
-| 0.2 ★ | Extract `runCompositeActionTestParams` from `runTestOrTestSuite` + thin `runRunnerTestCompositeAction` | Unit: both action types still succeed against mocks / existing runner unit tests | **nonreg** |
-| 0.3 | `runMiroirActionTest` stub + `MiroirTestTools` dispatch (`executionMode: "integration"` only) | Unit: unknown leaf gone; actionTest without env throws; with env calls shared helper | — |
+| Slice | Work | Tests first | Nonreg | Status |
+|-------|------|-------------|--------|--------|
+| 0.1 | Provisional `miroirTestForActionDraft` (+ TS type); full entity schema in Phase 1 | Unit: schema parse accepts minimal `actionTest`, rejects missing label | — | ✅ |
+| 0.2 ★ | Extract `runCompositeActionTestParams`; thin `runRunnerTestCompositeAction` + `runTestOrTestSuite` | Unit: suite + buildPlusRuntime param merge | **nonreg** + legacy Data.CRUD | ✅ |
+| 0.3 | `runMiroirActionTest` stub + `MiroirTestTools` dispatch (`executionMode: "integration"` only) | Unit: unit mode throws; missing DC throws; stub “Phase 2” | — | ✅ |
+
+**Note:** Phase 0 does **not** touch `DomainController.integ.Data.CRUD.test.tsx`. Resolve / JSON pilot starts in Phase 2.
 
 ### Phase 1 — Schema + session context generalization
 

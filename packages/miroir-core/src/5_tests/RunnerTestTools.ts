@@ -18,6 +18,7 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "../1_core/Runner";
+import { runCompositeActionTestParams } from "./CompositeActionTestTools.js";
 import { resolveRunnerFromRegistry } from "./resolveRunnerFromRegistry.js";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
@@ -90,31 +91,18 @@ export async function runRunnerTestCompositeAction(
   miroirActivityTracker: MiroirActivityTrackerInterface,
   testActionParamValues?: Record<string, unknown>,
 ): Promise<Action2ReturnType | undefined> {
-  const fullTestName = testAction.testActionLabel ?? testAction.testActionType;
-  const currentModelEnvironment = domainController.currentModelEnvironment(
-    testAction.application,
-    applicationDeploymentMap,
-  );
-
   if (testAction.testActionType !== "testBuildPlusRuntimeCompositeActionSuite") {
     throw new Error(
       `runRunnerTestCompositeAction: unsupported testActionType ${testAction.testActionType}`,
     );
   }
 
-  const newParams = {
-    ...(testActionParamValues ?? {}),
-    ...(testAction.testParams ?? {}),
-  };
-
-  return miroirActivityTracker.trackTestSuite(fullTestName, fullTestName, undefined, async () =>
-    domainController.handleTestCompositeActionSuite(
-      testAction.application,
-      testAction.testCompositeAction as any,
-      applicationDeploymentMap,
-      currentModelEnvironment,
-      newParams,
-    ),
+  return runCompositeActionTestParams(
+    domainController,
+    testAction,
+    applicationDeploymentMap,
+    miroirActivityTracker,
+    testActionParamValues,
   );
 }
 

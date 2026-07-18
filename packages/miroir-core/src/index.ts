@@ -1041,6 +1041,18 @@ export {
   type MiroirTestIntegrationOrchestrator,
 } from "./5_tests/MiroirTestIntegrationOrchestrator.js";
 export {
+  runCompositeActionTestParams,
+} from "./5_tests/CompositeActionTestTools.js";
+export {
+  runMiroirActionTest,
+} from "./5_tests/ActionTestTools.js";
+export type {
+  MiroirTestForAction,
+} from "./0_interfaces/5-tests/miroirTestActionTypes.js";
+export {
+  miroirTestForActionDraft,
+} from "./0_interfaces/5-tests/miroirTestActionTypes.js";
+export {
   resolveRunnerTestLeaf,
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
