@@ -1,6 +1,9 @@
 /**
  * Render insight registry — gated render-count tracking for UI performance mode.
  * When `enabled` is false, trackRender is a no-op (near-zero footprint).
+ *
+ * Path identity: componentId + optional formikPath (siblings sharing a name
+ * are distinguished by formik path, not reportSectionPath).
  */
 
 export interface RenderCounts {
@@ -17,12 +20,41 @@ export interface TrackRenderArgs {
   componentId: string;
   navigationKey: string;
   enabled: boolean;
+  /** Formik value path — preferred sibling identity for attribute-level nodes. */
+  formikPath?: string;
+}
+
+export interface RenderInsightNode extends RenderCounts {
+  pathKey: string;
+  componentId: string;
+  formikPath?: string;
+  /** Depth from formik path segments (0 when no formikPath). */
+  depth: number;
 }
 
 interface ComponentRenderData {
+  componentId: string;
+  formikPath?: string;
+  depth: number;
   totalRenderCount: number;
   navigationRenderCount: number;
   lastNavigationKey: string;
+}
+
+/** Build stable map key: `Component` or `Component@formik.path`. */
+export function buildPathKey(componentId: string, formikPath?: string): string {
+  if (formikPath === undefined || formikPath === "") {
+    return componentId;
+  }
+  return `${componentId}@${formikPath}`;
+}
+
+/** Depth = number of non-empty formik path segments; 0 when absent. */
+export function formikPathDepth(formikPath?: string): number {
+  if (formikPath === undefined || formikPath === "") {
+    return 0;
+  }
+  return formikPath.split(".").filter((s) => s.length > 0).length;
 }
 
 export class RenderInsightRegistry {
@@ -37,16 +69,20 @@ export class RenderInsightRegistry {
       return NOOP_RENDER_COUNTS;
     }
 
-    const { componentId, navigationKey } = args;
-    let data = this.componentData.get(componentId);
+    const { componentId, navigationKey, formikPath } = args;
+    const pathKey = buildPathKey(componentId, formikPath);
+    let data = this.componentData.get(pathKey);
 
     if (!data) {
       data = {
+        componentId,
+        formikPath: formikPath || undefined,
+        depth: formikPathDepth(formikPath),
         totalRenderCount: 0,
         navigationRenderCount: 0,
         lastNavigationKey: navigationKey,
       };
-      this.componentData.set(componentId, data);
+      this.componentData.set(pathKey, data);
     }
 
     data.totalRenderCount++;
@@ -68,8 +104,8 @@ export class RenderInsightRegistry {
     return this.componentData.size;
   }
 
-  getCounts(componentId: string): RenderCounts | null {
-    const data = this.componentData.get(componentId);
+  getCounts(pathKey: string): RenderCounts | null {
+    const data = this.componentData.get(pathKey);
     if (!data) return null;
     return {
       navigationCount: data.navigationRenderCount,
@@ -79,8 +115,8 @@ export class RenderInsightRegistry {
 
   getAllCounts(): Record<string, RenderCounts> {
     const result: Record<string, RenderCounts> = {};
-    for (const [componentId, data] of this.componentData.entries()) {
-      result[componentId] = {
+    for (const [pathKey, data] of this.componentData.entries()) {
+      result[pathKey] = {
         navigationCount: data.navigationRenderCount,
         totalCount: data.totalRenderCount,
       };
@@ -88,12 +124,28 @@ export class RenderInsightRegistry {
     return result;
   }
 
+  /** Snapshot of all nodes with path metadata (for depth/aggregate UI). */
+  getSnapshot(): RenderInsightNode[] {
+    const nodes: RenderInsightNode[] = [];
+    for (const [pathKey, data] of this.componentData.entries()) {
+      nodes.push({
+        pathKey,
+        componentId: data.componentId,
+        formikPath: data.formikPath,
+        depth: data.depth,
+        navigationCount: data.navigationRenderCount,
+        totalCount: data.totalRenderCount,
+      });
+    }
+    return nodes;
+  }
+
   resetAll(): void {
     this.componentData.clear();
   }
 
-  resetComponent(componentId: string): void {
-    this.componentData.delete(componentId);
+  resetComponent(pathKey: string): void {
+    this.componentData.delete(pathKey);
   }
 }
 

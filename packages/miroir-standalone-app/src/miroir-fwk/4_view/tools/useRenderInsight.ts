@@ -12,10 +12,12 @@ import {
 
 /**
  * Track component renders only when performance display mode is on.
+ * Optional formikPath distinguishes siblings that share a component name.
  */
 export const useRenderInsight = (
   componentId: string,
-  navigationKey: string
+  navigationKey: string,
+  formikPath?: string
 ): RenderCounts => {
   const context = useMiroirContextService();
   if (!context.showPerformanceDisplay) {
@@ -24,6 +26,7 @@ export const useRenderInsight = (
   return renderInsightRegistry.trackRender({
     componentId,
     navigationKey,
+    formikPath,
     enabled: true,
   });
 };
