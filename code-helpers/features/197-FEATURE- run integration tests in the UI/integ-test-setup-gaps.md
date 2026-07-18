@@ -23,7 +23,7 @@ current state and names the gaps that still need to be filled before UI executio
 **Takeaway:** Setup is converging on two adapters implementing `RunnerTestSessionInterface`:
 `IntegrationTestSession` (transformer / `MIROIR_TEST_*`) and `AppStackIntegrationTestSession`
 (`4_storage` / `VITE_MIROIR_*`). Assertion style still splits: most families use
-`domainController`; `4_storage` deliberately keeps PSC-direct calls.
+`domainController`; `4_storage` deliberately keeps PersistenceStoreController-direct calls.
 
 ---
 
@@ -57,7 +57,7 @@ already provisioned Miroir + admin:
 
 **#197 Phase B:** Default UI path is **data-isolated in-browser orchestrator** (`hostMode: "isolated"`,
 ephemeral `runTarget`, dedicated activity tracker — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md)).
-Vitest subprocess remains CLI transport and optional B9 catalog for PSC-direct suites. Embedded mode
+Vitest subprocess remains CLI transport and optional B9 catalog for PersistenceStoreController-direct suites. Embedded mode
 is the advanced path for attaching to a running host without re-deploying meta-model stores.
 
 ### What was filled
@@ -134,7 +134,7 @@ Every integration session declares its **playfield** via `IntegrationTestSession
 | Kind / profile | Playfield |
 |----------------|-----------|
 | `transformer` | `testApplication` (synthetic UUIDs — unchanged) |
-| `appStackPsc`, `runner` | `libraryDeployment` |
+| `appStackPersistenceStoreController`, `runner` | `libraryDeployment` |
 | `domainController` + `miroirPlatform` | `none` (library lifecycle in test JSON) |
 | `domainController` + `miroirAndLibrary` | `libraryDeployment` |
 
@@ -222,7 +222,7 @@ Gap C was originally framed as “replace `PersistenceStoreController` as the ma
 | Sub-gap | Topic | Status |
 |---------|--------|--------|
 | **C-setup** | One common **bootstrap** for integ tests (stores, deployments, session lifecycle) | **Largely solved** ✅ |
-| **C-assertions** | Whether **test bodies** must call `domainController` instead of PSC | **Intentionally split** — see below |
+| **C-assertions** | Whether **test bodies** must call `domainController` instead of PersistenceStoreController | **Intentionally split** — see below |
 
 Refactoring plan and slices: [gap-C-refactoring-plan.md](./gap-C-refactoring-plan.md).
 
@@ -231,7 +231,7 @@ Refactoring plan and slices: [gap-C-refactoring-plan.md](./gap-C-refactoring-pla
 **Problem (before):** Each `4_storage` file and transformer integ duplicated
 `setupMiroirTest` → `createMiroirDeploymentGetPersistenceStoreController` → library deployment
 composite action. Transformer integ used a separate `initMiroirCoreTestIntegrationStore` path with
-direct PSC assembly and a synthetic `testApplication` schema. Different setups made the overall
+direct PersistenceStoreController assembly and a synthetic `testApplication` schema. Different setups made the overall
 testing operation hard to control (profiles, store backends, deployment UUIDs, teardown).
 
 **Solution (now):**
@@ -241,7 +241,7 @@ VITE_MIROIR_* (4_storage)                    MIROIR_TEST_* (transformer integ)
         │                                              │
         ▼                                              ▼
 AppStackIntegrationTestSession              IntegrationTestSession
-  setupMiroirTest (emulated HTTP)               setupMiroirDomainController (local PSC)
+  setupMiroirTest (emulated HTTP)               setupMiroirDomainController (local PersistenceStoreController)
   Miroir + Library deployments                  testApplication + admin deployments
   returns persistenceStoreControllerManager     returns persistenceStoreControllerManager
         │                                              │
@@ -273,7 +273,7 @@ Assertions use `domainController.handleBoxedExtractorOrQueryAction`.
 still use the `setupMiroirTest*` ladder directly — candidates for a future adapter or
 `RunnerTestSession`-style consolidation (overlaps Gap E).
 
-### 4.2 C-assertions — persistence tests keep PSC (by design)
+### 4.2 C-assertions — persistence tests keep PersistenceStoreController (by design)
 
 **Decision:** `4_storage` integration tests **continue to call**
 `localAppPersistenceStoreController` / `localMiroirPersistenceStoreController` in `it()` blocks
@@ -293,12 +293,12 @@ etc.). Only **`beforeAll`** was unified.
 | Style | Families | Test body calls |
 |-------|----------|-----------------|
 | **Domain-layer integ** | DomainController CRUD, runner, CLI/MCP, transformer integ | `domainController.handleCompositeAction` / `handleBoxedExtractorOrQueryAction` |
-| **Persistence-layer integ** | `4_storage` | PSC methods on handles obtained from `persistenceStoreControllerManager` after common setup |
+| **Persistence-layer integ** | `4_storage` | PersistenceStoreController methods on handles obtained from `persistenceStoreControllerManager` after common setup |
 
 Both styles now share **the same deployment bootstrap** (`AppStackIntegrationTestSession`); they
 differ only in the **assertion surface**.
 
-### 4.3 UI execution of PSC-direct tests — open question (#197 scope?)
+### 4.3 UI execution of PersistenceStoreController-direct tests — open question (#197 scope?)
 
 **Problem:** In a live UI session, application code has no direct handle to
 `PersistenceStoreController`. The emulated-server Vitest path works today because `beforeAll` grabs
@@ -307,24 +307,24 @@ the **server-side** `PersistenceStoreControllerManager` while the client uses re
 process** with the emulated stack wired up — not when test code is naïvely “embedded” in the
 browser UI thread.
 
-**How UI-triggered PSC tests *could* work (infra not built yet):**
+**How UI-triggered PersistenceStoreController tests *could* work (infra not built yet):**
 
 | Approach | Idea | Fits #197 Phase B? |
 |----------|------|-------------------|
-| **A — Isolated Vitest subprocess (recommended near-term)** | UI spawns the same `testByFile` / `testMiroir` command in an isolated environment (separate schema / indexedDb, mutex). No change to PSC test bodies; same as CLI. | **Yes** — aligns with Phase B “never reuse live `MiroirContext`”; UI is a launcher + reporter |
+| **A — Isolated Vitest subprocess (recommended near-term)** | UI spawns the same `testByFile` / `testMiroir` command in an isolated environment (separate schema / indexedDb, mutex). No change to PersistenceStoreController test bodies; same as CLI. | **Yes** — aligns with Phase B “never reuse live `MiroirContext`”; UI is a launcher + reporter |
 | **B — Server-hosted test runner** | UI calls a backend endpoint that runs a test suite with access to the server `PersistenceStoreControllerManager` (emulated or real server). Tests still Node-side; UI shows progress via activity tracker / SSE. | **Possible** — needs runner API + session isolation (Feature 157 overlap) |
-| **C — New MiroirTest execution variant** | e.g. `executionSurface: "persistenceStore"` on a suite leaf, with orchestrator wiring PSC from `executionEnvironment.persistenceStoreControllerManager`. | **Later** — schema + orchestrator work; still runs outside live UI stores if isolated |
-| **D — Migrate PSC tests to domainController** | Makes UI path uniform but **changes test meaning** (C-assertions). | **Deferred** — not required for setup unification |
+| **C — New MiroirTest execution variant** | e.g. `executionSurface: "persistenceStore"` on a suite leaf, with orchestrator wiring PersistenceStoreController from `executionEnvironment.persistenceStoreControllerManager`. | **Later** — schema + orchestrator work; still runs outside live UI stores if isolated |
+| **D — Migrate PersistenceStoreController tests to domainController** | Makes UI path uniform but **changes test meaning** (C-assertions). | **Deferred** — not required for setup unification |
 
 **Recommendation for feature #197:**
 
 - **In scope for Phase B:** domainController-based MiroirTest integ (`runnerTest`, transformer
   integ via `testMiroir`) using approach **A** or **B** with session isolation.
-- **Defer to a follow-up issue (or #197 Phase B+):** “Run `4_storage` PSC suites from UI” — document
+- **Defer to a follow-up issue (or #197 Phase B+):** “Run `4_storage` PersistenceStoreController suites from UI” — document
   as launcher-only (A) first; only invest in **B/C** if product requires in-process server
   execution without a Vitest child process.
 
-No `Test` entity variant exists today for PSC-direct suites; they are not `MiroirTest` JSON leaves
+No `Test` entity variant exists today for PersistenceStoreController-direct suites; they are not `MiroirTest` JSON leaves
 —they are Vitest files. UI surfacing would likely be a **test catalog entry** pointing at
 `testByFile` filters, not a new `miroirTestType`, unless we later promote storage suites into
 MiroirTest with a dedicated runner adapter.
@@ -337,7 +337,7 @@ MiroirTest with a dedicated runner adapter.
 | Common setup adapter for transformer integ (`IntegrationTestSession`) | ✅ Done |
 | `MiroirTestExecutionEnvironment.persistenceStoreControllerManager` | ✅ Done |
 | Migrate `4_storage` **assertions** to `domainController` | ❌ Out of scope / deferred (Appendix A) |
-| UI launcher for PSC-direct Vitest suites | ❌ Not started — defer from core #197 Phase B unless explicitly scoped |
+| UI launcher for PersistenceStoreController-direct Vitest suites | ❌ Not started — defer from core #197 Phase B unless explicitly scoped |
 | Align `3_controllers` bootstrap with `AppStackIntegrationTestSession` | Optional follow-up (setup only) |
 
 ---
@@ -345,7 +345,7 @@ MiroirTest with a dedicated runner adapter.
 ## 4 (legacy note). Original Gap C wording (superseded)
 
 The text below described the **pre-refactor** state and an all-in `domainController` migration.
-**C-setup** is done; **C-assertions** for `4_storage` was rejected in favour of PSC-direct test
+**C-setup** is done; **C-assertions** for `4_storage` was rejected in favour of PersistenceStoreController-direct test
 bodies. Kept for historical context only.
 
 <details>
@@ -353,12 +353,12 @@ bodies. Kept for historical context only.
 
 #### `miroir-core` transformer integ (`initMiroirCoreTestIntegrationStore`) — removed
 
-Was entirely PSC-direct; replaced by `IntegrationTestSession` + `domainController` assertions.
+Was entirely PersistenceStoreController-direct; replaced by `IntegrationTestSession` + `domainController` assertions.
 
 #### `4_storage` tests — setup migrated; assertions unchanged
 
 Previously duplicated `setupMiroirTest` in every file; now `AppStackIntegrationTestSession`.
-Direct PSC calls in tests remain intentional (persistence-layer coverage).
+Direct PersistenceStoreController calls in tests remain intentional (persistence-layer coverage).
 
 </details>
 
@@ -449,8 +449,8 @@ delegates session construction to `StandaloneAppIntegrationOrchestrator` in stan
 
 | Session class | `IntegrationTestSessionKind` | Bootstrap phases (summary) |
 |---------------|------------------------------|----------------------------|
-| `IntegrationTestSession` | `transformer` | Local PSC path (no emulated HTTP) |
-| `AppStackIntegrationTestSession` | `appStackPsc` | wire + deployMiroir + deployLibrary |
+| `IntegrationTestSession` | `transformer` | Local PersistenceStoreController path (no emulated HTTP) |
+| `AppStackIntegrationTestSession` | `appStackPersistenceStoreController` | wire + deployMiroir + deployLibrary |
 | `DomainControllerIntegrationTestSession` | `domainController` | profile `miroirPlatform` or `miroirAndLibrary` |
 | `RunnerTestSession` | `runner` | wire + deployMiroir |
 
@@ -503,7 +503,7 @@ Five different public setup entry points existed across the test infrastructure:
 | **A** — Miroir + Admin init | ~~`hostMode`, `ensureMiroirPlatform`, host injection~~ | All `miroir-standalone-app` integ | **Done** ✅ — #197 Phase B launcher next |
 | **B** — Library playfield contract | ~~`ensureLibraryPlayfield` / `resetLibraryPlayfield`~~ | Runner, DomainController, 4_storage | **Done** ✅ — enables Gap A `playfieldMode` |
 | **C-setup** — Common integ bootstrap | ~~Unified session adapters~~ | Transformer + `4_storage` | **Done** ✅ — reduces setup chaos; UI still needs isolation (A/B) |
-| **C-assertions** — PSC vs domainController in test bodies | `4_storage` keeps PSC (intentional); UI launcher for PSC Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PSC access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
+| **C-assertions** — PersistenceStoreController vs domainController in test bodies | `4_storage` keeps PersistenceStoreController (intentional); UI launcher for PersistenceStoreController Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PersistenceStoreController access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
 | **D** — Env config fragmentation | ~~Unified profile system (`MIROIR_TEST_*` + `VITE_MIROIR_*`)~~ | Transformer, runner, `testByFile` | **Done** ✅ — [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md) |
 | **E** — Setup helper fragmentation | ~~Consolidate `setupMiroirTest*`; orchestrator for UI~~ | DomainController CRUD, legacy runners | **Done** ✅ — enables Gap B / UI Phase B |
 | **F** — UI store backend / real-server path | Browser emulated integ = **IndexedDB only**; SQL/fs/mongo need Node emulated (CLI) or **`miroir-server`** (`realServer-*` configs). Bootstrap today requires `emulateServer: true`. B6-d e2e RTL proof pending. | #197 Phase B UI launcher | **Open** — [phase-b-ui-launcher-plan.md §5](./phase-b-ui-launcher-plan.md#51-store-backend-reality-corrected--blocks-naive-b6-completion) |
@@ -516,7 +516,7 @@ pattern (`RunnerTestSessionInterface` + `AppStackIntegrationTestSession` / `Inte
 is available across transformer and storage families, which makes CLI testing much easier to
 control even though assertion style still differs.
 
-**Gap C-assertions** (PSC-direct `4_storage` tests) is a **product/architecture choice**, not a
+**Gap C-assertions** (PersistenceStoreController-direct `4_storage` tests) is a **product/architecture choice**, not a
 setup bug. For feature **#197 Phase B**, prefer launching **domainController-based** MiroirTest
-suites first; surfacing `4_storage` PSC suites from the UI can be a **follow-up** (Vitest
+suites first; surfacing `4_storage` PersistenceStoreController suites from the UI can be a **follow-up** (Vitest
 subprocess launcher) unless explicitly added to #197 scope.

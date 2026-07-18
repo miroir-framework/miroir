@@ -87,7 +87,7 @@ function explicitBootstrapOptions(
     phases: ["wireEmulatedStack", "deployMiroir", "deployLibrary"],
     libraryDeploymentStorageConfiguration,
     testApplicationUuid: selfApplicationLibrary.uuid,
-    deployMiroirStrategy: "pscHelper",
+    deployMiroirStrategy: "persistenceStoreControllerHelper",
     openAdminAndMiroirStoresOnServer: false,
     customFetch: fetch,
     ...overrides,
@@ -124,7 +124,7 @@ describe("runAppStackIntegrationBootstrap (Gap E B1)", () => {
     expect(setupMiroirTestMock).toHaveBeenCalledTimes(1);
   });
 
-  it("deployMiroir calls ensureMiroirPlatform with pscHelper strategy", async () => {
+  it("deployMiroir calls ensureMiroirPlatform with persistenceStoreControllerHelper strategy", async () => {
     const manager = createMockManager();
     setupMiroirTestMock.mockResolvedValue({
       domainControllerForClient: createMockDomainController(),
@@ -136,7 +136,7 @@ describe("runAppStackIntegrationBootstrap (Gap E B1)", () => {
 
     expect(ensureMiroirPlatformMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        deployStrategy: "pscHelper",
+        deployStrategy: "persistenceStoreControllerHelper",
         mode: "createIfAbsent",
         persistenceStoreControllerManager: manager,
         deployViaPscHelper: expect.any(Function),

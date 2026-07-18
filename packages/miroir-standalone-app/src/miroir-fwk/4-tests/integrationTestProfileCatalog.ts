@@ -18,7 +18,7 @@ export type UiIntegrationRuntime = "webApp" | "electron";
 
 /** How a profile is launched from the Miroir Tests UI. */
 export type UiIntegrationProfileTransport =
-  /** In-browser emulated stack — IndexedDB PSC (web + electron renderer). */
+  /** In-browser emulated stack — IndexedDB PersistenceStoreController (web + electron renderer). */
   | "browserEmulatedIndexedDb"
   /** Electron main process emulated stack — SQL / fs / mongo / indexedDb (B6-b2). */
   | "electronEmulated"

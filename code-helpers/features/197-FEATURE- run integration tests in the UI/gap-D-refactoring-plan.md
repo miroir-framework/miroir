@@ -53,7 +53,7 @@ roots, IndexedDB names, …) so CI and local dev use one matrix row per backend 
 | **`testMiroir` launcher** (`test-miroir-runner.ts`) | Routes core vs runner; profile only on runner path today | Apply profile **before** routing for any `--mode integ` run |
 | **CLI / MCP** (`setupMiroirPlatform`) | Package-local config | **Out of scope** (optional slice D9) |
 
-**Not in Gap D:** PSC→`domainController` assertions (Gap C), UI subprocess launcher (#197 Phase B),
+**Not in Gap D:** PersistenceStoreController→`domainController` assertions (Gap C), UI subprocess launcher (#197 Phase B),
 hostMode / embedded bootstrap (Gap A).
 
 ---
@@ -215,7 +215,7 @@ standalone-app or thin forwarder for one release; remove in D7.
 | Single env prefix replacing both `MIROIR_TEST_*` and `VITE_MIROIR_*` | Breaking; keep both as override layers |
 | Transformer integ loading full `MiroirConfigClient` for test execution | Different playfield (`testApplication`); only **defaults** converge |
 | Forcing app-stack tests off JSON configs | `loadTestConfigFiles` remains canonical for emulated server wiring |
-| Real-server profiles for transformer integ | Transformer uses local PSC, not HTTP — out of scope |
+| Real-server profiles for transformer integ | Transformer uses local PersistenceStoreController, not HTTP — out of scope |
 | `setupMiroirPlatform` (CLI/MCP) profile table | Optional D9; separate config files today |
 | Auto-rewrite developer-specific paths inside JSON files | Document “fix `filesystemDeploymentRootDirectory` locally”; CI presets use portable paths |
 

@@ -273,7 +273,7 @@ export async function runAppStackIntegrationBootstrap(
       deployStrategy: deployMiroirStrategy,
       persistenceStoreControllerManager,
       deployViaPscHelper:
-        deployMiroirStrategy === "pscHelper"
+        deployMiroirStrategy === "persistenceStoreControllerHelper"
           ? async () => {
               const wrapped = await createMiroirDeploymentGetPersistenceStoreController(
                 miroirConfig,
@@ -284,7 +284,7 @@ export async function runAppStackIntegrationBootstrap(
               );
               if (!wrapped?.localMiroirPersistenceStoreController) {
                 throw new Error(
-                  "runAppStackIntegrationBootstrap: Miroir deployment PSC missing after deployMiroir",
+                  "runAppStackIntegrationBootstrap: Miroir deployment PersistenceStoreController missing after deployMiroir",
                 );
               }
             }
@@ -319,7 +319,7 @@ export async function runAppStackIntegrationBootstrap(
       );
     if (!libraryPersistenceStoreController) {
       throw new Error(
-        "runAppStackIntegrationBootstrap: library PSC missing after deployLibrary",
+        "runAppStackIntegrationBootstrap: library PersistenceStoreController missing after deployLibrary",
       );
     }
   }

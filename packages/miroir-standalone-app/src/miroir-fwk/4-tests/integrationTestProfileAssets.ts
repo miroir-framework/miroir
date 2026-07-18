@@ -75,7 +75,7 @@ const BROWSER_SAFE_EMULATED_SERVER_TYPES = new Set(['indexedDb', 'bundled']);
 
 /**
  * True when every deployment storage section is indexedDb or bundled
- * (safe for webApp PSC factories — no filesystem/sql/mongo).
+ * (safe for webApp PersistenceStoreController factories — no filesystem/sql/mongo).
  * Admin may be bundled (seeded entity tables); Miroir/Library stay indexedDb.
  */
 export function isBrowserCompatibleEmulatedIndexedDbConfig(config: MiroirConfigClient): boolean {

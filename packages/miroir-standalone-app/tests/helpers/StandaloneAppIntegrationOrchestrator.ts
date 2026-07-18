@@ -77,7 +77,7 @@ function createStandaloneAppSession(
   switch (kind) {
     case "transformer":
       return new IntegrationTestSession(sessionSpecificOptions as TestSessionForIntegOptions);
-    case "appStackPsc": {
+    case "appStackPersistenceStoreController": {
       const appStackOptions = sessionSpecificOptions as AppStackSessionOptions;
       return new AppStackIntegrationTestSession(context.miroirConfig, {
         ...appStackOptions,

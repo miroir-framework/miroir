@@ -18,8 +18,8 @@ describe("IntegrationTestBootstrap (Gap E B0)", () => {
     expect(phases).toEqual([]);
   });
 
-  it("appStackPsc session wires emulated stack and deploys miroir + library", () => {
-    expect(getBootstrapPhasesForSessionKind("appStackPsc")).toEqual([
+  it("appStackPersistenceStoreController session wires emulated stack and deploys miroir + library", () => {
+    expect(getBootstrapPhasesForSessionKind("appStackPersistenceStoreController")).toEqual([
       "wireEmulatedStack",
       "deployMiroir",
       "deployLibrary",
@@ -72,7 +72,7 @@ describe("IntegrationTestBootstrap (Gap E B0)", () => {
 describe("IntegrationTestBootstrap host mode (Gap A A0)", () => {
   const allKinds: IntegrationTestSessionKind[] = [
     "transformer",
-    "appStackPsc",
+    "appStackPersistenceStoreController",
     "domainController",
     "runner",
   ];
@@ -85,7 +85,7 @@ describe("IntegrationTestBootstrap host mode (Gap A A0)", () => {
 
   it("embeddedCapable is false for transformer and true for app-stack session kinds", () => {
     expect(getEmbeddedCapableForSessionKind("transformer")).toBe(false);
-    expect(getEmbeddedCapableForSessionKind("appStackPsc")).toBe(true);
+    expect(getEmbeddedCapableForSessionKind("appStackPersistenceStoreController")).toBe(true);
     expect(getEmbeddedCapableForSessionKind("domainController")).toBe(true);
     expect(getEmbeddedCapableForSessionKind("runner")).toBe(true);
   });
@@ -105,7 +105,7 @@ describe("IntegrationTestBootstrap host mode (Gap A A0)", () => {
 describe("IntegrationTestBootstrap playfield (Gap B L0)", () => {
   it("maps every session kind to exactly one playfield", () => {
     expect(getPlayfieldForSessionKind("transformer")).toBe("testApplication");
-    expect(getPlayfieldForSessionKind("appStackPsc")).toBe("libraryDeployment");
+    expect(getPlayfieldForSessionKind("appStackPersistenceStoreController")).toBe("libraryDeployment");
     expect(getPlayfieldForSessionKind("runner")).toBe("libraryDeployment");
     expect(() => getPlayfieldForSessionKind("domainController")).toThrow(
       /getPlayfieldForDomainControllerProfile/,
@@ -117,9 +117,9 @@ describe("IntegrationTestBootstrap playfield (Gap B L0)", () => {
   });
 
   it("describeIntegrationTestSession includes playfield for all kinds", () => {
-    expect(describeIntegrationTestSession("appStackPsc")).toEqual({
-      kind: "appStackPsc",
-      bootstrapPhases: getBootstrapPhasesForSessionKind("appStackPsc"),
+    expect(describeIntegrationTestSession("appStackPersistenceStoreController")).toEqual({
+      kind: "appStackPersistenceStoreController",
+      bootstrapPhases: getBootstrapPhasesForSessionKind("appStackPersistenceStoreController"),
       playfield: "libraryDeployment",
       defaultHostMode: "isolated",
       embeddedCapable: true,

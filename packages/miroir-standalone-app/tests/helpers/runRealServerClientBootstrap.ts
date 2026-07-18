@@ -124,7 +124,7 @@ export async function runRealServerClientBootstrap(
       miroirSelfApplicationUuid,
       mode: platformEnsureMode,
       deployStrategy: "compositeAction",
-      // Real-server clients have no local Miroir PSC; createIfAbsent always deploys via REST.
+      // Real-server clients have no local Miroir PersistenceStoreController; createIfAbsent always deploys via REST.
       persistenceStoreControllerManager: undefined,
       // Admin is already open on the shared miroir-server.
       skipOpenAdminStore: true,

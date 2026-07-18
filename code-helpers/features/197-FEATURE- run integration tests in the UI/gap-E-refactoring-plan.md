@@ -33,7 +33,7 @@ Gap E **does not** implement library playfield idempotency (Gap B) or UI skip-de
 | **DomainController React** | `3_controllers/DomainController.React.Model.undo-redo.test.tsx` | `setupMiroirTest` + manual miroir + library `createDeploymentCompositeAction` | `DomainControllerIntegrationTestSession` (`bootstrap: "miroirAndLibrary"`) |
 | **Legacy runner integ** | `4_view/Runner_Miroir.integ.test.tsx` | `setupMiroirTestAndDeployMiroirApp` + `beforeEachTest` | `RunnerTestSession` (refactored internals only) |
 | **MiroirTest runner (#197)** | `miroir-runner-tests.integ.test.ts` | `RunnerTestSession` | unchanged call site; shared bootstrap inside session |
-| **4_storage PSC** | `4_storage/*.integ.test.tsx` | `AppStackIntegrationTestSession` | refactor to shared bootstrap (no test file edits) |
+| **4_storage PersistenceStoreController** | `4_storage/*.integ.test.tsx` | `AppStackIntegrationTestSession` | refactor to shared bootstrap (no test file edits) |
 | **Transformer integ** | `miroir-core-tests.integ.test.ts` | `IntegrationTestSession` | optional orchestrator wiring only |
 | **Applicative library (dormant)** | `applicative.Library.*.integ.test.tsx` (commented out) | — | **Out of scope** until files are re-enabled |
 
@@ -86,7 +86,7 @@ MiroirTestExecutionEnvironment { domainController, applicationDeploymentMap,
 
 | Session class | `bootstrap` phases | `testApplicationUuid` |
 |---------------|-------------------|------------------------|
-| `IntegrationTestSession` | local PSC path (unchanged) | `testApplication` synthetic UUID |
+| `IntegrationTestSession` | local PersistenceStoreController path (unchanged) | `testApplication` synthetic UUID |
 | `AppStackIntegrationTestSession` | wire + deployMiroir + deployLibrary | `selfApplicationLibrary` |
 | `DomainControllerIntegrationTestSession` | wire + deployMiroir [+ deployLibrary] [+ resetMiroir] | `selfApplicationLibrary` when library deployed, else miroir self-app |
 | `RunnerTestSession` | wire + deployMiroir (via shared bootstrap) | runner test app UUID |
@@ -112,7 +112,7 @@ export type IntegrationTestBootstrapPhase =
 
 export type IntegrationTestSessionKind =
   | "transformer"
-  | "appStackPsc"
+  | "appStackPersistenceStoreController"
   | "domainController"
   | "runner";
 
@@ -242,7 +242,7 @@ export class DomainControllerIntegrationTestSession implements RunnerTestSession
 |---------------------|--------|
 | `ensureLibraryPlayfield` idempotent helper | Gap B |
 | `skipMiroirAndAdminDeployment` / host `domainController` injection | Gap A |
-| Migrating PSC assertions to `domainController` | Gap C-assertions (deferred) |
+| Migrating PersistenceStoreController assertions to `domainController` | Gap C-assertions (deferred) |
 | Moving `setupMiroirTest` into `miroir-core` | Keeps `miroir-core` free of react / emulated-server deps |
 | Re-enabling commented `applicative.Library.*` tests | Dormant files; separate ticket |
 | Unifying `MIROIR_TEST_*` and `VITE_MIROIR_*` | Gap D |
@@ -286,7 +286,7 @@ npm run testByFile -w miroir-core -- MiroirTestTools
 **B1-Red/Green:** `appStackIntegrationBootstrap.ts` + `appStackIntegrationBootstrap.unit.test.ts` — ✅ **PASS**
 
 **B1-Refactor:** `AppStackIntegrationTestSession.initSession()` delegates to bootstrap with
-`getBootstrapPhasesForSessionKind("appStackPsc")` — ✅ **PASS**
+`getBootstrapPhasesForSessionKind("appStackPersistenceStoreController")` — ✅ **PASS**
 
 **Verify:** IntegrationTestSession.unit 12/12; ExtractorPersistenceStoreRunner.integ 11/11; transformer 243/243.
 
@@ -418,13 +418,13 @@ MIROIR_TEST_SUITES=runner_library MIROIR_TEST_MODE=integ \
 
 - Mock `IntegrationTestSessionFactory` injected into orchestrator.
 - `createSession("transformer", ctx)` delegates to factory with correct kind.
-- `describeSession("appStackPsc")` returns descriptor from `getBootstrapPhasesForSessionKind`.
+- `describeSession("appStackPersistenceStoreController")` returns descriptor from `getBootstrapPhasesForSessionKind`.
 
 **O1-Green:** — ✅
 
 - `MiroirTestIntegrationOrchestrator.ts` in miroir-core (`createDefaultMiroirTestIntegrationOrchestrator`,
   `createUnconfiguredMiroirTestIntegrationOrchestrator`).
-- `StandaloneAppIntegrationOrchestrator.ts` in standalone-app — registers transformer / appStackPsc /
+- `StandaloneAppIntegrationOrchestrator.ts` in standalone-app — registers transformer / appStackPersistenceStoreController /
   domainController / runner session constructors.
 
 **O2 — Wire entries (optional call-site cleanup)** — ✅

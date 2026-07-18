@@ -44,11 +44,11 @@ describe("MiroirPlatformPlayfield (Gap A A1)", () => {
       expect(result).toEqual({ created: true });
     });
 
-    it("createIfAbsent with pscHelper strategy calls deployViaPscHelper once", async () => {
+    it("createIfAbsent with persistenceStoreControllerHelper strategy calls deployViaPscHelper once", async () => {
       const handleCompositeAction = vi.fn();
       const deployViaPscHelper = vi.fn().mockResolvedValue(undefined);
       const params = baseEnsureParams({
-        deployStrategy: "pscHelper",
+        deployStrategy: "persistenceStoreControllerHelper",
         deployViaPscHelper,
         domainController: { handleCompositeAction } as unknown as DomainControllerInterface,
       });

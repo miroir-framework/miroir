@@ -50,11 +50,11 @@ the default regression anchor.
 |--------|-------------------------|--------------|
 | **App-stack integ** (`4_storage`, CRUD, undo-redo) | Per-file `miroirAppStartup` + session `initSession` → `wireEmulatedStack` + `deployMiroir` | Orchestrator `hostMode: "embedded"` skips phases; inject host env |
 | **Runner MiroirTest** | `RunnerTestSession` → bootstrap `runner` phases | Same context flags |
-| **Transformer integ** | `IntegrationTestSession` — local PSC, no `wireEmulatedStack` | **Out of embedded scope** — always `isolated`; synthetic `testApplication` |
+| **Transformer integ** | `IntegrationTestSession` — local PersistenceStoreController, no `wireEmulatedStack` | **Out of embedded scope** — always `isolated`; synthetic `testApplication` |
 | **CLI / MCP** | `setupMiroirPlatform` (parallel to `setupMiroirTest`) | Optional slice — align with `ensureMiroirPlatform` helper |
 | **Live UI** (`miroirAppStartup`) | Already provisioned | Consumer of `embedded` mode via #197 Phase B |
 
-**Not in Gap A:** library playfield idempotency (Gap B ✅), PSC assertion migration (Gap C),
+**Not in Gap A:** library playfield idempotency (Gap B ✅), PersistenceStoreController assertion migration (Gap C),
 `MIROIR_TEST_*` / `VITE_MIROIR_*` unification (Gap D), transformer ↔ library UUID convergence.
 
 ---
@@ -94,7 +94,7 @@ IntegrationTestOrchestratorContext
         ▼
 runAppStackIntegrationBootstrap(phases, hostContext)
   if hostMode === "embedded" && hostExecutionEnvironment:
-    skip wireEmulatedStack — use injected domainController + PSC manager
+    skip wireEmulatedStack — use injected domainController + PersistenceStoreController manager
   for each phase in phases filtered by skipBootstrapPhases:
     deployMiroir → ensureMiroirPlatform({ mode: platformEnsureMode ?? createIfAbsent })
     deployLibrary → ensureLibraryPlayfield({ mode: playfieldMode … })  // Gap B
@@ -173,7 +173,7 @@ export async function ensureMiroirPlatform(params): Promise<{ created: boolean }
 
 | Mode | Behaviour |
 |------|-----------|
-| `createIfAbsent` | PSC / composite deploy only when miroir deployment record absent |
+| `createIfAbsent` | PersistenceStoreController / composite deploy only when miroir deployment record absent |
 | `requireExisting` | throw if miroir deployment not initialised |
 | `skip` | no-op |
 
@@ -216,7 +216,7 @@ Each session forwards orchestrator context fields into `runAppStackIntegrationBo
 | `AppStackIntegrationTestSession` | `hostMode`, `platformEnsureMode`, `playfieldMode`, `hostExecutionEnvironment`, `skipBootstrapPhases` |
 | `DomainControllerIntegrationTestSession` | same |
 | `RunnerTestSession` | same |
-| `IntegrationTestSession` | **ignores** embedded flags (local PSC path) |
+| `IntegrationTestSession` | **ignores** embedded flags (local PersistenceStoreController path) |
 
 Optional **readonly** on sessions:
 
@@ -281,7 +281,7 @@ no `it()` body edits.
 **A0-Red:** `IntegrationTestBootstrap.unit.test.ts`
 
 - `defaultHostMode` is `"isolated"` for all kinds.
-- `embeddedCapable` is `false` for `transformer`, `true` for `appStackPsc`, `domainController`, `runner`.
+- `embeddedCapable` is `false` for `transformer`, `true` for `appStackPersistenceStoreController`, `domainController`, `runner`.
 
 **A0-Green:** Add `IntegrationTestHostMode`, extend `IntegrationTestSessionDescriptor`, export from `index.ts`.
 
@@ -295,7 +295,7 @@ no `it()` body edits.
 
 | Case | Expectation |
 |------|-------------|
-| `createIfAbsent`, absent | deploy composite / PSC path called once |
+| `createIfAbsent`, absent | deploy composite / PersistenceStoreController path called once |
 | `createIfAbsent`, present | no-op; `{ created: false }` |
 | `requireExisting`, absent | throws descriptive error |
 | `skip` | no-op |
@@ -355,7 +355,7 @@ npm run testByFile -w miroir-standalone-app -- DomainControllerIntegrationTestSe
 **A5-Red:** `embeddedIntegrationBootstrap.unit.test.ts` (standalone-app)
 
 - Mock host `domainController` + `persistenceStoreControllerManager`.
-- `runAppStackIntegrationBootstrap({ hostMode: "embedded", phases: appStackPsc phases, platformEnsureMode: "requireExisting", playfieldMode: "requireExisting" })` completes without `setupMiroirTest` / deploy composite spies.
+- `runAppStackIntegrationBootstrap({ hostMode: "embedded", phases: appStackPersistenceStoreController phases, platformEnsureMode: "requireExisting", playfieldMode: "requireExisting" })` completes without `setupMiroirTest` / deploy composite spies.
 
 **A5-Green:** Implementation hardened from A2–A4.
 
@@ -429,7 +429,7 @@ Wraps `createStandaloneAppIntegrationOrchestrator().createSession(kind, {
 | Item | Reason |
 |------|--------|
 | UI subprocess launcher / mutex | #197 Phase B |
-| Transformer integ embedded mode | Local PSC / synthetic UUIDs — always isolated |
+| Transformer integ embedded mode | Local PersistenceStoreController / synthetic UUIDs — always isolated |
 | Skip `beforeEach` data resets | Test isolation — resets stay; only platform **create** is skipped |
 | Merge `setupMiroirPlatform` (CLI) and `setupMiroirTest` (tests) into one module | Large blast radius; optional A7 only |
 | Real-server (`emulateServer: false`) embedded mode | Host is always emulated or IPC in scope; real-server tests stay CLI-only |

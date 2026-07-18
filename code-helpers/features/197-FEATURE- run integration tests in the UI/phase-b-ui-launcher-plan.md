@@ -25,7 +25,7 @@ The parent plan and gap docs sometimes conflate **data isolation** with **Vitest
 
 **In the browser there is no meaningful “spawn”.** The UI action is **async**: acquire run lock → bootstrap ephemeral session → execute leaves → collect results → teardown stores → release lock. Same JavaScript realm; different **data plane**.
 
-Vitest subprocess remains a **valid CLI/dev transport** (already built) and an **optional Phase B+ launcher** for PSC-direct `4_storage` suites that require Node-side `PersistenceStoreControllerManager` access. It is **not** the primary architectural model for domainController-based MiroirTest integ from the UI.
+Vitest subprocess remains a **valid CLI/dev transport** (already built) and an **optional Phase B+ launcher** for PersistenceStoreController-direct `4_storage` suites that require Node-side `PersistenceStoreControllerManager` access. It is **not** the primary architectural model for domainController-based MiroirTest integ from the UI.
 
 ### 1.2 Present architecture (after Phase R)
 
@@ -147,7 +147,7 @@ flowchart LR
 | **Gap A `hostMode`** | **`isolated` = data/bootstrap isolation**, not subprocess |
 | **Gap B `playfieldMode`** | `createIfAbsent` for UI integ (fresh library deployment per runTarget); `requireExisting` only for embedded advanced path |
 | **R6 run target** | Launcher passes `runTarget` + `suite.testParams` into `RunnerTestSession`; UI offers **Ephemeral run** (fresh UUID v4) vs **Pinned suite targets** (JSON) toggle (**D2 locked**) |
-| **Out of scope** | PSC-direct `4_storage` Vitest files — defer unless optional subprocess catalog entry (Phase B+) |
+| **Out of scope** | PersistenceStoreController-direct `4_storage` Vitest files — defer unless optional subprocess catalog entry (Phase B+) |
 
 ### 1.5 Code seams Phase B must touch
 
@@ -175,7 +175,7 @@ flowchart LR
 
 ### Out of scope (Phase B)
 
-- PSC-direct `4_storage` suites in-browser (no `PersistenceStoreController` in UI thread) — optional **subprocess catalog** in Phase B+ ([integ-test-setup-gaps.md §4.3](./integ-test-setup-gaps.md))
+- PersistenceStoreController-direct `4_storage` suites in-browser (no `PersistenceStoreController` in UI thread) — optional **subprocess catalog** in Phase B+ ([integ-test-setup-gaps.md §4.3](./integ-test-setup-gaps.md))
 - Migrating remaining legacy `Runner_*` imperative files (G8 — parallel track)
 - **`hostMode: "embedded"`** as default — optional gated dev feature only (B4)
 
@@ -471,7 +471,7 @@ npm run testMiroir -w miroir-standalone-app -- \
 
 ---
 
-### B9 — (Optional Phase B+) Subprocess launcher for PSC suites
+### B9 — (Optional Phase B+) Subprocess launcher for PersistenceStoreController suites
 
 **Not default.** UI menu entry that shells `npm run testByFile …` via desktop wrapper or documented dev-only command — out of core Phase B unless product requests.
 
@@ -483,7 +483,7 @@ npm run testMiroir -w miroir-standalone-app -- \
 |--------------|--------------|---------|-------------------|
 | `runnerTest` leaves | `runner` | `RunnerTestSession` | `miroirRunnerTestSuiteRegistry` |
 | `transformerTest` + integ | `transformer` | `IntegrationTestSession` | transformer suite registry / deployment exports |
-| PSC Vitest files | `appStackPsc` | subprocess only (B9) | `testByFile` filters |
+| PersistenceStoreController Vitest files | `appStackPersistenceStoreController` | subprocess only (B9) | `testByFile` filters |
 
 ```mermaid
 flowchart TD
@@ -507,7 +507,7 @@ Integration tests use an emulated in-process server (`setupMiroirTest`) or a **r
 
 | Runtime | Detect | Emulated IndexedDB | Emulated SQL/fs/mongo | Real server (`realServer-*`) |
 |---------|--------|--------------------|------------------------|------------------------------|
-| **webApp** (browser) | no `electronAPI.callMiroirIpc` | ✅ native PSC | ❌ | ✅ when B6-c (HTTP client only) |
+| **webApp** (browser) | no `electronAPI.callMiroirIpc` | ✅ native PersistenceStoreController | ❌ | ✅ when B6-c (HTTP client only) |
 | **electron** (desktop) | `electronAPI.callMiroirIpc` | ✅ | ✅ main process owns emulated stack (same as app today) | ✅ when B6-c |
 | **nodeTest** (Vitest RTL) | test harness | ✅ | ✅ store startups in `beforeAll` | ✅ with server up |
 
@@ -541,7 +541,7 @@ Gap D profiles use filesystem paths in Node (`loadTestConfigFiles`). UI launcher
 
 | # | Gap | Current state | Needed for B6-c |
 |---|-----|---------------|-----------------|
-| G-UI-1 | **`runAppStackIntegrationBootstrap` requires `emulateServer: true`** | Throws if `emulateServer: false` | New phase or parallel bootstrap: **client-only wire** to `rootApiUrl` (HTTP REST), skip in-process server PSC |
+| G-UI-1 | **`runAppStackIntegrationBootstrap` requires `emulateServer: true`** | Throws if `emulateServer: false` | New phase or parallel bootstrap: **client-only wire** to `rootApiUrl` (HTTP REST), skip in-process server PersistenceStoreController |
 | G-UI-2 | **Browser orchestrator imports `RunnerTestSession` from `tests/helpers/`** | Node store startups assumed in session init | Browser-safe session factory in `src/` OR lazy server path that never calls Node-only stores in browser |
 | G-UI-3 | **No store-section registration in browser app startup** | `index.tsx` does not call `miroirPostgresStoreSectionStartup` etc. | IndexedDB section may register in app bundle; SQL/fs/mongo only on server for real-server path |
 | G-UI-4 | **Real-server profiles absent from Gap D `INTEGRATION_TEST_PROFILES`** | Only emulated profiles in Node catalog | Extend UI catalog (`integrationTestProfileCatalog.ts`) — done; wire loader + bootstrap |
@@ -557,7 +557,7 @@ Reference configs: `tests/miroirConfig.test-realServer-sql.json`, `realServer-in
 
 | # | Decision | Locked |
 |---|----------|--------|
-| **D1** | **Primary transport** | **In-browser async orchestrator** — data-isolated session in the same JS realm; Vitest subprocess **not** the UI model (optional B9 for PSC-only dev catalog) |
+| **D1** | **Primary transport** | **In-browser async orchestrator** — data-isolated session in the same JS realm; Vitest subprocess **not** the UI model (optional B9 for PersistenceStoreController-only dev catalog) |
 | **D2** | **UI `runTarget` policy** | **User toggle:** “Ephemeral run” → always `generateRunnerTestRunTarget()` (fresh UUID v4); “Pinned suite targets” → `resolveRunnerTestRunTarget({ suite })` (honor JSON pins, generate when unpinned) |
 | **D3** | **First UI suites** | **`runner_library` + transformer integ** (e.g. `miroirCoreTransformers`) — B3 runner pilot, B7 transformer in same Phase B scope (not deferred post-done) |
 | **D4** | Config / runtime | **webApp:** indexedDb emulated + real-server (B6-c). **electron:** all emulatedServer-* + real-server. **CI profiles:** never in picker |

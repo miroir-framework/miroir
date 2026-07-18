@@ -44,14 +44,14 @@ describe("StandaloneAppIntegrationOrchestrator (Gap B L7)", () => {
     expect(orchestrator.describeSession("transformer").playfield).toBe(
       getPlayfieldForSessionKind("transformer"),
     );
-    expect(orchestrator.describeSession("appStackPsc").playfield).toBe("libraryDeployment");
+    expect(orchestrator.describeSession("appStackPersistenceStoreController").playfield).toBe("libraryDeployment");
     expect(orchestrator.describeSession("runner").playfield).toBe("libraryDeployment");
   });
 
-  it("forwards context playfieldMode to appStackPsc bootstrap as libraryPlayfieldEnsureMode", async () => {
+  it("forwards context playfieldMode to appStackPersistenceStoreController bootstrap as libraryPlayfieldEnsureMode", async () => {
     const orchestrator = createStandaloneAppIntegrationOrchestrator();
     const session = orchestrator.createSession(
-      "appStackPsc",
+      "appStackPersistenceStoreController",
       { miroirConfig, playfieldMode: "requireExisting" },
       appStackSessionOptions,
     );
@@ -68,7 +68,7 @@ describe("StandaloneAppIntegrationOrchestrator (Gap B L7)", () => {
   it("session-specific libraryPlayfieldEnsureMode wins over context playfieldMode", async () => {
     const orchestrator = createStandaloneAppIntegrationOrchestrator();
     const session = orchestrator.createSession(
-      "appStackPsc",
+      "appStackPersistenceStoreController",
       { miroirConfig, playfieldMode: "requireExisting" },
       { ...appStackSessionOptions, libraryPlayfieldEnsureMode: "createIfAbsent" },
     );
@@ -98,10 +98,10 @@ describe("StandaloneAppIntegrationOrchestrator (Gap A A3)", () => {
     });
   });
 
-  it("forwards hostMode and hostExecutionEnvironment to appStackPsc bootstrap", async () => {
+  it("forwards hostMode and hostExecutionEnvironment to appStackPersistenceStoreController bootstrap", async () => {
     const orchestrator = createStandaloneAppIntegrationOrchestrator();
     const session = orchestrator.createSession(
-      "appStackPsc",
+      "appStackPersistenceStoreController",
       {
         miroirConfig,
         hostMode: "embedded",
@@ -157,7 +157,7 @@ describe("StandaloneAppIntegrationOrchestrator (Gap A A3)", () => {
   it("hostApplicationDeploymentMap overrides session applicationDeploymentMap", async () => {
     const orchestrator = createStandaloneAppIntegrationOrchestrator();
     const session = orchestrator.createSession(
-      "appStackPsc",
+      "appStackPersistenceStoreController",
       { miroirConfig, hostApplicationDeploymentMap: hostDeploymentMap },
       appStackSessionOptions,
     );

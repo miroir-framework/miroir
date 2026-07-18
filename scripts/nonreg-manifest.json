@@ -11,6 +11,36 @@
       "argv": ["npm", "run", "testMiroir", "-w", "miroir-core", "--", "--mode", "unit"]
     },
     {
+      "id": "unit-RunAllMiroirTestsButton",
+      "tier": "unit",
+      "title": "T2 — RunAllMiroirTestsButton runMode (unit/integ batch)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "RunAllMiroirTestsButton.unit"
+      ]
+    },
+    {
+      "id": "unit-MiroirTestListDisplay",
+      "tier": "unit",
+      "title": "T3 — list dual bar (unit label + conditional integ)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "MiroirTestListDisplay.unit"
+      ]
+    },
+    {
+      "id": "unit-MiroirTestDisplay",
+      "tier": "unit",
+      "title": "T4 — details mixed / runner / unit-only chrome",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "MiroirTestDisplay.unit"
+      ]
+    },
+    {
       "id": "integ-transformer-miroirCoreTransformers",
       "tier": "default",
       "title": "MiroirTest integ — miroirCoreTransformers",

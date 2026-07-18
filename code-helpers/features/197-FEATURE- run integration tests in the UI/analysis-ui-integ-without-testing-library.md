@@ -39,7 +39,7 @@ Evidence points:
 
 ### Critical nuance
 
-`RunnerTestSession` uses `deployMiroirStrategy: "compositeAction"`. The imported helper `createMiroirDeploymentGetPersistenceStoreController` runs **only** for `"pscHelper"`. So for Return Book:
+`RunnerTestSession` uses `deployMiroirStrategy: "compositeAction"`. The imported helper `createMiroirDeploymentGetPersistenceStoreController` runs **only** for `"persistenceStoreControllerHelper"`. So for Return Book:
 
 - **Module evaluate:** yes (pulls RTL)  
 - **Runtime call:** no  
@@ -92,7 +92,7 @@ These must keep importing RTL **from the test file** (or `tests-utils.tsx`). The
 
 Current UI registry only exposes `runner_library` (`uiIntegrationTestRunnerSuiteRegistry.ts`). Launcher rejects other session kinds.
 
-### 4.3 Node / PSC-direct (never MiroirTest UI for Phase B)
+### 4.3 Node / PersistenceStoreController-direct (never MiroirTest UI for Phase B)
 
 `4_storage` / filesystem / SQL driver suites that need Node PersistenceStoreControllerManager or Node-only factories. Keep CLI/Vitest. Do not put them in the UI registry.
 
@@ -104,7 +104,7 @@ Current UI registry only exposes `runner_library` (`uiIntegrationTestRunnerSuite
 |-------|------|
 | B3 Node launcher | `runUiIntegrationTestSuiteInNode` → full orchestrator → `RunnerTestSession` → bootstrap |
 | CLI / `Runner_Miroir.integ.test.tsx` | direct `RunnerTestSession` |
-| Storage PSC | often imports constants/teardown from `tests-utils` |
+| Storage PersistenceStoreController | often imports constants/teardown from `tests-utils` |
 
 After a split, Node can:
 
@@ -131,9 +131,9 @@ Point `appStackIntegrationBootstrap.ts` at the `.ts` helper.
 | Vitest React suites unchanged | — |
 | Matches “compositeAction never needed that import” | — |
 
-### Rank 2 — Lazy import inside `pscHelper` only
+### Rank 2 — Lazy import inside `persistenceStoreControllerHelper` only
 
-`await import(…)` only when `deployMiroirStrategy === "pscHelper"`. Alone, removes RTL from runner path; still prefer Rank 1 for cleanliness.
+`await import(…)` only when `deployMiroirStrategy === "persistenceStoreControllerHelper"`. Alone, removes RTL from runner path; still prefer Rank 1 for cleanliness.
 
 ### Rank 3 — Relocate browser-safe session + bootstrap under `src/miroir-fwk/4-tests/`
 

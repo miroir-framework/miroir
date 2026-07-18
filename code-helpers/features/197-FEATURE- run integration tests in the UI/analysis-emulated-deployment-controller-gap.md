@@ -60,7 +60,7 @@ Log (~21:08, `preLendBookForReturn`):
 3. Resolved `createInstance` still had `"application": "5af03c98-…"`.  
 4. Saga: `deploymentUuid = map[application]` → `undefined` → “could not find controller for deployment: undefined”.
 
-So PSC registration succeeded; **model identity did not follow the ephemeral deployment**.
+So PersistenceStoreController registration succeeded; **model identity did not follow the ephemeral deployment**.
 
 Persistence path (unchanged fact):
 
@@ -303,7 +303,7 @@ These remain real but are **downstream** of remapping:
 
 | ID | Gap |
 |----|-----|
-| D-SEC-1 | Dual DomainController / emulateServer vs realServer (isolated stack ≠ host Library PSC) |
+| D-SEC-1 | Dual DomainController / emulateServer vs realServer (isolated stack ≠ host Library PersistenceStoreController) |
 | D-SEC-2 | Fail-fast when `application ∉ map` (message should include application uuid + map keys) |
 | D-SEC-3 | `duplicateApplicationModel` incomplete — replace/extend via T1∘T2 rather than paper over |
 | D-SEC-4 | RTL / `tests-utils` browser pull — see companion analysis |

@@ -60,8 +60,8 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
     };
     const orchestrator = createDefaultMiroirTestIntegrationOrchestrator(factory);
 
-    expect(orchestrator.describeSession("appStackPsc")).toEqual(
-      describeIntegrationTestSession("appStackPsc"),
+    expect(orchestrator.describeSession("appStackPersistenceStoreController")).toEqual(
+      describeIntegrationTestSession("appStackPersistenceStoreController"),
     );
   });
 
@@ -72,7 +72,7 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
 
     const catalogKinds: IntegrationTestSessionKind[] = [
       "transformer",
-      "appStackPsc",
+      "appStackPersistenceStoreController",
       "runner",
     ];
 
@@ -84,7 +84,7 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
     }
 
     expect(orchestrator.describeSession("transformer").playfield).toBe("testApplication");
-    expect(orchestrator.describeSession("appStackPsc").playfield).toBe("libraryDeployment");
+    expect(orchestrator.describeSession("appStackPersistenceStoreController").playfield).toBe("libraryDeployment");
     expect(orchestrator.describeSession("runner").playfield).toBe("libraryDeployment");
   });
 
@@ -105,10 +105,10 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
       skipBootstrapPhases: ["deployMiroir"] as const,
     };
 
-    orchestrator.createSession("appStackPsc", context, { adminDeployment: {} });
+    orchestrator.createSession("appStackPersistenceStoreController", context, { adminDeployment: {} });
 
     expect(factory.createSession).toHaveBeenCalledWith({
-      kind: "appStackPsc",
+      kind: "appStackPersistenceStoreController",
       context,
       sessionSpecificOptions: { adminDeployment: {} },
     });

@@ -7,7 +7,7 @@ export type IntegrationTestBootstrapPhase =
 
 export type IntegrationTestSessionKind =
   | "transformer"
-  | "appStackPsc"
+  | "appStackPersistenceStoreController"
   | "domainController"
   | "runner";
 
@@ -37,7 +37,7 @@ export function getPlayfieldForSessionKind(
   switch (kind) {
     case "transformer":
       return "testApplication";
-    case "appStackPsc":
+    case "appStackPersistenceStoreController":
     case "runner":
       return "libraryDeployment";
     case "domainController":
@@ -70,7 +70,7 @@ export function getEmbeddedCapableForSessionKind(
   switch (kind) {
     case "transformer":
       return false;
-    case "appStackPsc":
+    case "appStackPersistenceStoreController":
     case "domainController":
     case "runner":
       return true;
@@ -83,7 +83,7 @@ export function getBootstrapPhasesForSessionKind(
   switch (kind) {
     case "transformer":
       return [];
-    case "appStackPsc":
+    case "appStackPersistenceStoreController":
       return ["wireEmulatedStack", "deployMiroir", "deployLibrary"];
     case "domainController":
       throw new Error(

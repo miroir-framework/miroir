@@ -11,7 +11,7 @@ Miroir has three test layers:
 | Layer | Location | Launcher | Store / runtime |
 |-------|----------|----------|-----------------|
 | **Unit** | `miroir-core` | `testMiroir` / `testByFile` | In-memory, no persistence |
-| **MiroirTest integration** | `miroir-standalone-app` | `testMiroir` (`MIROIR_TEST_*`) | `IntegrationTestSession` — direct PSC / domainController |
+| **MiroirTest integration** | `miroir-standalone-app` | `testMiroir` (`MIROIR_TEST_*`) | `IntegrationTestSession` — direct PersistenceStoreController / domainController |
 | **App-stack integration** | `miroir-standalone-app` | `testByFile` (`VITE_MIROIR_*`) | `setupMiroirTest` — emulated or real HTTPS server |
 
 **MiroirTest** suites (transformer, function-call, query, runner) are defined as deployment JSON entities and share runners in `miroir-core`. **App-stack** tests are hand-written Vitest files that exercise `DomainController`, persistence stores, extractors, and React views against a full client/server stack configured via JSON files under `tests/miroirConfig.test-*.json`.
@@ -42,7 +42,7 @@ npm run nonreg -- --tier full --run-all
 | Tier | Contents |
 |------|----------|
 | `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` |
-| `default` | `unit` + MiroirTest integ (`miroirCoreTransformers`, `runner_library`) + curated app-stack (`DomainController.integ`, PSC, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
+| `default` | `unit` + MiroirTest integ (`miroirCoreTransformers`, `runner_library`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
 | `full` | `default` + deployment `modelValidation` packages |
 
 Modes: `--run-all` (continue after failures; default) or `--fail-fast`.
@@ -531,7 +531,7 @@ The final argument is a Vitest file-name filter (not a suite key). Examples:
 | `DomainController.integ` | All DomainController integration files |
 | `DomainController.integ.Data` | `DomainController.integ.Data.CRUD.test.tsx` only |
 | `DomainController.integ.Model` | Model CRUD suite |
-| `PersistenceStoreController.integ` | PSC low-level store tests |
+| `PersistenceStoreController.integ` | PersistenceStoreController low-level store tests |
 | `ExtractorPersistenceStoreRunner.integ` | Extractor runner against live store |
 | `ExtractorTemplatePersistenceStoreRunner.integ` | Extractor template runner |
 | `uiIntegrationTestLauncher.integ` | Node proof of the UI launcher (runner + transformer leaves, emulated SQL) |
@@ -601,7 +601,7 @@ Tests persistence below the domain layer, including the persistence controller a
 
 | File | Setup | Focus |
 |------|-------|-------|
-| `PersistenceStoreController.integ.test.tsx` | `AppStackIntegrationTestSession` | PSC open/create/read/write, model actions |
+| `PersistenceStoreController.integ.test.tsx` | `AppStackIntegrationTestSession` | PersistenceStoreController open/create/read/write, model actions |
 | `ExtractorPersistenceStoreRunner.integ.test.tsx` | `AppStackIntegrationTestSession` | `ExtractorPersistenceStoreRunner` end-to-end |
 | `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | `AppStackIntegrationTestSession` | Extractor templates against live store |
 
@@ -687,8 +687,8 @@ App-stack integration paths use **`runAppStackIntegrationBootstrap`** (`tests/he
 
 | Session class | Kind | Playfield | Typical bootstrap phases | Entry points |
 |---------------|------|-----------|--------------------------|--------------|
-| `IntegrationTestSession` | `transformer` | `testApplication` | (local PSC — no HTTP phases) | `miroir-core-tests.integ.test.ts` |
-| `AppStackIntegrationTestSession` | `appStackPsc` | `libraryDeployment` | wire + deployMiroir + deployLibrary | `4_storage/*.integ.test.tsx` |
+| `IntegrationTestSession` | `transformer` | `testApplication` | (local PersistenceStoreController — no HTTP phases) | `miroir-core-tests.integ.test.ts` |
+| `AppStackIntegrationTestSession` | `appStackPersistenceStoreController` | `libraryDeployment` | wire + deployMiroir + deployLibrary | `4_storage/*.integ.test.tsx` |
 | `DomainControllerIntegrationTestSession` | `domainController` | profile-dependent (see below) | profile-dependent | `3_controllers/DomainController.integ.*` |
 | `RunnerTestSession` | `runner` | `libraryDeployment` | wire + deployMiroir | `miroir-runner-tests.integ`, `Runner_Miroir.integ` |
 
@@ -720,7 +720,7 @@ The Miroir Tests report runs data-isolated integration sessions with `hostMode: 
 
 | Transport | Profile example | Where it runs | Notes |
 |-----------|-----------------|---------------|-------|
-| **Browser emulated IndexedDB** | `emulatedServer-indexedDb` | In-browser launcher (default) | Only emulated backend with native PSC in the browser. Bundled config is **`miroirConfig.browser-emulatedServer-indexedDb.json`** (all sections IndexedDB + placeholder `filesystemDeploymentRootDirectory` for `setupMiroirTest`). The Vitest file `miroirConfig.test-emulatedServer-indexedDb.json` still uses filesystem admin and is **CLI-only**. **No HTTPS to `miroir-server`** for this profile — network noise may be Vite loading modules. |
+| **Browser emulated IndexedDB** | `emulatedServer-indexedDb` | In-browser launcher (default) | Only emulated backend with native PersistenceStoreController in the browser. Bundled config is **`miroirConfig.browser-emulatedServer-indexedDb.json`** (all sections IndexedDB + placeholder `filesystemDeploymentRootDirectory` for `setupMiroirTest`). The Vitest file `miroirConfig.test-emulatedServer-indexedDb.json` still uses filesystem admin and is **CLI-only**. **No HTTPS to `miroir-server`** for this profile — network noise may be Vite loading modules. |
 | **CLI emulated** | `emulatedServer-sql`, `-filesystem`, `-mongodb` | `testMiroir` / `testByFile` (Node) | Postgres/filesystem/Mongo drivers register in Vitest `beforeAll` |
 | **Real server** | `realServer-sql`, `-indexedDb`, `-filesystem`, `-mongodb` | Browser client → `https://localhost:3080` (also Node proof via `uiIntegrationTestLauncher.realServer.integ`) | Requires running `miroir-server`. Select backend with `--storage` or `--profile realServer-*`. |
 
@@ -730,8 +730,8 @@ Embedded mode attaches to a running host without re-deploying meta-model stores.
 
 | Session kind | `embeddedCapable` | Notes |
 |--------------|-------------------|-------|
-| `transformer` | `false` | Local PSC / synthetic `testApplication` — always isolated |
-| `appStackPsc`, `domainController`, `runner` | `true` | App-stack sessions accept embedded host injection |
+| `transformer` | `false` | Local PersistenceStoreController / synthetic `testApplication` — always isolated |
+| `appStackPersistenceStoreController`, `domainController`, `runner` | `true` | App-stack sessions accept embedded host injection |
 
 ### Platform playfield helpers
 
@@ -791,12 +791,12 @@ const session = orchestrator.createSession("runner", {
 });
 
 // Embedded live UI host
-const embeddedSession = orchestrator.createSession("appStackPsc", {
+const embeddedSession = orchestrator.createSession("appStackPersistenceStoreController", {
   miroirConfig,
   hostMode: "embedded",
   platformEnsureMode: "requireExisting",
   playfieldMode: "requireExisting",
-  hostExecutionEnvironment: hostEnv, // domainController + PSC manager from live app
+  hostExecutionEnvironment: hostEnv, // domainController + PersistenceStoreController manager from live app
   skipBootstrapPhases: ["wireEmulatedStack", "deployMiroir"], // optional explicit filter
   hostApplicationDeploymentMap: hostEnv.applicationDeploymentMap,
 }, appStackSessionOptions);
@@ -839,7 +839,7 @@ npm run testMiroir -w miroir-standalone-app
       createStandaloneAppIntegrationOrchestrator().createSession("transformer", …)
         IntegrationTestSession.initSession()
         register store startups from MIROIR_TEST_APP/ADMIN_STORE_TYPE
-        setupMiroirDomainController (local PSC, no HTTP)
+        setupMiroirDomainController (local PersistenceStoreController, no HTTP)
         seed library entities via domainController actions
       runMiroirCoreTestsFromCLI
         loadMiroirCoreTestSuite(key)  ← deployment JSON
@@ -878,11 +878,11 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 | **Configuration** | `MIROIR_TEST_*` env vars | `VITE_MIROIR_TEST_CONFIG_FILENAME` + `VITE_MIROIR_LOG_CONFIG_FILENAME` |
 | **Test definition** | `MiroirTest` deployment JSON | Inline TypeScript (`testActions`, `it()`) |
 | **Bootstrap** | `IntegrationTestSession` via orchestrator | `DomainControllerIntegrationTestSession` / `AppStackIntegrationTestSession` / `RunnerTestSession` |
-| **HTTP layer** | None (direct PSC) | `RestClientStub` when `emulateServer: true` |
+| **HTTP layer** | None (direct PersistenceStoreController) | `RestClientStub` when `emulateServer: true` |
 | **Store layout** | Independent app + admin backends via env | Per-deployment `deploymentStorageConfig` in JSON |
 | **Reset between cases** | `testSession.beforeEach()` | Per-file `beforeEach` or composite-action `beforeEach` |
 | **Pre-flight checks** | `assertMiroirCoreIntegTestLaunchReady` | `loadTestConfigFiles` throws on missing env |
-| **Typical use** | Transformer/query regression at scale | DomainController, PSC, extractor, view integration |
+| **Typical use** | Transformer/query regression at scale | DomainController, PersistenceStoreController, extractor, view integration |
 
 Both paths ultimately drive actions through `domainController`, but the MiroirTest path bypasses the HTTP/RestClient layer and reads test cases from deployment assets, while the app-stack path exercises the same code paths the standalone UI uses (including emulated server routing).
 
@@ -922,7 +922,7 @@ npm run testMiroir -w miroir-core
 |------|------|
 | `tests/miroir-core-tests.integ.test.ts` | MiroirTest integration entry (`testMiroir`) |
 | `tests/miroir-runner-tests.integ.test.ts` | Runner MiroirTest integration entry |
-| `tests/helpers/IntegrationTestSession.ts` | Transformer + app-stack PSC sessions |
+| `tests/helpers/IntegrationTestSession.ts` | Transformer + app-stack PersistenceStoreController sessions |
 | `tests/helpers/DomainControllerIntegrationTestSession.ts` | DomainController CRUD / undo-redo bootstrap |
 | `tests/helpers/appStackIntegrationBootstrap.ts` | Shared `runAppStackIntegrationBootstrap` |
 | `tests/helpers/StandaloneAppIntegrationOrchestrator.ts` | Orchestrator implementation (all session kinds) |
@@ -941,7 +941,7 @@ npm run testMiroir -w miroir-core
 | Path | Role |
 |------|------|
 | `tests/3_controllers/DomainController.integ.*.test.tsx` | DomainController CRUD suites |
-| `tests/4_storage/PersistenceStoreController.integ.test.tsx` | PSC integration |
+| `tests/4_storage/PersistenceStoreController.integ.test.tsx` | PersistenceStoreController integration |
 | `tests/4_storage/ExtractorPersistenceStoreRunner.integ.test.tsx` | Extractor runner |
 | `tests/4_storage/ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | Extractor template runner |
 | `tests/4_view/ReportPage.integ.test.tsx` | Report view React tests |
@@ -991,7 +991,7 @@ await session.teardown();
 
 | Method | Called by | Effect |
 |--------|-----------|--------|
-| `initSession()` | vitest entry, once per file | Create store schemas, open PSC, seed library |
+| `initSession()` | vitest entry, once per file | Create store schemas, open PersistenceStoreController, seed library |
 | `beforeEach()` | vitest `beforeEach` hook | Re-run `resetModel → initModel → createEntity → createInstance` |
 | `teardown()` | vitest `afterAll` hook | Delete test schemas, close store |
 

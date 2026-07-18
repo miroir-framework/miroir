@@ -14,7 +14,7 @@ export type MiroirPlatformEnsureMode =
   | "requireExisting"
   | "skip";
 
-export type DeployMiroirStrategy = "pscHelper" | "compositeAction";
+export type DeployMiroirStrategy = "persistenceStoreControllerHelper" | "compositeAction";
 
 export type EnsureMiroirPlatformParams = {
   domainController: DomainControllerInterface;
@@ -26,7 +26,7 @@ export type EnsureMiroirPlatformParams = {
   mode: MiroirPlatformEnsureMode;
   deployStrategy: DeployMiroirStrategy;
   persistenceStoreControllerManager?: PersistenceStoreControllerManagerInterface;
-  /** Required when `deployStrategy` is `pscHelper` and deployment must be created. */
+  /** Required when `deployStrategy` is `persistenceStoreControllerHelper` and deployment must be created. */
   deployViaPscHelper?: () => Promise<void>;
   /**
    * When true, omit Admin openStore in createDeployment (real-server: Admin
@@ -71,7 +71,7 @@ async function deployMiroirPlatform(params: EnsureMiroirPlatformParams): Promise
 
   if (!params.deployViaPscHelper) {
     throw new Error(
-      "ensureMiroirPlatform: deployViaPscHelper is required when deployStrategy is pscHelper",
+      "ensureMiroirPlatform: deployViaPscHelper is required when deployStrategy is persistenceStoreControllerHelper",
     );
   }
   await params.deployViaPscHelper();

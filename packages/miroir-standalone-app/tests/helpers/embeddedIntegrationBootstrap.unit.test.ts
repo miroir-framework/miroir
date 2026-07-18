@@ -80,7 +80,7 @@ describe("embeddedIntegrationBootstrap (Gap A A5)", () => {
     ensureMiroirPlatformMock.mockResolvedValue({ created: false });
   });
 
-  it("embedded host completes appStackPsc phases without setupMiroirTest or direct deploy helpers", async () => {
+  it("embedded host completes appStackPersistenceStoreController phases without setupMiroirTest or direct deploy helpers", async () => {
     const hostDomainController = createHostDomainController();
     const hostManager = createHostManager();
 
@@ -88,10 +88,10 @@ describe("embeddedIntegrationBootstrap (Gap A A5)", () => {
       miroirConfig: baseMiroirConfig(),
       applicationDeploymentMap,
       adminDeployment,
-      phases: getBootstrapPhasesForSessionKind("appStackPsc"),
+      phases: getBootstrapPhasesForSessionKind("appStackPersistenceStoreController"),
       libraryDeploymentStorageConfiguration,
       testApplicationUuid: selfApplicationLibrary.uuid,
-      deployMiroirStrategy: "pscHelper",
+      deployMiroirStrategy: "persistenceStoreControllerHelper",
       openAdminAndMiroirStoresOnServer: false,
       customFetch: fetch,
       hostMode: "embedded",
@@ -126,10 +126,10 @@ describe("embeddedIntegrationBootstrap (Gap A A5)", () => {
       miroirConfig: baseMiroirConfig(),
       applicationDeploymentMap,
       adminDeployment,
-      phases: getBootstrapPhasesForSessionKind("appStackPsc"),
+      phases: getBootstrapPhasesForSessionKind("appStackPersistenceStoreController"),
       libraryDeploymentStorageConfiguration,
       testApplicationUuid: selfApplicationLibrary.uuid,
-      deployMiroirStrategy: "pscHelper",
+      deployMiroirStrategy: "persistenceStoreControllerHelper",
       openAdminAndMiroirStoresOnServer: false,
       customFetch: fetch,
       hostMode: "embedded",

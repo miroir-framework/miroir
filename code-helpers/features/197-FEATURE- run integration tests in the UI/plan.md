@@ -43,7 +43,7 @@ All non-component integration tests in `miroir-standalone-app` converge on `Runn
 | Session class | Kind | Entry point | Config surface | Playfield |
 |---------------|------|-------------|----------------|-----------|
 | `IntegrationTestSession` | `transformer` | `miroir-core-tests.integ.test.ts` | `MIROIR_TEST_*` or `--profile` | `testApplication` (synthetic UUIDs) |
-| `AppStackIntegrationTestSession` | `appStackPsc` | per-file `4_storage` integ | `VITE_MIROIR_*` or `--profile` | `libraryDeployment` |
+| `AppStackIntegrationTestSession` | `appStackPersistenceStoreController` | per-file `4_storage` integ | `VITE_MIROIR_*` or `--profile` | `libraryDeployment` |
 | `DomainControllerIntegrationTestSession` | `domainController` | `3_controllers` CRUD, undo-redo | `VITE_MIROIR_*` or `--profile` | profile-dependent |
 | `RunnerTestSession` | `runner` | `Runner_Miroir.integ`, `miroir-runner-tests.integ.test.ts` | `VITE_MIROIR_*` or `--profile` | `libraryDeployment` |
 
@@ -89,7 +89,7 @@ sequenceDiagram
 | Pilot instance | `miroirTest_runner_library` in deployment-library | lend + return `runnerTest` leaves (**inline JSON**, no `fixtureRef`) |
 | Ref registry (interim) | ~~`runnerTestFixtures.ts`~~ **deleted R6** → `runnerLibraryTestRegistry.ts` |
 
-**Still open for #197:** Phase B (UI launcher + reporting). Phase R complete ✅ ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)). UI runs **domainController-based** MiroirTest integ first; PSC-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
+**Still open for #197:** Phase B (UI launcher + reporting). Phase R complete ✅ ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)). UI runs **domainController-based** MiroirTest integ first; PersistenceStoreController-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
 
 ### Legacy imperative runner files (not yet on MiroirTest JSON)
 
@@ -779,7 +779,7 @@ R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTes
 
 **In scope:** domainController-based MiroirTest integ — `runner_library` + transformer integ (`runnerTest`, `transformerTest` leaves).
 
-**Deferred:** PSC-direct `4_storage` Vitest suites from UI (optional subprocess catalog B9).
+**Deferred:** PersistenceStoreController-direct `4_storage` Vitest suites from UI (optional subprocess catalog B9).
 
 **Isolation model (corrected):** **Data / dataflow isolation** — ephemeral `runTarget`, temp stores, dedicated integ activity tracker, session `teardown()`; **not** Vitest subprocess spawn in the browser. `hostMode: "isolated"` = fresh bootstrap stack in-process.
 
@@ -789,7 +789,7 @@ R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTes
 | B3–B4 | `UiIntegrationTestLauncher` + real `RunnerTestSession.teardown` |
 | B5–B6 | UI button, badges, profile picker (B6-a/b), real-server path (B6-c), **e2e proof** (B6-d) |
 | B7 | Transformer integ in same launcher — **blocked on B6-d** |
-| B8–B9 | Optional embedded troubleshooting; optional PSC subprocess catalog |
+| B8–B9 | Optional embedded troubleshooting; optional PersistenceStoreController subprocess catalog |
 
 ---
 
@@ -877,7 +877,7 @@ Plan: [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md)
 - Fixing pre-existing type `as any` in lendDocument payload
 - CI matrix for every storage backend (pilot: emulatedServer-sql only)
 - Running transformer + runner suites in a single `testMiroir` invocation across packages (future)
-- **UI launcher for PSC-direct `4_storage` suites** — persistence-layer tests keep PSC assertions by design ([Gap C-assertions](./integ-test-setup-gaps.md#42-c-assertions--persistence-tests-keep-psc-by-design)); defer to follow-up issue or Phase B+ (Vitest subprocess catalog entry only)
+- **UI launcher for PersistenceStoreController-direct `4_storage` suites** — persistence-layer tests keep PersistenceStoreController assertions by design ([Gap C-assertions](./integ-test-setup-gaps.md#42-c-assertions--persistence-tests-keep-psc-by-design)); defer to follow-up issue or Phase B+ (Vitest subprocess catalog entry only)
 - **Migrating `4_storage` assertions to `domainController`** — changes test meaning; not required for setup unification
 
 ---

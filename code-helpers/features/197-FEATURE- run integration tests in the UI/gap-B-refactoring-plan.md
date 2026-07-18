@@ -5,7 +5,7 @@
 **Follow-up:** [gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md) (platform skip / host injection — implement **after** Gap B)  
 **Related:** Gap A (skip deployment when UI host is live) plugs into the same bootstrap phases  
 **Scope:** Pure refactoring. Standardise **when** the library deployment is created, reset, and
-seeded — **not** what tests assert. PSC-direct `4_storage` test bodies remain unchanged (Gap C).
+seeded — **not** what tests assert. PersistenceStoreController-direct `4_storage` test bodies remain unchanged (Gap C).
 
 **Status:** L0–L8 done. Next: Slice L9 (CLI/MCP optional).
 
@@ -42,7 +42,7 @@ families that already share library UUIDs.
 | **Transformer integ** | `testApplication` synthetic UUIDs | `playfield: "testApplication"` — **no UUID convergence** |
 | **CLI / MCP** | Inline `beforeEach` library reset | Optional slice — adopt helpers only if low conflict |
 
-**Not in Gap B:** PSC→`domainController` assertion migration, env profile unification (Gap D),
+**Not in Gap B:** PersistenceStoreController→`domainController` assertion migration, env profile unification (Gap D),
 UI subprocess launcher for `4_storage`.
 
 ---
@@ -169,7 +169,7 @@ export async function resetLibraryPlayfield(
 
 **Design rules:**
 
-- `ensureLibraryPlayfield` checks whether PSC / deployment already exists (via
+- `ensureLibraryPlayfield` checks whether PersistenceStoreController / deployment already exists (via
   `domainController` or `persistenceStoreControllerManager` — use the same signal
   `createDeploymentCompositeAction` failure would today; prefer idempotent check if available).
 - `resetLibraryPlayfield` **composes** existing `resetAndInitApplicationDeployment` and
@@ -246,7 +246,7 @@ npm run testByFile -w miroir-core -- IntegrationTestBootstrap.unit
 **L0-Red:** Extend `IntegrationTestBootstrap.unit.test.ts`
 
 - Every `IntegrationTestSessionKind` maps to exactly one `playfield` value.
-- `appStackPsc` → `libraryDeployment`; `transformer` → `testApplication`; etc.
+- `appStackPersistenceStoreController` → `libraryDeployment`; `transformer` → `testApplication`; etc.
 
 **L0-Green:** Update `getBootstrapPhasesForSessionKind` / descriptor builders.
 
@@ -462,7 +462,7 @@ UI Test Launcher (#197 Phase B)
   │
   ├─ describeSession("runner") → playfield: libraryDeployment
   ├─ describeSession("transformer") → playfield: testApplication
-  └─ describeSession("appStackPsc") → playfield: libraryDeployment + PSC assertions (subprocess launcher)
+  └─ describeSession("appStackPersistenceStoreController") → playfield: libraryDeployment + PersistenceStoreController assertions (subprocess launcher)
 
 Orchestrator context (Gap A later):
   playfieldMode: "requireExisting" | "createIfAbsent"

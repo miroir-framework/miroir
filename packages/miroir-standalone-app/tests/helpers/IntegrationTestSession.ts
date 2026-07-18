@@ -224,9 +224,9 @@ export class AppStackIntegrationTestSession implements RunnerTestSessionInterfac
       adminDeployment: this.appStackOptions.adminDeployment,
       libraryDeploymentStorageConfiguration:
         this.appStackOptions.libraryDeploymentStorageConfiguration,
-      phases: getBootstrapPhasesForSessionKind("appStackPsc"),
+      phases: getBootstrapPhasesForSessionKind("appStackPersistenceStoreController"),
       testApplicationUuid: selfApplicationLibrary.uuid,
-      deployMiroirStrategy: "pscHelper",
+      deployMiroirStrategy: "persistenceStoreControllerHelper",
       openAdminAndMiroirStoresOnServer: false,
       customFetch: crossFetch,
       libraryPlayfieldEnsureMode: this.appStackOptions.libraryPlayfieldEnsureMode,

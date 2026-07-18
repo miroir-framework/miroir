@@ -21,7 +21,7 @@ Legacy `UnitTest` and `TransformerTest` entities remain in the deployment for ba
 |------|----------|-------------|----------------|
 | **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | All miroir-core registry suites except `miroirCoreTransformers` |
 | **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `miroirCoreTransformers`, etc. via `MIROIR_TEST_*` |
-| **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD, PSC, extractors |
+| **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD, PersistenceStoreController, extractors |
 | **Runner integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | Composite-action runner tests |
 
 The UI always runs **unit** mode.
@@ -209,7 +209,7 @@ Two integration paths coexist in `miroir-standalone-app`:
 
 **MiroirTest path** (`testMiroir`): deployment JSON test cases → `IntegrationTestSession` → direct `domainController` (no HTTP). Suited to large transformer/query regression suites.
 
-**App-stack path** (`testByFile`): inline TypeScript test trees → session adapters (`DomainControllerIntegrationTestSession`, etc.) → `runAppStackIntegrationBootstrap` → client + emulated server via `RestClientStub`. Suited to DomainController, PSC, and view integration.
+**App-stack path** (`testByFile`): inline TypeScript test trees → session adapters (`DomainControllerIntegrationTestSession`, etc.) → `runAppStackIntegrationBootstrap` → client + emulated server via `RestClientStub`. Suited to DomainController, PersistenceStoreController, and view integration.
 
 ```
 MiroirTest:  testMiroir → orchestrator → IntegrationTestSession → runMiroirCoreTestsFromCLI → deployment JSON leaves
