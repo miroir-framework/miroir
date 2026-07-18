@@ -12,14 +12,10 @@ import {
   resolveRunnerTestRunTarget,
   type LoggerInterface,
   type LoggerOptions,
-  type MetaModel,
   type MiroirTestSuite,
   parseMiroirRunnerTestCliConfig,
 } from "miroir-core";
-import {
-  defaultLibraryAppModel,
-  RUNNER_LIBRARY_RUNNER_REGISTRY,
-} from "miroir-test-app_deployment-library";
+import { RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -34,8 +30,8 @@ import {
 } from "./helpers/runMiroirRunnerTestsFromCLI.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 import {
-  libraryEntitiesAndInstancesWithoutBook3,
-  libraryPlayfieldSeedInitParams,
+  domainControllerDataCrudLibraryPlayfieldSeed,
+  isDomainControllerDataCrudSuite,
 } from "./helpers/libraryPlayfieldSeeds.js";
 
 const pageLabel = "miroir-runner-tests.integ";
@@ -77,18 +73,13 @@ if (config.filter?.testList) {
 
 function sessionOptionsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   const runTarget = resolveRunnerTestRunTarget({ suite });
-  if (suiteKey === "domain_controller_data_crud") {
+  if (isDomainControllerDataCrudSuite(suiteKey)) {
     return {
       pageLabel,
       runTarget,
       suiteTestParams: suite.testParams,
       runnerRegistry: {},
-      libraryPlayfieldSeed: {
-        libraryEntitiesAndInstances: libraryEntitiesAndInstancesWithoutBook3,
-        librarySeedInitParams: libraryPlayfieldSeedInitParams,
-        // Library app model (not Miroir meta-model) — same as Data.CRUD beforeEach.
-        librarySeedMetaModel: defaultLibraryAppModel as MetaModel,
-      },
+      libraryPlayfieldSeed: domainControllerDataCrudLibraryPlayfieldSeed,
     };
   }
   return {

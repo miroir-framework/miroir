@@ -289,18 +289,23 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 - Imperative `DomainController.integ.Data.CRUD.test.tsx` untouched; both paths green.
 - Lifecycle already on session playfield (`RunnerTestSession.libraryPlayfieldSeed`) — Phase 3.1 largely pre-satisfied.
 
-### Phase 3 — Lifecycle alignment (DRY with Runner)
+### Phase 3 — Lifecycle alignment (DRY with Runner) ✅
 
-| Slice | Work | Tests first | Nonreg |
-|-------|------|-------------|--------|
-| 3.1 | Move library create/reset/seed from suite hooks → session `beforeEach` / playfield helpers (reuse Gap B seeds) | Integ: suite still green with hooks removed from JSON | — |
-| 3.2 ★ | Delete redundant hook builders from pilot JSON; share seed constant with imperative file until deletion | Integ + unit for playfield helpers | **nonreg** |
+| Slice | Work | Tests first | Nonreg | Status |
+|-------|------|-------------|--------|--------|
+| 3.1 | Library create/reset/seed on session playfield (`libraryPlayfieldSeed`); JSON suite has **no** suite hooks | Integ: suite still green | — | ✅ |
+| 3.2 ★ | Shared `domainControllerDataCrudLibraryPlayfieldSeed` (+ filter entities for Phase 4); integ wiring DRY; unit tests | Unit: `libraryPlayfieldSeeds.unit` + `RunnerTestSession` seed forward | **nonreg** | ✅ |
+
+**Phase 3 notes:**
+- Shared seed lives in `tests/helpers/libraryPlayfieldSeeds.ts` (also used by Extractor playfield / Data.CRUD entities).
+- Imperative Data.CRUD still owns its own `beforeEach` hooks until Phase 4 cutover; both paths share `libraryEntitiesAndInstancesWithoutBook3`.
+- `RunnerTestSession.unit` now mocks `src/.../runRealServerClientBootstrap` (the path session actually imports).
 
 ### Phase 4 — Cutover & siblings
 
 | Slice | Work | Tests first | Nonreg |
 |-------|------|-------------|--------|
-| 4.1 | Deprecate / delete `DomainController.integ.Data.CRUD.test.tsx` when MiroirTest is sole owner | Confirm CI / docs point to `testMiroir` | **nonreg** |
+| 4.1 | Deprecate (DO NOT delete) `DomainController.integ.Data.CRUD.test.tsx` when MiroirTest is sole owner | Confirm CI / docs point to `testMiroir` | **nonreg** |
 | 4.2+ | Migrate Model / PK / noParentUuid CRUD files using the same leaf + session | One file per slice | nonreg per file or batch |
 
 ### Phase 5 — UI (#197 Phase B follow-on)

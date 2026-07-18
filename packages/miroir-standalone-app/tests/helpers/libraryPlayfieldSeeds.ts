@@ -4,7 +4,9 @@ import type {
   EntityDefinition,
   EntityInstance,
   InitApplicationParameters,
+  MetaModel,
   SelfApplication,
+  Uuid,
 } from "miroir-core";
 import { defaultMiroirMetaModel } from "miroir-core";
 import {
@@ -17,6 +19,7 @@ import {
   book4,
   book5,
   book6,
+  defaultLibraryAppModel,
   entityAuthor,
   entityBook,
   entityDefinitionAuthor,
@@ -30,6 +33,19 @@ import {
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
+
+/** Suite registry key for DomainController Data CRUD action MiroirTest. */
+export const DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY = "domain_controller_data_crud";
+
+/**
+ * Seed payload for `RunnerTestSessionOptions.libraryPlayfieldSeed` /
+ * `resetLibraryPlayfield` (Action Data.CRUD playfield).
+ */
+export type LibraryPlayfieldSeed = {
+  libraryEntitiesAndInstances: ApplicationEntitiesAndInstances;
+  librarySeedInitParams: InitApplicationParameters;
+  librarySeedMetaModel: MetaModel;
+};
 
 export const libraryPlayfieldSeedInitParams: InitApplicationParameters = {
   dataStoreType: "app",
@@ -97,3 +113,29 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
     ],
   },
 ];
+
+/**
+ * Entity filter used by imperative Data.CRUD `beforeEach`
+ * (`resetAndinitializeDeploymentCompositeAction` 6th arg). Shared for Phase 4 cutover.
+ */
+export const domainControllerDataCrudFilterEntities: Uuid[] = [
+  entityAuthor.uuid,
+  entityBook.uuid,
+  entityPublisher.uuid,
+];
+
+/**
+ * Session playfield seed for `domain_controller_data_crud` (MiroirTest path).
+ * Library app model — not Miroir meta-model — matches Extractor / Data.CRUD seed.
+ * Imperative Data.CRUD still builds hooks inline until Phase 4; both share
+ * `libraryEntitiesAndInstancesWithoutBook3` + `libraryPlayfieldSeedInitParams`.
+ */
+export const domainControllerDataCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
+  libraryEntitiesAndInstances: libraryEntitiesAndInstancesWithoutBook3,
+  librarySeedInitParams: libraryPlayfieldSeedInitParams,
+  librarySeedMetaModel: defaultLibraryAppModel as MetaModel,
+};
+
+export function isDomainControllerDataCrudSuite(suiteKey: string): boolean {
+  return suiteKey === DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY;
+}

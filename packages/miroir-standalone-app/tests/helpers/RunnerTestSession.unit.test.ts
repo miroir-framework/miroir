@@ -30,6 +30,15 @@ import {
 const runAppStackIntegrationBootstrapMock = vi.fn();
 const runRealServerClientBootstrapMock = vi.fn();
 const beforeEachTestMock = vi.fn();
+const ensureLibraryPlayfieldMock = vi.fn();
+
+vi.mock("miroir-core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("miroir-core")>();
+  return {
+    ...actual,
+    ensureLibraryPlayfield: (...args: unknown[]) => ensureLibraryPlayfieldMock(...args),
+  };
+});
 
 vi.mock("./appStackIntegrationBootstrap.js", async (importOriginal) => {
   const actual = await importOriginal<typeof import("./appStackIntegrationBootstrap.js")>();
@@ -40,7 +49,7 @@ vi.mock("./appStackIntegrationBootstrap.js", async (importOriginal) => {
   };
 });
 
-vi.mock("./runRealServerClientBootstrap.js", () => ({
+vi.mock("../../src/miroir-fwk/4-tests/runRealServerClientBootstrap.js", () => ({
   runRealServerClientBootstrap: (...args: unknown[]) =>
     runRealServerClientBootstrapMock(...args),
 }));
@@ -87,6 +96,7 @@ function baseMiroirConfig(runTarget = runnerLibraryRunTarget()): MiroirConfigCli
 describe("RunnerTestSession (Gap E R)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    ensureLibraryPlayfieldMock.mockResolvedValue({ created: false });
     const domainController = {
       // Real-server initSession calls ensureLibraryPlayfield, which awaits this
       // to create the ephemeral run-target deployment on the server (B6-c).
@@ -287,6 +297,47 @@ describe("RunnerTestSession (Gap E R)", () => {
     await session.beforeEach();
 
     expect(beforeEachTestMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("beforeEach forwards libraryPlayfieldSeed and prefers remapped library model", async () => {
+    const { domainControllerDataCrudLibraryPlayfieldSeed } = await import(
+      "./libraryPlayfieldSeeds.js"
+    );
+    const tracker = new MiroirActivityTracker();
+    const eventService = new MiroirEventService(tracker);
+    const runTarget = runnerLibraryRunTarget();
+    const session = new RunnerTestSession({
+      miroirConfig: baseMiroirConfig(runTarget),
+      miroirActivityTracker: tracker,
+      miroirEventService: eventService,
+      runTarget,
+      suiteTestParams: runnerLibrarySuite().testParams,
+      runnerRegistry: {},
+      libraryPlayfieldSeed: domainControllerDataCrudLibraryPlayfieldSeed,
+    });
+
+    await session.initSession();
+    await session.beforeEach();
+
+    expect(beforeEachTestMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      {
+        applicationUuid: runTarget.applicationUuid,
+        deploymentUuid: runTarget.deploymentUuid,
+      },
+      expect.objectContaining({
+        clearDocumentBody: false,
+        resetMiroirPlatform: true,
+        libraryEntitiesAndInstances:
+          domainControllerDataCrudLibraryPlayfieldSeed.libraryEntitiesAndInstances,
+        librarySeedInitParams:
+          domainControllerDataCrudLibraryPlayfieldSeed.librarySeedInitParams,
+        librarySeedMetaModel: expect.objectContaining({
+          applicationUuid: runTarget.applicationUuid,
+        }),
+      }),
+    );
   });
 
   it("teardown drops runTarget deployment stores via composite action (B4)", async () => {
