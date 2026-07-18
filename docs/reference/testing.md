@@ -724,7 +724,7 @@ The Miroir Tests report runs data-isolated integration sessions with `hostMode: 
 | **CLI emulated** | `emulatedServer-sql`, `-filesystem`, `-mongodb` | `testMiroir` / `testByFile` (Node) | Postgres/filesystem/Mongo drivers register in Vitest `beforeAll` |
 | **Real server** | `realServer-sql`, `-indexedDb`, `-filesystem`, `-mongodb` | Browser client → `https://localhost:3080` (also Node proof via `uiIntegrationTestLauncher.realServer.integ`) | Requires running `miroir-server`. Select backend with `--storage` or `--profile realServer-*`. |
 
-Bundling `emulatedServer-sql` JSON into the UI does **not** enable SQL integration in the browser. In webApp, **transformer** integ uses IndexedDB + bundled admin; **runner** integ uses IndexedDB emulated or any `realServer-*` profile. `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` verifies the details **Run Integration Tests** button (runner Return Book); `MiroirTestListIntegrationLaunch.integ.test.tsx` verifies list **Run All Integration Tests** (transformer leaf). The companion launcher test [`uiIntegrationTestLauncher.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts) covers both runner and transformer leaves in Node without RTL.
+Bundling `emulatedServer-sql` JSON into the UI does **not** enable SQL integration in the browser. In webApp, **transformer** integ uses IndexedDB + bundled admin, or **`realServer-sql`** (REST to `miroir-server`); **runner** integ uses IndexedDB emulated or any `realServer-*` profile. `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` verifies the details **Run Integration Tests** button (runner Return Book); `MiroirTestListIntegrationLaunch.integ.test.tsx` verifies list **Run All Integration Tests** (transformer leaf). The companion launcher test [`uiIntegrationTestLauncher.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.integ.test.ts) covers both runner and transformer leaves in Node without RTL; [`uiIntegrationTestLauncher.realServer.transformer.integ.test.ts`](../../packages/miroir-standalone-app/tests/helpers/uiIntegrationTestLauncher.realServer.transformer.integ.test.ts) proves transformer against live `miroir-server` (skips if down).
 
 Embedded mode attaches to a running host without re-deploying meta-model stores.
 
@@ -1179,7 +1179,7 @@ Both use the same **Run Integration Tests** affordance (details button, or list 
 | Suite (instance name) | Session | What to select | Browser profile |
 |-----------------------|---------|----------------|-----------------|
 | `runner_library` (label `runner.library`) | `RunnerTestSession` | Ephemeral or pinned run target | `emulatedServer-indexedDb` (default) or `realServer-*` |
-| `miroirCoreTransformers` | `IntegrationTestSession` | Ephemeral or pinned `testApplication` identity | `emulatedServer-indexedDb` only in webApp |
+| `miroirCoreTransformers` | `IntegrationTestSession` / `RealServerTransformerTestSession` | Ephemeral or pinned `testApplication` identity | `emulatedServer-indexedDb` or `realServer-sql` (server up) |
 
 **Runner**
 
@@ -1191,7 +1191,7 @@ Both use the same **Run Integration Tests** affordance (details button, or list 
 **Transformer**
 
 1. Open **miroirCoreTransformers** (or use the list batch).
-2. Choose profile **`emulatedServer-indexedDb`** (webApp cannot run SQL/filesystem emulated stacks).
+2. Choose profile **`emulatedServer-indexedDb`** or **`realServer-sql`** (requires `miroir-server` at `https://localhost:3080`).
 3. Choose ephemeral or pinned identity.
 4. Click **Run Integration Tests** — inspector should show `sessionKind: transformer`.
 
@@ -1202,7 +1202,7 @@ Browser-supported profiles:
 | Profile | Store location | Runner | Transformer |
 |---------|----------------|--------|-------------|
 | `emulatedServer-indexedDb` | Browser IndexedDB | ✅ | ✅ |
-| `realServer-sql` | Postgres behind `miroir-server` | ✅ | — (use CLI / Electron for SQL transformer) |
+| `realServer-sql` | Postgres behind `miroir-server` | ✅ | ✅ (REST; server must be up) |
 | `realServer-filesystem` | Filesystem behind `miroir-server` | ✅ | — |
 | `realServer-indexedDb` | IndexedDB behind `miroir-server` | ✅ | — |
 | `realServer-mongodb` | MongoDB behind `miroir-server` | ✅ | — |

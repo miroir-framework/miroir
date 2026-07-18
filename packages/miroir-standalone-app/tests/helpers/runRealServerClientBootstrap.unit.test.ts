@@ -23,7 +23,7 @@ vi.mock("miroir-core", async (importOriginal) => {
   };
 });
 
-import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
+import { runRealServerClientBootstrap } from "../../src/miroir-fwk/4-tests/runRealServerClientBootstrap.js";
 
 function createMockDomainController(): DomainControllerInterface {
   return {

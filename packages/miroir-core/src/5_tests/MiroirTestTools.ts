@@ -20,6 +20,7 @@ import type {
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
+import { runMiroirActionTest } from "./ActionTestTools.js";
 import { runMiroirFunctionCallTestInMemory } from "./FunctionCallTestTools";
 import {
   runMiroirTransformerIntegrationTest,
@@ -34,7 +35,11 @@ import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import type { RunnerTestRunTarget } from "./RunnerTestRunTarget.js";
 
-export type RunnerTestContext = {
+/** @deprecated Use MiroirTestLeaf — actionTest is now in the fundamental union. */
+export type MiroirTestLeafExecutable = MiroirTestLeaf;
+
+/** Shared integ context for Action and Runner MiroirTest leaves (Feature 197). */
+export type CompositeActionTestContext = {
   domainController: DomainControllerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
   internalMiroirConfig: MiroirConfigClient;
@@ -42,9 +47,13 @@ export type RunnerTestContext = {
   adminDeployment: Deployment;
   testDeploymentStorageConfiguration: StoreUnitConfiguration;
   runTarget: RunnerTestRunTarget;
-  runnerRegistry: Record<string, Runner>;
   testParams: Record<string, unknown>;
   runtimeContext: Record<string, unknown>;
+};
+
+/** Runner context = composite-action context + Runner registry. */
+export type RunnerTestContext = CompositeActionTestContext & {
+  runnerRegistry: Record<string, Runner>;
 };
 
 export type MiroirTestExecutionEnvironment = {
@@ -52,6 +61,9 @@ export type MiroirTestExecutionEnvironment = {
   applicationDeploymentMap: ApplicationDeploymentMap;
   testApplicationUuid: string;
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
+  /** Action integ (and optionally Runner) shared param/runTarget bank. */
+  compositeActionTestContext?: CompositeActionTestContext;
+  /** Runner integ; also usable as Action context under 1.3-a (registry unused). */
   runnerTestContext?: RunnerTestContext;
 };
 
@@ -72,7 +84,7 @@ export type MiroirTestExecutionOptions = {
 };
 
 
-function miroirTestLeafLabel(leaf: MiroirTestLeaf): string {
+function miroirTestLeafLabel(leaf: MiroirTestLeafExecutable): string {
   return leaf.miroirTestLabel;
 }
 
@@ -111,13 +123,30 @@ export async function runMiroirTest(
   _parentTrackingId: string | undefined,
   _trackActionsBelow: boolean,
   _runMiroirTests: RunMiroirTests,
-  executionOptions?: MiroirTestExecutionOptions, // needed only for transformerTest and runnerTest
+  executionOptions?: MiroirTestExecutionOptions, // needed only for transformerTest, runnerTest, actionTest
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
 ): Promise<void> {
   const executionMode = executionOptions?.executionMode ?? "unit";
 
   switch (leaf.miroirTestType) {
+    case "actionTest": {
+      if (executionOptions?.executionMode !== "integration") {
+        throw new Error(
+          "runMiroirTestInMemory: actionTest leaves require executionMode integration",
+        );
+      }
+      return runMiroirActionTest(
+        localVitest,
+        testNamePath,
+        filter,
+        leaf,
+        miroirActivityTracker,
+        testAssertionPath,
+        parentSkip,
+        executionOptions.executionEnvironment,
+      );
+    }
     case "transformerTest": {
       if (executionOptions?.executionMode === "integration") {
         const env = executionOptions.executionEnvironment;

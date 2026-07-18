@@ -11,7 +11,11 @@ import type {
 } from "miroir-core";
 import { createDefaultMiroirTestIntegrationOrchestrator } from "miroir-core";
 
-import type { AppStackBootstrapHostOptions } from "./appStackIntegrationBootstrap.js";
+import type { AppStackBootstrapHostOptions } from "../../src/miroir-fwk/4-tests/appStackBootstrapHostOptions.js";
+import {
+  isRealServerTransformerSessionOptions,
+  RealServerTransformerTestSession,
+} from "../../src/miroir-fwk/4-tests/RealServerTransformerTestSession.js";
 import {
   AppStackIntegrationTestSession,
   IntegrationTestSession,
@@ -75,8 +79,26 @@ function createStandaloneAppSession(
   sessionSpecificOptions?: unknown,
 ) {
   switch (kind) {
-    case "transformer":
+    case "transformer": {
+      if (isRealServerTransformerSessionOptions(sessionSpecificOptions)) {
+        const hostBootstrap = resolveBootstrapHostOptions(context, sessionSpecificOptions);
+        return new RealServerTransformerTestSession({
+          ...sessionSpecificOptions,
+          miroirConfig: sessionSpecificOptions.miroirConfig ?? context.miroirConfig,
+          miroirActivityTracker:
+            sessionSpecificOptions.miroirActivityTracker ?? context.miroirActivityTracker,
+          miroirEventService:
+            sessionSpecificOptions.miroirEventService ?? context.miroirEventService,
+          // Node: TLS-tolerant cross-fetch even under jsdom.
+          customFetch:
+            sessionSpecificOptions.customFetch ?? (crossFetch as unknown as typeof fetch),
+          ...hostBootstrap,
+          hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
+          platformEnsureMode: hostBootstrap.platformEnsureMode ?? "skip",
+        });
+      }
       return new IntegrationTestSession(sessionSpecificOptions as TestSessionForIntegOptions);
+    }
     case "appStackPersistenceStoreController": {
       const appStackOptions = sessionSpecificOptions as AppStackSessionOptions;
       return new AppStackIntegrationTestSession(context.miroirConfig, {

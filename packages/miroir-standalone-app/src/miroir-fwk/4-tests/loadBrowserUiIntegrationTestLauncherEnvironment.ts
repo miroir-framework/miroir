@@ -16,7 +16,10 @@ import {
   getIntegTestRunCoordinator,
 } from "./integTestRunCoordinator.js";
 import { loadBrowserIntegrationTestProfileConfig } from "./integrationTestProfileAssets.js";
-import { resolveBrowserTransformerTestSessionOptions } from "./resolveTransformerTestSessionOptions.js";
+import {
+  resolveBrowserTransformerTestSessionOptions,
+  resolveRealServerTransformerTestSessionOptions,
+} from "./resolveTransformerTestSessionOptions.js";
 import type { UiIntegrationTestLauncherEnvironment } from "./uiIntegrationTestLauncher.js";
 
 let browserBundledAdminStoreRegistered = false;
@@ -102,9 +105,16 @@ export async function loadBrowserUiIntegrationTestLauncherEnvironment(): Promise
     expect: resolveBrowserInProcessExpect(),
     getCoordinator: getIntegTestRunCoordinator,
     resolveTransformerSessionOptions: (profileName, runTargetMode, miroirConfig) => {
+      if (miroirConfig.client?.emulateServer === false) {
+        return resolveRealServerTransformerTestSessionOptions({
+          profileName,
+          runTargetMode,
+          miroirConfig,
+        });
+      }
       if (miroirConfig.client?.emulateServer !== true) {
         throw new Error(
-          `Browser transformer UI integ requires an emulated profile (got "${profileName}" with emulateServer=false). Use emulatedServer-indexedDb.`,
+          `Browser transformer UI integ requires emulatedServer-indexedDb or realServer-sql (got "${profileName}").`,
         );
       }
       if (!lastBundledDeploymentData) {

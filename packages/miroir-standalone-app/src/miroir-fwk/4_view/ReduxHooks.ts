@@ -28,8 +28,7 @@ import {
   getApplicationSection,
   getReduxDeploymentsStateIndex,
   computeSchemaRevision,
-  getMiroirFundamentalSchemaForDeployment,
-  resolveFundamentalSchemaForDeployment,
+  miroirFundamentalJzodSchema,
   selectEntityUuidFromJzodAttribute,
   selfApplicationMiroir,
   type ApplicationDeploymentMap,
@@ -260,9 +259,9 @@ export function useCurrentModel(
 
 // ################################################################################################
 /**
- * Returns the current MiroirModelEnvironment for a given deployment
- * @param deploymentUuid - The deployment UUID to get the model environment for
- * @returns MiroirModelEnvironment containing the fundamental schema, meta model, and current model
+ * Returns the current MiroirModelEnvironment for a given deployment.
+ * Schema resolution is owned by ModelEnvironmentSync (or ensureSchemaForDeployment for
+ * cross-app edge cases) — this hook only reads `schemasPerDeployment`.
  */
 export function useCurrentModelEnvironment(
   application: Uuid,
@@ -295,11 +294,12 @@ export function useCurrentModelEnvironment(
     [deploymentUuid, currentModel, application],
   );
 
+  // Safety path for apps not covered by ModelEnvironmentSync (single-flight via ensure).
   useEffect(() => {
     if (!currentModel || !deploymentUuid) {
       return;
     }
-    context.applyDeploymentSchemaRevision({
+    context.ensureSchemaForDeployment({
       deploymentUuid,
       applicationUuid: application,
       currentModel,
@@ -311,14 +311,14 @@ export function useCurrentModelEnvironment(
     appSchemaRevision,
     metaSchemaRevision,
     deploymentUuid,
-    context.applyDeploymentSchemaRevision,
+    currentModel,
+    context.ensureSchemaForDeployment,
   ]);
 
   return useMemo(() => {
     return {
       miroirFundamentalJzodSchema:
-        context.schemasPerDeployment[deploymentUuid] ??
-        resolveFundamentalSchemaForDeployment(deploymentUuid, currentModel, "auto"),
+        context.schemasPerDeployment[deploymentUuid] ?? miroirFundamentalJzodSchema,
       miroirMetaModel: miroirMetaModel,
       endpointsByUuid,
       currentModel: currentModel,
@@ -335,7 +335,8 @@ export function useCurrentModelEnvironment(
 
 // ################################################################################################
 /**
- * Resolves the fundamental jzod schema for a deployment from context cache or getMiroirFundamentalSchemaForDeployment.
+ * Resolves the fundamental jzod schema for a deployment from context cache.
+ * Population is owned by ModelEnvironmentSync / ensureSchemaForDeployment.
  */
 export function useMiroirFundamentalJzodSchemaForDeployment(
   deploymentUuid?: Uuid,
@@ -344,15 +345,47 @@ export function useMiroirFundamentalJzodSchemaForDeployment(
   const resolvedDeploymentUuid = deploymentUuid ?? context.deploymentUuid;
   const application = context.application;
   const applicationDeploymentMap = context.applicationDeploymentMap ?? {};
+  const miroirDeploymentUuid = applicationDeploymentMap[selfApplicationMiroir.uuid];
+  const miroirMetaModel = useCurrentModel(selfApplicationMiroir.uuid, applicationDeploymentMap);
   const currentModel = useCurrentModel(application, applicationDeploymentMap);
-  const cached = context.schemasPerDeployment[resolvedDeploymentUuid];
-  if (cached) {
-    return cached;
-  }
-  if (resolvedDeploymentUuid && currentModel) {
-    return getMiroirFundamentalSchemaForDeployment(resolvedDeploymentUuid, currentModel);
-  }
-  return undefined;
+
+  const metaSchemaRevision = useMemo(
+    () =>
+      miroirDeploymentUuid && miroirMetaModel
+        ? computeSchemaRevision(miroirDeploymentUuid, miroirMetaModel, selfApplicationMiroir.uuid)
+        : "",
+    [miroirDeploymentUuid, miroirMetaModel],
+  );
+
+  const appSchemaRevision = useMemo(
+    () =>
+      resolvedDeploymentUuid && currentModel && application
+        ? computeSchemaRevision(resolvedDeploymentUuid, currentModel, application)
+        : "",
+    [resolvedDeploymentUuid, currentModel, application],
+  );
+
+  useEffect(() => {
+    if (!currentModel || !resolvedDeploymentUuid || !application) {
+      return;
+    }
+    context.ensureSchemaForDeployment({
+      deploymentUuid: resolvedDeploymentUuid,
+      applicationUuid: application,
+      currentModel,
+      metaSchemaRevision,
+      appSchemaRevision,
+    });
+  }, [
+    application,
+    appSchemaRevision,
+    metaSchemaRevision,
+    resolvedDeploymentUuid,
+    currentModel,
+    context.ensureSchemaForDeployment,
+  ]);
+
+  return context.schemasPerDeployment[resolvedDeploymentUuid];
 }
 
 // ################################################################################################

@@ -158,6 +158,17 @@ export interface MiroirReactContext {
     metaSchemaRevision: string;
     appSchemaRevision: string;
   }) => void;
+  /**
+   * Single-flight schema sync: no-ops when revisions for this deployment are already applied.
+   * Used by thin hooks / cross-app edge cases; ModelEnvironmentSync owns the primary path.
+   */
+  ensureSchemaForDeployment: (input: {
+    deploymentUuid: Uuid;
+    applicationUuid: Uuid;
+    currentModel: MetaModel;
+    metaSchemaRevision: string;
+    appSchemaRevision: string;
+  }) => void;
   // ###################################################################################################
   // Form state management
   innerFormOutput: any;
@@ -315,6 +326,27 @@ export function MiroirContextReactProvider(props: {
       }
     },
     [clearSchemaForDeployment, setSchemaForDeployment],
+  );
+
+  const ensureSchemaForDeployment = useCallback(
+    (input: {
+      deploymentUuid: Uuid;
+      applicationUuid: Uuid;
+      currentModel: MetaModel;
+      metaSchemaRevision: string;
+      appSchemaRevision: string;
+    }) => {
+      const previousRevisions = schemaRevisionsRef.current[input.deploymentUuid];
+      if (
+        previousRevisions &&
+        previousRevisions.meta === input.metaSchemaRevision &&
+        previousRevisions.app === input.appSchemaRevision
+      ) {
+        return;
+      }
+      applyDeploymentSchemaRevision(input);
+    },
+    [applyDeploymentSchemaRevision],
   );
 
   // Create ViewParams instance to track UI state with reactive state
@@ -611,6 +643,7 @@ export function MiroirContextReactProvider(props: {
       setSchemaReloadRequired,
       schemaRevisionsByDeployment,
       applyDeploymentSchemaRevision,
+      ensureSchemaForDeployment,
       viewParams,
       toolsPageState,
       updateToolsPageStateDEFUNCT,
@@ -688,6 +721,7 @@ export function MiroirContextReactProvider(props: {
       schemaReloadRequired,
       schemaRevisionsByDeployment,
       applyDeploymentSchemaRevision,
+      ensureSchemaForDeployment,
       innerFormOutput,
       props.miroirContext,
       props.domainController,

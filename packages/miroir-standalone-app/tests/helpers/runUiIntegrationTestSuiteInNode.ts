@@ -20,6 +20,7 @@ import {
 import { applyIntegrationTestProfile, resolveRepoRoot } from "./integrationTestProfiles.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./StandaloneAppIntegrationOrchestrator.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
+import { resolveRealServerTransformerTestSessionOptions } from "../../src/miroir-fwk/4-tests/resolveTransformerTestSessionOptions.js";
 
 export function createNodeUiIntegrationTestLauncherEnvironment(
   expectFn: UiIntegrationTestLauncherEnvironment["expect"],
@@ -45,7 +46,14 @@ export function createNodeUiIntegrationTestLauncherEnvironment(
     expect: expectFn,
     // Same TLS-tolerant fetch as RunnerTestSession bootstrap against local miroir-server.
     fetchImpl: crossFetch as unknown as typeof fetch,
-    resolveTransformerSessionOptions: (_profileName, runTargetMode) => {
+    resolveTransformerSessionOptions: (profileName, runTargetMode, miroirConfig) => {
+      if (miroirConfig.client?.emulateServer === false) {
+        return resolveRealServerTransformerTestSessionOptions({
+          profileName,
+          runTargetMode,
+          miroirConfig,
+        });
+      }
       const base = resolveTestSessionForIntegOptionsFromEnv(process.env);
       return {
         ...base,

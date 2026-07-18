@@ -75,6 +75,7 @@ import {
   useReduxDeploymentsStateQuerySelector,
   useReduxDeploymentsStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
+import { ModelEnvironmentSync } from "../../ModelEnvironmentSync.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
 const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));
@@ -801,6 +802,12 @@ export const RootComponent = (props: RootComponentProps) => {
         currentThemeOptions={currentThemeOptions}
       >
         <ReportPageContextProvider>
+          <ModelEnvironmentSync
+            applicationDeploymentMap={
+              applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+            }
+            applicationsToSync={[selfApplicationMiroir.uuid, currentApplication]}
+          />
           <div
             style={{ display: "flex", flexDirection: "row", height: "100vh", overflow: "hidden" }}
           >

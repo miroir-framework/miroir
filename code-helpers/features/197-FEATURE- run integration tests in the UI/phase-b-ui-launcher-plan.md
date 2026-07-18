@@ -441,6 +441,7 @@ Close gaps G-UI-1 … G-UI-7 (§5.3).
 - ✅ Ephemeral / pinned toggle applies to transformer session `applicationIdentity`
 - ✅ Browser-safe `IntegrationTestSession` in `src/` (no `node:path`); browser orchestrator supports transformer with IndexedDB + bundled admin
 - ✅ Node integ: `uiIntegrationTestLauncher.integ.test.ts` transformer leaf green
+- ✅ **B7 realServer follow-up:** `RealServerTransformerTestSession` + browser/Node wiring for `realServer-sql`; Node proof `uiIntegrationTestLauncher.realServer.transformer.integ.test.ts` (skips if server down)
 
 **Verify**
 
@@ -448,12 +449,19 @@ Close gaps G-UI-1 … G-UI-7 (§5.3).
 # Node UI launcher integ (one integ leaf)
 npm run testByFile -w miroir-standalone-app -- uiIntegrationTestLauncher.integ
 
+# RealServer transformer leaf (requires miroir-server; skips if down)
+npm run testByFile -w miroir-standalone-app -- \
+  --storage sql uiIntegrationTestLauncher.realServer.transformer.integ
+
 # CLI non-reg
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ
 ```
 
-**Manual (webApp):** Miroir Tests → `miroirCoreTransformers` → profile `emulatedServer-indexedDb` → Run Integration Tests.
+**Manual (webApp):**
+
+1. Miroir Tests → `miroirCoreTransformers` → profile `emulatedServer-indexedDb` → Run Integration Tests (IndexedDB path).
+2. With `miroir-server` up: same suite → profile `realServer-sql` → ephemeral → Run Integration Tests → inspector `sessionKind: transformer`, success.
 
 **Follow-up (list vs details unit/integ UX):** [ui-unit-vs-integ-run-context-plan.md](./ui-unit-vs-integ-run-context-plan.md) — dual batch bar on MiroirTest **list**; keep capability-driven unit/integ on **details**; retain runner integ.
 

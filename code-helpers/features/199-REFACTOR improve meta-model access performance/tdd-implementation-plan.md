@@ -18,6 +18,7 @@ Related: [analysis.md](./analysis.md) · [#199](https://github.com/miroir-framew
 | **4** | `MIROIR_SCHEMA_MODE=frozen` | **Done** — gate 4.4 green; `docs/reference/testing.md` |
 | **5** | UI policy + localcache deprecation | **Done** — gate 5.6 green (unit slices); see notes |
 | **6** | Wide acceptance | **Done** — 6.1 tests added; 6.2 green for 199-specific slices |
+| **7** | Central `ModelEnvironmentSync` (Proposal 3) | **Done** — single owner + thin hooks |
 
 **Key deliverables**
 
@@ -793,6 +794,36 @@ Document in `analysis.md` / ADR: when server serves dynamic tenant meta-models, 
 
 ## Out of scope (follow-up issues)
 
-- **Proposal 3**: Central `ModelEnvironmentProvider` (can build on Phase 5 context work)
+- **Proposal 3**: ~~Central `ModelEnvironmentProvider`~~ → **Phase 7 (done)** — `ModelEnvironmentSync` + thin hooks
 - **Proposal 4**: Deploy-time overlay persistence + server hot path
 - **Proposal 1** standalone: largely delivered by Phase 3.4 revision cache (keep single issue)
+
+---
+
+## Phase 7 — Central ModelEnvironmentSync (Proposal 3) [DONE]
+
+> Single owner of UI schema resolution per deployment; `useCurrentModelEnvironment` becomes a thin context read.
+
+### Design
+
+| Piece | Role |
+|---|---|
+| `ModelEnvironmentSync` | App-shell owner; `useLayoutEffect` → `applyDeploymentSchemaRevision` for Miroir meta + current app |
+| `ensureSchemaForDeployment` | Context single-flight API; no-ops when revisions already applied (cross-app / tests without Sync) |
+| `useCurrentModelEnvironment` | Reads `schemasPerDeployment`; `ensure` safety effect only; no sync `resolve` fallback |
+
+### Slices
+
+| Slice | Status |
+|---|---|
+| 7.1 Sync + ensure + N-mount tests | Done |
+| 7.2 Thin hooks | Done |
+| 7.3 RootComponent wire + docs | Done |
+
+### Gate 7.3
+
+```bash
+./code-helpers/features/199-REFACTOR\ improve\ meta-model\ access\ performance/run-step-tests.sh 7.3
+```
+
+Progress tests: `useCurrentModelEnvironment.unit.test.tsx` (Phase 7 describe) + Phase 199 / Phase 6 non-regression.

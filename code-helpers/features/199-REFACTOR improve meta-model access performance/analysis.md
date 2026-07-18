@@ -6,7 +6,7 @@
 Related issue: https://github.com/miroir-framework/miroir/issues/199  
 Builds on: [198 impact analysis](../198-FEATURE-%20composing%20tests%20using%20application-defined%20Actions/impact-analysis-and-solutions.md) (runtime schema extension, carry-on, caching).
 
-**Implementation (2026-07-15):** [Proposals 2 + 5](#proposal-2--split-api-getfundamentalschemafordeployment-full-vs-getruntimeschemafordeployment-light) and [Proposal 5](#proposal-5--policy-layer-constant-meta-model--explicit-reload-on-meta-change) are **done** (TDD phases 1–6). [Proposal 1](#proposal-1--schema-fingerprint-cache-content-keyed-not-reference-keyed) content-keyed cache is **done** (Phase 3). [Proposal 3](#proposal-3--central-modelenvironmentprovider-in-miroir-context-single-owner-per-deployment) and [Proposal 4](#proposal-4--two-tier-schema-frozen-meta-baseline--incremental-app-overlay-dry-with-build) remain **follow-up**. See [§8 Current architecture](#8-current-architecture-after-199--orientation) and [tdd-implementation-plan.md](./tdd-implementation-plan.md).
+**Implementation (2026-07-15):** [Proposals 2 + 5](#proposal-2--split-api-getfundamentalschemafordeployment-full-vs-getruntimeschemafordeployment-light) and [Proposal 5](#proposal-5--policy-layer-constant-meta-model--explicit-reload-on-meta-change) are **done** (TDD phases 1–6). [Proposal 1](#proposal-1--schema-fingerprint-cache-content-keyed-not-reference-keyed) content-keyed cache is **done** (Phase 3). [Proposal 3](#proposal-3--central-modelenvironmentprovider-in-miroir-context-single-owner-per-deployment) is **done** (Phase 7 — `ModelEnvironmentSync`). [Proposal 4](#proposal-4--two-tier-schema-frozen-meta-baseline--incremental-app-overlay-dry-with-build) remains **follow-up**. See [§8 Current architecture](#8-current-architecture-after-199--orientation) and [tdd-implementation-plan.md](./tdd-implementation-plan.md).
 
 ---
 
@@ -258,7 +258,7 @@ Library app-action tests keep `'extended'` / `'auto'` explicitly.
 
 ---
 
-### Proposal 3 — Central `ModelEnvironmentProvider` in Miroir context (single owner per deployment)
+### Proposal 3 — Central `ModelEnvironmentProvider` in Miroir context (single owner per deployment) ✅ *implemented (Phase 7)*
 
 Move schema resolution **out of** per-component `useCurrentModelEnvironment`:
 
@@ -270,6 +270,12 @@ Move schema resolution **out of** per-component `useCurrentModelEnvironment`:
 
 Optionally expose `useModelEnvironment(deploymentUuid)` with React `useSyncExternalStore` for
 fine-grained subscription.
+
+**As built:** `ModelEnvironmentSync` in standalone-app (mounted from `RootComponent`) owns
+`applyDeploymentSchemaRevision` via `useLayoutEffect` for Miroir meta + current application.
+Context `ensureSchemaForDeployment` is the single-flight safety path for non-synced apps.
+`useCurrentModelEnvironment` / `useMiroirFundamentalJzodSchemaForDeployment` no longer call
+`resolveFundamentalSchemaForDeployment` / `getMiroirFundamentalSchemaForDeployment` on the hot path.
 
 | | |
 |---|---|
@@ -338,14 +344,14 @@ for UI** (JSDoc + `MIROIR_UI_CONTEXT=1` warn in redux/zustand). Reload **banner*
 |-------|-----------|--------|
 | **Quick wins** | 2 + 5 + remove `console.log` | **Done** |
 | **Core fix** | 1 (revision cache + invalidation taxonomy) | **Done** |
-| **UI structure** | 3 | **Not started** — ~20 `useCurrentModelEnvironment` call sites still mount hook independently |
+| **UI structure** | 3 | **Done** — `ModelEnvironmentSync` + thin hooks (Phase 7) |
 | **Longer term** | 4 | **Not started** — deploy-time overlay persistence |
 
-Suggested acceptance metrics *(Phase 6 automated tests cover most)*:
+Suggested acceptance metrics *(Phase 6–7 automated tests cover most)*:
 
 - Cold: first Library schema ≤ 4s (unchanged), logged once per session.
 - Warm: 0 calls to carry-on path during entity grid refresh (only data Redux actions).
-- `getMiroirFundamentalSchemaForDeployment` invocations per user action ≤ 1 (provider). *Partially met — context dedupes per revision; N hook mounts remain.*
+- `getMiroirFundamentalSchemaForDeployment` invocations per user action ≤ 1 (provider). *Met for UI — Sync owns resolve; N hook mounts use `ensure` no-op.*
 - Unit test suite: 0 multi-second schema builds unless explicitly in `schemaForDeployment` perf test.
 
 ---
@@ -368,26 +374,28 @@ See [tdd-implementation-plan.md](./tdd-implementation-plan.md) for the TDD slice
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │  UI (miroir-standalone-app)                                             │
-│  useCurrentModelEnvironment ──► computeSchemaRevision (meta + app)    │
-│       │                              │ only when revision changes       │
-│       └──────────────────────────────► applyDeploymentSchemaRevision    │
-│                                        (MiroirContextReactProvider)   │
-└────────────────────────────────────────────┬────────────────────────────┘
-                                             │
-┌────────────────────────────────────────────▼────────────────────────────┐
+│  ModelEnvironmentSync (RootComponent) ──► applyDeploymentSchemaRevision │
+│       │  useLayoutEffect on (meta+app revision) for meta + current app  │
+│       ▼                                                                 │
+│  useCurrentModelEnvironment ──► ensureSchemaForDeployment (no-op if warm)│
+│       └──────────────────────────────► schemasPerDeployment (read only) │
+└────────────────────────────────────────────────┬────────────────────────┘
+                                                 │
+┌────────────────────────────────────────────────▼────────────────────────┐
 │  Policy (miroir-react)                                                    │
 │  schemaReloadPolicy.ts — evaluateSchemaRevisionChange / resolveSchema…  │
-└────────────────────────────────────────────┬────────────────────────────┘
-                                             │
-┌────────────────────────────────────────────▼────────────────────────────┐
+│  ensureSchemaForDeployment — single-flight when revisions already applied│
+└────────────────────────────────────────────────┬────────────────────────┘
+                                                 │
+┌────────────────────────────────────────────────▼────────────────────────┐
 │  Core (miroir-core)                                                       │
 │  schemaChangeKind.ts    — computeSchemaRevision, classifySchemaChange     │
 │  schemaModePolicy.ts    — MIROIR_SCHEMA_MODE frozen → static auto         │
 │  schemaForDeployment.ts — resolveFundamentalSchemaForDeployment + cache   │
 │  getMiroirFundamentalSchemaForDeployment → resolve(..., 'auto')          │
-└────────────────────────────────────────────┬────────────────────────────┘
-                                             │
-                    ┌────────────────────────┴────────────────────────┐
+└────────────────────────────────────────────────┬────────────────────────┘
+                                                 │
+                    ┌────────────────────────────┴────────────────────────┐
                     │ static (import)          │ extended (carry-on)    │
                     ▼                          ▼                        │
          miroirFundamentalJzodSchema    buildExtendedSchema + cache     │
@@ -412,15 +420,18 @@ See [tdd-implementation-plan.md](./tdd-implementation-plan.md) for the TDD slice
 
 Meta revision is computed from the **Miroir deployment** model (`selfApplicationMiroir`), not from the client app's deployment — avoids false meta invalidation on Library data edits.
 
-### 8.4 UI data flow (today)
+### 8.4 UI data flow (after Proposal 3)
 
 1. Redux/localCache updates → new `currentModel` object (often).
-2. Hook computes `metaSchemaRevision` + `appSchemaRevision` via `computeSchemaRevision`.
-3. Effect runs **only when either revision string changes** (not on every model ref).
-4. `applyDeploymentSchemaRevision` → policy → maybe `setSchemaForDeployment`.
-5. Components read `context.schemasPerDeployment[deploymentUuid]` (fallback: one `resolve(..., 'auto')` in `useMemo` before cache warm).
+2. `ModelEnvironmentSync` (RootComponent) computes `metaSchemaRevision` + `appSchemaRevision`
+   for Miroir meta + current application; `useLayoutEffect` calls `applyDeploymentSchemaRevision`
+   only when a revision string changes.
+3. `applyDeploymentSchemaRevision` → policy → maybe `setSchemaForDeployment`.
+4. Components call `useCurrentModelEnvironment` which **reads** `context.schemasPerDeployment`
+   and may call `ensureSchemaForDeployment` (no-op when Sync already applied that revision).
+5. Cross-app edge cases (non-current app) warm via `ensure` only — still one resolve per revision.
 
-**Still open (Proposal 3):** ~18 production components each mount `useCurrentModelEnvironment`; revision dedup prevents redundant carry-on but not duplicate hook/effect work.
+**Proposal 3 done:** N consumer mounts no longer each own an `apply` effect; Sync is the single owner.
 
 ### 8.5 Non-UI paths (unchanged role)
 
@@ -438,8 +449,9 @@ Meta revision is computed from the **Miroir deployment** model (`selfApplication
 | `schemaChangeKind.ts` | miroir-core | Revision fingerprint, `SchemaChangeKind` |
 | `schemaModePolicy.ts` | miroir-core | `MIROIR_SCHEMA_MODE` |
 | `schemaReloadPolicy.ts` | miroir-react | UI invalidation decisions |
-| `MiroirContextReactProvider.tsx` | miroir-react | `schemasPerDeployment`, `schemaReloadRequired`, `applyDeploymentSchemaRevision` |
-| `ReduxHooks.ts` | miroir-standalone-app | `useCurrentModelEnvironment` (revision-keyed) |
+| `MiroirContextReactProvider.tsx` | miroir-react | `schemasPerDeployment`, `schemaReloadRequired`, `applyDeploymentSchemaRevision`, `ensureSchemaForDeployment` |
+| `ModelEnvironmentSync.tsx` | miroir-standalone-app | Single owner of schema sync (Proposal 3) |
+| `ReduxHooks.ts` | miroir-standalone-app | Thin `useCurrentModelEnvironment` (ensure + context read) |
 | `docs/reference/testing.md` | docs | Frozen vs runtime test policy |
 
 Primary tests: `schemaResolutionMode.unit.test.ts`, `schemaChangeKind.unit.test.ts`,
@@ -458,8 +470,9 @@ Primary tests: `schemaResolutionMode.unit.test.ts`, `schemaChangeKind.unit.test.
 | `packages/miroir-core/src/0_interfaces/.../getMiroirFundamentalJzodSchemaHelpers.ts` | `applyDeploymentDomainActionCarryOn` |
 | `packages/miroir-core/src/1_core/Model.ts` | Module-level default envs (`'static'`) |
 | `packages/miroir-react/src/contexts/schemaReloadPolicy.ts` | UI reload / overlay policy |
-| `packages/miroir-react/src/contexts/MiroirContextReactProvider.tsx` | `schemasPerDeployment`, `applyDeploymentSchemaRevision` |
-| `packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts` | `useCurrentModelEnvironment` |
+| `packages/miroir-react/src/contexts/MiroirContextReactProvider.tsx` | `schemasPerDeployment`, `applyDeploymentSchemaRevision`, `ensureSchemaForDeployment` |
+| `packages/miroir-standalone-app/src/miroir-fwk/4_view/ModelEnvironmentSync.tsx` | Single owner of UI schema sync (Proposal 3) |
+| `packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts` | Thin `useCurrentModelEnvironment` |
 | `packages/miroir-localcache-redux/src/4_services/localCache/Model.ts` | `currentModelEnvironment` (DC path; UI deprecated) |
 | `packages/miroir-core/tests/1_core/schema*.unit.test.ts` | Mode, revision, cache, perf guards |
 | `packages/miroir-react/tests/schemaReloadPolicy.unit.test.ts` | UI policy unit tests |

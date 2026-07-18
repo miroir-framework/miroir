@@ -134,6 +134,21 @@ describe("inferIntegrationSessionKind (B0)", () => {
 
     expect(inferIntegrationSessionKind(suite)).toBe("runner");
   });
+
+  it("returns runner for actionTest-only suites (1.3-a)", () => {
+    const suite: MiroirTestSuite = {
+      miroirTestType: "miroirTestSuite",
+      miroirTestLabel: "domainController.data.crud",
+      miroirTests: [
+        {
+          miroirTestType: "actionTest",
+          miroirTestLabel: "Refresh all Instances",
+        },
+      ],
+    };
+
+    expect(inferIntegrationSessionKind(suite)).toBe("runner");
+  });
 });
 
 describe("classifyMiroirTestSuiteExecutionCapabilities (B0)", () => {
@@ -206,6 +221,26 @@ describe("classifyMiroirTestSuiteExecutionCapabilities (B0)", () => {
       hasIntegrationLeaves: true,
       integrationSessionKind: "transformer",
       uiExecutionMode: "mixed",
+    });
+  });
+
+  it("marks actionTest suites as integration-only with runner session kind", () => {
+    const suite: MiroirTestSuite = {
+      miroirTestType: "miroirTestSuite",
+      miroirTestLabel: "action suite",
+      miroirTests: [
+        {
+          miroirTestType: "actionTest",
+          miroirTestLabel: "Add Book instance",
+        },
+      ],
+    };
+
+    expect(classifyMiroirTestSuiteExecutionCapabilities(suite)).toEqual({
+      hasUnitLeaves: false,
+      hasIntegrationLeaves: true,
+      integrationSessionKind: "runner",
+      uiExecutionMode: "integration",
     });
   });
 });

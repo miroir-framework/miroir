@@ -7,8 +7,10 @@ import {
   defaultMetaModelEnvironment,
   listQueryRunnerFixtureRefs,
   listWhitelistedFunctionRefs,
+  miroirTestForAction,
   miroirTestForFunctionCall,
   miroirTestForQuery,
+  miroirTestLeaf,
   miroirTest_pilot_transformer_plus,
   miroirTest_queries_library,
   resolveFunctionCallTarget,
@@ -99,6 +101,24 @@ describe("miroir leaf zod schemas", () => {
       ],
     });
     expect(parsed.fixtureRef).toBe("libraryDomainState");
+  });
+
+  it("miroirTestForAction validates a minimal actionTest leaf", () => {
+    const parsed = miroirTestForAction.parse({
+      miroirTestType: "actionTest",
+      miroirTestLabel: "Refresh all Instances",
+    });
+    expect(parsed.miroirTestLabel).toBe("Refresh all Instances");
+    expect(parsed.miroirTestType).toBe("actionTest");
+  });
+
+  it("miroirTestLeaf accepts actionTest in the union", () => {
+    const parsed = miroirTestLeaf.parse({
+      miroirTestType: "actionTest",
+      miroirTestLabel: "Add Book instance",
+      testParams: { bookCount: 6 },
+    });
+    expect(parsed.miroirTestType).toBe("actionTest");
   });
 });
 
@@ -328,6 +348,77 @@ describe("runMiroirTestInMemory — runnerTest", () => {
   });
 });
 
+describe("runMiroirTestInMemory — actionTest (Phase 0 stub)", () => {
+  const actionLeaf = {
+    miroirTestType: "actionTest" as const,
+    miroirTestLabel: "Refresh all Instances",
+  };
+
+  it("requires executionMode integration", async () => {
+    await expect(
+      runMiroirTest(
+        vitest,
+        ["action"],
+        undefined,
+        actionLeaf,
+        defaultMetaModelEnvironment,
+        mockTracker() as any,
+        undefined,
+        false,
+        runMiroirTests,
+        { executionMode: "unit" },
+        [{ test: "t" }, { testAssertion: "t" }],
+      ),
+    ).rejects.toThrow(/actionTest leaves require executionMode integration/);
+  });
+
+  it("requires domainController in executionEnvironment", async () => {
+    await expect(
+      runMiroirTest(
+        vitest,
+        ["action"],
+        undefined,
+        actionLeaf,
+        defaultMetaModelEnvironment,
+        mockTracker() as any,
+        undefined,
+        false,
+        runMiroirTests,
+        {
+          executionMode: "integration",
+          executionEnvironment: {} as any,
+        },
+        [{ test: "t" }, { testAssertion: "t" }],
+      ),
+    ).rejects.toThrow(/domainController is required/);
+  });
+
+  it("throws Phase 2 stub when environment is present", async () => {
+    await expect(
+      runMiroirTest(
+        vitest,
+        ["action"],
+        undefined,
+        actionLeaf,
+        defaultMetaModelEnvironment,
+        mockTracker() as any,
+        undefined,
+        false,
+        runMiroirTests,
+        {
+          executionMode: "integration",
+          executionEnvironment: {
+            domainController: {} as any,
+            applicationDeploymentMap: {},
+            testApplicationUuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            persistenceStoreControllerManager: {} as any,
+          },
+        },
+        [{ test: "t" }, { testAssertion: "t" }],
+      ),
+    ).rejects.toThrow(/resolveActionTestLeaf not implemented/);
+  });
+});
 describe("runMiroirTestInMemory — transformerTest", () => {
   it("executes pilot resolveConditionalSchema build test", async () => {
     const tracker = mockTracker();
