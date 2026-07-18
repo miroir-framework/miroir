@@ -1,3 +1,11 @@
+/**
+ * @deprecated Prefer MiroirTest suites:
+ * - `domain_controller_non_uuid_pk_model_crud` (create entity with number PK)
+ * - `domain_controller_non_uuid_pk_data_crud` (CRUD instances with number PK)
+ * via `npm run testMiroir -w miroir-standalone-app -- --suites <key> --mode integ --profile emulatedServer-sql`.
+ * Canonical leaves in deployment-miroir; Library is runTarget only.
+ * Kept green until MiroirTest is accepted as sole owner — do not delete.
+ */
 import { describe, expect, beforeAll, beforeEach, afterAll, afterEach, it } from "vitest";
 
 import process from "process";

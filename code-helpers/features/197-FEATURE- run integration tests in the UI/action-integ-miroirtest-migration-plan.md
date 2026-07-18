@@ -316,7 +316,8 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 | 4.1 ★ | **Deprecate** (do **not** delete) `DomainController.integ.Data.CRUD.test.tsx`; docs + nonreg prefer `testMiroir --suites domain_controller_data_crud`; legacy stays in nonreg via `DomainController.integ` | Both paths green | **nonreg** | ✅ |
 | 4.2 ★ | Port Model.CRUD → `domain_controller_model_crud` (`actionTest`); Publisher+Country playfield seed; deprecate imperative Model.CRUD | Integ 8/8 + legacy green | **nonreg** | ✅ |
 | 4.3 ★ | Port compositePK.CRUD → `domain_controller_composite_pk_crud` (`actionTest`); custom TestEntityCompositePK playfield seed; deprecate imperative compositePK | Integ 4/4 + legacy green | **nonreg** | ✅ |
-| 4.4+ | Migrate remaining PK / noParentUuid CRUD files using the same leaf + session | One file per slice | nonreg per file or batch | — |
+| 4.4 ★ | Port nonUuidPK.CRUD → `domain_controller_non_uuid_pk_{model,data}_crud` (`actionTest`); Publisher-only + CodeNumber seeds; deprecate imperative nonUuidPK | Integ 1+4 + legacy green | **nonreg** | ✅ |
+| 4.5+ | Migrate remaining noParentUuid / other CRUD files using the same leaf + session | One file per slice | nonreg per file or batch | — |
 
 **Phase 4.1 notes:**
 - Legacy Data.CRUD marked `@deprecated` with preferred CLI; **must remain runnable** until MiroirTest is accepted as sole owner (later deletion slice — not 4.1).
@@ -332,6 +333,11 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 - Seed: `domainControllerCompositePkCrudLibraryPlayfieldSeed` (TestEntityCompositePK only; `idAttribute: ["region","code"]`).
 - `RunnerTestSession` remaps the *provided* seed metaModel (does not replace with `defaultLibraryAppModel`) so custom entities survive.
 - Imperative compositePK.CRUD deprecated, not deleted.
+
+**Phase 4.4 notes:**
+- Two suite keys (different playfield seeds): `domain_controller_non_uuid_pk_model_crud` (Publisher only; leaf creates TestEntityCodeNumber) and `domain_controller_non_uuid_pk_data_crud` (TestEntityCodeNumber + 3 instances; `idAttribute: "code"`).
+- Generator: `generate_domain_controller_non_uuid_pk_crud_miroir_test.py` writes both JSON assets into Miroir `miroir_data`.
+- Imperative nonUuidPK.CRUD deprecated, not deleted.
 
 ### Phase 5 — UI (#197 Phase B follow-on)
 

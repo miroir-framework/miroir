@@ -5,10 +5,15 @@ import {
   DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY,
+  DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY,
+  DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY,
   domainControllerDataCrudFilterEntities,
   domainControllerDataCrudLibraryPlayfieldSeed,
   domainControllerModelCrudLibraryPlayfieldSeed,
   domainControllerCompositePkCrudLibraryPlayfieldSeed,
+  domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed,
+  domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed,
+  ENTITY_CODE_NUMBER_UUID,
   ENTITY_COMPOSITE_PK_UUID,
   isDomainControllerCompositePkCrudSuite,
   isDomainControllerDataCrudSuite,
@@ -68,5 +73,21 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
     expect(
       libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY),
     ).toBe(seed);
+  });
+
+  it("nonUuidPK model/data seeds use Publisher-only vs CodeNumber playfields", () => {
+    const modelSeed = domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed;
+    expect(modelSeed.libraryEntitiesAndInstances).toHaveLength(1);
+    expect(modelSeed.libraryEntitiesAndInstances[0].entity.name).toBe("Publisher");
+    expect(
+      libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY),
+    ).toBe(modelSeed);
+
+    const dataSeed = domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed;
+    expect(dataSeed.libraryEntitiesAndInstances[0].entity.uuid).toBe(ENTITY_CODE_NUMBER_UUID);
+    expect(dataSeed.libraryEntitiesAndInstances[0].instances).toHaveLength(3);
+    expect(
+      libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY),
+    ).toBe(dataSeed);
   });
 });

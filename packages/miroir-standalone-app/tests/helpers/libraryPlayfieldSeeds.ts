@@ -49,6 +49,14 @@ export const DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY = "domain_controller_model_c
 export const DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY =
   "domain_controller_composite_pk_crud";
 
+/** Suite registry key for DomainController non-UUID PK Model CRUD action MiroirTest. */
+export const DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY =
+  "domain_controller_non_uuid_pk_model_crud";
+
+/** Suite registry key for DomainController non-UUID PK Data CRUD action MiroirTest. */
+export const DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY =
+  "domain_controller_non_uuid_pk_data_crud";
+
 /**
  * Seed payload for `RunnerTestSessionOptions.libraryPlayfieldSeed` /
  * `resetLibraryPlayfield` (Action Data.CRUD playfield).
@@ -163,6 +171,131 @@ export const libraryEntitiesAndInstancesCompositePK: ApplicationEntitiesAndInsta
     instances: [compositeItem1, compositeItem2, compositeItem3],
   },
 ];
+
+/** Non-UUID number PK test entity — `idAttribute: "code"` (matches legacy integ file). */
+export const ENTITY_CODE_NUMBER_UUID = "ccc0d000-1c1c-2b2b-3a3a-4b4b5c5c6d6d";
+export const ENTITY_DEFINITION_CODE_NUMBER_UUID = "ddd1e111-2d2d-3e3e-4f4f-5a5a6b6b7c7c";
+
+export const entityCodeNumber: Entity = {
+  uuid: ENTITY_CODE_NUMBER_UUID,
+  parentName: "Entity",
+  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  selfApplication: selfApplicationLibrary.uuid,
+  name: "TestEntityCodeNumber",
+  conceptLevel: "Model",
+  description: "Test entity with a non-UUID number primary key.",
+} as Entity;
+
+export const entityDefinitionCodeNumber: EntityDefinition = {
+  uuid: ENTITY_DEFINITION_CODE_NUMBER_UUID,
+  parentName: "EntityDefinition",
+  parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  entityUuid: ENTITY_CODE_NUMBER_UUID,
+  conceptLevel: "Model",
+  name: "TestEntityCodeNumber",
+  idAttribute: "code",
+  mlSchema: {
+    type: "object",
+    definition: {
+      code: {
+        type: "number",
+        tag: { value: { id: 1, defaultLabel: "Code" } },
+      },
+      parentName: {
+        type: "string",
+        optional: true,
+        tag: { value: { id: 2, defaultLabel: "Entity Name" } },
+      },
+      parentUuid: {
+        type: "uuid",
+        tag: { value: { id: 3, defaultLabel: "Entity Uuid" } },
+      },
+      name: {
+        type: "string",
+        tag: { value: { id: 4, defaultLabel: "Name" } },
+      },
+    },
+  },
+} as any as EntityDefinition;
+
+export const codeItem1: EntityInstance = {
+  code: 1,
+  parentUuid: ENTITY_CODE_NUMBER_UUID,
+  parentName: "TestEntityCodeNumber",
+  name: "first item",
+} as EntityInstance;
+
+export const codeItem2: EntityInstance = {
+  code: 2,
+  parentUuid: ENTITY_CODE_NUMBER_UUID,
+  parentName: "TestEntityCodeNumber",
+  name: "second item",
+} as EntityInstance;
+
+export const codeItem3: EntityInstance = {
+  code: 3,
+  parentUuid: ENTITY_CODE_NUMBER_UUID,
+  parentName: "TestEntityCodeNumber",
+  name: "third item",
+} as EntityInstance;
+
+/** MetaModel for non-UUID PK Data seed — TestEntityCodeNumber only. */
+export const codeNumberTestMetaModel: MetaModel = {
+  applicationUuid: selfApplicationLibrary.uuid,
+  applicationName: selfApplicationLibrary.name,
+  entities: [entityCodeNumber],
+  entityDefinitions: [entityDefinitionCodeNumber],
+  endpoints: [],
+  jzodSchemas: [],
+  menus: [],
+  runners: [],
+  themes: [],
+  applicationVersions: [],
+  reports: [],
+  storedQueries: [],
+  applicationVersionCrossEntityDefinition: [],
+  applications: [],
+};
+
+export const libraryEntitiesAndInstancesCodeNumber: ApplicationEntitiesAndInstances = [
+  {
+    entity: entityCodeNumber,
+    entityDefinition: entityDefinitionCodeNumber,
+    instances: [codeItem1, codeItem2, codeItem3],
+  },
+];
+
+/** Publisher only — non-UUID PK Model.CRUD beforeEach seed. */
+export const libraryEntitiesAndInstancesPublisherOnly: ApplicationEntitiesAndInstances = [
+  {
+    entity: entityPublisher as Entity,
+    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    instances: [
+      publisher1 as EntityInstance,
+      publisher2 as EntityInstance,
+      publisher3 as EntityInstance,
+    ],
+  },
+];
+
+export const publisherOnlyTestMetaModel: MetaModel = {
+  applicationUuid: selfApplicationLibrary.uuid,
+  applicationName: selfApplicationLibrary.name,
+  entities: [entityPublisher as Entity],
+  entityDefinitions: [entityDefinitionPublisher as EntityDefinition],
+  endpoints: [],
+  jzodSchemas: [],
+  menus: [],
+  runners: [],
+  themes: [],
+  applicationVersions: [],
+  reports: [],
+  storedQueries: [],
+  applicationVersionCrossEntityDefinition: [],
+  applications: [],
+};
 
 export const libraryPlayfieldSeedInitParams: InitApplicationParameters = {
   dataStoreType: "app",
@@ -312,11 +445,41 @@ export function isDomainControllerCompositePkCrudSuite(suiteKey: string): boolea
   return suiteKey === DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY;
 }
 
+/**
+ * Session playfield seed for `domain_controller_non_uuid_pk_model_crud`.
+ * Publisher only — leaf creates TestEntityCodeNumber.
+ */
+export const domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
+  libraryEntitiesAndInstances: libraryEntitiesAndInstancesPublisherOnly,
+  librarySeedInitParams: libraryPlayfieldSeedInitParams,
+  librarySeedMetaModel: publisherOnlyTestMetaModel,
+};
+
+export function isDomainControllerNonUuidPkModelCrudSuite(suiteKey: string): boolean {
+  return suiteKey === DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY;
+}
+
+/**
+ * Session playfield seed for `domain_controller_non_uuid_pk_data_crud`.
+ * TestEntityCodeNumber (idAttribute "code") + 3 instances.
+ */
+export const domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
+  libraryEntitiesAndInstances: libraryEntitiesAndInstancesCodeNumber,
+  librarySeedInitParams: libraryPlayfieldSeedInitParams,
+  librarySeedMetaModel: codeNumberTestMetaModel,
+};
+
+export function isDomainControllerNonUuidPkDataCrudSuite(suiteKey: string): boolean {
+  return suiteKey === DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY;
+}
+
 export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
   return (
     isDomainControllerDataCrudSuite(suiteKey) ||
     isDomainControllerModelCrudSuite(suiteKey) ||
-    isDomainControllerCompositePkCrudSuite(suiteKey)
+    isDomainControllerCompositePkCrudSuite(suiteKey) ||
+    isDomainControllerNonUuidPkModelCrudSuite(suiteKey) ||
+    isDomainControllerNonUuidPkDataCrudSuite(suiteKey)
   );
 }
 
@@ -331,6 +494,12 @@ export function libraryPlayfieldSeedForActionSuite(
   }
   if (isDomainControllerCompositePkCrudSuite(suiteKey)) {
     return domainControllerCompositePkCrudLibraryPlayfieldSeed;
+  }
+  if (isDomainControllerNonUuidPkModelCrudSuite(suiteKey)) {
+    return domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed;
+  }
+  if (isDomainControllerNonUuidPkDataCrudSuite(suiteKey)) {
+    return domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed;
   }
   return undefined;
 }

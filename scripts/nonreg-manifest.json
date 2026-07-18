@@ -101,6 +101,30 @@
       ]
     },
     {
+      "id": "integ-action-domain_controller_non_uuid_pk_model_crud",
+      "tier": "default",
+      "title": "MiroirTest integ — domain_controller_non_uuid_pk_model_crud (actionTest)",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testMiroir", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "--suites", "domain_controller_non_uuid_pk_model_crud",
+        "--mode", "integ"
+      ]
+    },
+    {
+      "id": "integ-action-domain_controller_non_uuid_pk_data_crud",
+      "tier": "default",
+      "title": "MiroirTest integ — domain_controller_non_uuid_pk_data_crud (actionTest)",
+      "requires": "postgres",
+      "argv": [
+        "npm", "run", "testMiroir", "-w", "miroir-standalone-app", "--",
+        "--profile", "{profile}",
+        "--suites", "domain_controller_non_uuid_pk_data_crud",
+        "--mode", "integ"
+      ]
+    },
+    {
       "id": "appstack-DomainController.integ",
       "tier": "default",
       "title": "App-stack — DomainController.integ (all; Data.CRUD deprecated but kept green)",

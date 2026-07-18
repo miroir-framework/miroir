@@ -12,6 +12,8 @@ export const MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES = [
   "domain_controller_data_crud",
   "domain_controller_model_crud",
   "domain_controller_composite_pk_crud",
+  "domain_controller_non_uuid_pk_model_crud",
+  "domain_controller_non_uuid_pk_data_crud",
 ] as const;
 
 function listRunnerTestSuiteKeys(): string[] {
