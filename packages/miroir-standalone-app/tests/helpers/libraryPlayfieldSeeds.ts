@@ -524,6 +524,27 @@ export const domainControllerModelCrudFilterEntities: Uuid[] = [
   entityCountry.uuid,
 ];
 
+/** MetaModel for Model.CRUD — Publisher + Country only (legacy filterEntities). */
+export const publisherAndCountryTestMetaModel: MetaModel = {
+  applicationUuid: selfApplicationLibrary.uuid,
+  applicationName: selfApplicationLibrary.name,
+  entities: [entityPublisher as Entity, entityCountry as Entity],
+  entityDefinitions: [
+    entityDefinitionPublisher as EntityDefinition,
+    entityDefinitionCountry as EntityDefinition,
+  ],
+  endpoints: [],
+  jzodSchemas: [],
+  menus: [],
+  runners: [],
+  themes: [],
+  applicationVersions: [],
+  reports: [],
+  storedQueries: [],
+  applicationVersionCrossEntityDefinition: [],
+  applications: [],
+};
+
 /**
  * Session playfield seed for `domain_controller_model_crud`.
  * Matches imperative Model.CRUD beforeEach (Publisher + Country).
@@ -531,7 +552,7 @@ export const domainControllerModelCrudFilterEntities: Uuid[] = [
 export const domainControllerModelCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
   libraryEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
   librarySeedInitParams: libraryPlayfieldSeedInitParams,
-  librarySeedMetaModel: defaultLibraryAppModel as MetaModel,
+  librarySeedMetaModel: publisherAndCountryTestMetaModel,
 };
 
 export function isDomainControllerModelCrudSuite(suiteKey: string): boolean {

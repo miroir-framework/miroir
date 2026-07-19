@@ -60,6 +60,10 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
       "Country",
       "Publisher",
     ]);
+    expect(seed.librarySeedMetaModel.entities.map((e) => e.name).sort()).toEqual([
+      "Country",
+      "Publisher",
+    ]);
     expect(isDomainControllerModelCrudSuite(DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY)).toBe(true);
     expect(libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY)).toBe(seed);
   });

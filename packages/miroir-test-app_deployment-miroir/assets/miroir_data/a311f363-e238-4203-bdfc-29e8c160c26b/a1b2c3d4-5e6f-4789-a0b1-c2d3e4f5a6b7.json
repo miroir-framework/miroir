@@ -1310,11 +1310,11 @@
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                  "entityName": "Publisher",
                   "sourceEntityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
                   "targetEntityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
                   "sourceEntityDefinitionUuid": "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
                   "targetEntityDefinitionUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
+                  "targetEntityName": "Publisher",
                   "columns": [
                     "iso3166-1Alpha-2"
                   ]
@@ -1344,17 +1344,13 @@
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                       "extractors": {
-                        "entityDefinitions": {
-                          "extractorOrCombinerType": "extractorByPrimaryKey",
-                          "applicationSection": "model",
-                          "parentName": "EntityDefinition",
-                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                          "instanceUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        }
+                                    "entityDefinitions": {
+                                      "extractorOrCombinerType": "extractorByPrimaryKey",
+                                      "applicationSection": "model",
+                                      "parentName": "EntityDefinition",
+                                      "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                                      "instanceUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9"
+                                    }
                       }
                     }
                   }
