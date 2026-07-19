@@ -14,14 +14,14 @@
   "overrides": {
     "yaml": "^2.4.2"
   },
-    "postinstall": "node scripts/patch-tsup-baseurl.js"
+  "devDependencies": {
     "@types/node": "^25.6.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "lerna": "^9.0.0",
     "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
   "scripts": {
-    "postinstall": "python scripts/patch-tsup-baseurl.py",
+    "postinstall": "node scripts/patch-tsup-baseurl.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "nonreg": "python scripts/run-nonreg.py",
     "nonreg:unit": "python scripts/run-nonreg.py --tier unit --run-all",
