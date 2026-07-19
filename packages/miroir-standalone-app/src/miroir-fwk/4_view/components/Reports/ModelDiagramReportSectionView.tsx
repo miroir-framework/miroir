@@ -10,6 +10,7 @@ import { buildEntityDefinitionClickLinks, MermaidClassDiagram } from "miroir-dia
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -74,11 +75,11 @@ export const ModelDiagramReportSectionView: React.FC<ModelDiagramReportSectionVi
 
   return (
     <div>
-      {props.showPerformanceDisplay && (
-        <div style={{ fontSize: "12px", opacity: 0.6 }}>
-          ModelDiagramReportSectionView renders: {navigationCount} (total: {totalCount})
-        </div>
-      )}
+      <RenderInsightHeader
+        componentName="ModelDiagramReportSectionView"
+        navigationCount={navigationCount}
+        totalCount={totalCount}
+      />
       <MermaidClassDiagram
         entityDefinitions={entityDefinitions}
         options={{

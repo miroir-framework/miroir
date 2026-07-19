@@ -20,6 +20,7 @@ import { PageContainer } from "../components/Page/PageContainer.js";
 import { ThemedBox } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
+import { RenderInsightHeader } from "../components/RenderInsightHeader.js";
 import { useRenderTracker } from "../tools/renderCountTracker.js";
 import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
 import { ReportDisplay } from "./ReportDisplay.js";
@@ -100,17 +101,19 @@ export const ReportPage = () => {
           />
           <ThemedBox>
             {context.showPerformanceDisplay && (
-              <>
-                <ThemedBox>
-                  application={pageParams.application},
-                  deploymentUuid={pageParams.deploymentUuid}, applicationSection=
-                  {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}, instanceUuid=
-                  {pageParams.instanceUuid}
-                </ThemedBox>
-                <span>
-                  ReportPage renders: {navigationCount} (total: {totalCount})
-                </span>
-              </>
+              <ThemedBox>
+                application={pageParams.application},
+                deploymentUuid={pageParams.deploymentUuid}, applicationSection=
+                {pageParams.applicationSection}, reportUuid={pageParams.reportUuid}, instanceUuid=
+                {pageParams.instanceUuid}
+              </ThemedBox>
+            )}
+            {context.showPerformanceDisplay && (
+              <RenderInsightHeader
+                componentName="ReportPage"
+                navigationCount={navigationCount}
+                totalCount={totalCount}
+              />
             )}
           </ThemedBox>
           <ReportDisplay

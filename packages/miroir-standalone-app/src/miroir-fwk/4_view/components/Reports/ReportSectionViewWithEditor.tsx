@@ -24,6 +24,7 @@ import type { Params } from 'react-router-dom';
 import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { ReportDisplay } from '../../routes/ReportDisplay';
+import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 import { StoredRunnerView } from '../Runners/RunnerView';
@@ -310,9 +311,15 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
       <div style={{ position: "relative" }}>
         {/* {props.generalEditMode && <IconBar />} */}
         {showPerformanceDisplay && (
-          <ThemedText style={{ fontSize: "12px", opacity: 0.6 }}>
-            ReportSectionViewWithEditor renders: {navigationCount} (total: {totalCount})
-          </ThemedText>
+          <RenderInsightHeader
+            componentName="ReportSectionViewWithEditor"
+            navigationCount={navigationCount}
+            totalCount={totalCount}
+            formikPath={
+              props.formikReportDefinitionPathString ||
+              props.reportSectionPath?.join(".")
+            }
+          />
         )}
         <JsonDisplayHelper
           debug={true}

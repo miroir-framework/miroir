@@ -63,6 +63,7 @@ import {
   useSnackbar,
 } from "miroir-react";
 import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../../contexts/MiroirThemeContext.js';
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
@@ -861,9 +862,11 @@ export const RootComponent = (props: RootComponentProps) => {
                   <ThemedText> transactions: {JSON.stringify(transactions)}</ThemedText>
                 )}
                 {context.showPerformanceDisplay && (
-                  <div>
-                    RootComponent renders: {navigationCount} (total: {totalCount})
-                  </div>
+                  <RenderInsightHeader
+                    componentName="RootComponent"
+                    navigationCount={navigationCount}
+                    totalCount={totalCount}
+                  />
                 )}
                 {/* TODO: enclose the outlet in a PageContainer? (see ReportPage, Tools page) */}
                 <Outlet></Outlet>

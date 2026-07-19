@@ -44,6 +44,7 @@ import {
   useCurrentModel,
   useReduxDeploymentsStateQueryTemplateSelector
 } from "../../ReduxHooks.js";
+import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import {
@@ -157,7 +158,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const formikContext = useFormikContext<Record<string, any>>();
   const formikValuePathAsString = props.formikValuePath?.join("_") || "";
   
-  log.info("ReportSectionEntityInstance formikValuePathAsString", formikValuePathAsString);
+  // log.info("ReportSectionEntityInstance formikValuePathAsString", formikValuePathAsString);
 
   const reportDefinitionFromFormik: Report  | undefined =
     formikContext.values &&
@@ -183,7 +184,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const navigationKey = `${props.deploymentUuid}-${props.applicationSection}`;
   const { navigationCount, totalCount } = useRenderTracker(
     "ReportSectionEntityInstance",
-    navigationKey
+    navigationKey,
+    formikValuePathAsString
   );
 
   // Track performance immediately for initial render
@@ -415,15 +417,18 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
-  log.info("ReportSectionEntityInstance: rendering with instance:", instance);
+  // log.info("ReportSectionEntityInstance: rendering with instance:", instance);
   if (instance) {
     return (
       // <ThemedContainer style={{ width: '100%' }}>
       <ThemedContainer>
         {showPerformanceDisplay && (
-          <ThemedText>
-            ReportSectionEntityInstance renders: {navigationCount} (total: {totalCount})
-          </ThemedText>
+          <RenderInsightHeader
+            componentName="ReportSectionEntityInstance"
+            navigationCount={navigationCount}
+            totalCount={totalCount}
+            formikPath={formikValuePathAsString}
+          />
         )}
 
         <ThemedHeaderSection>

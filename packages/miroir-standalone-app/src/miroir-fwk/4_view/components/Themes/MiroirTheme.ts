@@ -394,6 +394,23 @@ export interface ResolvedMiroirTheme extends Omit<MiroirTheme, 'components' | 't
         lg: string;
       };
     };
+    /**
+     * Render-insight overlays (timer mode). Distinct from visual-debug (warning amber).
+     * Optional on stored themes; always resolved here with teal defaults.
+     */
+    renderInsight: {
+      background: string;
+      textColor: string;
+      textMuted: string;
+      accent: string;
+      borderColor: string;
+      badgeBackground: string;
+      badgeTextColor: string;
+      fontSize: string;
+      fontSizeSummary: string;
+      borderRadius: string;
+      borderRadiusSummary: string;
+    };
   };
   table: ResolvedTableTheme;
 }

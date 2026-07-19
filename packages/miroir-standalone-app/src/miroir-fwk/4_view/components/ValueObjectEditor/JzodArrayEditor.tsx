@@ -30,12 +30,18 @@ import {
   useMiroirContextService,
   useSelector,
 } from "miroir-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
+import {
+  NOOP_RENDER_COUNTS,
+  renderInsightRegistry,
+} from "../../tools/renderInsightRegistry.js";
+import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import {
@@ -203,30 +209,14 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   duplicateItemAtIndex,
   ...props
 }) => {
-  const isTestMode = process.env.VITE_TEST_MODE === 'true';
-  const [isRendered, setIsRendered] = useState(isTestMode);
-
-
-  if (!isTestMode) {
-    useEffect(() => {
-      // Use requestIdleCallback if available, otherwise setTimeout
-      const scheduleRender = () => {
-        if (typeof requestIdleCallback !== "undefined") {
-          requestIdleCallback(() => setIsRendered(true), { timeout: 1000 });
-        } else {
-          setTimeout(() => setIsRendered(true), 500);
-        }
-      };
-
-      scheduleRender();
-    }, []);
-  }
+  // Viewport-gated — same policy as ProgressiveAttribute.
+  const { ref: viewportRef, revealed: isRendered } = useViewportReveal();
 
   const itemRootLessListKey = rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index;
   const itemListKey = listKey + "." + index;
 
   return (
-    <div key={rootLessListKey + "." + index}>
+    <div key={rootLessListKey + "." + index} ref={viewportRef}>
       <div key={listKey + "." + index} style={{ marginLeft: `calc(${indentShift})` }}>
         {!isRendered ? (
           <div style={{ fontStyle: "italic", color: "#666", padding: "4px" }}>
@@ -379,6 +369,10 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
 ) => {
   jzodArrayEditorRenderCount++;
   const context = useMiroirContextService();
+  const renderStartRef = useRef(0);
+  if (context.showPerformanceDisplay) {
+    renderStartRef.current = performance.now();
+  }
   
   const formik = useFormikContext<Record<string, any>>();
   const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
@@ -786,6 +780,25 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   );
   ;
   // ##############################################################################################
+  const schemaType =
+    localResolvedElementJzodSchemaBasedOnValue?.type ??
+    currentTypeCheckKeyMap?.resolvedSchema?.type ??
+    currentRawJzodSchema?.type;
+  const insightRole = schemaType === "tuple" ? "tuple" : "array";
+  const insightComponentId =
+    insightRole === "tuple" ? "JzodTupleEditor" : "JzodArrayEditor";
+  const insightEnabled = !!context.showPerformanceDisplay;
+  // Sync accrual: chips need live counts; progressive mount limits fan-out.
+  const insightCounts = insightEnabled
+    ? renderInsightRegistry.trackRender({
+        componentId: insightComponentId,
+        navigationKey: `${currentDeploymentUuid ?? ""}-${currentApplicationSection ?? ""}`,
+        formikPath: formikRootLessListKey,
+        enabled: true,
+        durationMs: performance.now() - renderStartRef.current,
+      })
+    : NOOP_RENDER_COUNTS;
+
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <JsonDisplayHelper debug={true}
@@ -799,6 +812,15 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       />
       <div>
         <ThemedFlexRow justify="start" align="center">
+          {context.showPerformanceDisplay && (
+            <RenderInsightHeader
+              componentName={insightRole}
+              navigationCount={insightCounts.navigationCount}
+              totalCount={insightCounts.totalCount}
+              formikPath={formikRootLessListKey}
+              lastRenderTime={insightCounts.lastRenderTime}
+            />
+          )}
           <span>
             <ThemedFlexRow align="center">
               {label}

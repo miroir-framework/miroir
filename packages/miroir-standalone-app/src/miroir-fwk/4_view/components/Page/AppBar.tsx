@@ -19,6 +19,7 @@ import { pageUrl, reportUrl } from '../../navigation.js';
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../../services/index.js';
+import { applyPerformanceDisplayGate } from '../../tools/performanceDisplayGate.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { reportMiroirRunners } from 'miroir-test-app_deployment-miroir';
@@ -603,9 +604,11 @@ export function AppBar(props:AppBarProps) {
                   }
                 >
                   <ThemedIconButton
-                    onClick={() =>
-                      context.setShowPerformanceDisplay?.(!context.showPerformanceDisplay) as any
-                    }
+                    onClick={() => {
+                      const next = !context.showPerformanceDisplay;
+                      applyPerformanceDisplayGate(next);
+                      context.setShowPerformanceDisplay?.(next);
+                    }}
                     aria-label="Performance Monitor"
                     // title="Fetch Miroir & App configurations from database"
                   >

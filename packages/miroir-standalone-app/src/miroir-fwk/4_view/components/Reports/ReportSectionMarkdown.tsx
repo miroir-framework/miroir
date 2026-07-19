@@ -15,6 +15,7 @@ import {
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
 import {
@@ -170,12 +171,11 @@ export const ReportSectionMarkdown = (props: ReportSectionMarkdownProps) => {
         }}
       >
         {/* <span>reportSectionDefinitionFromFormik! {JSON.stringify(reportSectionDefinitionFromFormik)}</span> */}
-      {/* Performance display (optional) */}
-      {props.showPerformanceDisplay && (
-        <ThemedText>
-          ReportSectionMarkdown renders: {navigationCount} (total: {totalCount})
-        </ThemedText>
-      )}
+      <RenderInsightHeader
+        componentName="ReportSectionMarkdown"
+        navigationCount={navigationCount}
+        totalCount={totalCount}
+      />
       
       {/* Optional label at the top */}
       {props.label && (

@@ -11,6 +11,7 @@ import {
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { GraphComponent } from './GraphComponent.js';
 import { 
@@ -167,11 +168,11 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
   if (graphDataPoints.length === 0) {
     return (
       <ThemedBox>
-        {props.showPerformanceDisplay && (
-          <ThemedText style={{ fontSize: '12px', opacity: 0.6, padding: '2px' }}>
-            GraphReportSectionView renders: {navigationCount} (total: {totalCount})
-          </ThemedText>
-        )}
+        <RenderInsightHeader
+          componentName="GraphReportSectionView"
+          navigationCount={navigationCount}
+          totalCount={totalCount}
+        />
         <ThemedText>
           No data available for graph: {props.reportSection.definition.label || 'Untitled Graph'}
         </ThemedText>
@@ -184,11 +185,11 @@ export const GraphReportSectionView: React.FC<GraphReportSectionViewProps> = (pr
 
   return (
     <ThemedBox>
-      {props.showPerformanceDisplay && (
-        <ThemedText style={{ fontSize: '12px', opacity: 0.6, padding: '2px' }}>
-          GraphReportSectionView renders: {navigationCount} (total: {totalCount})
-        </ThemedText>
-      )}
+      <RenderInsightHeader
+        componentName="GraphReportSectionView"
+        navigationCount={navigationCount}
+        totalCount={totalCount}
+      />
       <GraphComponent 
         graphData={graphData}
         data-testid={`graph-${props.reportSection.definition.graphType}-${props.reportSection.definition.fetchedDataReference}`}
