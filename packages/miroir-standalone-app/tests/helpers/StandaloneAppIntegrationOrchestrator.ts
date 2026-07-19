@@ -148,6 +148,7 @@ function createStandaloneAppSession(
           | "suiteTestParams"
           | "runnerRegistry"
           | "libraryPlayfieldSeed"
+          | "skipRunTargetPlayfieldReset"
         >
       >;
       if (!runnerOptions.runTarget) {

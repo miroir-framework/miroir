@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { defaultLibraryAppModel, deployment_Library_DO_NO_USE, miroirTest_runner_library, RUNNER_LIBRARY_RUNNER_REGISTRY, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {
   miroirTest_runner_create_entity,
+  miroirTest_runner_drop_entity,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 import {
@@ -277,5 +278,54 @@ describe("runnerTest tools", () => {
       application: string;
     };
     expect(createEntityParams.application).toBe(runTarget.applicationUuid);
+  });
+
+  it("runner_drop_entity suite omits runTarget and preRunner embeds createEntity sequence", () => {
+    const suite = (miroirTest_runner_drop_entity as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    expect(suite.runTarget).toBeUndefined();
+    expect(suite.miroirTests).toHaveLength(1);
+    const leaf = suite.miroirTests[0] as MiroirTestForRunner;
+    expect(leaf.runnerRef).toBe("dropEntity");
+    expect(leaf.initialModel).toEqual(getFromParameters("emptyApplicationModel"));
+    expect(leaf.preRunnerCompositeActions).toHaveLength(1);
+    expect(leaf.preRunnerCompositeActions?.[0]).toMatchObject({
+      actionType: "compositeActionSequence",
+      actionLabel: "createEntitySequence",
+    });
+    expect(leaf.testParams?.createEntity).toBeDefined();
+    expect(leaf.testParams?.dropEntity).toBeDefined();
+  });
+
+  it("resolveRunnerTestLeaf builds dropEntity leaf with create+drop params expanded", () => {
+    const suite = (miroirTest_runner_drop_entity as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    const leaf = suite.miroirTests[0] as MiroirTestForRunner;
+    const runTarget = resolveRunnerTestRunTarget({
+      suite,
+      defaultApplicationName: "testApplication_CreateEntity",
+    });
+    const sessionTestParams = buildRunnerTestSessionParamBank(suite.testParams, runTarget, {
+      emptyApplicationModel,
+    });
+    const resolved = resolveRunnerTestLeaf({
+      leaf,
+      pageLabel: "runner.dropEntity",
+      buildContext,
+      runTarget,
+      sessionTestParams,
+      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+    });
+    expect(resolved.testActionType).toBe("testBuildPlusRuntimeCompositeActionSuite");
+    const dropParams = resolved.testParams.dropEntity as {
+      application: string;
+      entity: string;
+    };
+    expect(dropParams.application).toBe(runTarget.applicationUuid);
+    expect(typeof dropParams.entity).toBe("string");
+    const createParams = resolved.testParams.createEntity as {
+      application: string;
+    };
+    expect(createParams.application).toBe(runTarget.applicationUuid);
   });
 });

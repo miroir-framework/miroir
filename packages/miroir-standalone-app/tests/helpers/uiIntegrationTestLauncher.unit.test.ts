@@ -17,9 +17,11 @@ function runnerLibrarySuite(): MiroirTestSuite {
 }
 
 describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
-  it("lists runner_library and domain_controller action suites", () => {
+  it("lists runner_library, runner_create_entity, runner_drop_entity, and domain_controller action suites", () => {
     const keys = listUiIntegrationRunnerSuiteKeys();
     expect(keys).toContain("runner_library");
+    expect(keys).toContain("runner_create_entity");
+    expect(keys).toContain("runner_drop_entity");
     expect(keys).toContain("domain_controller_data_crud");
     expect(keys).toContain("domain_controller_model_crud");
   });
@@ -28,6 +30,22 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     const entry = resolveUiIntegrationRunnerSuite("runner_library");
     expect(entry.suiteDefinition.miroirTestLabel).toBe("runner.library");
     expect(Object.keys(entry.runnerRegistry).length).toBeGreaterThan(0);
+  });
+
+  it("resolves runner_create_entity with entity runners and skip playfield reset", () => {
+    const entry = resolveUiIntegrationRunnerSuite("runner_create_entity");
+    expect(entry.suiteDefinition.miroirTestLabel).toBe("runner.createEntity");
+    expect(entry.runnerRegistry).toHaveProperty("createEntity");
+    expect(entry.skipRunTargetPlayfieldReset).toBe(true);
+    expect(entry.defaultApplicationName).toBe("testApplication_CreateEntity");
+  });
+
+  it("resolves runner_drop_entity with entity runners and skip playfield reset", () => {
+    const entry = resolveUiIntegrationRunnerSuite("runner_drop_entity");
+    expect(entry.suiteDefinition.miroirTestLabel).toBe("runner.dropEntity");
+    expect(entry.runnerRegistry).toHaveProperty("dropEntity");
+    expect(entry.skipRunTargetPlayfieldReset).toBe(true);
+    expect(entry.defaultApplicationName).toBe("testApplication_CreateEntity");
   });
 
   it("resolves domain_controller_data_crud with playfield seed and empty runner registry", () => {

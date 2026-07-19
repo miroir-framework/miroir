@@ -110,7 +110,12 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
     const runnerOptions = (sessionSpecificOptions ?? {}) as Partial<
       Pick<
         RunnerTestSessionOptions,
-        "pageLabel" | "runTarget" | "suiteTestParams" | "runnerRegistry" | "libraryPlayfieldSeed"
+        | "pageLabel"
+        | "runTarget"
+        | "suiteTestParams"
+        | "runnerRegistry"
+        | "libraryPlayfieldSeed"
+        | "skipRunTargetPlayfieldReset"
       >
     > &
       Partial<AppStackBootstrapHostOptions>;

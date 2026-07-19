@@ -11,6 +11,9 @@ import {
   miroirTest_domain_controller_no_parent_uuid_crud,
   miroirTest_domain_controller_non_uuid_pk_data_crud,
   miroirTest_domain_controller_non_uuid_pk_model_crud,
+  miroirTest_runner_create_entity,
+  miroirTest_runner_drop_entity,
+  RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 
 import {
@@ -25,12 +28,22 @@ import {
   type LibraryPlayfieldSeed,
 } from "../../../tests/helpers/libraryPlayfieldSeeds.js";
 
+export const RUNNER_CREATE_ENTITY_SUITE_KEY = "runner_create_entity";
+export const RUNNER_DROP_ENTITY_SUITE_KEY = "runner_drop_entity";
+
 export type UiIntegrationRunnerSuiteEntry = {
   suiteDefinition: MiroirTestSuite;
   /** Empty for actionTest suites (no Runner entities). */
   runnerRegistry: Record<string, Runner>;
   /** Required for DomainController action suites; omitted for runner_library. */
   libraryPlayfieldSeed?: LibraryPlayfieldSeed;
+  /**
+   * Create/drop entity suites: ephemeral empty playfield — do not remount library
+   * seed onto the runTarget (same as CLI `skipRunTargetPlayfieldReset`).
+   */
+  skipRunTargetPlayfieldReset?: boolean;
+  /** Ephemeral runTarget applicationName when suite omits `runTarget`. */
+  defaultApplicationName?: string;
 };
 
 function actionSuiteEntry(
@@ -56,6 +69,20 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
       suiteDefinition: (miroirTest_runner_library as MiroirTestDefinition)
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
+    },
+    [RUNNER_CREATE_ENTITY_SUITE_KEY]: {
+      suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
+        .definition as MiroirTestSuite,
+      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      skipRunTargetPlayfieldReset: true,
+      defaultApplicationName: "testApplication_CreateEntity",
+    },
+    [RUNNER_DROP_ENTITY_SUITE_KEY]: {
+      suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
+        .definition as MiroirTestSuite,
+      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      skipRunTargetPlayfieldReset: true,
+      defaultApplicationName: "testApplication_CreateEntity",
     },
     [DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY]: actionSuiteEntry(
       DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,

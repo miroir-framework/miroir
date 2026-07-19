@@ -5,7 +5,7 @@
 - `packages/miroir-standalone-app/tests/4_view/Runner_CreateEntity.integ.test.tsx`  
 - `packages/miroir-standalone-app/tests/4_view/Runner_DropEntity.integ.test.tsx`  
 **Instance home:** **Miroir meta-application** (`miroir-test-app_deployment-miroir` / `miroir_data`) — runners `createEntity` / `dropEntity` are Miroir entities; Library Author fixtures are only the payload under test.  
-**Status:** Step 1 ✅ (`runner_create_entity`) · Step 2 planned · Step 3 optional  
+**Status:** Step 1 ✅ · Step 2 ✅ (`runner_drop_entity`) · Step 3 UI create done / drop registered  
 **Method:** TDD; keep legacy harness green until parity; deprecate (do not delete) per G8
 
 ### Hard constraint — legacy files kept green
@@ -78,7 +78,7 @@ flowchart LR
 | `initialModel` | `emptyApplicationModel` literal | `getFromParameters` → suite `testParams.emptyApplicationModel` (R0 pattern) |
 | Runner payload | Plain object under `createEntity` / `dropEntity` keys | Prefer `getFromParameters` for UUIDs; entity/definition literals OK in pilot |
 | Registry | Inline in integ file | `RUNNER_*_REGISTRY` export from deployment-miroir + CLI/UI suite keys |
-| UI integ | Not registered | Optional follow-up: add keys to `UI_INTEGRATION_RUNNER_SUITE_REGISTRY` |
+| UI integ | `UI_INTEGRATION_RUNNER_SUITE_REGISTRY` keys `runner_create_entity` + `runner_drop_entity` | — |
 
 ---
 
@@ -171,8 +171,9 @@ npm run testByFile -w miroir-standalone-app -- \
 
 ### Step 3 — (Optional follow-up) UI catalog + harness cleanup
 
-- Register both suites in `UI_INTEGRATION_RUNNER_SUITE_REGISTRY` for Phase B UI launcher.
-- Align DropEntity harness with `RunnerTestSession` (same fix as CreateEntity) if still imperative when Step 2 starts.
+- [x] Register `runner_create_entity` in `UI_INTEGRATION_RUNNER_SUITE_REGISTRY` (with `skipRunTargetPlayfieldReset`).
+- [x] Register `runner_drop_entity` after Step 2.
+- Align DropEntity harness with `RunnerTestSession` (same fix as CreateEntity) if still imperative when Step 2 starts. ✅
 - Later cutover: delete deprecated integ files when G8 batch agrees.
 
 ---
@@ -201,10 +202,12 @@ Import Author entity + definition from `miroir-test-app_deployment-library` in t
 ## 6. Success criteria
 
 - [x] Step 1: `runner_create_entity` integ green via `testMiroir` (2 leaves); legacy CreateEntity still green
-- [ ] Step 2: `runner_drop_entity` integ green via `testMiroir` (1 leaf); legacy DropEntity still green
-- [x] Instances exported from deployment-miroir; UUID v4 only *(create suite)*
+- [x] Step 1 UI: `runner_create_entity` in `UI_INTEGRATION_RUNNER_SUITE_REGISTRY` (button launchable)
+- [x] Step 2: `runner_drop_entity` integ green via `testMiroir` (1 leaf); legacy DropEntity still green
+- [x] Step 2 UI: `runner_drop_entity` in `UI_INTEGRATION_RUNNER_SUITE_REGISTRY`
+- [x] Instances exported from deployment-miroir; UUID v4 only *(create + drop suites)*
 - [x] No new leaf type; reuses `runnerTest` + `RunnerTestSession`
-- [x] Imperative CreateEntity file deprecated, not deleted *(Step 1)*; DropEntity pending Step 2
+- [x] Imperative CreateEntity + DropEntity files deprecated, not deleted
 
 ---
 
