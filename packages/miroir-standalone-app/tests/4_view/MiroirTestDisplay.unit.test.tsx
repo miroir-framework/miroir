@@ -7,6 +7,7 @@ import type { MiroirTestDefinition } from 'miroir-core';
 import { miroirTest_runner_library } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
+  miroirTest_domain_controller_data_crud,
   miroirTest_miroirCoreTransformers,
 } from 'miroir-test-app_deployment-miroir';
 
@@ -72,6 +73,24 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
       screen.getByRole('button', { name: 'Run runner_library Integration Tests' }),
     ).toBeEnabled();
     expect(screen.getByText('Integration run settings')).toBeInTheDocument();
+  });
+
+  it('enables integ button for domain_controller_data_crud action suite', () => {
+    render(
+      <MiroirTestDisplay
+        miroirTest={asMiroirTest(miroirTest_domain_controller_data_crud)}
+        testLabel="domainController.data.crud"
+        gridType="ag-grid"
+        useSnackBar={false}
+      />,
+    );
+
+    expect(screen.getByText('integration')).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', {
+        name: 'Run domainController.data.crud Integration Tests',
+      }),
+    ).toBeEnabled();
   });
 
   it('shows unit-only chrome for EntityPrimaryKey', () => {

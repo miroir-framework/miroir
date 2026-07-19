@@ -195,6 +195,9 @@ async function runRunnerIntegrationSuite(
       runTarget,
       suiteTestParams: request.suiteDefinition.testParams,
       runnerRegistry: runnerEntry.runnerRegistry,
+      ...(runnerEntry.libraryPlayfieldSeed
+        ? { libraryPlayfieldSeed: runnerEntry.libraryPlayfieldSeed }
+        : {}),
     },
   );
 

@@ -7,6 +7,7 @@ import type {
   TestCompositeActionParams,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { LIBRARY_TMP } from "../0_interfaces/1_core/LIBRARY_TMP.js";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type {
   MiroirActivityTrackerInterface,
@@ -14,11 +15,49 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { runCompositeActionTestParams } from "./CompositeActionTestTools.js";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
+import type { RunnerTestRunTarget } from "./RunnerTestRunTarget.js";
 
 export type ResolveActionTestLeafParams = {
   leaf: MiroirTestForAction;
   applicationUuid: Uuid;
 };
+
+function deepReplaceUuidStrings<T>(value: T, replacements: Record<string, string>): T {
+  if (typeof value === "string") {
+    return (replacements[value] ?? value) as T;
+  }
+  if (Array.isArray(value)) {
+    return value.map((entry) => deepReplaceUuidStrings(entry, replacements)) as T;
+  }
+  if (value !== null && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+      out[key] = deepReplaceUuidStrings(entry, replacements);
+    }
+    return out as T;
+  }
+  return value;
+}
+
+/**
+ * Rewrite canonical Library application/deployment UUIDs inside an `actionTest`
+ * leaf so ephemeral runTargets resolve in `applicationDeploymentMap`.
+ * No-op when runTarget already uses the canonical Library SelfApplication uuid.
+ */
+export function remapActionTestLeafForRunTarget(
+  leaf: MiroirTestForAction,
+  runTarget: RunnerTestRunTarget,
+  canonicalApplicationUuid: Uuid = LIBRARY_TMP.selfApplicationLibraryUuid,
+  canonicalDeploymentUuid: Uuid = LIBRARY_TMP.deployment_Library_DO_NO_USE.uuid,
+): MiroirTestForAction {
+  if (runTarget.applicationUuid === canonicalApplicationUuid) {
+    return leaf;
+  }
+  return deepReplaceUuidStrings(leaf, {
+    [canonicalApplicationUuid]: runTarget.applicationUuid,
+    [canonicalDeploymentUuid]: runTarget.deploymentUuid,
+  });
+}
 
 /**
  * Resolve an `actionTest` leaf to `testCompositeAction` params (no Runner entity).
@@ -106,7 +145,16 @@ export async function runMiroirActionTest(
     );
   }
 
-  const testAction = resolveActionTestLeaf({ leaf, applicationUuid });
+  const runTarget: RunnerTestRunTarget = compositeContext?.runTarget ?? {
+    applicationUuid,
+    applicationName: "Library",
+    deploymentUuid:
+      typeof compositeContext?.testParams?.testApplicationDeploymentUuid === "string"
+        ? compositeContext.testParams.testApplicationDeploymentUuid
+        : LIBRARY_TMP.deployment_Library_DO_NO_USE.uuid,
+  };
+  const remappedLeaf = remapActionTestLeafForRunTarget(leaf, runTarget);
+  const testAction = resolveActionTestLeaf({ leaf: remappedLeaf, applicationUuid });
   const result = await runCompositeActionTestParams(
     domainController,
     testAction,

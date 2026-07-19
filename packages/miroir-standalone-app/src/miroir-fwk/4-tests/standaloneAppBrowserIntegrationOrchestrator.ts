@@ -108,14 +108,19 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
       );
     }
     const runnerOptions = (sessionSpecificOptions ?? {}) as Partial<
-      Pick<RunnerTestSessionOptions, "pageLabel" | "runTarget" | "suiteTestParams" | "runnerRegistry">
+      Pick<
+        RunnerTestSessionOptions,
+        "pageLabel" | "runTarget" | "suiteTestParams" | "runnerRegistry" | "libraryPlayfieldSeed"
+      >
     > &
       Partial<AppStackBootstrapHostOptions>;
     if (!runnerOptions.runTarget) {
       throw new Error("Browser integration orchestrator: runner session requires runTarget");
     }
-    if (!runnerOptions.runnerRegistry) {
-      throw new Error("Browser integration orchestrator: runner session requires runnerRegistry");
+    if (!runnerOptions.runnerRegistry && !runnerOptions.libraryPlayfieldSeed) {
+      throw new Error(
+        "Browser integration orchestrator: runner session requires runnerRegistry or libraryPlayfieldSeed",
+      );
     }
     const hostBootstrap = resolveBootstrapHostOptions(context, runnerOptions);
     return new RunnerTestSession({
@@ -124,7 +129,10 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
       miroirEventService: context.miroirEventService,
       runTarget: runnerOptions.runTarget,
       suiteTestParams: runnerOptions.suiteTestParams,
-      runnerRegistry: runnerOptions.runnerRegistry,
+      runnerRegistry: runnerOptions.runnerRegistry ?? {},
+      ...(runnerOptions.libraryPlayfieldSeed
+        ? { libraryPlayfieldSeed: runnerOptions.libraryPlayfieldSeed }
+        : {}),
       // Browser: use the native fetch. A Node polyfill (cross-fetch) fails in the
       // browser before issuing a request, so the client never reaches the server.
       customFetch:

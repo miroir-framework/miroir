@@ -16515,13 +16515,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "tag": {
                         "value": {
-                          "canBeTemplate": true,
-                          "ifThenElseMMLS": {
-                            "mmlsReference": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "compositeActionTemplate"
-                            }
-                          }
+                          "canBeTemplate": true
                         }
                       },
                       "definition": {
@@ -16823,13 +16817,7 @@ export const miroirFundamentalJzodSchema = {
                       "type": "schemaReference",
                       "tag": {
                         "value": {
-                          "canBeTemplate": true,
-                          "ifThenElseMMLS": {
-                            "mmlsReference": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "compositeActionTemplate"
-                            }
-                          }
+                          "canBeTemplate": true
                         }
                       },
                       "definition": {
@@ -31689,12 +31677,6 @@ export const miroirFundamentalJzodSchema = {
                           "tag": {
                             "value": {
                               "canBeTemplate": true,
-                              "ifThenElseMMLS": {
-                                "mmlsReference": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "compositeActionTemplate"
-                                }
-                              },
                               "isTemplate": true
                             }
                           },
@@ -31708,12 +31690,6 @@ export const miroirFundamentalJzodSchema = {
                               "tag": {
                                 "value": {
                                   "canBeTemplate": true,
-                                  "ifThenElseMMLS": {
-                                    "mmlsReference": {
-                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                      "relativePath": "compositeActionTemplate"
-                                    }
-                                  },
                                   "isTemplate": true
                                 }
                               },
@@ -34218,12 +34194,6 @@ export const miroirFundamentalJzodSchema = {
                           "tag": {
                             "value": {
                               "canBeTemplate": true,
-                              "ifThenElseMMLS": {
-                                "mmlsReference": {
-                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                  "relativePath": "compositeActionTemplate"
-                                }
-                              },
                               "isTemplate": true
                             }
                           },
@@ -34237,12 +34207,6 @@ export const miroirFundamentalJzodSchema = {
                               "tag": {
                                 "value": {
                                   "canBeTemplate": true,
-                                  "ifThenElseMMLS": {
-                                    "mmlsReference": {
-                                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                      "relativePath": "compositeActionTemplate"
-                                    }
-                                  },
                                   "isTemplate": true
                                 }
                               },

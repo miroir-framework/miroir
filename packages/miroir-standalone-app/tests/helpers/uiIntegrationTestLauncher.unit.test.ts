@@ -17,14 +17,24 @@ function runnerLibrarySuite(): MiroirTestSuite {
 }
 
 describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
-  it("lists runner_library", () => {
-    expect(listUiIntegrationRunnerSuiteKeys()).toContain("runner_library");
+  it("lists runner_library and domain_controller action suites", () => {
+    const keys = listUiIntegrationRunnerSuiteKeys();
+    expect(keys).toContain("runner_library");
+    expect(keys).toContain("domain_controller_data_crud");
+    expect(keys).toContain("domain_controller_model_crud");
   });
 
   it("resolves runner_library entry", () => {
     const entry = resolveUiIntegrationRunnerSuite("runner_library");
     expect(entry.suiteDefinition.miroirTestLabel).toBe("runner.library");
     expect(Object.keys(entry.runnerRegistry).length).toBeGreaterThan(0);
+  });
+
+  it("resolves domain_controller_data_crud with playfield seed and empty runner registry", () => {
+    const entry = resolveUiIntegrationRunnerSuite("domain_controller_data_crud");
+    expect(entry.suiteDefinition.miroirTestLabel).toBe("domainController.data.crud");
+    expect(entry.runnerRegistry).toEqual({});
+    expect(entry.libraryPlayfieldSeed).toBeDefined();
   });
 });
 

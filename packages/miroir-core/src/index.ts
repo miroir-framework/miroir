@@ -1046,6 +1046,7 @@ export {
   runCompositeActionTestParams,
 } from "./5_tests/CompositeActionTestTools.js";
 export {
+  remapActionTestLeafForRunTarget,
   resolveActionTestLeaf,
   runMiroirActionTest,
 } from "./5_tests/ActionTestTools.js";
