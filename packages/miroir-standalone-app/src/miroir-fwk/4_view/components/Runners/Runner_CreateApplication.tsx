@@ -35,7 +35,7 @@ import {
 } from "miroir-core";
 import {
   type AdminApplication
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, useMiroirContextService, useSelector } from "miroir-react";
 import {
   entityDeployment

@@ -462,7 +462,10 @@ export {
   ZodParseError,
   zodParseError,
   ZodParseErrorIssue,
-  zodParseErrorIssue
+  zodParseErrorIssue,
+  ExtractorTemplateInstancesByEntity,
+  ExtractorTemplateExtractorByPrimaryKey,
+  ExtractorTemplateCombinerOneToOne,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {

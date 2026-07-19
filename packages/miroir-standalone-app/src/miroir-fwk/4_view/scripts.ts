@@ -16,7 +16,7 @@ import {
 } from "miroir-core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
-import type { ExtractorTemplateInstancesByEntity } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { ExtractorTemplateInstancesByEntity } from "miroir-core";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

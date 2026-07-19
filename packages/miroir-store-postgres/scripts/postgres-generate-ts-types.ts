@@ -7,8 +7,8 @@ import {
 } from "@miroir-framework/jzod-ts";
 import { sqlQuerySelectSchema } from "../src/1_core/SqlQueryBuilder";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import { cleanLevel } from "miroir-core/src/1_core/constants.js";
-import { packageName } from "miroir-core/src/constants.js";
+import { packageName } from "../src/constants";
+import { cleanLevel } from "../src/4_services/constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

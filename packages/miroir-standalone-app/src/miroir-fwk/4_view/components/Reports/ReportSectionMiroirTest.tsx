@@ -7,7 +7,7 @@ import {
   resolvePathOnObject,
   type MiroirTestDefinition,
 } from "miroir-core";
-import type { MiroirTestReportSection } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { MiroirTestReportSection } from "miroir-core";
 import { useViewParams } from "miroir-react";
 
 import { packageName } from "../../../../constants.js";

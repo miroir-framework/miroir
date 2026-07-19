@@ -27,7 +27,7 @@ import {
   ThemedTooltip,
 } from "../Themes/index";
 import { MarkdownEditorModal } from './MarkdownEditorModal.js';
-import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import type { MarkdownReportSection } from 'miroir-core';
 import { useFormikContext } from 'formik';
 import { useMiroirContextService } from 'miroir-react';
 
