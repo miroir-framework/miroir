@@ -16,8 +16,9 @@
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "lerna": "^9.0.0",
-    "typescript": "^6.0.2"
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
   "scripts": {
     "postinstall": "python scripts/patch-tsup-baseurl.py",

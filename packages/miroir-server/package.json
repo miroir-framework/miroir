@@ -80,7 +80,6 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.1.2",
     "tsup": "^8.0.1",
-    "typescript": "^6.0.0",
     "vite-plugin-node": "^7.0.0",
     "webpack": "^5.105.3",
     "webpack-cli": "^6.0.0",

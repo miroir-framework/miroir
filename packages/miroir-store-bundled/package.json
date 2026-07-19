@@ -15,8 +15,7 @@
     "miroir-core": "*"
   },
   "devDependencies": {
-    "tsup": "^8.0.1",
-    "typescript": "^6.0.0"
+    "tsup": "^8.0.1"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT"
