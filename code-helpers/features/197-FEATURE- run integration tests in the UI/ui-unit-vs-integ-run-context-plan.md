@@ -1,7 +1,7 @@
 # UI unit vs integ run context — TDD plan (Feature #197)
 
 **Parent:** [plan.md](./plan.md) · [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md)  
-**Status:** Done (T0–T6 complete; §9 success criteria met — nonreg `20260717T234407Z` + T6 manual sign-off)  
+**Status:** Done (T0–T6 complete; §9 success criteria met — nonreg `20260717T234407Z` + T6 manual sign-off). Part of **Phase B ✅** (C5 + B7 transformer webApp manuals signed off **2026-07-19**).  
 **Problem:** List and details Miroir Test reports expose different run affordances; list “Run All” is unit-only and unlabeled as such, while details already split unit/integ by leaf capabilities. Transformer suites (mixed) need a clear way to launch either mode; runner suites must keep integ-only launch.
 
 ---
