@@ -210,6 +210,7 @@ export { default as miroirTest_domain_controller_non_uuid_pk_model_crud } from "
 export { default as miroirTest_domain_controller_non_uuid_pk_data_crud } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a4b6c508-9f0b-4d35-a6a7-3b4c5d6e7f80.json" assert { type: "json" };
 export { default as miroirTest_domain_controller_no_parent_uuid_crud } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/b5c7d609-a01c-4e46-b7b8-4c5d6e7f8091.json" assert { type: "json" };
 export { default as miroirTest_domain_controller_model_undo_redo } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c6d8e70a-b12d-4f57-a8c9-5d6e7f8091a2.json" assert { type: "json" };
+export { default as miroirTest_runner_create_entity } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/4b4645f5-a3c1-4563-ac3f-c6e12cc703dc.json" assert { type: "json" };
 export { default as miroirTest_unionArrayChoices } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/9e4db067-27ab-48c1-91f7-2a739824e674.json" assert { type: "json" };
 export { default as miroirTest_unionObjectChoices } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/14319c8e-8ece-4853-9004-f095fbd16d1a.json" assert { type: "json" };
 
@@ -307,3 +308,8 @@ export { default as defaultStoredMiroirTheme } from "./assets/miroir_data/bdcf95
 export { default as darkStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/b327b9c0-7355-42ac-b44b-b6d8b0320e0f.json" assert { type: "json" };
 export { default as compactStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/edd44b02-3125-46d7-b5a8-ccb1c3c51363.json" assert { type: "json" };
 export { default as materialStoredMiroirTheme } from "./assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/3c3b4845-59c5-4fbc-859e-8b94253fa090.json" assert { type: "json" };
+
+export {
+  RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+  resolveRunnerMiroirEntityRunnerRef,
+} from "./src/runnerMiroirEntityTestRegistry.js";

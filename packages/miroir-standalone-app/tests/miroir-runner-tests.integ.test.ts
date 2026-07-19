@@ -16,6 +16,9 @@ import {
   parseMiroirRunnerTestCliConfig,
 } from "miroir-core";
 import { RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
+import {
+  RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+} from "miroir-test-app_deployment-miroir";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -35,6 +38,15 @@ import {
 } from "./helpers/libraryPlayfieldSeeds.js";
 
 const pageLabel = "miroir-runner-tests.integ";
+
+const RUNNER_CREATE_ENTITY_SUITE_KEY = "runner_create_entity";
+const RUNNER_DROP_ENTITY_SUITE_KEY = "runner_drop_entity";
+
+function isMiroirEntityRunnerSuite(suiteKey: string): boolean {
+  return (
+    suiteKey === RUNNER_CREATE_ENTITY_SUITE_KEY || suiteKey === RUNNER_DROP_ENTITY_SUITE_KEY
+  );
+}
 
 let log: LoggerInterface = console as unknown as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -72,7 +84,12 @@ if (config.filter?.testList) {
 }
 
 function sessionOptionsForSuite(suiteKey: string, suite: MiroirTestSuite) {
-  const runTarget = resolveRunnerTestRunTarget({ suite });
+  const runTarget = resolveRunnerTestRunTarget({
+    suite,
+    defaultApplicationName: isMiroirEntityRunnerSuite(suiteKey)
+      ? "testApplication_CreateEntity"
+      : "Library",
+  });
   const playfieldSeed = libraryPlayfieldSeedForActionSuite(suiteKey);
   if (isDomainControllerActionCrudSuite(suiteKey) && playfieldSeed) {
     return {
@@ -81,6 +98,15 @@ function sessionOptionsForSuite(suiteKey: string, suite: MiroirTestSuite) {
       suiteTestParams: suite.testParams,
       runnerRegistry: {},
       libraryPlayfieldSeed: playfieldSeed,
+    };
+  }
+  if (isMiroirEntityRunnerSuite(suiteKey)) {
+    return {
+      pageLabel,
+      runTarget,
+      suiteTestParams: suite.testParams,
+      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      skipRunTargetPlayfieldReset: true,
     };
   }
   return {

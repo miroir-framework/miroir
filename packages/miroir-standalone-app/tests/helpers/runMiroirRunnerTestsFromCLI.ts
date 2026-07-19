@@ -22,10 +22,12 @@ import {
   miroirTest_domain_controller_no_parent_uuid_crud,
   miroirTest_domain_controller_non_uuid_pk_data_crud,
   miroirTest_domain_controller_non_uuid_pk_model_crud,
+  miroirTest_runner_create_entity,
 } from "miroir-test-app_deployment-miroir";
 
 const SUITE_BY_KEY: Record<string, MiroirTestDefinition> = {
   runner_library: miroirTest_runner_library as MiroirTestDefinition,
+  runner_create_entity: miroirTest_runner_create_entity as MiroirTestDefinition,
   domain_controller_data_crud: miroirTest_domain_controller_data_crud as MiroirTestDefinition,
   domain_controller_model_crud: miroirTest_domain_controller_model_crud as MiroirTestDefinition,
   domain_controller_composite_pk_crud:
