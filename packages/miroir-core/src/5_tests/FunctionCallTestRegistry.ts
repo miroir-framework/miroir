@@ -31,7 +31,6 @@ import {
   unionObjectChoices,
 } from "../1_core/jzod/jzodTypeCheck";
 import { jzodUnion_recursivelyUnfold } from "../1_core/jzod/jzodUnion_RecursivelyUnfold";
-// import { jzodReferencesGraphConnectedComponents } from "../1_core/jzod/jzodReferencesGraphConnectedComponents";
 import { localizeJzodSchemaReferenceContext } from "../1_core/jzod/JzodUnfoldSchemaOnce";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { mergeIfUnique, pushIfUnique } from "../1_core/tools";
@@ -44,7 +43,7 @@ import {
   safeResolvePathOnObject,
   stringTuple,
 } from "../tools";
-import { getAttributeTypesFromJzodSchema } from "miroir-store-postgres/src/1_core/mlSchema.js";
+import { getAttributeTypesFromJzodSchema } from "miroir-store-postgres";
 import { alterObjectAtPath } from "../tools";
 
 export type FunctionCallRef = {
