@@ -22,6 +22,7 @@
   },
   "scripts": {
     "postinstall": "python scripts/patch-tsup-baseurl.py",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "nonreg": "python scripts/run-nonreg.py",
     "nonreg:unit": "python scripts/run-nonreg.py --tier unit --run-all",
     "nonreg:default": "python scripts/run-nonreg.py --tier default --run-all",
