@@ -23,12 +23,13 @@ import { resolveRunnerFromRegistry } from "./resolveRunnerFromRegistry.js";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
 import type { RunnerTestRunTarget } from "./RunnerTestRunTarget";
-import { mergeRunnerTestParamBank } from "./RunnerTestRunTarget.js";
+import { mergeRunnerTestParamBank, expandGetFromParametersInParamBank } from "./RunnerTestRunTarget.js";
 
 export { miroirTestForRunner as runnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 export {
   buildRunnerTestSessionParamBank,
   mergeRunnerTestParamBank,
+  expandGetFromParametersInParamBank,
 } from "./RunnerTestRunTarget.js";
 
 export type ResolveRunnerTestLeafBuildContext = {
@@ -61,7 +62,9 @@ export function resolveRunnerTestLeaf({
     );
   }
 
-  const mergedTestParams = mergeRunnerTestParamBank(sessionTestParams, leaf);
+  const mergedTestParams = expandGetFromParametersInParamBank(
+    mergeRunnerTestParamBank(sessionTestParams, leaf),
+  );
 
   return testBuildPlusRuntimeCompositeActionSuiteForRunner(
     pageLabel,

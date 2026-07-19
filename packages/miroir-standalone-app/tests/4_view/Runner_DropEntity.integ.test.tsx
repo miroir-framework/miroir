@@ -1,25 +1,30 @@
 /**
+ * @deprecated Prefer MiroirTest suite `runner_drop_entity` via:
+ *   npm run testMiroir -w miroir-standalone-app -- --suites runner_drop_entity --mode integ --profile emulatedServer-sql
+ * Kept green until G8 cutover. See runner-create-drop-entity-miroirtest-migration-plan.md.
+ *
  * Runner_DropEntity.integ.test.tsx
+ *
+ * Imperative harness for `runnerDropEntity` (G8). Canonical MiroirTest migration:
+ * see code-helpers/features/197-FEATURE-…/runner-create-drop-entity-miroirtest-migration-plan.md
  */
 import "@testing-library/jest-dom";
-import { v4 as uuidv4 } from "uuid";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import {
-  type DomainControllerInterface,
-  type LoggerInterface,
-  type LoggerOptions,
-  type Runner,
-  type StoreUnitConfiguration,
   ConfigurationService,
   emptyApplicationModel,
-  formatYYYYMMDD_HHMMSS,
-  extendMiroirConfigWithExtraDeploymentConfiguration,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  testBuildPlusRuntimeCompositeActionSuiteForRunner
+  resolveRunnerTestRunTarget,
+  testBuildPlusRuntimeCompositeActionSuiteForRunner,
+  type ApplicationDeploymentMap,
+  type DomainControllerInterface,
+  type LoggerInterface,
+  type LoggerOptions,
+  type Runner,
 } from "miroir-core";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -27,9 +32,13 @@ import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import {
   entityAuthor,
-  entityDefinitionAuthor
+  entityDefinitionAuthor,
 } from "miroir-test-app_deployment-library";
-import { entityEntity, runnerCreateEntity, runnerDropEntity } from "miroir-test-app_deployment-miroir";
+import {
+  entityEntity,
+  runnerCreateEntity,
+  runnerDropEntity,
+} from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite";
@@ -37,12 +46,13 @@ import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 import {
   afterAllTests,
-  beforeAllTests,
   beforeEachTest,
-  getTestConfig,
-  testApplicationStorageConfiguration,
   type RunnerTestParams,
 } from "./RunnerIntegTestTools";
+import {
+  getTestSessionConfig,
+  RunnerTestSession,
+} from "../helpers/RunnerTestSession.js";
 
 // ################################################################################################
 const pageLabel = "Runner_DropEntity.integ.test";
@@ -83,69 +93,56 @@ MiroirLoggerFactory.startRegisteredLoggers(
 myConsoleLog("started registered loggers DONE");
 
 // ################################################################################################
-// ################################################################################################
-// ################################################################################################
 const globalTimeOut = 30000;
 
-const testApplicationUuid = uuidv4();
-const testApplicationDeploymentUuid = uuidv4();
-const testApplicationName = "testApplication_" + formatYYYYMMDD_HHMMSS(new Date());
-
-const {
-  applicationDeploymentMap,
-  miroirDeploymentStorageConfiguration,
-  adminDeploymentStorageConfiguration,
-  adminDeployment,
-  libraryDeploymentStorageConfiguration,
-} = getTestConfig(
-  miroirConfig,
-  testApplicationDeploymentUuid,
-  testApplicationName,
-  testApplicationUuid,
-);
-
-let testDeploymentStorageConfiguration: StoreUnitConfiguration = testApplicationStorageConfiguration(
-  libraryDeploymentStorageConfiguration,
-  testApplicationName,
-);
-
-const internalMiroirConfig = extendMiroirConfigWithExtraDeploymentConfiguration(
-  miroirConfig,
-  testDeploymentStorageConfiguration,
-  testApplicationDeploymentUuid,
-);
-
-let domainController: DomainControllerInterface;
-
-beforeAll(async () => {
-  const {
-    domainController: localdomainController,
-  } = await  beforeAllTests(
-    internalMiroirConfig,
-    miroirActivityTracker,
-    miroirEventService,
-    adminDeployment,
-    miroirDeploymentStorageConfiguration,
-    applicationDeploymentMap,
-  );
-  domainController = localdomainController;
+const runTarget = resolveRunnerTestRunTarget({
+  suite: { miroirTestLabel: pageLabel },
+  defaultApplicationName: "testApplication_CreateEntity",
 });
 
-// executed only once like beforeAll, since there is only 1 test suite
+const sessionConfig = getTestSessionConfig(miroirConfig, runTarget);
+
+const runnerTestSession = new RunnerTestSession({
+  miroirConfig,
+  miroirActivityTracker,
+  miroirEventService,
+  pageLabel,
+  runTarget,
+  suiteTestParams: {},
+  runnerRegistry: {
+    [runnerDropEntity.name]: runnerDropEntity as unknown as Runner,
+    [runnerCreateEntity.name]: runnerCreateEntity as unknown as Runner,
+  },
+});
+
+let domainController: DomainControllerInterface;
+let testApplicationDeploymentMap: ApplicationDeploymentMap;
+
+const {
+  applicationUuid: testApplicationUuid,
+  deploymentUuid: testApplicationDeploymentUuid,
+  applicationName: testApplicationName,
+} = runTarget;
+
+// ################################################################################################
+beforeAll(async () => {
+  const env = await runnerTestSession.initSession();
+  domainController = env.domainController;
+  testApplicationDeploymentMap = env.applicationDeploymentMap;
+});
+
+// DropEntity creates/drops its own ephemeral deployment inside the composite
+// (emptyApplicationModel). Reset the *canonical* library playfield only.
 beforeEach(async () => {
-  await beforeEachTest(
-    domainController,
-    applicationDeploymentMap,
-  );
+  await beforeEachTest(domainController, testApplicationDeploymentMap);
 });
 
 afterAll(async () => {
-  await afterAllTests(
-    miroirActivityTracker,
-    [runnerDropEntity.name],
-  );
+  await runnerTestSession.teardown();
+  await afterAllTests(miroirActivityTracker, [runnerDropEntity.name]);
 });
 
+// ################################################################################################
 const runnerTestParams: Record<string, RunnerTestParams> = {
   [runnerDropEntity.name]: {
     pageLabel,
@@ -154,25 +151,18 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
     testApplicationDeploymentUuid,
     testApplicationName,
     testParams: {
-      ["createEntity"]: {
-        transformerType: "returnValue",
-        value: {
-          application: testApplicationUuid,
-          entity: entityAuthor,
-          entityDefinition: entityDefinitionAuthor,
-        },
+      createEntity: {
+        application: testApplicationUuid,
+        entity: entityAuthor,
+        entityDefinition: entityDefinitionAuthor,
       },
       [runnerDropEntity.name]: {
-        transformerType: "returnValue",
-        value: {
-          application: testApplicationUuid,
-          entity: entityAuthor.uuid,
-        },
+        application: testApplicationUuid,
+        entity: entityAuthor.uuid,
       },
-    }, // testParams
+    },
     preTestCompositeActions: [
       {
-        // performs query on local cache for emulated server, and on server for remote server
         actionType: "compositeRunBoxedQueryAction",
         endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         actionLabel: "calculateNewEntityDefinionAndReports",
@@ -205,7 +195,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
           },
         },
       },
-    ], // preTestCompositeActions
+    ],
     testCompositeActionAssertions: [
       {
         actionType: "compositeRunTestAssertion",
@@ -244,50 +234,51 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
         },
       },
     ],
-    internalMiroirConfig,
-    adminDeployment,
-    testDeploymentStorageConfiguration,
+    internalMiroirConfig: sessionConfig.internalMiroirConfig,
+    adminDeployment: sessionConfig.adminDeployment,
+    testDeploymentStorageConfiguration: sessionConfig.testDeploymentStorageConfiguration,
     initialModel: emptyApplicationModel,
-    preRunnerCompositeActions: [runnerCreateEntity.definition.compositeActionSequence as any], // preRunnerCompositeActions: create the entity before dropping it
+    preRunnerCompositeActions: [
+      runnerCreateEntity.definition.compositeActionSequence as any,
+    ],
     testCompositeActionLabel: "Create and Drop Entity Author",
   },
 };
 
-describe.sequential(
-  pageLabel,
-  () => {
-    it.each(Object.entries(runnerTestParams))(
-      "test %s",
-      async (currentTestSuiteName, testParams: RunnerTestParams) => {
-        const testAction = testBuildPlusRuntimeCompositeActionSuiteForRunner(
-          testParams.pageLabel,
-          testParams.runner,
-          testParams.testApplicationUuid,
-          testParams.testApplicationDeploymentUuid,
-          testParams.testApplicationName,
-          testParams.testParams,
-          testParams.preTestCompositeActions,
-          testParams.testCompositeActionAssertions,
-          //
-          testParams.internalMiroirConfig,
-          testParams.adminDeployment,
-          testParams.testDeploymentStorageConfiguration,
-          testParams.initialModel,
-          testParams.preRunnerCompositeActions,
-          testParams.testCompositeActionLabel,
-        );
-        const testSuiteResults = await runTestOrTestSuite(
-          domainController,
-          testAction,
-          applicationDeploymentMap,
-          miroirActivityTracker,
-          {}
-        );
-        if (!testSuiteResults || testSuiteResults.status !== "ok") {
-          expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
-        }
-      },
-      globalTimeOut
-    );
-  }
-);
+// ################################################################################################
+describe.sequential(pageLabel, () => {
+  it.each(Object.entries(runnerTestParams))(
+    "test %s",
+    async (currentTestSuiteName, testParams: RunnerTestParams) => {
+      const testAction = testBuildPlusRuntimeCompositeActionSuiteForRunner(
+        testParams.pageLabel,
+        testParams.runner,
+        testParams.testApplicationUuid,
+        testParams.testApplicationDeploymentUuid,
+        testParams.testApplicationName,
+        testParams.testParams,
+        testParams.preTestCompositeActions,
+        testParams.testCompositeActionAssertions,
+        testParams.internalMiroirConfig,
+        testParams.adminDeployment,
+        testParams.testDeploymentStorageConfiguration,
+        testParams.initialModel,
+        testParams.preRunnerCompositeActions,
+        testParams.testCompositeActionLabel,
+        testParams.skipCreateDeployment,
+        testParams.skipDropDeployment,
+      );
+      const testSuiteResults = await runTestOrTestSuite(
+        domainController,
+        testAction,
+        testApplicationDeploymentMap,
+        miroirActivityTracker,
+        {}
+      );
+      if (!testSuiteResults || testSuiteResults.status !== "ok") {
+        expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
+      }
+    },
+    globalTimeOut
+  );
+});

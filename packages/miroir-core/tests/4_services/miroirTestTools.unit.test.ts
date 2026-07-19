@@ -393,7 +393,7 @@ describe("runMiroirTestInMemory — actionTest (Phase 0 stub)", () => {
     ).rejects.toThrow(/domainController is required/);
   });
 
-  it("throws Phase 2 stub when environment is present", async () => {
+  it("requires compositeActionSequence when environment is present", async () => {
     await expect(
       runMiroirTest(
         vitest,
@@ -408,15 +408,37 @@ describe("runMiroirTestInMemory — actionTest (Phase 0 stub)", () => {
         {
           executionMode: "integration",
           executionEnvironment: {
-            domainController: {} as any,
+            domainController: {
+              currentModelEnvironment: () => ({}),
+              handleTestCompositeAction: async () => ({ status: "ok" }),
+            } as any,
             applicationDeploymentMap: {},
             testApplicationUuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
             persistenceStoreControllerManager: {} as any,
+            runnerTestContext: {
+              domainController: {
+                currentModelEnvironment: () => ({}),
+                handleTestCompositeAction: async () => ({ status: "ok" }),
+              } as any,
+              applicationDeploymentMap: {},
+              internalMiroirConfig: {} as any,
+              pageLabel: "p",
+              adminDeployment: {} as any,
+              testDeploymentStorageConfiguration: {} as any,
+              runTarget: {
+                applicationUuid: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                applicationName: "Library",
+                deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              },
+              runnerRegistry: {},
+              testParams: {},
+              runtimeContext: {},
+            },
           },
         },
         [{ test: "t" }, { testAssertion: "t" }],
       ),
-    ).rejects.toThrow(/resolveActionTestLeaf not implemented/);
+    ).rejects.toThrow(/requires compositeActionSequence/);
   });
 });
 describe("runMiroirTestInMemory — transformerTest", () => {

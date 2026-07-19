@@ -74,3 +74,35 @@ export function mergeRunnerTestParamBank(
     ...(leaf.testParams ?? {}),
   };
 }
+
+/**
+ * Eagerly expand `getFromParameters` (build interpolation) nested in a param bank.
+ * Needed when runner templates use mustache (`{{createEntity.application}}`) that
+ * expects plain values, not unresolved transformer objects.
+ */
+export function expandGetFromParametersInParamBank(
+  params: Record<string, unknown>,
+): Record<string, unknown> {
+  const resolve = (value: unknown): unknown => {
+    if (Array.isArray(value)) {
+      return value.map(resolve);
+    }
+    if (value !== null && typeof value === "object") {
+      const obj = value as Record<string, unknown>;
+      if (
+        obj.transformerType === "getFromParameters" &&
+        typeof obj.referenceName === "string"
+      ) {
+        return params[obj.referenceName];
+      }
+      const out: Record<string, unknown> = {};
+      for (const [key, nested] of Object.entries(obj)) {
+        out[key] = resolve(nested);
+      }
+      return out;
+    }
+    return value;
+  };
+
+  return resolve(params) as Record<string, unknown>;
+}

@@ -14,6 +14,7 @@ import {
   entityDefinitionEntityDefinition,
   entityDefinitionJzodSchema,
   entityDefinitionMenu,
+  entityDefinitionMiroirTest,
   entityDefinitionQueryVersionV1,
   entityDefinitionReport,
   entityDefinitionRunner,
@@ -116,6 +117,12 @@ const runnerInstances = import.meta.glob(
 // Data: TransformerDefinitions (parentUuid = entityTransformerDefinition = a557419d)
 const transformerDefinitionInstances = import.meta.glob(
   "../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: MiroirTests (parentUuid = entityMiroirTest = a311f363)
+const miroirTestInstances = import.meta.glob(
+  "../assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/*.json",
   { eager: true },
 ) as Record<string, { default: any }>;
 
@@ -252,6 +259,11 @@ const modelTestsToRun: Array<{
     "jzodSchema": (entityDefinitionTransformerDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
     "instances": transformerDefinitionInstances,
     // filterByName: ["getActiveDeployment"],
+  },
+  {
+    "groupName": "MiroirTest",
+    "jzodSchema": (entityDefinitionMiroirTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    "instances": miroirTestInstances,
   },
   // {
   //   "groupName": "Test",

@@ -1,0 +1,932 @@
+{
+  "uuid": "c6d8e70a-b12d-4f57-a8c9-5d6e7f8091a2",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "domain_controller_model_undo_redo",
+  "description": "DomainController Model undo/redo action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Domain-action coverage of createEntity + undo/redo + commit (React UI / currentTransaction checks remain on the deprecated legacy file). Lifecycle: session libraryPlayfieldSeed (empty Library).",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "domainController.model.undoRedo",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Add 2 entity definitions then undo one then commit",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Add 2 entity definitions then undo one then commit",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryEntities_entitiesAfterRollback",
+                "nameGivenToResult": "entitiesAfterRollback",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "checkEmptyAfterRollback",
+                "nameGivenToResult": "checkEmptyAfterRollback",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkEmptyAfterRollback",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "entitiesAfterRollback",
+                          "entities"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 0
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "createEntity",
+                "actionLabel": "createAuthor",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [
+                    {
+                      "entity": {
+                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Author",
+                        "conceptLevel": "Model",
+                        "description": "The Author of a book."
+                      },
+                      "entityDefinition": {
+                        "uuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
+                        "parentName": "EntityDefinition",
+                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                        "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "conceptLevel": "Model",
+                        "name": "Author",
+                        "description": "author",
+                        "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+                        "cache": {
+                          "cacheAllInstancesOnRefresh": true
+                        },
+                        "viewAttributes": [
+                          "name",
+                          "country",
+                          "icon",
+                          "uuid"
+                        ],
+                        "mlSchema": {
+                          "type": "object",
+                          "extend": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "eager": true,
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityDefinitionRoot"
+                            }
+                          },
+                          "definition": {
+                            "name": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 4,
+                                  "defaultLabel": "Name"
+                                }
+                              }
+                            },
+                            "language": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 5,
+                                  "defaultLabel": "Language"
+                                }
+                              }
+                            },
+                            "birthDate": {
+                              "type": "date",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 6,
+                                  "defaultLabel": "Birth"
+                                }
+                              }
+                            },
+                            "deathDate": {
+                              "type": "date",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 7,
+                                  "defaultLabel": "Death"
+                                }
+                              }
+                            },
+                            "country": {
+                              "type": "uuid",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 8,
+                                  "defaultLabel": "Country",
+                                  "foreignKeyParams": {
+                                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                    "targetEntityOrderInstancesBy": "name"
+                                  }
+                                }
+                              }
+                            },
+                            "icon": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 9,
+                                  "defaultLabel": "Icon"
+                                }
+                              }
+                            },
+                            "icons": {
+                              "type": "number",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 10,
+                                  "defaultLabel": "Icons"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "createEntity",
+                "actionLabel": "createBook",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [
+                    {
+                      "entity": {
+                        "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Book",
+                        "conceptLevel": "Model",
+                        "description": "A book."
+                      },
+                      "entityDefinition": {
+                        "uuid": "797dd185-0155-43fd-b23f-f6d0af8cae06",
+                        "parentName": "EntityDefinition",
+                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                        "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                        "conceptLevel": "Model",
+                        "name": "Book",
+                        "icon": "Book",
+                        "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+                        "cache": {
+                          "cacheAllInstancesOnRefresh": true
+                        },
+                        "viewAttributes": [
+                          "name",
+                          "author",
+                          "year",
+                          "publisher",
+                          "uuid"
+                        ],
+                        "mlSchema": {
+                          "type": "object",
+                          "extend": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "eager": true,
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityDefinitionRoot"
+                            }
+                          },
+                          "definition": {
+                            "name": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Book Title"
+                                }
+                              }
+                            },
+                            "year": {
+                              "type": "number",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 6,
+                                  "defaultLabel": "Year of Publication",
+                                  "display": {
+                                    "editable": true
+                                  }
+                                }
+                              }
+                            },
+                            "author": {
+                              "type": "uuid",
+                              "tag": {
+                                "value": {
+                                  "id": 7,
+                                  "defaultLabel": "Author",
+                                  "foreignKeyParams": {
+                                    "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                                    "targetEntityOrderInstancesBy": "name"
+                                  }
+                                }
+                              }
+                            },
+                            "publisher": {
+                              "type": "uuid",
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Publisher",
+                                  "id": 8,
+                                  "foreignKeyParams": {
+                                    "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                                    "targetEntityOrderInstancesBy": "name"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryEntities_entitiesAfterCreate",
+                "nameGivenToResult": "entitiesAfterCreate",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "checkBothAfterCreate",
+                "nameGivenToResult": "checkBothAfterCreate",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkBothAfterCreate",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "entitiesAfterCreate",
+                          "entities"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 2
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "listBothAfterCreate",
+                "nameGivenToResult": "listBothAfterCreate",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "listBothAfterCreate",
+                  "definition": {
+                    "resultAccessPath": [
+                      "entitiesAfterCreate",
+                      "entities"
+                    ],
+                    "ignoreAttributes": [
+                      "author",
+                      "storageAccess"
+                    ],
+                    "expectedValue": [
+                      {
+                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Author",
+                        "conceptLevel": "Model",
+                        "description": "The Author of a book."
+                      },
+                      {
+                        "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Book",
+                        "conceptLevel": "Model",
+                        "description": "A book."
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "actionType": "undo",
+                "actionLabel": "undoBook",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryEntities_entitiesAfterUndo1",
+                "nameGivenToResult": "entitiesAfterUndo1",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "checkAuthorAfterUndo1",
+                "nameGivenToResult": "checkAuthorAfterUndo1",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkAuthorAfterUndo1",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "entitiesAfterUndo1",
+                          "entities"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 1
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "listAuthorAfterUndo1",
+                "nameGivenToResult": "listAuthorAfterUndo1",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "listAuthorAfterUndo1",
+                  "definition": {
+                    "resultAccessPath": [
+                      "entitiesAfterUndo1",
+                      "entities"
+                    ],
+                    "ignoreAttributes": [
+                      "author",
+                      "storageAccess"
+                    ],
+                    "expectedValue": [
+                      {
+                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Author",
+                        "conceptLevel": "Model",
+                        "description": "The Author of a book."
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "actionType": "redo",
+                "actionLabel": "redoBook",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryEntities_entitiesAfterRedo1",
+                "nameGivenToResult": "entitiesAfterRedo1",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "checkBothAfterRedo1",
+                "nameGivenToResult": "checkBothAfterRedo1",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkBothAfterRedo1",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "entitiesAfterRedo1",
+                          "entities"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 2
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "undo",
+                "actionLabel": "undoBookAgain",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "undo",
+                "actionLabel": "undoAuthor",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "redo",
+                "actionLabel": "redoAuthor",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryEntities_entitiesAfterUndo2Redo1",
+                "nameGivenToResult": "entitiesAfterUndo2Redo1",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "checkAuthorAfterUndo2Redo1",
+                "nameGivenToResult": "checkAuthorAfterUndo2Redo1",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkAuthorAfterUndo2Redo1",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "entitiesAfterUndo2Redo1",
+                          "entities"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 1
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "redo",
+                "actionLabel": "redoBookRestore",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "undo",
+                "actionLabel": "undoExtra1",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "undo",
+                "actionLabel": "undoExtra2",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "undo",
+                "actionLabel": "undoExtra3",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "redo",
+                "actionLabel": "redoAfterExtraUndos",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryEntities_entitiesAfterExtraUndos",
+                "nameGivenToResult": "entitiesAfterExtraUndos",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "checkAuthorAfterExtraUndos",
+                "nameGivenToResult": "checkAuthorAfterExtraUndos",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkAuthorAfterExtraUndos",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "entitiesAfterExtraUndos",
+                          "entities"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 1
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "redo",
+                "actionLabel": "redoBookBeforeCommit",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "redo",
+                "actionLabel": "redoExtraIgnored",
+                "endpoint": "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitEntities",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryEntities_entitiesAfterCommit",
+                "nameGivenToResult": "entitiesAfterCommit",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "checkBothAfterCommit",
+                "nameGivenToResult": "checkBothAfterCommit",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkBothAfterCommit",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "entitiesAfterCommit",
+                          "entities"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 2
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "actionLabel": "listBothAfterCommit",
+                "nameGivenToResult": "listBothAfterCommit",
+                "testAssertion": {
+                  "testType": "testAssertion",
+                  "testLabel": "listBothAfterCommit",
+                  "definition": {
+                    "resultAccessPath": [
+                      "entitiesAfterCommit",
+                      "entities"
+                    ],
+                    "ignoreAttributes": [
+                      "author",
+                      "storageAccess"
+                    ],
+                    "expectedValue": [
+                      {
+                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Author",
+                        "conceptLevel": "Model",
+                        "description": "The Author of a book."
+                      },
+                      {
+                        "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Book",
+                        "conceptLevel": "Model",
+                        "description": "A book."
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": []
+      }
+    ]
+  }
+}

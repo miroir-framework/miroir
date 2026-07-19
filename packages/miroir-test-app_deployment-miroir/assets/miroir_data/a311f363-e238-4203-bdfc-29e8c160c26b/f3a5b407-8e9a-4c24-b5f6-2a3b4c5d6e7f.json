@@ -1,0 +1,195 @@
+{
+  "uuid": "f3a5b407-8e9a-4c24-b5f6-2a3b4c5d6e7f",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "domain_controller_non_uuid_pk_model_crud",
+  "description": "DomainController non-UUID PK Model CRUD action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session libraryPlayfieldSeed (Publisher only); leaf creates TestEntityCodeNumber.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "domainController.nonUuidPK.model.crud",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Create Entity TestEntityCodeNumber and Commit",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Create Entity TestEntityCodeNumber and Commit",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createEntity",
+                "actionLabel": "createEntityCodeNumber",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [
+                    {
+                      "entity": {
+                        "uuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "TestEntityCodeNumber",
+                        "conceptLevel": "Model",
+                        "description": "Test entity with a non-UUID number primary key."
+                      },
+                      "entityDefinition": {
+                        "uuid": "dceae8f8-c657-49df-9967-64ac3e52f5b4",
+                        "parentName": "EntityDefinition",
+                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                        "entityUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                        "conceptLevel": "Model",
+                        "name": "TestEntityCodeNumber",
+                        "idAttribute": "code",
+                        "mlSchema": {
+                          "type": "object",
+                          "definition": {
+                            "code": {
+                              "type": "number",
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Code"
+                                }
+                              }
+                            },
+                            "parentName": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 2,
+                                  "defaultLabel": "Entity Name"
+                                }
+                              }
+                            },
+                            "parentUuid": {
+                              "type": "uuid",
+                              "tag": {
+                                "value": {
+                                  "id": 3,
+                                  "defaultLabel": "Entity Uuid"
+                                }
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 4,
+                                  "defaultLabel": "Name"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitEntityCodeNumber",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryEntities",
+                "nameGivenToResult": "libraryEntityList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityCount",
+            "nameGivenToResult": "checkEntityCount",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityCount",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityList",
+                      "entities"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 2
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -75,13 +75,18 @@ export type UiIntegrationTestLauncherEnvironment = {
 export function resolveUiIntegrationTestRunTarget(
   runTargetMode: UiIntegrationTestRunTargetMode,
   suite: MiroirTestSuite,
+  defaultApplicationName?: string,
 ): RunnerTestRunTarget {
   if (runTargetMode === "ephemeral") {
     return resolveRunnerTestRunTarget({
       suite: { miroirTestLabel: suite.miroirTestLabel },
+      ...(defaultApplicationName ? { defaultApplicationName } : {}),
     });
   }
-  return resolveRunnerTestRunTarget({ suite });
+  return resolveRunnerTestRunTarget({
+    suite,
+    ...(defaultApplicationName ? { defaultApplicationName } : {}),
+  });
 }
 
 export function resolveUiIntegrationTransformerApplicationIdentity(
@@ -195,6 +200,12 @@ async function runRunnerIntegrationSuite(
       runTarget,
       suiteTestParams: request.suiteDefinition.testParams,
       runnerRegistry: runnerEntry.runnerRegistry,
+      ...(runnerEntry.libraryPlayfieldSeed
+        ? { libraryPlayfieldSeed: runnerEntry.libraryPlayfieldSeed }
+        : {}),
+      ...(runnerEntry.skipRunTargetPlayfieldReset
+        ? { skipRunTargetPlayfieldReset: true }
+        : {}),
     },
   );
 
@@ -361,6 +372,7 @@ export async function runUiIntegrationTestSuite(
   const runTarget = resolveUiIntegrationTestRunTarget(
     request.runTargetMode,
     request.suiteDefinition,
+    runnerEntry.defaultApplicationName,
   );
 
   return coordinator.runExclusive(() =>

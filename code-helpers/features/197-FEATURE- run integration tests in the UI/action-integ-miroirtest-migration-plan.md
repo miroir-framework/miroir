@@ -5,10 +5,11 @@
 **Status:** Phase 1 ✅ (fundamental `actionTest` schema + compositeActionTestContext + 1.3-a session kind)  
 **Method:** TDD; run `npm run nonreg` (or targeted profile integ + unit gate) after each impactful slice
 
-### Hard constraint — legacy file untouched until wrap-up
+### Hard constraint — legacy file kept green (deprecate, do not delete in 4.1)
 
 - **Do not modify** `DomainController.integ.Data.CRUD.test.tsx` during Phases 0–3 (or any earlier slice).
-- This command must **keep passing throughout** the migration:
+- Phase **4.1:** mark **deprecated** and point docs/nonreg at `testMiroir --suites domain_controller_data_crud`. **Do not delete** the legacy file until MiroirTest is accepted as the sole owner.
+- This command must **keep passing throughout** the migration (and after 4.1 deprecation):
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
@@ -16,7 +17,14 @@ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificL
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 ```
 
-- Delete / retire the legacy file **only in Phase 4 wrap-up**, after MiroirTest parity is proven.
+- Preferred owner path:
+
+```bash
+npm run testMiroir -w miroir-standalone-app -- \
+  --suites domain_controller_data_crud --mode integ --profile emulatedServer-sql
+```
+
+- Delete / retire the legacy file **only in a later cutover slice**, after MiroirTest parity is proven and agreed.
 - After `miroir-core` source changes that standalone-app imports from `dist`, run `npm run build -w miroir-core` before re-checking the legacy command.
 
 ## Goal
@@ -273,28 +281,78 @@ Each slice: **failing test → implement → green → commit**. After slices ma
 
 **Locked 1.3-a:** Action suites reuse session kind `"runner"` (registry unused for Action leaves).
 
-### Phase 2 — Pilot MiroirTest instance (parity with Data.CRUD)
+### Phase 2 — Pilot MiroirTest instance (parity with Data.CRUD) ✅
 
-| Slice | Work | Tests first | Nonreg |
-|-------|------|-------------|--------|
-| 2.1 | Add deployment JSON suite with **one** leaf (“Refresh all Instances”) + suite hooks or playfield seed | Integ: `testMiroir --suites <key> --mode integ --profile emulatedServer-sql --filter Refresh` | — |
-| 2.2 | Port remaining five cases as `actionTest` leaves | Filter each leaf; then full suite | — |
-| 2.3 ★ | Wire suite into `testMiroir` / registry export (library package) | CLI entry green for full Data.CRUD suite | **nonreg** |
-| 2.4 | Parity checklist vs imperative file (same assertions / counts) | Keep both green; document known deltas if any | — |
+| Slice | Work | Tests first | Nonreg | Status |
+|-------|------|-------------|--------|--------|
+| 2.0 | `resolveActionTestLeaf` + real `runMiroirActionTest` (via `runCompositeActionTestParams`) | Unit: `ActionTestTools.unit.test.ts` | — | ✅ |
+| 2.1 | Add deployment JSON suite with **one** leaf (“Refresh all Instances”) + playfield seed (no suite-level hooks) | Integ: `testMiroir --suites domain_controller_data_crud --mode integ --profile emulatedServer-sql` | — | ✅ |
+| 2.2 | Port remaining five cases as `actionTest` leaves | Full suite 6/6 | — | ✅ |
+| 2.3 ★ | Wire suite into `testMiroir` / registry export (library package); session `libraryPlayfieldSeed` | CLI entry green for full Data.CRUD suite | **nonreg** | ✅ |
+| 2.4 | Parity checklist vs imperative file (same assertions / counts) | Keep both green; document known deltas if any | — | ✅ |
 
-### Phase 3 — Lifecycle alignment (DRY with Runner)
+**Phase 2 notes:**
+- Suite key: `domain_controller_data_crud` (`miroirTest_domain_controller_data_crud` in **deployment-miroir** `miroir_data`; Library remains `runTarget` only).
+- Seed uses `libraryEntitiesAndInstancesWithoutBook3` + `defaultLibraryAppModel` (not `defaultMiroirMetaModel`).
+- Imperative `DomainController.integ.Data.CRUD.test.tsx` untouched; both paths green.
+- Lifecycle already on session playfield (`RunnerTestSession.libraryPlayfieldSeed`) — Phase 3.1 largely pre-satisfied.
 
-| Slice | Work | Tests first | Nonreg |
-|-------|------|-------------|--------|
-| 3.1 | Move library create/reset/seed from suite hooks → session `beforeEach` / playfield helpers (reuse Gap B seeds) | Integ: suite still green with hooks removed from JSON | — |
-| 3.2 ★ | Delete redundant hook builders from pilot JSON; share seed constant with imperative file until deletion | Integ + unit for playfield helpers | **nonreg** |
+### Phase 3 — Lifecycle alignment (DRY with Runner) ✅
+
+| Slice | Work | Tests first | Nonreg | Status |
+|-------|------|-------------|--------|--------|
+| 3.1 | Library create/reset/seed on session playfield (`libraryPlayfieldSeed`); JSON suite has **no** suite hooks | Integ: suite still green | — | ✅ |
+| 3.2 ★ | Shared `domainControllerDataCrudLibraryPlayfieldSeed` (+ filter entities for Phase 4); integ wiring DRY; unit tests | Unit: `libraryPlayfieldSeeds.unit` + `RunnerTestSession` seed forward | **nonreg** | ✅ |
+
+**Phase 3 notes:**
+- Shared seed lives in `tests/helpers/libraryPlayfieldSeeds.ts` (also used by Extractor playfield / Data.CRUD entities).
+- Imperative Data.CRUD still owns its own `beforeEach` hooks until Phase 4 cutover; both paths share `libraryEntitiesAndInstancesWithoutBook3`.
+- `RunnerTestSession.unit` now mocks `src/.../runRealServerClientBootstrap` (the path session actually imports).
 
 ### Phase 4 — Cutover & siblings
 
-| Slice | Work | Tests first | Nonreg |
-|-------|------|-------------|--------|
-| 4.1 | Deprecate / delete `DomainController.integ.Data.CRUD.test.tsx` when MiroirTest is sole owner | Confirm CI / docs point to `testMiroir` | **nonreg** |
-| 4.2+ | Migrate Model / PK / noParentUuid CRUD files using the same leaf + session | One file per slice | nonreg per file or batch |
+| Slice | Work | Tests first | Nonreg | Status |
+|-------|------|-------------|--------|--------|
+| 4.1 ★ | **Deprecate** (do **not** delete) `DomainController.integ.Data.CRUD.test.tsx`; docs + nonreg prefer `testMiroir --suites domain_controller_data_crud`; legacy stays in nonreg via `DomainController.integ` | Both paths green | **nonreg** | ✅ |
+| 4.2 ★ | Port Model.CRUD → `domain_controller_model_crud` (`actionTest`); Publisher+Country playfield seed; deprecate imperative Model.CRUD | Integ 8/8 + legacy green | **nonreg** | ✅ |
+| 4.3 ★ | Port compositePK.CRUD → `domain_controller_composite_pk_crud` (`actionTest`); custom TestEntityCompositePK playfield seed; deprecate imperative compositePK | Integ 4/4 + legacy green | **nonreg** | ✅ |
+| 4.4 ★ | Port nonUuidPK.CRUD → `domain_controller_non_uuid_pk_{model,data}_crud` (`actionTest`); Publisher-only + CodeNumber seeds; deprecate imperative nonUuidPK | Integ 1+4 + legacy green | **nonreg** | ✅ |
+| 4.5 ★ | Port noParentUuid.CRUD → single `domain_controller_no_parent_uuid_crud` (`actionTest`); Publisher+NoParentUuid seed; deprecate imperative noParentUuid | Integ 6/6 + legacy green | **nonreg** | ✅ |
+| 4.6 ★ | Port React Model undo-redo → single `domain_controller_model_undo_redo` (`actionTest`); empty Library seed; deprecate React undo-redo | Integ 1/1 + legacy green | **nonreg** | ✅ |
+| 4.7+ | Migrate any remaining Action integ siblings using the same leaf + session | One file per slice | nonreg per file or batch | — |
+
+**Phase 4.1 notes:**
+- Legacy Data.CRUD marked `@deprecated` with preferred CLI; **must remain runnable** until MiroirTest is accepted as sole owner (later deletion slice — not 4.1).
+- Nonreg adds `integ-action-domain_controller_data_crud` while keeping `appstack-DomainController.integ`.
+
+**Phase 4.2 notes:**
+- Suite key: `domain_controller_model_crud` (`miroirTest_domain_controller_model_crud` in **deployment-miroir** `miroir_data`; Library remains `runTarget` only); generator: `generate_domain_controller_model_crud_miroir_test.py`.
+- Seed: `domainControllerModelCrudLibraryPlayfieldSeed` (Publisher + Country).
+- Imperative Model.CRUD deprecated, not deleted.
+
+**Phase 4.3 notes:**
+- Suite key: `domain_controller_composite_pk_crud` (`miroirTest_domain_controller_composite_pk_crud` in **deployment-miroir** `miroir_data`; Library remains `runTarget` only); generator: `generate_domain_controller_composite_pk_crud_miroir_test.py`.
+- Seed: `domainControllerCompositePkCrudLibraryPlayfieldSeed` (TestEntityCompositePK only; `idAttribute: ["region","code"]`).
+- `RunnerTestSession` remaps the *provided* seed metaModel (does not replace with `defaultLibraryAppModel`) so custom entities survive.
+- Imperative compositePK.CRUD deprecated, not deleted.
+
+**Phase 4.4 notes:**
+- Two suite keys (different playfield seeds): `domain_controller_non_uuid_pk_model_crud` (Publisher only; leaf creates TestEntityCodeNumber) and `domain_controller_non_uuid_pk_data_crud` (TestEntityCodeNumber + 3 instances; `idAttribute: "code"`).
+- Generator: `generate_domain_controller_non_uuid_pk_crud_miroir_test.py` writes both JSON assets into Miroir `miroir_data`.
+- Imperative nonUuidPK.CRUD deprecated, not deleted.
+
+**Phase 4.5 notes:**
+- Single suite key: `domain_controller_no_parent_uuid_crud` (Model create + Data CRUD leaves together).
+- Seed: Publisher + TestEntityNoParentUuid (instances omit `parentUuid`; payload.parentUuid fallback).
+- Model leaf drops+recreates the seeded entity so `createEntity` is still exercised under the shared seed.
+- Generator: `generate_domain_controller_no_parent_uuid_crud_miroir_test.py`.
+- Imperative noParentUuid.CRUD deprecated, not deleted.
+
+**Phase 4.6 notes:**
+- Single suite key: `domain_controller_model_undo_redo` (one stateful leaf covering createEntity Author/Book + undo/redo + commit).
+- Seed: empty Library (`domainControllerModelUndoRedoLibraryPlayfieldSeed`).
+- Domain-action + entity-list assertions only; React UI / `currentTransaction` remain on the deprecated legacy file.
+- Generator: `generate_domain_controller_model_undo_redo_miroir_test.py`.
 
 ### Phase 5 — UI (#197 Phase B follow-on)
 
@@ -345,12 +403,12 @@ Do **not** weaken assertions to get green; fix executor / param bank instead.
 
 ## 9. Success criteria
 
-- [ ] `actionTest` is a first-class `MiroirTest` leaf; dispatch lives in `miroir-core`
-- [ ] Runner and Action integ share one composite-action execution helper
-- [ ] Data.CRUD coverage runs via `testMiroir --mode integ` with parity to the imperative suite
-- [ ] Imperative Data.CRUD file removed or permanently skipped after cutover
-- [ ] `inferIntegrationSessionKind` / UI capabilities understand Action suites
-- [ ] Documented in [docs/reference/testing.md](../../../docs/reference/testing.md) under MiroirTest integ families
+- [x] `actionTest` is a first-class `MiroirTest` leaf; dispatch lives in `miroir-core`
+- [x] Runner and Action integ share one composite-action execution helper
+- [x] Data.CRUD coverage runs via `testMiroir --mode integ` with parity to the imperative suite
+- [ ] Imperative Data.CRUD file **deleted** only after MiroirTest is sole owner (4.1: **deprecated**, still green)
+- [x] `inferIntegrationSessionKind` / UI capabilities understand Action suites
+- [x] Documented in [docs/reference/testing.md](../../../docs/reference/testing.md) under MiroirTest integ families
 
 ---
 
@@ -361,5 +419,6 @@ Do **not** weaken assertions to get green; fix executor / param bank instead.
 - [gap-E-refactoring-plan.md](./gap-E-refactoring-plan.md) (DC session migration already done for bootstrap)
 - [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) (UI integ after CLI)
 - [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md)
-- Source pilot: `packages/miroir-standalone-app/tests/3_controllers/DomainController.integ.Data.CRUD.test.tsx`
+- Source pilot (deprecated imperative): `packages/miroir-standalone-app/tests/3_controllers/DomainController.integ.Data.CRUD.test.tsx`
+- Canonical MiroirTest: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/c8e2a104-….json` (`domain_controller_data_crud`; Library `runTarget`)
 - Runner reference: `packages/miroir-test-app_deployment-library/.../b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c.json` (`runner_library`)

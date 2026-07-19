@@ -379,11 +379,22 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         }
         const effectiveAction = persistenceAction.actionType.split('_')[1];
         // log.info("handleNetworkPersistenceAction effectiveAction", effectiveAction);
+        const deploymentUuid =
+          applicationDeploymentMap[persistenceAction.payload.application];
+        if (typeof deploymentUuid !== "string" || deploymentUuid.length === 0) {
+          throw new Error(
+            "handleNetworkPersistenceAction could not resolve deploymentUuid for application " +
+              persistenceAction.payload.application +
+              " (map keys: " +
+              Object.keys(applicationDeploymentMap).join(", ") +
+              ")",
+          );
+        }
         const callParams = this.getRestCallParams(
           persistenceAction,
           this.rootApiUrl +
             "/CRUD/" +
-            applicationDeploymentMap[persistenceAction.payload.application] +
+            deploymentUuid +
             "/" +
             persistenceAction.payload.section.toString() +
             "/entity",
@@ -392,7 +403,7 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
         const completeArgs = {
           ...callParams.args,
           application: persistenceAction.payload.application,
-          deploymentUuid: applicationDeploymentMap[persistenceAction.payload.application],
+          deploymentUuid,
           section: persistenceAction.payload.section,
           parentUuid: persistenceAction.payload.parentUuid,
           applicationDeploymentMap,

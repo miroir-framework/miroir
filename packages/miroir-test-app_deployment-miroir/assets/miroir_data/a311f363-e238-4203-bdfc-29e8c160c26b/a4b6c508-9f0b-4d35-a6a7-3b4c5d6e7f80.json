@@ -1,0 +1,551 @@
+{
+  "uuid": "a4b6c508-9f0b-4d35-a6a7-3b4c5d6e7f80",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "domain_controller_non_uuid_pk_data_crud",
+  "description": "DomainController non-UUID PK Data CRUD action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session libraryPlayfieldSeed (TestEntityCodeNumber, idAttribute code).",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "domainController.nonUuidPK.data.crud",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Refresh instances of TestEntityCodeNumber",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Refresh instances of TestEntityCodeNumber",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryCodeNumberInstances",
+                "nameGivenToResult": "codeNumberList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "codeItems": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "TestEntityCodeNumber",
+                          "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                          "orderBy": {
+                            "attributeName": "code",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkCount",
+            "nameGivenToResult": "checkCount",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkCount",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "codeNumberList",
+                      "codeItems"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 3
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkItems",
+            "nameGivenToResult": "checkItems",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkItems",
+              "definition": {
+                "resultAccessPath": [
+                  "codeNumberList",
+                  "codeItems"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": [
+                  {
+                    "code": 1,
+                    "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                    "parentName": "TestEntityCodeNumber",
+                    "name": "first item"
+                  },
+                  {
+                    "code": 2,
+                    "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                    "parentName": "TestEntityCodeNumber",
+                    "name": "second item"
+                  },
+                  {
+                    "code": 3,
+                    "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                    "parentName": "TestEntityCodeNumber",
+                    "name": "third item"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Create instance in TestEntityCodeNumber",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Create instance in TestEntityCodeNumber",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createInstance",
+                "actionLabel": "createCodeItem4",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "code": 4,
+                      "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                      "parentName": "TestEntityCodeNumber",
+                      "name": "fourth item"
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryCodeNumberInstances",
+                "nameGivenToResult": "codeNumberList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "codeItems": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "TestEntityCodeNumber",
+                          "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                          "orderBy": {
+                            "attributeName": "code",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkCount",
+            "nameGivenToResult": "checkCount",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkCount",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "codeNumberList",
+                      "codeItems"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 4
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Update instance in TestEntityCodeNumber",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Update instance in TestEntityCodeNumber",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "updateInstance",
+                "actionLabel": "updateCodeItem1",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "code": 1,
+                      "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                      "parentName": "TestEntityCodeNumber",
+                      "name": "first item UPDATED"
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryCodeNumberInstances",
+                "nameGivenToResult": "codeNumberList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "codeItems": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "TestEntityCodeNumber",
+                          "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                          "orderBy": {
+                            "attributeName": "code",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkCount",
+            "nameGivenToResult": "checkCount",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkCount",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "codeNumberList",
+                      "codeItems"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 3
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkUpdatedItem",
+            "nameGivenToResult": "checkUpdatedItem",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkUpdatedItem",
+              "definition": {
+                "resultAccessPath": [
+                  "codeNumberList",
+                  "codeItems"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": [
+                  {
+                    "code": 1,
+                    "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                    "parentName": "TestEntityCodeNumber",
+                    "name": "first item UPDATED"
+                  },
+                  {
+                    "code": 2,
+                    "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                    "parentName": "TestEntityCodeNumber",
+                    "name": "second item"
+                  },
+                  {
+                    "code": 3,
+                    "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                    "parentName": "TestEntityCodeNumber",
+                    "name": "third item"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Delete instance from TestEntityCodeNumber",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Delete instance from TestEntityCodeNumber",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "deleteInstance",
+                "actionLabel": "deleteCodeItem2",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "code": 2,
+                      "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                      "parentName": "TestEntityCodeNumber",
+                      "name": "second item"
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryCodeNumberInstances",
+                "nameGivenToResult": "codeNumberList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "codeItems": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "TestEntityCodeNumber",
+                          "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                          "orderBy": {
+                            "attributeName": "code",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkCount",
+            "nameGivenToResult": "checkCount",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkCount",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "codeNumberList",
+                      "codeItems"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 2
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkRemainingItems",
+            "nameGivenToResult": "checkRemainingItems",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkRemainingItems",
+              "definition": {
+                "resultAccessPath": [
+                  "codeNumberList",
+                  "codeItems"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": [
+                  {
+                    "code": 1,
+                    "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                    "parentName": "TestEntityCodeNumber",
+                    "name": "first item"
+                  },
+                  {
+                    "code": 3,
+                    "parentUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                    "parentName": "TestEntityCodeNumber",
+                    "name": "third item"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

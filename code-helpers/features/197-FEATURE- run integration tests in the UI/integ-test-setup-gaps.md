@@ -4,7 +4,7 @@
 ways integration tests start up and configure themselves must be unified. This document maps the
 current state and names the gaps that still need to be filled before UI execution becomes viable.
 
-**Last updated:** Gap D complete (unified integration profiles — see [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md)).
+**Last updated:** 2026-07-19 — Gaps A–E done; Gap F done (Phase B ✅ incl. C5 + B7 webApp manuals; B8 / B9 / Electron / Playwright postponed — [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md)).
 
 ---
 
@@ -29,7 +29,7 @@ current state and names the gaps that still need to be filled before UI executio
 
 ## 2. Gap A — Miroir + Admin app initialization — ✅ **Done**
 
-**Status:** Complete — A0–A5, A8 ([gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md)). A6/A7 skipped; A9 deferred to #197 Phase B.
+**Status:** Complete — A0–A5, A8 ([gap-A-refactoring-plan.md](./gap-A-refactoring-plan.md)). A6/A7 skipped; A9 delivered as #197 Phase B launcher (core ✅; B8 embedded postponed).
 
 ### Outcome
 
@@ -57,8 +57,8 @@ already provisioned Miroir + admin:
 
 **#197 Phase B:** Default UI path is **data-isolated in-browser orchestrator** (`hostMode: "isolated"`,
 ephemeral `runTarget`, dedicated activity tracker — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md)).
-Vitest subprocess remains CLI transport and optional B9 catalog for PersistenceStoreController-direct suites. Embedded mode
-is the advanced path for attaching to a running host without re-deploying meta-model stores.
+Vitest subprocess remains CLI transport and optional B9 catalog for PersistenceStoreController-direct suites (**postponed**). Embedded mode
+is the advanced path for attaching to a running host without re-deploying meta-model stores (B8 **postponed** — not the default).
 
 ### What was filled
 
@@ -506,11 +506,11 @@ Five different public setup entry points existed across the test infrastructure:
 | **C-assertions** — PersistenceStoreController vs domainController in test bodies | `4_storage` keeps PersistenceStoreController (intentional); UI launcher for PersistenceStoreController Vitest suites not built | `4_storage` only | **Partial** — blocks *in-browser* PersistenceStoreController access; **not** a blocker if UI spawns isolated Vitest (defer to follow-up) |
 | **D** — Env config fragmentation | ~~Unified profile system (`MIROIR_TEST_*` + `VITE_MIROIR_*`)~~ | Transformer, runner, `testByFile` | **Done** ✅ — [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md) |
 | **E** — Setup helper fragmentation | ~~Consolidate `setupMiroirTest*`; orchestrator for UI~~ | DomainController CRUD, legacy runners | **Done** ✅ — enables Gap B / UI Phase B |
-| **F** — UI store backend / real-server path | Browser emulated integ = **IndexedDB only**; SQL/fs/mongo need Node emulated (CLI) or **`miroir-server`** (`realServer-*` configs). Bootstrap today requires `emulateServer: true`. B6-d e2e RTL proof pending. | #197 Phase B UI launcher | **Open** — [phase-b-ui-launcher-plan.md §5](./phase-b-ui-launcher-plan.md#51-store-backend-reality-corrected--blocks-naive-b6-completion) |
+| **F** — UI store backend / real-server path | Browser emulated integ = **IndexedDB only**; SQL/fs/mongo via CLI emulated or **`miroir-server`** (`realServer-*`). B6-c C1–C5 + B6-d + B7 webApp manuals ✅ | #197 Phase B UI launcher | **Done** — [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) (§5, §7 postponed optionals) |
 
-Gaps **A**, **B**, **D**, and **E** (bootstrap, playfield, profiles, setup consolidation) are done. The remaining work for running
-integration tests from the UI is **#197 Phase B** (launcher, session isolation, UI wiring, **B6-d proof**) — see
-[phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md). Default UI path: **in-browser emulated IndexedDB**; other backends via **real server** (B6-c) or CLI.
+Gaps **A**, **B**, **D**, and **E** (bootstrap, playfield, profiles, setup consolidation) are done. **#197 Phase B** (launcher, isolation, UI wiring, B6-d/C5 proof, B7 transformer) is **done** — see
+[phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md). Default UI path: **in-browser emulated IndexedDB**; other backends via **real server** (B6-c C1–C5) or CLI.
+**Postponed leftovers:** Electron emulated (B6-b3), B8/B9, Playwright (D10).
 **Gap C-setup** is largely solved: one common bootstrap
 pattern (`RunnerTestSessionInterface` + `AppStackIntegrationTestSession` / `IntegrationTestSession`)
 is available across transformer and storage families, which makes CLI testing much easier to

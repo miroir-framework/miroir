@@ -141,7 +141,15 @@ function createStandaloneAppSession(
         );
       }
       const runnerOptions = (sessionSpecificOptions ?? {}) as Partial<
-        Pick<RunnerTestSessionOptions, "pageLabel" | "runTarget" | "suiteTestParams" | "runnerRegistry">
+        Pick<
+          RunnerTestSessionOptions,
+          | "pageLabel"
+          | "runTarget"
+          | "suiteTestParams"
+          | "runnerRegistry"
+          | "libraryPlayfieldSeed"
+          | "skipRunTargetPlayfieldReset"
+        >
       >;
       if (!runnerOptions.runTarget) {
         throw new Error(

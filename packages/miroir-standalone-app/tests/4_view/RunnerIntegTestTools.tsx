@@ -2,11 +2,13 @@ import crossFetch from "cross-fetch";
 
 import {
   type ApplicationDeploymentMap,
+  type ApplicationEntitiesAndInstances,
   type CompositeAction,
   type CompositeActionTemplate,
   type CompositeRunTestAssertion,
   type Deployment,
   type DomainControllerInterface,
+  type InitApplicationParameters,
   type MetaModel,
   type MiroirActivityTracker,
   type MiroirConfigClient,
@@ -74,6 +76,10 @@ export async function beforeEachTest(
      * filesystemDeploymentRootDirectory — resetting it mutates source data.
      */
     resetMiroirPlatform?: boolean;
+    /** Optional library seed applied after reset (Action Data.CRUD playfield). */
+    libraryEntitiesAndInstances?: ApplicationEntitiesAndInstances;
+    librarySeedInitParams?: InitApplicationParameters;
+    librarySeedMetaModel?: MetaModel;
   },
 ): Promise<void>  {
   await resetLibraryPlayfield({
@@ -86,6 +92,9 @@ export async function beforeEachTest(
     miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
     miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
     resetMiroirPlatform: options?.resetMiroirPlatform ?? true,
+    libraryEntitiesAndInstances: options?.libraryEntitiesAndInstances,
+    librarySeedInitParams: options?.librarySeedInitParams,
+    librarySeedMetaModel: options?.librarySeedMetaModel,
   });
   if (options?.clearDocumentBody !== false) {
     document.body.innerHTML = "";

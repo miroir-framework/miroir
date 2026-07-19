@@ -54,7 +54,7 @@ export async function runCompositeActionTestParams(
             testAction.testCompositeAction as any,
             applicationDeploymentMap,
             currentModelEnvironment,
-            {},
+            testActionParamValues ?? {},
           ),
       );
     }

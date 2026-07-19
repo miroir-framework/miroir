@@ -2,7 +2,7 @@
 
 GitHub issue: TBD (`miroir-framework/miroir#197`)
 
-**Status:** Phase A ✅ · Phase R (R0–R6) ✅ · Gaps A/B/C-setup/D/E ✅ · **Phase B in progress** (B0–B5 ✅ · B6-d1 ✅ · **B6-d2 indexedDb manual ✅ 2026-07-16** · **B6-c C1–C3 ✅ · C5 manual next** — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md))
+**Status:** Phase A ✅ · Phase R (R0–R6) ✅ · Gaps A/B/C-setup/D/E ✅ · **Phase B ✅** (B0–B7 incl. C5 + transformer webApp manuals **2026-07-19**) · **Postponed:** B6-b3 Electron · B8 · B9 · Playwright (D10) — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md)
 
 **Depends on:** [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md) (complete)
 
@@ -20,7 +20,7 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode in
 
 **Refactor goal (Phase R, green):** Replace the Phase A **TypeScript fixture bridge** with **transformer-based indirection** (`getFromParameters`, `getFromContext`) and a **standard injected parameter bank** — same pattern as Reports / Transformers. No new failing tests; each slice keeps `runner_library` green.
 
-**Later goal (Phase B):** Run the same suites from the Miroir UI inside a **data-isolated test run** (ephemeral application + temp stores, setup/teardown per run — not a separate OS process), with an exploratory troubleshooting view — without polluting the user's working UI session. Full plan: [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md).
+**Later goal (Phase B — done):** Run the same suites from the Miroir UI inside a **data-isolated test run** (ephemeral application + temp stores, setup/teardown per run — not a separate OS process), with an exploratory troubleshooting view — without polluting the user's working UI session. Full plan: [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md). Optional leftovers (Electron, B8/B9, Playwright) remain **postponed** there.
 
 Constraints:
 
@@ -89,9 +89,9 @@ sequenceDiagram
 | Pilot instance | `miroirTest_runner_library` in deployment-library | lend + return `runnerTest` leaves (**inline JSON**, no `fixtureRef`) |
 | Ref registry (interim) | ~~`runnerTestFixtures.ts`~~ **deleted R6** → `runnerLibraryTestRegistry.ts` |
 
-**Still open for #197:** Phase B (UI launcher + reporting). Phase R complete ✅ ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)). UI runs **domainController-based** MiroirTest integ first; PersistenceStoreController-direct `4_storage` suites deferred (see [Out of scope](#out-of-scope)).
+**Still open for #197:** Phase B **optional postponed** leftovers only (Electron emulated, B8/B9, Playwright) — [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) §7. Phase R complete ✅ ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)). UI runs **domainController-based** MiroirTest integ (`runnerTest` + `transformerTest`); PersistenceStoreController-direct `4_storage` suites remain deferred (B9 postponed — see [Out of scope](#out-of-scope)).
 
-**Action integ → MiroirTest (planned):** Migrate DomainController Action-centered CRUD integ (`DomainController.integ.Data.CRUD` pilot) onto an `actionTest` leaf — a simpler sibling of `runnerTest` sharing the composite-action executor. Plan: [action-integ-miroirtest-migration-plan.md](./action-integ-miroirtest-migration-plan.md).
+**Action integ → MiroirTest:** Data CRUD pilot on `actionTest` (`domain_controller_data_crud` in **deployment-miroir**; Library is `runTarget` only). Imperative `DomainController.integ.Data.CRUD.test.tsx` is **deprecated** but kept green until full replacement. Plan: [action-integ-miroirtest-migration-plan.md](./action-integ-miroirtest-migration-plan.md).
 
 ### Legacy imperative runner files (not yet on MiroirTest JSON)
 
@@ -114,8 +114,8 @@ The `Test` entity (`d2842a84-…`) already models `testBuildPlusRuntimeComposite
 
 1. **Representation:** Most `RunnerTestParams` coverage is still TypeScript-only; pilot `runner_library` is on MiroirTest JSON — remaining `Runner_*` files not yet migrated (G8).
 2. **Duplication:** Startup/lifecycle duplication **reduced** (Gap E) via shared session adapters; legacy files still repeat vitest entry boilerplate until full MiroirTest cutover.
-3. **Environment coupling:** Bootstrap is hexagonal and UI-ready (Gaps A/B/E); Phase B still needs a **UI launcher** wired to the orchestrator with session isolation.
-4. **Mode split:** Feature 196 UI runs MiroirTest in `executionMode: "unit"` only. Runner tests are inherently **integration** and need a guarded UI path in Phase B.
+3. **Environment coupling:** Bootstrap is hexagonal and UI-ready (Gaps A/B/E); Phase B **core** wires the **UI launcher** to the orchestrator with session isolation (done — see [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md)).
+4. **Mode split:** Feature 196 UI ran MiroirTest in `executionMode: "unit"` only. Runner/transformer integ now have a guarded UI path (Phase B B5–B7 + [ui-unit-vs-integ-run-context-plan.md](./ui-unit-vs-integ-run-context-plan.md)).
 
 ---
 
@@ -779,19 +779,19 @@ R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTes
 
 **Prerequisite:** Gaps A/B/C-setup/D/E ✅ · Phase R ✅ — Phase B wires an **in-browser async launcher** to existing orchestrator infrastructure.
 
-**In scope:** domainController-based MiroirTest integ — `runner_library` + transformer integ (`runnerTest`, `transformerTest` leaves).
+**In scope (done):** domainController-based MiroirTest integ — `runner_library` + transformer integ (`runnerTest`, `transformerTest` leaves).
 
-**Deferred:** PersistenceStoreController-direct `4_storage` Vitest suites from UI (optional subprocess catalog B9).
+**Deferred / postponed:** PersistenceStoreController-direct `4_storage` Vitest suites from UI (B9); Electron emulated (B6-b3); B8 embedded; Playwright (D10) — see phase-b §7 Postponed.
 
 **Isolation model (corrected):** **Data / dataflow isolation** — ephemeral `runTarget`, temp stores, dedicated integ activity tracker, session `teardown()`; **not** Vitest subprocess spawn in the browser. `hostMode: "isolated"` = fresh bootstrap stack in-process.
 
-| Slice | Summary |
-|-------|---------|
-| B0–B2 | Types, mutex, Vitest-free in-process suite runner |
-| B3–B4 | `UiIntegrationTestLauncher` + real `RunnerTestSession.teardown` |
-| B5–B6 | UI button, badges, profile picker (B6-a/b), real-server path (B6-c), **e2e proof** (B6-d) |
-| B7 | Transformer integ in same launcher — **blocked on B6-d** |
-| B8–B9 | Optional embedded troubleshooting; optional PersistenceStoreController subprocess catalog |
+| Slice | Summary | Status |
+|-------|---------|--------|
+| B0–B2 | Types, mutex, Vitest-free in-process suite runner | ✅ |
+| B3–B4 | `UiIntegrationTestLauncher` + real `RunnerTestSession.teardown` | ✅ |
+| B5–B6 | UI button, badges, profile picker (B6-a/b), real-server path (B6-c C1–C5), **e2e proof** (B6-d) | ✅ · B6-b3 postponed |
+| B7 | Transformer integ in same launcher (+ list dual-mode UX + webApp manual) | ✅ |
+| B8–B9 | Optional embedded troubleshooting; optional PersistenceStoreController subprocess catalog | ⏸️ Postponed |
 
 ---
 
@@ -837,14 +837,22 @@ R6 is split into five TDD slices (R6-A … R6-E): suite `testParams`, `RunnerTes
 
 ### Phase B
 
-See [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) §7 for granular checkboxes.
+See [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) §7 for granular checkboxes (source of truth).
+
+**Core (done):**
 
 - [x] In-browser data-isolated integ launcher (`hostMode: "isolated"`, dedicated tracker, mutex) — B1–B5
-- [ ] Run `runner_library` + transformer integ from UI without affecting working session stores — runner ✅ (B3–B5); transformer pending B7
+- [x] Run `runner_library` + transformer integ from UI without affecting working session stores — runner B3–B6 (incl. C5); transformer B7 (incl. webApp manual **2026-07-19**)
 - [x] Ephemeral vs pinned run-target toggle; profile picker with transport labels — B6-a/b
-- [ ] Environment inspector shows config + last run context **with proven end-to-end launch** — B6-d
+- [x] Environment inspector shows config + last run context **with proven end-to-end launch** — B6-d1/d2 (indexedDb) + C5 (real-server)
 - [x] Teardown leaves no test schemas / indexedDb databases behind — B4
-- [ ] (Optional) embedded host path documented and gated — not default (B8)
+- [x] List dual unit/integ batch bar — [ui-unit-vs-integ-run-context-plan.md](./ui-unit-vs-integ-run-context-plan.md)
+
+**Postponed:**
+
+- [ ] B6-b3 Electron emulated profiles; D10 Playwright T3 automation
+- [ ] (Optional) embedded host path documented and gated — B8
+- [ ] (Optional) PersistenceStoreController subprocess catalog — B9
 
 ### Gap D — unified integration test profiles — ✅ **Done**
 
@@ -900,6 +908,9 @@ Plan: [gap-D-refactoring-plan.md](./gap-D-refactoring-plan.md)
 
 - [Integration test setup — gap analysis](./integ-test-setup-gaps.md) (bootstrap gaps A–E)
 - [Gap D — unified integration test profiles](./gap-D-refactoring-plan.md)
+- [Phase B — UI launcher](./phase-b-ui-launcher-plan.md) (B0–B7 done; optional postponed in §7)
+- [UI unit vs integ run context](./ui-unit-vs-integ-run-context-plan.md) (list/details dual-mode — done)
+- [Runner CreateEntity / DropEntity → MiroirTest](./runner-create-drop-entity-miroirtest-migration-plan.md) (Miroir-app `runnerTest` suites — planned)
 - [Action integ → MiroirTest migration](./action-integ-miroirtest-migration-plan.md) (DomainController CRUD → `actionTest` leaf)
 - [Feature 196 — MiroirTest](../196-FEATURE-migrate-tests-to-MiroirTest/plan.md)
 - [Feature 195 — Unit tests in UI](../195-FEATURE-%20enable%20execution%20of%20miroir-core%20unit%20tests%20in%20UI/plan.md) (superseded for unit tests; still relevant for `Test` entity distinction)

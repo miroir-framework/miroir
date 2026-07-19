@@ -1,3 +1,9 @@
+/**
+ * @deprecated Prefer MiroirTest suite `domain_controller_model_crud` via
+ * `npm run testMiroir -w miroir-standalone-app -- --suites domain_controller_model_crud --mode integ --profile emulatedServer-sql`.
+ * Canonical leaves: `miroirTest_domain_controller_model_crud` (deployment-miroir; Library is runTarget only).
+ * This imperative harness must remain green until that suite fully replaces it; do not delete.
+ */
 import { describe, expect, beforeAll, beforeEach, afterAll, afterEach, it } from "vitest";
 
 import { fetch as crossFetch } from "cross-fetch";

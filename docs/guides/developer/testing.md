@@ -21,8 +21,8 @@ Legacy `UnitTest` and `TransformerTest` entities remain in the deployment for ba
 |------|----------|-------------|----------------|
 | **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | All miroir-core registry suites except `miroirCoreTransformers` |
 | **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `miroirCoreTransformers`, etc. via `MIROIR_TEST_*` |
-| **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD, PersistenceStoreController, extractors |
-| **Runner integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | Composite-action runner tests |
+| **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD (Data.CRUD deprecated), PersistenceStoreController, extractors |
+| **Runner / Action integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | `runner_library`, `domain_controller_data_crud` |
 
 The UI always runs **unit** mode.
 
@@ -129,7 +129,11 @@ Details: [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroi
 DomainController, persistence-store, extractor, and UI-launcher Node proofs are **per-file Vitest suites** launched with `testByFile`. Prefer **`--profile`** / **`--storage`**; `VITE_MIROIR_*` env remains a legacy fallback:
 
 ```bash
-# Preferred
+# Preferred Data CRUD — MiroirTest action suite
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_data_crud --mode integ
+
+# Deprecated imperative Data CRUD (parity harness — keep green)
 npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-sql DomainController.integ.Data
 
@@ -137,7 +141,7 @@ npm run testByFile -w miroir-standalone-app -- \
 npm run testByFile -w miroir-standalone-app -- \
   --storage sql uiIntegrationTestLauncher.realServer.integ
 
-# Legacy — explicit env
+# Legacy — explicit env for imperative Data CRUD
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data

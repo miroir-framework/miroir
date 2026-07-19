@@ -3,6 +3,7 @@ import crossFetch from "cross-fetch";
 import {
   buildRunnerTestSessionParamBank,
   defaultMiroirMetaModel,
+  emptyApplicationModel,
   ensureLibraryPlayfield,
   extendMiroirConfigWithExtraDeploymentConfiguration,
   getBootstrapPhasesForSessionKind,
@@ -54,6 +55,22 @@ export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   runTarget: RunnerTestRunTarget;
   suiteTestParams?: Record<string, unknown>;
   runnerRegistry: Record<string, Runner>;
+  /**
+   * Optional playfield seed applied in `beforeEach` after reset
+   * (Action Data.CRUD MiroirTest suites).
+   */
+  libraryPlayfieldSeed?: {
+    libraryEntitiesAndInstances: import("miroir-core").ApplicationEntitiesAndInstances;
+    librarySeedInitParams: import("miroir-core").InitApplicationParameters;
+    librarySeedMetaModel: MetaModel;
+  };
+  /**
+   * When true, `beforeEach` does **not** reset/seed the session runTarget with
+   * remapped library model. Used by CreateEntity / DropEntity MiroirTests that
+   * create/drop an ephemeral deployment with `emptyApplicationModel` inside the
+   * composite suite (legacy harness parity).
+   */
+  skipRunTargetPlayfieldReset?: boolean;
   /**
    * Fetch implementation for the client REST transport. MUST be runtime-appropriate:
    * the browser needs the native `window.fetch` (a Node polyfill such as `cross-fetch`
@@ -211,7 +228,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     // miroir-server nothing has opened/created it yet, so we send the createDeployment
     // composite action over REST here — mirroring the vitest suite's `beforeAll`
     // createDeployment. Admin is already open on the shared server, so skip its openStore.
-    if (!internalMiroirConfig.client.emulateServer) {
+    // Action Data.CRUD suites also need ensure on emulated when seeding (playfield create).
+    if (!internalMiroirConfig.client.emulateServer || this.options.libraryPlayfieldSeed) {
       await ensureLibraryPlayfield({
         domainController,
         applicationDeploymentMap: testApplicationDeploymentMap,
@@ -221,6 +239,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
         librarySelfApplicationUuid: runTarget.applicationUuid,
         mode: "createIfAbsent",
         skipOpenAdminStore: true,
+        persistenceStoreControllerManager,
       });
     }
 
@@ -230,7 +249,10 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     const sessionTestParams = buildRunnerTestSessionParamBank(
       this.options.suiteTestParams,
       runTarget,
-      { defaultLibraryAppModel: libraryModelForSession },
+      {
+        defaultLibraryAppModel: libraryModelForSession,
+        emptyApplicationModel,
+      },
     );
 
     this.domainController = domainController;
@@ -262,7 +284,12 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     if (!this.domainController || !this.applicationDeploymentMap || !this.runnerTestContext) {
       throw new Error("RunnerTestSession.beforeEach: initSession not called");
     }
+    if (this.options.skipRunTargetPlayfieldReset) {
+      this.runnerTestContext.runtimeContext = {};
+      return;
+    }
     const emulateServer = this.runnerTestContext.internalMiroirConfig.client.emulateServer === true;
+    const playfieldSeed = this.options.libraryPlayfieldSeed;
     await beforeEachTest(this.domainController, this.applicationDeploymentMap, {
       applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
       deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
@@ -270,6 +297,20 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       // Keep UI mounted during browser-triggered integration runs.
       clearDocumentBody: false,
       resetMiroirPlatform: emulateServer,
+      ...(playfieldSeed
+        ? {
+            ...playfieldSeed,
+            // Remap the *provided* seed metaModel for ephemeral runTargets.
+            // Do not replace with defaultLibraryAppModel — Action suites may seed
+            // custom entities (e.g. composite-PK TestEntityCompositePK).
+            librarySeedMetaModel: remapLibraryAppModelForRunTarget(
+              playfieldSeed.librarySeedMetaModel,
+              selfApplicationLibrary.uuid as string,
+              deployment_Library_DO_NO_USE.uuid,
+              this.runnerTestContext.runTarget,
+            ),
+          }
+        : {}),
     });
     if (this.runnerTestContext) {
       this.runnerTestContext.runtimeContext = {};

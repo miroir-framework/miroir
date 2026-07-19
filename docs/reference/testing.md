@@ -42,7 +42,7 @@ npm run nonreg -- --tier full --run-all
 | Tier | Contents |
 |------|----------|
 | `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` |
-| `default` | `unit` + MiroirTest integ (`miroirCoreTransformers`, `runner_library`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
+| `default` | `unit` + MiroirTest integ (`miroirCoreTransformers`, `runner_library`, `domain_controller_data_crud`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
 | `full` | `default` + deployment `modelValidation` packages |
 
 Modes: `--run-all` (continue after failures; default) or `--fail-fast`.
@@ -213,6 +213,7 @@ Use **`--profile`** so one preset sets both `VITE_MIROIR_*` (app-stack / runner)
 |------|------------------------|---------|-----------------|
 | **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` (synthetic `testApplication`) | `emulatedServer-sql` |
 | **Runner** | `runner_library` | `RunnerTestSession` (library playfield + runners) | `emulatedServer-sql` |
+| **Action** | `domain_controller_data_crud`, `domain_controller_model_crud`, `domain_controller_composite_pk_crud`, `domain_controller_non_uuid_pk_{model,data}_crud`, `domain_controller_no_parent_uuid_crud`, `domain_controller_model_undo_redo` (all Miroir `miroir_data`) | `RunnerTestSession` + `libraryPlayfieldSeed` (`actionTest` leaves); Library is `runTarget`/testbed | `emulatedServer-sql` |
 
 ```bash
 # Transformer integ
@@ -222,6 +223,38 @@ npm run testMiroir -w miroir-standalone-app -- \
 # Runner integ
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites runner_library --mode integ
+
+# Action Data CRUD integ — Miroir-owned suite; Library is runTarget only
+# (preferred over DomainController.integ.Data.CRUD.test.tsx)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_data_crud --mode integ
+
+# Action Model CRUD integ — Miroir-owned suite; Library is runTarget only
+# (preferred over DomainController.integ.Model.CRUD.test.tsx)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_model_crud --mode integ
+
+# Action composite-PK Data CRUD integ — Miroir-owned; Library is runTarget only
+# (preferred over DomainController.integ.compositePK.CRUD.test.tsx)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_composite_pk_crud --mode integ
+
+# Action non-UUID PK Model/Data CRUD integ — Miroir-owned; Library is runTarget only
+# (preferred over DomainController.integ.nonUuidPK.CRUD.test.tsx)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_non_uuid_pk_model_crud --mode integ
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_non_uuid_pk_data_crud --mode integ
+
+# Action no-parentUuid CRUD integ — single Miroir-owned suite (Model+Data); Library is runTarget only
+# (preferred over DomainController.integ.noParentUuid.CRUD.test.tsx)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_no_parent_uuid_crud --mode integ
+
+# Action Model undo/redo integ — Miroir-owned; Library is runTarget only
+# (preferred over DomainController.React.Model.undo-redo.test.tsx for domain actions)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_model_undo_redo --mode integ
 ```
 
 Filter keys use the suite **`miroirTestLabel`**, not the registry key (see [Filtering](#filtering-miroirtest-cases)):
@@ -529,7 +562,7 @@ The final argument is a Vitest file-name filter (not a suite key). Examples:
 | Filter | Matches |
 |--------|---------|
 | `DomainController.integ` | All DomainController integration files |
-| `DomainController.integ.Data` | `DomainController.integ.Data.CRUD.test.tsx` only |
+| `DomainController.integ.Data` | Deprecated imperative Data CRUD — prefer `testMiroir --suites domain_controller_data_crud` |
 | `DomainController.integ.Model` | Model CRUD suite |
 | `PersistenceStoreController.integ` | PersistenceStoreController low-level store tests |
 | `ExtractorPersistenceStoreRunner.integ` | Extractor runner against live store |
@@ -575,14 +608,22 @@ Full-stack CRUD coverage for model and data actions.
 
 | File | Focus |
 |------|-------|
-| `DomainController.integ.Data.CRUD.test.tsx` | Data-section entity/instance CRUD |
-| `DomainController.integ.Model.CRUD.test.tsx` | Model-section entity definition CRUD |
-| `DomainController.integ.compositePK.CRUD.test.tsx` | Composite primary keys |
-| `DomainController.integ.nonUuidPK.CRUD.test.tsx` | Non-UUID primary keys |
-| `DomainController.integ.noParentUuid.CRUD.test.tsx` | Entities without `parentUuid` |
+| `DomainController.integ.Data.CRUD.test.tsx` | **Deprecated** Data-section CRUD — keep green; prefer `testMiroir --suites domain_controller_data_crud` (`actionTest`) |
+| `DomainController.integ.Model.CRUD.test.tsx` | **Deprecated** Model-section CRUD — keep green; prefer `testMiroir --suites domain_controller_model_crud` (`actionTest`) |
+| `DomainController.integ.compositePK.CRUD.test.tsx` | **Deprecated** Composite-PK Data CRUD — keep green; prefer `testMiroir --suites domain_controller_composite_pk_crud` (`actionTest`) |
+| `DomainController.integ.nonUuidPK.CRUD.test.tsx` | **Deprecated** Non-UUID PK Model+Data CRUD — keep green; prefer `testMiroir --suites domain_controller_non_uuid_pk_{model,data}_crud` (`actionTest`) |
+| `DomainController.integ.noParentUuid.CRUD.test.tsx` | **Deprecated** Entities without `parentUuid` — keep green; prefer `testMiroir --suites domain_controller_no_parent_uuid_crud` (`actionTest`) |
 
 ```bash
-# Postgres
+# Preferred Data CRUD — MiroirTest action suite
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql --suites domain_controller_data_crud --mode integ
+
+# Deprecated imperative Data CRUD (parity harness — do not delete until cutover)
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-sql DomainController.integ.Data
+
+# Postgres — all DomainController app-stack files
 npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-sql DomainController.integ
 
@@ -921,7 +962,7 @@ npm run testMiroir -w miroir-core
 | File | Role |
 |------|------|
 | `tests/miroir-core-tests.integ.test.ts` | MiroirTest integration entry (`testMiroir`) |
-| `tests/miroir-runner-tests.integ.test.ts` | Runner MiroirTest integration entry |
+| `tests/miroir-runner-tests.integ.test.ts` | Runner / Action MiroirTest integration entry (`runner_library` from library; `domain_controller_*_crud` from Miroir `miroir_data`) |
 | `tests/helpers/IntegrationTestSession.ts` | Transformer + app-stack PersistenceStoreController sessions |
 | `tests/helpers/DomainControllerIntegrationTestSession.ts` | DomainController CRUD / undo-redo bootstrap |
 | `tests/helpers/appStackIntegrationBootstrap.ts` | Shared `runAppStackIntegrationBootstrap` |
@@ -1023,7 +1064,7 @@ await session.teardown();
 
 | Name | Example | Used in |
 |------|---------|---------|
-| **Registry key** | `runner_library`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI suite key |
+| **Registry key** | `runner_library`, `domain_controller_data_crud`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI suite key |
 | **Suite `miroirTestLabel`** | `runner.library`, `miroirCoreTransformers`, nested `plus` | Filter object **keys** (when nested) |
 | **Leaf `miroirTestLabel`** | `Return Book Test Composite Action`, `plus with empty args fails` | Filter object **values** (string array) |
 

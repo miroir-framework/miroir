@@ -1,0 +1,1960 @@
+{
+  "uuid": "a1b2c3d4-5e6f-4789-a0b1-c2d3e4f5a6b7",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "domain_controller_model_crud",
+  "description": "DomainController Model CRUD action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session libraryPlayfieldSeed (Publisher+Country).",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "domainController.model.crud",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Refresh all Instances",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Refresh all Instances",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "libraryEntityList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfEntities",
+            "nameGivenToResult": "checkNumberOfEntities",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfEntitiesInLibraryApplicationDeployment",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityList",
+                      "entities"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Drop Entity Publisher and Commit",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Drop Entity Publisher and Commit",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "dropEntity",
+                "actionLabel": "dropEntityPublisher",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "entityDefinitionUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9"
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "libraryEntityList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfEntities",
+            "nameGivenToResult": "checkNumberOfEntities",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfEntities",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityList",
+                      "entities"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityList",
+            "nameGivenToResult": "checkEntityList",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityList",
+              "definition": {
+                "resultAccessPath": [
+                  "libraryEntityList",
+                  "entities"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Country",
+                    "conceptLevel": "Model",
+                    "description": "Country."
+                  }
+                ],
+                "ignoreAttributes": []
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Add Entity Author and Commit",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Add Entity Author and Commit",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createEntity",
+                "actionLabel": "addEntityAuthor",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [
+                    {
+                      "entity": {
+                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Author",
+                        "conceptLevel": "Model",
+                        "description": "The Author of a book."
+                      },
+                      "entityDefinition": {
+                        "uuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
+                        "parentName": "EntityDefinition",
+                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                        "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "conceptLevel": "Model",
+                        "name": "Author",
+                        "description": "author",
+                        "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+                        "cache": {
+                          "cacheAllInstancesOnRefresh": true
+                        },
+                        "viewAttributes": [
+                          "name",
+                          "country",
+                          "icon",
+                          "uuid"
+                        ],
+                        "mlSchema": {
+                          "type": "object",
+                          "extend": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "eager": true,
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityDefinitionRoot"
+                            }
+                          },
+                          "definition": {
+                            "name": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 4,
+                                  "defaultLabel": "Name"
+                                }
+                              }
+                            },
+                            "language": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 5,
+                                  "defaultLabel": "Language"
+                                }
+                              }
+                            },
+                            "birthDate": {
+                              "type": "date",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 6,
+                                  "defaultLabel": "Birth"
+                                }
+                              }
+                            },
+                            "deathDate": {
+                              "type": "date",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 7,
+                                  "defaultLabel": "Death"
+                                }
+                              }
+                            },
+                            "country": {
+                              "type": "uuid",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 8,
+                                  "defaultLabel": "Country",
+                                  "foreignKeyParams": {
+                                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                    "targetEntityOrderInstancesBy": "name"
+                                  }
+                                }
+                              }
+                            },
+                            "icon": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 9,
+                                  "defaultLabel": "Icon"
+                                }
+                              }
+                            },
+                            "icons": {
+                              "type": "number",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 10,
+                                  "defaultLabel": "Icons"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "libraryEntityList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfEntities",
+            "nameGivenToResult": "checkNumberOfEntities",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfEntities",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityList",
+                      "entities"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 3
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityBooks",
+            "nameGivenToResult": "checkEntityBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "libraryEntityList",
+                  "entities"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Author",
+                    "conceptLevel": "Model",
+                    "description": "The Author of a book."
+                  },
+                  {
+                    "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Country",
+                    "conceptLevel": "Model",
+                    "description": "Country."
+                  },
+                  {
+                    "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Publisher",
+                    "conceptLevel": "Model",
+                    "description": "The publisher of a book."
+                  }
+                ],
+                "ignoreAttributes": [
+                  "author",
+                  "storageAccess"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Add Entity Author then rollback",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Add Entity Author then rollback",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createEntity",
+                "actionLabel": "addEntityAuthor",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [
+                    {
+                      "entity": {
+                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Author",
+                        "conceptLevel": "Model",
+                        "description": "The Author of a book."
+                      },
+                      "entityDefinition": {
+                        "uuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
+                        "parentName": "EntityDefinition",
+                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                        "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "conceptLevel": "Model",
+                        "name": "Author",
+                        "description": "author",
+                        "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+                        "cache": {
+                          "cacheAllInstancesOnRefresh": true
+                        },
+                        "viewAttributes": [
+                          "name",
+                          "country",
+                          "icon",
+                          "uuid"
+                        ],
+                        "mlSchema": {
+                          "type": "object",
+                          "extend": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "eager": true,
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityDefinitionRoot"
+                            }
+                          },
+                          "definition": {
+                            "name": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 4,
+                                  "defaultLabel": "Name"
+                                }
+                              }
+                            },
+                            "language": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 5,
+                                  "defaultLabel": "Language"
+                                }
+                              }
+                            },
+                            "birthDate": {
+                              "type": "date",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 6,
+                                  "defaultLabel": "Birth"
+                                }
+                              }
+                            },
+                            "deathDate": {
+                              "type": "date",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 7,
+                                  "defaultLabel": "Death"
+                                }
+                              }
+                            },
+                            "country": {
+                              "type": "uuid",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 8,
+                                  "defaultLabel": "Country",
+                                  "foreignKeyParams": {
+                                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                    "targetEntityOrderInstancesBy": "name"
+                                  }
+                                }
+                              }
+                            },
+                            "icon": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 9,
+                                  "defaultLabel": "Icon"
+                                }
+                              }
+                            },
+                            "icons": {
+                              "type": "number",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 10,
+                                  "defaultLabel": "Icons"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache2",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "libraryEntityList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfBooks",
+            "nameGivenToResult": "checkNumberOfBooks",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityList",
+                      "entities"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Alter Entity Publisher and Commit",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Alter Entity Publisher and Commit",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "alterEntityAttribute",
+                "actionLabel": "alterEntityPublisher",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entityName": "Publisher",
+                  "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "entityDefinitionUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
+                  "addColumns": [
+                    {
+                      "name": "aNewColumnForTest",
+                      "definition": {
+                        "type": "number",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 6,
+                            "defaultLabel": "Gender (narrow-minded)"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "libraryEntityDefinitionListFromPersistentStore",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entityDefinitions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityDefinition",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "libraryEntityDefinitionListFromLocalCache",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entityDefinitions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityDefinition",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfEntitiesFromPersistentStore",
+            "nameGivenToResult": "checkNumberOfEntitiesFromPersistentStore",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooksFromPersisentStore",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityDefinitionListFromPersistentStore",
+                      "entityDefinitions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfEntitiesFromLocalCache",
+            "nameGivenToResult": "checkNumberOfEntitiesFromLocalCache",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooksFromLocalCache",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityDefinitionListFromLocalCache",
+                      "entityDefinitions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityDefinitionFromLocalCache",
+            "nameGivenToResult": "checkEntityDefinitionFromLocalCache",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "libraryEntityDefinitionListFromLocalCache",
+                  "entityDefinitions"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
+                    "parentName": "EntityDefinition",
+                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                    "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                    "entityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "conceptLevel": "Model",
+                    "name": "Country",
+                    "description": "Country",
+                    "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
+                    "cache": {
+                      "cacheAllInstancesOnRefresh": true
+                    },
+                    "viewAttributes": [
+                      "name",
+                      "iso3166-1Alpha-2",
+                      "icon",
+                      "uuid"
+                    ],
+                    "mlSchema": {
+                      "type": "object",
+                      "extend": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "eager": true,
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "entityDefinitionRoot"
+                        }
+                      },
+                      "definition": {
+                        "name": {
+                          "type": "string",
+                          "tag": {
+                            "value": {
+                              "id": 4,
+                              "defaultLabel": "Name"
+                            }
+                          }
+                        },
+                        "iso3166-1Alpha-2": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 5,
+                              "defaultLabel": "Country Code"
+                            }
+                          }
+                        },
+                        "icon": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 6,
+                              "defaultLabel": "Icon"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "uuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
+                    "parentName": "EntityDefinition",
+                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                    "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                    "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "conceptLevel": "Model",
+                    "name": "Publisher",
+                    "description": "Publisher",
+                    "icon": "building",
+                    "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+                    "cache": {
+                      "cacheAllInstancesOnRefresh": true
+                    },
+                    "viewAttributes": [
+                      "name",
+                      "country",
+                      "icon",
+                      "uuid"
+                    ],
+                    "mlSchema": {
+                      "type": "object",
+                      "extend": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "eager": true,
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "entityDefinitionRoot"
+                        }
+                      },
+                      "definition": {
+                        "name": {
+                          "type": "string",
+                          "tag": {
+                            "value": {
+                              "id": 4,
+                              "defaultLabel": "Name"
+                            }
+                          }
+                        },
+                        "country": {
+                          "type": "uuid",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 5,
+                              "display": {
+                                "editable": true
+                              },
+                              "defaultLabel": "Country",
+                              "foreignKeyParams": {
+                                "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                "targetEntityOrderInstancesBy": "name"
+                              }
+                            }
+                          }
+                        },
+                        "icon": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 6,
+                              "defaultLabel": "Icon"
+                            }
+                          }
+                        },
+                        "aNewColumnForTest": {
+                          "type": "number",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 6,
+                              "defaultLabel": "Gender (narrow-minded)"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ignoreAttributes": [
+                  "author",
+                  "storageAccess"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityDefinitionFromPersistentStore",
+            "nameGivenToResult": "checkEntityDefinitionFromPersistentStore",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "libraryEntityDefinitionListFromPersistentStore",
+                  "entityDefinitions"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
+                    "parentName": "EntityDefinition",
+                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                    "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                    "entityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "conceptLevel": "Model",
+                    "name": "Country",
+                    "description": "Country",
+                    "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
+                    "cache": {
+                      "cacheAllInstancesOnRefresh": true
+                    },
+                    "viewAttributes": [
+                      "name",
+                      "iso3166-1Alpha-2",
+                      "icon",
+                      "uuid"
+                    ],
+                    "mlSchema": {
+                      "type": "object",
+                      "extend": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "eager": true,
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "entityDefinitionRoot"
+                        }
+                      },
+                      "definition": {
+                        "name": {
+                          "type": "string",
+                          "tag": {
+                            "value": {
+                              "id": 4,
+                              "defaultLabel": "Name"
+                            }
+                          }
+                        },
+                        "iso3166-1Alpha-2": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 5,
+                              "defaultLabel": "Country Code"
+                            }
+                          }
+                        },
+                        "icon": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 6,
+                              "defaultLabel": "Icon"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "uuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
+                    "parentName": "EntityDefinition",
+                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                    "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                    "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "conceptLevel": "Model",
+                    "name": "Publisher",
+                    "description": "Publisher",
+                    "icon": "building",
+                    "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+                    "cache": {
+                      "cacheAllInstancesOnRefresh": true
+                    },
+                    "viewAttributes": [
+                      "name",
+                      "country",
+                      "icon",
+                      "uuid"
+                    ],
+                    "mlSchema": {
+                      "type": "object",
+                      "extend": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "eager": true,
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "entityDefinitionRoot"
+                        }
+                      },
+                      "definition": {
+                        "name": {
+                          "type": "string",
+                          "tag": {
+                            "value": {
+                              "id": 4,
+                              "defaultLabel": "Name"
+                            }
+                          }
+                        },
+                        "country": {
+                          "type": "uuid",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 5,
+                              "display": {
+                                "editable": true
+                              },
+                              "defaultLabel": "Country",
+                              "foreignKeyParams": {
+                                "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                "targetEntityOrderInstancesBy": "name"
+                              }
+                            }
+                          }
+                        },
+                        "icon": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 6,
+                              "defaultLabel": "Icon"
+                            }
+                          }
+                        },
+                        "aNewColumnForTest": {
+                          "type": "number",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "id": 6,
+                              "defaultLabel": "Gender (narrow-minded)"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "ignoreAttributes": [
+                  "author",
+                  "storageAccess"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Duplicate iso3166-1Alpha-2 from Entity Country to Entity Publisher and Commit",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Duplicate iso3166-1Alpha-2 from Entity Country to Entity Publisher and Commit",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "entity_DuplicateAttribute",
+                "actionLabel": "entity_DuplicateAttribute",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "sourceEntityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "targetEntityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "sourceEntityDefinitionUuid": "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
+                  "targetEntityDefinitionUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
+                  "targetEntityName": "Publisher",
+                  "columns": [
+                    "iso3166-1Alpha-2"
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "fetchEntityDefinitionAfterAction",
+                "nameGivenToResult": "entityDefinitionAfterAction",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "extractors": {
+                                    "entityDefinitions": {
+                                      "extractorOrCombinerType": "extractorByPrimaryKey",
+                                      "applicationSection": "model",
+                                      "parentName": "EntityDefinition",
+                                      "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                                      "instanceUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9"
+                                    }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkPublisherHasNotChanged",
+            "nameGivenToResult": "checkPublisherHasNotChanged",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkPublisherHasNotChanged",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "operator": "&&",
+                  "left": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entityDefinitionAfterAction",
+                        "entityDefinitions",
+                        "uuid"
+                      ]
+                    },
+                    "right": "7a939fe8-d119-4e7f-ab94-95b2aae30db9"
+                  },
+                  "right": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "deepEqual",
+                    "left": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entityDefinitionAfterAction",
+                        "entityDefinitions",
+                        "mlSchema",
+                        "definition",
+                        "iso3166-1Alpha-2"
+                      ]
+                    },
+                    "right": {
+                      "type": "string",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "id": 5,
+                          "defaultLabel": "Country Code"
+                        }
+                      }
+                    }
+                  }
+                },
+                "expectedValue": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Add Entity Author then test before commit or rollback",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Add Entity Author then test before commit or rollback",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createEntity",
+                "actionLabel": "addEntityAuthor",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [
+                    {
+                      "entity": {
+                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "Author",
+                        "conceptLevel": "Model",
+                        "description": "The Author of a book."
+                      },
+                      "entityDefinition": {
+                        "uuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
+                        "parentName": "EntityDefinition",
+                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                        "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                        "conceptLevel": "Model",
+                        "name": "Author",
+                        "description": "author",
+                        "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+                        "cache": {
+                          "cacheAllInstancesOnRefresh": true
+                        },
+                        "viewAttributes": [
+                          "name",
+                          "country",
+                          "icon",
+                          "uuid"
+                        ],
+                        "mlSchema": {
+                          "type": "object",
+                          "extend": {
+                            "type": "schemaReference",
+                            "definition": {
+                              "eager": true,
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "entityDefinitionRoot"
+                            }
+                          },
+                          "definition": {
+                            "name": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 4,
+                                  "defaultLabel": "Name"
+                                }
+                              }
+                            },
+                            "language": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 5,
+                                  "defaultLabel": "Language"
+                                }
+                              }
+                            },
+                            "birthDate": {
+                              "type": "date",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 6,
+                                  "defaultLabel": "Birth"
+                                }
+                              }
+                            },
+                            "deathDate": {
+                              "type": "date",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 7,
+                                  "defaultLabel": "Death"
+                                }
+                              }
+                            },
+                            "country": {
+                              "type": "uuid",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 8,
+                                  "defaultLabel": "Country",
+                                  "foreignKeyParams": {
+                                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                    "targetEntityOrderInstancesBy": "name"
+                                  }
+                                }
+                              }
+                            },
+                            "icon": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 9,
+                                  "defaultLabel": "Icon"
+                                }
+                              }
+                            },
+                            "icons": {
+                              "type": "number",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "id": 10,
+                                  "defaultLabel": "Icons"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReportsFromLocalCache",
+                "nameGivenToResult": "libraryEntityListFromLocalCache",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    },
+                    "queryExecutionStrategy": "localCacheOrFail"
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReportsFromPersistentStore",
+                "nameGivenToResult": "libraryEntityListFromPersistentStore",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    },
+                    "queryExecutionStrategy": "storage"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfEntitiesFromLocalCache",
+            "nameGivenToResult": "checkNumberOfEntitiesFromLocalCache",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfEntitiesFromLocalCache",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityListFromLocalCache",
+                      "entities"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 3
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntitiesAreAuthorAndPublisher",
+            "nameGivenToResult": "checkEntitiesAreAuthorAndPublisher",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntitiesAreAuthorAndPublisher",
+              "definition": {
+                "resultAccessPath": [
+                  "libraryEntityListFromLocalCache",
+                  "entities"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Author",
+                    "conceptLevel": "Model",
+                    "description": "The Author of a book."
+                  },
+                  {
+                    "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Country",
+                    "conceptLevel": "Model",
+                    "description": "Country."
+                  },
+                  {
+                    "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Publisher",
+                    "conceptLevel": "Model",
+                    "description": "The publisher of a book."
+                  }
+                ],
+                "ignoreAttributes": [
+                  "author",
+                  "storageAccess"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfEntitiesFromPersistentStore",
+            "nameGivenToResult": "checkNumberOfEntitiesFromPersistentStore",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfEntitiesFromPersistentStore",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityListFromPersistentStore",
+                      "entities"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityFromPersistentStore",
+            "nameGivenToResult": "checkEntityFromPersistentStore",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityFromPersistentStore",
+              "definition": {
+                "resultAccessPath": [
+                  "libraryEntityListFromPersistentStore",
+                  "entities"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Country",
+                    "conceptLevel": "Model",
+                    "description": "Country."
+                  },
+                  {
+                    "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Publisher",
+                    "conceptLevel": "Model",
+                    "description": "The publisher of a book."
+                  }
+                ],
+                "ignoreAttributes": [
+                  "author",
+                  "storageAccess"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Rename Entity Publisher and Commit",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Rename Entity Publisher and Commit",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "renameEntity",
+                "actionLabel": "renameEntityPublisher",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "entityDefinitionUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
+                  "entityName": "Publisher",
+                  "targetValue": "Publishers"
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "calculateNewEntityDefinionAndReports",
+                "nameGivenToResult": "libraryEntityList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    },
+                    "queryExecutionStrategy": "storage"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfEntities",
+            "nameGivenToResult": "checkNumberOfEntities",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "libraryEntityList",
+                      "entities"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkEntityList",
+            "nameGivenToResult": "checkEntityList",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkEntityBooks",
+              "definition": {
+                "resultAccessPath": [
+                  "libraryEntityList",
+                  "entities"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Country",
+                    "conceptLevel": "Model",
+                    "description": "Country."
+                  },
+                  {
+                    "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Publishers",
+                    "conceptLevel": "Model",
+                    "description": "The publisher of a book."
+                  }
+                ],
+                "ignoreAttributes": [
+                  "author",
+                  "storageAccess"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

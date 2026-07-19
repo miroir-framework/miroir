@@ -1,3 +1,9 @@
+/**
+ * @deprecated Prefer MiroirTest suite `domain_controller_no_parent_uuid_crud` via
+ * `npm run testMiroir -w miroir-standalone-app -- --suites domain_controller_no_parent_uuid_crud --mode integ --profile emulatedServer-sql`.
+ * Canonical leaves: `miroirTest_domain_controller_no_parent_uuid_crud` (deployment-miroir; Library is runTarget only).
+ * Kept green until MiroirTest is accepted as sole owner — do not delete.
+ */
 import { describe, expect } from "vitest";
 
 import process from "process";
@@ -71,8 +77,8 @@ import { DomainControllerIntegrationTestSession } from "../helpers/DomainControl
 // Uses standard UUID primary key.
 // ##############################################################################################
 
-const entityNoParentUuidUuid = "aaa11111-bbbb-cccc-dddd-eeee00001111";
-const entityDefinitionNoParentUuidUuid = "aaa22222-bbbb-cccc-dddd-eeee00002222";
+const entityNoParentUuidUuid = "803b81ad-fda4-4206-8860-cc86f37c7a6e";
+const entityDefinitionNoParentUuidUuid = "0057f84b-64d8-4395-8841-b264e3f9473a";
 
 const entityNoParentUuid: Entity = {
   uuid: entityNoParentUuidUuid,
@@ -116,17 +122,17 @@ const entityDefinitionNoParentUuid: EntityDefinition = {
 
 // Test data instances — NO parentUuid attribute
 const noParentItem1: EntityInstance = {
-  uuid: "ff000001-0000-0000-0000-000000000001",
+  uuid: "4476e12d-e822-44db-bd06-aadb81b74d60",
   name: "item one",
 } as any as EntityInstance;
 
 const noParentItem2: EntityInstance = {
-  uuid: "ff000002-0000-0000-0000-000000000002",
+  uuid: "63e87f77-30d8-4044-a8de-0e7af286060c",
   name: "item two",
 } as any as EntityInstance;
 
 const noParentItem3: EntityInstance = {
-  uuid: "ff000003-0000-0000-0000-000000000003",
+  uuid: "ada284e0-f3bb-4da8-8041-671a8ee39b8d",
   name: "item three",
 } as any as EntityInstance;
 
@@ -641,7 +647,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                     parentUuid: entityNoParentUuidUuid, // fallback for instances without parentUuid
                     objects: [
                       {
-                        uuid: "ff000004-0000-0000-0000-000000000004",
+                        uuid: "3864e72e-08f4-4ede-b694-ee4caafa24a9",
                         name: "item four",
                       } as any as EntityInstance,
                     ],
@@ -675,7 +681,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                     parentUuid: entityNoParentUuidUuid,
                     objects: [
                       {
-                        uuid: "ff000001-0000-0000-0000-000000000001",
+                        uuid: "4476e12d-e822-44db-bd06-aadb81b74d60",
                         name: "item one UPDATED",
                       } as any as EntityInstance,
                     ],
@@ -699,7 +705,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                   ignoreAttributes: ["conceptLevel"],
                   expectedValue: [
                     {
-                      uuid: "ff000001-0000-0000-0000-000000000001",
+                      uuid: "4476e12d-e822-44db-bd06-aadb81b74d60",
                       name: "item one UPDATED",
                     },
                     noParentItem3,
@@ -764,13 +770,13 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                     objects: [
                       {
                         // Instance WITH explicit parentUuid
-                        uuid: "ff000005-0000-0000-0000-000000000005",
+                        uuid: "c0960303-1e38-4c0c-ad4c-1b0c50696d4b",
                         parentUuid: entityNoParentUuidUuid,
                         name: "item five with parentUuid",
                       } as any as EntityInstance,
                       {
                         // Instance WITHOUT parentUuid — resolved from payload
-                        uuid: "ff000006-0000-0000-0000-000000000006",
+                        uuid: "c19217e1-18d1-406d-85c3-d21c79874854",
                         name: "item six without parentUuid",
                       } as any as EntityInstance,
                     ],

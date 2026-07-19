@@ -9,6 +9,8 @@ import { miroirTest_runner_library } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
   miroirTest_miroirCoreTransformers,
+  miroirTest_runner_create_entity,
+  miroirTest_runner_drop_entity,
 } from 'miroir-test-app_deployment-miroir';
 
 import {
@@ -55,6 +57,22 @@ describe('miroirTestSuiteUiExecution (B5)', () => {
     expect(isUiIntegrationRunnerSuiteSupported('runner.library')).toBe(false);
     expect(
       isUiIntegrationRunnerSuiteSupportedForInstance(asMiroirTest(miroirTest_runner_library)),
+    ).toBe(true);
+  });
+
+  it('marks runner_create_entity instance as UI integration supported', () => {
+    expect(isUiIntegrationRunnerSuiteSupported('runner_create_entity')).toBe(true);
+    expect(isUiIntegrationRunnerSuiteSupported('runner.createEntity')).toBe(false);
+    expect(
+      isUiIntegrationRunnerSuiteSupportedForInstance(asMiroirTest(miroirTest_runner_create_entity)),
+    ).toBe(true);
+  });
+
+  it('marks runner_drop_entity instance as UI integration supported', () => {
+    expect(isUiIntegrationRunnerSuiteSupported('runner_drop_entity')).toBe(true);
+    expect(isUiIntegrationRunnerSuiteSupported('runner.dropEntity')).toBe(false);
+    expect(
+      isUiIntegrationRunnerSuiteSupportedForInstance(asMiroirTest(miroirTest_runner_drop_entity)),
     ).toBe(true);
   });
 
