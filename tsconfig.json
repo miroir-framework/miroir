@@ -8,20 +8,25 @@
     "**/__tests__/*"
   ],
   "compilerOptions": {
-		"target": "esnext",
-		"module": "esnext",
-		"moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports":true,
-		"forceConsistentCasingInFileNames": true,
-    "types": ["node", "jest"],
-    "lib": ["es2022", "dom"],
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": [
+      "node",
+      "jest"
+    ],
+    "lib": [
+      "es2022",
+      "dom"
+    ],
     "removeComments": true,
     "jsx": "react-jsx",
     "allowJs": true

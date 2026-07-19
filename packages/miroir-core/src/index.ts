@@ -434,6 +434,8 @@ export {
   TestSuiteResult,
   testSuiteResult,
   TestSuitesResults,
+  TransformerDefinition,
+  transformerDefinition,
   TransactionalInstanceAction,
   transactionalInstanceAction,
   transformer_contextOrParameterReferenceTO_REMOVE,

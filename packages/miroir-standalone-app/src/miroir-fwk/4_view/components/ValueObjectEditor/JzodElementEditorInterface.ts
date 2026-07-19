@@ -12,7 +12,6 @@ import {
   Uuid,
   type ApplicationDeploymentMap
 } from "miroir-core";
-import { JzodArray } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 
 export interface UnionInformation {

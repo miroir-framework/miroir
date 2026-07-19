@@ -1,5 +1,5 @@
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import type { MiroirThemeFull } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { MiroirThemeFull } from "miroir-core";
 import { defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
 import React, { ReactNode, createContext, useCallback, useContext, useMemo, useState } from "react";
 import {

@@ -1,17 +1,18 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-		"skipLibCheck": true,
+    "skipLibCheck": true,
     "strict": true,
-    "ignoreDeprecations": "6.0",
-		"noEmit": true,
+    "noEmit": true,
     "outDir": "dist/out-tsc",
     "declaration": true,
     "declarationMap": true,
     "rootDir": "./",
-    "baseUrl": "./",
-    "types": ["node", "jest"],
-    "allowSyntheticDefaultImports":true
+    "types": [
+      "node",
+      "jest"
+    ],
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "dist",
@@ -29,6 +30,7 @@
     "./src/**/*.jsx",
     "./src/**/*.ts",
     "./src/**/*.tsx",
-    "./scripts/**/*"
-, "../miroir-standalone-app/src/miroir-fwk/4-tests/setupMiroirTest.ts"  ]
+    "./scripts/**/*",
+    "../miroir-standalone-app/src/miroir-fwk/4-tests/setupMiroirTest.ts"
+  ]
 }

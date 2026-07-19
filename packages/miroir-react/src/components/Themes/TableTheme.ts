@@ -37,7 +37,7 @@
 // ################################################################################################
 
 import type { StoredMiroirTheme } from "miroir-core";
-import type { MiroirThemeFull } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirThemeFull } from "miroir-core";
 import { defaultStoredMiroirTheme, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 
 // ################################################################################################

@@ -2,14 +2,24 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "target": "ESNext",
-    "ignoreDeprecations": "6.0",
     "outDir": "dist/out-tsc",
     "declaration": true,
     "declarationMap": true,
     "declarationDir": "dist/out-tsc/dts",
-    "rootDir": "./",
-    "baseUrl": "./"
+    "rootDir": "./"
   },
-  "exclude": ["./node_modules/**", "./src/**/*.spec.js", "./src/**/*.spec.jsx", "./src/**/*.spec.ts", "./src/**/*.spec.tsx"],
-  "include": ["./src/**/*.json", "./src/**/*.js", "./src/**/*.jsx", "./src/**/*.ts", "./src/**/*.tsx"]
+  "exclude": [
+    "./node_modules/**",
+    "./src/**/*.spec.js",
+    "./src/**/*.spec.jsx",
+    "./src/**/*.spec.ts",
+    "./src/**/*.spec.tsx"
+  ],
+  "include": [
+    "./src/**/*.json",
+    "./src/**/*.js",
+    "./src/**/*.jsx",
+    "./src/**/*.ts",
+    "./src/**/*.tsx"
+  ]
 }

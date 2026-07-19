@@ -4,10 +4,8 @@
     "target": "ESNext",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "ignoreDeprecations": "6.0",
     "outDir": "./dist",
     "rootDir": "./",
-    "baseUrl": "./",
   },
   "exclude": [
     "./node_modules/**",
