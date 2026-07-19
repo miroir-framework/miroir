@@ -2,8 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "ignoreDeprecations": "6.0",
-    "baseUrl": "./src/",
     "rootDir": "./"
   },
   "exclude": [
@@ -19,6 +17,7 @@
     "./src/**/*.js",
     "./src/**/*.jsx",
     "./src/**/*.ts",
-    "./src/**/*.tsx"
-, "src/miroir-fwk/4-tests/setupMiroirTest.ts"  ]
+    "./src/**/*.tsx",
+    "src/miroir-fwk/4-tests/setupMiroirTest.ts"
+  ]
 }

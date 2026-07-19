@@ -7,7 +7,7 @@ import type {
   CoreTransformerForBuildPlusRuntime,
   Uuid
 } from "miroir-core";
-import type { MlSchemaTemplate } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MlSchemaTemplate } from "miroir-core";
 
 // ################################################################################################
 export type RunnerAction<T extends Record<string, any>> =

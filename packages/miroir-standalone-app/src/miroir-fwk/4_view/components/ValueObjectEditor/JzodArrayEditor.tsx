@@ -59,7 +59,6 @@ import {
 import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { valueToJzod } from "@miroir-framework/jzod";
-// import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

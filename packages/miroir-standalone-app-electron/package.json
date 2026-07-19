@@ -11,7 +11,7 @@
   "private": true,
   "scripts": {
     "build-main": "npx tsc src/main.ts --ignoreConfig --outDir dist --target es2020 --module esnext --moduleResolution bundler --allowSyntheticDefaultImports --strict --skipLibCheck",
-    "build-preload": "npx tsc src/preload.ts --ignoreConfig --ignoreDeprecations 6.0 --outDir dist/src --target es2020 --module commonjs --moduleResolution node --allowSyntheticDefaultImports --strict --skipLibCheck",
+    "build-preload": "npx tsc src/preload.ts --ignoreConfig --outDir dist/src --target es2020 --module commonjs --moduleResolution bundler --allowSyntheticDefaultImports --strict --skipLibCheck",
     "build-electron": "npm run build-main && npm run build-preload",
     "build": "npm run build-electron",
     "electron": "npm run build-electron && electron .",
@@ -40,8 +40,7 @@
   "devDependencies": {
     "@types/node": "^20.8.9",
     "electron": "40.6.1",
-    "electron-builder": "^26.8.1",
-    "typescript": "^6.0.0"
+    "electron-builder": "^26.8.1"
   },
   "build": {
     "appId": "com.miroir-framework.miroir-standalone-app-electron",
@@ -100,7 +99,12 @@
       "icon": "assets/miroir-logo.png"
     },
     "linux": {
-      "target": ["AppImage", "snap", "deb", "apk" ],
+      "target": [
+        "AppImage",
+        "snap",
+        "deb",
+        "apk"
+      ],
       "icon": "assets/miroir-logo.png"
     },
     "nsis": {

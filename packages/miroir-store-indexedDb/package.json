@@ -24,8 +24,7 @@
     "copyfiles": "^2.4.1",
     "rimraf": "^4.1.1",
     "tsconfig-paths": "^4.1.2",
-    "tsup": "^8.0.1",
-    "typescript": "^6.0.0"
+    "tsup": "^8.0.1"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT"

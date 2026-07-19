@@ -44,7 +44,7 @@ import {
   safeResolvePathOnObject,
   stringTuple,
 } from "../tools";
-import { getAttributeTypesFromJzodSchema } from "miroir-store-postgres/src/1_core/mlSchema";
+import { getAttributeTypesFromJzodSchema } from "miroir-store-postgres/src/1_core/mlSchema.js";
 import { alterObjectAtPath } from "../tools";
 
 export type FunctionCallRef = {
