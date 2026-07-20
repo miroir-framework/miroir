@@ -23,11 +23,9 @@ import type {
 import {
   ConfigurationService,
   createDeploymentCompositeAction,
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
-  entityEntity,
   LoggerInterface,
   LoggerOptions,
   MiroirActivityTracker,
@@ -36,8 +34,6 @@ import {
   MiroirLoggerFactory,
   resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
-  selfApplicationDeploymentMiroir,
-  selfApplicationMiroir,
   StoreUnitConfiguration,
   TestCompositeActionParams,
   testUtils_deleteApplicationDeployment,
@@ -76,6 +72,12 @@ import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 
+import {
+  defaultMiroirMetaModel,
+  entityEntity,
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 // ##############################################################################################
 // Non-UUID PK test entity definition
 // ##############################################################################################

@@ -1426,182 +1426,6 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
-        metaModel: {
-          type: "object",
-          definition: {
-            applicationUuid: {
-              type: "uuid",
-            },
-            applicationName: {
-              type: "string",
-            },
-            applicationVersions: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "applicationVersion",
-                },
-              },
-            },
-            applicationVersionCrossEntityDefinition: {
-              type: "array",
-              definition: {
-                type: "object",
-                definition: {
-                  uuid: {
-                    type: "uuid",
-                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
-                  },
-                  parentName: {
-                    type: "string",
-                    optional: true,
-                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
-                  },
-                  parentUuid: {
-                    type: "uuid",
-                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
-                  },
-                  conceptLevel: {
-                    type: "enum",
-                    definition: ["MetaModel", "Model", "Data"],
-                    optional: true,
-                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
-                  },
-                  applicationVersion: {
-                    type: "uuid",
-                    tag: {
-                      value: { id: 1, defaultLabel: "SelfApplication Version", editable: false },
-                    },
-                  },
-                  entityDefinition: {
-                    type: "uuid",
-                    tag: { value: { id: 1, defaultLabel: "Entity Definition", editable: false } },
-                  },
-                },
-              },
-            },
-            // configuration: {
-            //   type: "array",
-            //   definition: {
-            //     type: "schemaReference",
-            //     definition: {
-            //       absolutePath: miroirFundamentalJzodSchemaUuid,
-            //       relativePath: "storeBasedConfiguration",
-            //     },
-            //   },
-            // },
-            applications: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "selfApplication",
-                },
-              },
-            },
-            entities: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "entity",
-                },
-              },
-            },
-            entityDefinitions: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "entityDefinition",
-                },
-              },
-            },
-            endpoints: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "endpointDefinition",
-                },
-              },
-            },
-            jzodSchemas: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  // relativePath: "mlSchema",
-                  relativePath: "mlSchema",
-                },
-              },
-            },
-            menus: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "menu",
-                },
-              },
-            },
-            storedQueries: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "query",
-                },
-              },
-            },
-            reports: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "report",
-                },
-              },
-            },
-            runners: {
-              type: "array",
-              definition: {
-                type: "any",
-                /** runner creates a circular dependency on mlSchemaTemplate
-                 * the simpler solution is to not include runner in the metaModel,
-                 * MetaModel being used by ancillary tools, not by the user,
-                 * the contents of a MetaModel will generally not be viewed directly by the user.
-                 * Extra FIX: add the dependency to mlSchemaTemplate as a runtime type.
-                 */
-                // type: "schemaReference",
-                // definition: {
-                //   absolutePath: miroirFundamentalJzodSchemaUuid,
-                //   relativePath: "runner",
-                // },
-              },
-            },
-            themes: {
-              type: "array",
-              definition: {
-                type: "schemaReference",
-                definition: {
-                  absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "storedMiroirTheme",
-                },
-              },
-            },
-          },
-        },
         // ########################################################################################
         // ########################################################################################
         // ########################################################################################
@@ -2378,7 +2202,36 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        actionError: {
+          // buildPlusRuntimeCompositeAction: {
+          //   type: "schemaReference",
+          //   definition: {
+          //     absolutePath: miroirFundamentalJzodSchemaUuid,
+          //     relativePath:
+          //       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction",
+          //   },
+          // },
+          // actionTemplate: {
+          //   type: "schemaReference",
+          //   definition: {
+          //     absolutePath: miroirFundamentalJzodSchemaUuid,
+          //     relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
+          //   },
+          // }, 
+          // compositeActionSequenceTemplate: {
+          //   type: "schemaReference",
+          //   definition: {
+          //     absolutePath: miroirFundamentalJzodSchemaUuid,
+          //     relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
+          //   },
+          // }, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
+          // compositeActionTemplate: {
+          //   type: "schemaReference",
+          //   definition: {
+          //     absolutePath: miroirFundamentalJzodSchemaUuid,
+          //     relativePath: "buildPlusRuntimeCompositeAction",
+          //   },
+          // }, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
+          actionError: {
           type: "object",
           definition: {
             status: { type: "literal", definition: "error" },
@@ -3435,6 +3288,7 @@ export function getMiroirFundamentalJzodSchema(
     absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates.definition,
     "domainAction",
     true, // includeExtend
+    "miroirTemplate_", // filterPrefix
   );
   console.log(
     "getMiroirFundamentalJzodSchema - domainAction templates - domainActionDependencySet",
@@ -3503,6 +3357,210 @@ export function getMiroirFundamentalJzodSchema(
             relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodElement",
           },
         },
+        metaModel: {
+          type: "object",
+          tag: { value: { defaultLabel: "MetaModel", canBeTemplate: false } },
+          definition: {
+            applicationUuid: {
+              type: "uuid",
+            },
+            applicationName: {
+              type: "string",
+            },
+            applicationVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "applicationVersion",
+                },
+              },
+            },
+            applicationVersionCrossEntityDefinition: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 1, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  entityDefinition: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Entity Definition", editable: false } },
+                  },
+                },
+              },
+            },
+            // configuration: {
+            //   type: "array",
+            //   definition: {
+            //     type: "schemaReference",
+            //     definition: {
+            //       absolutePath: miroirFundamentalJzodSchemaUuid,
+            //       relativePath: "storeBasedConfiguration",
+            //     },
+            //   },
+            // },
+            applications: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "selfApplication",
+                },
+              },
+            },
+            entities: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "entity",
+                },
+              },
+            },
+            tests: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "miroirTestDefinition",
+                },
+              },
+            },
+            entityDefinitions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "entityDefinition",
+                },
+              },
+            },
+            endpoints: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "endpointDefinition",
+                },
+              },
+            },
+            jzodSchemas: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  // relativePath: "mlSchema",
+                  relativePath: "mlSchema",
+                },
+              },
+            },
+            menus: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "menu",
+                },
+              },
+            },
+            storedQueries: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "query",
+                },
+              },
+            },
+            reports: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "report",
+                },
+              },
+            },
+            runners: {
+              type: "array",
+              definition: {
+                type: "any",
+                /** runner creates a circular dependency on mlSchemaTemplate
+                 * the simpler solution is to not include runner in the metaModel,
+                 * MetaModel being used by ancillary tools, not by the user,
+                 * the contents of a MetaModel will generally not be viewed directly by the user.
+                 * Extra FIX: add the dependency to mlSchemaTemplate as a runtime type.
+                 */
+                // type: "schemaReference",
+                // definition: {
+                //   absolutePath: miroirFundamentalJzodSchemaUuid,
+                //   relativePath: "runner",
+                // },
+              },
+            },
+            themes: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "storedMiroirTheme",
+                },
+              },
+            },
+          },
+        },
+        // extractorOrCombinerTemplate: {
+        //   type: "schemaReference",
+        //   definition: {
+        //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //     relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner",
+        //   },
+        // },
+        // extractorOrCombinerTemplateRecord: {
+        //   type: "record",
+        //   definition: {
+        //     type: "schemaReference",
+        //     definition: {
+        //       absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        //       relativePath: "extractorOrCombinerTemplate",
+        //     },
+        //   },
+        // },
         extractorTemplateCombinerOneToOne: {
           "type": "schemaReference",
           "definition": {

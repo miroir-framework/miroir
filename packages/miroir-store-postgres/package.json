@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "miroir-core": "*",
+    "miroir-test-app_deployment-miroir": "*",
     "pg": "^8.9.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.3"

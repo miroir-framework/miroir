@@ -1,6 +1,8 @@
 // Debugging utilities for FoldedStateTree
 
-import { FoldedStateTree } from "./FoldedStateTreeUtils";
+export type FoldedStateTree = {
+  [key: string]: FoldedStateTree | "folded";
+};
 
 export type FoldAction = "fold" | "unfold";
 /**

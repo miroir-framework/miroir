@@ -188,21 +188,6 @@ export const coreTransformerForBuildPlusRuntimeNames = Object.keys(miroirCoreTra
   e.replace("transformer_", "coreTransformerForBuildPlusRuntime_")
 );
 
-// export const transformerForBuildPlusRuntimeNames = Object.keys(miroirTransformers)
-// .map((e) =>
-//   e.replace("transformer_", "transformerForBuildPlusRuntime_")
-// );
-
-
-// const buildPlusRuntimeReferenceMap: Record<string, string> = {
-//   transformer: "transformerForBuildPlusRuntime",
-//   transformer_returnValue: "transformerForBuildPlusRuntime_returnValue",
-//   transformer_createObject: "transformerForBuildPlusRuntime_createObject",
-//   transformer_getFromContext: "transformerForBuildPlusRuntime_getFromContext",
-//   transformer_accessDynamicPath: "transformerForBuildPlusRuntime_accessDynamicPath",
-//   transformer_mustacheStringTemplate: "transformerForBuildPlusRuntime_mustacheStringTemplate", // TODO: rename to transformer_mustacheStringTemplate
-// };
-
 const coreBuildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "coreTransformerForBuildPlusRuntime",
   transformer_returnValue: "coreTransformerForBuildPlusRuntime_returnValue",

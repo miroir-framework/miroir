@@ -30,5 +30,5 @@
     "./src/**/*.ts",
     "./src/**/*.tsx",
     "./scripts/**/*"
-, "../miroir-standalone-app/src/miroir-fwk/4-tests/setupMiroirTest.ts"  ]
+  ]
 }

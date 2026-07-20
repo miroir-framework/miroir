@@ -19,7 +19,7 @@
     "copy:client": "node scripts/copy-client.mjs",
     "copy:release-config": "copyfiles -u 1 config/**/*.json release/config",
     "build:server:OLD": "tsup --target=node20 --format esm src/server.ts --outDir dist",
-    "build:server": "cross-env NODE_OPTIONS=--max-old-space-size=6144 npx @vercel/ncc build src/server.ts -o release/ -e miroir-core -e miroir-localcache-redux -e miroir-ai -e miroir-mcp -e miroir-store-filesystem -e miroir-store-indexedDb -e miroir-store-mongodb -e miroir-store-postgres -e miroir-test-app_deployment-admin -e miroir-test-app_deployment-library -e json-diff",
+    "build:server": "cross-env NODE_OPTIONS=--max-old-space-size=6144 npx @vercel/ncc build src/server.ts -o release/ -e miroir-core -e miroir-localcache-redux -e miroir-ai -e miroir-mcp -e miroir-store-filesystem -e miroir-store-indexedDb -e miroir-store-mongodb -e miroir-store-postgres -e miroir-test-app_deployment-admin -e miroir-test-app_deployment-library -e miroir-test-app_deployment-miroir -e json-diff",
     "build:release": "npm run build:client && npm run copy:client && npm run copy:release-config && npm run build:server",
     "run:prod": "cross-env NODE_ENV=production node release/index.js",
     "help": "vite-node -h",
@@ -61,7 +61,9 @@
     "miroir-store-indexedDb": "*",
     "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*",
+    "miroir-test-app_deployment-admin": "*",
     "miroir-test-app_deployment-library": "*",
+    "miroir-test-app_deployment-miroir": "*",
     "vite": "^7.3.1"
   },
   "devDependencies": {

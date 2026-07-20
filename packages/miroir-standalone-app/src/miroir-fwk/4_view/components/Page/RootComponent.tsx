@@ -16,7 +16,6 @@ import {
 
 import { v4 as uuidv4 } from 'uuid';
 
-
 import {
   AppTheme,
   defaultSelfApplicationDeploymentMap,
@@ -34,13 +33,12 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   ViewParamsData,
   type ApplicationDeploymentMap,
   type Deployment,
-  type SyncQueryRunnerExtractorAndParams
+  type SyncQueryRunnerExtractorAndParams,
 } from "miroir-core";
 import {
   adminSelfApplication,
@@ -68,7 +66,7 @@ import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
 
 import { JsonDisplayHelper } from 'miroir-react';
-import { defaultStoredMiroirTheme } from 'miroir-test-app_deployment-miroir';
+import { defaultStoredMiroirTheme, selfApplicationMiroir } from 'miroir-test-app_deployment-miroir';
 import { packageName } from '../../../../constants.js';
 import {
   useCurrentModel,
@@ -92,8 +90,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 export const emptyDomainElementObject: Domain2QueryReturnType<Record<string,any>> = {}
-
-
 
 export interface RootComponentProps {
   // store:any;
@@ -344,7 +340,6 @@ export const RootComponent = (props: RootComponentProps) => {
   //   () => context.setApplicationSection,
   //   [context.setApplicationSection]
   // );
-
 
   // ###############################################################################################
 

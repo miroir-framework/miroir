@@ -1,17 +1,14 @@
 import { describe, expect, it } from "vitest";
 
 import type { JzodElement, MetaModel, MiroirModelEnvironment } from "miroir-core";
-import {
-  defaultMiroirMetaModel,
-  getMiroirFundamentalSchemaForDeployment,
-  jzodTypeCheck,
-} from "miroir-core";
+import { getMiroirFundamentalSchemaForDeployment, jzodTypeCheck } from "miroir-core";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   miroirTest_runner_library,
 } from "miroir-test-app_deployment-library";
 
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 /**
  * TypedValueObjectEditor resolves jzod against useCurrentModelEnvironment(application, …).
  * Model-section Library instances (e.g. runner_library) must use the Library application so

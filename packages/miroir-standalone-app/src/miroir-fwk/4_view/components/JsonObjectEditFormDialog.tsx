@@ -15,11 +15,10 @@ import {
   MetaModel,
   MiroirLoggerFactory,
   Uuid,
-  entityDefinitionReport,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
   type EntityDefinition,
-  type Report
+  type Report,
 } from "miroir-core";
 
 import {
@@ -37,12 +36,11 @@ import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.j
 import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
 import { ThemedDialog, ThemedDialogTitle } from "./Themes/index.js";
 
-
+import { entityDefinitionReport } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectEditFormDialog"), "UI"
 ).then((logger: LoggerInterface) => {log = logger});
-
 
 // #################################################################################################
 export type JsonObjectEditFormDialogInputs = { [a: string]: any };
@@ -291,7 +289,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       }
     );
   }, [defaultFormValuesObject]);
-
 
   // ##############################################################################################
   const formValueMLSchema: JzodObject = useMemo(() => {

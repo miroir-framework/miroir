@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildRunnerTestSessionParamBank,
-  defaultMiroirMetaModel,
   getBootstrapPhasesForSessionKind,
   MiroirActivityTracker,
   MiroirEventService,
@@ -22,10 +21,7 @@ import {
   RUNNER_LIBRARY_RUNNER_REGISTRY,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import {
-  selfApplicationDeploymentMiroir,
-  selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+import { selfApplicationDeploymentMiroir, selfApplicationMiroir, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 const runRealServerClientBootstrapMock = vi.fn();

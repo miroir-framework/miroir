@@ -50,7 +50,6 @@ import {
   MiroirContext,
   MiroirEventService,
   PersistenceStoreControllerManager,
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   getBasicApplicationConfiguration,
   getBasicStoreUnitConfiguration,
@@ -72,6 +71,7 @@ import {
   type Uuid,
 } from "miroir-core";
 
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 export type TestApplicationStoreOptions =
   | { emulatedServerType: "sql"; postgresHostName?: string; connectionString?: string }
   | {

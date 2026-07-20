@@ -1,27 +1,20 @@
-import { entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 
 import { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
 import {
   EntityDefinition,
-  EntityInstancesUuidIndex,
   JzodElement,
-  type TransformerForBuild_resolveConditionalSchema,
-  type TransformerForBuildPlusRuntime_resolveConditionalSchema,
+  // type TransformerForBuild_resolveConditionalSchema,
+  type TransformerForBuildPlusRuntime_resolveConditionalSchema
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
+import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
+import { transformer_extended_apply } from "../../2_domain/TransformersForRuntime";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { RelativePath, resolveRelativePath } from '../../tools';
 import { cleanLevel } from "../constants";
-import { getEntityInstancesIndexNonHook } from "../../2_domain/ReduxDeploymentsStateQueryExecutor";
-import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
-import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
-import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../../2_domain/TransformersForRuntime";
-import { transformer } from "zod";
-import type { MiroirActivityTrackerInterface } from "../../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
-import type { ApplicationDeploymentMap } from "../Deployment";
-import { jzodElement } from "@miroir-framework/jzod-ts";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =
@@ -43,9 +36,7 @@ export function resolveConditionalSchemaTransformer(
   step: Step,
   transformerPath: string[],
   label: string | undefined,
-  transformer:
-    | TransformerForBuild_resolveConditionalSchema
-    | TransformerForBuildPlusRuntime_resolveConditionalSchema,
+  transformer: TransformerForBuildPlusRuntime_resolveConditionalSchema,
   resolveBuildTransformersTo: ResolveBuildTransformersTo,
   modelEnvironment: MiroirModelEnvironment,
   queryParams: Record<string, any>,

@@ -23,20 +23,22 @@ import {
   SyncQueryTemplateRunnerParams,
   Uuid,
   defaultMetaModelEnvironment,
-  entityEndpointVersion,
-  entityMenu,
   getApplicationSection,
   getReduxDeploymentsStateIndex,
   computeSchemaRevision,
   miroirFundamentalJzodSchema,
   selectEntityUuidFromJzodAttribute,
-  selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type Deployment,
   type LocalCacheExtractor,
   type Menu,
   type ViewParams
 } from "miroir-core";
+import { 
+  entityEndpointVersion,
+  entityMenu,
+  selfApplicationMiroir
+ } from "miroir-test-app_deployment-miroir";
 import {
   ReduxStateWithUndoRedo,
   applyDomainStateQuerySelectorForCleanedResult,

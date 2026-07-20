@@ -9,8 +9,6 @@ import { Container } from "react-dom";
 
 import {
   EntityDefinition,
-  entityDefinitionEntityDefinition,
-  entityDefinitionTest,
   JzodAttributePlainDateWithValidations,
   JzodAttributePlainNumberWithValidations,
   JzodAttributePlainStringWithValidations,
@@ -21,8 +19,6 @@ import {
   JzodUnion,
   LoggerInterface,
   MiroirLoggerFactory,
-  queryEndpointVersionV1,
-  test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
 } from "miroir-core";
 
 import { JzodElementEditor } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/JzodElementEditor";
@@ -45,6 +41,12 @@ import {
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 import { book1, entityDefinitionBook } from "miroir-test-app_deployment-library";
 
+import {
+  entityDefinitionEntityDefinition,
+  entityDefinitionTest,
+  queryEndpointVersionV1,
+  test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
+} from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 const pageLabel = "JzodElementEditor.test";
 
@@ -541,7 +543,6 @@ export function getJzodEnumEditorTests(
                 { timeout: 1000 }
               );
             });
-
 
             screen.debug(undefined, Infinity); // Prints entire DOM with no size limit
             const valuesAfterClick: Record<string, any> = extractValuesFromRenderedElements(
@@ -3207,7 +3208,6 @@ export function getJzodAnyEditorTests(
     },
   };
 }
-
 
 // ################################################################################################
 // PERFORMANCE TESTS

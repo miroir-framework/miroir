@@ -8,7 +8,6 @@ import {
 
 import * as schemaHelpers from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
 import {
-  defaultMiroirMetaModel,
   clearSchemaCacheForTests,
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalJzodSchema,
@@ -17,6 +16,7 @@ import {
   LIBRARY_TMP,
 } from "miroir-core";
 
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 describe("getMiroirFundamentalSchemaForDeployment (Phase 1)", () => {
   it("returns the static schema for any deploymentUuid when model has no app-specific endpoints", () => {
     const result = getMiroirFundamentalSchemaForDeployment("any-uuid", defaultMiroirMetaModel);

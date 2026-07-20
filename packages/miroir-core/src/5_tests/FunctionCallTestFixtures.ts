@@ -1,8 +1,8 @@
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { resolveFundamentalSchemaForDeployment } from "../1_core/jzod/schemaForDeployment";
-import type { MlSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { defaultMetaModelEnvironment, defaultMiroirMetaModel, defaultMiroirModelEnvironment } from "../1_core/Model";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { defaultMetaModelEnvironment } from "../1_core/Model";
 import {
   listQueryRunnerFixtureRefs,
   resolveQueryRunnerFixture,

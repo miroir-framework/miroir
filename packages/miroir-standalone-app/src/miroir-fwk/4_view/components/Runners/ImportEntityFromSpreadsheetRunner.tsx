@@ -569,6 +569,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       found row A:{JSON.stringify(fileData ? fileData[0] : "")}
       <RunnerView
         runnerName={runnerName}
+        application={application}
         applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
         // deploymentUuidQuery={deploymentUuidQuery}
         formMLSchema={formMLSchema}

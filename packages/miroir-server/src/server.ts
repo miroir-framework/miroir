@@ -15,12 +15,10 @@ import {
   ConfigurationService,
   defaultLevels,
   defaultMetaModelEnvironment,
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   type Deployment,
   type EndpointDefinition,
   getMiroirEnvironmentMode,
-  instanceEndpointV1,
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
@@ -59,6 +57,7 @@ import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
 const packageName = "server"
 const cleanLevel = "5"
 
@@ -84,14 +83,10 @@ const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterfac
 //   specificLoggerOptions,
 // );
 
-
-
 let myLogger: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Server")
 ).then((logger: LoggerInterface) => {myLogger = logger});
-
-
 
 // Argument parsing
 function printUsageAndExit(exitCode = 1): never {
@@ -165,7 +160,6 @@ const configFileContents = JSON.parse(
   readFileSync(new URL(configFilePath, import.meta.url)).toString()
 );
 
-
 const miroirConfig: MiroirConfigServer = configFileContents as MiroirConfigServer;
 myLogger.info('miroirConfig',miroirConfig)
 myLogger.info(`process.env`, JSON.stringify(process.env, null, 2));
@@ -177,7 +171,6 @@ const restPortFromConfig: number = Number(
 const mcpPortFromConfig: number = Number(
   miroirConfig.server.mcpUrl?.substring(miroirConfig.server.mcpUrl.lastIndexOf(":") + 1) ?? 0,
 );
-
 
 // Derive CORS allowed origins: prefer explicit config, otherwise allow both http/https on common dev ports
 // For production: set corsAllowedOrigins in the server config to only the exact production frontend URL(s) (e.g., ["https://app.example.com"]). No code change needed.
@@ -275,7 +268,6 @@ await MiroirLoggerFactory.startRegisteredLoggers(
   // (miroirConfig as any).server.specificLoggerOptions
 );
 
-
 const miroirContext = new MiroirContext(
   miroirActivityTracker,
   miroirEventService,
@@ -357,7 +349,6 @@ for (const c of Object.entries(configurations)) {
     defaultMetaModelEnvironment
   );
 }
-
 
 const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({
   actionType: "runBoxedQueryAction",
@@ -508,7 +499,6 @@ const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
   deployment_Library_DO_NO_USE.uuid,
 );
 
-
 const endpointDefinition: EndpointDefinition[] | undefined =
     defaultLibraryAppModel.currentModel.endpoints.filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") as EndpointDefinition[]; // lendingEndpoint UUID
   
@@ -599,7 +589,6 @@ if (getMiroirEnvironmentMode() === 'prod') {
     res.send('App Works !!!!');
   });
 }
-
 
 // ##############################################################################################
 // Start HTTPS server. Certificate paths are resolved from environment variables

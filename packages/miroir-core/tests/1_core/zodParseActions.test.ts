@@ -125,7 +125,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         params: {
           dataStoreType: "app", // TODO: comparison between deployment and selfAdminConfigurationDeployment
-          // metaModel: defaultMiroirMetaModel,
           metaModel: {
             applicationUuid: "7947ae40-eb34-4149-887b-15a9021e714e",
             applicationName: "",
@@ -139,6 +138,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             applicationVersionCrossEntityDefinition: [],
             storedQueries: [],
             runners: [],
+            tests: [],
             themes: [],
             applications: [],
           },

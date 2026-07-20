@@ -3,15 +3,12 @@ import type {
   ApplicationDeploymentMap,
   LoggerInterface
 } from "miroir-core";
-import {
-  defaultSelfApplicationDeploymentMap,
-  MiroirLoggerFactory,
-  selfApplicationMiroir
-} from "miroir-core";
+import { defaultSelfApplicationDeploymentMap, MiroirLoggerFactory } from "miroir-core";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { StoredRunnerView } from "./RunnerView.js";
 
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_DropEntity"),
@@ -24,7 +21,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface CreateEntityToolProps {
   applicationDeploymentMap: ApplicationDeploymentMap;
 }
-
 
 // ################################################################################################
 export const Runner_DropEntity: React.FC<CreateEntityToolProps> = ({

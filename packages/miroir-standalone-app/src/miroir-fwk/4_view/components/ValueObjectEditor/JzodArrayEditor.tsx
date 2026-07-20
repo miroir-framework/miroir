@@ -2,7 +2,6 @@
 import {
   defaultSelfApplicationDeploymentMap,
   EntityDefinition,
-  entityEntityDefinition,
   foldableElementTypes,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   getEntityInstancesIndexNonHook,
@@ -15,13 +14,12 @@ import {
   ReduxDeploymentsState,
   resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
-  selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   type JzodPlainAttribute,
   type JzodReference,
   type KeyMapEntry,
   type MiroirModelEnvironment,
-  type Uuid
+  type Uuid,
 } from "miroir-core";
 import {
   JsonDisplayHelper,
@@ -59,6 +57,7 @@ import {
 import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { valueToJzod } from "@miroir-framework/jzod";
+import { entityEntityDefinition, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -423,7 +422,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
   const usedIndentLevel: number = indentLevel ?? 0;
 
   const arrayValueObject = currentValue;
-
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();

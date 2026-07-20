@@ -9,13 +9,13 @@ import {
 import * as schemaHelpers from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
 import {
   clearSchemaCacheForTests,
-  defaultMiroirMetaModel,
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalJzodSchema,
   resolveFundamentalSchemaForDeployment,
   type MetaModel,
 } from "miroir-core";
 
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 describe("resolveFundamentalSchemaForDeployment — static mode", () => {
   const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 

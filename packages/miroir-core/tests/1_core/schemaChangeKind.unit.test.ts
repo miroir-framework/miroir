@@ -2,15 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import { deployment_Library_DO_NO_USE, defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir, defaultMiroirMetaModel, entityDefinitionEntity } from "miroir-test-app_deployment-miroir";
 
-import {
-  classifySchemaChange,
-  computeSchemaRevision,
-  defaultMiroirMetaModel,
-  entityDefinitionEntity,
-  type MetaModel,
-} from "miroir-core";
+import { classifySchemaChange, computeSchemaRevision, type MetaModel } from "miroir-core";
 
 const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const libraryApplicationUuid = defaultLibraryAppModel.applicationUuid;
@@ -165,7 +159,8 @@ describe("computeSchemaRevision — partial models (DomainController / localcach
       endpoints: [],
       entityDefinitions: [],
       reports: [],
-    } as MetaModel;
+
+    } as Partial<MetaModel>;
 
     expect(() =>
       computeSchemaRevision(deployment_Miroir.uuid, partialModel, selfApplicationMiroir.uuid),

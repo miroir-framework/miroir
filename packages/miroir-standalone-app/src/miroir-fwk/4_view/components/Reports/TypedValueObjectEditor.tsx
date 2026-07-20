@@ -20,7 +20,6 @@ import {
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   ResolvedJzodSchemaReturnType,
-  selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerExtractorAndParams,
@@ -30,7 +29,7 @@ import {
   type ApplicationDeploymentMap,
   type CoreTransformerForBuildPlusRuntime,
   type JzodElement,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
 } from "miroir-core";
 import {
   CodeBlock_ReadOnly,
@@ -61,13 +60,13 @@ import { FieldValidationProvider, useFieldValidationContext } from '../ValueObje
 import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // const codeMirrorExtensions = [javascript()];
-
 
 // ################################################################################################
 // ################################################################################################
@@ -253,7 +252,6 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
         defaultMetaModelEnvironment
       )
   );
-
 
   // ##############################################################################################
   // Validation transformer: runs on every form value change, returns true | string (error message)
@@ -483,7 +481,6 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
       foreignKeyObjectsFetchQueryParams,
       applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
     ) || {};
-
 
   const submitButton = useActionButton ? (
     // TODO: using ActionButtonWithSnackbar is useless, formik.submitForm does not return a result (only Promise<void>)

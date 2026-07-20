@@ -25,8 +25,6 @@ import {
   ConfigurationService,
   defaultLevels,
   defaultSelfApplicationDeploymentMap,
-  entityEntity,
-  entityEntityDefinition,
   ignorePostgresExtraAttributesOnList,
   miroirCoreStartup,
   resetLibraryPlayfield,
@@ -58,6 +56,7 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 
+import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 let domainController: DomainControllerInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;

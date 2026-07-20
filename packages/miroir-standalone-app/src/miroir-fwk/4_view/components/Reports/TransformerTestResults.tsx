@@ -41,8 +41,9 @@ const resolveTestPath = (
     transformerTestSuite.transformerTestLabel &&
     transformerTestSuite.transformerTestLabel === currentSegment
   ) {
-    const nextTest = transformerTestSuite.transformerTests.find(
-      (test) => test.transformerTestLabel === nextSegment,
+    const nextTest = Object.values(transformerTestSuite.transformerTests).find(
+      (test: TransformerTest | TransformerTestSuite) =>
+        test.transformerTestLabel === nextSegment,
     );
     if (nextTest && restPath.length > 0) {
       return resolveTestPath(nextTest, restPath);

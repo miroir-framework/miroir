@@ -8,8 +8,6 @@ import {
   defaultMiroirModelEnvironment,
   Domain2ElementFailed,
   Domain2QueryReturnType,
-  entityRunner,
-  entityTransformerDefinition,
   getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
@@ -24,14 +22,13 @@ import {
   type MetaModel,
   type Query,
   type Report,
-  type Runner
+  type Runner,
 } from "miroir-core";
 import {
   deployment_Admin,
   adminSelfApplication,
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
-
 
 import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 
@@ -42,6 +39,7 @@ import {
 } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
 
+import { entityRunner, entityTransformerDefinition } from "miroir-test-app_deployment-miroir";
 // Entity constants
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -195,7 +193,6 @@ export function useQueryTemplateResults(
   // log.info("useQueryTemplateResults reportData from stored Query", reportData);
   return {reportData, resolvedQuery: reportDataQuery};
 };
-
 
 // ################################################################################################
 export function useDeploymentUuidFromApplicationUuid2(

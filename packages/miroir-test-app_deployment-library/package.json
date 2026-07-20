@@ -41,6 +41,7 @@
   "devDependencies": {
     "miroir-core": "*",
     "miroir-test-app_deployment-admin": "*",
+    "miroir-test-app_deployment-miroir": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
     "miroir-store-postgres": "*",

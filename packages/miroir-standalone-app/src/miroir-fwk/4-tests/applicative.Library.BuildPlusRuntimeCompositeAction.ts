@@ -9,16 +9,20 @@ import {
   Uuid,
   createDeploymentCompositeAction,
   emptyMetaModel,
+  getBasicApplicationConfiguration,
+  getBasicStoreUnitConfiguration,
+  resetAndinitializeDeploymentCompositeAction,
+  type Deployment,
+} from "miroir-core";
+import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+
+import {
   entityEntity,
   entityEntityDefinition,
   entityMenu,
   entityReport,
-  getBasicApplicationConfiguration,
-  getBasicStoreUnitConfiguration,
-  resetAndinitializeDeploymentCompositeAction,
-} from "miroir-core";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
-
+} from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 export const testSuiteNameForBuildPlusRuntimeCompositeAction: string =
   "applicative.Library.BuildPlusRuntimeCompositeAction.integ.test";
@@ -116,6 +120,7 @@ const testDeploymentConfiguration: MiroirConfigClient = {
   miroirConfigType: "client",
   client: {
     emulateServer: true,
+    filesystemDeploymentRootDirectory: process.cwd(),
     rootApiUrl: "http://localhost:3080",
     deploymentStorageConfig: {
       [testDeploymentUuid]: testDeploymentStorageConfiguration,
@@ -127,7 +132,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
   testDeploymentStorageConfiguration: any;
   testDeploymentUuid: Uuid;
 } {
-  const testSuitesForBuildPlusRuntimeCompositeAction: Record<string, TestCompositeActionParams> = {
+  const testSuitesForBuildPlusRuntimeCompositeAction = {
     [testSuiteNameForBuildPlusRuntimeCompositeAction]: {
       testActionType: "testBuildPlusRuntimeCompositeActionSuite",
       application: selfApplicationLibrary.uuid, // NOT USED
@@ -157,6 +162,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
           testApplicationName,
           testDeploymentUuid,
           testSelfApplicationUuid,
+          deployment_Admin as Deployment,
           testDeploymentStorageConfiguration
         ),
         beforeEach: resetAndinitializeDeploymentCompositeAction(
@@ -400,7 +406,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 //     },
                 //   },
                 // },
-                definition: [
+                actionSequence: [
                   // createEntity
                   {
                     actionType: "createEntity",
@@ -412,11 +418,6 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                         interpolation: "build",
                         referenceName: "testSelfApplicationUuid",
                       } as any,
-                      deploymentUuid: {
-                        transformerType: "getFromParameters",
-                        interpolation: "build",
-                        referenceName: "testDeploymentUuid",
-                      },
                       entities: [
                         {
                           entity: {
@@ -1123,7 +1124,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
         },
       },
     },
-  };
+  } as Record<string, TestCompositeActionParams>;
   return {
     testSuitesForBuildPlusRuntimeCompositeAction,
     testDeploymentStorageConfiguration,

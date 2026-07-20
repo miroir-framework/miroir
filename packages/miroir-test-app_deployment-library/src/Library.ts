@@ -1,5 +1,4 @@
 import {
-  defaultMiroirMetaModel,
   getMiroirFundamentalSchemaForDeployment,
   type EndpointDefinition,
   type Entity,
@@ -168,6 +167,7 @@ export const defaultLibraryAppModel: MetaModel = {
         lendDocument as Runner,
         returnDocument as Runner,
       ],
+      tests: [],
       themes: [],
       applicationVersionCrossEntityDefinition: [],
       storedQueries: [],

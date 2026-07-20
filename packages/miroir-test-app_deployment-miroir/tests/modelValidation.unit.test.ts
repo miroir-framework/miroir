@@ -5,132 +5,19 @@ import { describe, expect, it } from "vitest";
 import type {
   EntityDefinition,
   JzodElement,
+  MetaModel,
   MiroirModelEnvironment,
 } from "miroir-core";
 import {
   defaultMiroirModelEnvironment,
-  entityDefinitionEndpoint,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionJzodSchema,
-  entityDefinitionMenu,
-  entityDefinitionMiroirTest,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReport,
-  entityDefinitionRunner,
-  entityDefinitionSelfApplication,
-  entityDefinitionSelfApplicationDeploymentConfiguration,
-  entityDefinitionSelfApplicationModelBranch,
-  entityDefinitionSelfApplicationVersion,
-  entityDefinitionStoreBasedConfiguration,
-  entityDefinitionTest,
-  entityDefinitionTransformerDefinition,
   getInnermostTypeCheckError,
   jzodTypeCheck,
-  miroirFundamentalJzodSchema,
+  miroirFundamentalJzodSchema
 } from "miroir-core";
 
-import reportEntityList from "../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json" assert { type: "json" };
-
-// ================================================================================================
-// Eagerly load all instances via import.meta.glob
-// ================================================================================================
-
-// Model: Entities (parentUuid = entityEntity = 16dbfe28)
-const entityInstances = import.meta.glob(
-  "../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Model: EntityDefinitions (parentUuid = entityEntityDefinition = 54b9c72f)
-const entityDefinitionInstances = import.meta.glob(
-  "../assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: Reports (parentUuid = entityReport = 3f2baa83)
-const reportInstances = import.meta.glob(
-  "../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: EndpointVersions (parentUuid = entityEndpointVersion = 3d8da4d4)
-const endpointInstances = import.meta.glob(
-  "../assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: Menus (parentUuid = entityMenu = dde4c883)
-const menuInstances = import.meta.glob(
-  "../assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: JzodSchemas (parentUuid = entityJzodSchema = 5e81e1b9)
-const jzodSchemaInstances = import.meta.glob(
-  "../assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: QueryVersions (parentUuid = entityQueryVersion = e4320b9e)
-const queryInstances = import.meta.glob(
-  "../assets/miroir_data/e4320b9e-ab45-4abe-85d8-359604b3c62f/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: StoreBasedConfigurations (parentUuid = entityStoreBasedConfiguration = 7990c0c9)
-const storeBasedConfigurationInstances = import.meta.glob(
-  "../assets/miroir_data/7990c0c9-86c3-40a1-a121-036c91b55ed7/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: SelfApplications (parentUuid = entitySelfApplication = a659d350)
-const selfApplicationInstances = import.meta.glob(
-  "../assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: SelfApplicationDeploymentConfigurations (parentUuid = 35c5608a)
-const selfApplicationDeploymentInstances = import.meta.glob(
-  "../assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: SelfApplicationModelBranches (parentUuid = entitySelfApplicationModelBranch = cdb0aec6)
-const selfApplicationModelBranchInstances = import.meta.glob(
-  "../assets/miroir_data/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: SelfApplicationVersions (parentUuid = c3f0facf)
-const applicationVersionInstances = import.meta.glob(
-  "../assets/miroir_data/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: Runners (parentUuid = entityRunner = e54d7dc1)
-const runnerInstances = import.meta.glob(
-  "../assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: TransformerDefinitions (parentUuid = entityTransformerDefinition = a557419d)
-const transformerDefinitionInstances = import.meta.glob(
-  "../assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// Data: MiroirTests (parentUuid = entityMiroirTest = a311f363)
-const miroirTestInstances = import.meta.glob(
-  "../assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/*.json",
-  { eager: true },
-) as Record<string, { default: any }>;
-
-// // Data: Tests (parentUuid = entityTest = c37625c7)
-// const testInstances = import.meta.glob(
-//   "../assets/miroir_data/c37625c7-0b35-4d6a-811d-8181eb978301/*.json",
-//   { eager: true },
-// ) as Record<string, { default: any }>;
+import reportEntityList from "../assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9ea3359-690c-4620-9603-b5b402e4a2b9.json" with { type: "json" };
+import { defaultMiroirMetaModel, defaultMiroirMetaModelEntityNameToAttributeName } from "../src/Model";
+import { entityDefinitionReport } from "..";
 
 // ================================================================================================
 // Helpers
@@ -139,6 +26,82 @@ function buildInstanceLabel(instance: any, fallbackPath: string): string {
   const uuid: string = instance.uuid ?? fallbackPath;
   return instance.name ? `${instance.name} (${uuid})` : uuid;
 }
+
+type ModelTestToRun = {
+  groupName: string;
+  jzodSchema: JzodElement;
+  instances: Record<string, { default: any }>;
+  filterByName?: string[];
+};
+
+/** Adapt MetaModel instance arrays to the Record shape expected by describeEntityGroup. */
+function metaModelInstancesToRecord(
+  instances: readonly any[],
+): Record<string, { default: any }> {
+  return Object.fromEntries(
+    instances.map((instance, index) => {
+      const key = instance?.uuid ?? instance?.name ?? String(index);
+      return [key, { default: instance }];
+    }),
+  );
+}
+
+function entityDefinitionsByEntityName(metaModel: MetaModel): Record<string, EntityDefinition> {
+  return Object.fromEntries(
+    metaModel.entityDefinitions.map((entityDefinition) => [entityDefinition.name, entityDefinition]),
+  );
+}
+/**
+ * Build modelTestsToRun from a MetaModel.
+ * @param groupFilter optional list of groupName substrings to include; omit for all MetaModel-backed groups.
+ * Groups not present on MetaModel (e.g. StoreBasedConfiguration, MiroirTest) are omitted.
+ */
+function buildModelTestsToRun(
+  metaModel: MetaModel,
+  entityNames?: string[],
+  groupFilter?: string[],
+): ModelTestToRun[] {
+  const entityDefinitions = entityDefinitionsByEntityName(metaModel);
+  // console.log("entityDefinitions:", JSON.stringify(Object.keys(entityDefinitions), null, 2));
+  const all: ModelTestToRun[] = metaModel.entities
+    .map((entity) => entity.name)
+    // .filter((entityName) => entityNames.includes(entityName))
+    .map((entityName) => {
+      // console.log("entityName:", entityName);
+      // console.log(
+      //   `metaModel[${defaultMiroirMetaModelEntityNameToAttributeName[entityName]}]:`,
+      //   ((metaModel as any)[
+      //     defaultMiroirMetaModelEntityNameToAttributeName[entityName] ?? entityName
+      //   ]??[]).length,
+      // );
+      return {
+        groupName: entityName,
+        jzodSchema: entityDefinitions[entityName]?.mlSchema as unknown as JzodElement,
+        instances: metaModelInstancesToRecord((metaModel as any)[defaultMiroirMetaModelEntityNameToAttributeName[entityName] ?? entityName] ?? []),
+      };
+    });
+
+    return all;
+  // // filter out by groupName
+  // return all.filter(
+  //   (test) =>
+  //     Object.keys(test.instances).length > 0 &&
+  //   (!groupFilter || groupFilter.includes(test.groupName)),
+  // );
+}
+
+const checkedEntityNames = [
+  "Entity",
+  "EntityDefinition",
+  "Report",
+  "EndpointVersion",
+  "Menu",
+  "JzodSchema",
+  "QueryVersion",
+  "SelfApplication",
+  "SelfApplicationVersion",
+  "Runner",
+];
 
 function describeEntityGroup(
   groupName: string,
@@ -172,105 +135,14 @@ function describeEntityGroup(
   });
 }
 
-// // ================================================================================================
-// // Test suites — Model instances (validated against the Miroir meta-model)
-// // ================================================================================================
-const modelTestsToRun: Array<{
-  groupName: string;
-  jzodSchema: JzodElement;
-  instances: Record<string, { default: any }>;
-  filterByName?: string[];
-}> = [
-  {
-    "groupName": "Entity",
-    "jzodSchema": (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": entityInstances,
-  },
-  {
-    "groupName": "EntityDefinition",
-    "jzodSchema": (entityDefinitionEntityDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": entityDefinitionInstances,
-  },
-  {
-    "groupName": "Report",
-    "jzodSchema": (entityDefinitionReport as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": reportInstances,
-    // "filterByName": ["SelfApplicationDetails"],
-  },
-  {
-    "groupName": "EndpointVersion",
-    "jzodSchema": (entityDefinitionEndpoint as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": endpointInstances,
-    // "filterByName": ["TestEndpoint", "PersistenceEndpoint", "MenuEndpoint", "ApplicationEndpoint"],
-    // "filterByName": ["InstanceEndpoint"],
-  },
-  {
-    "groupName": "Menu",
-    "jzodSchema": (entityDefinitionMenu as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": menuInstances,
-  },
-  {
-    "groupName": "JzodSchema",
-    "jzodSchema": (entityDefinitionJzodSchema as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": jzodSchemaInstances,
-    // "filterByName": ["transformerJzodSchema"],
-  },
-  {
-    "groupName": "QueryVersion",
-    "jzodSchema": (entityDefinitionQueryVersionV1 as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": queryInstances,
-    "filterByName": ["BundleProducer"],
-  },
-  {
-    "groupName": "StoreBasedConfiguration",
-    "jzodSchema": (entityDefinitionStoreBasedConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": storeBasedConfigurationInstances,
-  },
-  {
-    "groupName": "SelfApplication",
-    "jzodSchema": (entityDefinitionSelfApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": selfApplicationInstances,
-  },
-  {
-    "groupName": "SelfApplicationDeploymentConfiguration",
-    "jzodSchema": (entityDefinitionSelfApplicationDeploymentConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": selfApplicationDeploymentInstances,
-  },
-  {
-    "groupName": "SelfApplicationModelBranch",
-    "jzodSchema": (entityDefinitionSelfApplicationModelBranch as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": selfApplicationModelBranchInstances,
-  },
-  {
-    "groupName": "SelfApplicationVersion",
-    "jzodSchema": (entityDefinitionSelfApplicationVersion as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": applicationVersionInstances,
-  },
-  {
-    "groupName": "Runner",
-    "jzodSchema": (entityDefinitionRunner as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": runnerInstances,
-    // filterByName: ["dropApplication", "dropEntity", "deployApplication", "createEntity"],
-    // filterByName: ["dropEntity"],
-    // filterByName: ["deployApplication"],
-  },
-  {
-    "groupName": "TransformerDefinition",
-    "jzodSchema": (entityDefinitionTransformerDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": transformerDefinitionInstances,
-    // filterByName: ["getActiveDeployment"],
-  },
-  {
-    "groupName": "MiroirTest",
-    "jzodSchema": (entityDefinitionMiroirTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-    "instances": miroirTestInstances,
-  },
-  // {
-  //   "groupName": "Test",
-  //   "jzodSchema": (entityDefinitionTest as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  //   "instances": testInstances,
-  // },
-]
+// ================================================================================================
+// Test suites — Model instances (validated against the Miroir meta-model)
+// ================================================================================================
+// Groups not on MetaModel (StoreBasedConfiguration, SelfApplicationDeploymentConfiguration,
+// SelfApplicationModelBranch, TransformerDefinition, MiroirTest) are filtered out by the builder.
+console.log("Found Entities in defaultMiroirMetaModel:", defaultMiroirMetaModel.entities.map(e => e.name).join(", "));
+const modelTestsToRun: ModelTestToRun[] = buildModelTestsToRun(defaultMiroirMetaModel);
+// console.log("modelTestsToRun:", JSON.stringify(modelTestsToRun, null, 2));
 
 modelTestsToRun.forEach(({ groupName, jzodSchema, instances, filterByName }) => {
   const filteredInstances = Object.fromEntries(Object.entries(instances).filter(e => {

@@ -18,10 +18,9 @@ import {
   PersistenceStoreInstanceSectionAbstractInterface,
   entityDefinitionMLSchema,
   entityDefinitionWithResolvedMLSchema,
-  entityEntity,
-  entityEntityDefinition,
   type JzodObject
 } from "miroir-core";
+import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils";
 import { SqlDbStoreSection } from "./SqlDbStoreSection";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin";

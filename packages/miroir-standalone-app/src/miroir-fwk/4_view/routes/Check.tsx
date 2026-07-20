@@ -2,7 +2,6 @@ import {
   coreTransformerForBuildPlusRuntime,
   MiroirLoggerFactory,
   resolvePathOnObject,
-  test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
   zodErrorFirstIssueLeaf,
   ZodParseError,
   type LoggerInterface,
@@ -14,6 +13,9 @@ import { usePageConfiguration } from "../services/index.js";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 
+import {
+  test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
+} from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga"), "UI",

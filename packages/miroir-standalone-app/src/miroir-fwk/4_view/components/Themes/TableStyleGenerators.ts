@@ -163,9 +163,9 @@ export const generateGlideTheme = (theme: ResolvedTableTheme) => ({
   fontFamily: theme.typography.fontFamily,
   editorFontSize: theme.typography.fontSize,
   lineHeight: 1.4,
-  cellHorizontalPadding: parseInt(theme.spacing.md),
-  cellVerticalPadding: parseInt(theme.spacing.sm),
-  headerHeight: parseInt(theme.components.header.height),
+  cellHorizontalPadding: parseInt(theme.spacing.md ?? "16"),
+  cellVerticalPadding: parseInt(theme.spacing.sm ?? "8"),
+  headerHeight: parseInt(theme.components.header.height ?? "36"),
   smoothScrollX: true,
   smoothScrollY: true,
 });

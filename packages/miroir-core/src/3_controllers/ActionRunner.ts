@@ -10,7 +10,7 @@ import { cleanLevel } from "./constants";
 
 import { Action2Error, Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { defaultMiroirMetaModel } from "../1_core/Model";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import { ACTION_OK } from "../1_core/constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;

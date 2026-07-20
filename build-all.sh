@@ -10,8 +10,11 @@
 #   devBuild   Full devBuild (default) – regenerates TypeScript types from Jzod schemas
 #              before building miroir-core. Required when schemas in
 #              packages/miroir-test-app_deployment-miroir/assets are modified.
+#   typecheck  Type-check all packages with tsc --noEmit (no emit, no artefacts by default).
+#              Workspace packages resolve types from dist/, so run a normal build first
+#              if declaration files are missing or stale.
 #
-# ARTEFACT (one or more; default: server-binary):
+# ARTEFACT (one or more; default: server-binary; none when CORE_BUILD_MODE is typecheck):
 #   server-binary   Self-contained server binary  (npm run build:release)
 #   electron        Electron desktop application  (dist via electron-builder)
 #   docker          Docker container image         (calls build_miroir.sh; optional tag argument)
@@ -22,6 +25,7 @@
 #   ./build-all.sh devBuild                # devBuild core → server binary
 #   ./build-all.sh build electron          # explicit flags, build electron app
 #   ./build-all.sh devbuild electron       # devBuild core → electron app
+#   ./build-all.sh typecheck               # tsc --noEmit across all packages
 #   ./build-all.sh docker                  # build Docker image with default tag
 #   ./build-all.sh docker mycustomtag      # build Docker image with custom tag
 # =============================================================================
@@ -41,14 +45,14 @@ ARTEFACTS=()
 
 for arg in "$@"; do
   case "$arg" in
-    build|devBuild)
+    build|devBuild|typecheck)
       CORE_BUILD_MODE="$arg"
       ;;
     electron|server-binary|docker|vm)
       ARTEFACTS+=("$arg")
       ;;
     -h|--help)
-      sed -n '2,27p' "$0"   # print the header comment block
+      sed -n '2,32p' "$0"   # print the header comment block
       exit 0
       ;;
     *)
@@ -59,10 +63,19 @@ for arg in "$@"; do
   esac
 done
 
-# Default artefact
-if [[ ${#ARTEFACTS[@]} -eq 0 ]]; then
+# Default artefact (none for typecheck)
+if [[ ${#ARTEFACTS[@]} -eq 0 && "$CORE_BUILD_MODE" != "typecheck" ]]; then
   ARTEFACTS=("server-binary")
 fi
+
+# Run build or typecheck for a list of packages (parallel).
+run_parallel_packages() {
+  if [[ "$CORE_BUILD_MODE" == "typecheck" ]]; then
+    run_parallel_typechecks "$@"
+  else
+    run_parallel_builds "$@"
+  fi
+}
 
 # ---------------------------------------------------------------------------
 # Step 1 – Optional: Build jzod and jzod-ts if present
@@ -90,7 +103,7 @@ fi
 # ---------------------------------------------------------------------------
 step "3/9  · miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin"
 t0=$(now_secs)
-run_parallel_builds \
+run_parallel_packages \
   miroir-test-app_deployment-miroir \
   miroir-test-app_deployment-admin
 record_time "3/9  miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin" "$t0"
@@ -102,6 +115,8 @@ step "4/9 · miroir-core ($CORE_BUILD_MODE)"
 t0=$(now_secs)
 if [[ "$CORE_BUILD_MODE" == "devBuild" ]]; then
   npm run devBuild -w miroir-core
+elif [[ "$CORE_BUILD_MODE" == "typecheck" ]]; then
+  typecheck_package miroir-core
 else
   npm run build -w miroir-core
 fi
@@ -112,10 +127,10 @@ record_time "4/9  miroir-core ($CORE_BUILD_MODE)" "$t0"
 # ---------------------------------------------------------------------------
 step "5/9 · localcaches & stores"
 t0=$(now_secs)
-run_parallel_builds \
-  miroir-localcache \
+run_parallel_packages \
   miroir-localcache-redux \
   miroir-localcache-zustand \
+  miroir-localcache \
   miroir-store-filesystem \
   miroir-store-indexedDb \
   miroir-store-postgres \
@@ -127,7 +142,7 @@ record_time "5/9  localcaches & stores" "$t0"
 # ---------------------------------------------------------------------------
 step "6/9 · miroir-react, miroir-mcp, miroir-diagram-class"
 t0=$(now_secs)
-run_parallel_builds \
+run_parallel_packages \
   miroir-react \
   miroir-mcp \
   miroir-diagram-class
@@ -138,7 +153,7 @@ record_time "6/9  miroir-react, miroir-mcp, miroir-diagram-class" "$t0"
 # ---------------------------------------------------------------------------
 step "7/9 · miroir-cli, miroir-ai, miroir-mcp"
 t0=$(now_secs)
-run_parallel_builds \
+run_parallel_packages \
   miroir-cli \
   miroir-ai \
   miroir-mcp
@@ -149,7 +164,11 @@ record_time "7/9  miroir-cli, miroir-ai, miroir-mcp" "$t0"
 # ---------------------------------------------------------------------------
 step "8/9 · miroir-standalone-app"
 t0=$(now_secs)
+if [[ "$CORE_BUILD_MODE" == "typecheck" ]]; then
+  typecheck_package miroir-standalone-app
+else
   npm run build -w miroir-standalone-app
+fi
 record_time "8/9  miroir-standalone-app" "$t0"
 
 # ---------------------------------------------------------------------------
@@ -157,7 +176,7 @@ record_time "8/9  miroir-standalone-app" "$t0"
 # ---------------------------------------------------------------------------
 step "9/9 · miroir-test-app_deployment-library & miroir-test-app_deployment-postgres"
 t0=$(now_secs)
-run_parallel_builds \
+run_parallel_packages \
   miroir-test-app_deployment-library \
   miroir-test-app_deployment-postgres
 record_time "9/9  miroir-test-app_deployment-library & miroir-test-app_deployment-postgres" "$t0"
@@ -165,7 +184,7 @@ record_time "9/9  miroir-test-app_deployment-library & miroir-test-app_deploymen
 # ---------------------------------------------------------------------------
 # Artefact-specific builds with timing
 # ---------------------------------------------------------------------------
-for artefact in "${ARTEFACTS[@]}"; do
+for artefact in "${ARTEFACTS[@]+"${ARTEFACTS[@]}"}"; do
   case "$artefact" in
 
 
@@ -221,5 +240,9 @@ print_timing_summary
 
 echo ""
 echo "========================================================================"
-echo "  ALL DONE  (core: $CORE_BUILD_MODE | artefacts: ${ARTEFACTS[*]})"
+if [[ ${#ARTEFACTS[@]} -eq 0 ]]; then
+  echo "  ALL DONE  (core: $CORE_BUILD_MODE | artefacts: none)"
+else
+  echo "  ALL DONE  (core: $CORE_BUILD_MODE | artefacts: ${ARTEFACTS[*]})"
+fi
 echo "========================================================================"

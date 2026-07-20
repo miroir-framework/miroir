@@ -9,15 +9,8 @@ import { expect, ExpectStatic, vi } from "vitest";
 import {
   Action2ReturnType,
   ConfigurationService,
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  entityEntity,
-  entityEntityDefinition,
-  entityJzodSchema,
-  entityMenu,
-  entityReport,
-  entitySelfApplicationVersion,
   JzodElement,
   jzodTypeCheck,
   LocalCacheInterface,
@@ -27,10 +20,9 @@ import {
   MiroirEventService,
   PersistenceStoreControllerManager,
   ResolvedJzodSchemaReturnType,
-  selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type ApplicationSection,
-  type EntityInstance
+  type EntityInstance,
 } from "miroir-core";
 import {
   LocalCache,
@@ -70,6 +62,16 @@ import { JzodEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/Valu
 import { useCurrentModel, useCurrentModelEnvironment } from "../../src/miroir-fwk/4_view/ReduxHooks";
 import { emptyObject } from "../../src/miroir-fwk/4_view/routes/TransformerBuilderPage.js";
 
+import {
+  defaultMiroirMetaModel,
+  entityEntity,
+  entityEntityDefinition,
+  entityJzodSchema,
+  entityMenu,
+  entityReport,
+  entitySelfApplicationVersion,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 export type TestMode = 'jzodElementEditor' | 'component';
 export type TestModeStar = 'jzodElementEditor' | 'component' | '*';
 
@@ -246,7 +248,6 @@ export interface JzodElementEditorProps_Test {
   // isPerformanceTest?: boolean;
 }
 
-
 // export type JzodEditorTestCaseRenderer<PropType> = {
 //   // renderAsJzodElementEditor?: React.FC<JzodElementEditorProps_Test>;
 //   renderAsJzodElementEditor?: React.FC<PropType>;
@@ -259,7 +260,6 @@ export interface ReactComponentTestSuitePrep<PropType extends Record<string, any
     jzodElementEditor: React.FC<PropType>
   ) => ReactComponentTestSuites<PropType>;
 }
-
 
 export interface ReactComponentTestCase<PropType extends Record<string, any>> {
   props?: PropType | ((props: PropType) => PropType);
@@ -387,8 +387,6 @@ export function getLocalEditor<
   return result;
 }
 
-
-
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -462,7 +460,6 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
       // [setformHelperState]
       []
     );
-
 
     const formikInitialValues = useMemo(() => {
       return { [testSectionName]: { [name]: initialFormState }};
@@ -845,7 +842,6 @@ export function getWrapperLoadingLocalCache(
       );
     }, []);
 
-
     return isPerformanceTest ? (
       <Profiler id="App" onRender={onRender}>
         <ThemeProvider theme={theme}>
@@ -989,7 +985,6 @@ export function getJzodEditorTestSuites<
 ): ReactComponentTestSuites<JzodEditorProps> {
   const WrapperForJzodElementEditor: React.FC<any> = getWrapperLoadingLocalCache(performanceTests, applicationDeploymentMap);
 
-
   const JzodElementEditorForTest: React.FC<JzodEditorProps> = reactComponentUnderTest;
     // getJzodElementEditorForTest(pageLabel);
 
@@ -1003,8 +998,6 @@ export function getJzodEditorTestSuites<
   );
   return jzodEditorTest;
 }
-
-
 
 // ################################################################################################
 export function prepareAndRunTestSuites(
@@ -2071,5 +2064,4 @@ export function formValuesToJSON(input: Record<string, any>, sectionName?: strin
   console.log("formValuesToJSON before extracting sectionName: result =", result, "sectionName =", sectionName);
   return sectionName?result[sectionName]:result;
 }
-
 

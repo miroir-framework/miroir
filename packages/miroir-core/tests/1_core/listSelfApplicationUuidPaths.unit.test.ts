@@ -3,10 +3,9 @@ import {
   defaultLibraryAppModel,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 
 import type { MetaModel } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { defaultMiroirMetaModel } from "../../src/1_core/Model";
 import {
   formatRelativePath,
   formatRelativePaths,

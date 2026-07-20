@@ -11,11 +11,11 @@ import {
   ApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
-  entityDefinitionEntityDefinition,
 } from "miroir-core";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { entityDefinitionEntityDefinition } from 'miroir-test-app_deployment-miroir';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
