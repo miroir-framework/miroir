@@ -2,6 +2,7 @@
 // Patch tsup 8.5.x so DTS builds do not inject deprecated baseUrl.
 // Upstream: https://github.com/egoist/tsup/issues/1388
 // Idempotent — safe to run on every install.
+// Use .cjs because root package.json has "type": "module".
 
 const fs = require("fs");
 const path = require("path");

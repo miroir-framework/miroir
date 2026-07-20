@@ -19,7 +19,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   testUtils_resetApplicationDeployment
 } from "./Deployment";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "./defaultMiroirMetaModel";
 
 // ################################################################################################
 export function testBuildPlusRuntimeCompositeActionSuiteForRunner(

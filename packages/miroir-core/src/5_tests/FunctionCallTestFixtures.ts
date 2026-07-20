@@ -1,6 +1,6 @@
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
 import { resolveFundamentalSchemaForDeployment } from "../1_core/jzod/schemaForDeployment";
 import { defaultMetaModelEnvironment } from "../1_core/Model";
 import {

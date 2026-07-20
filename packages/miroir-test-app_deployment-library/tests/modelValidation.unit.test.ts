@@ -1,17 +1,21 @@
 /// <reference types="vite/client" />
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import * as vitest from "vitest";
 
 import type {
   EntityDefinition,
   JzodElement,
   MiroirModelEnvironment,
   MlSchema,
+  ModelValidationGroup,
 } from "miroir-core";
 import {
+  buildModelValidationPlanFromGroups,
   defaultMiroirModelEnvironment,
   getMiroirFundamentalSchemaForDeployment,
   jzodTypeCheck,
+  registerModelValidationSuites,
   resolveFundamentalSchemaForDeployment,
 } from "miroir-core";
 
@@ -188,52 +192,9 @@ const lendingHistoryItemInstances = import.meta.glob(
 ) as Record<string, { default: any }>;
 
 // ================================================================================================
-// Helpers
-// ================================================================================================
-
-function buildInstanceLabel(instance: any, fallbackPath: string): string {
-  const uuid: string = instance.uuid ?? fallbackPath;
-  return instance.name ? `${instance.name} (${uuid})` : uuid;
-}
-
-function describeEntityGroup(
-  groupName: string,
-  jzodSchema: JzodElement,
-  instances: Record<string, { default: any }>,
-  modelEnv: MiroirModelEnvironment,
-): void {
-  describe(groupName, () => {
-    for (const [path, module] of Object.entries(instances)) {
-      const instance = module.default;
-      const label = buildInstanceLabel(instance, path);
-      it(label, () => {
-        const result = jzodTypeCheck(
-          jzodSchema,
-          instance,
-          [], // currentValuePath
-          [], // currentTypePath
-          modelEnv,
-          {}, // relativeReferenceJzodContext
-        );
-        expect(
-          result.status,
-          // `jzodTypeCheck failed for instance ${label}: ${JSON.stringify(result)}`,
-          `jzodTypeCheck failed for instance ${label}`,
-        ).toBe("ok");
-      });
-    }
-  });
-}
-
-// ================================================================================================
 // Test suites — Model instances (validated against the Miroir meta-model)
 // ================================================================================================
-const modelTestsToRun: Array<{
-  groupName: string;
-  jzodSchema: JzodElement;
-  instances: Record<string, { default: any }>;
-  filterByName?: string[];
-}> = [
+const modelTestsToRun: ModelValidationGroup[] = [
   {
     "groupName": "Entity",
     "jzodSchema": (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
@@ -360,21 +321,13 @@ const modelTestsToRun: Array<{
     "jzodSchema": (entityDefinitionLendingHistoryItem as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
     "instances": lendingHistoryItemInstances,
   },
-]
+];
 
-modelTestsToRun.forEach(({ groupName, jzodSchema, instances, filterByName }) => {
-  const filteredInstances = Object.fromEntries(Object.entries(instances).filter(e => {
-    const instance = e[1].default;
-    if (!instance.name) return true;
-    if (!filterByName) return true;
-    return filterByName.some(name => instance.name.includes(name));
-  }));
-  describeEntityGroup(
-    groupName,
-    jzodSchema,
-    filteredInstances,
-    defaultMiroirModelEnvironment,
-  );
+registerModelValidationSuites({
+  vitest,
+  plan: buildModelValidationPlanFromGroups(modelTestsToRun),
+  modelEnv: defaultMiroirModelEnvironment,
+  npmWorkspacePackage: "miroir-test-app_deployment-library",
 });
 
 // ================================================================================================

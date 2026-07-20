@@ -1,5 +1,4 @@
 import {
-  defaultMiroirMetaModel,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -25,6 +24,7 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
 import { resolveFundamentalSchemaForDeployment } from "./jzod/schemaForDeployment";
+import { defaultMiroirMetaModel } from "./defaultMiroirMetaModel";
 
 import {
   Entity,

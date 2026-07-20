@@ -4,6 +4,7 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm'],
   bundle: true,
+  clean: true,
   dts: true,
   sourcemap: true,
   treeshake: true,
@@ -17,7 +18,9 @@ export default defineConfig({
   external: [
     'miroir-test-app_deployment-admin',
     'miroir-test-app_deployment-miroir',
-    // 'miroir-test-app_deployment-library', // no runtime/package dependency on miroir-test-app_deployment-library
+    'miroir-test-app_deployment-library',
+    // Test registry imports postgres helpers; postgres depends on miroir-core — must not bundle.
+    'miroir-store-postgres',
     // json-diff → @ewoudenberg/difflib uses dynamic require('assert'); must stay external for ncc/ESM consumers
     'json-diff',
   ],

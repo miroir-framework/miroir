@@ -24,7 +24,7 @@ const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
 
 
 const endpointDefinition: EndpointDefinition[] | undefined =
-    defaultLibraryAppModel.currentModel.endpoints.filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") as EndpointDefinition[]; // lendingEndpoint UUID
+    defaultLibraryAppModel.currentModel.endpoints.filter((endpoint: EndpointDefinition) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") as EndpointDefinition[]; // lendingEndpoint UUID
   
 if (!endpointDefinition || endpointDefinition.length === 0) {
   throw new Error("Lending endpoint definition not found: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");

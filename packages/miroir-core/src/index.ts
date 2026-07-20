@@ -1055,6 +1055,29 @@ export {
   resolveActionTestLeaf,
   runMiroirActionTest,
 } from "./5_tests/ActionTestTools.js";
+export {
+  buildModelValidationPlanFromGroups,
+  buildModelValidationPlanFromMetaModel,
+  buildModelValidationInstanceLabel,
+  buildModelValidationVitestNameFilter,
+  checkModelValidationInstance,
+  entityDefinitionsByEntityName,
+  escapeRegexForVitestFilter,
+  filterModelValidationGroupInstances,
+  formatEntitiesWithZeroInstancesReport,
+  formatFailedModelValidationRerunCommands,
+  modelValidationInstancesArrayToRecord,
+  type ModelValidationFailedCase,
+  type ModelValidationGroup,
+  type ModelValidationInstanceCheck,
+  type ModelValidationInstanceModule,
+  type ModelValidationPlan,
+} from "./5_tests/ModelValidationTools.js";
+export {
+  registerModelValidationSuites,
+  type ModelValidationVitest,
+  type RegisterModelValidationSuitesParams,
+} from "./5_tests/registerModelValidationSuites.js";
 /** @deprecated Phase 0 draft — use `miroirTestForAction` from fundamental types. */
 export { miroirTestForAction as miroirTestForActionDraft } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 export {

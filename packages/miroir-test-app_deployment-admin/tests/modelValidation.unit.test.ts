@@ -1,6 +1,7 @@
 /// <reference types="vite/client" />
 
 import { describe, expect, it } from "vitest";
+import * as vitest from "vitest";
 
 import type {
   Entity,
@@ -8,12 +9,13 @@ import type {
   JzodElement,
   MetaModel,
   MiroirModelEnvironment,
-  MlSchema,
+  ModelValidationGroup,
 } from "miroir-core";
 import {
+  buildModelValidationPlanFromGroups,
   defaultMiroirModelEnvironment,
-  jzodTypeCheck,
   miroirFundamentalJzodSchema,
+  registerModelValidationSuites,
   resolveFundamentalSchemaForDeployment,
 } from "miroir-core";
 import {
@@ -209,140 +211,88 @@ const applicationVersionDataInstances = import.meta.glob(
 ) as Record<string, { default: any }>;
 
 // ================================================================================================
-// Helpers
+// Test suites — Model + Data instances
 // ================================================================================================
 
-function buildInstanceLabel(instance: any, fallbackPath: string): string {
-  const uuid: string = instance.uuid ?? fallbackPath;
-  return instance.name ? `${instance.name} (${uuid})` : uuid;
-}
+const modelTestsToRun: ModelValidationGroup[] = [
+  {
+    groupName: "Entity",
+    jzodSchema: (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: entityInstances,
+  },
+  {
+    groupName: "EntityDefinition",
+    jzodSchema: (entityDefinitionEntityDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: entityDefinitionInstances,
+  },
+  {
+    groupName: "Report",
+    jzodSchema: (entityDefinitionReport as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: reportInstances,
+  },
+  {
+    groupName: "Menu",
+    jzodSchema: (entityDefinitionMenu as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: menuInstances,
+  },
+  {
+    groupName: "StoreBasedConfiguration",
+    jzodSchema: (entityDefinitionStoreBasedConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: storeBasedConfigurationInstances,
+  },
+  {
+    groupName: "SelfApplication",
+    jzodSchema: (entityDefinitionSelfApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: selfApplicationInstances,
+  },
+  {
+    groupName: "ApplicationVersion",
+    jzodSchema: (entityDefinitionSelfApplicationVersion as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: applicationVersionInstances,
+  },
+  {
+    groupName: "SelfApplicationModelBranch",
+    jzodSchema: (entityDefinitionSelfApplicationModelBranch as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: selfApplicationModelBranchInstances,
+  },
+  {
+    groupName: "AdminApplication",
+    jzodSchema: (entityDefinitionAdminApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: adminApplicationInstances,
+    modelEnv: adminModelEnvironment,
+  },
+  {
+    groupName: "Deployment",
+    jzodSchema: (entityDefinitionDeploymentAdmin as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: deploymentInstances,
+    modelEnv: adminModelEnvironment,
+  },
+  {
+    groupName: "bundle",
+    jzodSchema: (entityDefinitionBundleAdmin as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: bundleInstances,
+    modelEnv: adminModelEnvironment,
+  },
+  {
+    groupName: "ViewParams",
+    jzodSchema: (entityDefinitionViewParamsAdmin as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: viewParamsInstances,
+    modelEnv: adminModelEnvironment,
+  },
+  {
+    groupName: "ApplicationVersionData",
+    jzodSchema: (entityDefinitionApplicationVersionAdmin as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
+    instances: applicationVersionDataInstances,
+    modelEnv: adminModelEnvironment,
+  },
+];
 
-function describeEntityGroup(
-  groupName: string,
-  jzodSchema: JzodElement,
-  instances: Record<string, { default: any }>,
-  modelEnv: MiroirModelEnvironment,
-): void {
-  describe(groupName, () => {
-    for (const [path, module] of Object.entries(instances)) {
-      const instance = module.default;
-      const label = buildInstanceLabel(instance, path);
-      it(label, () => {
-        const result = jzodTypeCheck(
-          jzodSchema,
-          instance,
-          [], // currentValuePath
-          [], // currentTypePath
-          modelEnv,
-          {}, // relativeReferenceJzodContext
-        );
-        expect(
-          result.status,
-          `jzodTypeCheck failed for instance ${label}: ${JSON.stringify(result)}`,
-        ).toBe("ok");
-      });
-    }
-  });
-}
-
-// ================================================================================================
-// Test suites — Model instances (validated against the Miroir meta-model)
-// ================================================================================================
-
-describeEntityGroup(
-  "Entity",
-  (entityDefinitionEntity as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  entityInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "EntityDefinition",
-  (entityDefinitionEntityDefinition as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  entityDefinitionInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "Report",
-  (entityDefinitionReport as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  reportInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "Menu",
-  (entityDefinitionMenu as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  menuInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "StoreBasedConfiguration",
-  (entityDefinitionStoreBasedConfiguration as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  storeBasedConfigurationInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "SelfApplication",
-  (entityDefinitionSelfApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  selfApplicationInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "ApplicationVersion",
-  (entityDefinitionSelfApplicationVersion as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  applicationVersionInstances,
-  defaultMiroirModelEnvironment,
-);
-
-describeEntityGroup(
-  "SelfApplicationModelBranch",
-  (entityDefinitionSelfApplicationModelBranch as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  selfApplicationModelBranchInstances,
-  defaultMiroirModelEnvironment,
-);
-
-// ================================================================================================
-// Test suites — Data instances (validated against the admin model)
-// ================================================================================================
-
-describeEntityGroup(
-  "AdminApplication",
-  (entityDefinitionAdminApplication as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  adminApplicationInstances,
-  adminModelEnvironment,
-);
-
-describeEntityGroup(
-  "Deployment",
-  (entityDefinitionDeploymentAdmin as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  deploymentInstances,
-  adminModelEnvironment,
-);
-
-describeEntityGroup(
-  "bundle",
-  (entityDefinitionBundleAdmin as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  bundleInstances,
-  adminModelEnvironment,
-);
-
-describeEntityGroup(
-  "ViewParams",
-  (entityDefinitionViewParamsAdmin as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  viewParamsInstances,
-  adminModelEnvironment,
-);
-
-describeEntityGroup(
-  "ApplicationVersionData",
-  (entityDefinitionApplicationVersionAdmin as unknown as EntityDefinition).mlSchema as unknown as JzodElement,
-  applicationVersionDataInstances,
-  adminModelEnvironment,
-);
+registerModelValidationSuites({
+  vitest,
+  plan: buildModelValidationPlanFromGroups(modelTestsToRun),
+  modelEnv: defaultMiroirModelEnvironment,
+  npmWorkspacePackage: "miroir-test-app_deployment-admin",
+});
 
 describe("static schema mode (199)", () => {
   it("admin model environment schema is miroirFundamentalJzodSchema by reference", () => {

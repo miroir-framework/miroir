@@ -93,7 +93,9 @@
                                 "value": {
                                   "id": 1,
                                   "defaultLabel": "Uuid",
-                                  "editable": false
+                                  "display": {
+                                    "editable": false
+                                  }
                                 }
                               }
                             },
