@@ -2,12 +2,10 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist/out-tsc",
-    "ignoreDeprecations": "6.0",
     "declaration": true,
     "declarationMap": true,
     "declarationDir": "dist/out-tsc/dts",
-    "rootDir": "./",
-    "baseUrl": "./"
+    "rootDir": "./"
   },
   "exclude": [
     "./node_modules/**",

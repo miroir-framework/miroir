@@ -16,7 +16,6 @@ import {
 } from "miroir-core";
 
 import { useFormikContext } from 'formik';
-import type { MarkdownReportSection } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
 import { useDomainControllerService, useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';

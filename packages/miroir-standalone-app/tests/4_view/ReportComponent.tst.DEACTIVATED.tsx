@@ -24,14 +24,14 @@
 //   RestPersistenceClientAndRestClient,
 // } from "miroir-localcache-redux";
 
-// import { ReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/ReportComponent'
+// import { ReportComponent } from 'miroir-standalone-app/src/miroir-fwk/4_view/ReportComponent.js'
 // import { renderWithProviders } from 'miroir-standalone-app/tests/utils/tests-utils'
 
 // import miroirConfig from 'miroir-standalone-app/src/assets/miroirConfig.json'
-// import { miroirAppStartup } from "miroir-standalone-app/src/startup"
+// import { miroirAppStartup } from "miroir-standalone-app/src/startup.js"
 
 
-// // import { pushError } from 'miroir-standalone-app/src/miroir-fwk/3_controllers/ErrorLogService'
+// // import { pushError } from 'miroir-standalone-app/src/miroir-fwk/3_controllers/ErrorLogService.js'
 
 // export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 

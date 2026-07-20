@@ -25,14 +25,12 @@ import {
 
 import { Formik, type FormikProps } from 'formik';
 import {
-  type TransformerDefinition,
-  type CoreTransformerForBuildPlusRuntime
-} from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { JsonDisplayHelper } from 'miroir-react';
-import { useMiroirContextService } from 'miroir-react';
+  type CoreTransformerForBuildPlusRuntime,
+  type TransformerDefinition
+} from "miroir-core";
+import { JsonDisplayHelper, useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
-import { useCurrentModelEnvironment } from '../../ReduxHooks';
 import {
   useDeploymentUuidFromApplicationUuid,
   useTransformer

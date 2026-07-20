@@ -22,10 +22,6 @@ import {
   type ReduxStateWithUndoRedo,
   useSelector,
 } from "miroir-react";
-// import {
-//   Entity,
-//   TestSuiteResult
-// } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { packageName } from "../../../constants.js";
 import {
   useDomainControllerService,

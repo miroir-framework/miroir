@@ -1,4 +1,4 @@
-import { JzodElement } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { JzodElement } from "miroir-core";
 import { useState } from "react";
 
 export const ChangeValueTypeSelect: React.FC<{ onChange: (type: JzodElement) => void }> = ({

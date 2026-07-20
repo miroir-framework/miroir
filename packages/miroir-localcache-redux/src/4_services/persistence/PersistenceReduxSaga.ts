@@ -27,8 +27,8 @@ import {
   type ApplicationDeploymentMap,
   type MiroirModelEnvironment
 } from "miroir-core";
-import { handlePromiseActionForSaga } from 'src/sagaTools.js';
 import { packageName } from '../../constants.js';
+import { handlePromiseActionForSaga } from '../../sagaTools.js';
 import { LocalCache } from '../LocalCache.js';
 import { cleanLevel } from '../constants.js';
 

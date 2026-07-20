@@ -3,13 +3,11 @@
   "compilerOptions": {
     "skipLibCheck": true,
     "strict": true,
-    "ignoreDeprecations": "6.0",
     "noEmit": true,
     "outDir": "dist/out-tsc",
     "declaration": true,
     "declarationMap": true,
     "rootDir": "./",
-    "baseUrl": "./",
     "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx"
   }

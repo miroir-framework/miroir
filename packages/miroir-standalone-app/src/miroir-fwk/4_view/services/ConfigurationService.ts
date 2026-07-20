@@ -28,7 +28,7 @@ import {
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
 
-import type { Deployment } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType';
+import type { Deployment } from 'miroir-core';
 
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';

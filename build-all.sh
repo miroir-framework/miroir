@@ -131,6 +131,7 @@ run_parallel_packages \
   miroir-localcache-redux \
   miroir-localcache-zustand \
   miroir-localcache \
+  miroir-store-bundled \
   miroir-store-filesystem \
   miroir-store-indexedDb \
   miroir-store-postgres \

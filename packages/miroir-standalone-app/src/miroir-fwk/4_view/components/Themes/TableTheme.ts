@@ -36,9 +36,8 @@
 // ensuring visual consistency regardless of which grid implementation is used.
 // ################################################################################################
 
-import type { StoredMiroirTheme } from "miroir-core";
-import type { MiroirThemeFull } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { defaultStoredMiroirTheme, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
+import type { MiroirThemeFull, StoredMiroirTheme } from "miroir-core";
+import { defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
 
 // ################################################################################################
 // TableTheme: color properties in sub-sections are optional.

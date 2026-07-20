@@ -43,7 +43,6 @@ import {
   springer as publisher3,
   selfApplicationLibrary
 } from "miroir-test-app_deployment-library";
-// import { miroirCoreStartup } from 'miroir-core/src/startup.js';
 import type {
   ApplicationDeploymentMap,
   Deployment,

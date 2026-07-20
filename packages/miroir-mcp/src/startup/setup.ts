@@ -16,17 +16,6 @@ import {
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController
 } from "miroir-localcache-redux";
-// import type { LoggerInterface, MiroirConfigClient, RestClientInterface, RestPersistenceClientAndRestClientInterface } from 'miroir-core';
-// import { ConfigurationService } from '../../../miroir-core/src/3_controllers/ConfigurationService.js';
-// import { MiroirActivityTracker } from '../../../miroir-core/src/3_controllers/MiroirActivityTracker.js';
-// import { MiroirContext } from '../../../miroir-core/src/3_controllers/MiroirContext.js';
-// import { MiroirEventService } from '../../../miroir-core/src/3_controllers/MiroirEventService.js';
-// import { MiroirLoggerFactory } from '../../../miroir-core/src/4_services/MiroirLoggerFactory.js';
-// import { PersistenceStoreControllerManager } from '../../../miroir-core/src/4_services/PersistenceStoreControllerManager.js';
-// import RestClient from '../../../miroir-core/src/4_services/RestClient.js';
-// import RestClientStub from '../../../miroir-core/src/4_services/RestClientStub.js';
-// import { packageName } from "../../../miroir-core/src/constants.js";
-// import { cleanLevel } from "../../../miroir-core/src/5_setup/constants.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

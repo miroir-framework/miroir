@@ -38,7 +38,7 @@ import { useMiroirContextService } from 'miroir-react';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { JsonDisplayHelper } from 'miroir-react';
-import type { MiroirMenuItemDivider, MiroirMenuReportLink } from 'miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js';
+import type { MiroirMenuItemDivider, MiroirMenuReportLink } from 'miroir-core';
 import { pageUrl, reportUrl } from '../../navigation.js';
 
 import { entityMenu, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
