@@ -4,7 +4,8 @@ import type { Deployment, StoreUnitConfiguration } from "../../src/0_interfaces/
 import type { DomainControllerInterface } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../../src/0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import type { ApplicationDeploymentMap } from "../../src/1_core/Deployment";
-import { defaultMiroirMetaModel } from "../../src/1_core/Model";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+
 import {
   ensureLibraryPlayfield,
   resetLibraryPlayfield,

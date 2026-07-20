@@ -4,7 +4,6 @@
  */
 import {
   Action2Error,
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   getBasicApplicationConfiguration,
   type ApplicationDeploymentMap,
@@ -24,6 +23,7 @@ import {
   type IntegrationTestApplicationIdentity,
 } from "./IntegrationTestSession.js";
 
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 /** Postgres / identifier-safe name derived from applicationName. */
 export function sanitizeStoreIdentifier(name: string): string {
   const cleaned = name.replace(/[^a-zA-Z0-9_]/g, "_");

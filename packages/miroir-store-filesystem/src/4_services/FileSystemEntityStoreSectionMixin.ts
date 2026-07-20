@@ -19,8 +19,6 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
-  entityEntity,
-  entityEntityDefinition
 } from "miroir-core";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
@@ -28,6 +26,7 @@ import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

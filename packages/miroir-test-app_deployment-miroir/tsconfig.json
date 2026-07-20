@@ -12,7 +12,7 @@
   "include": [
     "index.ts",
     "assets/**/*.json",
-    "tests/**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",

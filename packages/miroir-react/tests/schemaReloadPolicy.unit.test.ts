@@ -8,12 +8,13 @@ import {
 import {
   classifySchemaChange,
   computeSchemaRevision,
-  defaultMiroirMetaModel,
-  entityDefinitionEntity,
-  selfApplicationMiroir,
   type MetaModel,
 } from "miroir-core";
-
+import {
+  selfApplicationMiroir,
+  defaultMiroirMetaModel,
+  entityDefinitionEntity,
+} from "miroir-test-app_deployment-miroir";
 import {
   evaluateSchemaRevisionChange,
   resolveSchemaForDeploymentPolicy,
@@ -60,7 +61,7 @@ describe("schemaReloadPolicy (199 Phase 5)", () => {
   });
 
   it("does not set schemaReloadRequired for Library Book instance edit", () => {
-    const base = cloneModel(defaultLibraryAppModel) as MetaModel;
+    const base: MetaModel = cloneModel(defaultLibraryAppModel as MetaModel) as MetaModel;
     const appRevision = computeSchemaRevision(
       deployment_Library_DO_NO_USE.uuid,
       base,

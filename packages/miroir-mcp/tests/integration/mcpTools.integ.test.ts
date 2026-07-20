@@ -3,8 +3,6 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 
 import {
   ApplicationDeploymentMap,
-  // defaultLibraryAppModel,
-  defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
   LocalCacheInterface,
@@ -16,7 +14,6 @@ import {
   resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
   Deployment,
-  selfApplicationDeploymentMiroir,
   StoreOrBundleAction,
   StoreUnitConfiguration,
   type ApplicationEntitiesAndInstances,
@@ -33,7 +30,7 @@ import {
   miroirFundamentalJzodSchema,
   type EndpointDefinition,
   type MlSchema,
-  defaultSelfApplicationDeploymentMap
+  defaultSelfApplicationDeploymentMap,
 } from "miroir-core";
 import { loadMiroirMcpConfig } from "../../src/config/configLoader.js";
 import { MiroirMcpConfig } from "../../src/config/configSchema.js";
@@ -43,7 +40,6 @@ import {
   ALL_MCP_TEST_CASES,
   type McpToolTest
 } from "./mcpToolsTestCases.js";
-
 
 import {
   deployment_Library_DO_NO_USE,
@@ -78,6 +74,7 @@ import {
 } from "miroir-test-app_deployment-library";
 import { callMcpToolViaHttp } from './mcpClient.js';
 
+import { defaultMiroirMetaModel, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
 // import { runMcpTestsViaHttp } from './mcpClient.js';
 
 const packageName = "miroir-mcp";
@@ -205,7 +202,6 @@ const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
   deployment_Library_DO_NO_USE.uuid,
 );
 
-
 describe("MCP Tools Integration Tests", () => {
   // ##############################################################################################
   beforeAll(async () => {
@@ -251,7 +247,6 @@ describe("MCP Tools Integration Tests", () => {
       miroirActivityTracker,
       miroirEventService,
     );
-
 
     domainController = localdomainController;
     localCache = domainController.getLocalCache();

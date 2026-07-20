@@ -1,4 +1,6 @@
-import { pathToString, type FoldAction } from "./FoldedStateTreeDebug";
+import { pathToString, type FoldAction, type FoldedStateTree } from "./FoldedStateTreeDebug.js";
+
+export type { FoldedStateTree } from "./FoldedStateTreeDebug.js";
 
 
 /**

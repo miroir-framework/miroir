@@ -1,6 +1,5 @@
 import {
   entityDefinitionMLSchema,
-  entityQueryVersion,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   LoggerInterface,
@@ -13,12 +12,13 @@ import {
   type MetaModel,
   type MiroirModelEnvironment,
   type ReportSection,
-  type Uuid
+  type Uuid,
 } from "miroir-core";
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { editedQueryParameterValueKey } from "./ReportSectionEntityInstance.js";
 
+import { entityQueryVersion } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportTools"), "UI",

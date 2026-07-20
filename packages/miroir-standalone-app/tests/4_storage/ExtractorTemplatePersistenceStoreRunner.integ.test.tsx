@@ -10,11 +10,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   EntityDefinition,
-  entityEndpointVersion,
-  entityEntity,
-  entityEntityDefinition,
   EntityInstance,
-  entityMenu,
   ignorePostgresExtraAttributes,
   LoggerInterface,
   MetaEntity,
@@ -31,9 +27,8 @@ import {
   unNullify,
   type ApplicationDeploymentMap,
   type Deployment,
-  type Entity
+  type Entity,
 } from "miroir-core";
-
 
 import { LocalCacheInterface } from 'miroir-core';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -77,6 +72,12 @@ import { miroirAppStartup } from '../../src/startup.js';
 import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { AppStackIntegrationTestSession } from '../helpers/IntegrationTestSession.js';
 
+import {
+  entityEndpointVersion,
+  entityEntity,
+  entityEntityDefinition,
+  entityMenu,
+} from "miroir-test-app_deployment-miroir";
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -271,7 +272,6 @@ beforeEach(
 //     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
 //   }
 // )
-
 
 const resultHandler = (a: any, ignoreAttributes?: string[]) =>
   removeUndefinedProperties(

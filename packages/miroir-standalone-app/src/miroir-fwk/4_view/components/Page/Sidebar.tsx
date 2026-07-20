@@ -1,14 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
-
 // import AutoStories from '@mui/icons-material/AutoStories';
-import {
-  LoggerInterface,
-  menuDefaultMiroir,
-  MiroirLoggerFactory,
-  selfApplicationMiroir,
-  type Uuid
-} from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, type Uuid } from "miroir-core";
 import {
   adminSelfApplication,
   deployment_Admin,
@@ -29,13 +22,13 @@ import {
 } from "../Themes/index";
 import { SidebarSection } from './SidebarSection.js';
 
+import { menuDefaultMiroir, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 // ################################################################################################
 export const SidebarWidth = 200;
-
 
 // ################################################################################################
 let count = 0;

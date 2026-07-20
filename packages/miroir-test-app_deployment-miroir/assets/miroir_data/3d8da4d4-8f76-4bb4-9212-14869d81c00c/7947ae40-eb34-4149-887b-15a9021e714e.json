@@ -55,18 +55,20 @@
                 }
               },
               "model": {
-                "type": "schemaReference",
+                "type": "any",
                 "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Model",
                     "description": "The model of the application",
-                    "canBeTemplate": true
+                    "canBeTemplate": false,
+                    "ifThenElseMMLS": {
+                      "mmlsReference": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "metaModel"
+                      }
+                    }
                   }
-                },
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "metaModel"
                 }
               },
               "params": {
@@ -80,11 +82,20 @@
                 },
                 "definition": {
                   "metaModel": {
-                    "type": "schemaReference",
+                    "type": "any",
                     "optional": true,
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "metaModel"
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "MetaModel",
+                        "description": "The meta-model of the application",
+                        "canBeTemplate": false,
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "metaModel"
+                          }
+                        }
+                      }
                     }
                   },
                   "dataStoreType": {
@@ -297,17 +308,20 @@
                 }
               },
               "model": {
-                "type": "schemaReference",
+                "type": "any",
                 "optional": true,
                 "tag": {
                   "value": {
                     "defaultLabel": "Model",
-                    "description": "The model of the application"
+                    "description": "The model of the application",
+                    "canBeTemplate": false,
+                    "ifThenElseMMLS": {
+                      "mmlsReference": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "metaModel"
+                      }
+                    }
                   }
-                },
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "metaModel"
                 }
               }
             }

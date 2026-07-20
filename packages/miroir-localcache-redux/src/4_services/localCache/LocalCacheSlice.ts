@@ -5,7 +5,6 @@ import {
   createEntityAdapter,
   createSlice
 } from "@reduxjs/toolkit";
-import equal from "fast-deep-equal";
 // const { memoize: _memoize } = lodash;
 
 import {
@@ -17,8 +16,6 @@ import {
   EntityInstance,
   EntityInstanceCollection,
   EntityInstancesUuidIndex,
-  getEntityPrimaryKeyAttribute,
-  serializeCompositeKeyValue,
   InstanceAction,
   LocalCacheAction,
   LoggerInterface,
@@ -26,19 +23,18 @@ import {
   ModelAction,
   ModelEntityActionTransformer,
   ReduxDeploymentsState,
-  resolveInstanceParentUuid,
   TransformerFailure,
   Uuid,
-  defaultApplicationSection,
-  entityDefinitionEntityDefinition,
+  getEntityPrimaryKeyAttribute,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
   getReduxDeploymentsStateIndex,
-  type ApplicationDeploymentMap,
-  type EntityInstanceWithName,
-  entityEntityDefinition
+  resolveInstanceParentUuid,
+  serializeCompositeKeyValue,
+  type ApplicationDeploymentMap
 } from "miroir-core";
+import { entityDefinitionEntityDefinition, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";

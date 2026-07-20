@@ -45,7 +45,6 @@ export const EntityInstanceLink = (props: EntityInstanceLinkProps) => {
       queryType: "localCacheEntityInstancesExtractor",
       definition: {
         application: props.application,
-        deploymentUuid: props.deploymentUuid,
         applicationSection: props.applicationSection as ApplicationSection,
         entityUuid: props.entityUuid,
       }

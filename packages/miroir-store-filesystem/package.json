@@ -20,6 +20,7 @@
   "dependencies": {
     "electron": "40.6.1",
     "miroir-core": "*",
+    "miroir-test-app_deployment-miroir": "*",
     "pg": "^8.9.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.29.0",

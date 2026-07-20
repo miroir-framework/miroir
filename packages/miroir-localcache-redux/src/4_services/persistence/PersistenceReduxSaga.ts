@@ -11,8 +11,6 @@ import {
   ACTION_OK,
   Action2Error,
   Action2ReturnType,
-  BoxedExtractorOrCombinerReturningObjectOrObjectList,
-  BoxedQueryWithExtractorCombinerTransformer,
   EntityInstance,
   LocalCacheAction,
   LoggerInterface,
@@ -25,9 +23,6 @@ import {
   RestClientCallReturnType,
   RestPersistenceClientAndRestClientInterface,
   StoreOrBundleAction,
-  actionsWithDeploymentInPayload,
-  instanceEndpointV1,
-  modelEndpointV1,
   storeActionOrBundleActionStoreRunner,
   type ApplicationDeploymentMap,
   type MiroirModelEnvironment

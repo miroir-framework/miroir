@@ -12,14 +12,9 @@ import {
   MiroirLoggerFactory,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  entityMiroirTest,
-  // selfApplicationDeploymentLibrary,
-  // selfApplicationLibrary,
-  selfApplicationMiroir,
-  miroirTest_resolveConditionalSchema,
   type Domain2QueryReturnType,
   type ReduxDeploymentsState,
-  type SyncBoxedExtractorOrQueryRunnerMap
+  type SyncBoxedExtractorOrQueryRunnerMap,
 } from "miroir-core";
 
 import {
@@ -48,12 +43,12 @@ import {
 } from "miroir-test-app_deployment-library";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
+import { entityMiroirTest, selfApplicationMiroir, miroirTest_resolveConditionalSchema } from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerBuilderPage"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
-
 
 export const emptyString = ""
 export const dataSection = "data"
@@ -79,7 +74,6 @@ export const defaultObject: JzodObject = {
 //   formAction: DomainAction,
 // }
 
-
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
@@ -104,8 +98,6 @@ export const TransformerBuilderPage: React.FC<any> = (
   const domainController: DomainControllerInterface = useDomainControllerService();
   
   const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
-
-
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -332,14 +324,12 @@ export const TransformerBuilderPage: React.FC<any> = (
   //       setTestResults(globalTestSuiteResults);
   //       log.info("testResults", globalTestSuiteResults);
 
-
   //       displayTestSuiteResultsDetails(
   //         // TestFramework,
   //         Object.keys(testSuitesForBuildPlusRuntimeCompositeAction)[0],
   //         testSuitePath,
   //         context.miroirContext.miroirActivityTracker
   //       );
-
 
   //       // log.info("created Deployment instance in Admin App deployment");
   //     } catch (e) {

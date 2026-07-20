@@ -8,14 +8,13 @@ import {
   Entity,
   LoggerInterface,
   MiroirLoggerFactory,
-  reportReportDetails,
   ReportSection,
   resolvePathOnObject,
   transformer_extended_apply_wrapper,
   TransformerFailure,
   Uuid,
   type ApplicationDeploymentMap,
-  type JzodObject
+  type JzodObject,
 } from "miroir-core";
 
 import { useFormikContext } from 'formik';
@@ -38,6 +37,7 @@ import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
 
+import { reportReportDetails } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionViewWithEditor"), "UI",

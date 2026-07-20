@@ -8,7 +8,7 @@ import type {
   SelfApplication,
   Uuid,
 } from "miroir-core";
-import { defaultMiroirMetaModel } from "miroir-core";
+
 import {
   author1,
   author2,
@@ -39,6 +39,7 @@ import {
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
 
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 /** Suite registry key for DomainController Data CRUD action MiroirTest. */
 export const DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY = "domain_controller_data_crud";
 
@@ -170,6 +171,7 @@ export const compositePKTestMetaModel: MetaModel = {
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
   applications: [],
+  tests: [],
 };
 
 export const libraryEntitiesAndInstancesCompositePK: ApplicationEntitiesAndInstances = [
@@ -265,6 +267,7 @@ export const codeNumberTestMetaModel: MetaModel = {
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
   applications: [],
+  tests: [],
 };
 
 export const libraryEntitiesAndInstancesCodeNumber: ApplicationEntitiesAndInstances = [
@@ -303,6 +306,7 @@ export const publisherOnlyTestMetaModel: MetaModel = {
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
   applications: [],
+  tests: [],
 };
 
 /** Entity whose instances omit `parentUuid` — standard UUID PK (legacy noParentUuid integ). */
@@ -385,6 +389,7 @@ export const noParentUuidTestMetaModel: MetaModel = {
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
   applications: [],
+  tests: [],
 };
 
 export const libraryEntitiesAndInstancesNoParentUuid: ApplicationEntitiesAndInstances = [
@@ -543,6 +548,7 @@ export const publisherAndCountryTestMetaModel: MetaModel = {
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
   applications: [],
+  tests: [],
 };
 
 /**
@@ -634,6 +640,7 @@ export const emptyLibraryPlayfieldMetaModel: MetaModel = {
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
   applications: [],
+  tests: [],
 };
 
 export const domainControllerModelUndoRedoLibraryPlayfieldSeed: LibraryPlayfieldSeed = {

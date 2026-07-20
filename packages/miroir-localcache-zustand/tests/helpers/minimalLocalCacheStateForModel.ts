@@ -1,4 +1,9 @@
 import {
+  getReduxDeploymentsStateIndex,
+  type ApplicationSection,
+  type Uuid,
+} from "miroir-core";
+import {
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -8,9 +13,7 @@ import {
   entityReport,
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
-  getReduxDeploymentsStateIndex,
-  type Uuid,
-} from "miroir-core";
+} from "miroir-test-app_deployment-miroir";
 
 import type { LocalCacheSliceState } from "../../src/4_services/localCache/localCacheZustandInterface.js";
 
@@ -36,7 +39,7 @@ export function buildMinimalLocalCacheStateForDeployment(
     ["model", entitySelfApplicationVersion.uuid],
   ];
   for (const [section, entityUuid] of indexes) {
-    current[getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid)] = emptyCollection();
+    current[getReduxDeploymentsStateIndex(deploymentUuid, section as ApplicationSection, entityUuid)] = emptyCollection();
   }
   return {
     loading: {},

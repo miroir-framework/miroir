@@ -1,11 +1,10 @@
 import type { RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import * as React from 'react';
-import { FC, PropsWithChildren, createContext, useState } from 'react';
+import { FC, PropsWithChildren, useState } from 'react';
 
 // As a basic setup, import your same slice reducers
 import {
-  Action2ReturnType,
   AdminApplicationDeploymentConfiguration,
   DeploymentConfiguration,
   DomainControllerInterface,
@@ -26,23 +25,21 @@ import {
   // deployment_Library_DO_NO_USE,
   createDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
-  selfApplicationDeploymentMiroir,
-  selfApplicationMiroir,
   type ApplicationDeploymentMap,
-  type Deployment,
-  type MiroirActivityTrackerInterface
+  type Deployment
 } from "miroir-core";
 import {
   deployment_Miroir
 } from "miroir-test-app_deployment-admin";
+import {
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 
 import {
   selfApplicationDeploymentLibrary,
 } from "miroir-test-app_deployment-library";
 
-import {
-  TestCompositeActionParams,
-} from "miroir-core";
 import {
   LocalCache,
   LocalCacheProvider,

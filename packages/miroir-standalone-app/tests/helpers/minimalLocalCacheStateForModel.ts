@@ -1,4 +1,10 @@
 import {
+  getReduxDeploymentsStateIndex,
+  type ApplicationSection,
+  type Entity,
+  type Uuid,
+} from "miroir-core";
+import {
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -8,11 +14,7 @@ import {
   entityReport,
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
-  getReduxDeploymentsStateIndex,
-  type ApplicationSection,
-  type Uuid,
-} from "miroir-core";
-
+} from "miroir-test-app_deployment-miroir";
 import type { LocalCacheSliceState } from "miroir-react";
 
 function emptyCollection() {
@@ -97,7 +99,7 @@ export function mutateEntityDescriptionInLocalCacheState(
           [entityUuid]: {
             ...existing,
             description,
-          },
+          } as Entity,
         },
       },
     },

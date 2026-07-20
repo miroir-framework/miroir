@@ -9,7 +9,6 @@ import {
   defaultAdminApplicationDeploymentMapNOTGOOD,
   defaultMiroirModelEnvironment,
   defaultTransformerInput,
-  entityDefinitionTransformerDefinition,
   getInnermostTransformerError,
   noValue,
   safeStringify,
@@ -17,13 +16,12 @@ import {
   type JzodElement,
   type JzodObject,
   type JzodUnion,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
 } from 'miroir-core';
 import {
   adminSelfApplication,
   entityApplicationForAdmin
 } from "miroir-test-app_deployment-admin";
-
 
 import { Formik, type FormikProps } from 'formik';
 import {
@@ -56,6 +54,7 @@ import {
 } from "./TransformerEditorInterface";
 import { TransformerEventsPanel } from './TransformerEventsPanel';
 
+import { entityDefinitionTransformerDefinition } from 'miroir-test-app_deployment-miroir';
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -455,7 +454,6 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               formikContext.values[formikPath_TransformerEditorInputModeSelector].input,
               // formikContext.values.transformerEditor_editor.currentTransformerDefinition,
             ]);
-
 
             // ###############################################################################################
             // ###############################################################################################

@@ -2,7 +2,6 @@ import { useLayoutEffect, useMemo } from "react";
 
 import {
   computeSchemaRevision,
-  selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type MetaModel,
   type Uuid,
@@ -11,6 +10,7 @@ import { useMiroirContextService } from "miroir-react";
 
 import { useCurrentModel } from "./ReduxHooks.js";
 
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 export type ModelEnvironmentSyncProps = {
   applicationDeploymentMap: ApplicationDeploymentMap;
   /** Applications whose deployment schemas this owner keeps warm (typically Miroir meta + current app). */

@@ -4,6 +4,26 @@
  */
 
 import {
+  getMiroirFundamentalSchemaForDeployment,
+  getReduxDeploymentsStateIndex,
+  type ApplicationDeploymentMap,
+  type ApplicationVersion,
+  type Entity,
+  type EntityDefinition,
+  type Menu,
+  type MetaModel,
+  type MiroirModelEnvironment,
+  type MiroirTestDefinition,
+  type MlSchema,
+  type Query,
+  type Report,
+  type Runner,
+  type SelfApplication,
+  type StoredMiroirTheme,
+  type Uuid
+} from "miroir-core";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import {
   defaultMiroirMetaModel,
   entityEndpointVersion,
   entityEntity,
@@ -15,27 +35,9 @@ import {
   entityRunner,
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
-  getReduxDeploymentsStateIndex,
-  getMiroirFundamentalSchemaForDeployment,
-  type ApplicationDeploymentMap,
-  type ApplicationVersion,
-  type EntityDefinition,
-  type Menu,
-  type MetaEntity,
-  type MetaModel,
-  type MiroirModelEnvironment,
-  type MlSchema,
-  type Query,
-  type Report,
-  type Runner,
-  type StoreBasedConfiguration,
-  type StoredMiroirTheme,
-  type Uuid,
-  type Entity,
-  type SelfApplication
-} from "miroir-core";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { entityTheme } from "miroir-test-app_deployment-miroir";
+  entityTest,
+  entityTheme,
+} from "miroir-test-app_deployment-miroir";
 import type { LocalCacheSliceState } from "./localCacheZustandInterface.js";
 
 // #########################################################################################
@@ -101,6 +103,9 @@ export function currentModel(
       state.current[
         getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityRunner.uuid)
       ];
+    const tests = state.current[
+      getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityTest.uuid)
+    ];
     const themes = state.current[
       getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityTheme.uuid)
     ];
@@ -145,6 +150,7 @@ export function currentModel(
         ? Object.values(queries.entities)
         : []) as Query[],
       runners: (runners && runners.entities ? Object.values(runners.entities) : []) as Runner[],
+      tests: (tests && tests.entities ? Object.values(tests.entities) : []) as MiroirTestDefinition[],
       themes: (themes && themes.entities ? Object.values(themes.entities) : []) as StoredMiroirTheme[],
     };
     return result;

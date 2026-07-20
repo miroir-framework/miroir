@@ -18,7 +18,6 @@ import {
   ModelEntityActionTransformer,
   TransformerFailure,
   Uuid,
-  entityDefinitionEntityDefinition,
   getEntityPrimaryKeyAttribute,
   serializeCompositeKeyValue,
   getLocalCacheIndexDeploymentSection,
@@ -29,6 +28,7 @@ import {
   type Action2VoidReturnType,
   type ApplicationDeploymentMap
 } from "miroir-core";
+import { entityDefinitionEntityDefinition } from "miroir-test-app_deployment-miroir";
 
 import type { LocalCacheSliceState, LocalCacheSliceStateZone } from "./localCacheZustandInterface.js";
 import { currentModel } from "./Model.js";

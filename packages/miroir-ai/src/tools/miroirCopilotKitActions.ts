@@ -8,8 +8,6 @@ import type { Action, Parameter } from "@copilotkit/shared";
 
 import {
   Action2Error,
-  defaultMiroirMetaModel,
-  instanceEndpointV1,
   jzodToCopilotKitParameter,
   jzodToJsonSchema,
   type ApplicationDeploymentMap,
@@ -18,6 +16,7 @@ import {
   type JzodObject,
   type MiroirModelEnvironment,
 } from "miroir-core";
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
 import {
   deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,

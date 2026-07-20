@@ -2,11 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
-  defaultMiroirMetaModel,
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalJzodSchema,
-  selfApplicationMiroir,
 } from "miroir-core";
+import { selfApplicationMiroir, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
 import { currentModelEnvironment } from "../src/4_services/localCache/Model.js";
 import { buildMinimalLocalCacheStateForDeployment } from "./helpers/minimalLocalCacheStateForModel.js";

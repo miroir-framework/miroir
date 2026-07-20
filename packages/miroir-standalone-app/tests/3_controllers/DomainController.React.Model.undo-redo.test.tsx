@@ -28,14 +28,10 @@ import {
   StoreUnitConfiguration,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  entityDefinitionEntity,
-  entityEntity,
-  entityReport,
   miroirCoreStartup,
   resetLibraryPlayfield,
-  selfApplicationMiroir,
   type ApplicationDeploymentMap,
-  type Deployment
+  type Deployment,
 } from "miroir-core";
 
 import {
@@ -68,7 +64,12 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
 import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 
-
+import {
+  entityDefinitionEntity,
+  entityEntity,
+  entityReport,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 const env:any = process.env
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);

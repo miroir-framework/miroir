@@ -2,8 +2,10 @@
 // This file demonstrates how to use the queue and can be used for testing
 
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from './ViewParamsUpdateQueue.js';
-import { defaultAdminViewParams, DomainControllerInterface } from 'miroir-core';
+import { defaultAdminViewParams } from 'miroir-test-app_deployment-admin';
+import { DomainControllerInterface, type ViewParamsData } from 'miroir-core';
 
+const defaultAdminViewParamsData = defaultAdminViewParams as ViewParamsData;
 export class ViewParamsUpdateQueueTestUtils {
   
   /**
@@ -29,10 +31,10 @@ export class ViewParamsUpdateQueueTestUtils {
    */
   static simulateRapidSidebarChanges(queue: ViewParamsUpdateQueue): void {
     // Simulate user dragging sidebar quickly
-    queue.queueUpdate({ currentValue: defaultAdminViewParams, updates: {sidebarWidth: 250} });
-    setTimeout(() => queue.queueUpdate({ currentValue: defaultAdminViewParams, updates: {sidebarWidth: 275 }}), 100);
-    setTimeout(() => queue.queueUpdate({ currentValue: defaultAdminViewParams, updates: {sidebarWidth: 300 }}), 200);
-    setTimeout(() => queue.queueUpdate({ currentValue: defaultAdminViewParams, updates: {sidebarWidth: 280 }}), 300);
+    queue.queueUpdate({ currentValue: defaultAdminViewParamsData, updates: {sidebarWidth: 250} });
+    setTimeout(() => queue.queueUpdate({ currentValue: defaultAdminViewParamsData, updates: {sidebarWidth: 275 }}), 100);
+    setTimeout(() => queue.queueUpdate({ currentValue: defaultAdminViewParamsData, updates: {sidebarWidth: 300 }}), 200);
+    setTimeout(() => queue.queueUpdate({ currentValue: defaultAdminViewParamsData, updates: {sidebarWidth: 280 }}), 300);
     
     console.log('Simulated rapid sidebar width changes. Only the final value (280) should be saved after the delay.');
   }
@@ -41,7 +43,7 @@ export class ViewParamsUpdateQueueTestUtils {
    * Demonstrates immediate flush functionality
    */
   static async testImmediateFlush(queue: ViewParamsUpdateQueue): Promise<void> {
-    queue.queueUpdate({ currentValue: defaultAdminViewParams, updates: {sidebarWidth: 350} });
+    queue.queueUpdate({ currentValue: defaultAdminViewParamsData, updates: {sidebarWidth: 350} });
     console.log('Queued sidebar width update, flushing immediately...');
     await queue.flushImmediately();
     console.log('Update flushed immediately.');
@@ -53,7 +55,7 @@ export class ViewParamsUpdateQueueTestUtils {
   static testImmediateProcessing(queue: ViewParamsUpdateQueue): void {
     console.log('Testing immediate processing with queueUpdate...');
     queue.queueUpdate(
-      { currentValue: defaultAdminViewParams, updates: {gridType: 'glide-data-grid'} },
+      { currentValue: defaultAdminViewParamsData, updates: {gridType: 'glide-data-grid'} },
       true // Force immediate processing
     );
     console.log('Grid type update queued with immediate processing.');

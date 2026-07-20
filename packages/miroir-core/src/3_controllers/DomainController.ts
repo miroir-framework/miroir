@@ -70,11 +70,11 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
 import {
-  defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   metaModelEntities,
   miroirModelEntities,
 } from "../1_core/Model";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';

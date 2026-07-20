@@ -14,16 +14,14 @@ import {
   Uuid,
   defaultSelfApplicationDeploymentMap,
   entityDefinitionMLSchema,
-  entityQueryVersion,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
   resolvePathOnObject,
-  selfApplicationDeploymentMiroir,
   type ApplicationDeploymentMap,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type JzodObject,
   type ReportSection,
-  type SyncQueryTemplateRunnerParams
+  type SyncQueryTemplateRunnerParams,
 } from "miroir-core";
 
 import {
@@ -60,6 +58,7 @@ import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOu
 import { useReportPageContext } from './ReportPageContext.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
+import { entityQueryVersion, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance"), "UI",
@@ -289,7 +288,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     "." +
     currentReportTargetEntity?.name +
     (props.zoomInPath ? ` (${props.zoomInPath})` : "");
-
 
   // ##############################################################################################
   // CALLS setOutlineTitle and setReportInstance

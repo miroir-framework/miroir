@@ -12,12 +12,10 @@ import {
 } from "miroir-test-app_deployment-library";
 import {
   getMiroirFundamentalSchemaForDeployment,
-  instanceEndpointV1,
   MiroirActivityTracker,
   MiroirEventService,
   miroirFundamentalJzodSchema,
   resolveFundamentalSchemaForDeployment,
-  selfApplicationMiroir,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EntityInstance,
@@ -42,6 +40,7 @@ import {
   mutateEntityDescriptionInLocalCacheState,
 } from "../helpers/minimalLocalCacheStateForModel.js";
 
+import { instanceEndpointV1, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 const TEST_UPDATE_PRESENT_MODEL = "TEST_UPDATE_PRESENT_MODEL";
 
 const miroirActivityTracker = new MiroirActivityTracker();

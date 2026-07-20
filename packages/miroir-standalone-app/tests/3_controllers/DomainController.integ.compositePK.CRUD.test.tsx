@@ -21,11 +21,9 @@ import type {
 import {
   ConfigurationService,
   createDeploymentCompositeAction,
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
-  entityEntity,
   LoggerInterface,
   LoggerOptions,
   MiroirActivityTracker,
@@ -34,8 +32,6 @@ import {
   MiroirLoggerFactory,
   resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
-  selfApplicationDeploymentMiroir,
-  selfApplicationMiroir,
   StoreUnitConfiguration,
   TestCompositeActionParams,
   testUtils_deleteApplicationDeployment,
@@ -50,7 +46,6 @@ import { miroirAppStartup } from "../../src/startup.js";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
-
 
 import { deployment_Admin } from "miroir-test-app_deployment-admin";
 
@@ -70,6 +65,12 @@ import { cleanLevel } from "./constants.js";
 import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
 
+import {
+  defaultMiroirMetaModel,
+  entityEntity,
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 // ##############################################################################################
 // Composite-PK test entity definition
 // PK is ["region", "code"] — two string attributes form the composite key.

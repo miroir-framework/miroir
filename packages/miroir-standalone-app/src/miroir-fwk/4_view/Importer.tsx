@@ -8,10 +8,8 @@ import {
   JzodObject,
   LoggerInterface,
   MiroirLoggerFactory,
-  entityMenu,
-  entitySelfApplication,
   metaModel,
-  noValue
+  noValue,
 } from "miroir-core";
 import {
   useDomainControllerService,
@@ -27,12 +25,11 @@ import * as XLSX from 'xlsx';
 import { applicationParis, packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 
-
+import { entityMenu, entitySelfApplication } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "importer"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
-
 
 export const ImporterCorePropsSchema = z.object({
   filename:z.string(),
@@ -121,7 +118,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
     }
 
   }, [file]);
-
 
   
   // ##############################################################################################
@@ -253,7 +249,6 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   // const newEntityUuid = uuidv4();
   //   const currentApplicationUuid = props.currentApplicationUuid
   //   const currentDeploymentUuid = props.currentDeploymentUuid;
-
 
   //   const newEntity: MetaEntity = {
   //     uuid: newEntityUuid,

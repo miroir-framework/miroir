@@ -27,9 +27,6 @@ export function resolveSchemaReferenceInContextTransformer<T extends MiroirModel
     transformer.jzodReference,
     transformer.relativeReferenceJzodContext || {},
     modelEnvironment,
-    // transformer.miroirFundamentalJzodSchema,
-    // transformer.currentModel,
-    // transformer.miroirMetaModel,
   );
 }
 

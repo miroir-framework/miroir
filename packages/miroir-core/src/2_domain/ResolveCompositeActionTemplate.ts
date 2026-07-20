@@ -112,12 +112,16 @@ export function resolveCompositeActionTemplate(
     resolvedCompositeActionTemplates
   );
   const actionParamsAndTemplates = { ...localActionParams, ...resolvedCompositeActionTemplates };
+  if (compositeActionTemplate.actionType == "compositeRunTestAssertion") {
+    throw new Error("compositeRunTestAssertion is not supported");
+  }
+
   const resolvedCompositeActionDefinition: CompositeActionSequence = transformer_extended_apply_wrapper(
     undefined, // activityTracker
     "build",
     [],
     compositeActionLabel,
-    compositeActionTemplate.payload.actionSequence as any,
+    (compositeActionTemplate.payload  as any).actionSequence, // TODO: fix type!
     "value",
     currentModel,
     actionParamsAndTemplates,

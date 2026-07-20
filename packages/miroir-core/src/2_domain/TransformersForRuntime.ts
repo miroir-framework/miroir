@@ -948,8 +948,7 @@ function handleTransformer_duplicateApplicationModel(
     });
   }
 
-  const applicationBundle: MetaModel = "transformerType" in transformer.applicationBundle ?
-    defaultTransformers.transformer_extended_apply(
+  const applicationBundle: MetaModel = defaultTransformers.transformer_extended_apply(
       step,
       [...transformerPath, "applicationBundle"],
       label,
@@ -958,7 +957,7 @@ function handleTransformer_duplicateApplicationModel(
       modelEnvironment,
       queryParams,
       contextResults
-    ) : transformer.applicationBundle;
+    );
 
   const result: MetaModel = {
     ...applicationBundle,

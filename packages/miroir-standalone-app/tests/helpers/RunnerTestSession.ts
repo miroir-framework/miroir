@@ -2,7 +2,6 @@ import crossFetch from "cross-fetch";
 
 import {
   buildRunnerTestSessionParamBank,
-  defaultMiroirMetaModel,
   emptyApplicationModel,
   ensureLibraryPlayfield,
   extendMiroirConfigWithExtraDeploymentConfiguration,
@@ -27,10 +26,7 @@ import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import {
-  selfApplicationDeploymentMiroir,
-  selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+import { selfApplicationDeploymentMiroir, selfApplicationMiroir, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import {
   beforeEachTest,
   getTestConfig,

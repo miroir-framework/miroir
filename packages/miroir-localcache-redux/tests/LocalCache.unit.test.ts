@@ -1,7 +1,5 @@
 import {
   ACTION_OK,
-  entityDefinitionEntityDefinition,
-  entityEntityDefinition,
   type ApplicationDeploymentMap,
   type EntityInstance,
   type EntityInstanceCollection,
@@ -11,6 +9,7 @@ import {
 
 import { LocalCache } from "../src/4_services/LocalCache";
 
+import { entityDefinitionEntityDefinition, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 // ################################################################################################
 //  TEST CONSTANTS
@@ -28,7 +27,6 @@ const testCustomPKInstance2Name = "instance-beta";
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   [testApplicationUuid]: testDeploymentUuid,
 };
-
 
 // ################################################################################################
 //  HELPERS

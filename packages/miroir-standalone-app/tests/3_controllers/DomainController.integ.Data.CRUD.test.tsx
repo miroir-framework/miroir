@@ -28,19 +28,12 @@ import {
   testUtils_resetApplicationDeployment
 } from "miroir-core";
 
-
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 
-
-import {
-  defaultMiroirMetaModel,
-  defaultSelfApplicationDeploymentMap,
-  selfApplicationMiroir,
-  TestCompositeActionParams
-} from "miroir-core";
+import { defaultSelfApplicationDeploymentMap, TestCompositeActionParams } from "miroir-core";
 import {
   deployment_Admin
 } from "miroir-test-app_deployment-admin";
@@ -70,9 +63,9 @@ import { libraryEntitiesAndInstancesWithoutBook3 } from "../helpers/libraryPlayf
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
 
+import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 // const env: any = (import.meta as any).env;
 const env: any = process.env;
-
 
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "DomainController.integ.Data.CRUD.test";
