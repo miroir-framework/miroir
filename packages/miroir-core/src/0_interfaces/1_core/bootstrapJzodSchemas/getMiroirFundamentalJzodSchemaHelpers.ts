@@ -658,6 +658,19 @@ export function getCarryOnSchemaBuilder(
     type: "schemaReference",
     context: Object.fromEntries(
       Array.from(dependencySet.keys()).map((key) => {
+        // if (key.startsWith(prefix)) {
+        //   // return [key, absoluteMiroirFundamentalJzodSchema.definition.context[key]];
+        //   return [
+        //     key,
+        //     {
+        //       type: "never", // this is a placeholder to avoid trying to resolve references starting by "miroirTemplate_"
+        //     },
+        //     // {
+        //     //   type: "schemaReference",
+        //     //   definition: { absolutePath: miroirFundamentalJzodSchemaUuid, relativePath: key },
+        //     // },
+        //   ];
+        // }
         if (!absoluteMiroirFundamentalJzodSchema.definition.context[key]) {
           throw new Error(
             `Key ${key} not found in miroirFundamentalJzodSchema.context when building dependenciesInnerResolutionStore, existing keys are: ${Object.keys(
@@ -687,7 +700,6 @@ export function getCarryOnSchemaBuilder(
     carryOnSchemaDiscriminator,
     resolveReferencesWithCarryOn.bind(undefined, {
       [miroirFundamentalJzodSchemaUuid]: dependenciesJzodReference,
-      // [miroirFundamentalJzodSchemaUuid]: absoluteMiroirFundamentalJzodSchema.definition,
     }),
     prefix,
     alwaysPropagate,

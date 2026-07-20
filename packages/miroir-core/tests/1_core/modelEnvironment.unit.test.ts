@@ -4,13 +4,13 @@ import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 import {
   defaultMetaModelEnvironment,
-  defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalJzodSchema,
   resolveFundamentalSchemaForDeployment,
 } from "miroir-core";
 
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 describe("defaultMiroirModelEnvironment (Phase 1)", () => {
   it("miroirFundamentalJzodSchema equals getMiroirFundamentalSchemaForDeployment output", () => {
     expect(defaultMiroirModelEnvironment.miroirFundamentalJzodSchema).toBe(

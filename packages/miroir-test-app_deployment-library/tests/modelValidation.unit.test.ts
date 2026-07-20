@@ -9,20 +9,7 @@ import type {
   MlSchema,
 } from "miroir-core";
 import {
-  defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
-  entityDefinitionEndpoint,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionMenu,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReport,
-  entityDefinitionRunner,
-  entityDefinitionSelfApplication,
-  entityDefinitionSelfApplicationDeploymentConfiguration,
-  entityDefinitionSelfApplicationModelBranch,
-  entityDefinitionSelfApplicationVersion,
-  entityDefinitionStoreBasedConfiguration,
   getMiroirFundamentalSchemaForDeployment,
   jzodTypeCheck,
   resolveFundamentalSchemaForDeployment,
@@ -45,6 +32,21 @@ import deployment_Library_DO_NO_USE from "../assets/deployment/f714bb2f-a12d-4e7
 // Library model (built from static assets)
 import { defaultLibraryAppModel } from "../src/Library";
 
+import {
+  defaultMiroirMetaModel,
+  entityDefinitionEndpoint,
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  entityDefinitionMenu,
+  entityDefinitionQueryVersionV1,
+  entityDefinitionReport,
+  entityDefinitionRunner,
+  entityDefinitionSelfApplication,
+  entityDefinitionSelfApplicationDeploymentConfiguration,
+  entityDefinitionSelfApplicationModelBranch,
+  entityDefinitionSelfApplicationVersion,
+  entityDefinitionStoreBasedConfiguration,
+} from "miroir-test-app_deployment-miroir";
 // ================================================================================================
 // Model environments
 // ================================================================================================

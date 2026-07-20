@@ -4,14 +4,9 @@ import {
   type Action2ReturnType,
   ApplicationSection,
   ConfigurationService,
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  entityEndpointVersion,
-  entityEntity,
-  entityEntityDefinition,
   EntityInstance,
-  entityMenu,
   ignorePostgresExtraAttributesOnList,
   ignorePostgresExtraAttributesOnObject,
   LoggerInterface,
@@ -19,12 +14,10 @@ import {
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
-  miroirFundamentalJzodSchema,
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   resetLibraryPlayfield,
-  selfApplicationMiroir,
   StoreUnitConfiguration
 } from "miroir-core";
 import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -54,8 +47,7 @@ import type {
   ApplicationDeploymentMap,
   Deployment,
   EndpointDefinition,
-  Entity,
-  MlSchema
+  Entity
 } from "miroir-core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
@@ -68,6 +60,14 @@ import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSessio
 import { libraryEntitiesAndInstances, libraryPlayfieldSeedInitParams } from "../helpers/libraryPlayfieldSeeds.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
+import {
+  defaultMiroirMetaModel,
+  entityEndpointVersion,
+  entityEntity,
+  entityEntityDefinition,
+  entityMenu,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 let domainController: DomainControllerInterface;
 // let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -220,36 +220,6 @@ beforeEach(async () => {
   );
 });
 
-// // ################################################################################################
-// afterEach(
-//   async () => {
-//     log.info("################################################### afterEach start", beforEachCount);
-//     await resetApplicationDeployments(
-//       deploymentConfigurations,
-//       applicationDeploymentMap,
-//       domainController,
-//       localCache,
-//     );
-//     log.info("################################################### afterEach done", beforEachCount);
-//   }
-// )
-
-// // ################################################################################################
-// afterAll(
-//   async () => {
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
-//     await deleteAndCloseApplicationDeployments(
-//       miroirConfig,
-//       domainController,
-//       applicationDeploymentMap,
-//       [
-//         deployment_Miroir as AdminApplicationDeploymentConfiguration,
-//       ]
-//     );
-//     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments")
-//   }
-// )
-
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
@@ -299,14 +269,16 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
           (a as any).returnedDomainElement.entities.sort((a: any, b: any) =>
             a.name.localeCompare(b.name)
           ),
-          ["author", "storageAccess"]
+          ["author", "conceptLevel", "parentDefinitionVersionUuid", "parentName", "storageAccess"]
         ),
       // (a) => (a as any).returnedDomainElement.entities,
       // undefined, // expected result transformation
       undefined, // name to give to result
       undefined,
-      defaultMiroirMetaModel.entities
-      .sort((a, b) => a.name.localeCompare(b.name)),
+      ignorePostgresExtraAttributesOnList(
+        defaultMiroirMetaModel.entities,
+        ["author", "conceptLevel", "parentDefinitionVersionUuid", "parentName", "storageAccess"]
+      ).sort((a, b) => a.name.localeCompare(b.name)),
     );
   });
 

@@ -16,7 +16,6 @@
 import {
   Action2Error,
   Domain2ElementFailed,
-  entityEntity,
   PersistenceStoreControllerManager,
   type Entity,
   type EntityDefinition,
@@ -24,6 +23,7 @@ import {
   type StoreUnitConfiguration,
 } from "miroir-core";
 
+import { entityEntity } from "miroir-test-app_deployment-miroir";
 // ---------------------------------------------------------------------------
 // IndexedDB config for the writable admin deployment
 // ---------------------------------------------------------------------------

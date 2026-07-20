@@ -7,11 +7,18 @@ import { ThemedIcon } from './miroir-fwk/4_view/components/Themes';
 import { MiroirThemeProvider } from './miroir-fwk/4_view/contexts/MiroirThemeContext';
 import { defaultMiroirTheme } from './miroir-fwk/4_view/components/Themes/MiroirTheme';
 
+const iconTestThemeOptions = [{
+  id: 'default',
+  name: 'Default',
+  description: 'Default theme',
+  theme: defaultMiroirTheme,
+}];
+
 // Simple test component to verify MUI icons are working
 const IconTest = () => {
   return (
     // <MiroirThemeProvider theme={defaultMiroirTheme}>
-    <MiroirThemeProvider currentThemeId='default'>
+    <MiroirThemeProvider currentThemeId='default' currentThemeOptions={iconTestThemeOptions}>
       <div style={{ padding: '20px', display: 'flex', gap: '10px', flexDirection: 'column' }}>
         <h2>MUI Icon Test</h2>
         

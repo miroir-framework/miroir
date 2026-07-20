@@ -11,21 +11,20 @@ import {
   JzodReference,
   LoggerInterface,
   MiroirLoggerFactory,
-  // defaultLibraryAppModel,
-  defaultMiroirMetaModel,
-  defaultMiroirModelEnvironment,
   resolveFundamentalSchemaForDeployment,
   resolveJzodSchemaReferenceInContext,
   type EndpointDefinition,
-  type JzodObject,
-  type MiroirModelEnvironment
+  type MetaModel,
+  type MiroirModelEnvironment,
+  type SelfApplication,
 } from "miroir-core";
+import { defaultMiroirMetaModel,  } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   resolveLibraryDeploymentUuid,
 } from "miroir-test-app_deployment-library";
+import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
 
 
 const packageName = "miroir-mcp";
@@ -90,11 +89,11 @@ function resolveAllReferences(element: JzodElement): JzodElement {
       {
         miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
           deployment_Miroir.uuid,
-          defaultMiroirMetaModel,
+          defaultMiroirMetaModel as any as MetaModel, // TODO: fix type
           "static",
         ),
         endpointsByUuid: {},
-        currentModel: defaultMiroirMetaModel,
+        currentModel: defaultMiroirMetaModel as any as MetaModel, // TODO: fix type
       }
     );
     // Recursively resolve the resolved schema (it might contain more references)

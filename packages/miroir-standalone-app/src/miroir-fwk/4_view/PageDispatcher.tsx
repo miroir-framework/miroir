@@ -173,7 +173,7 @@ function PageContent(): React.JSX.Element {
       return <ModelDiagramPage />;
 
     case "ai":
-      return <AiAssistantPage />;
+      return <HomePage />;
 
     default:
       return <HomePage />;

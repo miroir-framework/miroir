@@ -11,14 +11,12 @@ import {
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
-  reportReportDetails,
-  selfApplicationDeploymentMiroir,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
   type DomainControllerInterface,
   type EntityDefinition,
-  type InstanceAction
+  type InstanceAction,
 } from "miroir-core";
 import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
@@ -31,6 +29,7 @@ import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
 
+import { reportReportDetails, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportViewWithEditor"), "UI",
@@ -125,7 +124,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   
   const {reportData, resolvedQuery} = reportDataQueryResults;
   // log.info("reportData", reportData);
-
 
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];

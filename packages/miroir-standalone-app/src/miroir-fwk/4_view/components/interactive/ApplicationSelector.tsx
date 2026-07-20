@@ -4,7 +4,6 @@ import {
   MiroirLoggerFactory,
   defaultSelfApplicationDeploymentMap,
   noValue,
-  selfApplicationMiroir,
 } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
 import {
@@ -17,6 +16,7 @@ import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { TypedValueObjectEditorWithFormik } from "../Reports/TypedValueObjectEditorWithFormik";
 
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ApplicationSelector"),

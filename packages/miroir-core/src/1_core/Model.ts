@@ -1,77 +1,25 @@
 import {
+  defaultMiroirMetaModel,
   entityEndpointVersion,
-  entitySelfApplication,
-  entitySelfApplicationVersion,
-  entitySelfApplicationModelBranch,
   entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
   entityMenu,
+  entityMiroirTest,
   entityQueryVersion,
   entityReport,
   entityRunner,
-  entityDefinitionJzodSchema,
-  entityDefinitionSelfApplicationVersion,
-  entityDefinitionEndpoint,
-  entityDefinitionEntity,
-  entityDefinitionSelfApplicationModelBranch,
-  entityDefinitionSelfApplication,
-  entityDefinitionMenu,
-  entityDefinitionQuery,
-  entityDefinitionSelfApplicationDeploymentConfiguration,
-  entityDefinitionEntityDefinition,
-  entityDefinitionReport,
-  entityDefinitionRunner,
-  menuDefaultMiroir,
-  reportApplicationVersionList,
-  reportApplicationList,
-  reportConfigurationList,
-  reportEndpointVersionList,
+  entitySelfApplication,
+  entitySelfApplicationModelBranch,
+  entitySelfApplicationVersion,
+  entityTheme,
   reportEntityDefinitionDetails,
-  reportEntityList,
-  reportApplicationDeploymentConfigurationList,
   reportEntityDefinitionList,
   reportEntityDetails,
-  reportMenuList,
-  reportReportList,
-  reportRunnerList,
-  reportRunnerDetails,
-  reportApplicationModelBranchList,
-  reportJzodSchemaList,
-  jzodSchemajzodMiroirBootstrapSchema,
-  applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity,
-  applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition,
-  applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,
-  applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVersion,
-  applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
-  applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
-  applicationVersionInitialMiroirVersionCrossEntityDefinitionReport,
-  selfApplicationVersionInitialMiroirVersion,
-  selfApplicationMiroir,
-  applicationEndpointV1,
-  storeManagementEndpoint as deploymentEndpointV1,
-  instanceEndpointV1,
-  modelEndpointV1,
-  domainEndpointVersionV1,
-  testEndpointVersionV1,
-  storeManagementEndpoint,
-  instanceEndpointVersionV1,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
-  runnerDropApplication,
-  runnerDropEntity,
-  defaultStoredMiroirTheme,
-  darkStoredMiroirTheme,
-  compactStoredMiroirTheme,
-  materialStoredMiroirTheme,
-  entityTheme,
-  entityDefinitionTheme,
-  entityMiroirTest,
+  reportEntityList,
+  selfApplicationMiroir
 } from "miroir-test-app_deployment-miroir";
 
-import { Transform } from "stream";
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
@@ -81,23 +29,23 @@ import { resolveFundamentalSchemaForDeployment } from "./jzod/schemaForDeploymen
 import {
   Entity,
   EntityDefinition,
-  MlSchema,
   Menu,
   MetaModel,
+  MlSchema,
   Report,
   type ApplicationSection,
-  type EndpointDefinition,
-  type Runner,
   type ApplicationVersion,
-  type StoredMiroirTheme,
-  type Query,
   type DataSet,
+  type EndpointDefinition,
+  type MiroirTestDefinition,
+  type Query,
+  type Runner,
   type SelfApplication,
+  type StoredMiroirTheme,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import type { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
-import type { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import { Action2Error, Domain2ElementFailed } from "../0_interfaces/2_domain/DomainElement";
+import type { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 // import { Endpoint } from "../3_controllers/Endpoint";
 
 
@@ -148,100 +96,6 @@ export const miroirModelEntities: Entity[] = metaModelEntities.filter((e: Entity
 export const applicationModelEntities: Entity[] = metaModelEntities.filter(
   (e: Entity) => e?.conceptLevel != "MetaModel"
 );
-
-// #################################################################################################
-export const defaultMiroirMetaModel: MetaModel = {
-  applicationUuid: selfApplicationMiroir.uuid,
-  applicationName: selfApplicationMiroir.name,
-  // configuration: [instanceConfigurationReference],
-  storedQueries: [],
-  applications: [
-    selfApplicationMiroir as SelfApplication,
-  ],
-  entities: [
-    // this is used in tests, the bootstrap entities have to come first
-    entityEntity as Entity,
-    entityEntityDefinition as Entity,
-    //
-    entityEndpointVersion as Entity,
-    entityJzodSchema as Entity, // null
-    entityMenu as Entity,
-    entityQueryVersion as Entity,
-    entityReport as Entity,
-    entityRunner as Entity,
-    entitySelfApplication as Entity,
-    entitySelfApplicationModelBranch as Entity,
-    entitySelfApplicationVersion as Entity,
-    entityTheme as Entity,
-  ],
-  entityDefinitions: [
-    // bootstrap entities have to come first
-    entityDefinitionEntityDefinition as EntityDefinition,
-    entityDefinitionEntity as EntityDefinition,
-    //
-    entityDefinitionEndpoint as EntityDefinition,
-    entityDefinitionJzodSchema as EntityDefinition, //
-    entityDefinitionMenu as EntityDefinition,
-    entityDefinitionQuery as EntityDefinition,
-    entityDefinitionReport as EntityDefinition,
-    entityDefinitionRunner as EntityDefinition,
-    entityDefinitionSelfApplication as EntityDefinition,
-    entityDefinitionSelfApplicationModelBranch as EntityDefinition,
-    entityDefinitionSelfApplicationVersion as EntityDefinition,
-    entityDefinitionTheme as EntityDefinition,
-  ],
-  endpoints: [
-    applicationEndpointV1 as any as EndpointDefinition,
-    deploymentEndpointV1 as any as EndpointDefinition,
-    instanceEndpointV1 as any as EndpointDefinition,
-    modelEndpointV1 as any as EndpointDefinition,
-    domainEndpointVersionV1 as any as EndpointDefinition,
-    testEndpointVersionV1 as any as EndpointDefinition,
-    storeManagementEndpoint as any as EndpointDefinition,
-    instanceEndpointVersionV1 as any as EndpointDefinition,
-    undoRedoEndpointVersionV1 as any as EndpointDefinition,
-    localCacheEndpointVersionV1 as any as EndpointDefinition,
-    queryEndpointVersionV1 as any as EndpointDefinition,
-    persistenceEndpointVersionV1 as any as EndpointDefinition,
-  ],
-  jzodSchemas: [jzodSchemajzodMiroirBootstrapSchema as MlSchema],
-  menus: [menuDefaultMiroir as Menu],
-  applicationVersions: [selfApplicationVersionInitialMiroirVersion],
-  reports: [ // TODO: MISSING "DETAILS" REPORTS
-    reportApplicationDeploymentConfigurationList as Report,
-    reportApplicationList as Report,
-    reportApplicationModelBranchList as Report,
-    reportApplicationVersionList as Report,
-    reportConfigurationList as Report,
-    reportEndpointVersionList as Report,
-    reportEntityDefinitionList as Report,
-    reportEntityList as Report,
-    reportJzodSchemaList as Report,
-    reportMenuList as Report,
-    reportReportList as Report,
-    reportRunnerList as Report,
-    reportRunnerDetails as Report,
-  ],
-  runners: [
-    runnerDropApplication as Runner,
-    runnerDropEntity as any as Runner,
-  ],
-  applicationVersionCrossEntityDefinition: [
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVersion,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionReport,
-    applicationVersionInitialMiroirVersionCrossEntityDefinitionStoreBasedConfiguration,
-  ],
-  themes: [
-    defaultStoredMiroirTheme,
-    darkStoredMiroirTheme,
-    compactStoredMiroirTheme,
-    materialStoredMiroirTheme,
-  ],
-};
 
 // #################################################################################################
 const defaultEndpointsByUuid: Record<Uuid, EndpointDefinition> = {
@@ -352,6 +206,7 @@ export const emptyApplicationModel: MetaModel = {
   reports: [],
   runners: [],
   storedQueries: [],
+  tests: [],
   themes: [],
 }
 
@@ -444,6 +299,7 @@ export async function extractApplicationModel(
     const queries = await extractEntityInstances(storeController, "model", entityQueryVersion.uuid, "queries");
     const runners = await extractEntityInstances(storeController, "model", entityRunner.uuid, "runners");
     const themes = await extractEntityInstances(storeController, "model", entityTheme.uuid, "themes");
+    const tests = await extractEntityInstances(storeController, "model", entityMiroirTest.uuid, "tests");
     // 
     const applications = await extractEntityInstances(storeController, "model", entitySelfApplication.uuid, "applications");
     const applicationVersions = await extractEntityInstances(storeController, "model", entitySelfApplicationVersion.uuid, "application versions");
@@ -464,6 +320,7 @@ export async function extractApplicationModel(
       applicationVersions: applicationVersions as ApplicationVersion[],
       applicationVersionCrossEntityDefinition: [], // These would need to be read separately if needed
       runners: runners as Runner[], 
+      tests: tests as MiroirTestDefinition[],
       themes: themes as StoredMiroirTheme[], // Themes are now included in the model extraction
     };
 

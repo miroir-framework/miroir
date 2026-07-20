@@ -7,13 +7,9 @@
 import { describe, expect, it } from "vitest";
 
 import type { EntityDefinition, JzodElement, MiroirModelEnvironment } from "miroir-core";
-import {
-  defaultMiroirModelEnvironment,
-  entityDefinitionMiroirTest,
-  getInnermostTypeCheckError,
-  jzodTypeCheck,
-} from "miroir-core";
+import { defaultMiroirModelEnvironment, getInnermostTypeCheckError, jzodTypeCheck } from "miroir-core";
 
+import { entityDefinitionMiroirTest } from "miroir-test-app_deployment-miroir";
 import suite from "../assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/e2f4a306-7d8f-4b13-a4e5-1f2a3b4c5d6e.json" assert { type: "json" };
 
 describe("composite_pk createInstance objects typecheck (UI path)", () => {

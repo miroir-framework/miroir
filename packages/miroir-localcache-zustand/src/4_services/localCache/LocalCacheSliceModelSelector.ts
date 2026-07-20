@@ -13,6 +13,17 @@ import {
   ReduxDeploymentsState,
   Report,
   Uuid,
+  getReduxDeploymentsStateIndex,
+  type ApplicationDeploymentMap,
+  type EndpointDefinition,
+  type Entity,
+  type MiroirTestDefinition,
+  type Query,
+  type Runner,
+  type SelfApplication,
+  type StoredMiroirTheme
+} from "miroir-core";
+import {
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -21,19 +32,13 @@ import {
   entityQueryVersion,
   entityReport,
   entityRunner,
+  entitySelfApplication,
   entitySelfApplicationVersion,
   entityStoreBasedConfiguration,
-  getReduxDeploymentsStateIndex,
+  entityTest,
+  entityTheme,
   selfApplicationMiroir,
-  type ApplicationDeploymentMap,
-  type EndpointDefinition,
-  type Entity,
-  type Query,
-  type Runner,
-  type SelfApplication,
-  type StoredMiroirTheme
-} from "miroir-core";
-import { entitySelfApplication, entityTheme } from "miroir-test-app_deployment-miroir";
+} from "miroir-test-app_deployment-miroir";
 import {
   selectCurrentReduxDeploymentsStateFromReduxState,
   selectMiroirSelectorQueryParams,
@@ -210,6 +215,34 @@ const selectEndpointsFromReduxState = createSelector(
           : "model"
         : undefined,
       entityEndpointVersion.uuid
+    );
+  }
+);
+
+// ################################################################################################
+const selectTestsFromReduxState = createSelector(
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ): EntityInstancesUuidIndex | undefined => {
+    return selectEntityInstancesFromReduxDeploymentsState(
+      reduxState,
+      applicationDeploymentMap,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application
+        : params.application,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application == selfApplicationMiroir.uuid
+          ? "data"
+          : "model"
+        : undefined,
+      entityTest.uuid
     );
   }
 );
@@ -453,6 +486,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectRunnersFromReduxState,
       selectQueriesFromReduxState,
       selectEndpointsFromReduxState,
+      selectTestsFromReduxState,
       selectThemesFromReduxState,
     ],
     (
@@ -467,6 +501,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       runners: EntityInstancesUuidIndex | undefined,
       queries: EntityInstancesUuidIndex | undefined,
       endpoints: EntityInstancesUuidIndex | undefined,
+      tests: EntityInstancesUuidIndex | undefined,
       themes: EntityInstancesUuidIndex | undefined,
     ) => {
       const applicationVersion = applicationVersions && Object.values(applicationVersions).length > 0
@@ -487,6 +522,7 @@ export const selectModelForDeploymentFromReduxState: () => (
         reports: (reports ? Object.values(reports) : []) as Report[],
         runners: (runners ? Object.values(runners) : []) as Runner[],
         storedQueries: (queries ? Object.values(queries) : []) as Query[],
+        tests: (tests ? Object.values(tests) : []) as MiroirTestDefinition[],
         themes: (themes ? Object.values(themes) : []) as StoredMiroirTheme[],
         applications: (applications ? Object.values(applications) : []) as SelfApplication[],
       };

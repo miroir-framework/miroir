@@ -48,10 +48,12 @@ print_timing_summary() {
 #   source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../ci/lib/common.sh"
 #
 # Provides:
-#   step  MSG...               Print a prominent section banner.
-#   die   MSG...               Print an error message and exit 1.
-#   run_parallel_builds PKG…   Build several npm workspace packages in parallel.
-#                              Must be called from the npm workspace root.
+#   step  MSG...                 Print a prominent section banner.
+#   die   MSG...                 Print an error message and exit 1.
+#   typecheck_package PKG        Run tsc --noEmit for one workspace package.
+#   run_parallel_builds PKG…     Build several npm workspace packages in parallel.
+#   run_parallel_typechecks PKG… Type-check several workspace packages in parallel.
+#                                Must be called from the npm workspace root.
 # =============================================================================
 
 # Print a prominent step / section banner.
@@ -70,21 +72,51 @@ die() {
   exit 1
 }
 
+# Type-check one workspace package with tsc --noEmit.
+# Must be called from the npm workspace root directory.
+typecheck_package() {
+  local pkg="$1"
+  echo "  typecheck $pkg"
+  npx tsc --noEmit -p "packages/$pkg"
+}
+
+# Wait for background jobs; exit 1 if any failed.
+_wait_parallel_jobs() {
+  local label="$1"
+  shift
+  local failed=0
+  local pid
+  for pid in "$@"; do
+    wait "$pid" || failed=$((failed + 1))
+  done
+  if [[ $failed -gt 0 ]]; then
+    echo "ERROR: $failed parallel ${label} job(s) failed." >&2
+    exit 1
+  fi
+}
+
 # Run several 'npm run build -w <pkg>' commands in parallel.
 # Must be called from the npm workspace root directory.
 # Exits with status 1 if any job fails.
 run_parallel_builds() {
   local pids=()
+  local pkg
   for pkg in "$@"; do
     npm run build -w "$pkg" &
     pids+=($!)
   done
-  local failed=0
-  for pid in "${pids[@]}"; do
-    wait "$pid" || failed=$((failed + 1))
+  _wait_parallel_jobs "build" "${pids[@]}"
+}
+
+# Run several 'tsc --noEmit' type-checks in parallel.
+# Must be called from the npm workspace root directory.
+# Exits with status 1 if any job fails.
+run_parallel_typechecks() {
+  local pids=()
+  local pkg
+  for pkg in "$@"; do
+    typecheck_package "$pkg" &
+    pids+=($!)
   done
-  if [[ $failed -gt 0 ]]; then
-    echo "ERROR: $failed parallel build job(s) failed." >&2
-    exit 1
-  fi
+  _wait_parallel_jobs "typecheck" "${pids[@]}"
 }

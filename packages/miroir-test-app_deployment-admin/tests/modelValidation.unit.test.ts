@@ -11,8 +11,12 @@ import type {
   MlSchema,
 } from "miroir-core";
 import {
-  defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
+  jzodTypeCheck,
+  miroirFundamentalJzodSchema,
+  resolveFundamentalSchemaForDeployment,
+} from "miroir-core";
+import {
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
   entityDefinitionMenu,
@@ -21,10 +25,8 @@ import {
   entityDefinitionSelfApplicationModelBranch,
   entityDefinitionSelfApplicationVersion,
   entityDefinitionStoreBasedConfiguration,
-  jzodTypeCheck,
-  miroirFundamentalJzodSchema,
-  resolveFundamentalSchemaForDeployment,
-} from "miroir-core";
+  defaultMiroirMetaModel,
+} from "miroir-test-app_deployment-miroir";
 
 // Admin-specific entity definitions (from admin model assets)
 import entityDefinitionAdminApplication from "../assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" assert {
@@ -77,6 +79,7 @@ import deployment_Admin from "../assets/admin_data/7959d814-400c-4e80-988f-a00fe
 const adminMetaModel: MetaModel = {
   applicationUuid: adminSelfApplication.uuid,
   applicationName: adminSelfApplication.name,
+  applications: [],
   entities: [
     entityApplicationForAdmin,
     entityDeploymentAdmin,
@@ -99,6 +102,7 @@ const adminMetaModel: MetaModel = {
   runners: [],
   storedQueries: [],
   applicationVersionCrossEntityDefinition: [],
+  tests: [],
   themes: [],
 };
 

@@ -12,13 +12,10 @@ import process from "process";
 import {
   ConfigurationService,
   createDeploymentCompositeAction,
-  defaultMiroirMetaModel,
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
   Entity,
   EntityDefinition,
-  entityEntity,
-  entityEntityDefinition,
   EntityInstance,
   JzodElement,
   LoggerInterface,
@@ -30,13 +27,11 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
   resetAndInitApplicationDeployment,
-  selfApplicationDeploymentMiroir,
   StoreUnitConfiguration,
   TestCompositeActionParams,
   testUtils_deleteApplicationDeployment,
-  testUtils_resetApplicationDeployment
+  testUtils_resetApplicationDeployment,
 } from "miroir-core";
-
 
 import {
   runTestOrTestSuite,
@@ -47,7 +42,6 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
-
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
@@ -62,7 +56,6 @@ import type {
 import {
   defaultSelfApplicationDeploymentMap,
   resetAndinitializeDeploymentCompositeAction,
-  selfApplicationMiroir,
 } from "miroir-core";
 import { deployment_Admin } from "miroir-test-app_deployment-admin";
 import {
@@ -87,6 +80,13 @@ import {
 import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
+import {
+  defaultMiroirMetaModel,
+  entityEntity,
+  entityEntityDefinition,
+  selfApplicationDeploymentMiroir,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 // import { entityBook } from "miroir-core";
 
 const env: any = process.env;
@@ -232,7 +232,6 @@ const testDeployment: Deployment = {
   ...deployment_Library_DO_NO_USE,
   configuration: testDeploymentStorageConfiguration,
 };
-
 
 // const typedAdminConfigurationDeploymentLibrary: AdminApplicationDeploymentConfiguration =
 //   deployment_Library_DO_NO_USE as any;

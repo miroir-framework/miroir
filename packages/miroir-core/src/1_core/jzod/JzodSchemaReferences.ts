@@ -120,6 +120,7 @@ export function jzodTransitiveDependencySet(
   miroirFundamentalJzodSchema: JzodReference,
   contextElementName: string,
   includeExtend: boolean = false,
+  filterPrefix?: string
 ): Set<string> {
   const visitedSet = new Set<string>();
   const toVisitMap = new Map<string, string[]>();
@@ -140,10 +141,14 @@ export function jzodTransitiveDependencySet(
     if (!miroirFundamentalJzodSchema.context) {
       throw new Error("miroirFundamentalJzodSchema.context is not defined");
     }
-    // if (!Object.hasOwn(miroirFundamentalJzodSchema.context, element) || !miroirFundamentalJzodSchema.context[element]) {
+    // if (filterPrefix && element.startsWith(filterPrefix)) {
+    //   console.log("jzodTransitiveDependencySet skipping dependencies for element", element, "filterPrefix", filterPrefix, "visitedSet", visitedSet.size);
+    //   visitedSet.add(element);
+    //   return;
+    // }
     if (!miroirFundamentalJzodSchema.context[element]) {
       throw new Error(
-        `Element ${element} not found in context:` +
+        `jzodTransitiveDependencySet Element ${element} not found in context:` +
           JSON.stringify(Object.keys(miroirFundamentalJzodSchema.context), null, 2)
       );
     }

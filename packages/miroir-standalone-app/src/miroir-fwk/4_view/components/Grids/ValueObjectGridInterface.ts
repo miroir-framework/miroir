@@ -2,13 +2,13 @@ import { z } from "zod";
 
 import {
   entityDefinition,
-  entityDefinitionEntityDefinition,
   jzodElement,
   jzodObject,
   type EntityDefinition,
   type Uuid,
 } from "miroir-core";
 
+import { entityDefinitionEntityDefinition } from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 // Value Object Grid Row structure
 export const valueObjectGridRowSchema = z.object({

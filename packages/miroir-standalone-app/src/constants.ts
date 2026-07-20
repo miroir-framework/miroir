@@ -1,9 +1,3 @@
-import {
-  deployment_Miroir,
-  deployment_Admin,
-} from "miroir-test-app_deployment-admin";
-// import { adminConfigurationDeploymentParis } from "./miroir-fwk/4_view/routes/ReportPage.js";
-
 export const packageName = "miroir-standalone-app";
 export const cleanLevel = "5";
 
@@ -92,9 +86,3 @@ export const applicationParis = {
   "description": "This selfApplication contains the Paris model and data",
   "selfApplication": "70e02039-e283-4381-9575-8c52aed18a87"
 };
-
-
-export const deploymentsDEFUNCT = [
-  deployment_Miroir,
-  deployment_Admin,
-] as any[]; //type for Admin SelfApplication Deployment Entity Definition

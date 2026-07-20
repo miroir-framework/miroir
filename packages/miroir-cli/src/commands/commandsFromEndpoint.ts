@@ -10,14 +10,11 @@ import {
   JzodReference,
   LoggerInterface,
   MiroirLoggerFactory,
-  // defaultLibraryAppModel,
-  // defaultLibraryModelEnvironment,
-  defaultMiroirMetaModel,
   resolveFundamentalSchemaForDeployment,
-  instanceEndpointV1,
   resolveJzodSchemaReferenceInContext,
   type EndpointDefinition,
-  type JzodObject
+  type JzodObject,
+  type MetaModel,
 } from "miroir-core";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -26,6 +23,7 @@ import {
   resolveLibraryDeploymentUuid,
 } from "miroir-test-app_deployment-library";
 
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
 const packageName = "miroir-cli";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -126,11 +124,11 @@ function resolveAllReferences(element: JzodElement): JzodElement {
       {
         miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
           deployment_Miroir.uuid,
-          defaultMiroirMetaModel,
+          defaultMiroirMetaModel as MetaModel,
           "static",
         ),
         endpointsByUuid: {},
-        currentModel: defaultMiroirMetaModel,
+        currentModel: defaultMiroirMetaModel as MetaModel,
       }
     );
     return resolveAllReferences(resolvedSchema);

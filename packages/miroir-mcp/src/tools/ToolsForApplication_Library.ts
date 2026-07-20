@@ -1,13 +1,10 @@
-import {
-  defaultMiroirMetaModel,
-  instanceEndpointV1,
-  type EndpointDefinition,
-} from "miroir-core";
+import { type EndpointDefinition } from "miroir-core";
 import {
   deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,
 } from "miroir-test-app_deployment-library";
 
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
   defaultMiroirMetaModel,

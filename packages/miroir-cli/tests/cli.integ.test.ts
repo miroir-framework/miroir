@@ -5,7 +5,6 @@ import loglevelNextLog from 'loglevelnext';
 import {
   ApplicationDeploymentMap,
   ConfigurationService,
-  defaultMiroirMetaModel,
   defaultMiroirModelEnvironment,
   DomainControllerInterface,
   LocalCacheInterface,
@@ -17,7 +16,6 @@ import {
   resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
   Deployment,
-  selfApplicationDeploymentMiroir,
   StoreOrBundleAction,
   StoreUnitConfiguration,
   noValue,
@@ -30,7 +28,6 @@ import {
   type MiroirConfigClient,
   type SpecificLoggerOptionsMap,
   miroirFundamentalJzodSchema,
-  instanceEndpointV1,
   type MlSchema,
 } from "miroir-core";
 import {
@@ -76,6 +73,7 @@ import {
   type CliCommandHandler,
 } from "../src/commands/commandsFromEndpoint.js";
 
+import { defaultMiroirMetaModel, selfApplicationDeploymentMiroir, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
 const packageName = "miroir-cli";
 const fileName = "cli.integ.test";
 

@@ -10,7 +10,6 @@ import type {
   EntityInstance,
   MetaModel,
   MiroirConfigClient,
-  SelfApplication,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -106,47 +105,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
-
-// // ################################################################################################
-// export function createApplicationCompositeAction(
-//   deploymentUuid: Uuid,
-//   // newAdminAppApplicationUuid: Uuid,
-//   newSelfApplicationUuid: Uuid,
-//   newApplicationName: string,
-//   deploymentConfiguration: StoreUnitConfiguration
-// ): CompositeActionSequence {
-//   const result: CompositeActionSequence = {
-//     actionType: "compositeActionSequence",
-//     actionLabel: "beforeAll",
-//     endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-//     payload: {
-//       actionSequence: [
-//         {
-//           actionType: "createInstance",
-//           actionLabel: "createApplicationForAdminAction",
-//           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-//           payload: {
-//             application: newSelfApplicationUuid,
-//             applicationSection: "data",
-//             objects: [
-//               {
-//                 uuid: newSelfApplicationUuid,
-//                 parentName: entityApplicationForAdmin.name,
-//                 parentUuid: entityApplicationForAdmin.uuid,
-//                 name: newApplicationName,
-//                 defaultLabel: `The ${newApplicationName} Application.`,
-//                 description: `This Application contains the ${newApplicationName} model and data.`,
-//                 selfApplication: newSelfApplicationUuid,
-//               } as AdminApplication,
-//             ],
-//           },
-//         },
-//       ],
-//     }
-//   };
-//   // log.info("createApplicationCompositeAction result =", result);
-//   return result;
-// }
 
 // ################################################################################################
 export type CreateDeploymentCompositeActionOptions = {
@@ -288,6 +246,7 @@ export const emptyMetaModel: MetaModel = {
   reports: [],
   storedQueries: [],
   runners: [],
+  tests: [],
   themes: [],
 }
 // ################################################################################################

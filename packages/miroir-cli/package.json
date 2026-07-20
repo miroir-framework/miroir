@@ -29,7 +29,9 @@
   },
   "dependencies": {
     "miroir-core": "*",
+    "miroir-test-app_deployment-admin": "*",
     "miroir-test-app_deployment-library": "*",
+    "miroir-test-app_deployment-miroir": "*",
     "miroir-localcache-redux": "*",
     "@miroir-framework/jzod": "0.8.3",
     "commander": "^12.1.0",

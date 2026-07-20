@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "miroir-core": "*",
+    "miroir-test-app_deployment-miroir": "*",
     "level": "^8.0.0"
   },
   "devDependencies": {

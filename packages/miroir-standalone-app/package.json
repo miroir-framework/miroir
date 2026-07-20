@@ -50,6 +50,7 @@
     "miroir-react": "*",
     "miroir-store-indexedDb": "*",
     "miroir-test-app_deployment-library": "*",
+    "miroir-test-app_deployment-miroir": "*",
     "mock-socket": "^9.1.5",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",

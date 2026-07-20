@@ -11,10 +11,8 @@ import { Box, Typography } from "@mui/material";
 import {
   LoggerInterface,
   MiroirLoggerFactory,
-  defaultMiroirMetaModel,
   defaultSelfApplicationDeploymentMap,
   noValue,
-  selfApplicationDeploymentMiroir,
   type JzodElement,
   type MetaModel,
 } from "miroir-core";
@@ -31,7 +29,7 @@ import { usePageConfiguration } from "../services/usePageConfiguration.js";
 import { adminSelfApplication, entityApplicationForAdmin } from "miroir-test-app_deployment-admin";
 import { Formik, type FormikProps } from "formik";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
-import { reportEntityDefinitionDetails } from "miroir-test-app_deployment-miroir";
+import { reportEntityDefinitionDetails, defaultMiroirMetaModel, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
 import { reportUrl } from "../navigation.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;

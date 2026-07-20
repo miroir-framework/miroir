@@ -16,11 +16,10 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
-  entityEntity,
-  entityEntityDefinition
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
+import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";

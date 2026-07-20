@@ -2,10 +2,10 @@
 // aggregate all instance action tools
 
 import {
-  defaultMiroirMetaModel,
-  instanceEndpointV1,
   type EndpointDefinition,
 } from "miroir-core";
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
+
 import {
   deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,

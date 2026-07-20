@@ -8,7 +8,6 @@ import {
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  entityEndpointVersion,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodObject,
   LoggerInterface,
@@ -17,12 +16,11 @@ import {
   noValue,
   ReduxDeploymentsState,
   resolvePathOnObject,
-  selfApplicationMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   transformer_extended_apply_wrapper,
   type Action,
   type MiroirModelEnvironment,
-  type CoreTransformerForBuildPlusRuntime
+  type CoreTransformerForBuildPlusRuntime,
 } from 'miroir-core';
 import {
   JsonDisplayHelper,
@@ -47,14 +45,13 @@ import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedPaper } from './Themes/index.js';
 
+import { entityEndpointVersion, selfApplicationMiroir } from 'miroir-test-app_deployment-miroir';
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EndpointActionCaller"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export interface EndpointActionCallerProps {}
-
-
 
 const formikPath_EndpointActionCaller = "EndpointActionCaller";
 
@@ -132,7 +129,6 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
         currentMiroirModelEnvironment
       )
   );
-
 
   // ######################################################################################
   const handleSubmit = async (values: any) => {

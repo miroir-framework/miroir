@@ -27,9 +27,8 @@ import {
   Domain2ElementFailed,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
-  selfApplicationMiroir,
   templateEvaluationParams,
-  transformer_extended_apply_wrapper
+  transformer_extended_apply_wrapper,
 } from "miroir-core";
 import {
   JsonDisplayHelper,
@@ -47,6 +46,7 @@ import { useRunner } from "../Reports/ReportHooks.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
 import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
 
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView"),
@@ -54,8 +54,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
-
-
 
 // ################################################################################################
 export function StoredRunnerView(props: {

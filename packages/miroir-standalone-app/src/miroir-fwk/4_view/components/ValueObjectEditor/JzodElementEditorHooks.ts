@@ -2,7 +2,6 @@ import { FormikProps, useFormikContext } from "formik";
 import { useContext, useEffect, useMemo, useState, useRef } from "react";
 import { valueToJzod } from "@miroir-framework/jzod";
 
-
 import {
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -22,14 +21,13 @@ import {
   getQueryRunnerParamsForReduxDeploymentsState,
   noValue,
   resolvePathOnObject,
-  selfApplicationMiroir,
   transformer_extended_apply_wrapper,
   type ApplicationDeploymentMap,
   type MiroirActivityTrackerInterface,
   type MiroirModelEnvironment,
   type TransformerReturnType,
   type Uuid,
-  type JzodObject
+  type JzodObject,
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-react";
 import { packageName } from "../../../../constants";
@@ -43,6 +41,7 @@ import {
 } from "../../ReduxHooks";
 import { FieldValidationContext } from "./FieldValidationContext";
 
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditorHooks"), "UI",
@@ -81,7 +80,6 @@ export interface JzodElementEditorHooks {
   itemsOrder: any[];
   // hiddenFormItems and setHiddenFormItems moved to props
 }
-
 
 // ################################################################################################
 // ##############################################################################################
@@ -401,7 +399,6 @@ export function useJzodElementEditorHooks(
       foreignKeyObjectsFetchQueryParams,
       applicationDeploymentMap,
   ) || {};
-
 
   // log.info(
   //   "useJzodElementEditorHooks foreignKeyObjects",

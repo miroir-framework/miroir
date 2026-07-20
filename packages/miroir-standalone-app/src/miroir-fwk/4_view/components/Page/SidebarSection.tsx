@@ -19,19 +19,17 @@ import {
   defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
   dummyDomainManyQueryWithDeploymentUuid,
-  entityMenu,
   getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
-  selfApplicationDeploymentMiroir,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunnerExtractorAndParams,
   Uuid,
   type ApplicationDeploymentMap,
-  type MiroirMenuItem
+  type MiroirMenuItem,
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-react';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -43,11 +41,11 @@ import { JsonDisplayHelper } from 'miroir-react';
 import type { MiroirMenuItemDivider, MiroirMenuReportLink } from 'miroir-core';
 import { pageUrl, reportUrl } from '../../navigation.js';
 
+import { entityMenu, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
-
 
 export const SidebarWidth = 200;
 

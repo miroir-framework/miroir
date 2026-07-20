@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type {
   ApplicationDeploymentMap,
   CompositeActionSequence,
+  CompositeActionSequenceTemplate,
   CompositeActionTemplate,
   CoreTransformerForBuildPlusRuntime,
   Deployment,
@@ -30,8 +31,7 @@ import {
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   noValue,
-  selfApplicationMiroir,
-  transformer_extended_apply_wrapper
+  transformer_extended_apply_wrapper,
 } from "miroir-core";
 import {
   type AdminApplication
@@ -46,6 +46,7 @@ import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCle
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
 
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateApplication"), "UI",
@@ -1645,7 +1646,7 @@ export function getRunner_CreateApplication(
         testDeploymentUuid,
         testApplicationName,
         initialMetaModel,
-      ),
+      ) as CompositeActionSequenceTemplate,
     },
   };
 };
@@ -1693,7 +1694,6 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
     () => getRunner_CreateApplication(testSelfApplicationUuid, testDeploymentUuid, "shouldGetApplicationNameFromFormik"),
     [testSelfApplicationUuid, testDeploymentUuid],
   );
-
 
   const defaultViewParamsFromAdminStorageFetchQueryResults: Record<
     string,
@@ -1766,7 +1766,6 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   );
 
   let applicationDeploymentMapWithNewApplication: ApplicationDeploymentMap = {};
-
 
   // ##############################################################################################
   // ##############################################################################################

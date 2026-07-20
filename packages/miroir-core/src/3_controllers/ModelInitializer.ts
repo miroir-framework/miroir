@@ -205,6 +205,13 @@ export async function modelInitialize(
     );
     log.info(logHeader, "created entity EntityRunner", persistenceStoreController.getEntityUuids());
 
+    // bootstrap EntityMiroirTest
+    await persistenceStoreController.createEntity(
+      entityMiroirTest as Entity,
+      entityDefinitionWithResolvedMLSchema(entityDefinitionMiroirTest as EntityDefinition),
+    );
+    log.info(logHeader, "created entity EntityTest", persistenceStoreController.getEntityUuids());
+
     // bootstrap EntityTheme
     await persistenceStoreController.createEntity(
       entityTheme as Entity,
