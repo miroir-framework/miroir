@@ -1,6 +1,6 @@
 /**
  * Thin vitest adapter for modelValidation suites.
- * Deployment packages supply plan + modelEnv + workspace name; this registers describe/it/afterAll.
+ * Builds a framework-agnostic suite array, then registers it with a tiny vitest loop.
  */
 
 // ONLY A DEV DEPENDENCY! USED FOR THE TYPE ONLY, PRUNED BY THE TRANSPILER
@@ -13,13 +13,27 @@ import {
   formatEntitiesWithZeroInstancesReport,
   formatFailedModelValidationRerunCommands,
   type ModelValidationFailedCase,
+  type ModelValidationInstanceCheck,
   type ModelValidationPlan,
 } from "./ModelValidationTools.js";
 
 export type ModelValidationVitest = Pick<
   VitestNamespace,
-  "describe" | "it" | "expect" | "afterAll"
+  "describe" | "it" | "expect" | "beforeAll" | "afterAll"
 >;
+
+export type ModelValidationRunnableTestCase = {
+  name: string;
+  /** Performs the check (and failure bookkeeping); vitest asserts status === "ok". */
+  run: () => ModelValidationInstanceCheck;
+};
+
+export type ModelValidationRunnableSuite = {
+  suiteName: string;
+  beforeAll?: () => void | Promise<void>;
+  afterAll?: () => void | Promise<void>;
+  testCases: ModelValidationRunnableTestCase[];
+};
 
 export type runModelValidationSuiteParams = {
   vitest: ModelValidationVitest;
@@ -33,15 +47,19 @@ export type runModelValidationSuiteParams = {
   logFoundEntities?: string[];
 };
 
+export type buildModelValidationRunnableSuitesParams = Omit<
+  runModelValidationSuiteParams,
+  "vitest"
+>;
+
 /**
- * Registers one describe/it tree per plan group and an afterAll reporter for
- * zero-instance entities + failed-case re-run commands.
+ * Build one runnable suite per plan group, plus a final reporting suite (afterAll only).
+ * No vitest dependency — callers can run these with any harness.
  */
-export function runModelValidationSuite(
-  params: runModelValidationSuiteParams,
-): void {
+export function buildModelValidationRunnableSuites(
+  params: buildModelValidationRunnableSuitesParams,
+): ModelValidationRunnableSuite[] {
   const {
-    vitest,
     plan,
     modelEnv,
     npmWorkspacePackage,
@@ -55,33 +73,98 @@ export function runModelValidationSuite(
 
   const failedModelValidationCases: ModelValidationFailedCase[] = [];
 
-  for (const group of plan.groups) {
+  const groupSuites: ModelValidationRunnableSuite[] = plan.groups.map((group) => {
     const instances = filterModelValidationGroupInstances(
       group.instances,
       group.filterByName,
     );
-    vitest.describe(group.groupName, () => {
-      for (const [path, module] of Object.entries(instances)) {
+    const testCases: ModelValidationRunnableTestCase[] = Object.entries(instances).map(
+      ([path, module]) => {
         const instance = module.default;
         const label = buildModelValidationInstanceLabel(instance, path);
-        vitest.it(label, () => {
-          const check = checkModelValidationInstance(
-            group.jzodSchema,
-            instance,
-            path,
-            group.modelEnv ?? modelEnv,
-          );
-          if (check.status === "error") {
-            failedModelValidationCases.push({
-              groupName: group.groupName,
-              label: check.label,
-              filter: check.filter,
-            });
-            console.error(
-              `Validation error for instance ${check.label}:`,
-              JSON.stringify(check.innermostError, null, 2),
+        return {
+          name: label,
+          run: () => {
+            const check = checkModelValidationInstance(
+              group.jzodSchema,
+              instance,
+              path,
+              group.modelEnv ?? modelEnv,
             );
-          }
+            if (check.status === "error") {
+              failedModelValidationCases.push({
+                groupName: group.groupName,
+                label: check.label,
+                filter: check.filter,
+              });
+              console.error(
+                `Validation error for instance ${check.label}:`,
+                JSON.stringify(check.innermostError, null, 2),
+              );
+            }
+            return check;
+          },
+        };
+      },
+    );
+    return {
+      suiteName: group.groupName,
+      testCases,
+    };
+  });
+
+  const reportSuite: ModelValidationRunnableSuite = {
+    suiteName: "modelValidation reports",
+    afterAll: () => {
+      const zeroReport = formatEntitiesWithZeroInstancesReport(
+        plan.entitiesWithZeroInstances,
+      );
+      if (zeroReport) {
+        console.log(zeroReport);
+      }
+      const rerunReport = formatFailedModelValidationRerunCommands({
+        npmWorkspacePackage,
+        failedCases: failedModelValidationCases,
+        testFileFilter,
+      });
+      if (rerunReport) {
+        console.log(rerunReport);
+      }
+    },
+    testCases: [],
+  };
+
+  return [...groupSuites, reportSuite];
+}
+
+/**
+ * Register a runnable-suite array with vitest (describe / it / hooks / expect only).
+ * Suites with no testCases register beforeAll/afterAll at the file root so hooks still run.
+ */
+export function runModelValidationSuitesWithVitest(
+  vitest: ModelValidationVitest,
+  suites: ModelValidationRunnableSuite[],
+): void {
+  for (const suite of suites) {
+    if (suite.testCases.length === 0) {
+      if (suite.beforeAll) {
+        vitest.beforeAll(suite.beforeAll);
+      }
+      if (suite.afterAll) {
+        vitest.afterAll(suite.afterAll);
+      }
+      continue;
+    }
+    vitest.describe(suite.suiteName, () => {
+      if (suite.beforeAll) {
+        vitest.beforeAll(suite.beforeAll);
+      }
+      if (suite.afterAll) {
+        vitest.afterAll(suite.afterAll);
+      }
+      for (const testCase of suite.testCases) {
+        vitest.it(testCase.name, () => {
+          const check = testCase.run();
           vitest.expect(
             check.status,
             `jzodTypeCheck failed for instance ${check.label}`,
@@ -90,21 +173,17 @@ export function runModelValidationSuite(
       }
     });
   }
+}
 
-  vitest.afterAll(() => {
-    const zeroReport = formatEntitiesWithZeroInstancesReport(
-      plan.entitiesWithZeroInstances,
-    );
-    if (zeroReport) {
-      console.log(zeroReport);
-    }
-    const rerunReport = formatFailedModelValidationRerunCommands({
-      npmWorkspacePackage,
-      failedCases: failedModelValidationCases,
-      testFileFilter,
-    });
-    if (rerunReport) {
-      console.log(rerunReport);
-    }
-  });
+/**
+ * Build runnable suites from the plan, then register them with vitest.
+ */
+export function runModelValidationSuite(
+  params: runModelValidationSuiteParams,
+): void {
+  const { vitest, ...buildParams } = params;
+  runModelValidationSuitesWithVitest(
+    vitest,
+    buildModelValidationRunnableSuites(buildParams),
+  );
 }

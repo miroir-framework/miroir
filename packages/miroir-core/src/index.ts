@@ -1078,7 +1078,12 @@ export {
   type ModelValidationPlan,
 } from "./5_tests/ModelValidationTools.js";
 export {
+  buildModelValidationRunnableSuites,
   runModelValidationSuite,
+  runModelValidationSuitesWithVitest,
+  type buildModelValidationRunnableSuitesParams,
+  type ModelValidationRunnableSuite,
+  type ModelValidationRunnableTestCase,
   type ModelValidationVitest,
   type runModelValidationSuiteParams as RegisterModelValidationSuitesParams,
 } from "./5_tests/runModelValidationSuite.js";
