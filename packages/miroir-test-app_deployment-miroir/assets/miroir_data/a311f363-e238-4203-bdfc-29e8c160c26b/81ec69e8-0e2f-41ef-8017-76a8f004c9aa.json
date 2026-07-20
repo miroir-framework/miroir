@@ -477,14 +477,12 @@
                           "if": {
                             "transformerType": "boolExpr",
                             "operator": "&&",
-                            "args": [
+                            "left":
                               {
                                 "transformerType": "getFromParameters",
-                                "referencePath": [
-                                  "createEntity",
-                                  "addMenuLink"
-                                ]
+                                "referencePath": ["createEntity", "addMenuLink"]
                               },
+                              "right":
                               {
                                 "operator": "!=",
                                 "left": {
@@ -497,7 +495,6 @@
                                   "value": null
                                 }
                               }
-                            ]
                           },
                           "then": {
                             "transformerType": "createObject",

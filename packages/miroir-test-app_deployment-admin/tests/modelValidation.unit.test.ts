@@ -15,7 +15,7 @@ import {
   buildModelValidationPlanFromGroups,
   defaultMiroirModelEnvironment,
   miroirFundamentalJzodSchema,
-  registerModelValidationSuites,
+  runModelValidationSuite,
   resolveFundamentalSchemaForDeployment,
 } from "miroir-core";
 import {
@@ -287,7 +287,7 @@ const modelTestsToRun: ModelValidationGroup[] = [
   },
 ];
 
-registerModelValidationSuites({
+runModelValidationSuite({
   vitest,
   plan: buildModelValidationPlanFromGroups(modelTestsToRun),
   modelEnv: defaultMiroirModelEnvironment,

@@ -3,9 +3,9 @@
 import * as vitest from "vitest";
 
 import {
-  buildModelValidationPlanFromMetaModel,
+  modelValidationSuite,
   defaultMiroirModelEnvironment,
-  registerModelValidationSuites,
+  runModelValidationSuite,
 } from "miroir-core";
 
 import {
@@ -13,9 +13,9 @@ import {
   defaultMiroirMetaModelEntityNameToAttributeName,
 } from "../src/Model";
 
-registerModelValidationSuites({
+runModelValidationSuite({
   vitest,
-  plan: buildModelValidationPlanFromMetaModel(
+  plan: modelValidationSuite(
     defaultMiroirMetaModel,
     defaultMiroirMetaModelEntityNameToAttributeName,
   ),

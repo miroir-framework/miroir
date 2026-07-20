@@ -2726,6 +2726,12 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
+        compositeActionSequence: {
+          type: "object",
+          definition: domainEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
+          )?.actionParameters,
+        },
         compositeAction: {
           type: "union",
           tag: {
@@ -2742,13 +2748,13 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "domainAction",
               },
             },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "compositeActionSequence",
-              },
-            },
+            // {
+            //   type: "schemaReference",
+            //   definition: {
+            //     absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            //     relativePath: "compositeActionSequence",
+            //   },
+            // },
             {
               type: "schemaReference",
               definition: {
@@ -2757,12 +2763,6 @@ export function getMiroirFundamentalJzodSchema(
               },
             },
           ],
-        },
-        compositeActionSequence: {
-          type: "object",
-          definition: domainEndpointVersionV1.definition.actions.find(
-            (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
-          )?.actionParameters,
         },
         // ################################################################################
         // ################################################################################
@@ -2829,7 +2829,17 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "storeOrBundleAction",
               },
             },
-            ...domainEndpointVersionV1.definition.actions.map((e: Record<string, JzodElement>) => ({
+            {
+              type: "schemaReference",
+              optional: false,
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "compositeActionSequence",
+              },
+            },
+            ...domainEndpointVersionV1.definition.actions
+            .filter((e: any) => e.actionParameters?.actionType?.definition != "compositeActionSequence")
+            .map((e: Record<string, JzodElement>) => ({
               type: "object",
               definition: e.actionParameters,
             })),

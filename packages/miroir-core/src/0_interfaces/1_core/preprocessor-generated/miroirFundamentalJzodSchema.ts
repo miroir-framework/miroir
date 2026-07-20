@@ -10457,6 +10457,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "style": {
             "type": "object",
+            "optional": true,
             "definition": {
               "maxWidth": {
                 "type": "string"
@@ -16499,7 +16500,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "description": "Array of entity instances to be updated"
+                        "description": "Array of entity instances to be updated",
+                        "canBeTemplate": true
                       }
                     },
                     "definition": {
@@ -16890,7 +16892,8 @@ export const miroirFundamentalJzodSchema = {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
-                        "description": "Array of entity instances to be updated"
+                        "description": "Array of entity instances to be updated",
+                        "canBeTemplate": true
                       }
                     },
                     "definition": {
@@ -19359,38 +19362,6 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "compositeAction": {
-        "type": "union",
-        "tag": {
-          "value": {
-            "canBeTemplate": false
-          }
-        },
-        "discriminator": "actionType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "domainAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeActionSequence"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeRunTestAssertion"
-            }
-          }
-        ]
-      },
       "compositeActionSequence": {
         "type": "object",
         "definition": {
@@ -19449,6 +19420,31 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "compositeAction": {
+        "type": "union",
+        "tag": {
+          "value": {
+            "canBeTemplate": false
+          }
+        },
+        "discriminator": "actionType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "domainAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeRunTestAssertion"
+            }
+          }
+        ]
+      },
       "domainAction": {
         "type": "union",
         "discriminator": "actionType",
@@ -19483,6 +19479,14 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "storeOrBundleAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeActionSequence"
             }
           },
           {
@@ -19528,64 +19532,6 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "instanceCUDAction"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "compositeActionSequence"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "optional": true
-                  },
-                  "templates": {
-                    "type": "record",
-                    "optional": true,
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "coreTransformerForBuildPlusRuntime"
-                      }
-                    }
-                  },
-                  "actionSequence": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Actions Definition",
-                        "canBeTemplate": false
-                      }
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "compositeAction"
-                      }
                     }
                   }
                 }
@@ -28214,6 +28160,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "style": {
             "type": "object",
+            "optional": true,
             "definition": {
               "maxWidth": {
                 "type": "string"
@@ -31082,6 +31029,14 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
+            }
+          },
+          {
             "type": "object",
             "definition": {
               "actionType": {
@@ -31152,65 +31107,6 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "compositeActionSequence"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "optional": true
-                  },
-                  "templates": {
-                    "type": "record",
-                    "optional": true,
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
-                      }
-                    }
-                  },
-                  "actionSequence": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Actions Definition",
-                        "canBeTemplate": false,
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                      }
                     }
                   }
                 }
@@ -31857,53 +31753,79 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "objects": {
-                    "type": "array",
+                    "type": "union",
                     "tag": {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
                         "description": "Array of entity instances to be updated",
+                        "canBeTemplate": true,
                         "isTemplate": true
                       }
                     },
-                    "definition": {
-                      "optional": false,
-                      "type": "union",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true,
-                          "isTemplate": true
-                        }
-                      },
-                      "discriminator": [
-                        "transformerType",
-                        "interpolation"
-                      ],
-                      "definition": [
-                        {
-                          "type": "schemaReference",
+                    "definition": [
+                      {
+                        "type": "array",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to update",
+                            "description": "Array of entity instances to be updated",
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": {
                           "optional": false,
+                          "type": "union",
                           "tag": {
                             "value": {
                               "canBeTemplate": true,
                               "isTemplate": true
                             }
                           },
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
-                          },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "coreTransformerForBuildPlusRuntime"
-                          }
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "optional": false,
+                              "tag": {
+                                "value": {
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
+                                }
+                              },
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                              },
+                              "context": {}
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "coreTransformerForBuildPlusRuntime"
+                              }
+                            }
+                          ]
                         }
-                      ]
-                    }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntimeWithoutArray"
+                        }
+                      }
+                    ],
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ]
                   }
                 }
               }
@@ -33786,6 +33708,65 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence": {
+        "type": "object",
+        "definition": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "compositeActionSequence"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "optional": true
+              },
+              "templates": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                  }
+                }
+              },
+              "actionSequence": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Actions Definition",
+                    "canBeTemplate": false,
+                    "isTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction": {
         "type": "union",
         "discriminator": "actionType",
@@ -34238,89 +34219,82 @@ export const miroirFundamentalJzodSchema = {
                     }
                   },
                   "objects": {
-                    "type": "array",
+                    "type": "union",
                     "tag": {
                       "value": {
                         "id": 2,
                         "defaultLabel": "Entity Instances to update",
                         "description": "Array of entity instances to be updated",
+                        "canBeTemplate": true,
                         "isTemplate": true
                       }
                     },
-                    "definition": {
-                      "optional": false,
-                      "type": "union",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true,
-                          "isTemplate": true
-                        }
-                      },
-                      "discriminator": [
-                        "transformerType",
-                        "interpolation"
-                      ],
-                      "definition": [
-                        {
-                          "type": "schemaReference",
+                    "definition": [
+                      {
+                        "type": "array",
+                        "tag": {
+                          "value": {
+                            "id": 2,
+                            "defaultLabel": "Entity Instances to update",
+                            "description": "Array of entity instances to be updated",
+                            "canBeTemplate": true,
+                            "isTemplate": true
+                          }
+                        },
+                        "definition": {
                           "optional": false,
+                          "type": "union",
                           "tag": {
                             "value": {
                               "canBeTemplate": true,
                               "isTemplate": true
                             }
                           },
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
-                          },
-                          "context": {}
-                        },
-                        {
-                          "type": "schemaReference",
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "coreTransformerForBuildPlusRuntime"
-                          }
+                          "discriminator": [
+                            "transformerType",
+                            "interpolation"
+                          ],
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "optional": false,
+                              "tag": {
+                                "value": {
+                                  "canBeTemplate": true,
+                                  "isTemplate": true
+                                }
+                              },
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance"
+                              },
+                              "context": {}
+                            },
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "coreTransformerForBuildPlusRuntime"
+                              }
+                            }
+                          ]
                         }
-                      ]
-                    }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntimeWithoutArray"
+                        }
+                      }
+                    ],
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ]
                   }
                 }
               }
-            }
-          }
-        ]
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction": {
-        "type": "union",
-        "tag": {
-          "value": {
-            "canBeTemplate": false,
-            "isTemplate": true
-          }
-        },
-        "discriminator": "actionType",
-        "definition": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeRunTestAssertion"
             }
           }
         ]
@@ -35962,100 +35936,31 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "bundleAction"
         }
       },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence": {
-        "type": "object",
-        "definition": {
-          "actionType": {
-            "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
-            "definition": "compositeActionSequence"
-          },
-          "actionLabel": {
-            "type": "string",
-            "optional": true
-          },
-          "endpoint": {
-            "type": "literal",
-            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
-          },
-          "payload": {
-            "type": "object",
-            "definition": {
-              "application": {
-                "type": "uuid",
-                "optional": true
-              },
-              "templates": {
-                "type": "record",
-                "optional": true,
-                "definition": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
-                  }
-                }
-              },
-              "actionSequence": {
-                "type": "array",
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Actions Definition",
-                    "canBeTemplate": false,
-                    "isTemplate": true
-                  }
-                },
-                "definition": {
-                  "type": "schemaReference",
-                  "definition": {
-                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                    "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeRunTestAssertion": {
-        "type": "object",
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction": {
+        "type": "union",
         "tag": {
           "value": {
-            "display": {
-              "displayedAttributeValueWhenFolded": "actionLabel"
-            },
+            "canBeTemplate": false,
             "isTemplate": true
           }
         },
-        "definition": {
-          "actionType": {
-            "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
-            "definition": "compositeRunTestAssertion"
-          },
-          "actionLabel": {
-            "type": "string",
-            "optional": true
-          },
-          "nameGivenToResult": {
-            "type": "string"
-          },
-          "testAssertion": {
+        "discriminator": "actionType",
+        "definition": [
+          {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeRunTestAssertion"
             }
           }
-        }
+        ]
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_boxedQueryWithExtractorCombinerTransformer": {
         "type": "object",
@@ -37259,44 +37164,38 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion": {
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeRunTestAssertion": {
         "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "actionLabel"
+            },
+            "isTemplate": true
+          }
+        },
         "definition": {
-          "testType": {
+          "actionType": {
             "type": "literal",
-            "definition": "testAssertion"
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
+            "definition": "compositeRunTestAssertion"
           },
-          "testLabel": {
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "nameGivenToResult": {
             "type": "string"
           },
-          "definition": {
-            "type": "object",
+          "testAssertion": {
+            "type": "schemaReference",
             "definition": {
-              "resultAccessPath": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "string"
-                }
-              },
-              "resultTransformer": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
-                }
-              },
-              "ignoreAttributes": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "string"
-                }
-              },
-              "expectedValue": {
-                "type": "any"
-              }
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
             }
           }
         }
@@ -37982,6 +37881,48 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion": {
+        "type": "object",
+        "definition": {
+          "testType": {
+            "type": "literal",
+            "definition": "testAssertion"
+          },
+          "testLabel": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "resultAccessPath": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "resultTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                }
+              },
+              "ignoreAttributes": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "expectedValue": {
+                "type": "any"
+              }
+            }
+          }
+        }
+      },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate": {
         "type": "schemaReference",
         "definition": {
@@ -38322,6 +38263,14 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           {
+            "type": "schemaReference",
+            "optional": false,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence"
+            }
+          },
+          {
             "type": "object",
             "definition": {
               "actionType": {
@@ -38392,65 +38341,6 @@ export const miroirFundamentalJzodSchema = {
                     "definition": {
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_instanceCUDAction"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "type": "object",
-            "definition": {
-              "actionType": {
-                "type": "literal",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": false
-                  }
-                },
-                "definition": "compositeActionSequence"
-              },
-              "actionLabel": {
-                "type": "string",
-                "optional": true
-              },
-              "endpoint": {
-                "type": "literal",
-                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
-              },
-              "payload": {
-                "type": "object",
-                "definition": {
-                  "application": {
-                    "type": "uuid",
-                    "optional": true
-                  },
-                  "templates": {
-                    "type": "record",
-                    "optional": true,
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
-                      }
-                    }
-                  },
-                  "actionSequence": {
-                    "type": "array",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Actions Definition",
-                        "canBeTemplate": false,
-                        "isTemplate": true
-                      }
-                    },
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeAction"
-                      }
                     }
                   }
                 }

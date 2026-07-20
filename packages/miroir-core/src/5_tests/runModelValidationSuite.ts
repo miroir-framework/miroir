@@ -5,7 +5,7 @@
 
 // ONLY A DEV DEPENDENCY! USED FOR THE TYPE ONLY, PRUNED BY THE TRANSPILER
 import type { VitestNamespace } from "./MiroirTestTools.js";
-import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer.js";
 import {
   buildModelValidationInstanceLabel,
   checkModelValidationInstance,
@@ -21,7 +21,7 @@ export type ModelValidationVitest = Pick<
   "describe" | "it" | "expect" | "afterAll"
 >;
 
-export type RegisterModelValidationSuitesParams = {
+export type runModelValidationSuiteParams = {
   vitest: ModelValidationVitest;
   plan: ModelValidationPlan;
   modelEnv: MiroirModelEnvironment;
@@ -37,8 +37,8 @@ export type RegisterModelValidationSuitesParams = {
  * Registers one describe/it tree per plan group and an afterAll reporter for
  * zero-instance entities + failed-case re-run commands.
  */
-export function registerModelValidationSuites(
-  params: RegisterModelValidationSuitesParams,
+export function runModelValidationSuite(
+  params: runModelValidationSuiteParams,
 ): void {
   const {
     vitest,

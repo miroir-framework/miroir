@@ -20,7 +20,7 @@ export type ModelValidationGroup = {
   /** Path / uuid keyed modules, typically from import.meta.glob or MetaModel arrays. */
   instances: Record<string, ModelValidationInstanceModule>;
   filterByName?: string[];
-  /** Optional per-group model environment; falls back to registerModelValidationSuites modelEnv. */
+  /** Optional per-group model environment; falls back to runModelValidationSuite modelEnv. */
   modelEnv?: MiroirModelEnvironment;
 };
 
@@ -108,7 +108,7 @@ export function filterModelValidationGroupInstances(
  * Build a validation plan from a MetaModel + entity-name → MetaModel attribute map.
  * Groups with zero instances are listed separately and omitted from `groups`.
  */
-export function buildModelValidationPlanFromMetaModel(
+export function modelValidationSuite(
   metaModel: MetaModel,
   entityNameToAttributeName: Record<string, string>,
 ): ModelValidationPlan {

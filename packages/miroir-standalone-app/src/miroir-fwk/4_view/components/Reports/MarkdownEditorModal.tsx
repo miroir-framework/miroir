@@ -79,23 +79,11 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
 
   // formik context
   const formikContext = useFormikContext<any>();
-  // const formikValuePathAsString = props.formikValuePath?.join("_") || "";
-  
-  // const formikReportSectionDefinitionPathString = [props.reportName, ...props.reportSectionPath || [], "definition"].join(".");
 
   const reportDefinitionFromFormik = useMemo(() => {
     return formikContext.values[props.reportName];
   }, [formikContext.values, props.formikReportDefinitionPathString]);
   
-  // const reportSectionDefinitionFromFormik = useMemo(() => {
-  //   if (reportDefinitionFromFormik && props.reportSectionPath) {
-  //     return resolvePathOnObject(
-  //       reportDefinitionFromFormik,
-  //       props.reportSectionPath
-  //     ) as MarkdownReportSection;
-  //   }
-  //   return undefined;
-  // }, [reportDefinitionFromFormik, props.reportSectionPath]);
   
   // log.info("MarkdownEditorModal render", "isOpen", props.isOpen, "initialContent length", props.initialContent.length);
   
@@ -114,8 +102,6 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
   }, []);
 
   const handleSave = useCallback(async () => {
-    // props.onSave(editedContent);
-    // formikContext.setFieldValue(
     const newReportDefinition = alterObjectAtPath2( // does a deep clone
       reportDefinitionFromFormik,
       // ["definition", "section", "definition", 0, "definition", "content"].join("."),
@@ -123,14 +109,6 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
       editedContent
     );
     const applicationSection = getApplicationSection(props.application, newReportDefinition.parentUuid)
-    // log.info("MarkdownEditorModal handleSave", 
-    //   "reportDefinitionFromFormik", reportDefinitionFromFormik,
-    //   // "reportSectionDefinitionFromFormik", reportSectionDefinitionFromFormik,
-    //   "content length", editedContent.length,
-    //   "editedContent", JSON.stringify(editedContent),
-    //   "applicationSection", applicationSection,
-    //   "newReportDefinition", newReportDefinition,
-    // );
 
     await domainController.handleActionFromUI(
       {
@@ -146,12 +124,6 @@ export const MarkdownEditorModal: React.FC<MarkdownEditorModalProps> = (props) =
               applicationSection: applicationSection,
               parentUuid: newReportDefinition.parentUuid,
               objects: [
-                // {
-                //   parentName: newReportDefinition.name,
-                //   parentUuid: newReportDefinition.parentUuid,
-                //   // applicationSection: applicationSection,
-                //   instances: [newReportDefinition],
-                // },
                 newReportDefinition,
               ],
             },

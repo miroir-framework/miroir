@@ -87,6 +87,7 @@
             "definition": {
               "style": {
                 "type": "object",
+                "optional": true,
                 "definition": {
                   "maxWidth": {
                     "type": "string"

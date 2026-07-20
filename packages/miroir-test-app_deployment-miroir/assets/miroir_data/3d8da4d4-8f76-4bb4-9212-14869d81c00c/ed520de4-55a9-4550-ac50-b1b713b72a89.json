@@ -352,7 +352,8 @@
                   "value": {
                     "id": 2,
                     "defaultLabel": "Entity Instances to update",
-                    "description": "Array of entity instances to be updated"
+                    "description": "Array of entity instances to be updated",
+                    "canBeTemplate": true
                   }
                 },
                 "definition": {

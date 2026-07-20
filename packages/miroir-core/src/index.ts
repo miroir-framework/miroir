@@ -741,6 +741,10 @@ export {
 } from "./1_core/jzod/JzodToJzod_Summary";
 export type { JsonSchema, JzodToJsonSchemaContext } from "./1_core/jzod/JzodToJsonSchema";
 export { jzodToJsonSchema } from "./1_core/jzod/JzodToJsonSchema";
+export {
+  getAttributeTypesFromJzodSchema,
+  jzodToSqlAttributeTypeMap,
+} from "./1_core/jzod/getAttributeTypesFromJzodSchema";
 export type { CopilotKitParameter, CopilotKitParameterType } from "./1_core/jzod/JzodToCopilotKitParameter";
 export { jzodToCopilotKitParameter } from "./1_core/jzod/JzodToCopilotKitParameter";
 export {
@@ -1057,7 +1061,7 @@ export {
 } from "./5_tests/ActionTestTools.js";
 export {
   buildModelValidationPlanFromGroups,
-  buildModelValidationPlanFromMetaModel,
+  modelValidationSuite,
   buildModelValidationInstanceLabel,
   buildModelValidationVitestNameFilter,
   checkModelValidationInstance,
@@ -1074,10 +1078,10 @@ export {
   type ModelValidationPlan,
 } from "./5_tests/ModelValidationTools.js";
 export {
-  registerModelValidationSuites,
+  runModelValidationSuite,
   type ModelValidationVitest,
-  type RegisterModelValidationSuitesParams,
-} from "./5_tests/registerModelValidationSuites.js";
+  type runModelValidationSuiteParams as RegisterModelValidationSuitesParams,
+} from "./5_tests/runModelValidationSuite.js";
 /** @deprecated Phase 0 draft — use `miroirTestForAction` from fundamental types. */
 export { miroirTestForAction as miroirTestForActionDraft } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 export {

@@ -43,7 +43,7 @@ import {
   safeResolvePathOnObject,
   stringTuple,
 } from "../tools";
-import { getAttributeTypesFromJzodSchema } from "miroir-store-postgres";
+import { getAttributeTypesFromJzodSchema } from "../1_core/jzod/getAttributeTypesFromJzodSchema";
 import { alterObjectAtPath } from "../tools";
 
 export type FunctionCallRef = {
@@ -138,6 +138,10 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
     getForeignKeyValue: getForeignKeyValue as WhitelistedFunction,
     instanceMatchesForeignKey: instanceMatchesForeignKey as WhitelistedFunction,
   },
+  "miroir-core/1_core/jzod/getAttributeTypesFromJzodSchema": {
+    getAttributeTypesFromJzodSchema: getAttributeTypesFromJzodSchema as WhitelistedFunction,
+  },
+  // Backward-compatible alias for existing MiroirTest assets that still reference the postgres path.
   "miroir-store-postgres/1_core/mlSchema": {
     getAttributeTypesFromJzodSchema: getAttributeTypesFromJzodSchema as WhitelistedFunction,
   },
