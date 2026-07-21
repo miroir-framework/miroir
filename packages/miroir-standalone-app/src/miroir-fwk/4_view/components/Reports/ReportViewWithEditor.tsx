@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { Formik } from 'formik';
 
@@ -19,7 +19,6 @@ import {
   type InstanceAction,
 } from "miroir-core";
 import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
-import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import { ThemedSpan } from '../Themes/index.js';
@@ -29,8 +28,8 @@ import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
 
-import { reportReportDetails } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { reportReportDetails } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportViewWithEditor"), "UI",

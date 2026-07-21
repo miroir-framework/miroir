@@ -14,12 +14,6 @@ import {
 } from "miroir-core";
 import { buildModelValidationGroupsFromFilesystem } from "miroir-core/model-validation-fs";
 
-// Feature 198 — runner_library MiroirTest instance
-
-// Deployment info for model environment
-
-// Library model (built from static assets)
-
 import {
   defaultMiroirMetaModel
 } from "miroir-test-app_deployment-miroir";

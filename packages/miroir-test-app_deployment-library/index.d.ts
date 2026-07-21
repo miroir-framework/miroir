@@ -1,0 +1,76 @@
+import type {
+  EndpointDefinition,
+  MetaModel,
+  MiroirModelEnvironment,
+} from "miroir-core";
+
+export declare const adminApplication_Library_DO_NOT_USE: any;
+export declare const deployment_Library_DO_NO_USE: any;
+export declare const entityPublisher: any;
+export declare const entityAuthor: any;
+export declare const entityBook: any;
+export declare const entityCountry: any;
+export declare const entityUser: any;
+export declare const entityLendingHistoryItem: any;
+export declare const entityDefinitionBook: any;
+export declare const entityDefinitionPublisher: any;
+export declare const entityDefinitionAuthor: any;
+export declare const entityDefinitionCountry: any;
+export declare const entityDefinitionUser: any;
+export declare const entityDefinitionLendingHistoryItem: any;
+export declare const reportAuthorDetails: any;
+export declare const reportAuthorList: any;
+export declare const reportBookInstance: any;
+export declare const reportBookDetails: any;
+export declare const reportBookList: any;
+export declare const reportCountryDetails: any;
+export declare const reportCountryList: any;
+export declare const reportPublisherDetails: any;
+export declare const reportPublisherList: any;
+export declare const reportUserList: any;
+export declare const reportUserDetails: any;
+export declare const reportLibraryHome: any;
+export declare const reportLendingHistoryItemDetails: any;
+export declare const reportLendingHistoryItemList: any;
+export declare const lendingEndpoint: any;
+export declare const bookEndpoint: any;
+export declare const returnDocument: any;
+export declare const lendDocument: any;
+export declare const menuDefaultLibrary: any;
+export declare const selfApplicationLibrary: any;
+export declare const selfApplicationStoreBasedConfigurationLibrary: any;
+export declare const selfApplicationVersionLibraryInitialVersion: any;
+export declare const selfApplicationModelBranchLibraryMasterBranch: any;
+export declare const selfApplicationDeploymentLibrary: any;
+export declare const endpointDocument: any;
+export declare const folio: any;
+export declare const penguin: any;
+export declare const springer: any;
+export declare const author1: any;
+export declare const author2: any;
+export declare const author3: any;
+export declare const author4: any;
+export declare const book1: any;
+export declare const book2: any;
+export declare const book3: any;
+export declare const book4: any;
+export declare const book5: any;
+export declare const book6: any;
+export declare const Country1: any;
+export declare const Country2: any;
+export declare const Country3: any;
+export declare const Country4: any;
+export declare const user1: any;
+export declare const user2: any;
+export declare const user3: any;
+export declare const miroirTest_runner_library: any;
+export declare const defaultLibraryAppModel: MetaModel;
+export declare function getDefaultLibraryModelEnvironmentDEFUNCT(
+  defaultMiroirMetaModelParam: MetaModel,
+  endpointDocumentNOTUSED: EndpointDefinition | undefined,
+  libraryDeploymentUuid: string,
+): MiroirModelEnvironment;
+export declare const resolveLibraryDeploymentUuid: any;
+export declare const libraryApplicationInstances: any;
+export declare const RUNNER_LIBRARY_RUNNER_REGISTRY: any;
+export declare const resolveRunnerLibraryRunnerRef: any;
