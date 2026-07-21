@@ -8,6 +8,7 @@ import type {
   LocalCacheMemoryBreakdown,
   LocalCacheMonitorSnapshot,
 } from "miroir-core";
+import { isLocalCacheMonitorEnabled } from "./localCacheMonitorConfig.js";
 import { localCacheMonitorIndicators } from "./localCacheMonitorIndicators.js";
 
 export type LocalCacheMonitorUiSnapshot = {
@@ -19,6 +20,10 @@ let snapshot: LocalCacheMonitorUiSnapshot | null = null;
 
 export const localCacheMonitorRegistry = {
   setSnapshot(next: LocalCacheMonitorUiSnapshot | LocalCacheMonitorSnapshot | null): void {
+    // Footprint: no registry growth when gate is OFF.
+    if (!isLocalCacheMonitorEnabled()) {
+      return;
+    }
     if (!next) {
       snapshot = null;
       return;

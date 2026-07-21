@@ -19,12 +19,20 @@ import {
   LocalCacheMonitorSummary,
   readLocalCacheMonitorBreakdown,
 } from "../../src/miroir-fwk/4_view/components/LocalCacheMonitorSummary.js";
+import { applyLocalCacheMonitorGate } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorGate.js";
+import {
+  LOCAL_CACHE_MONITOR_SESSION_KEY,
+  resetLocalCacheMonitorConfig,
+} from "../../src/miroir-fwk/4_view/tools/localCacheMonitorConfig.js";
 
 describe("LocalCacheMonitorSummary (Phase 7)", () => {
   beforeEach(() => {
     showLocalCacheMonitorRef.current = false;
     domainControllerRef.current = undefined;
+    resetLocalCacheMonitorConfig();
     localCacheMonitorRegistry.resetAll();
+    sessionStorage.removeItem(LOCAL_CACHE_MONITOR_SESSION_KEY);
+    applyLocalCacheMonitorGate(true);
   });
 
   afterEach(() => {
@@ -65,6 +73,9 @@ describe("LocalCacheMonitorSummary (Phase 7)", () => {
     expect(screen.getByTestId("localcache-monitor-indicators")).toBeInTheDocument();
     expect(screen.getByTestId("localcache-monitor-peak")).toHaveTextContent("4.0 KB");
     expect(screen.getByTestId("localcache-monitor-hit-ratio")).toHaveTextContent("n/a");
+
+    fireEvent.click(screen.getByRole("button", { name: /clear localcache monitor session stats/i }));
+    expect(screen.getByTestId("localcache-monitor-peak")).toHaveTextContent("0 B");
   });
 
   it("reads non-zero sizes from LocalCache.getState even without session monitor APIs", () => {

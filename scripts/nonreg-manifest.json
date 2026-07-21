@@ -131,6 +131,26 @@
       ]
     },
     {
+      "id": "unit-localCacheMonitorSession",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor clear/export + OFF footprint hooks",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/localCacheMonitorSession.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCacheMonitorFootprint",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor panel footprint when OFF",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/localCacheMonitorFootprint.acceptance.unit.test.tsx"
+      ]
+    },
+    {
       "id": "integ-transformer-miroirCoreTransformers",
       "tier": "default",
       "title": "MiroirTest integ — miroirCoreTransformers",

@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { applyLocalCacheMonitorGate } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorGate.js";
+import { resetLocalCacheMonitorConfig } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorConfig.js";
 import {
   computeHitRatio,
   computeHistoryToPresentRatio,
@@ -9,7 +11,9 @@ import {
 
 describe("localCacheMonitorIndicators (Phase 6)", () => {
   beforeEach(() => {
+    resetLocalCacheMonitorConfig();
     localCacheMonitorIndicators.reset();
+    applyLocalCacheMonitorGate(true);
   });
 
   describe("6.1 growth / peak", () => {

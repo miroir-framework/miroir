@@ -4,6 +4,7 @@
  */
 
 import type { AttributedInstanceSize, LocalCacheMemoryBreakdown } from "miroir-core";
+import { isLocalCacheMonitorEnabled } from "./localCacheMonitorConfig.js";
 
 export type LocalCacheMonitorIndicators = {
   peakEffectiveBytes: number;
@@ -112,6 +113,9 @@ export const localCacheMonitorIndicators = {
     breakdown: LocalCacheMemoryBreakdown,
     atMs: number = Date.now()
   ): void {
+    if (!isLocalCacheMonitorEnabled()) {
+      return;
+    }
     const effective = breakdown.effectiveBytes;
     if (effective > peakEffectiveBytes) {
       peakEffectiveBytes = effective;
@@ -127,22 +131,37 @@ export const localCacheMonitorIndicators = {
   },
 
   recordAttributedInstances(instances: AttributedInstanceSize[]): void {
+    if (!isLocalCacheMonitorEnabled()) {
+      return;
+    }
     topEntityShare = computeTopEntityShare(instances);
   },
 
   recordCacheHit(): void {
+    if (!isLocalCacheMonitorEnabled()) {
+      return;
+    }
     cacheHits += 1;
   },
 
   recordCacheMiss(): void {
+    if (!isLocalCacheMonitorEnabled()) {
+      return;
+    }
     cacheMisses += 1;
   },
 
   recordInstanceDeleted(key: string): void {
+    if (!isLocalCacheMonitorEnabled()) {
+      return;
+    }
     deletedPks.add(key);
   },
 
   recordInstanceLoaded(key: string): void {
+    if (!isLocalCacheMonitorEnabled()) {
+      return;
+    }
     if (deletedPks.has(key)) {
       thrashCount += 1;
       deletedPks.delete(key);

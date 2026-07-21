@@ -11,7 +11,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 [#61 performance monitor TDD plan](../61-FEATURE-%20include%20performance%20monitoring%20for%20UI%20components/tdd-implementation-plan.md) ·
 [#208 caching design](https://github.com/miroir-framework/miroir/issues/208)
 
-**Status:** Phases 0–7 done; Phase 8 (export / clear / footprint) next.
+**Status:** Phases 0–8 **done** (#211 LocalCache monitoring UI TDD plan complete for v1).
 
 ---
 
@@ -27,7 +27,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 | **5** | Barrier recalibration + CRUD/load deltas | **Done** (2026-07-21) — session gate + full recalibrate on action |
 | **6** | Session efficiency indicators | **Done** (2026-07-22) — peak/growth, history ratio, hit/thrash stubs, top-3 share |
 | **7** | UI: AppBar toggle + docked panel | **Done** (2026-07-21) — gate + summary + AppBar + ReportDisplay |
-| **8** | Export / Clear / acceptance footprint | Pending |
+| **8** | Export / Clear / acceptance footprint | **Done** (2026-07-22) — clear/export + OFF no-op hooks |
 
 ### Phase 1 achievement log
 
@@ -458,6 +458,21 @@ Mount beside Report shell / RootComponent like RenderInsightSummary; AppBar icon
 
 ## Phase 8 — Export / Clear / footprint acceptance
 
+**Status:** Done (2026-07-22).
+
+### Phase 8 achievement log
+
+| Slice | Result |
+|-------|--------|
+| 8.1 | `clearLocalCacheMonitorSession` zeros peak/hits/thrash; does not call LocalCache mutations |
+| 8.2 | `buildLocalCacheMonitorExportPayload` — timestamp, config, breakdown, top entities/instances, indicators |
+| 8.3 | Gate OFF → `setSnapshot` / indicator record* are no-ops; panel does not mount |
+| UI | Clear + Export buttons on `LocalCacheMonitorSummary` |
+
+**ON budget:** poll ≤1s; full measure on poll and LocalCache barriers; no per-React-render walks.
+
+**Artifacts:** `localCacheMonitorSession.ts`; `localCacheMonitorSession.unit.test.ts`; `localCacheMonitorFootprint.acceptance.unit.test.tsx`.
+
 ### 8.1  Clear resets session stats not cache data
 
 **Behavior:** Clear zeros peak/growth/thrash/hit counters; LocalCache domain data unchanged.
@@ -521,7 +536,7 @@ Start here when coding:
 5. Phase **5** barriers / commit / undo consistency — **DONE**  
 6. Phase **7** UI chrome with real measure wired — **DONE**  
 7. Phase **6** indicators — **DONE**  
-8. Phase **8** export / footprint  
+8. Phase **8** export / footprint — **DONE**  
 
 This delivers user-visible transparency before polishing all efficiency hooks.
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useMiroirContextService } from "miroir-react";
 import {
   buildAttributedInstanceIndex,
@@ -10,6 +10,10 @@ import {
   localCacheMonitorIndicators,
   type LocalCacheMonitorIndicators,
 } from "../tools/localCacheMonitorIndicators.js";
+import {
+  clearLocalCacheMonitorSession,
+  downloadLocalCacheMonitorExport,
+} from "../tools/localCacheMonitorSession.js";
 
 function formatBytes(n: number): string {
   if (!Number.isFinite(n) || n < 0) return "—";
@@ -39,6 +43,7 @@ const EMPTY_BREAKDOWN: LocalCacheMemoryBreakdown = {
 /**
  * Prefer a live `measureLocalCacheMemory(getState())` walk.
  * Session snapshot / enable APIs are optional (attributed deltas, indicators).
+ * No-ops registry writes when the monitor gate is OFF (Phase 8 footprint).
  */
 export function readLocalCacheMonitorBreakdown(localCache: {
   getState?: () => unknown;
@@ -62,6 +67,7 @@ export function readLocalCacheMonitorBreakdown(localCache: {
   if (state && typeof state === "object") {
     const breakdown = measureLocalCacheMemory(state as any);
     const present = (state as { presentModelSnapshot?: unknown }).presentModelSnapshot;
+    // setSnapshot is a no-op when gate OFF — still return live breakdown for callers.
     localCacheMonitorRegistry.setSnapshot({
       breakdown,
       attributedInstances:
@@ -131,6 +137,15 @@ export const LocalCacheMonitorSummary: React.FC = () => {
   const b = breakdown ?? EMPTY_BREAKDOWN;
   const ind = indicators;
 
+  const handleClear = useCallback(() => {
+    clearLocalCacheMonitorSession();
+    setIndicators(localCacheMonitorIndicators.getIndicators());
+  }, []);
+
+  const handleExport = useCallback(() => {
+    downloadLocalCacheMonitorExport();
+  }, []);
+
   return (
     <div
       data-testid="localcache-monitor-summary"
@@ -174,6 +189,38 @@ export const LocalCacheMonitorSummary: React.FC = () => {
         <span data-testid="localcache-monitor-effective-inline">
           Effective {formatBytes(b.effectiveBytes)}
         </span>
+        <button
+          type="button"
+          aria-label="Clear LocalCache monitor session stats"
+          onClick={handleClear}
+          style={{
+            background: "transparent",
+            border: "1px solid #64748b",
+            color: "#e2e8f0",
+            borderRadius: 4,
+            padding: "2px 8px",
+            cursor: "pointer",
+            fontSize: 12,
+          }}
+        >
+          Clear
+        </button>
+        <button
+          type="button"
+          aria-label="Export LocalCache monitor JSON"
+          onClick={handleExport}
+          style={{
+            background: "transparent",
+            border: "1px solid #64748b",
+            color: "#e2e8f0",
+            borderRadius: 4,
+            padding: "2px 8px",
+            cursor: "pointer",
+            fontSize: 12,
+          }}
+        >
+          Export
+        </button>
         <button
           type="button"
           aria-label={
