@@ -1,38 +1,38 @@
 import type { EntityInstance, EntityInstanceCollection } from "miroir-core";
-import entityPublisher from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" assert { type: "json" };
-import entityCountry from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d3139a6d-0486-4ec8-bded-2a83a3c3cee4.json" assert { type: "json" };
-import entityAuthor from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json" assert { type: "json" };
-import entityBook from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json" assert { type: "json" };
+import entityPublisher from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" with { type: "json" };
+import entityCountry from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d3139a6d-0486-4ec8-bded-2a83a3c3cee4.json" with { type: "json" };
+import entityAuthor from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json" with { type: "json" };
+import entityBook from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json" with { type: "json" };
 
-import folio from "../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" assert { type: "json" };
-import penguin from "../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" assert { type: "json" };
-import springer from "../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" assert { type: "json" };
+import folio from "../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/1f550a2a-33f5-4a56-83ee-302701039494.json" with { type: "json" };
+import penguin from "../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/516a7366-39e7-4998-82cb-80199a7fa667.json" with { type: "json" };
+import springer from "../assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/c1c97d54-aba8-4599-883a-7fe8f3874095.json" with { type: "json" };
 
 // Library Data - Authors
-import author1 from "../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2.json" assert { type: "json" };
-import author2 from "../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/ce7b601d-be5f-4bc6-a5af-14091594046a.json" assert { type: "json" };
-import author3 from "../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17.json" assert { type: "json" };
-import author4 from "../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/e4376314-d197-457c-aa5e-d2da5f8d5977.json" assert { type: "json" };
+import author1 from "../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/4441169e-0c22-4fbc-81b2-28c87cf48ab2.json" with { type: "json" };
+import author2 from "../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/ce7b601d-be5f-4bc6-a5af-14091594046a.json" with { type: "json" };
+import author3 from "../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17.json" with { type: "json" };
+import author4 from "../assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/e4376314-d197-457c-aa5e-d2da5f8d5977.json" with { type: "json" };
 
 // Library Data - Books
-import book3 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/4cb917b3-3c53-4f9b-b000-b0e4c07a81f7.json" assert { type: "json" };
-import book4 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json" assert { type: "json" };
-import book6 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c6852e89-3c3c-447f-b827-4b5b9d830975.json" assert { type: "json" };
-import book5 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json" assert { type: "json" };
-import book1 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json" assert { type: "json" };
-import book2 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json" assert { type: "json" };
+import book3 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/4cb917b3-3c53-4f9b-b000-b0e4c07a81f7.json" with { type: "json" };
+import book4 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/6fefa647-7ecf-4f83-b617-69d7d5094c37.json" with { type: "json" };
+import book6 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c6852e89-3c3c-447f-b827-4b5b9d830975.json" with { type: "json" };
+import book5 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/c97be567-bd70-449f-843e-cd1d64ac1ddd.json" with { type: "json" };
+import book1 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/caef8a59-39eb-48b5-ad59-a7642d3a1e8f.json" with { type: "json" };
+import book2 from "../assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/e20e276b-619d-4e16-8816-b7ec37b53439.json" with { type: "json" };
 
 // Library Data - Countries
-import Country1 from "../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/2eda1207-4dcc-4af9-a3ba-ef75e7f12c11.json" assert { type: "json" };
-import Country2 from "../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0.json" assert { type: "json" };
-import Country3 from "../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b62fc20b-dcf5-4e3b-a247-62d0475cf60f.json" assert { type: "json" };
-import Country4 from "../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe.json" assert { type: "json" };
+import Country1 from "../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/2eda1207-4dcc-4af9-a3ba-ef75e7f12c11.json" with { type: "json" };
+import Country2 from "../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0.json" with { type: "json" };
+import Country3 from "../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b62fc20b-dcf5-4e3b-a247-62d0475cf60f.json" with { type: "json" };
+import Country4 from "../assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe.json" with { type: "json" };
 
-import user1 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/04c371ed-702d-4dd9-a06d-8a04eda5d24f.json" assert { type: "json" };
-import user2 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/054518f7-f626-4e76-8633-6b6ece7dcfc3.json" assert { type: "json" };
-import user3 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/9b957235-1202-4c31-a33f-7eb3258b70bb.json" assert { type: "json" };
-import user4 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/bb193c1e-bbcb-4b36-97af-d39350dace6a.json" assert { type: "json" };
-import user5 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/d869ba03-d8ac-4b84-a821-e3348a52d167.json" assert { type: "json" };
+import user1 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/04c371ed-702d-4dd9-a06d-8a04eda5d24f.json" with { type: "json" };
+import user2 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/054518f7-f626-4e76-8633-6b6ece7dcfc3.json" with { type: "json" };
+import user3 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/9b957235-1202-4c31-a33f-7eb3258b70bb.json" with { type: "json" };
+import user4 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/bb193c1e-bbcb-4b36-97af-d39350dace6a.json" with { type: "json" };
+import user5 from "../assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/d869ba03-d8ac-4b84-a821-e3348a52d167.json" with { type: "json" };
 
 
 // Library Data - Users

@@ -6,6 +6,7 @@ import {
   modelValidationSuite,
   defaultMiroirModelEnvironment,
   runModelValidationSuite,
+  type Entity,
 } from "miroir-core";
 
 import {
@@ -21,5 +22,5 @@ runModelValidationSuite({
   ),
   modelEnv: defaultMiroirModelEnvironment,
   npmWorkspacePackage: "miroir-test-app_deployment-miroir",
-  logFoundEntities: defaultMiroirMetaModel.entities.map((entity) => entity.name),
+  logFoundEntities: defaultMiroirMetaModel.entities.map((entity: Entity) => entity.name),
 });

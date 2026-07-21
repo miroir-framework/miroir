@@ -11,7 +11,8 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [
@@ -24,6 +25,7 @@
   "scripts": {
     "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
     "build": "tsup",
+    "devBuild": "npm run build",
     "test": "vitest run --poolOptions.threads.singleThread -t",
     "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
   },
