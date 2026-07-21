@@ -16,6 +16,7 @@ import {
   Domain2QueryReturnType,
   DomainElementSuccess,
   DomainState,
+  estimateObjectBytes,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   getDomainStateExtractorRunnerMap,
   getExtractorRunnerParamsForDomainState,
@@ -55,41 +56,6 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCache")
 ).then((logger: LoggerInterface) => {log = logger});
 
-
-// ################################################################################################
-function roughSizeOfObject( object: any ) {
-
-  const objectListReportSection:any[] = [];
-  const stack = [ object ];
-  let bytes = 0;
-
-  while ( stack.length ) {
-      const value = stack.pop();
-
-      if ( typeof value === 'boolean' ) {
-          bytes += 4;
-      }
-      else if ( typeof value === 'string' ) {
-          bytes += value.length * 2;
-      }
-      else if ( typeof value === 'number' ) {
-          bytes += 8;
-      }
-      else if
-      (
-          typeof value === 'object'
-          && objectListReportSection.indexOf( value ) === -1
-      )
-      {
-          objectListReportSection.push( value );
-
-          for( let i in value ) {
-              stack.push( value[ i ] );
-          }
-      }
-  }
-  return bytes;
-}
 
 // ###############################################################################
 function exceptionToActionReturnType(f:()=>void): Action2ReturnType {
@@ -157,7 +123,9 @@ export class LocalCache implements LocalCacheInterface {
   // ###############################################################################
   public currentInfo(): LocalCacheInfo {
     return {
-      localCacheSize: roughSizeOfObject(this.innerReduxStore.getState().presentModelSnapshot),
+      localCacheSize: estimateObjectBytes(
+        this.innerReduxStore.getState().presentModelSnapshot
+      ),
     };
   }
 

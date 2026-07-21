@@ -71,6 +71,26 @@
       ]
     },
     {
+      "id": "unit-localCache-monitor-redux",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor API present-only currentInfo (redux)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "vitest", "-w", "miroir-localcache-redux", "--",
+        "tests/LocalCache.monitor.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCache-monitor-zustand",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor API present-only currentInfo (zustand)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "vitest", "-w", "miroir-localcache-zustand", "--",
+        "tests/LocalCache.monitor.unit.test.ts"
+      ]
+    },
+    {
       "id": "integ-transformer-miroirCoreTransformers",
       "tier": "default",
       "title": "MiroirTest integ — miroirCoreTransformers",

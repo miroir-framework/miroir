@@ -11,7 +11,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 [#61 performance monitor TDD plan](../61-FEATURE-%20include%20performance%20monitoring%20for%20UI%20components/tdd-implementation-plan.md) ·
 [#208 caching design](https://github.com/miroir-framework/miroir/issues/208)
 
-**Status:** Phases 0–2 done; Phase 3 (monitor API / gate) next.
+**Status:** Phases 0–3 done; Phase 4 (attributed per-Entity + top-10) next.
 
 ---
 
@@ -22,7 +22,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 | **0** | Lock design decisions (open questions) | **Done** |
 | **1** | Pure identity-aware sizing (core) | **Done** (2026-07-21) — see §Phase 1 |
 | **2** | Static LocalCache image on real Redux **and** Zustand | **Done** (2026-07-21) — Library Books golden present=3922 both impls |
-| **3** | `LocalCacheInfo` enrichment + gate (OFF cheap) | Pending *(was Phase 2)* |
+| **3** | `currentInfo` present-only via `estimateObjectBytes`; rich path = `measureLocalCacheMemory` | **Done** (2026-07-21) |
 | **4** | Attributed per-Entity + top-10 | Pending *(was Phase 3)* |
 | **5** | Barrier recalibration + CRUD/load deltas | Pending *(was Phase 4)* |
 | **6** | Session efficiency indicators | Pending *(was Phase 5)* |
@@ -159,7 +159,7 @@ measureLocalCacheMemory(localCache.getState())
 ```
 Phase 1 — Pure identity-aware sizing                         slices 1.1–1.4   [DONE]
 Phase 2 — Static image on real LocalCache (redux|zustand)    slices 2.1–2.4   [DONE]
-Phase 3 — LocalCacheInfo + OFF/ON gate semantics             slices 3.1–3.3
+Phase 3 — currentInfo present-only + shared estimateObjectBytes slices 3.1–3.3   [DONE]
 Phase 4 — Attributed per-Entity + top-10                     slices 4.1–4.3
 Phase 5 — Barriers + CRUD/load deltas                        slices 5.1–5.3
 Phase 6 — Efficiency indicators (session)                    slices 6.1–6.3
@@ -238,31 +238,27 @@ RED → GREEN (both packages)
 
 ---
 
-## Phase 3 — `LocalCacheInfo` + gate semantics
+## Phase 3 — `currentInfo` present-only + shared `estimateObjectBytes` ✅
 
-**Goal:** Enrich monitor consumption path; OFF path stays cheap. Formula already proven on real stores in Phase 2.
+**Goal:** Cheap present-only `currentInfo()`; full breakdown only via `measureLocalCacheMemory(getState())` (D7). Formula already proven on real stores in Phase 2.
 
-### 3.1  Monitor path uses measureLocalCacheMemory on getState()
+**Delivered (2026-07-21):**
 
-```
-RED → GREEN
-packages/miroir-localcache-redux/tests/LocalCache.monitor.unit.test.ts
-```
+| Slice | Result |
+|-------|--------|
+| 3.1 | `currentInfo().localCacheSize === measureLocalCacheMemory(state).presentSnapshotBytes` (Library Books) |
+| 3.2 | With open transactional history, `localCacheSize` stays present-only (`< effectiveBytes`) |
+| 3.3 | Redux + Zustand `currentInfo` use shared `estimateObjectBytes`; local `roughSizeOfObject` removed |
 
-### 3.2  currentInfo stays present-only when gate OFF
-
-Standalone `measureLocalCacheMemory(state)` is the rich API (D7).
-
-### 3.3  Zustand currentInfo optional cleanup to estimateObjectBytes
+**Artifacts:** `LocalCache.monitor.unit.test.ts` (redux + zustand); both `LocalCache.ts` facades.
 
 ---
 
 ## Phase 4 — Attributed per-Entity + top-10
 
-
 **Goal:** Hot-spot views from present `current` without claiming they sum to effective.
 
-### 3.1  Per-Entity attributed totals
+### 4.1  Per-Entity attributed totals
 
 **Behavior:** Two entities with known instance payloads → attributed bytes and counts match fixtures within tolerance of the size walk.
 
@@ -271,7 +267,7 @@ RED → GREEN
   "attributes instance bytes per Entity under present.current"
 ```
 
-### 3.2  Top-10 ordering
+### 4.2  Top-10 ordering
 
 **Behavior:** Eleven instances of varying sizes → top 10 are the ten largest, descending.
 
@@ -280,7 +276,7 @@ RED → GREEN
   "selectTopLargest returns at most N instances by descending bytes"
 ```
 
-### 3.3  Loading zone not in attributed table (v1)
+### 4.3  Loading zone not in attributed table (v1)
 
 **Behavior:** Instances only in `loading` (not yet rolled into `current`) appear in present heap but **not** in attributed Entity table.
 
@@ -470,7 +466,7 @@ Start here when coding:
 
 1. Phase **1** pure measure — **DONE**  
 2. Phase **2** static Redux|Zustand verification — **DONE**  
-3. Phase **3** API split (`currentInfo` vs `measureLocalCacheMemory`)  
+3. Phase **3** API split (`currentInfo` vs `measureLocalCacheMemory`) — **DONE**  
 4. Phase **4** attributed + top-10  
 5. Phase **7** UI chrome with real measure wired  
 6. Phase **5** barriers / commit / undo consistency  

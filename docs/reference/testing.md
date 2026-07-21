@@ -140,7 +140,7 @@ npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.stat
 npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 ```
 
-Nonreg step ids: `unit-localCacheMemoryMeasure`, `unit-localCache-memoryMeasure-static-redux`, `unit-localCache-memoryMeasure-static-zustand`.
+Nonreg step ids: `unit-localCacheMemoryMeasure`, `unit-localCache-memoryMeasure-static-redux`, `unit-localCache-memoryMeasure-static-zustand`, `unit-localCache-monitor-redux`, `unit-localCache-monitor-zustand`.
 
 ### Via `testMiroir` (preferred)
 
