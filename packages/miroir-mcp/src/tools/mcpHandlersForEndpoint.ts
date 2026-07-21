@@ -174,7 +174,7 @@ export async function handleMcpAction(
     const libraryDeploymentUuid = resolveLibraryDeploymentUuid(applicationDeploymentMap);
     const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
-      undefined, // not used
+      undefined as any, // not used
       libraryDeploymentUuid,
     );
     // log.info(`${toolName} - constructed defaultLibraryModelEnvironment:`, JSON.stringify(defaultLibraryModelEnvironment, null, 2));

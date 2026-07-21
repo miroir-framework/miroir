@@ -109,7 +109,18 @@ The monorepo must be built in strict dependency order. The provided script handl
 
 On Windows, run this inside **Git Bash** or **WSL 2**, not from `cmd.exe`.
 
-The script performs six ordered steps:
+### Incremental builds
+
+Progress is recorded in `tmp/build-all-state` (successful packages and last error, each with a timestamp).
+
+| Invocation | Behaviour |
+|---|---|
+| `./build-all.sh` | If the state file has a last error, resume from that package (skip already-successful packages). Otherwise full build. |
+| `./build-all.sh full` | Full build (ignore previous state). |
+| `./build-all.sh reset` | Delete the state file, then full build. |
+| `./build-all.sh incremental <package>` | Build from `<package>` upwards (skip earlier packages). |
+
+The script performs ordered steps:
 
 | Step | Packages |
 |---|---|
