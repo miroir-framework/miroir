@@ -3,7 +3,8 @@
 > First analysis: map classical client–server data-access / refresh / caching problems onto
 > the Miroir Framework’s actual architecture (Deployments, DomainController, local cache,
 > Entity / EntityDefinition, Query, Report, Extractors), catalogue the situations already
-> visible in the product, and relate the issue’s proposed techniques to existing model hooks.
+> visible in the product — **led by Entity cardinality** (working subset vs full collection) —
+> and relate the issue’s proposed techniques to existing model hooks.
 
 Related issue: https://github.com/miroir-framework/miroir/issues/208  
 Background: [data-architecture-deployments.md](../../../docs/reference/data-architecture-deployments.md) ·
@@ -21,19 +22,31 @@ Classical client/server applications must sometimes **avoid loading “too much�
 and client-cache limits) while still showing the user **consistent, sufficiently fresh** data.
 Without that balance, product value drops quickly.
 
-Issue examples:
+Issue examples (cardinality is the most fundamental scale driver; payload size and freshness
+are orthogonal axes):
 
-1. **Large Entity instances (e.g. Blob)** — too large to batch-load; load should be by instance
-   UUID (or UUID list), but a list of existing instances is still needed before accessing
-   individuals.
-2. **Always-stale Entities** — some Entities must never be served from cache without a refresh
+1. **High / unbounded Entity cardinality** — the *number* of instances makes Entity-wide load
+   into the CLIENT local cache impractical or impossible. Example: a Library **book lending /
+   activity log** where most rows are archive-level and only the most recent matter; at the
+   extreme, Entities with millions to **billions** of records cannot ever be fully cached.
+   Access must be windowed / filtered / paged / keyed; the local cache holds only a **working
+   subset**.
+2. **Large Entity instances (e.g. Blob)** — *per-instance* payload too large to batch-load;
+   load should be by instance UUID (or UUID list), but a list of existing instances is still
+   needed before accessing individuals.
+3. **Always-stale Entities** — some Entities must never be served from cache without a refresh
    (cached instances are immediately stale / cache-evictable; every Report display must
    network-fetch).
+
+> **Axis note:** cardinality (#instances) ≠ payload size (bytes/instance). A log Entity can
+> have tiny rows and still be uncacheable-as-a-whole; Blob can have few instances and still
+> blow the cache. Both break today’s “load all instances of Entity E on `rollback`” path.
 
 Identified problem classes:
 
 | Class | Meaning in practice |
 |-------|---------------------|
+| **High / unbounded Entity cardinality** | Cannot load all instances into local cache; need subset selection (recent window, filter, page, uuid set) |
 | Multi-origin loading | Same item “required” from several Reports / Queries / Actions at once |
 | Cache under-eviction | Stale or oversized data kept longer than it should |
 | Cache over-eviction | Useful data dropped while still needed elsewhere |
@@ -165,10 +178,61 @@ configuration system outside the meta-model.
 
 ## 4. Classical situations mapped onto Miroir
 
-### 4.1 Situation A — Large instances (Blob and similar)
+### 4.1 Situation A — High / unbounded Entity cardinality (primary)
+
+**Classic problem:** the Entity has so many instances that “load the whole collection into the
+client” is either pointless (most rows are never looked at) or impossible (memory / network /
+startup time). The client can only ever hold a **working subset**; the server remains the
+system of record for the rest.
+
+**Canonical Miroir-shaped example:** Library **book log** / lending history (or any append-only
+activity Entity):
+
+- Cardinality grows without bound over the life of the application.
+- Most instances are **archive-level**; typical Reports care about “recent N”, “open loans”,
+  “for this Book / Patron”, not the full history.
+- Bulk `rollback` of that Entity would dominate startup, fill Redux/Zustand beyond usefulness,
+  and still leave archive rows that no open Report needs.
+
+At the extreme (analytics facts, event stores, IoT readings, …): **billions** of records —
+full local-cache load is not a degraded mode; it is a non-starter.
+
+**In Miroir today:**
+
+- `loadConfigurationFromPersistenceStore` / Deployment `rollback` still issues Entity-wide
+  `RestPersistenceAction_read` (`parentUuid` / `/all`) for data Entities.
+- UI Reports assume the Entity’s instances are already in local cache; extractors such as
+  `extractorInstancesByEntity` imply “all instances of E in cache”, which does not scale.
+- There is no first-class **window / page / filter / cursor** contract from Report → Query →
+  persistence that fills only the needed subset into the cache.
+- `EntityDefinition.cache.cacheAllInstancesOnRefresh` (even if enforced) is a boolean: it can
+  say “don’t cache all”, but it does not say *how* to select the subset.
+
+**Required capabilities (design, not yet present):**
+
+1. **Cardinality-aware policy** on Entity / EntityDefinition — e.g. “never bulk-load”; default
+   access is subset-only (`cacheOnDemand` / `windowed` / `queryDriven`).
+2. **Need shaped as a bounded query** — extractors/Queries must express *which* subset
+   (filter, order, limit/offset or keyset, time window, FK scope), not only “all of Entity E”
+   or a single PK.
+3. **Server-side subset fetch** that returns that window into local cache (incremental upsert),
+   without implying the cache is complete for E.
+4. **Incomplete-cache semantics** — selectors and Reports must distinguish “not in working
+   set” from “does not exist”; pagination / “load more” / drill-down to archive must be
+   expressible without pretending the cache holds the Entity universe.
+5. **Eviction of cold windows** — when the user leaves a historical Report, archive rows
+   should be droppable (provenance + cardinality policy); recent/hot subset may stay.
+
+**Why this dominates Blob / freshness in priority:** even with tiny instances and perfect
+freshness, unbounded cardinality alone falsifies the current Miroir CLIENT bootstrap
+assumption. Blob and always-stale are important specializations; cardinality is the general
+scalability wall.
+
+### 4.2 Situation B — Large instances (Blob and similar)
 
 **Classic problem:** list is cheap; payload is not. Need catalogue without bodies; load bodies
-on demand (by UUID / UUID list).
+on demand (by UUID / UUID list). Orthogonal to cardinality: few huge Blobs *or* many Blobs
+both hurt; combined with Situation A they compound.
 
 **In Miroir:**
 
@@ -188,7 +252,7 @@ on demand (by UUID / UUID list).
 3. **Attribute- or Entity-level policy** that marks heavy attributes / Entities as
    non-batch-cached (extension of `EntityDefinition.cache` and/or `isBlob` semantics).
 
-### 4.2 Situation B — Always-stale / must-refresh Entities
+### 4.3 Situation C — Always-stale / must-refresh Entities
 
 **Classic problem:** cache hit is wrong by definition; every display must revalidate or refetch.
 
@@ -209,10 +273,12 @@ on demand (by UUID / UUID list).
 3. Eviction rule: instances of that Entity may be dropped immediately after use, or never
    trusted on next display without revalidation.
 
-### 4.3 Situation C — Multi-origin requirement
+### 4.4 Situation D — Multi-origin requirement
 
 **Classic problem:** Report A and Report B both need Book#X; loading for A then navigating
 away must not evict Book#X if B still needs it; loading twice must not double-fetch needlessly.
+Under high cardinality this is sharper: the working subset must be shared and refcounted, or
+each Report will re-fetch overlapping windows.
 
 **In Miroir:**
 
@@ -228,31 +294,34 @@ away must not evict Book#X if B still needs it; loading twice must not double-fe
 2. Eviction only when **no remaining reason** (or when consistency policy forces drop).
 3. Coalesce concurrent fetches for the same `(deployment, section, entity, instance)`.
 
-### 4.4 Situation D — Network over-fetch / under-fetch / denormalization
+### 4.5 Situation E — Network over-fetch / under-fetch / denormalization
 
 | Symptom | Miroir manifestation today |
 |---------|----------------------------|
-| Over-fetch | Entity-wide `/all` for a Report that needs one PK or a filtered set |
-| Under-fetch | Partial cache / skipped Entity → selector failures; no auto-fill |
-| Denormalization | Network returns full EntityInstance documents; Reports often need joins via multiple extractors + combiners; no sparse attribute fetch |
+| Over-fetch | Entity-wide `/all` on rollback — catastrophic under high cardinality; also Blob bodies |
+| Under-fetch | Partial / windowed cache → selector failures; no auto-fill for “next page” / archive drill-down |
+| Denormalization | Network returns full EntityInstance documents; Reports often need joins via multiple extractors + combiners; no sparse attribute fetch; no page metadata |
 
 Queries already describe *logical* need (extractors). The gap is that **physical fetch is not
 driven by that need** for UI Reports — it is driven by Deployment-wide rollback.
 
 Closing the gap means treating extractor requirements as **inputs to a fetch planner**, not
-only as inputs to an in-memory selector.
+only as inputs to an in-memory selector — including **bounded** needs (limit, window, filter).
 
-### 4.5 Situation E — Model vs data asymmetry
+### 4.6 Situation F — Model vs data asymmetry
 
 Meta-model / Admin / Miroir Deployments are often treated as relatively stable (see also #199
-schema reload policy). App **data** Entities (Library Books, Blobs, operational tables) are
-where selective load and freshness matter most.
+schema reload policy) and usually **low cardinality**. App **data** Entities (Library Books,
+Blobs, **logs / histories**, operational tables) are where selective load, cardinality, and
+freshness matter most.
 
 Any design should allow **different default consistency profiles** for:
 
-- Miroir meta-model Entities (Entity, EntityDefinition, Report, Menu, …)
-- Admin configuration Entities
-- Application domain Entities
+- Miroir meta-model Entities (Entity, EntityDefinition, Report, Menu, …) — typically small,
+  `cacheAllOnRefresh`-class
+- Admin configuration Entities — typically small
+- Application domain Entities — mixed; some remain fully cacheable (e.g. modest Book catalogue)
+- **High-cardinality / append-only Entities** (logs, events, histories) — never bulk-load
 - Special cases (Blob, external/read-only Entities — see also #174)
 
 without forcing every Entity to declare a full policy.
@@ -263,12 +332,13 @@ without forcing every Entity to declare a full policy.
 
 | #208 problem | Current Miroir behaviour | Gap |
 |--------------|--------------------------|-----|
-| Multi-origin loading | Shared cache by identity; no interest tracking | Provenance / refcount |
-| Cache under-eviction | Keep until full Deployment rollback | Policy-driven eviction |
+| **High / unbounded Entity cardinality** | Entity-wide `/all` into local cache on `rollback` | Subset fetch (window / filter / page / uuid set); incomplete-cache semantics |
+| Multi-origin loading | Shared cache by identity; no interest tracking | Provenance / refcount (esp. overlapping windows) |
+| Cache under-eviction | Keep until full Deployment rollback | Policy-driven eviction of cold windows / archive |
 | Cache over-eviction | Rare today (almost never selective-evict) | Will appear as soon as selective eviction exists without provenance |
-| Network over-fetch | Entity `/all` on rollback; Blob bodies included | Need-driven / projected fetch |
-| Network under-fetch | No Report-triggered fill; unimplemented strategies | `localCacheOrFetch` (or successor) + planner |
-| Fetch denormalization | Full instances only | Projections, sparse attrs, list-vs-detail |
+| Network over-fetch | Entity `/all` on rollback; Blob bodies included | Need-driven / projected / bounded fetch |
+| Network under-fetch | No Report-triggered fill; unimplemented strategies | `localCacheOrFetch` (or successor) + planner + pagination |
+| Fetch denormalization | Full instances only | Projections, sparse attrs, list-vs-detail, page metadata |
 
 ---
 
@@ -302,11 +372,12 @@ Illustrative levels (names TBD; not a final schema):
 
 | Level | Intended meaning | Fetch / cache behaviour |
 |-------|------------------|-------------------------|
-| `cacheAllOnRefresh` | Today’s intended `cacheAllInstancesOnRefresh` | Bulk-load on Deployment rollback; trust until next rollback |
+| `cacheAllOnRefresh` | Today’s intended `cacheAllInstancesOnRefresh` | Bulk-load on Deployment rollback; trust until next rollback; **only for low-cardinality Entities** |
 | `cacheOnDemand` | Load only when an extractor requires instances | UUID / filter fetch; keep while reasons remain |
+| `windowed` / `queryDriven` | High cardinality; cache is never complete for E | Fetch bounded subsets (limit, keyset, time window, FK scope); mark Entity cache as partial |
 | `revalidateOnDisplay` | May keep a copy but must refresh when Report shows | Network check / refetch each display |
 | `neverTrustCache` | Always-stale | Fetch every use; prefer immediate eviction |
-| `catalogueOnly` | List/identity without heavy attrs | Split list vs detail (Blob pattern) |
+| `catalogueOnly` | List/identity without heavy attrs | Split list vs detail (Blob pattern); may combine with `windowed` |
 
 User transparency: Report / UI can surface freshness (e.g. “refreshed”, “from cache”,
 “stale”) without requiring the citizen developer to write fetch code — consistent with
@@ -330,9 +401,11 @@ new Turing-complete dialect — see Transformer constraints in the #166 analysis
 **Example constraint shapes (illustrative):**
 
 - `need(extractor) ∧ missing(cache) ⇒ fetch(uuidSet)`
+- `cardinality(E) = high ⇒ ¬bulkLoad(E) ∧ require(boundedNeed)`
 - `consistency(E) = neverTrustCache ⇒ ¬serve(cache) without fetch`
 - `reasons(instance) = ∅ ∧ consistency(E) ≠ pin ⇒ evict`
 - `attr(isBlob) ∧ mode(list) ⇒ project(without contents)`
+- `window(E, recentN) loaded ∧ Report closed ⇒ evict(window) unless shared reasons`
 
 Exact syntax is a later design decision; this analysis only asserts that the **host** should
 be Miroir model data evaluated by DomainController, not scattered UI hooks.
@@ -343,13 +416,15 @@ be Miroir model data evaluated by DomainController, not scattered UI hooks.
 
 ```
 Report opens
-  → Query extractors declare Need N (entities, PKs, filters, attrs)
-  → Planner reads consistency profiles for Entities in N
+  → Query extractors declare Need N (entities, PKs, filters, attrs,
+      and — for high cardinality — bounded window / page / order)
+  → Planner reads consistency / cardinality profiles for Entities in N
   → Diff(N, local cache) + provenance update
-  → Fetch plan (storage / localCacheOrFetch / project)
-  → Merge into local cache (loading → current or incremental upsert)
+  → Fetch plan (storage / localCacheOrFetch / project / subset)
+  → Merge into local cache (loading → current or incremental upsert;
+      Entity may remain marked partial / incomplete)
   → Existing sync extractor runners evaluate Report against cache
-  → On Report close: drop reasons; maybe evict
+  → On Report close: drop reasons; maybe evict cold windows
 ```
 
 This preserves Miroir’s split:
@@ -363,14 +438,19 @@ This preserves Miroir’s split:
 
 ## 8. Concrete Miroir examples to keep in the design loop
 
-1. **Blob Entity** (`62209e4a-e429-4d7d-9b28-dcc1da6b51a2`) — force the list-then-detail and
-   non-batch-load path; today contradicts the goal via `cacheAllInstancesOnRefresh: true`.
-2. **Library Book / Author Reports** — multi-origin shared Entities; good provenance testbed
-   without huge payloads.
-3. **Meta-model Entity / EntityDefinition lists** — usually `cacheAllOnRefresh`-class; must
-   remain fast for Designer / Admin.
-4. **Startup `fetchMiroirAndAppConfigurations`** — must remain correct under selective load
-   (bootstrapping Admin + Miroir + Apps cannot assume every data Entity is tiny forever).
+1. **Library book log / lending history** (or any append-only activity Entity) — **primary
+   cardinality case**: unbounded growth, archive vs recent interest, Reports that must page
+   or window; never Entity-wide `/all` into local cache. (If the Library sample app does not
+   yet expose such an Entity, invent one in fixtures for tracer-bullet tests.)
+2. **Blob Entity** (`62209e4a-e429-4d7d-9b28-dcc1da6b51a2`) — payload-size axis: list-then-detail
+   and non-batch-load of bodies; today contradicts the goal via `cacheAllInstancesOnRefresh: true`.
+3. **Library Book / Author Reports** — multi-origin shared Entities; good provenance testbed
+   at modest cardinality (still fully cacheable as a catalogue).
+4. **Meta-model Entity / EntityDefinition lists** — low cardinality, usually
+   `cacheAllOnRefresh`-class; must remain fast for Designer / Admin.
+5. **Startup `fetchMiroirAndAppConfigurations`** — must remain correct when some data Entities
+   are **excluded** from bulk load (high cardinality / Blob); bootstrap cannot assume every
+   data Entity is tiny and fully cacheable.
 
 ---
 
@@ -392,27 +472,35 @@ Settle these before a detailed design RFC or TDD plan:
 
 1. **Primary policy host:** extend `EntityDefinition.cache` vs new `CachePolicy` Entity vs both
    (defaults on EntityDefinition, overrides on Query/Report)?
-2. **List vs detail for Blob:** projection on the same Entity (omit `contents`) vs separate
+2. **Cardinality declaration:** explicit profile (`windowed` / `neverBulkLoad`) vs inferred
+   heuristics vs both (safe default: opt-in “may bulk-load” for small Entities only)?
+3. **Bounded need vocabulary:** how do extractors/Queries express limit, order, keyset/cursor,
+   time window, and FK scope — extend existing extractor types, or new combiner/query params?
+4. **Incomplete-cache semantics:** how do Reports distinguish “not in working set” from
+   “instance does not exist”? Is a parallel “index / count known” structure required?
+5. **List vs detail for Blob:** projection on the same Entity (omit `contents`) vs separate
    catalogue Entity / derived index?
-3. **Bootstrap policy:** which Entities remain “load all on Deployment rollback” by default
-   for Admin/Miroir vs app data?
-4. **Provenance granularity:** per instance only, or per instance+attribute slice (needed for
-   blob bodies)?
-5. **Report integration:** sync selectors stay sync (prefetch before render) vs async Report
-   loading states become first-class?
-6. **Consistency UX:** how much freshness signalling is shown to end users vs only in Design /
-   debug mode?
-7. **DSL ambition:** closed enum of profiles first, or start directly with a composable
-   constraint language?
-8. **Relation to `Entity.storageAccess` and external Entities (#174):** one policy space or
-   separate axes (where stored vs how consistent)?
+6. **Bootstrap policy:** which Entities remain “load all on Deployment rollback” by default
+   for Admin/Miroir vs app data? High-cardinality Entities must be opt-out of bootstrap load.
+7. **Provenance granularity:** per instance only, or per instance+attribute slice (needed for
+   blob bodies) and/or per fetched window?
+8. **Report integration:** sync selectors stay sync (prefetch before render) vs async Report
+   loading states / “load more” become first-class?
+9. **Consistency UX:** how much freshness / “showing N of many” signalling is shown to end
+   users vs only in Design / debug mode?
+10. **DSL ambition:** closed enum of profiles first, or start directly with a composable
+    constraint language?
+11. **Relation to `Entity.storageAccess` and external Entities (#174):** one policy space or
+    separate axes (where stored vs how consistent vs how many)?
 
 **Recommended first product slice (suggestion, not decided):**  
-(1) define a small closed set of consistency profiles on `EntityDefinition.cache`,  
-(2) stop bulk-loading Entities marked `catalogueOnly` / non-`cacheAllOnRefresh`,  
-(3) implement UUID-set fetch + provenance for Report-driven needs,  
-(4) wire Blob as the flagship Entity. Defer full algebraic DSL until profiles prove
-insufficient.
+(1) define a small closed set of consistency / cardinality profiles on `EntityDefinition.cache`
+(including `windowed` / never-bulk-load),  
+(2) stop bulk-loading Entities not marked `cacheAllOnRefresh` (esp. logs / Blob),  
+(3) implement **bounded** subset fetch (filter + limit or uuid-set) + provenance for
+Report-driven needs,  
+(4) use a **Library book-log-style Entity** as the cardinality flagship and Blob as the
+payload-size flagship. Defer full algebraic DSL until profiles prove insufficient.
 
 ---
 
@@ -420,10 +508,11 @@ insufficient.
 
 | Document | Purpose |
 |----------|---------|
-| `consistency-profiles.md` | Propose concrete EntityDefinition.cache schema evolution |
-| `fetch-planner.md` | DomainController algorithm: Need × Policy × Cache → FetchPlan |
+| `consistency-profiles.md` | Propose concrete EntityDefinition.cache schema evolution (cardinality + freshness + payload) |
+| `fetch-planner.md` | DomainController algorithm: Need × Policy × Cache → FetchPlan (incl. windows) |
 | `provenance-model.md` | Load-reason data structures and eviction rules |
-| `tdd-implementation-plan.md` | After decisions: tracer-bullet tests (Blob list/detail, multi-Report Book, always-stale Entity) |
+| `bounded-extractors.md` | How Queries/Extractors declare filter / order / limit / cursor / FK scope |
+| `tdd-implementation-plan.md` | After decisions: tracer bullets (book-log window, Blob list/detail, multi-Report Book, always-stale Entity) |
 
 ---
 
@@ -431,13 +520,15 @@ insufficient.
 
 Miroir today solves client data access by **eagerly loading entire Entity collections into a
 shared local cache** and letting **Reports/Queries sync-read that cache**. That works while
-Deployments are small and mostly trusted-stale-until-rollback; it fails the classical cases
-#208 names — especially **Blob-scale instances**, **must-refresh Entities**, and **safe
-selective eviction under multi-origin use**.
+Deployments are small and mostly trusted-stale-until-rollback; it fails as soon as Entity
+**cardinality** grows beyond what the CLIENT can or should hold — the Library-style **book
+log** (archive vs recent interest) and, at the extreme, Entities with millions to billions of
+records. Orthogonal failures remain **Blob-scale payloads**, **must-refresh Entities**, and
+**safe selective eviction under multi-origin use**.
 
 The Framework already has the right *places* for a solution (EntityDefinition.cache,
 Query extractors as need declarations, `queryExecutionStrategy`, DomainController as
-planner, shared identity-keyed cache). What is missing is **policy**, **provenance**, and a
-**need-driven fetch path** — expressed as Miroir model data, not as per-screen networking
-code — which matches both the issue’s techniques and Miroir’s declarative, everything-is-data
-design.
+planner, shared identity-keyed cache). What is missing is **cardinality-aware policy**,
+**bounded needs** (window / filter / page), **provenance**, and a **need-driven fetch path** —
+expressed as Miroir model data, not as per-screen networking code — which matches both the
+issue’s techniques and Miroir’s declarative, everything-is-data design.
