@@ -41,7 +41,7 @@ npm run nonreg -- --tier full --run-all
 
 | Tier | Contents |
 |------|----------|
-| `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` |
+| `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` + LocalCache memory measure (#211: pure `localCacheMemoryMeasure` + static redux/zustand images) |
 | `default` | `unit` + MiroirTest integ (`miroirCoreTransformers`, `runner_library`, `domain_controller_data_crud`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
 | `full` | `default` + deployment `modelValidation` packages |
 
@@ -126,6 +126,21 @@ unionArrayChoices, unionObjectChoices
 ## Running unit tests
 
 Unit tests run entirely in-memory. No Postgres, no filesystem seeding.
+
+### LocalCache memory measure (#211)
+
+Pure sizing and static LocalCache image checks (included in `npm run nonreg:unit`):
+
+```bash
+# Pure identity-aware formula (miroir-core)
+npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryMeasure.unit.test.ts
+
+# Static store image — same golden presentSnapshotBytes on both implementations
+npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.static.unit.test.ts
+npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
+```
+
+Nonreg step ids: `unit-localCacheMemoryMeasure`, `unit-localCache-memoryMeasure-static-redux`, `unit-localCache-memoryMeasure-static-zustand`.
 
 ### Via `testMiroir` (preferred)
 

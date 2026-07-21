@@ -11,7 +11,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 [#61 performance monitor TDD plan](../61-FEATURE-%20include%20performance%20monitoring%20for%20UI%20components/tdd-implementation-plan.md) ·
 [#208 caching design](https://github.com/miroir-framework/miroir/issues/208)
 
-**Status:** plan ready — **no implementation yet**.
+**Status:** Phases 0–2 done; Phase 3 (monitor API / gate) next.
 
 ---
 
@@ -19,14 +19,40 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 
 | Phase | Scope | Status |
 |-------|--------|--------|
-| **0** | Lock design decisions (open questions) | **Done** (this document) |
-| **1** | Pure identity-aware sizing (core) | **Done** — slices 1.1–1.4 green (`localCacheMemoryMeasure`) |
-| **2** | `LocalCacheInfo` enrichment + gate (OFF cheap) | Pending |
-| **3** | Attributed per-Entity + top-10 | Pending |
-| **4** | Barrier recalibration + CRUD/load deltas | Pending |
-| **5** | Session efficiency indicators | Pending |
-| **6** | UI: AppBar toggle + docked panel | Pending |
-| **7** | Export / Clear / acceptance footprint | Pending |
+| **0** | Lock design decisions (open questions) | **Done** |
+| **1** | Pure identity-aware sizing (core) | **Done** (2026-07-21) — see §Phase 1 |
+| **2** | Static LocalCache image on real Redux **and** Zustand | **Done** (2026-07-21) — golden present=8646 both impls |
+| **3** | `LocalCacheInfo` enrichment + gate (OFF cheap) | Pending *(was Phase 2)* |
+| **4** | Attributed per-Entity + top-10 | Pending *(was Phase 3)* |
+| **5** | Barrier recalibration + CRUD/load deltas | Pending *(was Phase 4)* |
+| **6** | Session efficiency indicators | Pending *(was Phase 5)* |
+| **7** | UI: AppBar toggle + docked panel | Pending *(was Phase 6)* |
+| **8** | Export / Clear / acceptance footprint | Pending *(was Phase 7)* |
+
+### Phase 1 achievement log
+
+| Slice | Result |
+|-------|--------|
+| 1.1 | Identity-aware `estimateObjectBytes` — shared refs counted once |
+| 1.2 | Commit-aliased `previous === present` excluded from history incremental |
+| 1.3 | Divergent previous + shared subtree → history ≈ non-shared only |
+| 1.4 | Action payloads metadata-only (RED proven with deep-size broken) |
+| Hygiene | Unit test typed cleanly (`FatInstance`, `TransactionalInstanceAction` for `StateChanges`) — fixes TS2353 / TS2322 IDE diagnostics |
+
+**Artifacts:** `packages/miroir-core/src/2_domain/localCacheMemoryMeasure.ts` (+ index exports); `packages/miroir-core/tests/2_domain/localCacheMemoryMeasure.unit.test.ts`
+
+### Phase 2 achievement log
+
+| Slice | Result |
+|-------|--------|
+| 2.1 | Redux static bootstrap: parts sum to effective; present matches `estimateObjectBytes(present)` |
+| 2.2 | Zustand same invariants on real `LocalCache` |
+| 2.3 | Cross-impl parity: `presentSnapshotBytes === 8646` on identical payload (redux + zustand) |
+| 2.4 | Post-rollback history incremental `< present/5` on both |
+
+**Artifacts:** `packages/miroir-localcache-redux/tests/LocalCache.memoryMeasure.static.unit.test.ts`; `packages/miroir-localcache-zustand/tests/LocalCache.memoryMeasure.static.unit.test.ts`
+
+
 
 ---
 
@@ -36,6 +62,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 |---------|--------------------------|
 | `miroir-core` | From package: prefer file-scoped vitest/jest pattern used by sibling packages; avoid flaky full-suite `-t` when possible |
 | `miroir-localcache-redux` | `npm run vitest -- <path>` or existing `npm test -- <pattern>` from package root |
+| `miroir-localcache-zustand` | `npm run vitest -- <path>` from package root |
 | `miroir-standalone-app` | Vitest unit tests under `tests/4_view/` (same style as `performanceDisplayGate.unit.test.ts`) |
 
 **Legend**
@@ -60,14 +87,14 @@ Answers to [analysis.md §9](./analysis.md) plus accounting / gate choices neede
 | **Q2** | Include `queriesResultsCache` in effective? | **Yes** — part of effective total, shown as a **third breakdown line** (`queriesResultsCacheBytes`) | It is reachable heap under the LocalCache store root. Omitting it under-reports browser RAM. A separate line prevents users from mistaking it for Entity-instance cache. |
 | **Q3** | JS heap vs IndexedDB | **v1 = in-heap `StateWithUndoRedo` only.** IndexedDB / persisted cache size is **out of scope** (follow-up). UI copy says “LocalCache (in-memory)”, not “all browser storage”. | Fairness algorithm and identity walks apply cleanly to the live store. IndexedDB needs different APIs (`navigator.storage`, IDB estimates), mixes non-LocalCache data, and would delay the transparency goal. Document the wording so we do not over-claim. |
 | **Q4** | One gate or two with Performance Monitor? | **Two independent gates** — `showLocalCacheMonitor` separate from `showPerformanceDisplay` | Same rationale as #61 D11 (bug vs timer): investigators often want only one instrumentation class. LocalCache walks must not run when the user only enabled render insights, and vice versa. |
-| **Q5** | Zustand path | **Shared pure sizer on `StateWithUndoRedo` in `miroir-core` (or shared util both packages import).** Enrich `LocalCacheInfo` on the shared interface. **Implement Redux `currentInfo()` first**; Zustand `currentInfo()` switched to the same helper in the same Phase 2 slice (thin wrapper — no separate formula). | One formula prevents Redux/Zustand divergence. Zustand already mirrors present-only `roughSizeOfObject`; swapping the helper is cheap if the pure module is store-agnostic. |
+| **Q5** | Zustand path | **Shared pure sizer on `StateWithUndoRedo` in `miroir-core`.** Phase **2** proves the formula on both real LocalCache impls before Phase 3 wires monitor APIs. | One formula prevents Redux/Zustand divergence. `measureLocalCacheMemory` walks only known `StateWithUndoRedo` fields (Zustand store methods on `getState()` are ignored). |
 
 ### Additional settled choices
 
 | # | Topic | Decision | Reason |
 |---|-------|----------|--------|
 | **D6** | `localCacheSize` back-compat | Keep **`localCacheSize` = present snapshot bytes** (today’s semantics). Add `presentSnapshotBytes` (alias), `transactionHistoryBytes`, `queriesResultsCacheBytes`, `effectiveBytes`. | Callers of `currentLocalCacheInfo()` today expect present-only meaning. Changing it to effective would silently break any consumer that assumed “domain view size”. |
-| **D7** | When is sizing computed? | **Only when LocalCache monitor gate is ON** (or explicit test helper). OFF: `currentInfo()` returns present-only via existing cheap path **or** zeros for extended fields without walking history — see Phase 2. Monitor snapshot API is the rich path. | Matches “negligible when off”. Avoid making every `currentInfo()` call pay whole-store walks. |
+| **D7** | When is sizing computed? | **Only when LocalCache monitor gate is ON** (or explicit test helper). OFF: `currentInfo()` returns present-only via existing cheap path. Rich path = `measureLocalCacheMemory(getState())` — see Phase **3**. | Matches “negligible when off”. Avoid making every `currentInfo()` call pay whole-store walks. |
 | **D8** | History incremental formula | Seed `visited` from present walk, then walk `previousModelSnapshot`, patch stacks (Q1 policy), `currentTransaction`. Sum = `transactionHistoryBytes`. | Implements analysis §8 without double-counting Immer sharing / commit aliasing. |
 | **D9** | Undo/redo/commit/rollback | **Recalibration barriers** — full identity-aware snapshot recompute. CRUD/load use **attributed size-map deltas** between barriers. | Analysis challenging gap #2: incremental history math is brittle; barriers are correct and still limited if UI polls ≤1 Hz. |
 | **D10** | Attributed vs heap | UI labels **Effective (heap)** vs **Attributed (per Entity)**. Attributed map covers `present.current` instances only for v1 (`loading` included in present heap but not in per-Entity table unless still present after rollback). | Prevents summing Entity rows and comparing to effective. |
@@ -75,6 +102,7 @@ Answers to [analysis.md §9](./analysis.md) plus accounting / gate choices neede
 | **D12** | Efficiency indicators v1 | Implement all five from analysis, with thrash as **best-effort**: count reload of PK previously removed in-session (delete/reset), document weakness until #208 eviction exists. | Keeps secondary goal alive without blocking on eviction design. |
 | **D13** | UI chrome | AppBar icon toggle + **docked collapsible panel** (RenderInsightSummary family), folded by default; poll ≤1s when ON. | Analysis §5; proven low-friction pattern from #61. |
 | **D14** | Session persistence | Persist gate in `sessionStorage` (like performance display). | Diagnosis survives refresh within a session. |
+| **D15** | Cross-impl static measure | Same bootstrap fixtures on Redux and Zustand; assert identical **invariant** suite; **presentSnapshotBytes** for identical instance payloads must match **exactly** (same formula + same domain graph). Measure via `measureLocalCacheMemory(localCache.getState())` — known-field walks ignore Zustand action methods. | Gate consistency of the formula on real store images before monitor gate/UI work. |
 
 ---
 
@@ -128,13 +156,14 @@ measureLocalCacheMemory(localCache.getState())
 ## High-level phase structure
 
 ```
-Phase 1 — Pure identity-aware sizing                         slices 1.1–1.4
-Phase 2 — LocalCacheInfo + OFF/ON gate semantics             slices 2.1–2.3
-Phase 3 — Attributed per-Entity + top-10                     slices 3.1–3.3
-Phase 4 — Barriers + CRUD/load deltas                        slices 4.1–4.3
-Phase 5 — Efficiency indicators (session)                    slices 5.1–5.3
-Phase 6 — UI toggle + docked panel                           slices 6.1–6.4
-Phase 7 — Export / Clear / footprint acceptance              slices 7.1–7.3
+Phase 1 — Pure identity-aware sizing                         slices 1.1–1.4   [DONE]
+Phase 2 — Static image on real LocalCache (redux|zustand)    slices 2.1–2.4   [DONE]
+Phase 3 — LocalCacheInfo + OFF/ON gate semantics             slices 3.1–3.3
+Phase 4 — Attributed per-Entity + top-10                     slices 4.1–4.3
+Phase 5 — Barriers + CRUD/load deltas                        slices 5.1–5.3
+Phase 6 — Efficiency indicators (session)                    slices 6.1–6.3
+Phase 7 — UI toggle + docked panel                           slices 7.1–7.4
+Phase 8 — Export / Clear / footprint acceptance              slices 8.1–8.3
 ```
 
 ---
@@ -150,99 +179,85 @@ Phase 7 — Export / Clear / footprint acceptance              slices 7.1–7.3
 | Pure API | `packages/miroir-core/src/2_domain/localCacheMemoryMeasure.ts` (`estimateObjectBytes`, `measureLocalCacheMemory`) |
 | Tests | `packages/miroir-core/tests/2_domain/localCacheMemoryMeasure.unit.test.ts` |
 | Exports | `miroir-core` index re-exports |
+| Typing hygiene | Fixtures use `FatInstance` + `TransactionalInstanceAction` for `StateChanges` (fixes TS2353 / TS2322) |
 
-### 1.1  Shared structure counted once ✅
+### 1.1–1.4 ✅
 
-**Behavior:** Measuring a graph where the same object is reachable from two parents yields the same byte total as measuring it once.
-
-```
-RED → GREEN
-packages/miroir-core/tests/…/localCacheMemoryMeasure.unit.test.ts
-  "counts a shared object only once across two parent references"
-```
-
-**GREEN:** `sizeWalk` / `measureLocalCacheMemory` with `WeakSet`/`Set` identity tracking (evolve today’s `roughSizeOfObject`).
-
-### 1.2  Present vs history after commit alias
-
-**Behavior:** When `previousModelSnapshot === presentModelSnapshot` (reference equality, post-commit), `transactionHistoryBytes` does not re-add present’s payload; `effectiveBytes ≈ present + queryCache + patchMetadata`.
-
-```
-RED → GREEN
-  "after commit alias, history incremental excludes present payload"
-```
-
-### 1.3  History after divergent previous (Immer-style share)
-
-**Behavior:** Fixture where previous and present share a large subtree and differ by one small object: `effectiveBytes < presentBytes + previousBytes` (naive sum); history incremental ≈ size of divergent nodes + patches only.
-
-```
-RED → GREEN
-  "history incremental reflects only non-shared nodes plus patches"
-```
-
-### 1.4  Action payloads excluded from history (Q1)
-
-**Behavior:** A `pastModelPatches` entry whose `action.payload` embeds a large instance already in present does **not** increase `transactionHistoryBytes` by that instance’s deep size; patch `changes` values still count if not already visited.
-
-```
-RED → GREEN
-  "does not deep-size action payloads when measuring history"
-```
-
-**Non-regression:** Existing LocalCache unit tests unchanged.
+All four pure-sizing slices green. See achievement log in Implementation status.
 
 ---
 
-## Phase 2 — `LocalCacheInfo` + gate semantics
+## Phase 2 — Static LocalCache image (Redux | Zustand) ✅
 
-**Goal:** Enrich `currentInfo()`; OFF path stays cheap; both Redux and Zustand use the pure helper.
+**Goal:** Before monitor APIs / gates / UI, prove `measureLocalCacheMemory` yields a **consistent formula** on a whole **static** store image produced by the real LocalCache implementations — switchable between **redux** and **zustand**.
 
-### 2.1  Enriched info from real LocalCache state (Redux)
+**Out of scope here:** monitor gate, `currentInfo` enrichment, attributed maps, UI (those start at Phase 3).
 
-**Behavior:** After bootstrap + createInstance, `currentInfo()` (monitor path) reports `presentSnapshotBytes === localCacheSize`, `effectiveBytes >= presentSnapshotBytes`, and history/query fields are numbers.
+**Approach:** Identical bootstrap fixtures (load instances → rollback into `current`). Run the same invariant assertions against `measureLocalCacheMemory(localCache.getState())` in both packages. Cross-check: `presentSnapshotBytes` for the same payload must be **equal** across impls (shared golden constant).
+
+`measureLocalCacheMemory` walks only known `StateWithUndoRedo` fields, so Zustand store action methods on `getState()` do not inflate the estimate.
+
+### 2.1  Redux: bootstrap → coherent breakdown
+
+**Behavior:** After load+rollback of known instances, breakdown has `presentSnapshotBytes > 0`, parts sum to `effectiveBytes`, and `presentSnapshotBytes === estimateObjectBytes(presentModelSnapshot)`.
+
+```
+RED → GREEN
+packages/miroir-localcache-redux/tests/LocalCache.memoryMeasure.static.unit.test.ts
+  "static redux LocalCache: measureLocalCacheMemory parts sum and present matches walk"
+```
+
+### 2.2  Zustand: same bootstrap → same invariants
+
+**Behavior:** Same as 2.1 on Zustand `LocalCache`.
+
+```
+RED → GREEN
+packages/miroir-localcache-zustand/tests/LocalCache.memoryMeasure.static.unit.test.ts
+  "static zustand LocalCache: measureLocalCacheMemory parts sum and present matches walk"
+```
+
+### 2.3  Cross-impl present size parity
+
+**Behavior:** Both tests assert `presentSnapshotBytes === STATIC_PRESENT_BYTES_GOLDEN` for the shared bootstrap payload.
+
+```
+RED → GREEN (both packages)
+  "presentSnapshotBytes matches shared golden for identical bootstrap payload"
+```
+
+### 2.4  Post-rollback history is small vs present
+
+**Behavior:** After bootstrap rollback (patches cleared), `transactionHistoryBytes` is small relative to present (e.g. `< present / 5`).
+
+```
+RED → GREEN (both packages)
+  "after rollback bootstrap, history incremental is small relative to present"
+```
+
+---
+
+## Phase 3 — `LocalCacheInfo` + gate semantics
+
+**Goal:** Enrich monitor consumption path; OFF path stays cheap. Formula already proven on real stores in Phase 2.
+
+### 3.1  Monitor path uses measureLocalCacheMemory on getState()
 
 ```
 RED → GREEN
 packages/miroir-localcache-redux/tests/LocalCache.monitor.unit.test.ts
-  "currentInfo exposes present, history, queryCache, and effective bytes"
 ```
 
-Wire `LocalCacheInfo` in `DomainControllerInterface`; implement via `measureLocalCacheMemory(getState())` when measurement allowed.
+### 3.2  currentInfo stays present-only when gate OFF
 
-### 2.2  OFF / unmeasured path does not walk history
+Standalone `measureLocalCacheMemory(state)` is the rich API (D7).
 
-**Behavior:** With monitor measurement disabled, calling the cheap info path does not require walking `pastModelPatches` (assert via: either only `localCacheSize`/`presentSnapshotBytes` filled and extended fields `0`, or a test double/counter on the pure measure showing **not called** for history). Prefer behavioral: document API `currentInfo({ measure: "presentOnly" | "full" })` **or** separate `getLocalCacheMonitorSnapshot()` only used when ON.
-
-**Settled API for tests:**  
-- `currentInfo()` — **presentOnly** (back-compat, cheap, always safe).  
-- `getMonitorSnapshot()` / DomainController wrapper — **full measure**, called only by UI when gate ON.
-
-```
-RED → GREEN
-  "currentInfo remains present-only and does not include history walk cost"
-  "getMonitorSnapshot returns full breakdown"
-```
-
-*(If adding methods to `LocalCacheInterface` is heavy, `getMonitorSnapshot` can live as a standalone function `measureLocalCacheMemory(localCache.getState())` used by UI — still public, still deep. Prefer standalone pure + `getState()` for deepest module / easiest tests.)*
-
-**Decision refine (D7):** Prefer **standalone `measureLocalCacheMemory(state)`** as the rich API; keep `currentInfo()` present-only. UI never calls full measure when gate OFF.
-
-### 2.3  Zustand uses same helper
-
-**Behavior:** Zustand `currentInfo()` still present-only; measuring its `getState()` with the pure helper yields coherent effective bytes on a small fixture.
-
-```
-RED → GREEN
-packages/miroir-localcache-zustand/tests/… (or shared core test with a hand-built StateWithUndoRedo)
-  "measureLocalCacheMemory works on Zustand-shaped StateWithUndoRedo fixture"
-```
-
-No UI for Zustand-specific chrome required.
+### 3.3  Zustand currentInfo optional cleanup to estimateObjectBytes
 
 ---
 
-## Phase 3 — Attributed per-Entity + top-10
+## Phase 4 — Attributed per-Entity + top-10
+
 
 **Goal:** Hot-spot views from present `current` without claiming they sum to effective.
 
@@ -275,7 +290,7 @@ RED → GREEN
 
 ---
 
-## Phase 4 — Barriers + deltas
+## Phase 5 — Barriers + deltas
 
 **Goal:** Limited ON footprint — deltas for CRUD/load; full remeasure on barriers.
 
@@ -311,7 +326,7 @@ RED → GREEN
 
 ---
 
-## Phase 5 — Efficiency indicators
+## Phase 6 — Efficiency indicators
 
 **Goal:** Session metrics when monitor session is active (in-memory registry cleared on gate OFF).
 
@@ -349,7 +364,7 @@ RED → GREEN
 
 ---
 
-## Phase 6 — UI toggle + docked panel
+## Phase 7 — UI toggle + docked panel
 
 **Goal:** Discoverable transparency matching analysis §5.
 
@@ -394,7 +409,7 @@ Mount beside Report shell / RootComponent like RenderInsightSummary; AppBar icon
 
 ---
 
-## Phase 7 — Export / Clear / footprint acceptance
+## Phase 8 — Export / Clear / footprint acceptance
 
 ### 7.1  Clear resets session stats not cache data
 
@@ -452,13 +467,14 @@ Document ON budget: poll ≤1s; full measure on poll and barriers; no per-React-
 
 Start here when coding:
 
-1. Phase **1.1** → **1.4** (pure measure — highest risk, no UI)  
-2. Phase **2.2** API split (`currentInfo` vs `measureLocalCacheMemory`)  
-3. Phase **3.1–3.2** attributed + top-10  
-4. Phase **6.1–6.4** UI chrome with real measure wired  
-5. Phase **4** barriers / commit / undo consistency  
-6. Phase **5** indicators  
-7. Phase **7** export / footprint  
+1. Phase **1** pure measure — **DONE**  
+2. Phase **2** static Redux|Zustand verification — **DONE**  
+3. Phase **3** API split (`currentInfo` vs `measureLocalCacheMemory`)  
+4. Phase **4** attributed + top-10  
+5. Phase **7** UI chrome with real measure wired  
+6. Phase **5** barriers / commit / undo consistency  
+7. Phase **6** indicators  
+8. Phase **8** export / footprint  
 
 This delivers user-visible transparency before polishing all efficiency hooks.
 
