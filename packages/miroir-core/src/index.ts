@@ -1060,7 +1060,6 @@ export {
   runMiroirActionTest,
 } from "./5_tests/ActionTestTools.js";
 export {
-  buildModelValidationGroupsFromFilesystem,
   buildModelValidationPlanFromGroups,
   modelValidationSuite,
   buildModelValidationInstanceLabel,
@@ -1071,15 +1070,15 @@ export {
   filterModelValidationGroupInstances,
   formatEntitiesWithZeroInstancesReport,
   formatFailedModelValidationRerunCommands,
-  loadModelValidationInstancesFromDir,
   modelValidationInstancesArrayToRecord,
-  type BuildModelValidationGroupsFromFilesystemParams,
   type ModelValidationFailedCase,
   type ModelValidationGroup,
   type ModelValidationInstanceCheck,
   type ModelValidationInstanceModule,
   type ModelValidationPlan,
 } from "./5_tests/ModelValidationTools.js";
+// Node-only filesystem loaders: import from "miroir-core/model-validation-fs"
+// (kept off the main browser entry — Vite cannot bundle node:fs).
 export {
   buildModelValidationRunnableSuites,
   runModelValidationSuite,

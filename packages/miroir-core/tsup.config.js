@@ -1,7 +1,12 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from 'tsup'
 
 export default defineConfig({
-  entry: ['src/index.ts'],
+  entry: {
+    index: 'src/index.ts',
+    // Node-only: filesystem model-validation helpers (node:fs). Not part of the
+    // browser-facing main entry — Vite cannot resolve existsSync from fs stubs.
+    'model-validation-fs': 'src/5_tests/ModelValidationToolsFilesystem.ts',
+  },
   format: ['esm'],
   bundle: true,
   clean: true,
@@ -21,5 +26,8 @@ export default defineConfig({
     'miroir-test-app_deployment-library',
     // json-diff → @ewoudenberg/difflib uses dynamic require('assert'); must stay external for ncc/ESM consumers
     'json-diff',
+    // Node builtins — only used by model-validation-fs entry
+    'node:fs',
+    'node:path',
   ],
 });
