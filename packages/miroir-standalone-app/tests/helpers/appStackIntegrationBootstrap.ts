@@ -28,7 +28,6 @@ import {
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import {
-  selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
@@ -86,13 +85,13 @@ async function openAdminAndMiroirStores(
 ): Promise<void> {
   const miroirDeploymentForOpenStore: Deployment = {
     ...(deployment_Miroir as Deployment),
-    uuid: selfApplicationDeploymentMiroir.uuid,
+    uuid: deployment_Miroir.uuid,
     configuration: miroirDeploymentStorageConfiguration,
   };
 
   const configurations: Record<string, Deployment> = {
     [adminDeployment.uuid]: adminDeployment,
-    [selfApplicationDeploymentMiroir.uuid]: miroirDeploymentForOpenStore,
+    [deployment_Miroir.uuid]: miroirDeploymentForOpenStore,
   };
 
   for (const c of Object.entries(configurations)) {
@@ -245,7 +244,7 @@ export async function runAppStackIntegrationBootstrap(
         : domainControllerForClient;
 
     const resolvedMiroirDeploymentUuid =
-      miroirDeploymentUuid ?? selfApplicationDeploymentMiroir.uuid;
+      miroirDeploymentUuid ?? deployment_Miroir.uuid;
     const resolvedMiroirSelfApplicationUuid =
       miroirSelfApplicationUuid ?? selfApplicationMiroir.uuid;
 
@@ -317,7 +316,7 @@ export async function runAppStackIntegrationBootstrap(
     !isPhaseSkipped("resetMiroirModel", skipBootstrapPhases)
   ) {
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-      selfApplicationDeploymentMiroir as Deployment,
+      deployment_Miroir as Deployment,
     ]);
   }
 

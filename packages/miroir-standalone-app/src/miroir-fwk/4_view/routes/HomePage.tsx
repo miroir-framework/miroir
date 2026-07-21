@@ -7,43 +7,34 @@ import {
   dummyDomainManyQueryWithDeploymentUuid,
   LoggerInterface,
   MiroirLoggerFactory,
-  Report,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
   type MetaModel,
-  type SelfApplication,
+  type SelfApplication
 } from "miroir-core";
 
 import {
   useMiroirContextService
 } from "miroir-react";
 import { PageContainer } from "../components/Page/PageContainer.js";
-import { usePageConfiguration } from "../services/index.js";
 import { reportUrl } from "../navigation.js";
 
 // import entityPublisher from "../../assets/library_model/";
+import { JsonDisplayHelper } from "miroir-react";
+import {
+  entitySelfApplication,
+  reportMiroirSandboxHome,
+  selfApplicationMiroir
+} from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   packageName,
   type ReportUrlParamKeys
 } from "../../../constants.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
-import { JsonDisplayHelper } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { RunnerList, runnerConfigs } from "../components/Runners/RunnersList.js";
-import { ThemedText } from "../components/Themes/BasicComponents.js";
 import { ReportDisplay } from "./ReportDisplay.js";
-import {
-  entitySelfApplication,
-  reportEntityDefinitionDetails,
-  reportEntityDefinitionList,
-  reportEntityDetails,
-  reportEntityList,
-  reportMiroirSandboxHome,
-  reportMiroirWebAppOrDesktopHome,
-  selfApplicationDeploymentMiroir,
-  selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -162,8 +153,7 @@ export const HomePage = (props: RootComponentProps) => {
     return {
       application: selfApplicationMiroir.uuid,
       applicationSection: "data",
-      deploymentUuid: selfApplicationDeploymentMiroir.uuid,
-      // reportUuid: context?.clientEnvironment == "sandbox" ? reportMiroirSandboxHome.uuid : reportMiroirWebAppOrDesktopHome.uuid,
+      deploymentUuid: deployment_Miroir.uuid,
       reportUuid: reportMiroirSandboxHome.uuid,
       instanceUuid: "none",
     };

@@ -1,4 +1,3 @@
-import crossFetch from "cross-fetch";
 
 import {
   type ApplicationDeploymentMap,
@@ -12,18 +11,14 @@ import {
   type MetaModel,
   type MiroirActivityTracker,
   type MiroirConfigClient,
-  type MiroirEventService,
   type Runner,
   type StoreUnitConfiguration,
   type Uuid,
-  createDeploymentCompositeAction,
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   displayTestSuiteResultsDetails,
-  resetLibraryPlayfield,
+  resetLibraryPlayfield
 } from "miroir-core";
 import {
-  adminApplication_Miroir,
   deployment_Admin,
   deployment_Miroir
 } from "miroir-test-app_deployment-admin";
@@ -32,10 +27,8 @@ import {
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import {
-  selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
-import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest";
 
 export interface RunnerTestParams {
   pageLabel: string,
@@ -89,7 +82,7 @@ export async function beforeEachTest(
       libraryRunTarget?.deploymentUuid ?? deployment_Library_DO_NO_USE.uuid,
     librarySelfApplicationUuid:
       libraryRunTarget?.applicationUuid ?? selfApplicationLibrary.uuid,
-    miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+    miroirDeploymentUuid: deployment_Miroir.uuid,
     miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
     resetMiroirPlatform: options?.resetMiroirPlatform ?? true,
     libraryEntitiesAndInstances: options?.libraryEntitiesAndInstances,

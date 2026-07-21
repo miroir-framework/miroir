@@ -21,9 +21,9 @@ import {
 } from "miroir-core";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {
-  selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 import type { AppStackSessionOptions } from "./IntegrationTestSession.js";
 import {
@@ -86,7 +86,7 @@ export class DomainControllerIntegrationTestSession implements RunnerTestSession
       testApplicationUuid: selfApplicationLibrary.uuid,
       deployMiroirStrategy: "compositeAction",
       openAdminAndMiroirStoresOnServer: true,
-      miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+      miroirDeploymentUuid: deployment_Miroir.uuid,
       miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
       libraryPlayfieldEnsureMode: this.sessionOptions.libraryPlayfieldEnsureMode,
       ...bootstrapHostOptionsFrom(this.sessionOptions),

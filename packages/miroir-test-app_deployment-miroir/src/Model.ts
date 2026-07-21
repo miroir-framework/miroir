@@ -59,7 +59,7 @@ import {
   modelEndpointV1,
   persistenceEndpointVersionV1,
   queryEndpointVersionV1,
-  reportApplicationDeploymentConfigurationList,
+  // reportApplicationDeploymentConfigurationList,
   reportApplicationList,
   reportApplicationModelBranchList,
   reportApplicationVersionList,
@@ -195,7 +195,7 @@ export const defaultMiroirMetaModel: MetaModel = {
   applicationVersions: [selfApplicationVersionInitialMiroirVersion],
   reports: [
     // TODO: MISSING "DETAILS" REPORTS
-    reportApplicationDeploymentConfigurationList as Report,
+    // reportApplicationDeploymentConfigurationList as Report,
     reportApplicationList as Report,
     reportApplicationModelBranchList as Report,
     reportApplicationVersionList as Report,

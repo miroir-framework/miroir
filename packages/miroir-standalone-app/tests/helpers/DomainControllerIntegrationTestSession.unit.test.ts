@@ -7,9 +7,9 @@ import {
 } from "miroir-core";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {
-  selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 
@@ -73,7 +73,7 @@ describe("DomainControllerIntegrationTestSession (Gap E DC)", () => {
         phases: getBootstrapPhasesForDomainControllerProfile("miroirPlatform"),
         deployMiroirStrategy: "compositeAction",
         openAdminAndMiroirStoresOnServer: true,
-        miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+        miroirDeploymentUuid: deployment_Miroir.uuid,
         miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
         testApplicationUuid: selfApplicationLibrary.uuid,
       }),

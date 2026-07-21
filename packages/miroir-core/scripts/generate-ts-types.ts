@@ -29,7 +29,7 @@ import {
   entityDefinitionQueryVersionV1,
   entityDefinitionReportV1,
   entityDefinitionRunner,
-  entityDefinitionSelfApplicationDeploymentConfiguration,
+  // entityDefinitionSelfApplicationDeploymentConfiguration,
   entityDefinitionSelfApplicationModelBranch,
   entityDefinitionSelfApplicationV1,
   entityDefinitionSelfApplicationVersionV1,

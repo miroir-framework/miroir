@@ -36,7 +36,7 @@ import {
   miroirJzodSchemaBootstrap,
   modelEndpointV1,
   queryVersionBundleProducerV1,
-  reportApplicationDeploymentConfigurationList,
+  // reportApplicationDeploymentConfigurationList,
   reportApplicationList,
   reportApplicationModelBranchList,
   reportApplicationVersionList,
@@ -251,10 +251,10 @@ export async function modelInitialize(
       "data",
       reportApplicationList as EntityInstance,
     );
-    await persistenceStoreController.upsertInstance(
-      "data",
-      reportApplicationDeploymentConfigurationList as EntityInstance,
-    );
+    // await persistenceStoreController.upsertInstance(
+    //   "data",
+    //   reportApplicationDeploymentConfigurationList as EntityInstance,
+    // );
     await persistenceStoreController.upsertInstance(
       "data",
       reportApplicationModelBranchList as EntityInstance,

@@ -29,7 +29,8 @@ import { usePageConfiguration } from "../services/usePageConfiguration.js";
 import { adminSelfApplication, entityApplicationForAdmin } from "miroir-test-app_deployment-admin";
 import { Formik, type FormikProps } from "formik";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
-import { reportEntityDefinitionDetails, defaultMiroirMetaModel, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
+import { reportEntityDefinitionDetails, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { reportUrl } from "../navigation.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -55,7 +56,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
     context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
 
   const formikPath = "modelDiagramPage";
-  const inputSelector_applicationUuid = context.toolsPageState?.applicationSelector ?? selfApplicationDeploymentMiroir.uuid;
+  const inputSelector_applicationUuid = context.toolsPageState?.applicationSelector ?? deployment_Miroir.uuid;
   const applicationSelectorPanelSchema: JzodElement = {
     type: "object",
     definition: {
@@ -121,7 +122,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
           context.application;
         const deploymentUuid =
           currentApplicationDeploymentMap[formikContext.values[formikPath].application] ??
-          selfApplicationDeploymentMiroir.uuid;
+          deployment_Miroir.uuid;
           
         const currentModel: MetaModel = useCurrentModel(
           application,

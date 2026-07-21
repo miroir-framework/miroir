@@ -17,9 +17,9 @@ import {
 import { MiroirActivityTracker, MiroirEventService } from "miroir-core";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {
-  selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 describe("setupMiroirTest wrappers (Gap E B2)", () => {
   const miroirConfig = { client: { emulateServer: true } } as MiroirConfigClient;
@@ -77,7 +77,7 @@ describe("setupMiroirTest wrappers (Gap E B2)", () => {
         phases: getBootstrapPhasesForSessionKind("runner"),
         deployMiroirStrategy: "compositeAction",
         openAdminAndMiroirStoresOnServer: false,
-        miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+        miroirDeploymentUuid: deployment_Miroir.uuid,
         miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
         testApplicationUuid: selfApplicationLibrary.uuid,
         customFetch: expect.any(Function),

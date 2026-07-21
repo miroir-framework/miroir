@@ -84,9 +84,9 @@ import {
   defaultMiroirMetaModel,
   entityEntity,
   entityEntityDefinition,
-  selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 // import { entityBook } from "miroir-core";
 
 const env: any = process.env;
@@ -178,7 +178,7 @@ const deployment_Miroir: Deployment = {
 const deployment_Library_DO_NO_USE: Deployment = {
   uuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
   parentName: "Deployment",
-  parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
   name: "LibraryApplicationFilesystemDeployment",
   defaultLabel: "LibraryApplicationFilesystemDeployment",
   selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -267,7 +267,7 @@ beforeAll(async () => {
 // executed only once like beforeAll, since there is only 1 test suite
 beforeEach(async () => {
   await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-    selfApplicationDeploymentMiroir as Deployment,
+    deployment_Miroir as Deployment,
   ]);
   document.body.innerHTML = "";
 });

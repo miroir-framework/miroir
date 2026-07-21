@@ -65,7 +65,7 @@ import { cleanLevel, packageName } from '../../src/constants.js';
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   addEntitiesAndInstances,
-  selfApplicationDeploymentConfigurations,
+  selfApplicationDeploymentConfigurationsTO_REMOVE,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { chainVitestSteps } from '../../src/miroir-fwk/4-tests/vitest-utils.js';
 import { miroirAppStartup } from '../../src/startup.js';
@@ -195,7 +195,7 @@ beforeEach(
       applicationDeploymentMap,
       libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
       librarySelfApplicationUuid: selfApplicationLibrary.uuid,
-      deploymentsToReset: selfApplicationDeploymentConfigurations,
+      deploymentsToReset: selfApplicationDeploymentConfigurationsTO_REMOVE,
       postResetHook: async () => {
         document.body.innerHTML = '';
         await addEntitiesAndInstances(
@@ -248,18 +248,6 @@ beforeEach(
 )
 
 // // ################################################################################################
-// afterEach(
-//   async () => {
-//     await resetApplicationDeployments(
-//       deploymentConfigurations,
-//       applicationDeploymentMap,
-//       domainController,
-//       localCache,
-//     );
-//   }
-// )
-
-// // ################################################################################################
 // afterAll(
 //   async () => {
 //     console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments")
@@ -303,11 +291,11 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
   //             application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   //             endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
   //             payload: {
-  //               application: selfApplicationDeploymentMiroir.uuid,
+  //               application: deployment_Miroir.uuid,
   //               // deploymentUuid: deployment_Miroir.uuid,
   //               applicationSection: applicationSection,
   //               query: {
-  //                 application: selfApplicationDeploymentMiroir.uuid,
+  //                 application: deployment_Miroir.uuid,
   //                 queryType: "boxedExtractorTemplateReturningObject",
   //                 pageParams: {},
   //                 queryParams: {},

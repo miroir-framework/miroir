@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import {
-  // SelfApplicationDeploymentConfigurationSchema,
+  // selfApplicationDeploymentConfigurationsTO_REMOVEchema,
   domainElementObject,
   entity,
   entityDefinition,
@@ -39,7 +39,7 @@ export const tableComponentCorePropsSchema = z.object({
 
 export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
-  // displayedDeploymentDefinition: SelfApplicationDeploymentConfigurationSchema,
+  // displayedDeploymentDefinition: selfApplicationDeploymentConfigurationsTO_REMOVEchema,
   // displayedDeploymentDefinition: deployment,
   currentEntity: entity.optional(),
   currentEntityDefinition: entityDefinition,

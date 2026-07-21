@@ -58,7 +58,8 @@ import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOu
 import { useReportPageContext } from './ReportPageContext.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
-import { entityQueryVersion, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
+import { entityQueryVersion } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance"), "UI",
@@ -204,7 +205,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentDeploymentModel: MetaModel = useCurrentModel(
     props.applicationSection == "data"
       ? props.application
-      : selfApplicationDeploymentMiroir.uuid, // the report to edit any element from the 'model' section must be in the meta-model
+      : deployment_Miroir.uuid, // the report to edit any element from the 'model' section must be in the meta-model
       props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
 

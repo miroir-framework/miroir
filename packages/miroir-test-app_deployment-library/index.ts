@@ -57,7 +57,7 @@ export { default as selfApplicationLibrary } from "./assets/library_model/a659d3
 export { default as selfApplicationStoreBasedConfigurationLibrary } from "./assets/library_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/2e5b7948-ff33-4917-acac-6ae6e1ef364f.json" with { type: "json" };
 export { default as selfApplicationVersionLibraryInitialVersion } from "./assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json" with { type: "json" };
 export { default as selfApplicationModelBranchLibraryMasterBranch } from "./assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json" with { type: "json" };
-export { default as selfApplicationDeploymentLibrary } from "./assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
+// export { default as selfApplicationDeploymentLibrary } from "./assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
 // export { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-admin";
 
 // Library Model - Documents

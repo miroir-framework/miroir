@@ -129,7 +129,7 @@
 //   { eager: true },
 // ) as Record<string, { default: any }>;
 
-// // Model: SelfApplicationDeploymentConfigurations (parentUuid = entitySelfApplicationDeploymentConfiguration = 35c5608a)
+// // Model: selfApplicationDeploymentConfigurationsTO_REMOVE (parentUuid = entitySelfApplicationDeploymentConfiguration = 35c5608a)
 // const selfApplicationDeploymentInstances = import.meta.glob(
 //   "../assets/library_model/35c5608a-7678-4f07-a4ec-76fc5bc35424/*.json",
 //   { eager: true },

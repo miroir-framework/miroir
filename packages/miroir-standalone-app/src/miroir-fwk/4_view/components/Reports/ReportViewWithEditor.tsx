@@ -29,7 +29,8 @@ import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
 
-import { reportReportDetails, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
+import { reportReportDetails } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportViewWithEditor"), "UI",
@@ -131,7 +132,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ##############################################################################################
   // (meta-)information about the current report, to enable editing
   const entityDefinitionReport: EntityDefinition | undefined = useMemo(() => {
-    const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[selfApplicationDeploymentMiroir.uuid];
+    const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[deployment_Miroir.uuid];
     if (!miroirMapping) return undefined;
     const result =  miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
     log.info("ReportViewWithEditor found report entity definition", { result });

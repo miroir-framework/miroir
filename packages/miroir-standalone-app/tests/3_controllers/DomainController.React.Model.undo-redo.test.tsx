@@ -8,7 +8,7 @@
 import React from "react";
 import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect } from 'vitest';
+import { describe, expect, beforeAll, beforeEach, it } from 'vitest';
 
 import {
   ConfigurationService,
@@ -46,7 +46,7 @@ import {
 import {
   DisplayLoadingInfo,
   renderWithProviders,
-  selfApplicationDeploymentConfigurations,
+  selfApplicationDeploymentConfigurationsTO_REMOVE,
 } from "../../src/miroir-fwk/4-tests/tests-utils";
 import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
 
@@ -164,7 +164,7 @@ beforeEach(
       applicationDeploymentMap,
       libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
       librarySelfApplicationUuid: selfApplicationLibrary.uuid,
-      deploymentsToReset: selfApplicationDeploymentConfigurations,
+      deploymentsToReset: selfApplicationDeploymentConfigurationsTO_REMOVE,
     });
     document.body.innerHTML = '';
   }
@@ -177,17 +177,6 @@ beforeEach(
 //       domainController,
 //       applicationDeploymentMap,
 //       adminApplicationDeploymentConfigurations,
-//     );
-//   }
-// )
-
-// afterEach(
-//   async () => {
-//     await resetApplicationDeployments(
-//       deploymentConfigurations,
-//       applicationDeploymentMap,
-//       domainController,
-//       localCache,
 //     );
 //   }
 // )

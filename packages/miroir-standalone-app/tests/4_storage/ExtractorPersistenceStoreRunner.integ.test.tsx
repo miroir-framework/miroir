@@ -51,7 +51,7 @@ import type {
 } from "miroir-core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
-  selfApplicationDeploymentConfigurations,
+  selfApplicationDeploymentConfigurationsTO_REMOVE,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { chainVitestSteps } from "../../src/miroir-fwk/4-tests/vitest-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
@@ -208,7 +208,7 @@ beforeEach(async () => {
     applicationDeploymentMap,
     libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
     librarySelfApplicationUuid: selfApplicationLibrary.uuid,
-    deploymentsToReset: selfApplicationDeploymentConfigurations,
+    deploymentsToReset: selfApplicationDeploymentConfigurationsTO_REMOVE,
     libraryEntitiesAndInstances,
     librarySeedInitParams: libraryPlayfieldSeedInitParams,
     librarySeedMetaModel: defaultLibraryModelEnvironment.currentModel as any,

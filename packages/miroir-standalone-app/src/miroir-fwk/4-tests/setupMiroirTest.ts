@@ -12,7 +12,6 @@ import {
   type StoreUnitConfiguration
 } from "miroir-core";
 import {
-  selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
@@ -38,6 +37,7 @@ import {
 import { packageName } from "../../constants";
 import { cleanLevel } from "../4_view/constants";
 import { runAppStackIntegrationBootstrap } from "../../../tests/helpers/appStackIntegrationBootstrap.js";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -210,7 +210,7 @@ export async function setupMiroirTestAndDeployMiroirApp(
     applicationDeploymentMap,
     adminDeployment,
     miroirDeploymentStorageConfiguration,
-    miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+    miroirDeploymentUuid: deployment_Miroir.uuid,
     miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
     phases: getBootstrapPhasesForSessionKind("runner"),
     miroirActivityTracker,

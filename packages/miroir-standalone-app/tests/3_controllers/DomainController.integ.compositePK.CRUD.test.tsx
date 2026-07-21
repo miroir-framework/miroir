@@ -4,7 +4,7 @@
  * Canonical leaves: `miroirTest_domain_controller_composite_pk_crud` (deployment-miroir; Library is runTarget only).
  * Kept green until MiroirTest is accepted as sole owner — do not delete.
  */
-import { describe, expect, beforeAll, beforeEach, afterAll, afterEach, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import process from "process";
 
@@ -30,12 +30,11 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
   StoreUnitConfiguration,
   TestCompositeActionParams,
   testUtils_deleteApplicationDeployment,
-  testUtils_resetApplicationDeployment,
+  testUtils_resetApplicationDeployment
 } from "miroir-core";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -52,24 +51,19 @@ import { deployment_Admin } from "miroir-test-app_deployment-admin";
 import {
   entityDefinitionPublisher,
   entityPublisher,
-  folio as publisher1,
-  penguin as publisher2,
-  springer as publisher3,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion,
+  selfApplicationVersionLibraryInitialVersion
 } from "miroir-test-app_deployment-library";
 
 import { packageName } from "../../src/constants.js";
-import { cleanLevel } from "./constants.js";
-import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
+import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
+import { cleanLevel } from "./constants.js";
 
 import {
   defaultMiroirMetaModel,
-  entityEntity,
-  selfApplicationDeploymentMiroir,
-  selfApplicationMiroir,
+  selfApplicationMiroir
 } from "miroir-test-app_deployment-miroir";
 // ##############################################################################################
 // Composite-PK test entity definition
@@ -162,6 +156,7 @@ const compositePKTestMetaModel: MetaModel = {
   jzodSchemas: [],
   menus: [],
   runners: [],
+  tests: [],
   themes: [],
   applicationVersions: [],
   reports: [],
@@ -237,7 +232,7 @@ const deployment_Miroir: Deployment = {
 const deployment_Library_DO_NO_USE: Deployment = {
   uuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
   parentName: "Deployment",
-  parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
   name: "LibraryApplicationFilesystemDeployment",
   defaultLabel: "LibraryApplicationFilesystemDeployment",
   selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",

@@ -21,7 +21,8 @@ import {
   RUNNER_LIBRARY_RUNNER_REGISTRY,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { selfApplicationDeploymentMiroir, selfApplicationMiroir, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 const runRealServerClientBootstrapMock = vi.fn();
@@ -215,7 +216,7 @@ describe("RunnerTestSession (Gap E R)", () => {
         phases: getBootstrapPhasesForSessionKind("runner"),
         deployMiroirStrategy: "compositeAction",
         openAdminAndMiroirStoresOnServer: false,
-        miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+        miroirDeploymentUuid: deployment_Miroir.uuid,
         miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
         testApplicationUuid: runTarget.applicationUuid,
         customFetch: expect.any(Function),

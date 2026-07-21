@@ -20,7 +20,6 @@ import {
   type StoreUnitConfiguration,
 } from "miroir-core";
 import {
-  selfApplicationDeploymentMiroir,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
@@ -44,6 +43,7 @@ import {
   resolveMiroirStorageFromMiroirConfig,
   seedTransformerTestApplicationData,
 } from "./transformerTestApplicationPlayfield.js";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 export type RealServerTransformerTestSessionOptions = AppStackBootstrapHostOptions & {
   /** Discriminant — orchestrator routes on this (or `isRealServerTransformerSessionOptions`). */
@@ -141,7 +141,7 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
         miroirEventService: this.options.miroirEventService,
         customFetch,
         testApplicationUuid: identity.applicationUuid,
-        miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+        miroirDeploymentUuid: deployment_Miroir.uuid,
         miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
         ...hostBootstrap,
         platformEnsureMode: this.options.platformEnsureMode ?? "skip",

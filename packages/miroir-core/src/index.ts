@@ -518,7 +518,7 @@ export {
 } from "./0_interfaces/1_core/Model.js";
 
 export {
-  // SelfApplicationDeploymentConfigurationSchema,
+  // selfApplicationDeploymentConfigurationsTO_REMOVEchema,
   // Deployment,
   AdminApplicationDeploymentConfiguration,
   ApplicationModelLevel,

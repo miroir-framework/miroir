@@ -50,7 +50,7 @@ import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   adminApplicationDeploymentConfigurations,
   deleteAndCloseApplicationDeployments,
-  selfApplicationDeploymentConfigurations,
+  selfApplicationDeploymentConfigurationsTO_REMOVE,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
@@ -168,16 +168,9 @@ beforeEach(async () => {
     applicationDeploymentMap,
     libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
     librarySelfApplicationUuid: selfApplicationLibrary.uuid,
-    deploymentsToReset: selfApplicationDeploymentConfigurations,
+    deploymentsToReset: selfApplicationDeploymentConfigurationsTO_REMOVE,
   });
 });
-
-// // // ################################################################################################
-// // afterEach(
-// //   async () => {
-// //     await resetApplicationDeployments(deploymentConfigurations, domainController, undefined);
-// //   }
-// // )
 
 // ################################################################################################
 afterAll(async () => {
@@ -312,7 +305,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   // //           metaModel: defaultMiroirMetaModel,
   // //           dataStoreType: 'miroir',
   // //           selfApplication: selfApplicationMiroir,
-  // //           applicationDeploymentConfiguration: selfApplicationDeploymentMiroir, //deployment_Miroir,
+  // //           applicationDeploymentConfiguration: deployment_Miroir, //deployment_Miroir,
   // //           applicationModelBranch: selfApplicationModelBranchMiroirMasterBranch,
   // //           applicationVersion: selfApplicationVersionInitialMiroirVersion,
   // //           applicationStoreBasedConfiguration: selfApplicationStoreBasedConfigurationMiroir,

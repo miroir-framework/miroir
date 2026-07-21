@@ -29,16 +29,16 @@ import {
   type Deployment
 } from "miroir-core";
 import {
+  deployment_Admin,
   deployment_Miroir
 } from "miroir-test-app_deployment-admin";
 import {
-  selfApplicationDeploymentMiroir,
-  selfApplicationMiroir,
+  selfApplicationMiroir
 } from "miroir-test-app_deployment-miroir";
 
-import {
-  selfApplicationDeploymentLibrary,
-} from "miroir-test-app_deployment-library";
+// import {
+//   selfApplicationDeploymentLibrary,
+// } from "miroir-test-app_deployment-library";
 
 import {
   LocalCache,
@@ -59,7 +59,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 const deployment_Library_DO_NO_USE: AdminApplicationDeploymentConfiguration = {
   uuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
   parentName: "Deployment",
-  parentUuid: "35c5608a-7678-4f07-a4ec-76fc5bc35424",
+  parentUuid: "7959d814-400c-4e80-988f-a00fe582ab98",
   name: "LibraryApplicationFilesystemDeployment",
   defaultLabel: "LibraryApplicationFilesystemDeployment",
   selfApplication: "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -90,20 +90,32 @@ const deployment_Library_DO_NO_USE: AdminApplicationDeploymentConfiguration = {
 // ################################################################################################
 // const deployments = [deployment_Miroir, deployment_Library_DO_NO_USE ];
 
-export const deploymentConfigurations: DeploymentConfiguration[] = [
-  {
-    adminConfigurationDeployment: deployment_Miroir,
-    selfApplicationDeployment: selfApplicationDeploymentMiroir as Deployment,
-  },
-  {
-    adminConfigurationDeployment: deployment_Library_DO_NO_USE,
-    selfApplicationDeployment: selfApplicationDeploymentLibrary as Deployment,
-  },
-];
 
-export const selfApplicationDeploymentConfigurations: Deployment[] = [
-    selfApplicationDeploymentMiroir as Deployment,
-    selfApplicationDeploymentLibrary  as Deployment,
+export const selfApplicationDeploymentConfigurationsTO_REMOVE: Deployment[] = [
+    deployment_Admin as Deployment,
+    {
+      "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+      "parentName":"Deployment",
+      "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
+      "name":"LibraryApplicationFilesystemDeployment",
+      "defaultLabel":"LibraryApplicationFilesystemDeployment",
+      "selfApplication":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "description": "The default Filesystem Deployment for SelfApplication Library",
+      "configuration": {
+        "admin": {
+          "emulatedServerType": "filesystem",
+          "directory": "miroir-test-app_deployment-admin/assets"
+        },
+        "model": {
+          "emulatedServerType": "filesystem",
+          "directory":"miroir-test-app_deployment-library/assets/library_model"
+        },
+        "data": {
+          "emulatedServerType": "filesystem",
+          "directory":"miroir-test-app_deployment-library/assets/library_data"
+        }
+      }
+    } as Deployment, //selfApplicationDeploymentLibrary
 ];
 
 export const adminApplicationDeploymentConfigurations: AdminApplicationDeploymentConfiguration[] = [

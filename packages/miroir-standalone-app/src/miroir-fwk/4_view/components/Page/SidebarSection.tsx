@@ -41,7 +41,8 @@ import { JsonDisplayHelper } from 'miroir-react';
 import type { MiroirMenuItemDivider, MiroirMenuReportLink } from 'miroir-core';
 import { pageUrl, reportUrl } from '../../navigation.js';
 
-import { entityMenu, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
+import { entityMenu } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar"), "UI",
@@ -293,10 +294,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                     (curr: MiroirMenuReportLink | MiroirMenuItemDivider) =>
                       // context.viewParams.generalEditMode
                       ((curr.selfApplication === adminSelfApplication.uuid ||
-                        curr.selfApplication === selfApplicationDeploymentMiroir.uuid) &&
+                        curr.selfApplication === deployment_Miroir.uuid) &&
                         context.showModelTools) ||
                       (curr.selfApplication !== adminSelfApplication.uuid &&
-                        curr.selfApplication !== selfApplicationDeploymentMiroir.uuid &&
+                        curr.selfApplication !== deployment_Miroir.uuid &&
                         (!curr.menuItemScope ||
                           curr.menuItemScope == "data" ||
                           context.viewParams.generalEditMode)),
@@ -324,10 +325,10 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
                     .filter(
                       (curr: MiroirMenuReportLink | MiroirMenuItemDivider) =>
                         ((curr.selfApplication === adminSelfApplication.uuid ||
-                          curr.selfApplication === selfApplicationDeploymentMiroir.uuid) &&
+                          curr.selfApplication === deployment_Miroir.uuid) &&
                           context.showModelTools) ||
                         (curr.selfApplication !== adminSelfApplication.uuid &&
-                          curr.selfApplication !== selfApplicationDeploymentMiroir.uuid &&
+                          curr.selfApplication !== deployment_Miroir.uuid &&
                           (!curr.menuItemScope ||
                             curr.menuItemScope == "data" ||
                             context.viewParams.generalEditMode)),

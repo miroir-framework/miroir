@@ -26,7 +26,8 @@ import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { selfApplicationDeploymentMiroir, selfApplicationMiroir, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   beforeEachTest,
   getTestConfig,
@@ -189,7 +190,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
             miroirEventService,
             customFetch,
             testApplicationUuid: runTarget.applicationUuid,
-            miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+            miroirDeploymentUuid: deployment_Miroir.uuid,
             miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
             ...bootstrapHostOptionsFrom(this.options),
             // D9: shared miroir-server already has Miroir platform (after host options)
@@ -207,7 +208,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
             testApplicationUuid: runTarget.applicationUuid,
             deployMiroirStrategy: "compositeAction",
             openAdminAndMiroirStoresOnServer: false,
-            miroirDeploymentUuid: selfApplicationDeploymentMiroir.uuid,
+            miroirDeploymentUuid: deployment_Miroir.uuid,
             miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
             ...bootstrapHostOptionsFrom(this.options),
           });

@@ -74,7 +74,8 @@ import {
 } from "miroir-test-app_deployment-library";
 import { callMcpToolViaHttp } from './mcpClient.js';
 
-import { defaultMiroirMetaModel, selfApplicationDeploymentMiroir } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 // import { runMcpTestsViaHttp } from './mcpClient.js';
 
 const packageName = "miroir-mcp";
@@ -309,7 +310,7 @@ describe("MCP Tools Integration Tests", () => {
   beforeEach(async () => {
     // Reset Miroir deployment to clean state before each test
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-      selfApplicationDeploymentMiroir as Deployment,
+      deployment_Miroir as Deployment,
     ]);
 
     const createLibraryAction = resetAndinitializeDeploymentCompositeAction(

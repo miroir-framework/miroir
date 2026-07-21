@@ -10,7 +10,7 @@ export { default as entityMenu } from "./assets/miroir_model/16dbfe28-e1d7-4f20-
 export { default as entityReport } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916.json" with { type: "json" };
 export { default as entityRunner } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd.json" with { type: "json" };
 export { default as entitySelfApplication } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a659d350-dd97-4da9-91de-524fa01745dc.json" with { type: "json" };
-export { default as entitySelfApplicationDeploymentConfiguration } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json" with { type: "json" };
+// export { default as entitySelfApplicationDeploymentConfiguration } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/35c5608a-7678-4f07-a4ec-76fc5bc35424.json" with { type: "json" };
 export { default as entitySelfApplicationVersion } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json" with { type: "json" };
 export { default as entitySelfApplicationModelBranch } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/cdb0aec6-b848-43ac-a058-fe2dbe5811f1.json" with { type: "json" };
 export { default as entityStoreBasedConfiguration } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7990c0c9-86c3-40a1-a121-036c91b55ed7.json" with { type: "json" };
@@ -34,7 +34,7 @@ export { default as entityDefinitionQuery } from "./assets/miroir_model/54b9c72f
 export { default as entityDefinitionReport } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json" with { type: "json" };
 export { default as entityDefinitionRunner } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/daa38a5f-f1b5-4d4f-94b7-54e97fe6782e.json" with { type: "json" };
 export { default as entityDefinitionSelfApplication } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9460420b-f176-4918-bd45-894ab195ffe9.json" with { type: "json" };
-export { default as entityDefinitionSelfApplicationDeploymentConfiguration } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json" with { type: "json" };
+// export { default as entityDefinitionSelfApplicationDeploymentConfiguration } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bd303ae8-6bce-4b44-a63c-815b9ebf728b.json" with { type: "json" };
 export { default as entityDefinitionSelfApplicationVersion } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/27046fce-742f-4cc4-bb95-76b271f490a5.json" with { type: "json" };
 export { default as entityDefinitionSelfApplicationModelBranch } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/69bf7c03-a1df-4d1c-88c1-44363feeea87.json" with { type: "json" };
 export { default as entityDefinitionTest } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/d2842a84-3e66-43ee-ac58-7e13b95b01e8.json" with { type: "json" };
@@ -64,10 +64,6 @@ export { default as modelEndpointVersionV1 } from "./assets/miroir_data/3d8da4d4
 // ################################################################################################
 export { default as selfApplicationMiroir } from "./assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json" with { type: "json" };
 
-// ################################################################################################
-// Miroir Data - SelfApplicationDeploymentConfiguration (parentUuid = 35c5608a)
-// ################################################################################################
-export { default as selfApplicationDeploymentMiroir } from "./assets/miroir_data/35c5608a-7678-4f07-a4ec-76fc5bc35424/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - StoreBasedConfiguration (parentUuid = 7990c0c9)
@@ -88,7 +84,7 @@ export { default as selfApplicationVersionInitialMiroirVersion } from "./assets/
 // Miroir Data - Reports (parentUuid = entityReport = 3f2baa83)
 // ################################################################################################
 export { default as reportApplicationList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0e4cf674-3a26-422a-8618-09e32302ac0c.json" with { type: "json" };
-export { default as reportApplicationDeploymentConfigurationList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json" with { type: "json" };
+// export { default as reportApplicationDeploymentConfigurationList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/df0a9a8f-e0f6-4f9f-8635-c8460e638e1b.json" with { type: "json" };
 export { default as reportApplicationModelBranchList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json" with { type: "json" };
 export { default as reportApplicationVersionList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0810de28-fdab-4baf-8935-7e04a8f779a9.json" with { type: "json" };
 export { default as reportConfigurationList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/43f04807-8f96-43f9-876f-9a0210f7b99c.json" with { type: "json" };

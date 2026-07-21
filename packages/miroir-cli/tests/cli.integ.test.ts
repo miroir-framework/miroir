@@ -29,6 +29,9 @@ import {
   type SpecificLoggerOptionsMap,
   miroirFundamentalJzodSchema,
   type MlSchema,
+  type EndpointDefinition,
+  type SelfApplication,
+  type Entity,
 } from "miroir-core";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
@@ -73,7 +76,8 @@ import {
   type CliCommandHandler,
 } from "../src/commands/commandsFromEndpoint.js";
 
-import { defaultMiroirMetaModel, selfApplicationDeploymentMiroir, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 const packageName = "miroir-cli";
 const fileName = "cli.integ.test";
 
@@ -96,12 +100,12 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
-    entity: entityAuthor as MetaEntity,
+    entity: entityAuthor as Entity,
     entityDefinition: entityDefinitionAuthor as EntityDefinition,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
-    entity: entityBook as MetaEntity,
+    entity: entityBook as Entity,
     entityDefinition: entityDefinitionBook as EntityDefinition,
     instances: [
       book1 as EntityInstance,
@@ -112,12 +116,12 @@ const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances =
     ],
   },
   {
-    entity: entityPublisher as MetaEntity,
+    entity: entityPublisher as Entity,
     entityDefinition: entityDefinitionPublisher as EntityDefinition,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
   {
-    entity: entityUser as MetaEntity,
+    entity: entityUser as Entity,
     entityDefinition: entityDefinitionUser as EntityDefinition,
     instances: [
       user1 as EntityInstance,
@@ -434,11 +438,11 @@ describe("CLI Commands Integration Tests", () => {
   beforeEach(async () => {
     // Reset Miroir deployment to clean state before each test
     await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
-      selfApplicationDeploymentMiroir as Deployment,
+      deployment_Miroir as Deployment,
     ]);
     const defaultLibraryAppModelDEFUNCT = getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
-      instanceEndpointV1,
+      instanceEndpointV1 as EndpointDefinition,
       resolveLibraryDeploymentUuid(applicationDeploymentMap),
     );
     
@@ -448,11 +452,11 @@ describe("CLI Commands Integration Tests", () => {
       {
         dataStoreType: "app",
         metaModel: defaultMiroirMetaModel,
-        selfApplication: selfApplicationLibrary,
+        selfApplication: selfApplicationLibrary as SelfApplication,
         applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       },
-      defaultLibraryAppModelthoutBook3,
+      libraryEntitiesAndInstancesWithoutBook3,
       defaultLibraryAppModelDEFUNCT.currentModel as any,
     );
     const beforeEachResult = await domainController.handleCompositeAction(
