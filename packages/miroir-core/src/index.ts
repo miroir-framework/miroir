@@ -797,6 +797,11 @@ export {
   metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities
 } from "./1_core/Model.js";
 export {
+  resolveEntitiesToFetchOnRefresh,
+  shouldCacheAllInstancesOnRefresh,
+  type EntityFetchOnRefresh,
+} from "./1_core/cacheRefreshPolicy.js";
+export {
   formatRelativePath,
   formatRelativePaths,
   listSelfApplicationUuidPaths,

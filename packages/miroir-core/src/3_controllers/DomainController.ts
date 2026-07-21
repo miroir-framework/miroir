@@ -20,6 +20,7 @@ import {
 import {
   entityEndpointVersion,
   entityEntity,
+  entityEntityDefinition,
   entityMenu,
   entityQueryVersion,
   entityReport,
@@ -68,6 +69,9 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
+import {
+  resolveEntitiesToFetchOnRefresh,
+} from "../1_core/cacheRefreshPolicy.js";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
 import {
   defaultMiroirModelEnvironment,
@@ -457,96 +461,96 @@ export class DomainController implements DomainControllerInterface {
           //   modelEntitiesToFetch.map((e) => e.name),
           // );
 
-          const toFetchEntities: { section: ApplicationSection; entity: Entity }[] = [
-            ...modelEntitiesToFetch.map((e) => ({
-              section: "model" as ApplicationSection,
-              entity: e,
-            })),
-            ...dataEntitiesToFetch.map((e) => ({
-              section: "data" as ApplicationSection,
-              entity: e as Entity,
-            })),
-          ];
-          // log.debug(
-          //   "DomainController loadConfigurationFromPersistenceStore for",
-          //   "application",
-          //   applicationUuid,
-          //   "deployment",
-          //   deploymentUuid,
-          //   "found entities to fetch",
-          //   toFetchEntities.map((e) => ({
-          //     section: e.section,
-          //     name: e.entity.name,
-          //     uuid: e.entity.uuid,
-          //   })),
-          // );
-
-          // Batch all persistence operations for React 18 automatic batching
-          const fetchPromises = toFetchEntities
-            // .slice(1)
-            .map((e) => {
-              // log.info(
-              //   "DomainController loadConfigurationFromPersistenceStore",
-              //   "application",
-              //   applicationUuid,
-              //   "deployment",
-              //   deploymentUuid,
-              //   "fetching instances from server for entity",
-              //   (e as any).name,
-              //   // JSON.stringify(e, undefined, 2),
-              // );
-              return this.callUtil
-                .callPersistenceAction(
-                  {}, // context
-                  {
-                    addResultToContextAsName: "entityInstanceCollection",
-                    expectedDomainElementType: "entityInstanceCollection",
-                  }, // continuation
-                  applicationDeploymentMap,
-                  {
-                    actionType: "RestPersistenceAction_read",
-                    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                    payload: {
-                      application: applicationUuid,
-                      section: e.section,
-                      parentName: e.entity.name,
-                      parentUuid: e.entity.uuid,
-                    },
+          const fetchEntityInstances = (e: {
+            section: ApplicationSection;
+            entity: Entity;
+          }) => {
+            return this.callUtil
+              .callPersistenceAction(
+                {}, // context
+                {
+                  addResultToContextAsName: "entityInstanceCollection",
+                  expectedDomainElementType: "entityInstanceCollection",
+                }, // continuation
+                applicationDeploymentMap,
+                {
+                  actionType: "RestPersistenceAction_read",
+                  endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+                  payload: {
+                    application: applicationUuid,
+                    section: e.section,
+                    parentName: e.entity.name,
+                    parentUuid: e.entity.uuid,
                   },
-                )
-                .then((context: Record<string, any> | Action2Error) => {
-                  if (context instanceof Action2Error) {
-                    return context;
-                  } else {
-                    return context["entityInstanceCollection"].returnedDomainElement;
-                  }
-                })
-                .catch((reason) => {
-                  log.error(
-                    "DomainController loadConfigurationFromPersistenceStore failed to fetch entity instances for entity ",
-                    e.entity.name,
-                    "application",
-                    applicationUuid,
-                    "deployment",
-                    deploymentUuid,
+                },
+              )
+              .then((fetchContext: Record<string, any> | Action2Error) => {
+                if (fetchContext instanceof Action2Error) {
+                  return fetchContext;
+                } else {
+                  return fetchContext["entityInstanceCollection"].returnedDomainElement;
+                }
+              })
+              .catch((reason) => {
+                log.error(
+                  "DomainController loadConfigurationFromPersistenceStore failed to fetch entity instances for entity ",
+                  e.entity.name,
+                  "application",
+                  applicationUuid,
+                  "deployment",
+                  deploymentUuid,
+                  reason,
+                );
+                return new Action2Error(
+                  "FailedToHandleAction",
+                  "DomainController loadConfigurationFromPersistenceStore application" +
+                    applicationUuid +
+                    "deployment" +
+                    deploymentUuid +
+                    " failed to fetch entity instances for " +
+                    e.entity.name +
+                    " reason: " +
                     reason,
-                  );
-                  return new Action2Error(
-                    "FailedToHandleAction",
-                    "DomainController loadConfigurationFromPersistenceStore application" +
-                      applicationUuid +
-                      "deployment" +
-                      deploymentUuid +
-                      " failed to fetch entity instances for " +
-                      e.entity.name +
-                      " reason: " +
-                      reason,
-                  );
-                });
-            });
+                );
+              });
+          };
 
-          // Wait for all fetch operations to complete
-          const allInstances = await Promise.all(fetchPromises);
+          // Model is always loaded entirely (application concepts). Fetch model first so
+          // EntityDefinitions are available to interpret cacheAllInstancesOnRefresh for data.
+          const modelFetchTargets = modelEntitiesToFetch.map((e) => ({
+            section: "model" as ApplicationSection,
+            entity: e,
+          }));
+          const modelInstances = await Promise.all(modelFetchTargets.map(fetchEntityInstances));
+
+          const entityDefinitionsByEntityUuid: Record<string, EntityDefinition> = {};
+          const entityDefinitionFetchIndex = modelEntitiesToFetch.findIndex(
+            (e) => e.uuid === entityEntityDefinition.uuid,
+          );
+          if (entityDefinitionFetchIndex >= 0) {
+            const entityDefinitionCollection = modelInstances[entityDefinitionFetchIndex];
+            if (
+              !(entityDefinitionCollection instanceof Action2Error) &&
+              entityDefinitionCollection &&
+              Array.isArray(entityDefinitionCollection.instances)
+            ) {
+              for (const def of entityDefinitionCollection.instances as EntityDefinition[]) {
+                if (def?.entityUuid) {
+                  entityDefinitionsByEntityUuid[def.entityUuid] = def;
+                }
+              }
+            }
+          }
+
+          const toFetchEntities = resolveEntitiesToFetchOnRefresh(
+            modelEntitiesToFetch,
+            dataEntitiesToFetch as Entity[],
+            entityDefinitionsByEntityUuid,
+          );
+          const dataFetchTargets = toFetchEntities.filter((e) => e.section === "data");
+          const dataInstances = await Promise.all(dataFetchTargets.map(fetchEntityInstances));
+
+          const allInstances = [...modelInstances, ...dataInstances];
 
           const errors = allInstances.filter((result) => result instanceof Action2Error);
           const nonErrors = allInstances.filter((result) => !(result instanceof Action2Error));
