@@ -62,6 +62,9 @@ describe("LocalCacheMonitorSummary (Phase 7)", () => {
     expect(screen.getByTestId("localcache-monitor-present")).toHaveTextContent("3.8 KB");
     expect(screen.getByTestId("localcache-monitor-history")).toHaveTextContent("120 B");
     expect(screen.getByTestId("localcache-monitor-query-cache")).toHaveTextContent("48 B");
+    expect(screen.getByTestId("localcache-monitor-indicators")).toBeInTheDocument();
+    expect(screen.getByTestId("localcache-monitor-peak")).toHaveTextContent("4.0 KB");
+    expect(screen.getByTestId("localcache-monitor-hit-ratio")).toHaveTextContent("n/a");
   });
 
   it("reads non-zero sizes from LocalCache.getState even without session monitor APIs", () => {

@@ -11,7 +11,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 [#61 performance monitor TDD plan](../61-FEATURE-%20include%20performance%20monitoring%20for%20UI%20components/tdd-implementation-plan.md) ·
 [#208 caching design](https://github.com/miroir-framework/miroir/issues/208)
 
-**Status:** Phases 0–5 and 7 done; Phase 6 (efficiency indicators) or Phase 8 (export/clear/footprint) next.
+**Status:** Phases 0–7 done; Phase 8 (export / clear / footprint) next.
 
 ---
 
@@ -25,7 +25,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 | **3** | `currentInfo` present-only via `estimateObjectBytes`; rich path = `measureLocalCacheMemory` | **Done** (2026-07-21) |
 | **4** | Attributed per-Entity + top-10 | **Done** (2026-07-21) — present.current only; loading ignored |
 | **5** | Barrier recalibration + CRUD/load deltas | **Done** (2026-07-21) — session gate + full recalibrate on action |
-| **6** | Session efficiency indicators | Pending |
+| **6** | Session efficiency indicators | **Done** (2026-07-22) — peak/growth, history ratio, hit/thrash stubs, top-3 share |
 | **7** | UI: AppBar toggle + docked panel | **Done** (2026-07-21) — gate + summary + AppBar + ReportDisplay |
 | **8** | Export / Clear / acceptance footprint | Pending |
 
@@ -351,6 +351,19 @@ RED → GREEN
 
 **Goal:** Session metrics when monitor session is active (in-memory registry cleared on gate OFF).
 
+**Status:** Done (2026-07-22). Hit/miss and thrash are stub counters (call sites deferred); UI shows `n/a` for hit ratio until hooks land.
+
+### Phase 6 achievement log
+
+| Slice | Result |
+|-------|--------|
+| 6.1 | Peak effective + growth bytes/min from consecutive breakdown samples |
+| 6.2 | `historyToPresentRatio` with div-by-zero → null |
+| 6.3 | Hit/miss ratio math + thrash on delete-then-reload PK; top-3 entity share |
+| Hygiene | Gate OFF resets indicators with registry; panel lists indicators when expanded |
+
+**Artifacts:** `localCacheMonitorIndicators.ts`; `tests/4_view/localCacheMonitorIndicators.unit.test.ts`; registry/panel wiring.
+
 ### 6.1  Growth / peak
 
 **Behavior:** Record effective bytes over two snapshots; peak and growth rate (bytes/min) reflect increase.
@@ -507,7 +520,7 @@ Start here when coding:
 4. Phase **4** attributed + top-10 — **DONE**  
 5. Phase **5** barriers / commit / undo consistency — **DONE**  
 6. Phase **7** UI chrome with real measure wired — **DONE**  
-7. Phase **6** indicators  
+7. Phase **6** indicators — **DONE**  
 8. Phase **8** export / footprint  
 
 This delivers user-visible transparency before polishing all efficiency hooks.

@@ -9,6 +9,7 @@ import {
   isLocalCacheMonitorEnabled,
 } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorGate.js";
 import { localCacheMonitorRegistry } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorRegistry.js";
+import { localCacheMonitorIndicators } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorIndicators.js";
 
 describe("applyLocalCacheMonitorGate (Phase 7)", () => {
   beforeEach(() => {
@@ -36,7 +37,9 @@ describe("applyLocalCacheMonitorGate (Phase 7)", () => {
         },
       ],
     });
+    localCacheMonitorIndicators.recordCacheHit();
     expect(localCacheMonitorRegistry.size()).toBeGreaterThan(0);
+    expect(localCacheMonitorIndicators.getIndicators().peakEffectiveBytes).toBe(125);
 
     applyLocalCacheMonitorGate(false);
 
@@ -44,6 +47,8 @@ describe("applyLocalCacheMonitorGate (Phase 7)", () => {
     expect(getLocalCacheMonitorConfig().enabled).toBe(false);
     expect(localCacheMonitorRegistry.size()).toBe(0);
     expect(localCacheMonitorRegistry.getSnapshot()).toBeNull();
+    expect(localCacheMonitorIndicators.getIndicators().peakEffectiveBytes).toBe(0);
+    expect(localCacheMonitorIndicators.getIndicators().cacheHits).toBe(0);
   });
 
   it("applyLocalCacheMonitorGate(true) enables showLocalCacheMonitor", () => {

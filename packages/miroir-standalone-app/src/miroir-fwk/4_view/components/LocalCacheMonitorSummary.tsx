@@ -6,12 +6,27 @@ import {
   type LocalCacheMemoryBreakdown,
 } from "miroir-core";
 import { localCacheMonitorRegistry } from "../tools/localCacheMonitorRegistry.js";
+import {
+  localCacheMonitorIndicators,
+  type LocalCacheMonitorIndicators,
+} from "../tools/localCacheMonitorIndicators.js";
 
 function formatBytes(n: number): string {
   if (!Number.isFinite(n) || n < 0) return "—";
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
   return `${(n / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function formatRatio(n: number | null): string {
+  if (n === null || !Number.isFinite(n)) return "n/a";
+  return `${(n * 100).toFixed(1)}%`;
+}
+
+function formatGrowth(n: number | null): string {
+  if (n === null || !Number.isFinite(n)) return "n/a";
+  const sign = n > 0 ? "+" : "";
+  return `${sign}${formatBytes(Math.round(n))}/min`;
 }
 
 const EMPTY_BREAKDOWN: LocalCacheMemoryBreakdown = {
@@ -78,10 +93,12 @@ export const LocalCacheMonitorSummary: React.FC = () => {
   const context = useMiroirContextService();
   const [collapsed, setCollapsed] = useState(true);
   const [breakdown, setBreakdown] = useState<LocalCacheMemoryBreakdown | null>(null);
+  const [indicators, setIndicators] = useState<LocalCacheMonitorIndicators | null>(null);
 
   useEffect(() => {
     if (!context.showLocalCacheMonitor) {
       setBreakdown(null);
+      setIndicators(null);
       return;
     }
 
@@ -91,6 +108,7 @@ export const LocalCacheMonitorSummary: React.FC = () => {
         const live = readLocalCacheMonitorBreakdown(localCache);
         if (live) {
           setBreakdown(live);
+          setIndicators(localCacheMonitorIndicators.getIndicators());
           return;
         }
       } catch {
@@ -98,6 +116,7 @@ export const LocalCacheMonitorSummary: React.FC = () => {
       }
       const fromReg = localCacheMonitorRegistry.getSnapshot();
       setBreakdown(fromReg?.breakdown ?? EMPTY_BREAKDOWN);
+      setIndicators(localCacheMonitorIndicators.getIndicators());
     };
 
     poll();
@@ -110,6 +129,7 @@ export const LocalCacheMonitorSummary: React.FC = () => {
   }
 
   const b = breakdown ?? EMPTY_BREAKDOWN;
+  const ind = indicators;
 
   return (
     <div
@@ -177,28 +197,60 @@ export const LocalCacheMonitorSummary: React.FC = () => {
         </button>
       </div>
       {!collapsed && (
-        <dl
-          data-testid="localcache-monitor-breakdown"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "auto 1fr",
-            gap: "4px 16px",
-            margin: 0,
-          }}
-        >
-          <dt>Effective</dt>
-          <dd data-testid="localcache-monitor-effective">{formatBytes(b.effectiveBytes)}</dd>
-          <dt>Present</dt>
-          <dd data-testid="localcache-monitor-present">{formatBytes(b.presentSnapshotBytes)}</dd>
-          <dt>Transaction / history</dt>
-          <dd data-testid="localcache-monitor-history">
-            {formatBytes(b.transactionHistoryBytes)}
-          </dd>
-          <dt>Query cache</dt>
-          <dd data-testid="localcache-monitor-query-cache">
-            {formatBytes(b.queriesResultsCacheBytes)}
-          </dd>
-        </dl>
+        <>
+          <dl
+            data-testid="localcache-monitor-breakdown"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "auto 1fr",
+              gap: "4px 16px",
+              margin: 0,
+            }}
+          >
+            <dt>Effective</dt>
+            <dd data-testid="localcache-monitor-effective">{formatBytes(b.effectiveBytes)}</dd>
+            <dt>Present</dt>
+            <dd data-testid="localcache-monitor-present">{formatBytes(b.presentSnapshotBytes)}</dd>
+            <dt>Transaction / history</dt>
+            <dd data-testid="localcache-monitor-history">
+              {formatBytes(b.transactionHistoryBytes)}
+            </dd>
+            <dt>Query cache</dt>
+            <dd data-testid="localcache-monitor-query-cache">
+              {formatBytes(b.queriesResultsCacheBytes)}
+            </dd>
+          </dl>
+          {ind && (
+            <dl
+              data-testid="localcache-monitor-indicators"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "auto 1fr",
+                gap: "4px 16px",
+                margin: "10px 0 0",
+                paddingTop: 8,
+                borderTop: "1px dashed #64748b",
+              }}
+            >
+              <dt>Peak effective</dt>
+              <dd data-testid="localcache-monitor-peak">{formatBytes(ind.peakEffectiveBytes)}</dd>
+              <dt>Growth</dt>
+              <dd data-testid="localcache-monitor-growth">{formatGrowth(ind.growthBytesPerMinute)}</dd>
+              <dt>History / present</dt>
+              <dd data-testid="localcache-monitor-history-ratio">
+                {formatRatio(ind.historyToPresentRatio)}
+              </dd>
+              <dt>Cache hit ratio</dt>
+              <dd data-testid="localcache-monitor-hit-ratio">{formatRatio(ind.hitRatio)}</dd>
+              <dt>Thrash</dt>
+              <dd data-testid="localcache-monitor-thrash">{ind.thrashCount}</dd>
+              <dt>Top-3 entity share</dt>
+              <dd data-testid="localcache-monitor-top-entity-share">
+                {formatRatio(ind.topEntityShare)}
+              </dd>
+            </dl>
+          )}
+        </>
       )}
     </div>
   );

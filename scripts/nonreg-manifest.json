@@ -121,6 +121,16 @@
       ]
     },
     {
+      "id": "unit-localCacheMonitorIndicators",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor session efficiency indicators",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/localCacheMonitorIndicators.unit.test.ts"
+      ]
+    },
+    {
       "id": "integ-transformer-miroirCoreTransformers",
       "tier": "default",
       "title": "MiroirTest integ — miroirCoreTransformers",

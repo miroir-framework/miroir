@@ -8,6 +8,7 @@ import type {
   LocalCacheMemoryBreakdown,
   LocalCacheMonitorSnapshot,
 } from "miroir-core";
+import { localCacheMonitorIndicators } from "./localCacheMonitorIndicators.js";
 
 export type LocalCacheMonitorUiSnapshot = {
   breakdown: LocalCacheMemoryBreakdown;
@@ -26,6 +27,8 @@ export const localCacheMonitorRegistry = {
       breakdown: next.breakdown,
       attributedInstances: next.attributedInstances,
     };
+    localCacheMonitorIndicators.recordBreakdownSample(next.breakdown);
+    localCacheMonitorIndicators.recordAttributedInstances(next.attributedInstances);
   },
 
   getSnapshot(): LocalCacheMonitorUiSnapshot | null {
@@ -34,10 +37,14 @@ export const localCacheMonitorRegistry = {
 
   resetAll(): void {
     snapshot = null;
+    localCacheMonitorIndicators.reset();
   },
 
   /** Observable size for gate/footprint tests (0 when empty). */
   size(): number {
-    return snapshot ? 1 + snapshot.attributedInstances.length : 0;
+    return (
+      (snapshot ? 1 + snapshot.attributedInstances.length : 0) +
+      localCacheMonitorIndicators.size()
+    );
   },
 };
