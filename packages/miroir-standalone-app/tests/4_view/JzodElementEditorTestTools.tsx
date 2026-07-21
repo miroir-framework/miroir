@@ -50,9 +50,9 @@ import {
   reportBookList,
   reportCountryList,
   reportPublisherList,
-  selfApplicationDeploymentLibrary,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
+import { deployment_Library } from "miroir-test-app_deployment-admin";
 import { Container } from "react-dom";
 import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
 import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext";
@@ -286,7 +286,7 @@ export type ReactComponentTestSuites<T extends Record<string, any>> = Record<str
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
-  [selfApplicationLibrary.uuid]: selfApplicationDeploymentLibrary.uuid,
+  [selfApplicationLibrary.uuid]: deployment_Library.uuid,
 };
 
 // ################################################################################################
@@ -416,7 +416,7 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
     context.setDeploymentUuid
 
     const currentModel: MetaModel = useCurrentModel(
-      selfApplicationDeploymentLibrary.uuid,
+      deployment_Library.uuid,
       applicationDeploymentMap
     );
 
@@ -850,7 +850,7 @@ export function getWrapperLoadingLocalCache(
               <MiroirContextReactProvider
                 miroirContext={miroirContext}
                 domainController={domainController}
-                testingDeploymentUuid={selfApplicationDeploymentLibrary.uuid}
+                testingDeploymentUuid={deployment_Library.uuid}
               >
                 <DocumentOutlineContextProvider
                   isOutlineOpen={true}
@@ -871,7 +871,7 @@ export function getWrapperLoadingLocalCache(
             <MiroirContextReactProvider
               miroirContext={miroirContext}
               domainController={domainController}
-              testingDeploymentUuid={selfApplicationDeploymentLibrary.uuid}
+              testingDeploymentUuid={deployment_Library.uuid}
             >
               <DocumentOutlineContextProvider
                 isOutlineOpen={true}

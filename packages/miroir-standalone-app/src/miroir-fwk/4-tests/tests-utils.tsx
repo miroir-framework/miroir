@@ -36,10 +36,6 @@ import {
   selfApplicationMiroir
 } from "miroir-test-app_deployment-miroir";
 
-// import {
-//   selfApplicationDeploymentLibrary,
-// } from "miroir-test-app_deployment-library";
-
 import {
   LocalCache,
   LocalCacheProvider,

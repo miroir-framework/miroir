@@ -466,6 +466,9 @@ export {
   ExtractorTemplateInstancesByEntity,
   ExtractorTemplateExtractorByPrimaryKey,
   ExtractorTemplateCombinerOneToOne,
+  MiroirMenuReportLink,
+  MiroirMenuItemDivider,
+  MiroirMenuPageLink,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {

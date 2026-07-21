@@ -26,7 +26,6 @@ import {
   springer as publisher3,
   entityPublisher,
   entityDefinitionPublisher,
-  // selfApplicationDeploymentLibrary,
 } from "miroir-test-app_deployment-library";
 
 export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [

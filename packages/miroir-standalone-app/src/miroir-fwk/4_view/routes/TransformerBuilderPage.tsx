@@ -6,46 +6,51 @@ import { PageContainer } from "../components/Page/PageContainer";
 
 import {
   Domain2ElementFailed,
-  DomainControllerInterface,
   JzodObject,
   LoggerInterface,
   MiroirLoggerFactory,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
+  type Deployment,
   type Domain2QueryReturnType,
   type ReduxDeploymentsState,
-  type SyncBoxedExtractorOrQueryRunnerMap,
+  type SyncBoxedExtractorOrQueryRunnerMap
 } from "miroir-core";
 
 import {
   getMemoizedReduxDeploymentsStateSelectorMap,
-  type ReduxStateWithUndoRedo,
+  useMiroirContextService,
   useSelector,
+  type ReduxStateWithUndoRedo,
 } from "miroir-react";
 import { packageName } from "../../../constants.js";
-import {
-  useDomainControllerService,
-  useMiroirContextService
-} from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
 
-import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
-import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   entityBook,
-  selfApplicationDeploymentLibrary,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
+import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
 
-import { entityMiroirTest, selfApplicationMiroir, miroirTest_resolveConditionalSchema } from "miroir-test-app_deployment-miroir";
+import { entityMiroirTest, miroirTest_resolveConditionalSchema, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerBuilderPage"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
+const deployment_Library: Deployment = {
+  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "parentName":"Deployment",
+  "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
+  "name":"LibraryApplicationFilesystemDeployment",
+  "defaultLabel":"LibraryApplicationFilesystemDeployment",
+  "selfApplication":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "description": "The default Filesystem Deployment for SelfApplication Library",
+}
 export const emptyString = ""
 export const dataSection = "data"
 export const emptyList:any[] = []
@@ -91,7 +96,7 @@ export const TransformerBuilderPage: React.FC<any> = (
   
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
-  const domainController: DomainControllerInterface = useDomainControllerService();
+  // const domainController: DomainControllerInterface = useDomainControllerService();
   
   const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
 
@@ -369,7 +374,7 @@ export const TransformerBuilderPage: React.FC<any> = (
           <TransformerEditor
             application={selfApplicationLibrary.uuid}
             applicationDeploymentMap={currentApplicationDeploymentMap}
-            deploymentUuid={selfApplicationDeploymentLibrary.uuid}
+            deploymentUuid={deployment_Library.uuid}
             entityUuid={entityBook.uuid}
           />
         </div>

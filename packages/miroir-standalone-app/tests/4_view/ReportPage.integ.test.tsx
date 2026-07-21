@@ -14,8 +14,31 @@ import {
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
 } from "./JzodElementEditorTestTools";
-import { defaultSelfApplicationDeploymentMap } from "miroir-core";
+import { defaultSelfApplicationDeploymentMap, type Deployment } from "miroir-core";
 // import { selfApplicationLibrary } from "miroir-core";
+const deployment_Library: Deployment = {
+  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "parentName":"Deployment",
+  "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
+  "name":"LibraryApplicationFilesystemDeployment",
+  "defaultLabel":"LibraryApplicationFilesystemDeployment",
+  "selfApplication":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "description": "The default Filesystem Deployment for SelfApplication Library",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-test-app_deployment-admin/assets"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory":"miroir-test-app_deployment-library/assets/library_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory":"miroir-test-app_deployment-library/assets/library_data"
+    }
+  }
+}
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -29,7 +52,7 @@ vi.mock('react-router-dom', async () => {
 
 vi.spyOn(RRDom, "useParams").mockReturnValue({
   applicationSection: "data",
-  deploymentUuid: selfApplicationDeploymentLibrary.uuid,
+  deploymentUuid: deployment_Library.uuid,
   instanceUuid: undefined, // TODO: remove, this is specific to entity instance views
   reportUuid: reportCountryList.uuid,
 });
