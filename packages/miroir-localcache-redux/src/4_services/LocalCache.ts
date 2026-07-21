@@ -16,6 +16,7 @@ import {
   Domain2QueryReturnType,
   DomainElementSuccess,
   DomainState,
+  buildAttributedInstanceIndex,
   estimateObjectBytes,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   getDomainStateExtractorRunnerMap,
@@ -26,11 +27,13 @@ import {
   LocalCacheInterface,
   LoggerInterface,
   MetaModel,
+  measureLocalCacheMemory,
   MiroirLoggerFactory,
   ModelActionReplayableAction,
   // RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction,
   type ApplicationDeploymentMap,
+  type LocalCacheMonitorSnapshot,
   type MiroirModelEnvironment,
   type RunBoxedQueryAction
 } from "miroir-core";
@@ -75,6 +78,8 @@ function exceptionToActionReturnType(f:()=>void): Action2ReturnType {
 export class LocalCache implements LocalCacheInterface {
   private innerReduxStore: ReduxStoreWithUndoRedo;
   private staticReducers: ReduxReducerWithUndoRedoInterface;
+  private monitorEnabled = false;
+  private monitorSnapshot: LocalCacheMonitorSnapshot | null = null;
 
   // ###############################################################################
   constructor(persistenceStore?: PersistenceReduxSaga) {
@@ -126,6 +131,33 @@ export class LocalCache implements LocalCacheInterface {
       localCacheSize: estimateObjectBytes(
         this.innerReduxStore.getState().presentModelSnapshot
       ),
+    };
+  }
+
+  // ###############################################################################
+  public setLocalCacheMonitorEnabled(enabled: boolean): void {
+    this.monitorEnabled = enabled;
+    if (!enabled) {
+      this.monitorSnapshot = null;
+      return;
+    }
+    this.recalibrateMonitor();
+  }
+
+  // ###############################################################################
+  public getLocalCacheMonitorSnapshot(): LocalCacheMonitorSnapshot | null {
+    return this.monitorSnapshot;
+  }
+
+  // ###############################################################################
+  private recalibrateMonitor(): void {
+    if (!this.monitorEnabled) {
+      return;
+    }
+    const state = this.innerReduxStore.getState();
+    this.monitorSnapshot = {
+      breakdown: measureLocalCacheMemory(state),
+      attributedInstances: buildAttributedInstanceIndex(state.presentModelSnapshot),
     };
   }
 
@@ -188,6 +220,7 @@ export class LocalCache implements LocalCacheInterface {
         })
       )
     );
+    this.recalibrateMonitor();
     log.info("LocalCache handleAction result=", result);
     return result;
   }

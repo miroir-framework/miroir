@@ -12,12 +12,14 @@ import {
   Domain2QueryReturnType,
   DomainElementSuccess,
   DomainState,
+  buildAttributedInstanceIndex,
   estimateObjectBytes,
   LocalCacheAction,
   LocalCacheInfo,
   LocalCacheInterface,
   LoggerInterface,
   MetaModel,
+  measureLocalCacheMemory,
   MiroirLoggerFactory,
   ModelActionReplayableAction,
   TransactionalInstanceAction,
@@ -27,6 +29,7 @@ import {
   getExtractorRunnerParamsForDomainState,
   getQueryRunnerParamsForDomainState,
   type ApplicationDeploymentMap,
+  type LocalCacheMonitorSnapshot,
   type MiroirModelEnvironment,
   type RunBoxedQueryAction,
 } from "miroir-core";
@@ -70,6 +73,8 @@ function exceptionToActionReturnType(f: () => void): Action2ReturnType {
  */
 export class LocalCache implements LocalCacheInterface {
   private store: StoreApi<LocalCacheStore>;
+  private monitorEnabled = false;
+  private monitorSnapshot: LocalCacheMonitorSnapshot | null = null;
 
   // ###############################################################################
   constructor(persistenceStore?: PersistenceAsyncStore) {
@@ -105,6 +110,33 @@ export class LocalCache implements LocalCacheInterface {
   }
 
   // ###############################################################################
+  public setLocalCacheMonitorEnabled(enabled: boolean): void {
+    this.monitorEnabled = enabled;
+    if (!enabled) {
+      this.monitorSnapshot = null;
+      return;
+    }
+    this.recalibrateMonitor();
+  }
+
+  // ###############################################################################
+  public getLocalCacheMonitorSnapshot(): LocalCacheMonitorSnapshot | null {
+    return this.monitorSnapshot;
+  }
+
+  // ###############################################################################
+  private recalibrateMonitor(): void {
+    if (!this.monitorEnabled) {
+      return;
+    }
+    const state = this.store.getState();
+    this.monitorSnapshot = {
+      breakdown: measureLocalCacheMemory(state),
+      attributedInstances: buildAttributedInstanceIndex(state.presentModelSnapshot),
+    };
+  }
+
+  // ###############################################################################
   public currentModel(
     application: string,
     applicationDeploymentMap: ApplicationDeploymentMap,
@@ -134,6 +166,7 @@ export class LocalCache implements LocalCacheInterface {
     const result: Action2ReturnType = exceptionToActionReturnType(() =>
       this.store.getState().handleAction(action, applicationDeploymentMap)
     );
+    this.recalibrateMonitor();
     log.info("LocalCache handleAction result=", result);
     return result;
   }
@@ -192,18 +225,22 @@ export class LocalCache implements LocalCacheInterface {
   // Additional methods for Zustand-specific operations
   undo(): void {
     this.store.getState().undo();
+    this.recalibrateMonitor();
   }
 
   redo(): void {
     this.store.getState().redo();
+    this.recalibrateMonitor();
   }
 
   commit(): void {
     this.store.getState().commit();
+    this.recalibrateMonitor();
   }
 
   rollback(): void {
     this.store.getState().rollback();
+    this.recalibrateMonitor();
   }
 
   subscribe(listener: (state: ZustandStateWithUndoRedo, prevState: ZustandStateWithUndoRedo) => void): () => void {

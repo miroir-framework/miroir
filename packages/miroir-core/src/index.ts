@@ -893,6 +893,7 @@ export {
   type AttributedEntitySize,
   type AttributedInstanceSize,
   type LocalCacheMemoryBreakdown,
+  type LocalCacheMonitorSnapshot,
 } from "./2_domain/localCacheMemoryMeasure.js";
 export { ModelEntityActionTransformer } from "./2_domain/ModelEntityActionTransformer.js";
 export {

@@ -11,7 +11,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 [#61 performance monitor TDD plan](../61-FEATURE-%20include%20performance%20monitoring%20for%20UI%20components/tdd-implementation-plan.md) ·
 [#208 caching design](https://github.com/miroir-framework/miroir/issues/208)
 
-**Status:** Phases 0–4 done; Phase 5 (barriers + CRUD/load deltas) next.
+**Status:** Phases 0–5 done; Phase 6 (session efficiency indicators) next.
 
 ---
 
@@ -24,7 +24,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 | **2** | Static LocalCache image on real Redux **and** Zustand | **Done** (2026-07-21) — Library Books golden present=3922 both impls |
 | **3** | `currentInfo` present-only via `estimateObjectBytes`; rich path = `measureLocalCacheMemory` | **Done** (2026-07-21) |
 | **4** | Attributed per-Entity + top-10 | **Done** (2026-07-21) — present.current only; loading ignored |
-| **5** | Barrier recalibration + CRUD/load deltas | Pending |
+| **5** | Barrier recalibration + CRUD/load deltas | **Done** (2026-07-21) — session gate + full recalibrate on action |
 | **6** | Session efficiency indicators | Pending |
 | **7** | UI: AppBar toggle + docked panel | Pending |
 | **8** | Export / Clear / acceptance footprint | Pending |
@@ -303,6 +303,18 @@ RED → GREEN
 
 **Goal:** Limited ON footprint — deltas for CRUD/load; full remeasure on barriers.
 
+**Status:** Done (2026-07-21). v1 uses full recalibrate after each mutating action / barrier while the session gate is ON (true attributed deltas deferred).
+
+### Phase 5 achievement log
+
+| Slice | Result |
+|-------|--------|
+| 5.1 | `setLocalCacheMonitorEnabled` + `getLocalCacheMonitorSnapshot` — attributed index tracks create / update / delete on redux + zustand |
+| 5.2 | After transactional create, history bytes &gt; 0; `commit` drops `transactionHistoryBytes` |
+| 5.3 | After undo barrier, cached snapshot equals fresh `measureLocalCacheMemory(getState())` |
+
+**Artifacts:** `LocalCacheInterface` monitor methods; redux + zustand `LocalCache.ts`; `LocalCache.monitor.unit.test.ts` (Phase 5 describe in both packages); `LocalCacheMonitorSnapshot` type.
+
 ### 5.1  create / update / delete update attributed map
 
 **Behavior:** Through `LocalCache.handleLocalCacheAction`, after createInstance the instance appears in attributed index; after deleteInstance it disappears; updateInstance changes bytes in the expected direction.
@@ -339,7 +351,7 @@ RED → GREEN
 
 **Goal:** Session metrics when monitor session is active (in-memory registry cleared on gate OFF).
 
-### 5.1  Growth / peak
+### 6.1  Growth / peak
 
 **Behavior:** Record effective bytes over two snapshots; peak and growth rate (bytes/min) reflect increase.
 
@@ -348,7 +360,7 @@ RED → GREEN
   "records peak effective bytes and positive growth after size increase"
 ```
 
-### 5.2  History / present ratio
+### 6.2  History / present ratio
 
 **Behavior:** Indicator equals `transactionHistoryBytes / presentSnapshotBytes` (guard div-by-zero).
 
@@ -357,7 +369,7 @@ RED → GREEN
   "exposes history-to-present ratio"
 ```
 
-### 5.3  Hit ratio & thrash (best-effort)
+### 6.3  Hit ratio & thrash (best-effort)
 
 **Behavior:**  
 - Hit ratio: registry increments on “served from cache” vs “persistence fetch” hooks **if** call sites exist; otherwise stub interface + unit test of pure counter math, with integration deferred.  
@@ -369,7 +381,7 @@ RED → GREEN
   "hit-ratio counters compute ratio from hits and misses"
 ```
 
-**Note:** Wiring real persistence hit/miss may need PersistenceReduxSaga hooks — keep pure counters in Phase 5; optional thin hook slice if timeboxed. Do not block Phase 6 UI on full hit-ratio instrumentation — show “n/a” until hooks land.
+**Note:** Wiring real persistence hit/miss may need PersistenceReduxSaga hooks — keep pure counters testable first; optional thin hook slice if timeboxed. Do not block Phase 7 UI on full hit-ratio instrumentation — show “n/a” until hooks land.
 
 ---
 
@@ -377,7 +389,7 @@ RED → GREEN
 
 **Goal:** Discoverable transparency matching analysis §5.
 
-### 6.1  Gate OFF clears and disables collection
+### 7.1  Gate OFF clears and disables collection
 
 **Behavior:** `applyLocalCacheMonitorGate(false)` clears indicator registry / cached snapshot; subsequent measure scheduling does not run.
 
@@ -387,7 +399,7 @@ packages/miroir-standalone-app/tests/4_view/localCacheMonitorGate.unit.test.ts
   (mirror performanceDisplayGate.unit.test.ts)
 ```
 
-### 6.2  Gate ON exposes context flag
+### 7.2  Gate ON exposes context flag
 
 **Behavior:** Context `showLocalCacheMonitor === true` after enable; AppBar wiring covered by light component test or gate+context unit test.
 
@@ -396,7 +408,7 @@ RED → GREEN
   "applyLocalCacheMonitorGate(true) enables showLocalCacheMonitor"
 ```
 
-### 6.3  Panel hidden when OFF
+### 7.3  Panel hidden when OFF
 
 **Behavior:** `LocalCacheMonitorSummary` renders null / nothing when flag false.
 
@@ -405,7 +417,7 @@ RED → GREEN
   "LocalCacheMonitorSummary renders nothing when monitor is off"
 ```
 
-### 6.4  Panel shows three size lines when ON with mock snapshot
+### 7.4  Panel shows three size lines when ON with mock snapshot
 
 **Behavior:** With gate on and injected/mock snapshot, panel shows Effective, Present, Transaction/history (and Query cache line).
 
@@ -420,7 +432,7 @@ Mount beside Report shell / RootComponent like RenderInsightSummary; AppBar icon
 
 ## Phase 8 — Export / Clear / footprint acceptance
 
-### 7.1  Clear resets session stats not cache data
+### 8.1  Clear resets session stats not cache data
 
 **Behavior:** Clear zeros peak/growth/thrash/hit counters; LocalCache domain data unchanged.
 
@@ -429,7 +441,7 @@ RED → GREEN
   "clear monitor session stats does not delete Entity instances"
 ```
 
-### 7.2  Export JSON shape
+### 8.2  Export JSON shape
 
 **Behavior:** Export includes timestamp, breakdown, attributed top entities, indicators, gate config.
 
@@ -438,7 +450,7 @@ RED → GREEN
   "export payload includes effective breakdown and indicators"
 ```
 
-### 7.3  Footprint acceptance when OFF
+### 8.3  Footprint acceptance when OFF
 
 **Behavior:** With gate OFF, invoking a hot path that would update monitor registry is a no-op (no registry growth) — acceptance test style like `renderInsightFootprint.acceptance.unit.test.tsx`.
 
@@ -479,9 +491,9 @@ Start here when coding:
 1. Phase **1** pure measure — **DONE**  
 2. Phase **2** static Redux|Zustand verification — **DONE**  
 3. Phase **3** API split (`currentInfo` vs `measureLocalCacheMemory`) — **DONE**  
-4. Phase **4** attributed + top-10  
-5. Phase **7** UI chrome with real measure wired  
-6. Phase **5** barriers / commit / undo consistency  
+4. Phase **4** attributed + top-10 — **DONE**  
+5. Phase **5** barriers / commit / undo consistency — **DONE**  
+6. Phase **7** UI chrome with real measure wired  
 7. Phase **6** indicators  
 8. Phase **8** export / footprint  
 

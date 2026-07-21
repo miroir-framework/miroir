@@ -8,6 +8,7 @@ import {
   type InstanceAction,
   type ModelAction,
   type TransactionalInstanceAction,
+  type UndoRedoAction,
 } from "miroir-core";
 import {
   book1,
@@ -98,5 +99,156 @@ describe("LocalCache monitor API (Phase 3, redux)", () => {
     expect(measured.transactionHistoryBytes).toBeGreaterThan(0);
     expect(info.localCacheSize).toBe(measured.presentSnapshotBytes);
     expect(info.localCacheSize).toBeLessThan(measured.effectiveBytes);
+  });
+});
+
+describe("LocalCache monitor session (Phase 5, redux)", () => {
+  it("attributed map tracks create, update, delete", () => {
+    const localCache = new LocalCache();
+    bootstrapLibraryBooks(localCache, [book1 as EntityInstance]);
+    localCache.setLocalCacheMonitorEnabled(true);
+
+    expect(localCache.getLocalCacheMonitorSnapshot()).not.toBeNull();
+    expect(
+      localCache.getLocalCacheMonitorSnapshot()!.attributedInstances.map((r) => r.instanceId)
+    ).toEqual([book1.uuid]);
+
+    const createBook2: Extract<InstanceAction, { actionType: "createInstance" }> = {
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        applicationSection: "data",
+        parentUuid: entityBook.uuid,
+        objects: [book2 as EntityInstance],
+      },
+    };
+    localCache.handleLocalCacheAction(createBook2, applicationDeploymentMap);
+
+    let ids = localCache
+      .getLocalCacheMonitorSnapshot()!
+      .attributedInstances.map((r) => r.instanceId);
+    expect(ids).toContain(book1.uuid);
+    expect(ids).toContain(book2.uuid);
+
+    const book2Before = localCache
+      .getLocalCacheMonitorSnapshot()!
+      .attributedInstances.find((r) => r.instanceId === book2.uuid)!;
+    const enlargedBook2 = {
+      ...(book2 as EntityInstance),
+      name: `${(book2 as EntityInstance).name ?? "book2"}-${"X".repeat(200)}`,
+    };
+    const updateBook2: Extract<InstanceAction, { actionType: "updateInstance" }> = {
+      actionType: "updateInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        applicationSection: "data",
+        parentUuid: entityBook.uuid,
+        objects: [enlargedBook2],
+      },
+    };
+    localCache.handleLocalCacheAction(updateBook2, applicationDeploymentMap);
+
+    const book2After = localCache
+      .getLocalCacheMonitorSnapshot()!
+      .attributedInstances.find((r) => r.instanceId === book2.uuid)!;
+    expect(book2After.bytes).toBeGreaterThan(book2Before.bytes);
+
+    const deleteBook2: Extract<InstanceAction, { actionType: "deleteInstance" }> = {
+      actionType: "deleteInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        applicationSection: "data",
+        parentUuid: entityBook.uuid,
+        objects: [enlargedBook2],
+      },
+    };
+    localCache.handleLocalCacheAction(deleteBook2, applicationDeploymentMap);
+
+    ids = localCache
+      .getLocalCacheMonitorSnapshot()!
+      .attributedInstances.map((r) => r.instanceId);
+    expect(ids).toEqual([book1.uuid]);
+  });
+
+  it("commit drops transaction history incremental size", () => {
+    const localCache = new LocalCache();
+    bootstrapLibraryBooks(localCache, [book1 as EntityInstance]);
+    localCache.setLocalCacheMonitorEnabled(true);
+
+    const createBook2: Extract<InstanceAction, { actionType: "createInstance" }> = {
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        applicationSection: "data",
+        parentUuid: entityBook.uuid,
+        objects: [book2 as EntityInstance],
+      },
+    };
+    const transactionalCreate: TransactionalInstanceAction = {
+      actionType: "transactionalInstanceAction",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        instanceAction: createBook2,
+      },
+    };
+    localCache.handleLocalCacheAction(transactionalCreate, applicationDeploymentMap);
+
+    const historyBefore = localCache.getLocalCacheMonitorSnapshot()!.breakdown
+      .transactionHistoryBytes;
+    expect(historyBefore).toBeGreaterThan(0);
+
+    const commit: ModelAction = {
+      actionType: "commit",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: { application: selfApplicationLibrary.uuid },
+    };
+    localCache.handleLocalCacheAction(commit, applicationDeploymentMap);
+
+    const historyAfter = localCache.getLocalCacheMonitorSnapshot()!.breakdown
+      .transactionHistoryBytes;
+    expect(historyAfter).toBeLessThan(historyBefore);
+  });
+
+  it("after undo, monitor snapshot matches fresh measureLocalCacheMemory", () => {
+    const localCache = new LocalCache();
+    bootstrapLibraryBooks(localCache, [book1 as EntityInstance]);
+    localCache.setLocalCacheMonitorEnabled(true);
+
+    const createBook2: Extract<InstanceAction, { actionType: "createInstance" }> = {
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        applicationSection: "data",
+        parentUuid: entityBook.uuid,
+        objects: [book2 as EntityInstance],
+      },
+    };
+    const transactionalCreate: TransactionalInstanceAction = {
+      actionType: "transactionalInstanceAction",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        instanceAction: createBook2,
+      },
+    };
+    localCache.handleLocalCacheAction(transactionalCreate, applicationDeploymentMap);
+
+    const undo: UndoRedoAction = {
+      actionType: "undo",
+      endpoint: "71c04f8e-c687-4ea7-9a19-bc98d796c389",
+      payload: { application: selfApplicationLibrary.uuid },
+    };
+    localCache.handleLocalCacheAction(undo, applicationDeploymentMap);
+
+    const snapshot = localCache.getLocalCacheMonitorSnapshot()!;
+    const fresh = measureLocalCacheMemory(localCache.getState());
+    expect(snapshot.breakdown).toEqual(fresh);
+    expect(snapshot.attributedInstances.map((r) => r.instanceId)).toEqual([book1.uuid]);
   });
 });

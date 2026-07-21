@@ -46,6 +46,12 @@ export type AttributedEntitySize = {
   attributedBytes: number;
 };
 
+/** Cached monitor view when LocalCache monitoring session is ON (#211). */
+export type LocalCacheMonitorSnapshot = {
+  breakdown: LocalCacheMemoryBreakdown;
+  attributedInstances: AttributedInstanceSize[];
+};
+
 export function estimateObjectBytes(
   value: unknown,
   visited: Set<object> = new Set()
