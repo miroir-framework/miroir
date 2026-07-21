@@ -884,6 +884,11 @@ export {
 } from "./2_domain/DomainStateQueryTemplateSelector.js";
 export { ExtractorRunnerInMemory } from "./2_domain/ExtractorRunnerInMemory.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
+export {
+  estimateObjectBytes,
+  measureLocalCacheMemory,
+  type LocalCacheMemoryBreakdown,
+} from "./2_domain/localCacheMemoryMeasure.js";
 export { ModelEntityActionTransformer } from "./2_domain/ModelEntityActionTransformer.js";
 export {
   applyExtractorTransformerInMemory, domainElementToPlainObjectDEFUNCT,
