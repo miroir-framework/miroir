@@ -239,7 +239,7 @@ export async function handleCliAction(
 
     const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
-      instanceEndpointV1,
+      instanceEndpointV1 as any as EndpointDefinition,
       resolveLibraryDeploymentUuid(applicationDeploymentMap),
     );
     // Execute via DomainController

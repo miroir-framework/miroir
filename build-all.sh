@@ -573,6 +573,20 @@ run_stage_packages() {
   return 0
 }
 
+# Deployment bootstrap packages import miroir-core types for their DTS build, but
+# miroir-core devBuild imports their dist for schema generation — bootstrap plain
+# build breaks the cycle (committed preprocessor-generated types → dist/index.d.ts).
+bootstrap_miroir_core_for_deployment_dts() {
+  local pkg
+  for pkg in "${STAGE_DEPLOY_BOOTSTRAP[@]}"; do
+    if should_build_package "$pkg"; then
+      echo "  [BOOTSTRAP] miroir-core plain build (deployment packages need dist/index.d.ts for DTS)"
+      npm run build -w miroir-core
+      return 0
+    fi
+  done
+}
+
 resolve_build_scope
 
 # ---------------------------------------------------------------------------
@@ -592,10 +606,12 @@ run_stage_packages "jzod-ts" "${STAGE_OPTIONAL_JZOD_TS[@]}"
 record_time "2/9  jzod-ts (optional)" "$t0"
 
 # ---------------------------------------------------------------------------
-# Step 3 – Deployment packages (schema definitions; no miroir-core dependency)
+# Step 3 – Deployment packages (import miroir-core types for DTS; devBuild
+#           regenerates core types from their dist in step 4)
 # ---------------------------------------------------------------------------
 step "3/9  · miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin"
 t0=$(now_secs)
+bootstrap_miroir_core_for_deployment_dts
 run_stage_packages "deploy-bootstrap" "${STAGE_DEPLOY_BOOTSTRAP[@]}"
 record_time "3/9  miroir-test-app_deployment-miroir & miroir-test-app_deployment-admin" "$t0"
 

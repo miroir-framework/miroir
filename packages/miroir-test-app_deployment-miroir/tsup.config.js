@@ -14,7 +14,7 @@ export default defineConfig({
   splitting: false,
   treeshake: false,
   minify: false,
-  external: [],
+  external: ['miroir-core', 'json-diff'],
   noExternal: [],
   loader: {
     '.json': 'copy',

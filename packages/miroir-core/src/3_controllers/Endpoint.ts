@@ -1,8 +1,18 @@
-import type { E } from "vitest/dist/chunks/environment.d.cL3nLXbE";
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { InstanceAction, type EndpointDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { EndpointInterfaceNOTUSED } from "../0_interfaces/3_controllers/EndpointInterface";
-import { LocalCacheInterface } from "../0_interfaces/4-services/LocalCacheInterface";
+import { type EndpointDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import {
+  applicationEndpointV1,
+  storeManagementEndpoint as deploymentEndpointV1,
+  domainEndpointVersionV1,
+  instanceEndpointV1,
+  instanceEndpointVersionV1,
+  localCacheEndpointVersionV1,
+  modelEndpointV1,
+  persistenceEndpointVersionV1,
+  queryEndpointVersionV1,
+  storeManagementEndpoint,
+  testEndpointVersionV1,
+  undoRedoEndpointVersionV1,
+} from "miroir-test-app_deployment-miroir";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
@@ -15,20 +25,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 
 // ################################################################################################
-import {
-  applicationEndpointV1,
-  storeManagementEndpoint as deploymentEndpointV1,
-  instanceEndpointV1,
-  modelEndpointV1,
-  domainEndpointVersionV1,
-  testEndpointVersionV1,
-  storeManagementEndpoint,
-  instanceEndpointVersionV1,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
-} from "miroir-test-app_deployment-miroir";
+
 
 export const coreEndpoints: Record<string, EndpointDefinition> = {
   [applicationEndpointV1.uuid]: applicationEndpointV1 as any as EndpointDefinition,

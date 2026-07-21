@@ -34,7 +34,6 @@ import {
   entityReport,
   entityRunner,
   entitySelfApplicationVersion,
-  entityStoreBasedConfiguration,
   entityTest,
   entityTheme,
 } from "miroir-test-app_deployment-miroir";

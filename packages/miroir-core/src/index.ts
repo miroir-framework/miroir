@@ -469,6 +469,7 @@ export {
   MiroirMenuReportLink,
   MiroirMenuItemDivider,
   MiroirMenuPageLink,
+  RunStoredQuery,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
