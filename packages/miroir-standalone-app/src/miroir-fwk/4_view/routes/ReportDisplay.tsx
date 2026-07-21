@@ -27,6 +27,7 @@ import {
 import { useCurrentModel } from "../ReduxHooks.js";
 import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js";
 import { RenderInsightSummary } from "../components/RenderInsightSummary.js";
+import { LocalCacheMonitorSummary } from "../components/LocalCacheMonitorSummary.js";
 import { useStoredQueriesResults } from "../components/Reports/ReportHooks.js";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
 import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
@@ -158,6 +159,7 @@ export const ReportDisplay: React.FC<{
               )}
             >
               <RenderInsightSummary />
+              <LocalCacheMonitorSummary />
               <ReportViewWithEditor
                 applicationSection={pageParams.applicationSection as ApplicationSection}
                 application={application}

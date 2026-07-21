@@ -65,6 +65,8 @@ npm run testMiroir -w miroir-core -- --mode unit
 # LocalCache memory measure (#211) — also in nonreg:unit
 npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryMeasure.unit.test.ts
 npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryAttributed.unit.test.ts
+npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorGate.unit.test.ts
+npm run testByFile -w miroir-standalone-app -- tests/4_view/LocalCacheMonitorSummary.unit.test.tsx
 npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 ```

@@ -11,7 +11,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 [#61 performance monitor TDD plan](../61-FEATURE-%20include%20performance%20monitoring%20for%20UI%20components/tdd-implementation-plan.md) ·
 [#208 caching design](https://github.com/miroir-framework/miroir/issues/208)
 
-**Status:** Phases 0–5 done; Phase 6 (session efficiency indicators) next.
+**Status:** Phases 0–5 and 7 done; Phase 6 (efficiency indicators) or Phase 8 (export/clear/footprint) next.
 
 ---
 
@@ -26,7 +26,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 | **4** | Attributed per-Entity + top-10 | **Done** (2026-07-21) — present.current only; loading ignored |
 | **5** | Barrier recalibration + CRUD/load deltas | **Done** (2026-07-21) — session gate + full recalibrate on action |
 | **6** | Session efficiency indicators | Pending |
-| **7** | UI: AppBar toggle + docked panel | Pending |
+| **7** | UI: AppBar toggle + docked panel | **Done** (2026-07-21) — gate + summary + AppBar + ReportDisplay |
 | **8** | Export / Clear / acceptance footprint | Pending |
 
 ### Phase 1 achievement log
@@ -389,6 +389,19 @@ RED → GREEN
 
 **Goal:** Discoverable transparency matching analysis §5.
 
+**Status:** Done (2026-07-21).
+
+### Phase 7 achievement log
+
+| Slice | Result |
+|-------|--------|
+| 7.1 | `applyLocalCacheMonitorGate(false)` clears `localCacheMonitorRegistry` |
+| 7.2 | Gate ON sets config + `sessionStorage.showLocalCacheMonitor`; context flag + AppBar toggle |
+| 7.3 | `LocalCacheMonitorSummary` returns null when `showLocalCacheMonitor` is false |
+| 7.4 | Expanded panel shows Effective / Present / History / Query cache from registry or LocalCache poll |
+
+**Artifacts:** `localCacheMonitorGate.ts`, `localCacheMonitorConfig.ts`, `localCacheMonitorRegistry.ts`, `LocalCacheMonitorSummary.tsx`, AppBar icon, `ReportDisplay` mount; tests under `tests/4_view/localCacheMonitor*`.
+
 ### 7.1  Gate OFF clears and disables collection
 
 **Behavior:** `applyLocalCacheMonitorGate(false)` clears indicator registry / cached snapshot; subsequent measure scheduling does not run.
@@ -493,7 +506,7 @@ Start here when coding:
 3. Phase **3** API split (`currentInfo` vs `measureLocalCacheMemory`) — **DONE**  
 4. Phase **4** attributed + top-10 — **DONE**  
 5. Phase **5** barriers / commit / undo consistency — **DONE**  
-6. Phase **7** UI chrome with real measure wired  
+6. Phase **7** UI chrome with real measure wired — **DONE**  
 7. Phase **6** indicators  
 8. Phase **8** export / footprint  
 

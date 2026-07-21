@@ -20,6 +20,7 @@ import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { applyPerformanceDisplayGate } from '../../tools/performanceDisplayGate.js';
+import { applyLocalCacheMonitorGate } from '../../tools/localCacheMonitorGate.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { reportMiroirRunners } from 'miroir-test-app_deployment-miroir';
@@ -617,6 +618,40 @@ export function AppBar(props:AppBarProps) {
                         context.showPerformanceDisplay
                           ? { iconType: "mui", name: "timer_off" }
                           : { iconType: "mui", name: "timer" }
+                      }
+                    />
+                  </ThemedIconButton>
+                </Tooltip>
+              )}
+            {/* LocalCache Monitor Indicator (#211) */}
+            {context.setShowLocalCacheMonitor && (
+                <Tooltip
+                  title={
+                    context.showLocalCacheMonitor
+                      ? "LocalCache Monitor: ON (click to disable)"
+                      : "LocalCache Monitor: OFF (click to enable)"
+                  }
+                >
+                  <ThemedIconButton
+                    onClick={() => {
+                      const next = !context.showLocalCacheMonitor;
+                      applyLocalCacheMonitorGate(next);
+                      context.setShowLocalCacheMonitor?.(next);
+                      try {
+                        context.domainController
+                          ?.getLocalCache?.()
+                          ?.setLocalCacheMonitorEnabled(next);
+                      } catch {
+                        // DomainController / LocalCache may be unavailable in some shells.
+                      }
+                    }}
+                    aria-label="LocalCache Monitor"
+                  >
+                    <ThemedIcon
+                      icon={
+                        context.showLocalCacheMonitor
+                          ? { iconType: "mui", name: "memory" }
+                          : { iconType: "mui", name: "storage" }
                       }
                     />
                   </ThemedIconButton>

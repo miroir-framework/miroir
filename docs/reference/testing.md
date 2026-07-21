@@ -138,12 +138,16 @@ npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryMeasure.unit
 # Attributed per-Entity + top-10 (present.current only; loading ignored)
 npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryAttributed.unit.test.ts
 
+# UI gate + docked summary (#211 Phase 7)
+npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorGate.unit.test.ts
+npm run testByFile -w miroir-standalone-app -- tests/4_view/LocalCacheMonitorSummary.unit.test.tsx
+
 # Static store image — Library book1–book6; shared golden presentSnapshotBytes on redux + zustand
 npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 ```
 
-Nonreg step ids: `unit-localCacheMemoryMeasure`, `unit-localCacheMemoryAttributed`, `unit-localCache-memoryMeasure-static-redux`, `unit-localCache-memoryMeasure-static-zustand`, `unit-localCache-monitor-redux`, `unit-localCache-monitor-zustand`.
+Nonreg step ids: `unit-localCacheMemoryMeasure`, `unit-localCacheMemoryAttributed`, `unit-localCacheMonitorGate`, `unit-localCacheMonitorSummary`, `unit-localCache-memoryMeasure-static-redux`, `unit-localCache-memoryMeasure-static-zustand`, `unit-localCache-monitor-redux`, `unit-localCache-monitor-zustand`.
 
 ### Via `testMiroir` (preferred)
 

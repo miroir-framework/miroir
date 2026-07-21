@@ -101,8 +101,27 @@
       ]
     },
     {
+      "id": "unit-localCacheMonitorGate",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor UI gate",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/localCacheMonitorGate.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCacheMonitorSummary",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor docked summary panel",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/LocalCacheMonitorSummary.unit.test.tsx"
+      ]
+    },
+    {
       "id": "integ-transformer-miroirCoreTransformers",
-
       "tier": "default",
       "title": "MiroirTest integ — miroirCoreTransformers",
       "requires": "postgres",
