@@ -14,7 +14,7 @@ Related: [analysis.md](./analysis.md) · issue #114
 |---|---|---|
 | **0** | Design decisions confirmed | **DONE** (2026-07-21) |
 | **1** | EntityDefinition cache flag → refresh fetch set (no stage-C read when `false`) | **DONE** (2026-07-21) |
-| **2** | Query fingerprint + single-flight loader | Not started |
+| **2** | Query fingerprint + single-flight loader | **DONE** (2026-07-21) |
 | **3** | Report load trigger (effect, not render) | Not started |
 | **4** | End-to-end Blob (`false` + report load) + integ assert no stage-C read | Not started |
 | **5** | Acceptance / non-regression gates | Not started |
@@ -42,15 +42,13 @@ Related: [analysis.md](./analysis.md) · issue #114
 
 ## Refresh stages (DomainController — record)
 
-See [analysis.md](./analysis.md) “Refresh flow — clarified”.
-
 | Stage | Read | Phase 1 behavior |
 |---|---|---|
 | A | Entity catalog (concepts) | Always |
 | B | All model entity instances | Always (needed for concepts + EntityDefinition flags) |
 | C | Data entity instances | **Only** entities with `cacheAllInstancesOnRefresh !== false` |
 
-**Misconception corrected:** Phase 1 does **not** issue stage-C reads for lazy entities and then abandon results. Filtering is applied **before** stage C.
+**D12:** Phase 1 does **not** issue stage-C reads for lazy entities and then abandon results. Filtering is applied **before** stage C.
 
 ---
 
@@ -80,7 +78,28 @@ User confirmed D1–D11 (EntityDefinition flag, model always loaded, sticky erro
 - Integration / recording-fake test that counts stage-C `RestPersistenceAction_read` for Blob with flag `false` → **Phase 4 / 5**
 - Report-triggered async fill → **Phase 2+**
 
-### Phase 2+ — not started
+### Phase 2 — DONE (2026-07-21)
+
+| Slice | Behavior | Evidence |
+|---|---|---|
+| 2.1 | Stable fingerprint (params / query / report / deployment) | `ReportQueryLoadService.unit.test.ts` |
+| 2.2 | Concurrent same key → one executor call | same |
+| 2.3 | Ready short-circuit → no re-dispatch | same |
+| 2.4 | Different fingerprint → new dispatch | same |
+| 2.5 | Success → ready; failure → sticky error until `invalidate` | same |
+
+**Artifacts**
+
+- `packages/miroir-core/src/2_domain/ReportQueryLoadService.ts`
+- `packages/miroir-core/tests/2_domain/ReportQueryLoadService.unit.test.ts` (9/9)
+- exported from `miroir-core` `index.ts`
+
+**Notes**
+
+- `ReportQueryLoadExecutor` is injected: service owns single-flight/status; executor owns persistence + `loadNewInstancesInLocalCache` (wired in Phase 3/4).
+- UI effect not yet connected.
+
+### Phase 3+ — not started
 
 See slices below.
 
@@ -133,10 +152,10 @@ resolveEntitiesToFetchOnRefresh(modelEntities, dataEntities, entityDefinitionsBy
 | B1 | Absent/`true`: data entity included in refresh fetch set | 1 | **DONE** |
 | B2 | `false`: data entity excluded from fetch set (⇒ no stage-C read when wired) | 1 | **DONE** (unit + wire); integ assert later |
 | B2b | Model entities always fetched | 1 | **DONE** |
-| B3 | Same fingerprint → concurrent / repeated `ensureLoaded` → **one** persistence query | 2 | Pending |
-| B4 | Different fingerprint → new load | 2 | Pending |
-| B5 | Successful load → instances retrievable from local cache | 2 | Pending |
-| B6 | Failed load → sticky `error`; no auto-retry on re-render | 2 | Pending |
+| B3 | Same fingerprint → concurrent / repeated `ensureLoaded` → **one** persistence query | 2 | **DONE** |
+| B4 | Different fingerprint → new load | 2 | **DONE** |
+| B5 | Successful load → ready (executor writes cache) | 2 | **DONE** (status); real cache wire in Phase 4 |
+| B6 | Failed load → sticky `error`; no auto-retry until invalidate | 2 | **DONE** |
 | B7 | Report open → one ensure per key change; re-render → zero extra | 3 | Pending |
 | B8 | Blob `false` + open Blob report → data appears without stage-C preload | 4 | Pending |
 
@@ -169,7 +188,7 @@ Out of scope for this plan:
 
 ```
 Phase 1 — EntityDefinition → stage C filter          slices 1.1–1.3   [DONE]
-Phase 2 — ReportQueryLoadService (fingerprint + SF)  slices 2.1–2.5
+Phase 2 — ReportQueryLoadService (fingerprint + SF)  slices 2.1–2.5   [DONE]
 Phase 3 — UI effect: ensureLoaded decoupled from render slices 3.1–3.3
 Phase 4 — Blob end-to-end + no stage-C read assert   slices 4.1–4.2
 Phase 5 — Acceptance gates                           slice 5.1
@@ -212,61 +231,15 @@ Phase 5 — Acceptance gates                           slice 5.1
 
 ---
 
-## Phase 2 — `ReportQueryLoadService` (fingerprint + single-flight)
+## Phase 2 — `ReportQueryLoadService` (fingerprint + single-flight) — **DONE**
 
-**Goal**: Async ensure-loaded with stable keys; one in-flight request per key; success writes cache; error is sticky without render-loop refetch.
+**Goal**: Async ensure-loaded with stable keys; one in-flight request per key; success → ready; error sticky without render-loop refetch.
 
-### 2.1  Fingerprint stability
+**Gate 2**: **PASSED** (9/9 unit). Executor → real DomainController / cache wire deferred to Phase 3–4.
 
-**Behavior**: Same logical request → same key; different `queryParams` or `resolvedQuery` extractors → different key.
+### 2.1–2.5 — **DONE**
 
-| | |
-|---|---|
-| **Progress (RED)** | Pure unit tests on `fingerprint(...)` only (no I/O). |
-| **Progress (GREEN)** | Deterministic serialization (sorted keys; no non-deterministic fields). |
-
-### 2.2  Single-flight: concurrent ensureLoaded
-
-**Behavior (B3)**: Two overlapping `ensureLoaded(sameRequest)` share one underlying persistence call (recording fake: call count === 1).
-
-| | |
-|---|---|
-| **Progress (RED)** | Slow fake promise; two parallel ensures; expect one dispatch. |
-| **Progress (GREEN)** | In-flight `Map<key, Promise>`. |
-
-### 2.3  Repeated ensure after ready does not re-dispatch
-
-**Behavior (B3 continued)**: After status `ready`, another `ensureLoaded(same key)` does not hit persistence again.
-
-| | |
-|---|---|
-| **Progress (RED)** | After resolve, third call → still call count === 1. |
-| **Progress (GREEN)** | Short-circuit on `ready`. |
-
-### 2.4  Param / report change triggers new load
-
-**Behavior (B4)**: Change `queryParams` or report identity → second persistence call; both keys can be `ready`.
-
-| | |
-|---|---|
-| **Progress (RED)** | Two requests, different fingerprints → call count === 2. |
-| **Progress (GREEN)** | Separate map entries. |
-
-### 2.5  Success → cache readable; failure → sticky error
-
-**Behavior (B5, B6)**:
-
-- Success: instances available via public local-cache / DomainController read path.
-- Failure: status `error`; subsequent `ensureLoaded` same key returns `error` **without** re-dispatch until `invalidate` / later `retry` (D10).
-
-| | |
-|---|---|
-| **Progress (RED)** | Fake success + failure path tests. |
-| **Progress (GREEN)** | Persistence/query boundary + `loadNewInstancesInLocalCache`; set status. |
-
-**Gate 2**: 2.1–2.5 green; no UI yet.
-
-**Mocking rule**: Fake/stub only at the **persistence / DomainController boundary** injected into the service.
+See execution log above. Sticky error until `invalidate` (D10); optional `retry(key)` still later.
 
 ---
 
@@ -346,4 +319,4 @@ WRONG:  write all Phase 1–4 tests → implement everything
 RIGHT:  1.1 RED→GREEN → … → 4.2 RED→GREEN → refactor
 ```
 
-Phase 1 complete. Next coding slice: **2.1 fingerprint**.
+Phase 2 complete. Next coding slice: **3.1 `useEnsureReportQueryLoaded`**.

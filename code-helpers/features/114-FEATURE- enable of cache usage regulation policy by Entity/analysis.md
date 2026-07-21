@@ -183,3 +183,11 @@ If you want stricter alignment with existing schema semantics now, combine Propo
 - Changing report UUID, deployment UUID, or query params triggers a new load.
 - Async load completion updates local cache and report UI without requiring manual refresh.
 - Failed loads expose error state without render-loop retries.
+
+---
+
+## Follow-up notes (implementation, light)
+
+Execution chose Proposal 1’s report single-flight idea with Proposal 2’s EntityDefinition flag as the refresh switch (not a DomainController-global `eagerAll|loadNone` enum). Model stays fully loaded on refresh; only **data** instances may be omitted.
+
+On `loadConfigurationFromPersistenceStore`: the first read is the Entity **catalog** (concepts); later reads load instances. For skipped data entities, the intended contract is **no instance read** for that entity (filter before fetch)—not fetch-then-drop from cache. See the TDD plan for the execution record.

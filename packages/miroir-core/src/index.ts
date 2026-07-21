@@ -880,6 +880,13 @@ export {
   runQueryTemplateFromDomainState
 } from "./2_domain/DomainStateQueryTemplateSelector.js";
 export { ExtractorRunnerInMemory } from "./2_domain/ExtractorRunnerInMemory.js";
+export {
+  ReportQueryLoadService,
+  fingerprintReportQueryLoadRequest,
+  type ReportLoadStatus,
+  type ReportQueryLoadExecutor,
+  type ReportQueryLoadRequest,
+} from "./2_domain/ReportQueryLoadService.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
 export { ModelEntityActionTransformer } from "./2_domain/ModelEntityActionTransformer.js";
 export {
