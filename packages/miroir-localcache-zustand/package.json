@@ -42,6 +42,7 @@
     "immer": "^10.0.3",
     "lodash": "^4.17.21",
     "miroir-core": "*",
+    "miroir-test-app_deployment-library": "*",
     "miroir-test-app_deployment-miroir": "*",
     "zod": "^3.21.4",
     "zustand": "^4.5.0"

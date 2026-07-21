@@ -21,7 +21,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 |-------|--------|--------|
 | **0** | Lock design decisions (open questions) | **Done** |
 | **1** | Pure identity-aware sizing (core) | **Done** (2026-07-21) — see §Phase 1 |
-| **2** | Static LocalCache image on real Redux **and** Zustand | **Done** (2026-07-21) — golden present=8646 both impls |
+| **2** | Static LocalCache image on real Redux **and** Zustand | **Done** (2026-07-21) — Library Books golden present=3922 both impls |
 | **3** | `LocalCacheInfo` enrichment + gate (OFF cheap) | Pending *(was Phase 2)* |
 | **4** | Attributed per-Entity + top-10 | Pending *(was Phase 3)* |
 | **5** | Barrier recalibration + CRUD/load deltas | Pending *(was Phase 4)* |
@@ -37,7 +37,8 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 | 1.2 | Commit-aliased `previous === present` excluded from history incremental |
 | 1.3 | Divergent previous + shared subtree → history ≈ non-shared only |
 | 1.4 | Action payloads metadata-only (RED proven with deep-size broken) |
-| Hygiene | Unit test typed cleanly (`FatInstance`, `TransactionalInstanceAction` for `StateChanges`) — fixes TS2353 / TS2322 IDE diagnostics |
+| Hygiene | Typed cleanly (`TransactionalInstanceAction` for `StateChanges`) |
+| Fixtures | Library app: `entityBook` / `entityAuthor`, `book1`–`book6`, `author1`/`author2`, `selfApplicationLibrary`, `deployment_Library_DO_NO_USE` |
 
 **Artifacts:** `packages/miroir-core/src/2_domain/localCacheMemoryMeasure.ts` (+ index exports); `packages/miroir-core/tests/2_domain/localCacheMemoryMeasure.unit.test.ts`
 
@@ -47,7 +48,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 |-------|--------|
 | 2.1 | Redux static bootstrap: parts sum to effective; present matches `estimateObjectBytes(present)` |
 | 2.2 | Zustand same invariants on real `LocalCache` |
-| 2.3 | Cross-impl parity: `presentSnapshotBytes === 8646` on identical payload (redux + zustand) |
+| 2.3 | Cross-impl parity: Library `book1`–`book6` → `presentSnapshotBytes === 3922` (redux + zustand) |
 | 2.4 | Post-rollback history incremental `< present/5` on both |
 
 **Artifacts:** `packages/miroir-localcache-redux/tests/LocalCache.memoryMeasure.static.unit.test.ts`; `packages/miroir-localcache-zustand/tests/LocalCache.memoryMeasure.static.unit.test.ts`

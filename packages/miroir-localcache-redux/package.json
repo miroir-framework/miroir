@@ -56,6 +56,7 @@
     "http-proxy-middleware": "3.0.5",
     "lodash": "^4.17.21",
     "miroir-core": "*",
+    "miroir-test-app_deployment-library": "*",
     "miroir-test-app_deployment-miroir": "*",
     "redux-saga": "^1.2.1",
     "typed-redux-saga": "^1.5.0",

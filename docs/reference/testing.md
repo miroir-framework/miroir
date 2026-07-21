@@ -132,10 +132,10 @@ Unit tests run entirely in-memory. No Postgres, no filesystem seeding.
 Pure sizing and static LocalCache image checks (included in `npm run nonreg:unit`):
 
 ```bash
-# Pure identity-aware formula (miroir-core)
+# Pure identity-aware formula (miroir-core) — Library Book/Author fixtures
 npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryMeasure.unit.test.ts
 
-# Static store image — same golden presentSnapshotBytes on both implementations
+# Static store image — Library book1–book6; shared golden presentSnapshotBytes on redux + zustand
 npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 ```

@@ -41,6 +41,36 @@
       ]
     },
     {
+      "id": "unit-localCacheMemoryMeasure",
+      "tier": "unit",
+      "title": "#211 — LocalCache memory measure (pure identity-aware sizing)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-core", "--",
+        "tests/2_domain/localCacheMemoryMeasure.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCache-memoryMeasure-static-redux",
+      "tier": "unit",
+      "title": "#211 — LocalCache static memory image (redux)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "vitest", "-w", "miroir-localcache-redux", "--",
+        "tests/LocalCache.memoryMeasure.static.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCache-memoryMeasure-static-zustand",
+      "tier": "unit",
+      "title": "#211 — LocalCache static memory image (zustand)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "vitest", "-w", "miroir-localcache-zustand", "--",
+        "tests/LocalCache.memoryMeasure.static.unit.test.ts"
+      ]
+    },
+    {
       "id": "integ-transformer-miroirCoreTransformers",
       "tier": "default",
       "title": "MiroirTest integ — miroirCoreTransformers",
