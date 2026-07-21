@@ -33,6 +33,7 @@ import { reportSectionsFormValue } from './ReportTools.js';
 import { useEnsureReportQueryLoaded } from './useEnsureReportQueryLoaded.js';
 
 import { reportReportDetails } from "miroir-test-app_deployment-miroir";
+import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportViewWithEditor"), "UI",
@@ -341,13 +342,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     <>
       {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
-        {reportQueryLoadStatus === "loading" ? (
+        {reportQueryLoadStatus === "loading" ||
+        (reportQueryLoadRequest && reportQueryLoadStatus === "idle") ? (
           <ThemedSpan>Loading report data…</ThemedSpan>
-        ) : null}
-        {reportQueryLoadStatus === "error" ? (
+        ) : reportQueryLoadStatus === "error" ? (
           <ThemedSpan>Failed to load report data.</ThemedSpan>
-        ) : null}
-        {props.applicationSection ? (
+        ) : props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
           ) : // (<>failure</>)

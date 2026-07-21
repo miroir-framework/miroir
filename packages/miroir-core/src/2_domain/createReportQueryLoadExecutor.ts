@@ -4,6 +4,7 @@ import type { Action2ReturnType } from "../0_interfaces/2_domain/DomainElement.j
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement.js";
 import type {
   EntityInstanceCollection,
+  LocalCacheAction,
   PersistenceAction,
   RestPersistenceAction,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -44,12 +45,16 @@ export function parentUuidsFromResolvedReportQuery(
 }
 
 function isErrorResult(result: Action2ReturnType): result is Action2Error {
-  return result instanceof Action2Error || result.status === "error";
+  return (
+    result instanceof Action2Error ||
+    (typeof result === "object" && (result as any)?.status == "error")
+  );
 }
 
 /**
  * DomainController-backed executor: RestPersistenceAction_read per entity
- * referenced by the report query, then loadNewInstancesInLocalCache.
+ * referenced by the report query, then loadNewInstancesInLocalCache via the
+ * local cache only (not handleAction — that would POST to the remote store).
  */
 export function createReportQueryLoadExecutor(
   domainController: DomainControllerInterface,
@@ -70,7 +75,7 @@ export function createReportQueryLoadExecutor(
       return;
     }
 
-    const remote = withStore.getRemoteStore();
+    const store = withStore.getRemoteStore();
     const collections: EntityInstanceCollection[] = [];
 
     for (const parentUuid of parentUuids) {
@@ -84,7 +89,7 @@ export function createReportQueryLoadExecutor(
         },
       };
 
-      const result = await remote.handlePersistenceAction(
+      const result = await store.handlePersistenceAction(
         readAction as PersistenceAction,
         applicationDeploymentMap,
       );
@@ -98,29 +103,41 @@ export function createReportQueryLoadExecutor(
 
       const element = result.returnedDomainElement;
       if (element && Array.isArray((element as EntityInstanceCollection).instances)) {
-        collections.push(element as EntityInstanceCollection);
+        collections.push({
+          parentUuid:
+            (element as EntityInstanceCollection).parentUuid || parentUuid,
+          applicationSection:
+            (element as EntityInstanceCollection).applicationSection ||
+            applicationSection,
+          instances: (element as EntityInstanceCollection).instances,
+        });
       } else if (Array.isArray(element)) {
         collections.push({
           parentUuid,
           applicationSection,
           instances: element,
         });
+      } else {
+        // Still register an empty entity slice so selectors stop returning EntityNotFound.
+        collections.push({
+          parentUuid,
+          applicationSection,
+          instances: [],
+        });
       }
     }
 
-    if (collections.length === 0) {
-      return;
-    }
-
-    const loadResult = await domainController.handleAction(
-      {
-        actionType: "loadNewInstancesInLocalCache",
-        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        payload: {
-          application: request.application,
-          objects: collections,
-        },
+    const loadAction: LocalCacheAction = {
+      actionType: "loadNewInstancesInLocalCache",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: request.application,
+        objects: collections,
       },
+    };
+
+    const loadResult = store.handleLocalCacheAction(
+      loadAction,
       applicationDeploymentMap,
     );
 

@@ -389,6 +389,9 @@ function handleLoadNewInstancesAction(
     
     const idAttribute = getIdAttributeForIndex(index);
     state.loading[index] = setAllInEntityState(instances, idAttribute);
+    // Mirror into current so report-triggered fills are visible without full rollback.
+    initializeLocalCacheSliceState(deploymentUuid, section, instanceCollection.parentUuid, "current", state);
+    state.current[index] = setAllInEntityState(instances, idAttribute);
   }
 }
 

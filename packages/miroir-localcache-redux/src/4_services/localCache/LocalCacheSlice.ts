@@ -365,6 +365,20 @@ function loadNewEntityInstancesInLocalCache(
     (state as any).loading[instanceCollectionEntityIndex],
     serializableInstances
   );
+  // Also mirror into current so report-triggered fills (no full-deployment
+  // rollback) are visible to sync selectors. Full refresh still finishes with
+  // rollback, which replaces current from loading.
+  const currentAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
+    deploymentUuid,
+    section,
+    instanceCollection.parentUuid,
+    "current",
+    state
+  );
+  (state as any).current[instanceCollectionEntityIndex] = currentAdapter.setAll(
+    (state as any).current[instanceCollectionEntityIndex],
+    serializableInstances
+  );
   // log.info("loadNewInstancesInLocalCache returned state", JSON.stringify(state))
 }
 

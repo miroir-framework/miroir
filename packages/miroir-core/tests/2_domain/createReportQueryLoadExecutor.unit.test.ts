@@ -36,7 +36,7 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
     ]);
   });
 
-  it("reads each parentUuid once then loadNewInstancesInLocalCache (4.1)", async () => {
+  it("reads each parentUuid once then loadNewInstancesInLocalCache via local cache (4.1)", async () => {
     const handlePersistenceAction = vi.fn(async () => ({
       status: "ok" as const,
       returnedDomainElement: {
@@ -45,16 +45,17 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
         instances: [{ uuid: "dddddddd-dddd-dddd-dddd-dddddddddddd", parentUuid: BLOB_UUID }],
       },
     }));
-    const handleAction = vi.fn(async () => ({
+    const handleLocalCacheAction = vi.fn(() => ({
       status: "ok" as const,
       returnedDomainElement: undefined,
     }));
     const domainController = {
-      getRemoteStore: () => ({ handlePersistenceAction }),
-      handleAction,
+      getRemoteStore: () => ({ handlePersistenceAction, handleLocalCacheAction }),
     } as any;
 
-    const executor = createReportQueryLoadExecutor(domainController, {});
+    const executor = createReportQueryLoadExecutor(domainController, {
+      [APP]: DEPLOY,
+    });
     await executor(blobListRequest());
 
     expect(handlePersistenceAction).toHaveBeenCalledTimes(1);
@@ -62,18 +63,17 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
       actionType: "RestPersistenceAction_read",
       payload: { parentUuid: BLOB_UUID, section: "data", application: APP },
     });
-    expect(handleAction).toHaveBeenCalledTimes(1);
-    expect(handleAction.mock.calls[0][0]).toMatchObject({
+    expect(handleLocalCacheAction).toHaveBeenCalledTimes(1);
+    expect(handleLocalCacheAction.mock.calls[0][0]).toMatchObject({
       actionType: "loadNewInstancesInLocalCache",
     });
   });
 
   it("does nothing when resolved query has no entity extractors", async () => {
     const handlePersistenceAction = vi.fn();
-    const handleAction = vi.fn();
+    const handleLocalCacheAction = vi.fn();
     const domainController = {
-      getRemoteStore: () => ({ handlePersistenceAction }),
-      handleAction,
+      getRemoteStore: () => ({ handlePersistenceAction, handleLocalCacheAction }),
     } as any;
 
     const executor = createReportQueryLoadExecutor(domainController, {});
@@ -88,6 +88,6 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
     });
 
     expect(handlePersistenceAction).not.toHaveBeenCalled();
-    expect(handleAction).not.toHaveBeenCalled();
+    expect(handleLocalCacheAction).not.toHaveBeenCalled();
   });
 });

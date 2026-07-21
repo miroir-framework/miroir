@@ -123,9 +123,9 @@ User confirmed D1–D11 (EntityDefinition flag, model always loaded, sticky erro
 | Slice | Behavior | Evidence |
 |---|---|---|
 | 4.1a | Blob EntityDefinition asset `cacheAllInstancesOnRefresh: false` | asset + `cacheRefreshPolicy` Blob exclusion test |
-| 4.1b | Report executor: read referenced entities + `loadNewInstancesInLocalCache` | `createReportQueryLoadExecutor.unit.test.ts` (3/3) |
-| 4.1c | Report view effect wires `useEnsureReportQueryLoaded` | `ReportViewWithEditor.tsx` |
-| 4.2 | Re-open same fingerprint → no second persistence load | Service/hook unit coverage; full integ pending |
+| 4.1b | Report executor: read referenced entities + `loadNewInstancesInLocalCache` | `createReportQueryLoadExecutor.unit.test.ts` (3/3); uses **local cache only** (not remote `handleAction`) |
+| 4.1c | Report view effect wires `useEnsureReportQueryLoaded` | `ReportViewWithEditor.tsx`; hides EntityNotFound while loading |
+| 4.1d | `loadNewInstancesInLocalCache` mirrors into `current` | redux + zustand LocalCacheSlice — selectors see report-triggered fills without full rollback |
 
 **Artifacts**
 
