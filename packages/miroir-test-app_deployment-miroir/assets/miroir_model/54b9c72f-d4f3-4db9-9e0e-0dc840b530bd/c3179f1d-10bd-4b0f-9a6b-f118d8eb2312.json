@@ -14,7 +14,7 @@
   ],
   "defaultInstanceDetailsReportUuid": "5a90a36c-f167-44f3-812f-3a70772e0a58",
   "cache": {
-    "cacheAllInstancesOnRefresh": true
+    "cacheAllInstancesOnRefresh": false
   },
   "mlSchema": {
     "type": "object",

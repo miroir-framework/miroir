@@ -15,8 +15,8 @@ Related: [analysis.md](./analysis.md) · issue #114
 | **0** | Design decisions confirmed | **DONE** (2026-07-21) |
 | **1** | EntityDefinition cache flag → refresh fetch set (no stage-C read when `false`) | **DONE** (2026-07-21) |
 | **2** | Query fingerprint + single-flight loader | **DONE** (2026-07-21) |
-| **3** | Report load trigger (effect, not render) | Not started |
-| **4** | End-to-end Blob (`false` + report load) + integ assert no stage-C read | Not started |
+| **3** | Report load trigger (effect, not render) | **DONE** (2026-07-21) |
+| **4** | End-to-end Blob (`false` + report load) + integ assert no stage-C read | **IN PROGRESS** (2026-07-21) |
 | **5** | Acceptance / non-regression gates | Not started |
 
 ---
@@ -99,7 +99,46 @@ User confirmed D1–D11 (EntityDefinition flag, model always loaded, sticky erro
 - `ReportQueryLoadExecutor` is injected: service owns single-flight/status; executor owns persistence + `loadNewInstancesInLocalCache` (wired in Phase 3/4).
 - UI effect not yet connected.
 
-### Phase 3+ — not started
+### Phase 3 — DONE (2026-07-21)
+
+| Slice | Behavior | Evidence |
+|---|---|---|
+| 3.1 | Mount → one `ensureLoaded`; fingerprint change → second | `useEnsureReportQueryLoaded.unit.test.tsx` |
+| 3.2 | Re-render same fingerprint → no extra `ensureLoaded` | same |
+| 3.3 | idle / loading→ready / sticky error; undefined → idle | same |
+
+**Artifacts**
+
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/useEnsureReportQueryLoaded.ts`
+- `packages/miroir-standalone-app/tests/4_view/useEnsureReportQueryLoaded.unit.test.tsx` (6/6 via vitest)
+
+**Notes**
+
+- Effect deps: `[service, fingerprint]`; `requestRef` holds latest request.
+- Hook reads service status **after** `ensureLoaded` so `loading` is visible before the promise settles.
+- Report view wiring + real executor → **Phase 4**.
+
+### Phase 4 — IN PROGRESS (2026-07-21)
+
+| Slice | Behavior | Evidence |
+|---|---|---|
+| 4.1a | Blob EntityDefinition asset `cacheAllInstancesOnRefresh: false` | asset + `cacheRefreshPolicy` Blob exclusion test |
+| 4.1b | Report executor: read referenced entities + `loadNewInstancesInLocalCache` | `createReportQueryLoadExecutor.unit.test.ts` (3/3) |
+| 4.1c | Report view effect wires `useEnsureReportQueryLoaded` | `ReportViewWithEditor.tsx` |
+| 4.2 | Re-open same fingerprint → no second persistence load | Service/hook unit coverage; full integ pending |
+
+**Artifacts**
+
+- Blob ED: `…/c3179f1d-….json` → `false` (rebuild `miroir-test-app_deployment-miroir` dist)
+- `packages/miroir-core/src/2_domain/createReportQueryLoadExecutor.ts`
+- Hook wired in `ReportViewWithEditor`
+
+**Still open**
+
+- Full integ recording of zero stage-C `RestPersistenceAction_read` for Blob on real refresh/rollback (DomainController unit import blocked by `defaultMiroirMetaModel` dist issue)
+- End-to-end Blob list report integ after refresh
+
+### Phase 5 — not started
 
 See slices below.
 
@@ -247,19 +286,9 @@ See execution log above. Sticky error until `invalidate` (D10); optional `retry(
 
 **Goal**: Opening a report schedules `ensureLoaded` from an effect; render only reads status + selector data.
 
-### 3.1  Hook / effect: one ensure per key change
+### 3.1–3.3 — **DONE**
 
-**Behavior (B7)**: Mount with request A → one `ensureLoaded`. Re-render same key → still one. Change key → second ensure.
-
-### 3.2  Render path does not call ensureLoaded
-
-**Behavior**: Pure re-renders do not increment ensure count.
-
-### 3.3  Loading / error UI observability (minimal)
-
-**Behavior**: Status transitions idle→loading→ready/error; error sticky across re-renders.
-
-**Gate 3**: 3.1–3.3 green.
+See execution log above. Gate 3 green (6/6).
 
 ---
 
@@ -293,11 +322,11 @@ See execution log above. Sticky error until `invalidate` (D10); optional `retry(
 | Absent/`true` → still on refresh fetch set | 1.1 | **DONE** |
 | `false` → no stage-C read for that data entity | 1.2 wire; 4.1 integ | Wire DONE; integ pending |
 | Model always loaded | 1.3 | **DONE** |
-| Report open → exactly one async load per key | 2.2, 3.1, 4.1 | Pending |
-| Re-render same key → zero extra load | 2.3, 3.2 | Pending |
-| Change report / params / deployment → new load | 2.4 | Pending |
-| Load completion updates cache / UI | 2.5, 4.1 | Pending |
-| Failed loads → error, no render-loop retries | 2.5, 3.3 | Pending |
+| Report open → exactly one async load per key | 2.2, 3.1, 4.1 | 2.2/3.1 DONE; 4.1 pending |
+| Re-render same key → zero extra load | 2.3, 3.2 | **DONE** |
+| Change report / params / deployment → new load | 2.4 | **DONE** (unit) |
+| Load completion updates cache / UI | 2.5, 4.1 | 2.5 DONE; 4.1 pending |
+| Failed loads → error, no render-loop retries | 2.5, 3.3 | **DONE** |
 
 **Non-regression pack** (after Phase 4): ConfigurationService startup; ReportHooks with default eager; Blob path with flag `false`.
 
@@ -319,4 +348,4 @@ WRONG:  write all Phase 1–4 tests → implement everything
 RIGHT:  1.1 RED→GREEN → … → 4.2 RED→GREEN → refactor
 ```
 
-Phase 2 complete. Next coding slice: **3.1 `useEnsureReportQueryLoaded`**.
+Phase 4 in progress. Next: **integ assert zero stage-C Blob reads on refresh** + BlobList report load after refresh.

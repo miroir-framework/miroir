@@ -5,18 +5,21 @@ import { Formik } from 'formik';
 
 import {
   Action2Error,
+  createReportQueryLoadExecutor,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
+  ReportQueryLoadService,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
   type DomainControllerInterface,
   type EntityDefinition,
   type InstanceAction,
+  type ReportQueryLoadRequest,
 } from "miroir-core";
 import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
@@ -28,9 +31,9 @@ import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
+import { useEnsureReportQueryLoaded } from './useEnsureReportQueryLoaded.js';
 
 import { reportReportDetails } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportViewWithEditor"), "UI",
@@ -64,7 +67,16 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const context = useMiroirContextService();
   const outlineContext = useDocumentOutlineContext();
   const { showSnackbar, handleAsyncAction } = useSnackbar();
-  
+  const domainController: DomainControllerInterface = useDomainControllerService();
+
+  const reportQueryLoadService = useMemo(
+    () =>
+      new ReportQueryLoadService(
+        createReportQueryLoadExecutor(domainController, props.applicationDeploymentMap),
+      ),
+    [domainController, props.applicationDeploymentMap],
+  );
+
   const generalEditMode = context.viewParams.generalEditMode;
   
   // ##############################################################################################
@@ -119,12 +131,43 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     Domain2QueryReturnType<Record<string, any>>
   > = useQueryTemplateResults(props, props.applicationDeploymentMap, reportDataQueryBase);
 
+  const resolvedQuery =
+    reportDataQueryResults instanceof Domain2ElementFailed
+      ? undefined
+      : reportDataQueryResults.resolvedQuery;
+  const reportData =
+    reportDataQueryResults instanceof Domain2ElementFailed
+      ? reportDataQueryResults
+      : reportDataQueryResults.reportData;
+
+  const reportQueryLoadRequest: ReportQueryLoadRequest | undefined = useMemo(() => {
+    const extractors = (resolvedQuery as BoxedQueryWithExtractorCombinerTransformer | undefined)
+      ?.extractors;
+    if (!resolvedQuery || !extractors || Object.keys(extractors).length === 0) {
+      return undefined;
+    }
+    return {
+      application: props.application,
+      deploymentUuid: props.deploymentUuid,
+      reportUuid: props.reportDefinition?.uuid,
+      resolvedQuery,
+      queryParams: {},
+    };
+  }, [
+    props.application,
+    props.deploymentUuid,
+    props.reportDefinition?.uuid,
+    resolvedQuery,
+  ]);
+
+  const reportQueryLoadStatus = useEnsureReportQueryLoaded(
+    reportQueryLoadService,
+    reportQueryLoadRequest,
+  );
+
   if (reportDataQueryResults instanceof Domain2ElementFailed) { // should never happen
     throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));
   }
-  
-  const {reportData, resolvedQuery} = reportDataQueryResults;
-  // log.info("reportData", reportData);
 
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];
@@ -176,7 +219,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ###############################################################################################
   // ###############################################################################################
   // ##############################################################################################
-  const domainController: DomainControllerInterface = useDomainControllerService();
   const currentModelEnvironment = defaultMiroirModelEnvironment;
   const onEditValueObjectFormSubmit = useCallback(
     async (data: any) => {
@@ -300,6 +342,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     <>
       {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
+        {reportQueryLoadStatus === "loading" ? (
+          <ThemedSpan>Loading report data…</ThemedSpan>
+        ) : null}
+        {reportQueryLoadStatus === "error" ? (
+          <ThemedSpan>Failed to load report data.</ThemedSpan>
+        ) : null}
         {props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>

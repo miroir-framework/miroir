@@ -107,6 +107,21 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
     expect(result).toEqual([]);
   });
 
+  it("excludes Miroir Blob when EntityDefinition asset sets cacheAllInstancesOnRefresh false (Phase 4)", async () => {
+    const { entityBlob, entityDefinitionBlob } = await import(
+      "miroir-test-app_deployment-miroir"
+    );
+    expect(entityDefinitionBlob.cache?.cacheAllInstancesOnRefresh).toBe(false);
+
+    const result = resolveEntitiesToFetchOnRefresh(
+      [],
+      [entityBlob as Entity],
+      { [entityBlob.uuid]: entityDefinitionBlob as EntityDefinition },
+    );
+
+    expect(result).toEqual([]);
+  });
+
   it("tags sections correctly on the fetch list", () => {
     const result = resolveEntitiesToFetchOnRefresh(
       [modelA],

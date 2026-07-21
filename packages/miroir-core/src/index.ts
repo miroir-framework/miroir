@@ -887,6 +887,10 @@ export {
   type ReportQueryLoadExecutor,
   type ReportQueryLoadRequest,
 } from "./2_domain/ReportQueryLoadService.js";
+export {
+  createReportQueryLoadExecutor,
+  parentUuidsFromResolvedReportQuery,
+} from "./2_domain/createReportQueryLoadExecutor.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
 export { ModelEntityActionTransformer } from "./2_domain/ModelEntityActionTransformer.js";
 export {
