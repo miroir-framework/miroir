@@ -1060,6 +1060,7 @@ export {
   runMiroirActionTest,
 } from "./5_tests/ActionTestTools.js";
 export {
+  buildModelValidationGroupsFromFilesystem,
   buildModelValidationPlanFromGroups,
   modelValidationSuite,
   buildModelValidationInstanceLabel,
@@ -1070,7 +1071,9 @@ export {
   filterModelValidationGroupInstances,
   formatEntitiesWithZeroInstancesReport,
   formatFailedModelValidationRerunCommands,
+  loadModelValidationInstancesFromDir,
   modelValidationInstancesArrayToRecord,
+  type BuildModelValidationGroupsFromFilesystemParams,
   type ModelValidationFailedCase,
   type ModelValidationGroup,
   type ModelValidationInstanceCheck,
