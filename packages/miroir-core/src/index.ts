@@ -470,6 +470,14 @@ export {
   MiroirMenuItemDivider,
   MiroirMenuPageLink,
   RunStoredQuery,
+  MarkdownReportSection,
+  markdownReportSection,
+  MiroirTestReportSection,
+  miroirTestReportSection,
+  AdminApplication,
+  adminApplication,
+  MlSchemaTemplate,
+  mlSchemaTemplate,
 } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export {
