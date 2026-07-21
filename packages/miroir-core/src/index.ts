@@ -885,8 +885,13 @@ export {
 export { ExtractorRunnerInMemory } from "./2_domain/ExtractorRunnerInMemory.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
 export {
+  aggregateAttributedByEntity,
+  buildAttributedInstanceIndex,
   estimateObjectBytes,
   measureLocalCacheMemory,
+  selectTopLargest,
+  type AttributedEntitySize,
+  type AttributedInstanceSize,
   type LocalCacheMemoryBreakdown,
 } from "./2_domain/localCacheMemoryMeasure.js";
 export { ModelEntityActionTransformer } from "./2_domain/ModelEntityActionTransformer.js";

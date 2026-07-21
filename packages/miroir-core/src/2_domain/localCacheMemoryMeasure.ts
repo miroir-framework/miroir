@@ -11,15 +11,39 @@
  */
 
 import type {
+  LocalCacheSliceState,
   StateChanges,
   StateWithUndoRedo,
 } from "../0_interfaces/2_domain/LocalCacheInterface.js";
+import {
+  getLocalCacheIndexDeploymentSection,
+  getLocalCacheIndexDeploymentUuid,
+  getLocalCacheIndexEntityUuid,
+} from "./ReduxDeploymentsState.js";
 
 export type LocalCacheMemoryBreakdown = {
   presentSnapshotBytes: number;
   transactionHistoryBytes: number;
   queriesResultsCacheBytes: number;
   effectiveBytes: number;
+};
+
+/** Attributed size of one instance under `present.current` (distribution view, not unique heap). */
+export type AttributedInstanceSize = {
+  deploymentUuid: string;
+  applicationSection: string;
+  entityUuid: string;
+  instanceId: string;
+  bytes: number;
+};
+
+/** Rolled-up attributed size for one Entity collection under `present.current`. */
+export type AttributedEntitySize = {
+  deploymentUuid: string;
+  applicationSection: string;
+  entityUuid: string;
+  instanceCount: number;
+  attributedBytes: number;
 };
 
 export function estimateObjectBytes(
@@ -192,4 +216,88 @@ export function measureLocalCacheMemory(
       transactionHistoryBytes +
       queriesResultsCacheBytes,
   };
+}
+
+/**
+ * Attribute each instance under `present.current` with an independent size estimate.
+ * Does not walk `loading` (v1). This is a distribution / hot-spot view — summing
+ * attributed bytes is not required to equal `presentSnapshotBytes` / effective heap.
+ */
+export function buildAttributedInstanceIndex(
+  present: LocalCacheSliceState
+): AttributedInstanceSize[] {
+  const result: AttributedInstanceSize[] = [];
+  const current = present?.current;
+  if (!current || typeof current !== "object") {
+    return result;
+  }
+
+  for (const indexKey of Object.keys(current)) {
+    let deploymentUuid: string;
+    let applicationSection: string;
+    let entityUuid: string;
+    try {
+      deploymentUuid = getLocalCacheIndexDeploymentUuid(indexKey);
+      applicationSection = getLocalCacheIndexDeploymentSection(indexKey);
+      entityUuid = getLocalCacheIndexEntityUuid(indexKey);
+    } catch {
+      continue;
+    }
+
+    const collection = current[indexKey] as
+      | { entities?: Record<string, unknown>; ids?: string[] }
+      | undefined;
+    const entities = collection?.entities;
+    if (!entities || typeof entities !== "object") {
+      continue;
+    }
+
+    for (const instanceId of Object.keys(entities)) {
+      const instance = entities[instanceId];
+      result.push({
+        deploymentUuid,
+        applicationSection,
+        entityUuid,
+        instanceId,
+        bytes: estimateObjectBytes(instance),
+      });
+    }
+  }
+
+  return result;
+}
+
+/** Roll attributed instances up by (deployment, section, entity). */
+export function aggregateAttributedByEntity(
+  instances: AttributedInstanceSize[]
+): AttributedEntitySize[] {
+  const map = new Map<string, AttributedEntitySize>();
+  for (const row of instances) {
+    const key = `${row.deploymentUuid}_${row.applicationSection}_${row.entityUuid}`;
+    const existing = map.get(key);
+    if (existing) {
+      existing.instanceCount += 1;
+      existing.attributedBytes += row.bytes;
+    } else {
+      map.set(key, {
+        deploymentUuid: row.deploymentUuid,
+        applicationSection: row.applicationSection,
+        entityUuid: row.entityUuid,
+        instanceCount: 1,
+        attributedBytes: row.bytes,
+      });
+    }
+  }
+  return [...map.values()];
+}
+
+/** Top N instances by attributed bytes, descending. */
+export function selectTopLargest(
+  instances: AttributedInstanceSize[],
+  n: number
+): AttributedInstanceSize[] {
+  if (n <= 0) {
+    return [];
+  }
+  return [...instances].sort((a, b) => b.bytes - a.bytes).slice(0, n);
 }

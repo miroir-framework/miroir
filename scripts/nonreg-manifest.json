@@ -91,7 +91,18 @@
       ]
     },
     {
+      "id": "unit-localCacheMemoryAttributed",
+      "tier": "unit",
+      "title": "#211 — LocalCache attributed per-Entity + top-10 sizing",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-core", "--",
+        "tests/2_domain/localCacheMemoryAttributed.unit.test.ts"
+      ]
+    },
+    {
       "id": "integ-transformer-miroirCoreTransformers",
+
       "tier": "default",
       "title": "MiroirTest integ — miroirCoreTransformers",
       "requires": "postgres",

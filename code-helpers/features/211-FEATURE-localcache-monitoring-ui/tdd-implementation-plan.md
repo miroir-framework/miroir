@@ -11,7 +11,7 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 [#61 performance monitor TDD plan](../61-FEATURE-%20include%20performance%20monitoring%20for%20UI%20components/tdd-implementation-plan.md) ·
 [#208 caching design](https://github.com/miroir-framework/miroir/issues/208)
 
-**Status:** Phases 0–3 done; Phase 4 (attributed per-Entity + top-10) next.
+**Status:** Phases 0–4 done; Phase 5 (barriers + CRUD/load deltas) next.
 
 ---
 
@@ -23,11 +23,11 @@ Related: [analysis.md](./analysis.md) · [#211](https://github.com/miroir-framew
 | **1** | Pure identity-aware sizing (core) | **Done** (2026-07-21) — see §Phase 1 |
 | **2** | Static LocalCache image on real Redux **and** Zustand | **Done** (2026-07-21) — Library Books golden present=3922 both impls |
 | **3** | `currentInfo` present-only via `estimateObjectBytes`; rich path = `measureLocalCacheMemory` | **Done** (2026-07-21) |
-| **4** | Attributed per-Entity + top-10 | Pending *(was Phase 3)* |
-| **5** | Barrier recalibration + CRUD/load deltas | Pending *(was Phase 4)* |
-| **6** | Session efficiency indicators | Pending *(was Phase 5)* |
-| **7** | UI: AppBar toggle + docked panel | Pending *(was Phase 6)* |
-| **8** | Export / Clear / acceptance footprint | Pending *(was Phase 7)* |
+| **4** | Attributed per-Entity + top-10 | **Done** (2026-07-21) — present.current only; loading ignored |
+| **5** | Barrier recalibration + CRUD/load deltas | Pending |
+| **6** | Session efficiency indicators | Pending |
+| **7** | UI: AppBar toggle + docked panel | Pending |
+| **8** | Export / Clear / acceptance footprint | Pending |
 
 ### Phase 1 achievement log
 
@@ -258,6 +258,18 @@ RED → GREEN (both packages)
 
 **Goal:** Hot-spot views from present `current` without claiming they sum to effective.
 
+**Status:** Done (2026-07-21).
+
+### Phase 4 achievement log
+
+| Slice | Result |
+|-------|--------|
+| 4.1 | `buildAttributedInstanceIndex` + `aggregateAttributedByEntity` — Books/Authors attributed bytes = sum of per-instance `estimateObjectBytes` |
+| 4.2 | `selectTopLargest(instances, 10)` — descending bytes; drops the smallest of 11 |
+| 4.3 | Attributed index walks `present.current` only — `loading` instances contribute to present heap but not attribution |
+
+**Artifacts:** `localCacheMemoryMeasure.ts` (+ index exports); `packages/miroir-core/tests/2_domain/localCacheMemoryAttributed.unit.test.ts`
+
 ### 4.1  Per-Entity attributed totals
 
 **Behavior:** Two entities with known instance payloads → attributed bytes and counts match fixtures within tolerance of the size walk.
@@ -291,7 +303,7 @@ RED → GREEN
 
 **Goal:** Limited ON footprint — deltas for CRUD/load; full remeasure on barriers.
 
-### 4.1  create / update / delete update attributed map
+### 5.1  create / update / delete update attributed map
 
 **Behavior:** Through `LocalCache.handleLocalCacheAction`, after createInstance the instance appears in attributed index; after deleteInstance it disappears; updateInstance changes bytes in the expected direction.
 
@@ -303,7 +315,7 @@ packages/miroir-localcache-redux/tests/LocalCache.monitor.unit.test.ts
 
 Implementation may remeasure present attributed index after each mutating action while a “monitor session” flag is on — or true deltas. Tests assert observable map contents, not delta math internals.
 
-### 4.2  Commit clears history incremental
+### 5.2  Commit clears history incremental
 
 **Behavior:** After transactional edits, history bytes &gt; 0; after `commit`, history incremental drops (patches cleared, previous aliased).
 
@@ -312,7 +324,7 @@ RED → GREEN
   "commit drops transaction history incremental size"
 ```
 
-### 4.3  Undo recalibrates present + history
+### 5.3  Undo recalibrates present + history
 
 **Behavior:** Undo changes present and moves patch stacks; effective measure remains consistent with a fresh `measureLocalCacheMemory(getState())` (equality within tolerance).
 

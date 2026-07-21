@@ -41,7 +41,7 @@ npm run nonreg -- --tier full --run-all
 
 | Tier | Contents |
 |------|----------|
-| `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` + LocalCache memory measure (#211: pure `localCacheMemoryMeasure` + static redux/zustand images) |
+| `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` + LocalCache memory measure (#211: pure `localCacheMemoryMeasure` / attributed + static redux/zustand images) |
 | `default` | `unit` + MiroirTest integ (`miroirCoreTransformers`, `runner_library`, `domain_controller_data_crud`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
 | `full` | `default` + deployment `modelValidation` packages |
 
@@ -135,12 +135,15 @@ Pure sizing and static LocalCache image checks (included in `npm run nonreg:unit
 # Pure identity-aware formula (miroir-core) — Library Book/Author fixtures
 npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryMeasure.unit.test.ts
 
+# Attributed per-Entity + top-10 (present.current only; loading ignored)
+npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryAttributed.unit.test.ts
+
 # Static store image — Library book1–book6; shared golden presentSnapshotBytes on redux + zustand
 npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 ```
 
-Nonreg step ids: `unit-localCacheMemoryMeasure`, `unit-localCache-memoryMeasure-static-redux`, `unit-localCache-memoryMeasure-static-zustand`, `unit-localCache-monitor-redux`, `unit-localCache-monitor-zustand`.
+Nonreg step ids: `unit-localCacheMemoryMeasure`, `unit-localCacheMemoryAttributed`, `unit-localCache-memoryMeasure-static-redux`, `unit-localCache-memoryMeasure-static-zustand`, `unit-localCache-monitor-redux`, `unit-localCache-monitor-zustand`.
 
 ### Via `testMiroir` (preferred)
 
