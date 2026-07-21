@@ -36,11 +36,9 @@ import {
   miroirJzodSchemaBootstrap,
   modelEndpointV1,
   queryVersionBundleProducerV1,
-  // reportApplicationDeploymentConfigurationList,
   reportApplicationList,
   reportApplicationModelBranchList,
   reportApplicationVersionList,
-  reportConfigurationList,
   reportEndpointVersionList,
   reportEntityDefinitionList,
   reportEntityList,
@@ -180,10 +178,6 @@ export async function modelInitialize(
     );
     log.info(logHeader, "created entity Menu", persistenceStoreController.getEntityUuids());
 
-    // // bootstrap EntityStoreBasedConfiguration
-    // await persistenceStoreController.createEntity(entityStoreBasedConfiguration as Entity, entityDefinitionStoreBasedConfiguration as EntityDefinition);
-    // log.info(logHeader, 'created entity StoreBasedConfiguration',persistenceStoreController.getEntityUuids());
-
     // bootstrap EntityJzodSchema
     await persistenceStoreController.createEntity(
       entityJzodSchema as Entity,
@@ -233,10 +227,6 @@ export async function modelInitialize(
     );
     log.info(logHeader, "created entity Query", persistenceStoreController.getEntityUuids());
 
-    await persistenceStoreController.upsertInstance(
-      "data",
-      reportConfigurationList as EntityInstance,
-    );
     // await persistenceStoreController.upsertInstance('data', reportEndpointList as EntityInstance);
     await persistenceStoreController.upsertInstance(
       "data",
@@ -251,10 +241,6 @@ export async function modelInitialize(
       "data",
       reportApplicationList as EntityInstance,
     );
-    // await persistenceStoreController.upsertInstance(
-    //   "data",
-    //   reportApplicationDeploymentConfigurationList as EntityInstance,
-    // );
     await persistenceStoreController.upsertInstance(
       "data",
       reportApplicationModelBranchList as EntityInstance,
@@ -445,13 +431,6 @@ export async function modelInitialize(
       "app initialized entity Theme",
       persistenceStoreController.getEntityUuids(),
     );
-
-    // // bootstrap EntityStoreBasedConfiguration
-    // await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
-    //   entityStoreBasedConfiguration as Entity,
-    //   entityDefinitionStoreBasedConfiguration as EntityDefinition
-    // );
-    // log.info(logHeader, "app initialized entity StoreBasedConfiguration", persistenceStoreController.getEntityUuids());
 
     await persistenceStoreController.upsertInstance("model", selfApplication);
     // // log.info(logHeader, 'inserting app deployment',deployment);

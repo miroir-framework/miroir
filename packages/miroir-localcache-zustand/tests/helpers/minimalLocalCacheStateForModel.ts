@@ -12,7 +12,6 @@ import {
   entityQueryVersion,
   entityReport,
   entitySelfApplicationVersion,
-  entityStoreBasedConfiguration,
 } from "miroir-test-app_deployment-miroir";
 
 import type { LocalCacheSliceState } from "../../src/4_services/localCache/localCacheZustandInterface.js";
@@ -28,7 +27,6 @@ export function buildMinimalLocalCacheStateForDeployment(
   const current: LocalCacheSliceState["current"] = {};
   const indexes: Array<[string, Uuid]> = [
     [modelSection, entitySelfApplicationVersion.uuid],
-    [modelSection, entityStoreBasedConfiguration.uuid],
     [modelSection, entityEndpointVersion.uuid],
     ["model", entityEntity.uuid],
     ["model", entityEntityDefinition.uuid],

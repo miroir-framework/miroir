@@ -70,7 +70,6 @@ export const metaMetaModelEntityUuids: Uuid[] = metaMetaModelEntities.map((e) =>
 
 export const metaModelEntities: Entity[] = [
   entitySelfApplication,
-  // entitySelfApplicationDeploymentConfiguration, // TODO: remove, deployments are not part of applications, they are external to them, belonging to a separate selfApplication, which contents is specific to each node (no transactions / historization)
   entityEndpointVersion,
   entityEntity, 
   entityEntityDefinition,
@@ -82,7 +81,6 @@ export const metaModelEntities: Entity[] = [
   entitySelfApplicationVersion,
   entityTheme,
   entityMiroirTest,
-  // entityStoreBasedConfiguration,
 ] as Entity[];
 
 export const metaModelEntityUuids: Uuid[] = metaModelEntities.map((e) => e.uuid);

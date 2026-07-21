@@ -67,14 +67,6 @@ export function currentModel(
           entitySelfApplicationVersion.uuid
         )
       ];
-    const configuration =
-      state.current[
-        getReduxDeploymentsStateIndex(
-          deploymentUuid,
-          modelSection,
-          entityStoreBasedConfiguration.uuid
-        )
-      ];
     const endpoints =
       state.current[
         getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityEndpointVersion.uuid)

@@ -3,7 +3,6 @@
 export { default as entityApplicationForAdmin } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json" with { type: "json" };
 export { default as entityDeployment } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7959d814-400c-4e80-988f-a00fe582ab98.json" with { type: "json" };
 export { default as entityViewParams } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/b9765b7c-b614-4126-a0e2-634463f99937.json" with { type: "json" };
-export { default as entityStoreBasedConfiguration } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/9f9170da-538d-425c-8cb7-551640623eed.json" with { type: "json" };
 export { default as entityImport } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ff3d211b-7eb6-473a-afbf-503bb70a5c26.json" with { type: "json" };
 
 // Admin Model - Entity Definitions  
@@ -28,7 +27,6 @@ export { default as menuDefaultAdmin } from "./assets/admin_model/dde4c883-ae6d-
 
 // Admin Model - Application metadata
 export { default as adminSelfApplication } from "./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json" with { type: "json" };
-export { default as selfApplicationStoreBasedConfigurationAdmin } from "./assets/admin_model/7990c0c9-86c3-40a1-a121-036c91b55ed7/a192c4bd-15c9-4932-84f6-3885b9d5969f.json" with { type: "json" };
 export { default as selfApplicationVersionAdminInitialVersion } from "./assets/admin_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/b843bd4b-83bd-4241-95c6-b16bbdc75abd.json" with { type: "json" };
 export { default as selfApplicationModelBranchAdminMasterBranch } from "./assets/admin_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/9034141b-0d0d-4beb-82af-dfc02be15c2d.json" with { type: "json" };
 

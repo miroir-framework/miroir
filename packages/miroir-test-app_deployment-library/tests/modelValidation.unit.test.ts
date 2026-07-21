@@ -29,39 +29,11 @@ import {
 // ================================================================================================
 
 /**
- * Library model environment: used when validating library data instances (Author, Book, etc.)
- * so that currentModel reflects the library application model.
- */
-// const libraryModelEnvironment: MiroirModelEnvironment = {
-//   miroirFundamentalJzodSchema: getMiroirFundamentalSchemaForDeployment(
-//     deployment_Library_DO_NO_USE.uuid,
-//     defaultLibraryAppModel,
-//   ),
-//   miroirMetaModel: defaultMiroirMetaModel,
-//   endpointsByUuid: {},
-//   deploymentUuid: deployment_Library_DO_NO_USE.uuid,
-//   currentModel: defaultLibraryAppModel,
-// };
-
-/**
  * `defaultMiroirMetaModel` omits a few meta-entities that library assets still store
  * (StoreBasedConfiguration, Deployment / SelfApplicationDeploymentConfiguration).
  * Merge them so filesystem discovery covers the previous hardcoded suite.
  */
 const miroirMetaModelForLibraryValidation: MetaModel = defaultMiroirMetaModel
-// {
-//   ...defaultMiroirMetaModel,
-//   entities: [
-//     ...defaultMiroirMetaModel.entities,
-//     entityStoreBasedConfiguration as Entity,
-//     entitySelfApplicationDeploymentConfiguration as Entity,
-//   ],
-//   entityDefinitions: [
-//     ...defaultMiroirMetaModel.entityDefinitions,
-//     entityDefinitionStoreBasedConfiguration as EntityDefinition,
-//     entityDefinitionSelfApplicationDeploymentConfiguration as EntityDefinition,
-//   ],
-// };
 
 // ================================================================================================
 // Model + data validation groups (filesystem-driven)

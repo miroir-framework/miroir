@@ -34,7 +34,6 @@ import {
   entityRunner,
   entitySelfApplication,
   entitySelfApplicationVersion,
-  entityStoreBasedConfiguration,
   entityTest,
   entityTheme,
   selfApplicationMiroir,
@@ -384,34 +383,6 @@ const selectThemesFromReduxState = createSelector(
 );
 
 // ################################################################################################
-const selectConfigurationsFromReduxState = createSelector(
-  [
-    selectCurrentReduxDeploymentsStateFromReduxState,
-    selectApplicationDeploymentMap,
-    selectMiroirSelectorQueryParams,
-  ],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate,
-  ): EntityInstancesUuidIndex | undefined => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityStoreBasedConfiguration.uuid,
-    );
-  },
-);
-
-// ################################################################################################
 const selectApplicationVersionsFromReduxState = createSelector(
   [
     selectCurrentReduxDeploymentsStateFromReduxState,
@@ -477,7 +448,6 @@ export const selectModelForDeploymentFromReduxState: () => (
     [
       selectApplicationsFromReduxState,
       selectApplicationVersionsFromReduxState,
-      selectConfigurationsFromReduxState,
       selectEntitiesFromReduxState,
       selectEntityDefinitionsFromReduxState,
       selectJzodSchemasFromReduxState,
@@ -492,7 +462,6 @@ export const selectModelForDeploymentFromReduxState: () => (
     (
       applications: EntityInstancesUuidIndex | undefined,
       applicationVersions: EntityInstancesUuidIndex | undefined,
-      configurations: EntityInstancesUuidIndex | undefined,
       entities: EntityInstancesUuidIndex | undefined,
       entityDefinitions: EntityInstancesUuidIndex | undefined,
       jzodSchemas: EntityInstancesUuidIndex | undefined,

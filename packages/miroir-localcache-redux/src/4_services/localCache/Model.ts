@@ -40,7 +40,6 @@ import {
   entityReport,
   entityRunner,
   entitySelfApplicationVersion,
-  entityStoreBasedConfiguration,
   entityEndpointVersion,
   defaultMiroirMetaModel,
 } from "miroir-test-app_deployment-miroir";
@@ -79,14 +78,6 @@ export function currentModel(
           deploymentUuid,
           modelSection,
           entitySelfApplicationVersion.uuid
-        )
-      ];
-    const configuration =
-      state.current[
-        getReduxDeploymentsStateIndex(
-          deploymentUuid,
-          modelSection,
-          entityStoreBasedConfiguration.uuid
         )
       ];
     const endpoints =
@@ -139,9 +130,6 @@ export function currentModel(
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],
       applicationVersionCrossEntityDefinition: [],
-      configuration: (configuration && configuration.entities
-        ? Object.values(configuration.entities)
-        : []) as StoreBasedConfiguration[],
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],

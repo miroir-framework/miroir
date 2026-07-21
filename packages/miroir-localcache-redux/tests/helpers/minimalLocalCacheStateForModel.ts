@@ -1,18 +1,9 @@
 import {
-  // entityEndpointVersion,
-  // entityEntity,
-  // entityEntityDefinition,
-  // entityJzodSchema,
-  // entityMenu,
-  // entityQueryVersion,
-  // entityReport,
-  // entityStoreBasedConfiguration,
   getReduxDeploymentsStateIndex,
   type ApplicationSection,
   type Uuid,
 } from "miroir-core";
 import { entitySelfApplicationVersion,
-  entityStoreBasedConfiguration,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -39,7 +30,6 @@ export function buildMinimalLocalCacheStateForDeployment(
   const current: LocalCacheSliceState["current"] = {};
   const indexes: Array<[string, Uuid]> = [
     [modelSection, entitySelfApplicationVersion.uuid],
-    [modelSection, entityStoreBasedConfiguration.uuid],
     [modelSection, entityEndpointVersion.uuid],
     ["model", entityEntity.uuid],
     ["model", entityEntityDefinition.uuid],

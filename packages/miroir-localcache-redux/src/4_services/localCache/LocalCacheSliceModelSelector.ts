@@ -32,7 +32,6 @@ import {
   entityReport,
   entityRunner,
   entitySelfApplicationVersion,
-  entityStoreBasedConfiguration,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 import { packageName } from "../../constants.js";
@@ -344,34 +343,6 @@ const selectRunnersFromReduxState = createSelector(
 );
 
 // ################################################################################################
-const selectConfigurationsFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      // params.queryType == "localCacheEntityInstancesExtractor"
-      //   ? params.definition.deploymentUuid ?? "undefined"
-      //   : "undefined",
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityStoreBasedConfiguration.uuid
-    );
-    // return selectEntityInstancesFromReduxDeploymentsState(reduxState,params, entityStoreBasedConfiguration.uuid)
-  }
-);
-
-// ################################################################################################
 const selectApplicationVersionsFromReduxState = createSelector(
   [
     selectCurrentReduxDeploymentsStateFromReduxState,
@@ -437,7 +408,6 @@ export const selectModelForDeploymentFromReduxState: () => (
     [
       selectApplicationFromReduxState,
       selectApplicationVersionsFromReduxState,
-      selectConfigurationsFromReduxState,
       selectEntitiesFromReduxState,
       selectEntityDefinitionsFromReduxState,
       selectJzodSchemasFromReduxState,
@@ -453,7 +423,6 @@ export const selectModelForDeploymentFromReduxState: () => (
     (
       applications: EntityInstancesUuidIndex,
       applicationVersions: EntityInstancesUuidIndex,
-      configurations: EntityInstancesUuidIndex,
       entities: EntityInstancesUuidIndex,
       entityDefinitions: EntityInstancesUuidIndex,
       jzodSchemas: EntityInstancesUuidIndex,
