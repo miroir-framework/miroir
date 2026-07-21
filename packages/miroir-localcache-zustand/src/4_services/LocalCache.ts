@@ -12,11 +12,14 @@ import {
   Domain2QueryReturnType,
   DomainElementSuccess,
   DomainState,
+  buildAttributedInstanceIndex,
+  estimateObjectBytes,
   LocalCacheAction,
   LocalCacheInfo,
   LocalCacheInterface,
   LoggerInterface,
   MetaModel,
+  measureLocalCacheMemory,
   MiroirLoggerFactory,
   ModelActionReplayableAction,
   TransactionalInstanceAction,
@@ -26,6 +29,7 @@ import {
   getExtractorRunnerParamsForDomainState,
   getQueryRunnerParamsForDomainState,
   type ApplicationDeploymentMap,
+  type LocalCacheMonitorSnapshot,
   type MiroirModelEnvironment,
   type RunBoxedQueryAction,
 } from "miroir-core";
@@ -52,31 +56,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-// ################################################################################################
-function roughSizeOfObject(object: any): number {
-  const objectList: any[] = [];
-  const stack = [object];
-  let bytes = 0;
-
-  while (stack.length) {
-    const value = stack.pop();
-
-    if (typeof value === 'boolean') {
-      bytes += 4;
-    } else if (typeof value === 'string') {
-      bytes += value.length * 2;
-    } else if (typeof value === 'number') {
-      bytes += 8;
-    } else if (typeof value === 'object' && objectList.indexOf(value) === -1) {
-      objectList.push(value);
-      for (const i in value) {
-        stack.push(value[i]);
-      }
-    }
-  }
-  return bytes;
-}
-
 // ###############################################################################
 function exceptionToActionReturnType(f: () => void): Action2ReturnType {
   try {
@@ -94,6 +73,8 @@ function exceptionToActionReturnType(f: () => void): Action2ReturnType {
  */
 export class LocalCache implements LocalCacheInterface {
   private store: StoreApi<LocalCacheStore>;
+  private monitorEnabled = false;
+  private monitorSnapshot: LocalCacheMonitorSnapshot | null = null;
 
   // ###############################################################################
   constructor(persistenceStore?: PersistenceAsyncStore) {
@@ -124,7 +105,34 @@ export class LocalCache implements LocalCacheInterface {
   // ###############################################################################
   public currentInfo(): LocalCacheInfo {
     return {
-      localCacheSize: roughSizeOfObject(this.store.getState().presentModelSnapshot),
+      localCacheSize: estimateObjectBytes(this.store.getState().presentModelSnapshot),
+    };
+  }
+
+  // ###############################################################################
+  public setLocalCacheMonitorEnabled(enabled: boolean): void {
+    this.monitorEnabled = enabled;
+    if (!enabled) {
+      this.monitorSnapshot = null;
+      return;
+    }
+    this.recalibrateMonitor();
+  }
+
+  // ###############################################################################
+  public getLocalCacheMonitorSnapshot(): LocalCacheMonitorSnapshot | null {
+    return this.monitorSnapshot;
+  }
+
+  // ###############################################################################
+  private recalibrateMonitor(): void {
+    if (!this.monitorEnabled) {
+      return;
+    }
+    const state = this.store.getState();
+    this.monitorSnapshot = {
+      breakdown: measureLocalCacheMemory(state),
+      attributedInstances: buildAttributedInstanceIndex(state.presentModelSnapshot),
     };
   }
 
@@ -158,6 +166,7 @@ export class LocalCache implements LocalCacheInterface {
     const result: Action2ReturnType = exceptionToActionReturnType(() =>
       this.store.getState().handleAction(action, applicationDeploymentMap)
     );
+    this.recalibrateMonitor();
     log.info("LocalCache handleAction result=", result);
     return result;
   }
@@ -216,18 +225,22 @@ export class LocalCache implements LocalCacheInterface {
   // Additional methods for Zustand-specific operations
   undo(): void {
     this.store.getState().undo();
+    this.recalibrateMonitor();
   }
 
   redo(): void {
     this.store.getState().redo();
+    this.recalibrateMonitor();
   }
 
   commit(): void {
     this.store.getState().commit();
+    this.recalibrateMonitor();
   }
 
   rollback(): void {
     this.store.getState().rollback();
+    this.recalibrateMonitor();
   }
 
   subscribe(listener: (state: ZustandStateWithUndoRedo, prevState: ZustandStateWithUndoRedo) => void): () => void {

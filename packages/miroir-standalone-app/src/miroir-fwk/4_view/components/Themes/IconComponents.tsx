@@ -452,6 +452,8 @@ const materialSymbolsIconMap: Record<string, string> = {
   height: 'height',
   code: 'code',
   data_object: 'data_object',
+  storage: 'storage',
+  memory: 'memory',
   menu_open: 'menu_open',
   view_list: 'view_list',
 };

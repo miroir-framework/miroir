@@ -197,6 +197,8 @@ export interface MiroirReactContext {
   // Modal windows for monitoring
   showPerformanceDisplay: boolean;
   setShowPerformanceDisplay: (value: boolean | ((prev: boolean) => boolean)) => void;
+  showLocalCacheMonitor: boolean;
+  setShowLocalCacheMonitor: (value: boolean | ((prev: boolean) => boolean)) => void;
   showActionTimeline: boolean;
   setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => void;
   showDebugInfo: boolean;
@@ -366,6 +368,11 @@ export function MiroirContextReactProvider(props: {
   const [showPerformanceDisplay, setShowPerformanceDisplay] = useState(() => {
     // Persist showPerformanceDisplay state across navigation
     const saved = sessionStorage.getItem("showPerformanceDisplay");
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  const [showLocalCacheMonitor, setShowLocalCacheMonitor] = useState(() => {
+    const saved = sessionStorage.getItem("showLocalCacheMonitor");
     return saved ? JSON.parse(saved) : false;
   });
 
@@ -654,6 +661,12 @@ export function MiroirContextReactProvider(props: {
         setShowPerformanceDisplay(newValue);
         sessionStorage.setItem("showPerformanceDisplay", JSON.stringify(newValue));
       },
+      showLocalCacheMonitor,
+      setShowLocalCacheMonitor: (value: boolean | ((prev: boolean) => boolean)) => {
+        const newValue = typeof value === "function" ? value(showLocalCacheMonitor) : value;
+        setShowLocalCacheMonitor(newValue);
+        sessionStorage.setItem("showLocalCacheMonitor", JSON.stringify(newValue));
+      },
       showActionTimeline,
       setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => {
         const newValue = typeof value === "function" ? value(showActionTimeline) : value;
@@ -732,6 +745,7 @@ export function MiroirContextReactProvider(props: {
       showSnackbar,
       handleAsyncAction,
       showPerformanceDisplay,
+      showLocalCacheMonitor,
       showActionTimeline,
       showDebugInfo,
       showModelTools,

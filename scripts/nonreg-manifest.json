@@ -41,6 +41,116 @@
       ]
     },
     {
+      "id": "unit-localCacheMemoryMeasure",
+      "tier": "unit",
+      "title": "#211 — LocalCache memory measure (pure identity-aware sizing)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-core", "--",
+        "tests/2_domain/localCacheMemoryMeasure.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCache-memoryMeasure-static-redux",
+      "tier": "unit",
+      "title": "#211 — LocalCache static memory image (redux)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "vitest", "-w", "miroir-localcache-redux", "--",
+        "tests/LocalCache.memoryMeasure.static.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCache-memoryMeasure-static-zustand",
+      "tier": "unit",
+      "title": "#211 — LocalCache static memory image (zustand)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "vitest", "-w", "miroir-localcache-zustand", "--",
+        "tests/LocalCache.memoryMeasure.static.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCache-monitor-redux",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor API present-only currentInfo (redux)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "vitest", "-w", "miroir-localcache-redux", "--",
+        "tests/LocalCache.monitor.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCache-monitor-zustand",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor API present-only currentInfo (zustand)",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "vitest", "-w", "miroir-localcache-zustand", "--",
+        "tests/LocalCache.monitor.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCacheMemoryAttributed",
+      "tier": "unit",
+      "title": "#211 — LocalCache attributed per-Entity + top-10 sizing",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-core", "--",
+        "tests/2_domain/localCacheMemoryAttributed.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCacheMonitorGate",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor UI gate",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/localCacheMonitorGate.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCacheMonitorSummary",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor docked summary panel",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/LocalCacheMonitorSummary.unit.test.tsx"
+      ]
+    },
+    {
+      "id": "unit-localCacheMonitorIndicators",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor session efficiency indicators",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/localCacheMonitorIndicators.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCacheMonitorSession",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor clear/export + OFF footprint hooks",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/localCacheMonitorSession.unit.test.ts"
+      ]
+    },
+    {
+      "id": "unit-localCacheMonitorFootprint",
+      "tier": "unit",
+      "title": "#211 — LocalCache monitor panel footprint when OFF",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-standalone-app", "--",
+        "tests/4_view/localCacheMonitorFootprint.acceptance.unit.test.tsx"
+      ]
+    },
+    {
       "id": "integ-transformer-miroirCoreTransformers",
       "tier": "default",
       "title": "MiroirTest integ — miroirCoreTransformers",

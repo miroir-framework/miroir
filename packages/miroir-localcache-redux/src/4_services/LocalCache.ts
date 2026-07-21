@@ -16,6 +16,8 @@ import {
   Domain2QueryReturnType,
   DomainElementSuccess,
   DomainState,
+  buildAttributedInstanceIndex,
+  estimateObjectBytes,
   extractWithBoxedExtractorOrCombinerReturningObjectOrObjectList,
   getDomainStateExtractorRunnerMap,
   getExtractorRunnerParamsForDomainState,
@@ -25,11 +27,13 @@ import {
   LocalCacheInterface,
   LoggerInterface,
   MetaModel,
+  measureLocalCacheMemory,
   MiroirLoggerFactory,
   ModelActionReplayableAction,
   // RunBoxedExtractorOrQueryAction,
   TransactionalInstanceAction,
   type ApplicationDeploymentMap,
+  type LocalCacheMonitorSnapshot,
   type MiroirModelEnvironment,
   type RunBoxedQueryAction
 } from "miroir-core";
@@ -56,41 +60,6 @@ MiroirLoggerFactory.registerLoggerToStart(
 ).then((logger: LoggerInterface) => {log = logger});
 
 
-// ################################################################################################
-function roughSizeOfObject( object: any ) {
-
-  const objectListReportSection:any[] = [];
-  const stack = [ object ];
-  let bytes = 0;
-
-  while ( stack.length ) {
-      const value = stack.pop();
-
-      if ( typeof value === 'boolean' ) {
-          bytes += 4;
-      }
-      else if ( typeof value === 'string' ) {
-          bytes += value.length * 2;
-      }
-      else if ( typeof value === 'number' ) {
-          bytes += 8;
-      }
-      else if
-      (
-          typeof value === 'object'
-          && objectListReportSection.indexOf( value ) === -1
-      )
-      {
-          objectListReportSection.push( value );
-
-          for( let i in value ) {
-              stack.push( value[ i ] );
-          }
-      }
-  }
-  return bytes;
-}
-
 // ###############################################################################
 function exceptionToActionReturnType(f:()=>void): Action2ReturnType {
   try {
@@ -109,6 +78,8 @@ function exceptionToActionReturnType(f:()=>void): Action2ReturnType {
 export class LocalCache implements LocalCacheInterface {
   private innerReduxStore: ReduxStoreWithUndoRedo;
   private staticReducers: ReduxReducerWithUndoRedoInterface;
+  private monitorEnabled = false;
+  private monitorSnapshot: LocalCacheMonitorSnapshot | null = null;
 
   // ###############################################################################
   constructor(persistenceStore?: PersistenceReduxSaga) {
@@ -157,7 +128,36 @@ export class LocalCache implements LocalCacheInterface {
   // ###############################################################################
   public currentInfo(): LocalCacheInfo {
     return {
-      localCacheSize: roughSizeOfObject(this.innerReduxStore.getState().presentModelSnapshot),
+      localCacheSize: estimateObjectBytes(
+        this.innerReduxStore.getState().presentModelSnapshot
+      ),
+    };
+  }
+
+  // ###############################################################################
+  public setLocalCacheMonitorEnabled(enabled: boolean): void {
+    this.monitorEnabled = enabled;
+    if (!enabled) {
+      this.monitorSnapshot = null;
+      return;
+    }
+    this.recalibrateMonitor();
+  }
+
+  // ###############################################################################
+  public getLocalCacheMonitorSnapshot(): LocalCacheMonitorSnapshot | null {
+    return this.monitorSnapshot;
+  }
+
+  // ###############################################################################
+  private recalibrateMonitor(): void {
+    if (!this.monitorEnabled) {
+      return;
+    }
+    const state = this.innerReduxStore.getState();
+    this.monitorSnapshot = {
+      breakdown: measureLocalCacheMemory(state),
+      attributedInstances: buildAttributedInstanceIndex(state.presentModelSnapshot),
     };
   }
 
@@ -220,6 +220,7 @@ export class LocalCache implements LocalCacheInterface {
         })
       )
     );
+    this.recalibrateMonitor();
     log.info("LocalCache handleAction result=", result);
     return result;
   }
