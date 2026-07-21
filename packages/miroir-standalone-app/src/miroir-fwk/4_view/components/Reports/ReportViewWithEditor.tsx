@@ -150,6 +150,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       application: props.application,
       deploymentUuid: props.deploymentUuid,
       reportUuid: props.reportDefinition?.uuid,
+      applicationSection: props.applicationSection,
       resolvedQuery,
       queryParams: {},
     };
@@ -157,6 +158,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     props.application,
     props.deploymentUuid,
     props.reportDefinition?.uuid,
+    props.applicationSection,
     resolvedQuery,
   ]);
 
@@ -342,12 +344,13 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     <>
       {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
-        {reportQueryLoadStatus === "loading" ||
-        (reportQueryLoadRequest && reportQueryLoadStatus === "idle") ? (
+        {reportQueryLoadStatus === "loading" ? (
           <ThemedSpan>Loading report data…</ThemedSpan>
-        ) : reportQueryLoadStatus === "error" ? (
-          <ThemedSpan>Failed to load report data.</ThemedSpan>
-        ) : props.applicationSection ? (
+        ) : null}
+        {reportQueryLoadStatus === "error" ? (
+          <ThemedSpan>Report async load failed (showing cached data if available).</ThemedSpan>
+        ) : null}
+        {props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
           ) : // (<>failure</>)

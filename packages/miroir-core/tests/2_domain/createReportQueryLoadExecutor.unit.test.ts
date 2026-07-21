@@ -56,7 +56,7 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
     const executor = createReportQueryLoadExecutor(domainController, {
       [APP]: DEPLOY,
     });
-    await executor(blobListRequest());
+    await executor({ ...blobListRequest(), applicationSection: "data" });
 
     expect(handlePersistenceAction).toHaveBeenCalledTimes(1);
     expect(handlePersistenceAction.mock.calls[0][0]).toMatchObject({
@@ -67,6 +67,29 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
     expect(handleLocalCacheAction.mock.calls[0][0]).toMatchObject({
       actionType: "loadNewInstancesInLocalCache",
     });
+  });
+
+  it("uses request.applicationSection for model reports", async () => {
+    const handlePersistenceAction = vi.fn(async () => ({
+      status: "ok" as const,
+      returnedDomainElement: {
+        parentUuid: BLOB_UUID,
+        applicationSection: "model",
+        instances: [],
+      },
+    }));
+    const handleLocalCacheAction = vi.fn(() => ({
+      status: "ok" as const,
+      returnedDomainElement: undefined,
+    }));
+    const domainController = {
+      getRemoteStore: () => ({ handlePersistenceAction, handleLocalCacheAction }),
+    } as any;
+
+    const executor = createReportQueryLoadExecutor(domainController, { [APP]: DEPLOY });
+    await executor({ ...blobListRequest(), applicationSection: "model" });
+
+    expect(handlePersistenceAction.mock.calls[0][0].payload.section).toBe("model");
   });
 
   it("does nothing when resolved query has no entity extractors", async () => {

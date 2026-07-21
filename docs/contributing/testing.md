@@ -47,6 +47,8 @@ npm run nonreg -- --compare test-results/nonreg/<newer> test-results/nonreg/<old
 
 Snapshots land in `test-results/nonreg/<UTC-stamp>/` (`summary.json`, `summary.md`, per-step `logs/`). End-of-run prints passed / failed / skipped / not_run. Edit the step list in [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Full detail: [reference/testing.md § Repo-wide non-regression](../reference/testing.md#repo-wide-non-regression-npm-run-nonreg).
 
+`--tier full` also runs deployment `modelValidation` for **miroir**, **library**, **admin**, and **postgres** (see [Deployment modelValidation](../reference/testing.md#deployment-modelvalidation-full-tier)).
+
 ### Unit (no database)
 
 ```bash

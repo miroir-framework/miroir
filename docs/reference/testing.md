@@ -43,7 +43,7 @@ npm run nonreg -- --tier full --run-all
 |------|----------|
 | `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` |
 | `default` | `unit` + MiroirTest integ (`miroirCoreTransformers`, `runner_library`, `domain_controller_data_crud`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
-| `full` | `default` + deployment `modelValidation` packages |
+| `full` | `default` + deployment `modelValidation` for **miroir**, **library**, **admin**, and **postgres** |
 
 Modes: `--run-all` (continue after failures; default) or `--fail-fast`.
 
@@ -67,6 +67,27 @@ npm run nonreg -- --compare \
 ```
 
 Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--profile`).
+
+### Deployment `modelValidation` (full tier)
+
+Each deployment package ships a Vitest file `tests/modelValidation.unit.test.ts` that type-checks model and data JSON instances against their entity schemas via `runModelValidationSuite` (`miroir-core`).
+
+| Package | How groups are built | Assets |
+|---------|----------------------|--------|
+| `miroir-test-app_deployment-miroir` | `modelValidationSuite(defaultMiroirMetaModel, …)` | In-package MetaModel exports |
+| `miroir-test-app_deployment-library` | `buildModelValidationGroupsFromFilesystem` (`miroir-core/model-validation-fs`) | `assets/library_model` + `assets/library_data` |
+| `miroir-test-app_deployment-admin` | same filesystem helper | `assets/admin_model` + `assets/admin_data` |
+| `miroir-test-app_deployment-postgres` | same filesystem helper | `assets/postgres_model` (+ `postgres_data` when present) |
+
+```bash
+# One package
+npm run testByFile -w miroir-test-app_deployment-admin -- tests/modelValidation.unit.test.ts
+
+# All four (nonreg full)
+npm run nonreg -- --tier full --run-all
+```
+
+Vite configs for packages that use the filesystem helper must alias `miroir-core/model-validation-fs` to `miroir-core/src/5_tests/ModelValidationToolsFilesystem.ts` (the plain `miroir-core` → `src/index.ts` alias does not cover that subpath).
 
 ---
 

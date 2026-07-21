@@ -9,6 +9,8 @@ export interface ReportQueryLoadRequest {
   application: Uuid;
   deploymentUuid: Uuid;
   reportUuid?: Uuid;
+  /** Section used for RestPersistenceAction_read / cache fill (model vs data). */
+  applicationSection?: "data" | "model";
   resolvedQuery: BoxedQueryWithExtractorCombinerTransformer | Record<string, unknown>;
   queryParams?: Record<string, unknown>;
 }
@@ -29,6 +31,7 @@ export function fingerprintReportQueryLoadRequest(
     application: request.application,
     deploymentUuid: request.deploymentUuid,
     reportUuid: request.reportUuid ?? null,
+    applicationSection: request.applicationSection ?? "data",
     resolvedQuery: request.resolvedQuery,
     queryParams: request.queryParams ?? {},
   });

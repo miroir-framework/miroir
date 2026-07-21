@@ -255,6 +255,26 @@
         "npm", "run", "testByFile", "-w", "miroir-test-app_deployment-library", "--",
         "tests/modelValidation.unit.test.ts"
       ]
+    },
+    {
+      "id": "full-admin-modelValidation",
+      "tier": "full",
+      "title": "Deployment modelValidation — admin",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-test-app_deployment-admin", "--",
+        "tests/modelValidation.unit.test.ts"
+      ]
+    },
+    {
+      "id": "full-postgres-modelValidation",
+      "tier": "full",
+      "title": "Deployment modelValidation — postgres",
+      "requires": "none",
+      "argv": [
+        "npm", "run", "testByFile", "-w", "miroir-test-app_deployment-postgres", "--",
+        "tests/modelValidation.unit.test.ts"
+      ]
     }
   ]
 }

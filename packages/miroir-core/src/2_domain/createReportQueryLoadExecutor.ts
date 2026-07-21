@@ -61,7 +61,6 @@ export function createReportQueryLoadExecutor(
   applicationDeploymentMap: ApplicationDeploymentMap,
   options?: { applicationSection?: "data" | "model" },
 ): ReportQueryLoadExecutor {
-  const applicationSection = options?.applicationSection ?? "data";
   const withStore = domainController as DomainControllerWithRemoteStore;
   if (typeof withStore.getRemoteStore !== "function") {
     throw new Error(
@@ -75,6 +74,8 @@ export function createReportQueryLoadExecutor(
       return;
     }
 
+    const section =
+      request.applicationSection ?? options?.applicationSection ?? "data";
     const store = withStore.getRemoteStore();
     const collections: EntityInstanceCollection[] = [];
 
@@ -84,7 +85,7 @@ export function createReportQueryLoadExecutor(
         endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
         payload: {
           application: request.application,
-          section: applicationSection,
+          section,
           parentUuid,
         },
       };
@@ -107,21 +108,20 @@ export function createReportQueryLoadExecutor(
           parentUuid:
             (element as EntityInstanceCollection).parentUuid || parentUuid,
           applicationSection:
-            (element as EntityInstanceCollection).applicationSection ||
-            applicationSection,
+            (element as EntityInstanceCollection).applicationSection || section,
           instances: (element as EntityInstanceCollection).instances,
         });
       } else if (Array.isArray(element)) {
         collections.push({
           parentUuid,
-          applicationSection,
+          applicationSection: section,
           instances: element,
         });
       } else {
         // Still register an empty entity slice so selectors stop returning EntityNotFound.
         collections.push({
           parentUuid,
-          applicationSection,
+          applicationSection: section,
           instances: [],
         });
       }
