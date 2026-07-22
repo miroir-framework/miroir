@@ -406,7 +406,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     selfApplicationVersion: EntityInstance,
     // metaModel?: MetaModel,
   ): Promise<Action2ReturnType> {
-    await modelInitialize(
+    return modelInitialize(
       this,
       dataStoreType,
       selfApplication,
@@ -414,7 +414,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       selfApplicationVersion,
       // metaModel,
     );
-    return Promise.resolve(ACTION_OK);
   }
 
   // #############################################################################################

@@ -57,9 +57,15 @@ import {
   EntityInstance,
   SelfApplication
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import {
+  Action2Error,
+  Action2ReturnType,
+  Action2VoidReturnType,
+} from "../0_interfaces/2_domain/DomainElement.js";
 import { DataStoreApplicationType } from "../0_interfaces/3_controllers/ApplicationControllerInterface.js";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
+import { ACTION_OK } from "../1_core/constants.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -80,7 +86,7 @@ export async function modelInitialize(
   selfApplicationVersion: EntityInstance,
   // selfApplicationStoreBasedConfiguration: EntityInstance,
   // metaModel?:MetaModel,
-): Promise<void> {
+): Promise<Action2ReturnType> {
   log.info("modelInitialize selfApplication", selfApplication, "dataStoreType", dataStoreType);
   const logHeader = "modelInitialize " + selfApplication?.name;
   // TODO: test this.sqlEntities for emptiness, abort if not empty
@@ -93,18 +99,25 @@ export async function modelInitialize(
   );
 
   const insertReferenceInMetaModel = dataStoreType == "miroir";
+  let result: Action2VoidReturnType;
 
   if (dataStoreType == "miroir") {
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntity as Entity,
       entityDefinitionEntity as EntityDefinition,
     ); //entityDefinition for entityEntity has not been inserted!
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
     // bootstrap MetaClass EntityDefinition
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntityDefinition as Entity,
       entityDefinitionEntityDefinition as EntityDefinition,
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "created entity EntityDefinition",
@@ -112,26 +125,41 @@ export async function modelInitialize(
     );
 
     // // because entityDefinition for entityEntity has not been inserted during datastore.createEntity(entityEntity as Entity,entityDefinitionEntity as EntityDefinition);!
-    await persistenceStoreController.upsertInstance("model", entityEntity as EntityInstance);
-    await persistenceStoreController.upsertInstance(
+    result = await persistenceStoreController.upsertInstance("model", entityEntity as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
       "model",
       entityEntityDefinition as EntityInstance,
     );
-    await persistenceStoreController.upsertInstance(
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
       "model",
       entityDefinitionEntity as EntityInstance,
     );
-    await persistenceStoreController.upsertInstance(
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
       "model",
       entityDefinitionEntityDefinition as EntityInstance,
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity entity", persistenceStoreController.getEntityUuids());
 
     // bootstrap SelfApplication
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entitySelfApplication as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionSelfApplication as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "created entity SelfApplication",
@@ -139,12 +167,15 @@ export async function modelInitialize(
     );
 
     // bootstrap ApplicationModelBranch
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entitySelfApplicationModelBranch as Entity,
       entityDefinitionWithResolvedMLSchema(
         entityDefinitionSelfApplicationModelBranch as EntityDefinition,
       ),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "created entity ApplicationModelBranch",
@@ -152,12 +183,15 @@ export async function modelInitialize(
     );
 
     // bootstrap ApplicationVersion
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entitySelfApplicationVersion as Entity,
       entityDefinitionWithResolvedMLSchema(
         entityDefinitionSelfApplicationVersion as EntityDefinition,
       ),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "created entity ApplicationVersion",
@@ -165,132 +199,234 @@ export async function modelInitialize(
     );
 
     // bootstrap Endpoint version
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entityEndpointVersion as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionEndpoint as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity Endpoint", persistenceStoreController.getEntityUuids());
 
     // bootstrap Menu
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entityMenu as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionMenu as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity Menu", persistenceStoreController.getEntityUuids());
 
     // bootstrap EntityJzodSchema
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entityJzodSchema as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionJzodSchema as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity MlSchema", persistenceStoreController.getEntityUuids());
 
     // bootstrap EntityReport
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entityReport as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionReport as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity EntityReport", persistenceStoreController.getEntityUuids());
 
     // bootstrap EntityRunner
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entityRunner as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionRunner as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity EntityRunner", persistenceStoreController.getEntityUuids());
 
     // bootstrap EntityMiroirTest
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entityMiroirTest as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionMiroirTest as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity EntityTest", persistenceStoreController.getEntityUuids());
 
     // bootstrap EntityTheme
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entityTheme as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionTheme as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity EntityTheme", persistenceStoreController.getEntityUuids());
 
     // bootstrap EntityQuery
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entityQueryVersion as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionQuery as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity Query", persistenceStoreController.getEntityUuids());
 
     // bootstrap EntityQueryVersion
-    await persistenceStoreController.createEntity(
+    result = await persistenceStoreController.createEntity(
       entityQueryVersion as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionQuery as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "created entity Query", persistenceStoreController.getEntityUuids());
 
     // await persistenceStoreController.upsertInstance('data', reportEndpointList as EntityInstance);
-    await persistenceStoreController.upsertInstance(
+    result = await persistenceStoreController.upsertInstance(
       "data",
       reportEndpointVersionList as EntityInstance,
     );
-    await persistenceStoreController.upsertInstance(
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
       "data",
       reportEntityDefinitionList as EntityInstance,
     );
-    await persistenceStoreController.upsertInstance("data", reportEntityList as EntityInstance);
-    await persistenceStoreController.upsertInstance(
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("data", reportEntityList as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
       "data",
       reportApplicationList as EntityInstance,
     );
-    await persistenceStoreController.upsertInstance(
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
       "data",
       reportApplicationModelBranchList as EntityInstance,
     );
-    await persistenceStoreController.upsertInstance(
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
       "data",
       reportApplicationVersionList as EntityInstance,
     );
-    await persistenceStoreController.upsertInstance("data", reportMenuList as EntityInstance);
-    await persistenceStoreController.upsertInstance("data", reportReportList as EntityInstance);
-    await persistenceStoreController.upsertInstance("data", reportJzodSchemaList as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("data", reportMenuList as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("data", reportReportList as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("data", reportJzodSchemaList as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
     // await persistenceStoreController.upsertInstance('data', reportQueryList as EntityInstance);
-    await persistenceStoreController.upsertInstance("data", reportQueryList as EntityInstance);
-    await persistenceStoreController.upsertInstance("data", menuDefaultMiroir as EntityInstance);
-    await persistenceStoreController.upsertInstance(
+    result = await persistenceStoreController.upsertInstance("data", reportQueryList as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("data", menuDefaultMiroir as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
       "data",
       miroirJzodSchemaBootstrap as EntityInstance,
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
-    await persistenceStoreController.upsertInstance("data", selfApplication);
+    result = await persistenceStoreController.upsertInstance("data", selfApplication);
+    if (result instanceof Action2Error) {
+      return result;
+    }
     // log.info(logHeader, 'inserting miroir deployment',deployment);
     // await persistenceStoreController.upsertInstance('data', deployment);
     // log.info(logHeader, 'inserting miroir deployment DONE');
-    await persistenceStoreController.upsertInstance("data", selfApplicationModelBranch);
-    await persistenceStoreController.upsertInstance("data", selfApplicationVersion);
+    result = await persistenceStoreController.upsertInstance("data", selfApplicationModelBranch);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("data", selfApplicationVersion);
+    if (result instanceof Action2Error) {
+      return result;
+    }
     // await persistenceStoreController.upsertInstance('data', selfApplicationStoreBasedConfiguration);
 
     // await persistenceStoreController.upsertInstance('data', applicationEndpoint);
-    await persistenceStoreController.upsertInstance("data", applicationEndpointV1);
+    result = await persistenceStoreController.upsertInstance("data", applicationEndpointV1);
+    if (result instanceof Action2Error) {
+      return result;
+    }
     // await persistenceStoreController.upsertInstance('data', deploymentEndpoint);
-    await persistenceStoreController.upsertInstance("data", deploymentEndpointV1);
+    result = await persistenceStoreController.upsertInstance("data", deploymentEndpointV1);
+    if (result instanceof Action2Error) {
+      return result;
+    }
     // await persistenceStoreController.upsertInstance('data', instanceEndpoint);
-    await persistenceStoreController.upsertInstance("data", instanceEndpointV1);
+    result = await persistenceStoreController.upsertInstance("data", instanceEndpointV1);
+    if (result instanceof Action2Error) {
+      return result;
+    }
     // await persistenceStoreController.upsertInstance('data', modelEndpoint);
-    await persistenceStoreController.upsertInstance("data", modelEndpointV1);
+    result = await persistenceStoreController.upsertInstance("data", modelEndpointV1);
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
     // await persistenceStoreController.upsertInstance('data', queryBundleProducer);
-    await persistenceStoreController.upsertInstance("data", queryVersionBundleProducerV1);
+    result = await persistenceStoreController.upsertInstance("data", queryVersionBundleProducerV1);
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
-    await persistenceStoreController.upsertInstance("data", defaultStoredMiroirTheme);
-    await persistenceStoreController.upsertInstance("data", darkStoredMiroirTheme);
-    await persistenceStoreController.upsertInstance("data", compactStoredMiroirTheme);
-    await persistenceStoreController.upsertInstance("data", materialStoredMiroirTheme);
+    result = await persistenceStoreController.upsertInstance("data", defaultStoredMiroirTheme);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("data", darkStoredMiroirTheme);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("data", compactStoredMiroirTheme);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("data", materialStoredMiroirTheme);
+    if (result instanceof Action2Error) {
+      return result;
+    }
   }
 
   if (dataStoreType == "app") {
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntity as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionEntity as EntityDefinition),
     ); //entityDefinition for entityEntity has not been inserted!
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
     log.info(
       logHeader,
@@ -299,10 +435,13 @@ export async function modelInitialize(
     );
 
     // bootstrap MetaClass EntityDefinition
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntityDefinition as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionEntityDefinition as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "app initialized entity Definition",
@@ -310,10 +449,13 @@ export async function modelInitialize(
     );
 
     // bootstrap Self SelfApplication
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplication as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionSelfApplication as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "app initialized entity SelfApplication",
@@ -321,10 +463,13 @@ export async function modelInitialize(
     );
 
     // bootstrap Self ApplicationModelBranch
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplicationModelBranch as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionSelfApplicationModelBranch as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "app initialized entity ApplicationModelBranch",
@@ -332,10 +477,13 @@ export async function modelInitialize(
     );
 
     // bootstrap Self ApplicationVersion
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplicationVersion as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionSelfApplicationVersion as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "app initialized entity ApplicationVersion",
@@ -343,17 +491,23 @@ export async function modelInitialize(
     );
 
     // bootstrap Self Menu
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityMenu as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionMenu as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(logHeader, "app initialized entity Menu", persistenceStoreController.getEntityUuids());
 
     // bootstrap Endpoint
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEndpointVersion as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionEndpoint as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "app initialized entity Endpoint",
@@ -366,10 +520,13 @@ export async function modelInitialize(
       "app initialized entity Query",
       persistenceStoreController.getEntityUuids(),
     );
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityQueryVersion as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionQuery as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
     // bootstrap EntityReport
     log.info(
@@ -377,10 +534,13 @@ export async function modelInitialize(
       "app initializing entity Report",
       persistenceStoreController.getEntityUuids(),
     );
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityReport as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionReport as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "app initialized entity Report",
@@ -392,10 +552,13 @@ export async function modelInitialize(
       "app initializing entity Runner",
       persistenceStoreController.getEntityUuids(),
     );
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityRunner as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionRunner as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "app initialized entity Runner",
@@ -407,10 +570,13 @@ export async function modelInitialize(
       "app initializing entity MiroirTest",
       persistenceStoreController.getEntityUuids(),
     );
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityMiroirTest as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionMiroirTest as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "app initialized entity MiroirTest",
@@ -422,122 +588,34 @@ export async function modelInitialize(
       "app initializing entity Theme",
       persistenceStoreController.getEntityUuids(),
     );
-    await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityTheme as Entity,
       entityDefinitionWithResolvedMLSchema(entityDefinitionTheme as EntityDefinition),
     );
+    if (result instanceof Action2Error) {
+      return result;
+    }
     log.info(
       logHeader,
       "app initialized entity Theme",
       persistenceStoreController.getEntityUuids(),
     );
 
-    await persistenceStoreController.upsertInstance("model", selfApplication);
+    result = await persistenceStoreController.upsertInstance("model", selfApplication);
+    if (result instanceof Action2Error) {
+      return result;
+    }
     // // log.info(logHeader, 'inserting app deployment',deployment);
     // await persistenceStoreController.upsertInstance("model", deployment);
     // // log.info(logHeader, 'inserting app deployment DONE');
-    await persistenceStoreController.upsertInstance("model", selfApplicationModelBranch);
-    await persistenceStoreController.upsertInstance("model", selfApplicationVersion);
-    // await persistenceStoreController.upsertInstance("model", selfApplicationStoreBasedConfiguration);
-    // const defaultMenu: Menu = {
-    //   uuid: uuidv4(),
-    //   parentName: "Menu",
-    //   parentUuid: entityMenu.uuid,
-    //   name: "defaultMenu_" + selfApplication.name,
-    //   defaultLabel: "Default Menu for " + selfApplication.name,
-    //   description: "Default menu for " + selfApplication.name,
-    //   definition: {
-    //     menuType: "complexMenu",
-    //     definition: [
-    //       {
-    //         title: selfApplication.name + " Menu",
-    //         label: selfApplication.name,
-    //         items: [
-    //           {
-    //             miroirMenuItemType: "miroirMenuReportLink",
-    //             label: selfApplication.name + " Application",
-    //             section: "model",
-    //             selfApplication: selfApplication.uuid,
-    //             reportUuid: "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
-    //             icon: "category",
-    //             menuItemScope: "model",
-    //             instanceUuid: selfApplication.uuid,
-    //           },
-    //           {
-    //             miroirMenuItemType: "miroirMenuReportLink",
-    //             label: selfApplication.name + " Entities",
-    //             section: "model",
-    //             selfApplication: selfApplication.uuid,
-    //             reportUuid: "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-    //             icon: "category",
-    //             menuItemScope: "model",
-    //           },
-    //           {
-    //             miroirMenuItemType: "miroirMenuReportLink",
-    //             label: selfApplication.name + " Entity Definitions",
-    //             section: "model",
-    //             selfApplication: selfApplication.uuid,
-    //             reportUuid: "f9aff35d-8636-4519-8361-c7648e0ddc68",
-    //             icon: "category",
-    //             menuItemScope: "model",
-    //           },
-    //           {
-    //             miroirMenuItemType: "miroirMenuReportLink",
-    //             label: selfApplication.name + " Queries",
-    //             section: "model",
-    //             selfApplication: selfApplication.uuid,
-    //             reportUuid: "32e52150-ac95-4d96-91b7-f231b85fe76e",
-    //             icon: "saved_search",
-    //             menuItemScope: "model",
-    //           },
-    //           {
-    //             miroirMenuItemType: "miroirMenuReportLink",
-    //             label: selfApplication.name + " Reports",
-    //             section: "model",
-    //             selfApplication: selfApplication.uuid,
-    //             reportUuid: "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-    //             icon: "newspaper",
-    //             menuItemScope: "model",
-    //           },
-    //           {
-    //             miroirMenuItemType: "miroirMenuReportLink",
-    //             label: selfApplication.name + " Menus",
-    //             section: "model",
-    //             selfApplication: selfApplication.uuid,
-    //             reportUuid: "ecfd8787-09cc-417d-8d2c-173633c9f998",
-    //             icon: "list",
-    //             menuItemScope: "model",
-    //           },
-    //           {
-    //             miroirMenuItemType: "miroirMenuReportLink",
-    //             label: selfApplication.name + " Endpoints",
-    //             section: "model",
-    //             selfApplication: selfApplication.uuid,
-    //             reportUuid: "ace3d5c9-b6a7-43e6-a277-595329e7532a",
-    //             icon: "list",
-    //             menuItemScope: "model",
-    //           },
-    //           {
-    //             miroirMenuItemType: "miroirMenuReportLink",
-    //             label: selfApplication.name + " Runners",
-    //             section: "model",
-    //             selfApplication: selfApplication.uuid,
-    //             reportUuid: "3c26c31e-c988-40b2-af47-d7380e35ba80",
-    //             icon: "directions_run",
-    //             menuItemScope: "model",
-    //           },
-    //           {
-    //             miroirMenuItemType: "miroirMenuItemDivider",
-    //             label: selfApplication.name + " Model-Data Divider",
-    //             selfApplication: selfApplication.uuid,
-    //             menuItemScope: "model",
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //   },
-    // };
-    // await persistenceStoreController.upsertInstance("model", defaultMenu);
+    result = await persistenceStoreController.upsertInstance("model", selfApplicationModelBranch);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance("model", selfApplicationVersion);
+    if (result instanceof Action2Error) {
+      return result;
+    }
   }
 
   // HUGE LOG!
@@ -549,5 +627,5 @@ export async function modelInitialize(
   //     data: await persistenceStoreController.getDataState(),
   //   })
   // );
-  return Promise.resolve(undefined);
+  return ACTION_OK;
 }

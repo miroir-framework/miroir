@@ -18,10 +18,11 @@ describe("IntegrationTestBootstrap (Gap E B0)", () => {
     expect(phases).toEqual([]);
   });
 
-  it("appStackPersistenceStoreController session wires emulated stack and deploys miroir + library", () => {
+  it("appStackPersistenceStoreController session wires emulated stack, inits miroir model, and deploys library", () => {
     expect(getBootstrapPhasesForSessionKind("appStackPersistenceStoreController")).toEqual([
       "wireEmulatedStack",
       "deployMiroir",
+      "resetMiroirModel",
       "deployLibrary",
     ]);
   });
