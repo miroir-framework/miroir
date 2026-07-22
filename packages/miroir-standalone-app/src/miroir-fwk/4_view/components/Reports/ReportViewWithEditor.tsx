@@ -172,10 +172,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     reportQueryLoadRequest,
   );
 
-  if (reportDataQueryResults instanceof Domain2ElementFailed) { // should never happen
-    throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));
-  }
-
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];
 
@@ -340,6 +336,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     },
     [domainController, props]
   );
+
+  if (reportDataQueryResults instanceof Domain2ElementFailed) { // should never happen
+    throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));
+  }
 
   
   // ##############################################################################################

@@ -229,15 +229,14 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         )
       : undefined;
 
-  if (reportSectionDefinitionFromFormik && reportSectionDefinitionFromFormik.type !== "objectListReportSection") {
-    return (
-      <ThemedBox>
-        <ThemedSpan>
-          ReportSectionListDisplay: Unsupported report section type: {reportSectionDefinitionFromFormik.type}
-        </ThemedSpan>
-      </ThemedBox>
-    )
-  }
+  // Do not early-return before hooks below — section type can resolve after Formik init
+  // (Rules of Hooks: same number of hooks every render).
+  const unsupportedListSectionType =
+    reportSectionDefinitionFromFormik &&
+    reportSectionDefinitionFromFormik.type !== "objectListReportSection"
+      ? reportSectionDefinitionFromFormik.type
+      : undefined;
+
   // ##############################################################################################
   const instancesToDisplay: EntityInstancesUuidIndex = useMemo(
     () =>
@@ -716,6 +715,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
   return (
     <ThemedBox className="MiroirReport-global" display="block">
+      {unsupportedListSectionType ? (
+        <ThemedSpan>
+          ReportSectionListDisplay: Unsupported report section type:{" "}
+          {unsupportedListSectionType}
+        </ThemedSpan>
+      ) : (
+        <>
       {context.showPerformanceDisplay && (
         <RenderInsightHeader
           componentName="ReportSectionListDisplay"
@@ -862,6 +868,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           ReportSectionListDisplay, no report or incorrect report to display:{" "}
           {JSON.stringify(reportSectionDefinitionFromFormik)}
         </ThemedSpan>
+      )}
+        </>
       )}
     </ThemedBox>
   );

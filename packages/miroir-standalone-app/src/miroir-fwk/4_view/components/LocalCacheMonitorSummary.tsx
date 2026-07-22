@@ -130,13 +130,7 @@ export const LocalCacheMonitorSummary: React.FC = () => {
     return () => clearInterval(id);
   }, [context.showLocalCacheMonitor, context.domainController]);
 
-  if (!context.showLocalCacheMonitor) {
-    return null;
-  }
-
-  const b = breakdown ?? EMPTY_BREAKDOWN;
-  const ind = indicators;
-
+  // Hooks must run unconditionally — do not place useCallback below the gate return.
   const handleClear = useCallback(() => {
     clearLocalCacheMonitorSession();
     setIndicators(localCacheMonitorIndicators.getIndicators());
@@ -145,6 +139,13 @@ export const LocalCacheMonitorSummary: React.FC = () => {
   const handleExport = useCallback(() => {
     downloadLocalCacheMonitorExport();
   }, []);
+
+  if (!context.showLocalCacheMonitor) {
+    return null;
+  }
+
+  const b = breakdown ?? EMPTY_BREAKDOWN;
+  const ind = indicators;
 
   return (
     <div

@@ -170,14 +170,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     reportDefinitionFromFormik && props.reportSectionPath
       ? resolvePathOnObject(reportDefinitionFromFormik, props.reportSectionPath)
       : undefined;
-  
-  if (reportSectionDefinitionFromFormik?.type && reportSectionDefinitionFromFormik?.type !== "objectInstanceReportSection") {
-    throw new Error(
-      "ReportSectionEntityInstance can only be used with objectInstanceReportSection types, got reportDefinition: " +
-        JSON.stringify(reportDefinitionFromFormik) + " and path: " +
-        JSON.stringify(props.reportSectionPath)
-    );
-  }
+
+  // Hooks must run even when section type is wrong — throw after all hooks below.
+  const unsupportedEntityInstanceSectionType =
+    reportSectionDefinitionFromFormik?.type &&
+    reportSectionDefinitionFromFormik?.type !== "objectInstanceReportSection"
+      ? reportSectionDefinitionFromFormik.type
+      : undefined;
+
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
 
@@ -416,6 +416,14 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
+  if (unsupportedEntityInstanceSectionType) {
+    throw new Error(
+      "ReportSectionEntityInstance can only be used with objectInstanceReportSection types, got reportDefinition: " +
+        JSON.stringify(reportDefinitionFromFormik) +
+        " and path: " +
+        JSON.stringify(props.reportSectionPath)
+    );
+  }
   // log.info("ReportSectionEntityInstance: rendering with instance:", instance);
   if (instance) {
     return (
