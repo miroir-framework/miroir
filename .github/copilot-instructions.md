@@ -2,11 +2,12 @@
 
 ## Project Overview
 
-The Miroir Framework is a comprehensive web application development environment that integrates development-time and runtime activities, inspired by Smalltalk's interactive development model. This is a **multi-workspace monorepo** containing:
+The Miroir Framework is a comprehensive web application development environment that integrates development-time and runtime activities, inspired by Smalltalk's interactive development model. This repository (`miroir-app-dev`) is the main npm-workspaces monorepo (`packages/*`) with a layered architecture.
+
+Sibling repos (linked locally when developing schemas / codegen) live next to this checkout:
 
 - **jzod**: JSON interface to Zod schemas (`@miroir-framework/jzod`)
 - **jzod-ts**: TypeScript type generation for Jzod schemas (`@miroir-framework/jzod-ts`)
-- **miroir-app-dev**: Main framework monorepo with layered architecture
 
 ## Architecture: Layered Domain-Driven Design (Clean or Hexagonal Architecture)
 
@@ -19,25 +20,29 @@ The `miroir-core` and other packages follow a strict layered architecture in `sr
 3_controllers/   → Application controllers (DomainController, ActionRunner)
 4_services/      → Infrastructure services (persistence stores)
 4_views/         → UI layer
+5_setup/         → Composition / wiring
+5_tests/         → Shared test helpers (e.g. MiroirTest CLI parsing)
 ```
 
 **Key Principle**: Interface dependencies may flow both ways, but implementation Dependencies flow downwards only. Layer 3 can use implementations from layers 2 and 1, but layer 1 cannot reference an implementation from layer 3. Layer 1 may freely reference interfaces from layer 2 or 3, however.
 
 ## Package Dependencies & Build Order
 
-Core dependency graph (must be built in this order):
-1. `miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin` (definition of core types and concepts as Jzod schemas)
-2. `miroir-core` (foundation with generated types)
-3. `miroir-localcache*`, `miroir-store-*` packages  
-4. `miroir-react`, `miroir-mcp`, `miroir-diagram-class`
-5. `miroir-server`, `miroir-standalone-app`, `miroir-cli`
-7. `miroir-test-app_deployment-library`, `miroir-test-app_deployment-postgres` (example applications), miroir-standalone-app-electron (desktop application)
+Core dependency graph (see `build-all.sh`; must be built in this order):
+1. Optional siblings: `jzod`, `jzod-ts` (when linked locally)
+2. `miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin` (definition of core types and concepts as Jzod schemas)
+3. `miroir-core` (foundation with generated types)
+4. `miroir-localcache*`, `miroir-store-*` packages (`filesystem`, `indexedDb`, `postgres`, `mongodb`, `bundled`)
+5. `miroir-react`, `miroir-mcp`, `miroir-diagram-class`
+6. `miroir-cli`, `miroir-ai`, `miroir-mcp`
+7. `miroir-standalone-app`
+8. `miroir-test-app_deployment-library`, `miroir-test-app_deployment-postgres` (example / test applications)
 
-`miroir-designer`, `miroir-runtime` are not used.
+Artefacts (after the packages above): `miroir-server` release binary (`npm run build:release -w miroir-server`), `miroir-standalone-app-electron`, Docker image.
 
-**Note**: `miroir-core` has a `devBuild` step to generate TypeScript types (the files in `packages\miroir-core\src\0_interfaces\1_core\preprocessor-generated`) from Jzod schemas. It must be built every time some core schema in `packages/miroir-test-app_deployment-miroir/assets` is modified, after building `miroir-test-app_deployment-miroir` itself.
+`miroir-designer` and `miroir-runtime` are unused stubs (LICENSE / README only).
 
-**Note**: `miroir-runtime` and `miroir-query-jsonata` are additional packages in the ecosystem.
+**Note**: `miroir-core` has a `devBuild` step to generate TypeScript types (the files in `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated`) from Jzod schemas. It must be built every time some core schema in `packages/miroir-test-app_deployment-miroir/assets` is modified, after building `miroir-test-app_deployment-miroir` itself. Prefer `./build-all.sh` / `./build-all.sh devBuild` for full ordered builds.
 
 ## Coding Conventions & Style
 
@@ -51,7 +56,7 @@ Core dependency graph (must be built in this order):
 ## Within React:
  - Prefer functional components with hooks
  - avoid `useEffect` unless strictly necessary, always ask for confirmation before adding a `useEffect`
- - do not use publish-subscribe patterns to push data from one component to another, this is an anti-pattern, and it is redundant with React principles. Instead, feed the data to React.FC components through props and hooks (useSelector, useDispatch, etc.). Services providing subscription mechanisms may de defined for uses outside of React components (for example on the server side).
+ - do not use publish-subscribe patterns to push data from one component to another, this is an anti-pattern, and it is redundant with React principles. Instead, feed the data to React.FC components through props and hooks (useSelector, useDispatch, etc.). Services providing subscription mechanisms may be defined for uses outside of React components (for example on the server side).
  - do not call a function in a useMemo to get data in a FC, useMemo can not work properly to get data from a service via a plain function. If a useMemo is needed to limit rendering, then enable access to the wanted data from the service via a hook.
 
 ## Development Workflows
@@ -65,7 +70,7 @@ npm run devBuild -w miroir-core
 npm run build -w miroir-core
 
 # Build multiple stores in parallel
-npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres
+npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-store-bundled
 
 # Type checking only (no build on miroir-standalone-app)
 npx tsc --noEmit --skipLibCheck
@@ -85,50 +90,58 @@ npm run build -w miroir-test-app_deployment-miroir
 
 # MiroirTest CLI — dynamic import by registry key (preferred)
 npm run testMiroir -w miroir-core -- --suites mustache,alterObject --mode unit
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode integration
+
+# MiroirTest integration (runs in standalone-app; --mode integ is an alias for integration)
+npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 
 # Per-file vitest (RUN_TEST gate on most loaders)
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
-npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 
 # Schema / migration smoke
 npm run testByFile -w miroir-core -- miroirTest.migration
 
 # Specific test with debug logging
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run vitest -w miroir-core -- domainSelector
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json npm run vitest -w miroir-core -- domainSelector
 
 # All miroir-core unit tests
 npm run test -w miroir-core -- ''
+
+# Repo-wide non-regression (unit + MiroirTest integ + curated app-stack)
+npm run nonreg
 ```
 
-**MiroirTest UI:** standalone app menu **Miroir Tests** (unit mode only). Plan: `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`. Contributor guide: `docs/contributing/testing.md`.
+**MiroirTest UI:** standalone app menu **Miroir Tests** (unit mode only). Plan: `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`. Contributor guide: `docs/contributing/testing.md`. Full reference: `docs/reference/testing.md`.
 
 ### Integration Testing by Store Type
 ```bash
 # File System persistence tests
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json npm run testByFile -w miroir-standalone-app -- DomainController.integ
 
 # IndexedDB persistence tests  
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json npm run testByFile -w miroir-standalone-app -- DomainController.integ
 
 # PostgreSQL persistence tests
-VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testByFile -w miroir-standalone-app -- DomainController.integ
+VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json npm run testByFile -w miroir-standalone-app -- DomainController.integ
 ```
 
 
 ### Application Development
 
-It shall be assumed that the client already run and are available at http://localhost:5173 and the server at http://localhost:3080
+For a full packaged run, the built server serves the client at **https://localhost:3080** (or http if TLS certs are absent). See `docs/guides/build-it-yourself.md`.
 
-In any case when this would not be the case, use the following commands to start both server and client in development mode:
+For active frontend development, assume Vite client at **http://localhost:5173** (default Vite port) and API server at **http://localhost:3080** (or https when `certs/` is set up).
+
+When those are not already running:
 ```bash
-# Background server build (for active development)
-npm run build-tsup -w miroir-server
+# Build / refresh the server release binary (there is no `npm run dev` on miroir-server)
+npm run build:server -w miroir-server
+# or full client+server release: npm run build:release -w miroir-server
 
-# Launch server
-npm run dev -w miroir-server
+# Launch server (defaults work from repo root; see build-it-yourself.md for TLS flags)
+NODE_ENV=development node packages/miroir-server/release/index.js
+# equivalent: npm run run:prod -w miroir-server
 
-# Launch client (use dev, not startDev)
+# Launch Vite client (use `dev`, not a removed `startDev` script)
 npm run dev -w miroir-standalone-app
 ```
 
@@ -138,24 +151,26 @@ npm run dev -w miroir-standalone-app
 
 The Miroir Framework allows to create applications by defining data structures and behaviors through JSON-declared schemas.
 
-The whole approach to the framework is based on a meta-language, name "ML", "MML" (for Miroir Meta-Language), "MMLS" (for Miroir Meta-Language Schema) or Jzod. The meta-schema is given in `packages/miroir-core/src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json`. It defines the structure of all data in Miroir, and it is bootstrapped, defining its own structure (it is itself an Jzod Schema). It corresponds to a subset of Typescript types.
+The whole approach to the framework is based on a meta-language, named "ML", "MML" (for Miroir Meta-Language), "MMLS" (for Miroir Meta-Language Schema) or Jzod. The meta-schema is given in `packages/miroir-test-app_deployment-miroir/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/1e8dab4b-65a3-4686-922e-ce89a2d62aa9.json`. It defines the structure of all data in Miroir, and it is bootstrapped, defining its own structure (it is itself a Jzod Schema). It corresponds to a subset of Typescript types.
 
 Each core concept in Miroir (Entity, EntityDefinition, Query, Transformer, Report, Endpoint, etc.) are defined as an Entity, and each Entity can have multiple versions (EntityDefinitions). They are all defined using the Meta-language (Jzod schemas).
 
 ### Application / Deployment Structure: (Meta-)Model + Data
 The Deployment of every Application is stored in two parts (here filesystem storage is used as an example, but it can be any persistence backend):
-- **Model**: JSON files defining Entities, EntityDefinitions, Queries, Transformers, Reports, any logic or model-related information of an Application. For the Miroir application itself (in `packages/miroir-core/src/assets/miroir_model/`) this contains only the Meta-Model (Entity and EntityDefinition). For any other Application, this contain the actual application model.
-- **Data**: JSON files defining the actual data instances of an application Model. For the Miroir application itself (in `packages/miroir-core/src/assets/miroir_data/`) this contains only data for non-bootstrapped concepts, that are the concepts belonging to the Model of the Miroir Application, but not to its Meta-Model: `Query`, `Transformer`, `Report`, etc. For any other application, this contains the actual application data.
+- **Model**: JSON files defining Entities, EntityDefinitions, Queries, Transformers, Reports, any logic or model-related information of an Application. For the Miroir application itself (in `packages/miroir-test-app_deployment-miroir/assets/miroir_model/`) this contains the Meta-Model (Entity and EntityDefinition) plus other model-level concepts. For any other Application, this contains the actual application model.
+- **Data**: JSON files defining the actual data instances of an application Model. For the Miroir application itself (in `packages/miroir-test-app_deployment-miroir/assets/miroir_data/`) this contains instances for non-bootstrapped concepts that belong to the Model of the Miroir Application but not only to its Meta-Model: `Query`, `Transformer`, `Report`, etc. For any other application, this contains the actual application data.
+
+Canonical layout reference: `docs/reference/data-architecture-deployments.md`.
 
 ### Miroir Core Concepts: Meta-Model
 
--  The bootstrapped Entity `Entity` is defined in file `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json`
-- Each EntityDefinition defines the attributes of an Entity using a (Jzod) ML schema. The bootstrapped EntityDefinition `EntityDefinition` can be found in file `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json` 
+-  The bootstrapped Entity `Entity` is defined in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/381ab1be-337f-4198-b1d3-f686867fc1dd.json`
+- Each EntityDefinition defines the attributes of an Entity using a (Jzod) ML schema. The bootstrapped EntityDefinition `EntityDefinition` can be found in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/bdd7ad43-f0fc-4716-90c1-87454c40dd95.json` 
 - The Jzod schemas are used to generate TypeScript types and Zod validation schemas.
-- The Jzod schemas for miroir and other applications can be found in directory `miroir-core/src/assets/`.
-- All miroir-core types generated from Jzod schemas are found in `miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/`.
-- Run `npm run devBuild` in `miroir-core` to produce TS types and zod Schemas
-- TS Types from miroir-core are exported through massive index.ts (1200+ lines)
+- Application / deployment Jzod assets live under `packages/miroir-test-app_deployment-*/assets/` (not under `miroir-core/src/assets/`, which only holds leftover fixtures such as `miroirAdmin/` and `test1_model/`).
+- Generated TypeScript types from Jzod schemas are written to `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`). Generator helpers live in `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/`.
+- Run `npm run devBuild -w miroir-core` to produce TS types (and then build)
+- TS Types from miroir-core are exported through a large `index.ts` (1200+ lines)
 
 The Entities are bootstrapped to themselves as meta-classes (there is an Entity named "Entity"). EntityDefinition is also bootstrapped to itself as a meta-class (there is an EntityDefinition named EntityDefinition, which jzodSchema defines the format of all EntityDefinitions, including itself).
 
@@ -180,10 +195,10 @@ Combiner FK attributes (`AttributeOfObjectToCompareToReferenceUuid`, `AttributeO
 ### Miroir Core Concepts: Model
 
 Other core concepts are defined as Entities / EntityDefinitions, for example:
-  - `Query`: allows to fetch data objects based on criteria, in file `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json`. General Query combines Extractors, Combiners, and Transformers
-  - `Transformer`: a pure function, allow to transform data, can be run either on client or server side in-memory, or in the database (Postgres). In file `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json`
-  - `Report`: allows to display data in the UI, based on a Query and several display sections, in file `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json`
-  - `Endpoint`: allows to define Actions, which can perform side-effects on Entity instances and on the Model of an Application. Actions can run on the client or the server. Definition in file `packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json`
+  - `Query`: allows to fetch data objects based on criteria, in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/359f1f9b-7260-4d76-a864-72c839b9711b.json`. General Query combines Extractors, Combiners, and Transformers
+  - `Transformer`: a pure function, allow to transform data, can be run either on client or server side in-memory, or in the database (Postgres). In file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/54a16d69-c1f0-4dd7-aba4-a2cda883586c.json`
+  - `Report`: allows to display data in the UI, based on a Query and several display sections, in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/952d2c65-4da2-45c2-9394-a0920ceedfb6.json`
+  - `Endpoint`: allows to define Actions, which can perform side-effects on Entity instances and on the Model of an Application. Actions can run on the client or the server. Definition in file `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e3c1cc69-066d-4f52-beeb-b659dc7a88b9.json`
 
 ### Logging
 each file has its own logger instance, named after the file, for example `DomainController.ts` has a logger named `DomainController`. Loggers are configured via environment variable `VITE_MIROIR_LOG_CONFIG_FILENAME`, see example config files in `packages/miroir-standalone-app/tests/`.
@@ -212,7 +227,7 @@ then use `log.debug(...)`, `log.info(...)`, etc. in the file.
 
 ### Error Handling
 - For Actions, consistent `ActionReturnType` pattern with `ActionSuccess` | `ActionError`
-- Vitest emulation to run test in the UI to be found in `test-expect.ts` for assertion patterns (`describe`, `it`, `expect`)
+- Vitest-like assertion helpers for in-app / MiroirTest runs: `packages/miroir-core/src/1_core/test-expect.ts` (`describe`, `it`, `expect`)
 
 ## Store Architecture
 
@@ -220,6 +235,8 @@ Multiple persistence backends with unified interface:
 - `miroir-store-filesystem`: File system persistence
 - `miroir-store-indexedDb`: Browser IndexedDB
 - `miroir-store-postgres`: PostgreSQL with admin schema pattern
+- `miroir-store-mongodb`: MongoDB backend
+- `miroir-store-bundled`: Read-only statically imported deployment data (sandbox / demo)
 
 Each store implements the same interface defined in `miroir-core`.
 
@@ -244,33 +261,36 @@ Each store implements the same interface defined in `miroir-core`.
 - `packages/miroir-core/src/index.ts`: Complete type export surface
 - `packages/miroir-core/src/3_controllers/DomainController.ts`: Core business logic
 - `packages/miroir-core/src/2_domain/QuerySelectors.ts`: Data access patterns
-- `rationale.md`: Project philosophy and design decisions
-- `works.md`: Development history and milestone tracking
+- `docs/guides/why-miroir.md`: Project philosophy and design decisions
+- `docs/reference/data-architecture-deployments.md`: Deployments, store backends, model/data layout
+- `docs/contributing/testing.md` / `docs/reference/testing.md`: Testing workflows
+- `build-all.sh`: Canonical package build order and artefacts
 
 ## Platform Notes
 
 - Use git-bash for Windows development
-- Monorepo managed with npm workspaces
+- Monorepo managed with npm workspaces (`packages/*`)
 - ESM modules throughout (`"type": "module"`)
 - TypeScript compilation via tsup for libraries, Vite for applications
 
 ## Example Application: Library
 
-data and Model for the example Library application can be found in:
-- Model: `packages/miroir-core/src/assets/library_model/`
-- data: `packages/miroir-core/src/assets/library_data/`
+Model and data for the example Library application live in the deployment package:
+- Model: `packages/miroir-test-app_deployment-library/assets/library_model/`
+- Data: `packages/miroir-test-app_deployment-library/assets/library_data/`
 
-the library application model contains Entities `Author`, `Book`, `Country`, `Publisher`, and `User`. See files in directory `packages/miroir-core/src/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/`
+The library application model includes Entities `Author`, `Book`, `Country`, `Publisher`, `User`, and `LendingHistoryItem`. EntityDefinitions are under `packages/miroir-test-app_deployment-library/assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/`.
 
-the library application data can be found:
-- authors: `packages/miroir-test-app_deployment-library/assets/library_data/d7d7a144ff-d1b9-4135-800c-a7cfc1f38733/`
+Library application data directories (entity uuid → folder):
+- authors: `packages/miroir-test-app_deployment-library/assets/library_data/d7a144ff-d1b9-4135-800c-a7cfc1f38733/`
 - books: `packages/miroir-test-app_deployment-library/assets/library_data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/`
 - countries: `packages/miroir-test-app_deployment-library/assets/library_data/d3139a6d-0486-4ec8-bded-2a83a3c3cee4/`
 - publishers: `packages/miroir-test-app_deployment-library/assets/library_data/a027c379-8468-43a5-ba4d-bf618be25cab/`
 - users: `packages/miroir-test-app_deployment-library/assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/`
+- lending history: `packages/miroir-test-app_deployment-library/assets/library_data/e81078f3-2de7-4301-bd79-d3a156aec149/`
 
 ## Critical Dependencies
 
-- `@miroir-framework/jzod` and `@miroir-framework/jzod-ts` must be linked locally
-- Build order is critical due to generated types
+- `@miroir-framework/jzod` and `@miroir-framework/jzod-ts` must be linked locally from sibling checkouts when regenerating types
+- Build order is critical due to generated types (`build-all.sh`)
 - Some packages have circular development dependencies requiring careful build orchestration
