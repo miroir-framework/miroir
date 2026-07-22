@@ -864,6 +864,14 @@ export type {
   FetchEvolutionHistoryOptions,
 } from "./2_domain/evolutionTraceCompaction.js";
 export {
+  generateEvolutionBaseline,
+  buildEvolutionBaselineCreateInstanceActions,
+  DEFAULT_EVOLUTION_BRANCH,
+  EVOLUTION_TRACE_ENTITY_UUID,
+  EVOLUTION_TRACE_EVENT_ENTITY_UUID,
+} from "./2_domain/evolutionTraceBaseline.js";
+export type { EvolutionTraceDeploymentState } from "./2_domain/evolutionTraceBaseline.js";
+export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,

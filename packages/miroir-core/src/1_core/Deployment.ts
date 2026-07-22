@@ -17,6 +17,10 @@ import type { InitApplicationParameters } from "../0_interfaces/4-services/Persi
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import {
+  buildEvolutionBaselineCreateInstanceActions,
+  EVOLUTION_TRACE_ENTITY_UUID,
+} from "../2_domain/evolutionTraceBaseline.js";
 
 import {
   selfApplicationMiroir,
@@ -483,6 +487,10 @@ export function buildResetAndinitializeDeploymentActionSequence(
             objects: e.instances,
           },
         })),
+        // Squashed evolution baseline when ApplicationEvolutionTrace is part of this init.
+        ...(entities.some((e) => e.entity.uuid === EVOLUTION_TRACE_ENTITY_UUID)
+          ? buildEvolutionBaselineCreateInstanceActions(applicationUuid)
+          : []),
       ],
     },
   };

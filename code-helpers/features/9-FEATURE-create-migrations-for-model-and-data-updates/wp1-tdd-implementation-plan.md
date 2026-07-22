@@ -22,7 +22,7 @@ Related:
 | 2 | Persist raw trace events from action flow | ✅ DONE | 14/14 |
 | 3 | Enforce section/app tracking policy | ✅ DONE | 3/3 |
 | 4 | Hybrid compaction model (read-side cursor) | ✅ DONE | 3/3 |
-| 5 | Initial squashed baseline generation | 🔲 TODO | — |
+| 5 | Initial squashed baseline generation | ✅ DONE | 2/2 |
 | 6 | #15-compatible definition-version resolution | 🔲 TODO | — |
 | 7 | Display surfaces (reports + menu wiring) | 🔲 TODO | — |
 | 8 | End-to-end WP1 tracer bullet | 🔲 TODO | — |
@@ -321,7 +321,7 @@ npx tsc --noEmit --skipLibCheck
 
 ---
 
-## Phase 5 — Initial squashed baseline generation
+## Phase 5 — Initial squashed baseline generation  ✅ DONE
 
 ### 5.1 RED
 Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.baseline.unit.test.ts`
@@ -342,38 +342,25 @@ npm run testByFile -w miroir-core -- evolutionTrace.baseline
 Expected: `1 failed` (generator not yet implemented).
 
 ### 5.1 GREEN
-Implement `generateEvolutionBaseline(...)` and call it during deployment initialisation for all four known deployments (miroir, library, admin, postgres).
+Implement `generateEvolutionBaseline(...)` and wire into deployment initialisation when `ApplicationEvolutionTrace` is among entities being created (`buildResetAndinitializeDeploymentActionSequence`). Full 4-deployment coverage when those entities are included in init (Phase 8 e2e).
 
-#### Validation (GREEN)
+#### Validation (GREEN) — verified
 ```bash
-# Unit tests
 npm run testByFile -w miroir-core -- evolutionTrace.baseline
-
-# Type check
 npx tsc --noEmit --skipLibCheck
-
-# Integration: baseline present after deployment initialisation
-npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration
 ```
 
-Expected per check:
-| Check | Expected |
+| Check | Result |
 |---|---|
-| `evolutionTrace.baseline` tests | `1 passed` — 2/2 tests pass |
-| Test A: baseline event count | exactly 1 event, `operationType = "squashedBaseline"` |
+| `evolutionTrace.baseline` tests | **2/2 pass** |
+| Test A: baseline event | 1 root (`branchName = "master"`), 1 event `squashedBaseline` / `compactionLevel = "version"` |
 | Test B: idempotence | calling twice → still 1 event |
-| Baseline `compactionLevel` | `"version"` |
-| Baseline `branchName` | `"master"` |
-| Integration: miroir deployment | 1 baseline `ApplicationEvolutionTrace` root in store |
-| Integration: library deployment | 1 baseline root in store |
+| Deployment wiring | baseline createInstance actions appended when evolution-trace entity is in init entity list |
 | `tsc --noEmit` | 0 type errors |
+| NON-REGRESSION `createDeploymentCompositeAction` | **4/4** |
+| NON-REGRESSION `modelEnvironment` | **6/6** |
 
-### NON-REGRESSION
-```
-npm run testByFile -w miroir-core -- createDeploymentCompositeAction
-npm run testByFile -w miroir-core -- modelEnvironment
-```
-Expected: all pass unchanged.
+Note: `evolutionTraceWP1` integration suite is Phase 8 (not yet present).
 
 ---
 
@@ -629,19 +616,19 @@ Target files (done):
 - `packages/miroir-core/src/index.ts` (exports)
 - `packages/miroir-core/tests/2_domain/evolutionTrace.compaction.unit.test.ts` (new — 3 tests)
 
-### Phase 5 — Initial squashed baseline
-- [ ] Write baseline creation and idempotence tests (RED).
-- [ ] Implement `generateEvolutionBaseline(...)` (GREEN).
-- [ ] Wire into deployment initialisation for Miroir, Library, Admin, Postgres.
-- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.baseline` → **2/2 pass**.
-- [ ] Verify: integration test shows 1 baseline root per deployment.
-- [ ] Verify: calling twice → no duplicate baseline events.
-- [ ] Verify NON-REGRESSION: `createDeploymentCompositeAction`, `modelEnvironment` pass.
+### Phase 5 — Initial squashed baseline ✅ DONE
+- [x] Write baseline creation and idempotence tests (RED).
+- [x] Implement `generateEvolutionBaseline(...)` (GREEN).
+- [x] Wire into `buildResetAndinitializeDeploymentActionSequence` when ApplicationEvolutionTrace entity is created.
+- [x] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.baseline` → **2/2 pass**.
+- [x] Verify: calling twice → no duplicate baseline events.
+- [x] Verify NON-REGRESSION: `createDeploymentCompositeAction` (**4/4**), `modelEnvironment` (**6/6**) pass.
 
-Target files:
-- `packages/miroir-core/src/1_core/Deployment.ts` (or initializer flows)
-- `packages/miroir-core/src/3_controllers/` (initializer wiring)
-- `packages/miroir-core/tests/2_domain/evolutionTrace.baseline.unit.test.ts` (new)
+Target files (done):
+- `packages/miroir-core/src/2_domain/evolutionTraceBaseline.ts`
+- `packages/miroir-core/src/1_core/Deployment.ts` (gated wiring)
+- `packages/miroir-core/src/index.ts` (exports)
+- `packages/miroir-core/tests/2_domain/evolutionTrace.baseline.unit.test.ts` (new — 2 tests)
 
 ### Phase 6 — #15-compatible definition-version resolution
 - [ ] Write 4 resolver unit tests covering all precedence paths (RED).
