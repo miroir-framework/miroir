@@ -19,7 +19,7 @@ Related:
 |---|---|---|---|
 | 0 | Lock contracts and fixtures | ✅ DONE | 6/6 |
 | 1 | Introduce WP1 entities and generated types | ✅ DONE | 16/16 |
-| 2 | Persist raw trace events from action flow | 🔲 TODO | — |
+| 2 | Persist raw trace events from action flow | ✅ DONE | 14/14 |
 | 3 | Enforce section/app tracking policy | 🔲 TODO | — |
 | 4 | Hybrid compaction model (read-side cursor) | 🔲 TODO | — |
 | 5 | Initial squashed baseline generation | 🔲 TODO | — |
@@ -193,7 +193,7 @@ Expected: all pass unchanged.
 
 ---
 
-## Phase 2 — Persist raw trace events from action flow
+## Phase 2 — Persist raw trace events from action flow  ✅ DONE
 
 ### 2.1 RED
 Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.persist.unit.test.ts`
