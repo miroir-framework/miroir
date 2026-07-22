@@ -350,7 +350,13 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         {reportQueryLoadStatus === "error" ? (
           <ThemedSpan>Report async load failed (showing cached data if available).</ThemedSpan>
         ) : null}
-        {props.applicationSection ? (
+        {/* While async report load is in flight, skip EntityNotFound failure dump — expected for lazy-on-refresh entities. */}
+        {reportQueryLoadStatus === "loading" &&
+        reportData &&
+        typeof reportData === "object" &&
+        ((reportData as any).queryFailure === "ReferenceNotFound" ||
+          (reportData as any).queryFailure === "EntityNotFound" ||
+          (reportData as any).elementType === "failure") ? null : props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
           ) : // (<>failure</>)

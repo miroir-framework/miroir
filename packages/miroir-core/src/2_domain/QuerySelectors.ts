@@ -1100,16 +1100,31 @@ export const runQuery = <StateType>(
     );
     // TODO: test for error!
     if (result instanceof Domain2ElementFailed) {
-      log.error(
-        "runQuery failed for deployment",
-        deploymentUuid,
-        "extractor",
-        extractor[0],
-        "query",
-        extractor[1],
-        "result=",
-        result
-      );
+      // EntityNotFound for lazy-on-refresh entities is expected until report load completes;
+      // avoid console.error noise for that interim state.
+      if (result.queryFailure === "EntityNotFound") {
+        log.debug(
+          "runQuery EntityNotFound (may be lazy-on-refresh interim) for deployment",
+          deploymentUuid,
+          "extractor",
+          extractor[0],
+          "query",
+          extractor[1],
+          "result=",
+          result,
+        );
+      } else {
+        log.error(
+          "runQuery failed for deployment",
+          deploymentUuid,
+          "extractor",
+          extractor[0],
+          "query",
+          extractor[1],
+          "result=",
+          result,
+        );
+      }
       context[extractor[0]] = result;
       return new Domain2ElementFailed({
         queryFailure: "ReferenceNotFound",

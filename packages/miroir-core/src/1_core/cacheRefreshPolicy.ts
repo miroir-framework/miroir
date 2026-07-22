@@ -20,6 +20,13 @@ export function shouldCacheAllInstancesOnRefresh(
   return entityDefinition?.cache?.cacheAllInstancesOnRefresh !== false;
 }
 
+/** True when the entity is intentionally skipped on refresh (report-triggered load). */
+export function isLazyCacheOnRefreshEntity(
+  entityDefinition: EntityDefinition | undefined,
+): boolean {
+  return entityDefinition?.cache?.cacheAllInstancesOnRefresh === false;
+}
+
 /**
  * Builds the refresh fetch list.
  * - Model entities are always included (application concepts must be fully available).

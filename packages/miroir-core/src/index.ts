@@ -807,6 +807,7 @@ export {
 export {
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
+  isLazyCacheOnRefreshEntity,
   type EntityFetchOnRefresh,
 } from "./1_core/cacheRefreshPolicy.js";
 export {

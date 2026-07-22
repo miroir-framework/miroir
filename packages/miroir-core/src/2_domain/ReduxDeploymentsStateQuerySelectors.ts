@@ -25,6 +25,10 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
+  isLazyCacheOnRefreshEntity,
+} from "../1_core/cacheRefreshPolicy.js";
+import type { EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
   applyExtractorTransformerInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
   extractEntityInstanceUuidIndexWithObjectListExtractorInMemory,
@@ -300,6 +304,33 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
 };
 
 // ################################################################################################
+/**
+ * Looks up EntityDefinition for an entityUuid from model section of the local cache.
+ * Used to interpret cache.cacheAllInstancesOnRefresh without a network round-trip.
+ */
+function getEntityDefinitionFromReduxDeploymentsState(
+  deploymentEntityState: ReduxDeploymentsState,
+  deploymentUuid: string,
+  entityUuid: string,
+): EntityDefinition | undefined {
+  const entityDefinitionIndex = getReduxDeploymentsStateIndex(
+    deploymentUuid,
+    "model",
+    entityEntityDefinition.uuid,
+  );
+  const definitions = deploymentEntityState[entityDefinitionIndex]?.entities;
+  if (!definitions) {
+    return undefined;
+  }
+  for (const def of Object.values(definitions) as EntityDefinition[]) {
+    if (def?.entityUuid === entityUuid) {
+      return def;
+    }
+  }
+  return undefined;
+}
+
+// ################################################################################################
 // ACCESSES deploymentEntityState
 export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedExtractorRunner<
   BoxedExtractorOrCombinerReturningObjectList,
@@ -331,6 +362,20 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
     entityUuid
   );
   if (!deploymentEntityState[deploymentEntityStateIndex]) {
+    // Lazy-on-refresh entities are intentionally absent until a report load fills them.
+    // Treat as empty index (not EntityNotFound) so interim selectors stay quiet.
+    const entityDefinition = getEntityDefinitionFromReduxDeploymentsState(
+      deploymentEntityState,
+      deploymentUuid,
+      entityUuid,
+    );
+    if (isLazyCacheOnRefreshEntity(entityDefinition)) {
+      log.debug(
+        "selectEntityInstanceUuidIndexFromReduxDeploymentsState: lazy-on-refresh entity not in cache yet",
+        deploymentEntityStateIndex,
+      );
+      return {};
+    }
     log.warn(
       "selectEntityInstanceUuidIndexFromReduxDeploymentsState could not find index",
       deploymentEntityStateIndex,

@@ -126,6 +126,7 @@ User confirmed D1–D11 (EntityDefinition flag, model always loaded, sticky erro
 | 4.1b | Report executor: read referenced entities + `loadNewInstancesInLocalCache` | `createReportQueryLoadExecutor.unit.test.ts` (3/3); uses **local cache only** (not remote `handleAction`) |
 | 4.1c | Report view effect wires `useEnsureReportQueryLoaded` | `ReportViewWithEditor.tsx`; hides EntityNotFound while loading |
 | 4.1d | `loadNewInstancesInLocalCache` mirrors into `current` | redux + zustand LocalCacheSlice — selectors see report-triggered fills without full rollback |
+| 4.1e | Lazy-on-refresh missing index ⇒ empty (not EntityNotFound warn/error) | `ReduxDeploymentsStateQuerySelectors` + `isLazyCacheOnRefreshEntity` |
 
 **Artifacts**
 
