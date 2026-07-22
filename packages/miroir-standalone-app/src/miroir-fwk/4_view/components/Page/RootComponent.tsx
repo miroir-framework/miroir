@@ -110,6 +110,18 @@ export interface RootComponentProps {
  * 4. Optimized context value dependencies to only change when necessary
  * 5. Batched domain controller actions to take advantage of React 18's automatic batching
  */
+function applicationDeploymentMapsShallowEqual(
+  a: ApplicationDeploymentMap,
+  b: ApplicationDeploymentMap,
+): boolean {
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (aKeys.length !== bKeys.length) {
+    return false;
+  }
+  return aKeys.every((key) => a[key] === b[key]);
+}
+
 let count = 0;
 export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
@@ -239,7 +251,7 @@ export const RootComponent = (props: RootComponentProps) => {
 
   // log.info("RootComponent adminDeploymentsQueryResult",adminDeploymentsQueryResult);
 
-  const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useMemo(
+  const applicationDeploymentMapRaw: ApplicationDeploymentMap | undefined = useMemo(
     () =>
       adminDeploymentsQueryResult &&
       !(adminDeploymentsQueryResult instanceof Domain2ElementFailed) &&
@@ -252,6 +264,25 @@ export const RootComponent = (props: RootComponentProps) => {
         : undefined,
     [adminDeploymentsQueryResult]
   );
+
+  // Selector results get new object identity on every LocalCache write even when
+  // deployment→application mappings are unchanged. Reusing the previous map
+  // stops context churn that used to recreate ReportQueryLoadService and flash
+  // "Loading report data…" on list reports.
+  const applicationDeploymentMapPrevRef = useRef<ApplicationDeploymentMap | undefined>(undefined);
+  const applicationDeploymentMap: ApplicationDeploymentMap | undefined = useMemo(() => {
+    const next = applicationDeploymentMapRaw;
+    const prev = applicationDeploymentMapPrevRef.current;
+    if (!next) {
+      applicationDeploymentMapPrevRef.current = undefined;
+      return undefined;
+    }
+    if (prev && applicationDeploymentMapsShallowEqual(prev, next)) {
+      return prev;
+    }
+    applicationDeploymentMapPrevRef.current = next;
+    return next;
+  }, [applicationDeploymentMapRaw]);
   // log.info("RootComponent applicationDeploymentMap",applicationDeploymentMap);
 
   // Use dynamic applicationDeploymentMap (which includes non-default apps like Library)

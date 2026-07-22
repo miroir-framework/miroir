@@ -19,7 +19,7 @@
  * compatibility, but all new navigation should use the query-param helpers
  * exported from navigation.ts.
  */
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useMemo } from "react";
 import { Navigate, type Params, useParams, useSearchParams } from "react-router-dom";
 
 import { type ApplicationSection } from "miroir-core";
@@ -80,6 +80,24 @@ function PageContent(): React.JSX.Element {
   const { "*": wildcardPath = "" } = useParams();
   const [searchParams] = useSearchParams();
   const page = searchParams.get("page");
+  const application = searchParams.get("application") ?? "";
+  const deploymentUuid = searchParams.get("deploymentUuid") ?? "";
+  const applicationSection = searchParams.get("applicationSection") ?? "data";
+  const reportUuid = searchParams.get("reportUuid") ?? "";
+  const instanceUuid = searchParams.get("instanceUuid") ?? undefined;
+
+  const reportPageParams = useMemo(() => {
+    if (page !== "report") {
+      return undefined;
+    }
+    return {
+      application,
+      deploymentUuid,
+      applicationSection,
+      reportUuid,
+      instanceUuid,
+    } satisfies Params<ReportUrlParamKeys>;
+  }, [page, application, deploymentUuid, applicationSection, reportUuid, instanceUuid]);
 
   console.log("[PageDispatcher] render: wildcardPath=", wildcardPath, "page=", page, "search=", searchParams.toString());
 
@@ -90,14 +108,7 @@ function PageContent(): React.JSX.Element {
         return <HomePage />;
 
       case "report": {
-        const pageParams: Params<ReportUrlParamKeys> = {
-          application:        searchParams.get("application")        ?? "",
-          deploymentUuid:     searchParams.get("deploymentUuid")     ?? "",
-          applicationSection: searchParams.get("applicationSection") ?? "data",
-          reportUuid:         searchParams.get("reportUuid")         ?? "",
-          instanceUuid:       searchParams.get("instanceUuid")       ?? undefined,
-        };
-        return <ReportWrapper pageParams={pageParams} />;
+        return <ReportWrapper pageParams={reportPageParams!} />;
       }
 
       case "transformerBuilder":
