@@ -12,7 +12,6 @@ import type {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { produceEvolutionTraceEvent } from "../../src/2_domain/evolutionTraceWriter.js";
 import { MIROIR_APPLICATION_UUID } from "../../src/2_domain/evolutionTracePolicy.js";
-import { MIROIR_APPLICATION_UUID } from "../../src/2_domain/evolutionTracePolicy.js";
 
 // ── Shared constants ────────────────────────────────────────────────────────
 const LIBRARY_UUID = "dd986507-6b28-4aac-a27a-f2dfba2aa0e4";
@@ -70,7 +69,6 @@ const mockEntityDefinition: EntityDefinition = {
 const mockInstance: EntityInstance = {
   uuid: INSTANCE_UUID,
   parentUuid: ENTITY_UUID,
-  name: "TestInstance",
 };
 
 describe("produceEvolutionTraceEvent — section/app tracking policy", () => {

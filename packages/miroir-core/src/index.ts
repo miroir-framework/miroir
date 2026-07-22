@@ -854,6 +854,16 @@ export {
 } from "./2_domain/evolutionTraceWriter.js";
 export type { EvolutionTraceableAction } from "./2_domain/evolutionTraceWriter.js";
 export {
+  fetchEvolutionHistory,
+} from "./2_domain/evolutionTraceCompaction.js";
+export type {
+  EvolutionHistoryCompactionLevel,
+  EvolutionHistoryCommitBlock,
+  EvolutionHistoryItem,
+  EvolutionHistoryVersionBlock,
+  FetchEvolutionHistoryOptions,
+} from "./2_domain/evolutionTraceCompaction.js";
+export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
   asyncExtractEntityInstanceUuidIndexWithObjectListExtractor,

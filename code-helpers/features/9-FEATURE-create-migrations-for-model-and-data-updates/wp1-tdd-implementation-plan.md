@@ -21,7 +21,7 @@ Related:
 | 1 | Introduce WP1 entities and generated types | ✅ DONE | 16/16 |
 | 2 | Persist raw trace events from action flow | ✅ DONE | 14/14 |
 | 3 | Enforce section/app tracking policy | ✅ DONE | 3/3 |
-| 4 | Hybrid compaction model (read-side cursor) | 🔲 TODO | — |
+| 4 | Hybrid compaction model (read-side cursor) | ✅ DONE | 3/3 |
 | 5 | Initial squashed baseline generation | 🔲 TODO | — |
 | 6 | #15-compatible definition-version resolution | 🔲 TODO | — |
 | 7 | Display surfaces (reports + menu wiring) | 🔲 TODO | — |
@@ -280,7 +280,7 @@ npx tsc --noEmit --skipLibCheck
 
 ---
 
-## Phase 4 — Add hybrid compaction model (read-side cursor)
+## Phase 4 — Add hybrid compaction model (read-side cursor)  ✅ DONE
 
 ### 4.1 RED
 Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.compaction.unit.test.ts`
@@ -301,30 +301,23 @@ Expected: `1 failed` (query/compaction API not yet implemented).
 ### 4.1 GREEN
 Implement read-model compaction in query/transformer layer; raw storage unchanged.
 
-#### Validation (GREEN)
+#### Validation (GREEN) — verified
 ```bash
 npm run testByFile -w miroir-core -- evolutionTrace.compaction
 npm run testByFile -w miroir-core -- evolutionTrace.persist
 npx tsc --noEmit --skipLibCheck
 ```
 
-Expected per check:
-| Check | Expected |
+| Check | Result |
 |---|---|
-| `evolutionTrace.compaction` tests | `1 passed` — 3/3 tests pass |
-| `raw` cursor: 3 events in store | returns 3 items, each with `sequenceNumber`, `timestamp`, `operationType` |
-| `commit` cursor: events across 2 commits | returns 2 blocks, each with `commitId`, `eventCount` |
-| `version` cursor A→B | returns 1 summary block with `fromVersion`, `toVersion`, `totalEvents` |
-| Result ordering (all levels) | ascending by `sequenceNumber` / `timestamp` |
-| `evolutionTrace.persist` tests | still pass |
+| `evolutionTrace.compaction` tests | **3/3 pass** |
+| `raw` cursor: 3 events in store | 3 items, ordered by `sequenceNumber` |
+| `commit` cursor: events across 2 commits | 2 blocks with `commitId`, `eventCount` |
+| `version` cursor A→B | 1 summary with `fromVersion`, `toVersion`, `totalEvents` |
+| `evolutionTrace.persist` tests | **14/14** still pass |
 | `tsc --noEmit` | 0 type errors |
-
-### NON-REGRESSION
-```
-npm run testByFile -w miroir-core -- queries
-npm run testByFile -w miroir-core -- resolveQueryTemplates
-```
-Expected: all pass unchanged.
+| NON-REGRESSION `queries` | **17/17** |
+| NON-REGRESSION `resolveQueryTemplates` | **1/1** |
 
 ---
 
@@ -623,18 +616,18 @@ Target files (done):
 - `packages/miroir-core/src/index.ts` (exports)
 - `packages/miroir-core/tests/2_domain/evolutionTrace.policy.unit.test.ts` (new — 3 tests)
 
-### Phase 4 — Read-side compaction cursor
-- [ ] Write three compaction tests with setup of 3+ raw events across 2 commits (RED).
-- [ ] Implement `fetchEvolutionHistory({ compactionLevel })` in query layer (GREEN).
-- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.compaction` → **3/3 pass**.
-- [ ] Verify: raw ordering is ascending by `sequenceNumber`.
-- [ ] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
-- [ ] Verify NON-REGRESSION: `queries`, `resolveQueryTemplates` pass.
+### Phase 4 — Read-side compaction cursor ✅ DONE
+- [x] Write three compaction tests with setup of 3+ raw events across 2 commits (RED).
+- [x] Implement `fetchEvolutionHistory({ compactionLevel })` in query layer (GREEN).
+- [x] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.compaction` → **3/3 pass**.
+- [x] Verify: raw ordering is ascending by `sequenceNumber`.
+- [x] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
+- [x] Verify NON-REGRESSION: `queries` (**17/17**), `resolveQueryTemplates` (**1/1**) pass.
 
-Target files:
-- `packages/miroir-core/src/2_domain/QuerySelectors.ts` (or new query helper)
-- `packages/miroir-core/src/2_domain/TransformersForRuntime.ts` (if used)
-- `packages/miroir-core/tests/2_domain/evolutionTrace.compaction.unit.test.ts` (new)
+Target files (done):
+- `packages/miroir-core/src/2_domain/evolutionTraceCompaction.ts` (`fetchEvolutionHistory`)
+- `packages/miroir-core/src/index.ts` (exports)
+- `packages/miroir-core/tests/2_domain/evolutionTrace.compaction.unit.test.ts` (new — 3 tests)
 
 ### Phase 5 — Initial squashed baseline
 - [ ] Write baseline creation and idempotence tests (RED).
