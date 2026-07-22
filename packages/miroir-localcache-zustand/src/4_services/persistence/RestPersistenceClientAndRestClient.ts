@@ -396,6 +396,9 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
             "/entity",
           applicationDeploymentMap
         );
+        const readAttributes = (
+          persistenceAction.payload as { attributes?: string[] }
+        ).attributes;
         const completeArgs = {
           ...callParams.args,
           // actionName: action.actionName,
@@ -404,9 +407,8 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           section: persistenceAction.payload.section,
           parentUuid: persistenceAction.payload.parentUuid,
           applicationDeploymentMap,
-          ...(Array.isArray(persistenceAction.payload.attributes) &&
-          persistenceAction.payload.attributes.length > 0
-            ? { attributes: persistenceAction.payload.attributes }
+          ...(Array.isArray(readAttributes) && readAttributes.length > 0
+            ? { attributes: readAttributes }
             : {}),
         };
         log.info(

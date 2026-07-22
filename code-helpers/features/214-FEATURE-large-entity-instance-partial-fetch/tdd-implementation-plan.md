@@ -13,7 +13,7 @@
 |---|---|---|
 | **0** | Design decisions (segments C′; defer instance-level B) | **DONE** (defaults locked 2026-07-22) |
 | **1** | Projection contract on extractors / persistence reads | **DONE** (2026-07-22; schema-first remediated same day) |
-| **2** | Local-cache segments: `full` + `partial` (≤2 per entity) | Not started |
+| **2** | Local-cache segments: `full` + `partial` (≤2 per entity) | **DONE** (2026-07-22) |
 | **3** | Hook/selector routing + `#114` loader → correct segment | Not started |
 | **4** | Mutation guardrails (partial forbidden; full segment only) | Not started |
 | **5** | Tracer entity end-to-end | Not started |
@@ -177,7 +177,13 @@ Phase 6 — Acceptance                                             6.1
 
 **Behavior:** Zod/types accept optional `attributes: string[]` on `extractorInstancesByEntity` / `extractorByPrimaryKey`.
 
-**Done:** types + zod regenerated via schema-first path (Query ED + Endpoint assets → `devBuild`); tests in `instanceProjectionSchema.unit.test.ts`.
+**Done:** types + zod regenerated via schema-first path (Query ED + Endpoint assets → `devBuild`).
+
+**Validation:**
+- `packages/miroir-core/tests/1_core/instanceProjectionSchema.unit.test.ts`
+  - `accepts attributes on extractorInstancesByEntity`
+  - `accepts attributes on extractorByPrimaryKey`
+  - `accepts attributes on RestPersistenceAction_read`
 
 ### 1.2  REST / PersistenceAction carries projection — **DONE**
 
@@ -185,17 +191,40 @@ Phase 6 — Acceptance                                             6.1
 
 **Done:** `attributes?: string[]` on `RestPersistenceAction_read` / `LocalPersistenceAction_read` / `getInstances` in **deployment assets** then regenerated; Rest client appends `?attributes=`; RestServer + `miroir-server` merge query params; LocalPersistenceAction→getInstances forwards attributes.
 
+**Validation:**
+- Schema: `instanceProjectionSchema.unit.test.ts` — `accepts attributes on RestPersistenceAction_read` (+ without-attributes non-regression in 1.4)
+- End-to-end wire → store projection covered by integ in 1.3 (filesystem `getInstances` with `attributes`)
+
 ### 1.3  At least one backend honors projection — **DONE**
 
 **Behavior (integ):** Response keys ⊆ allow-list ∪ identity fields (`uuid` / PK, `parentUuid`).
 
-**Done:** `PersistenceStoreController.getInstances` / `getInstance` apply `projectEntityInstance(s)` after store read (filter-after-read). Identity via `resolveProjectionIdentityFields` → `getEntityPrimaryKeyAttributes`. Filesystem integ: `PersistenceStoreController.integ.test.tsx` (“get Miroir Entities with attribute projection”).
+**Done:** `PersistenceStoreController.getInstances` / `getInstance` apply `projectEntityInstance(s)` after store read (filter-after-read). Identity via `resolveProjectionIdentityFields` → `getEntityPrimaryKeyAttributes`.
+
+**Validation:**
+- Unit — `packages/miroir-core/tests/1_core/instanceProjection.unit.test.ts`
+  - `keeps only allow-listed attributes plus identity fields`
+  - `retains non-uuid primary key attributes when EntityDefinition is supplied`
+  - `projects each instance in a collection`
+  - `parseAttributesProjectionParam accepts comma string or array`
+- Unit — `packages/miroir-core/tests/4_services/PersistenceStoreController.projection.unit.test.ts`
+  - `projects getInstances when attributes are provided`
+- Integ — `packages/miroir-standalone-app/tests/4_storage/PersistenceStoreController.integ.test.tsx`
+  - `get Miroir Entities with attribute projection (#214)` (filesystem store)
 
 ### 1.4  Non-regression: omit projection ⇒ full instance — **DONE**
 
 **Behavior:** Existing paths without `attributes` unchanged.
 
-**Done:** covered by schema + controller unit tests (omit attributes ⇒ same full objects).
+**Validation:**
+- `instanceProjectionSchema.unit.test.ts`
+  - `accepts extractorInstancesByEntity without attributes (non-regression)`
+  - `accepts RestPersistenceAction_read without attributes (non-regression)`
+- `instanceProjection.unit.test.ts`
+  - `returns the same object when attributes are absent`
+- `PersistenceStoreController.projection.unit.test.ts`
+  - `returns full instances when attributes are omitted`
+- Integ non-regression: same suite’s `get Miroir Entities` (no `attributes`) still returns full instances
 
 **Gate 1:** 1.1–1.4 green.
 
@@ -213,26 +242,55 @@ Phase 6 — Acceptance                                             6.1
 
 **Goal:** Per `(deployment, section, entity)`, expose full segment (existing) and optional partial segment (homogeneous map + header). **No per-instance completeness fields.**
 
-### 2.1  Partial segment write / replace
+### 2.1  Partial segment write / replace — **DONE**
 
 **Behavior:** Loading projected instances creates or **replaces** the partial segment: header `{ kind: "partial", projection, freshness: "fresh" }` + instance map. Does not write into the full segment.
 
-### 2.2  Full segment write unchanged
+**Done:** `attributes` / `cacheSegment` on `entityInstanceCollection` (bootstrap → regenerated); index `…__partial`; Redux + Zustand `loadNewInstancesInLocalCache` write/replace partial only.
+
+**Validation:**
+- Helpers — `packages/miroir-core/tests/1_core/localCacheSegment.unit.test.ts`
+  - `resolveCacheSegmentKind routes by attributes presence`
+  - `resolveLoadCacheSegment prefers explicit cacheSegment then attributes`
+  - `buildLocalCacheSegmentHeader requires projection for partial`
+  - `getReduxDeploymentsStateIndex segment keys` — `appends __partial for the partial segment`; parsers strip suffix
+- Parity — both backends, same case name:
+  - `packages/miroir-localcache-redux/tests/LocalCache.segments.unit.test.ts` → `2.1 projected load writes/replaces partial segment only`
+  - `packages/miroir-localcache-zustand/tests/LocalCache.segments.unit.test.ts` → `2.1 projected load writes/replaces partial segment only`
+
+### 2.2  Full segment write unchanged — **DONE**
 
 **Behavior:** Non-projected `loadNewInstancesInLocalCache` (and #114 stage-C / executor full path) populate the full segment only.
 
-### 2.3  Homogeneity / isolation
+**Done:** omit `attributes` ⇒ full index + `{ kind: "full", freshness: "fresh" }`; partial index untouched.
+
+**Validation:**
+- `localCacheSegment.unit.test.ts` — `keeps full index backward-compatible (no suffix)`
+- `LocalCache.segments.unit.test.ts` (Redux + Zustand) — `2.2 non-projected load writes full segment only`
+- Index non-regression — `packages/miroir-localcache/tests/localCacheSlice.unit.test.ts` (existing index helpers / `localCacheStateToDomainState`)
+
+### 2.3  Homogeneity / isolation — **DONE**
 
 **Behavior:**
 - Reading the full segment never returns partial objects.
 - Reading the partial segment never returns full objects.
 - Unit test: after both segments populated for same entity, maps are distinct; same `uuid` may exist in both with different attribute sets.
 
-### 2.4  Segment freshness
+**Done:** dual-load isolation test; `localCacheStateToDomainState` filters to full segment only.
+
+**Validation:**
+- `LocalCache.segments.unit.test.ts` (Redux + Zustand) — `2.3 full and partial segments are isolated (same uuid, different attrs)` (also asserts domain state exposes full segment only)
+
+### 2.4  Segment freshness — **DONE**
 
 **Behavior:** API can set partial (or full) segment `freshness: "stale"` without deleting instances; UI may still read the map.
 
-**Gate 2:** 2.1–2.4 green; Redux + Zustand parity.
+**Done:** `setLocalCacheSegmentFreshness` exported from Redux + Zustand localcache packages.
+
+**Validation:**
+- `LocalCache.segments.unit.test.ts` (Redux + Zustand) — `2.4 setLocalCacheSegmentFreshness marks stale without deleting instances`
+
+**Gate 2:** 2.1–2.4 green; Redux + Zustand parity — **DONE** (2026-07-22).
 
 ---
 
@@ -244,9 +302,25 @@ Phase 6 — Acceptance                                             6.1
 
 **Behavior:** `attributes` present (non-empty) ⇒ `"partial"`; else `"full"`. Used by selector helpers and report load request construction — **not** inside per-instance loops.
 
+**Expected validation:**
+- Already covered by Phase 2 helpers — `packages/miroir-core/tests/1_core/localCacheSegment.unit.test.ts`
+  - `resolveCacheSegmentKind routes by attributes presence`
+- Extend when wiring report request / selector routing (same file or thin wrapper test):
+  - `report / selector routing uses resolveCacheSegmentKind once per query (not per instance)`
+- Fingerprint includes segment + projection — extend `packages/miroir-core/tests/2_domain/ReportQueryLoadService.unit.test.ts`:
+  - `fingerprint changes when projection attributes change`
+  - `fingerprint changes when segment kind differs (full vs partial)`
+  - non-regression: existing fingerprint cases still pass
+
 ### 3.2  Executor writes correct segment
 
 **Behavior:** `createReportQueryLoadExecutor` with `projection` → partial segment replace; without → full segment (current #114 path).
+
+**Expected validation:**
+- Extend `packages/miroir-core/tests/2_domain/createReportQueryLoadExecutor.unit.test.ts`:
+  - `with projection: RestPersistenceAction_read forwards attributes and loadNewInstancesInLocalCache targets partial segment`
+  - `without projection: load targets full segment only (non-regression of current #114 path)`
+- Optional parity smoke (if executor exercised against real LocalCache): assert index keys via `getReduxDeploymentsStateIndex(..., "partial"|"full")` on Redux and/or Zustand cache after `ensureLoaded`
 
 ### 3.3  Sufficiency short-circuit (segment-level)
 
@@ -254,9 +328,27 @@ Phase 6 — Acceptance                                             6.1
 - **full:** full segment present and `fresh` (and not `forceRefresh`);
 - **partial:** partial segment present, `fresh`, and projection matches hit rule (D5).
 
+**Expected validation:**
+- Extend `ReportQueryLoadService.unit.test.ts` and/or a new segment-sufficiency helper unit test:
+  - `ensureLoaded does not call executor when full segment is fresh`
+  - `ensureLoaded does not call executor when partial segment is fresh and projection equals (D5 sorted-set)`
+  - `ensureLoaded calls executor when partial projection mismatches (D5)`
+- Hook non-regression — `packages/miroir-standalone-app/tests/4_view/useEnsureReportQueryLoaded.unit.test.tsx`:
+  - existing remount / same-fingerprint cases still green
+  - add: `does not call ensureLoaded again when segment sufficiency already met` (if hook-visible)
+
 ### 3.4  Stale / mismatch / forceRefresh
 
 **Behavior:** Segment `stale`, projection mismatch, or `forceRefresh` ⇒ exactly **one** server query (single-flight), then segment replace/update to `fresh`. Fingerprint includes segment kind + projection.
+
+**Expected validation:**
+- `ReportQueryLoadService.unit.test.ts` (or executor + service integration unit):
+  - `ensureLoaded refetches once when segment freshness is stale`
+  - `ensureLoaded refetches once when forceRefresh is set`
+  - `concurrent ensureLoaded with same fingerprint share one executor call after stale/forceRefresh (single-flight)`
+  - after success: segment header `freshness: "fresh"` (and partial projection updated on replace)
+- Hook — `useEnsureReportQueryLoaded.unit.test.tsx`:
+  - `calls ensureLoaded again when forceRefresh / fingerprint includes stale remount trigger`
 
 **Gate 3:** 3.1–3.4 green; still `useEnsureReportQueryLoaded` + sync selectors; **no** instance-level coverage checks.
 
@@ -268,9 +360,25 @@ Phase 6 — Acceptance                                             6.1
 
 **Behavior:** Payload identified as partial (type tag / missing required full shape / sourced from partial segment) ⇒ `Action2Error` before REST.
 
+**Expected validation:**
+- Unit — DomainController (or mutation pre-check helper) under `packages/miroir-core/tests/…`:
+  - `createInstance with partial payload returns Action2Error before remote call`
+  - `updateInstance with partial payload returns Action2Error before remote call`
+  - assert remote store / REST not invoked (spy)
+- Non-regression — full-shape create/update still succeed (existing `LocalCache.unit.test.ts` create/update cases remain green)
+- Optional: LocalCache path never writes mutations into the partial index (mutations stay on full segment only)
+
 ### 4.2  Successful mutation vs partial segment
 
 **Behavior:** After successful create/update/delete on the full segment, partial segment for that entity is marked **`stale`** (D7) or dropped — test asserts it is not left silently `fresh` with outdated rows.
+
+**Expected validation:**
+- Extend `LocalCache.segments.unit.test.ts` (Redux **and** Zustand parity):
+  - `after createInstance on full segment, sibling partial segment is stale (or absent)`
+  - `after updateInstance on full segment, sibling partial segment is stale (or absent)`
+  - `after deleteInstance on full segment, sibling partial segment is stale (or absent)`
+  - assert: when stale-and-kept, instances still readable; when dropped, partial index undefined
+- If invalidation lives in DomainController after successful remote mutation (not only LocalCache), add a DomainController unit that stubs local cache and asserts `setLocalCacheSegmentFreshness(..., "stale")` (or equivalent) is invoked
 
 **Gate 4:** 4.1–4.2 green.
 
@@ -340,4 +448,4 @@ RIGHT:  1.1 RED→GREEN → segments → routing/#114 → mutations → tracer
 1. Phase 5 tracer confirmation (Blob without `contents`?).
 2. Refresh seeding of stale partial segment (default: absent until report).
 
-**Next coding slice:** **Phase 2 — local cache segments**.
+**Next coding slice:** **Phase 3 — routing + #114 report loader → segment**.

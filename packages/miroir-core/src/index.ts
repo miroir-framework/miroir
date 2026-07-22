@@ -820,6 +820,22 @@ export {
 } from "./1_core/instanceProjection.js";
 export type { InstanceProjectionAttributes } from "./1_core/instanceProjection.js";
 export {
+  LOCAL_CACHE_PARTIAL_SEGMENT_SUFFIX,
+  buildLocalCacheSegmentHeader,
+  canonicalizeProjection,
+  isPartialLocalCacheIndex,
+  projectionsEqual,
+  resolveCacheSegmentKind,
+  resolveLoadCacheSegment,
+  stripLocalCacheSegmentSuffix,
+} from "./1_core/localCacheSegment.js";
+export type {
+  CacheFreshness,
+  CacheSegmentKind,
+  LocalCacheLoadSegmentHint,
+  LocalCacheSegmentHeader,
+} from "./1_core/localCacheSegment.js";
+export {
   formatRelativePath,
   formatRelativePaths,
   listSelfApplicationUuidPaths,
@@ -937,7 +953,9 @@ export {
 export {
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
-  getLocalCacheIndexEntityUuid, getReduxDeploymentsStateIndex
+  getLocalCacheIndexEntityUuid,
+  getLocalCacheIndexSegmentKind,
+  getReduxDeploymentsStateIndex,
 } from "./2_domain/ReduxDeploymentsState.js";
 export {
   createReduxDeploymentsStateSelectorMap,

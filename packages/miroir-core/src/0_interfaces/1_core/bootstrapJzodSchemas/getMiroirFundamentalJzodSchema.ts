@@ -1181,6 +1181,34 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
+            // #214 Option C′ — which local-cache segment this collection targets
+            cacheSegment: {
+              type: "enum",
+              optional: true,
+              definition: ["full", "partial"],
+              tag: {
+                value: {
+                  id: 3,
+                  defaultLabel: "Cache Segment",
+                  editable: false,
+                  canBeTemplate: true,
+                },
+              },
+            },
+            // #214 — projection allow-list when writing/replacing the partial segment
+            attributes: {
+              type: "array",
+              optional: true,
+              definition: { type: "string" },
+              tag: {
+                value: {
+                  id: 4,
+                  defaultLabel: "Attributes Projection",
+                  editable: false,
+                  canBeTemplate: true,
+                },
+              },
+            },
           },
         },
         conceptLevel: entityDefinitionRoot.definition.conceptLevel,

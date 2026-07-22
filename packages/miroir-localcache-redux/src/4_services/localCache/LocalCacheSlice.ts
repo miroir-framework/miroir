@@ -25,14 +25,20 @@ import {
   ReduxDeploymentsState,
   TransformerFailure,
   Uuid,
+  buildLocalCacheSegmentHeader,
   getEntityPrimaryKeyAttribute,
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
   getReduxDeploymentsStateIndex,
+  isPartialLocalCacheIndex,
   resolveInstanceParentUuid,
+  resolveLoadCacheSegment,
   serializeCompositeKeyValue,
-  type ApplicationDeploymentMap
+  type ApplicationDeploymentMap,
+  type CacheFreshness,
+  type CacheSegmentKind,
+  type LocalCacheSegmentHeader,
 } from "miroir-core";
 import { entityDefinitionEntityDefinition, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 
@@ -97,7 +103,10 @@ export function getLocalCacheKeysDeploymentSectionEntitiesList(
 ): Uuid[] {
   const deploymentKeys = getLocalCacheKeysForDeploymentUuid(localCacheKeys, deploymentUuid);
   const sectionKeys = getLocalCacheKeysForDeploymentSection(deploymentKeys, section);
-  return sectionKeys.map((k) => getLocalCacheIndexEntityUuid(k));
+  // Domain / entity listings use the full segment only (#214).
+  return sectionKeys
+    .filter((k) => !isPartialLocalCacheIndex(k))
+    .map((k) => getLocalCacheIndexEntityUuid(k));
 }
 
 //#########################################################################################
@@ -115,6 +124,7 @@ export function localCacheStateToDomainState(localCache:LocalCacheSliceState):Do
             sections.map(
               section=> {
                 const sectionLocalCacheKeys = getLocalCacheKeysForDeploymentSection(deploymentLocalCacheKeys,section)
+                  .filter((k) => !isPartialLocalCacheIndex(k));
                 return [
                   section,
                   Object.fromEntries(
@@ -150,6 +160,7 @@ export function selectDomainStateFromlocalCacheEntityZone(localCacheEntityZone:R
             sections.map(
               section=> {
                 const sectionLocalCacheKeys: string[] = getLocalCacheKeysForDeploymentSection(deploymentLocalCacheKeys,section)
+                  .filter((k) => !isPartialLocalCacheIndex(k));
                 return [
                   section,
                   Object.fromEntries(
@@ -255,31 +266,23 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
   section: ApplicationSection,
   entityUuid: string,
   zone: LocalCacheSliceStateZone,
-  state: LocalCacheSliceState
+  state: LocalCacheSliceState,
+  segment: CacheSegmentKind = "full"
 ) {
   // TODO: refactor so as to avoid side effects!
-  // log.info(
-  //   "initializeLocalCacheSliceStateWithEntityAdapter called for deploymentUuid",
-  //   deploymentUuid,
-  //   "section",
-  //   section,
-  //   "entityUuid",
-  //   entityUuid,
-  //   "zone",
-  //   zone,
-  //   // "state",
-  //   // state
-  // );
-  const entityInstancesLocationIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid);
-  // log.info(
-  //   "initializeLocalCacheSliceStateWithEntityAdapter got entityInstancesLocationIndex",
-  //   entityInstancesLocationIndex
-  // );
-  const currentAdapter = getOrCreateEntityAdapter(entityInstancesLocationIndex);
+  // Storage index may be the partial sibling; PK adapters stay registered on the full index.
+  const entityInstancesLocationIndex = getReduxDeploymentsStateIndex(
+    deploymentUuid,
+    section,
+    entityUuid,
+    segment
+  );
+  const adapterIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid, "full");
+  const currentAdapter = getOrCreateEntityAdapter(adapterIndex);
   if (!(state as any)[zone][entityInstancesLocationIndex]) {
     (state as any)[zone][entityInstancesLocationIndex] = currentAdapter.getInitialState();
   }
-  return currentAdapter;
+  return { adapter: currentAdapter, entityInstancesLocationIndex };
 }
 
 //#########################################################################################
@@ -294,6 +297,37 @@ function initializeLocalCacheSliceStateWithEntityAdapter(
 //   }
 //   return true;
 // }
+
+// ################################################################################################
+function applyEntityInstancesToZone(
+  deploymentUuid: string,
+  section: ApplicationSection,
+  entityUuid: string,
+  zone: LocalCacheSliceStateZone,
+  state: LocalCacheSliceState,
+  segment: CacheSegmentKind,
+  segmentHeader: LocalCacheSegmentHeader,
+  serializableInstances: EntityInstance[]
+): void {
+  const { adapter, entityInstancesLocationIndex } =
+    initializeLocalCacheSliceStateWithEntityAdapter(
+      deploymentUuid,
+      section,
+      entityUuid,
+      zone,
+      state,
+      segment
+    );
+  const next = adapter.setAll(
+    (state as any)[zone][entityInstancesLocationIndex],
+    serializableInstances
+  );
+  // EntityAdapter.setAll drops custom fields — re-attach segment header (#214).
+  (state as any)[zone][entityInstancesLocationIndex] = {
+    ...next,
+    segment: segmentHeader,
+  };
+}
 
 // ################################################################################################
 function loadNewEntityInstancesInLocalCache(
@@ -319,27 +353,25 @@ function loadNewEntityInstancesInLocalCache(
       registerEntityAdapterFromDefinition(deploymentUuid, section, entityDefinition);
     }
   }
-  const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(deploymentUuid, section, instanceCollection.parentUuid);
+  const { kind: segment, projection } = resolveLoadCacheSegment(instanceCollection);
+  const segmentHeader = buildLocalCacheSegmentHeader(segment, "fresh", projection);
+  const instanceCollectionEntityIndex = getReduxDeploymentsStateIndex(
+    deploymentUuid,
+    section,
+    instanceCollection.parentUuid,
+    segment
+  );
   log.info(
     "loadNewEntityInstancesInLocalCache for deployment",
     deploymentUuid,
     "section",
     section,
+    "segment",
+    segment,
     "instanceCollection",
     instanceCollection,
     "instanceCollectionEntityIndex",
-    instanceCollectionEntityIndex,
-    // "current state for this entity instances:",
-    // JSON.stringify((state as any).current[instanceCollectionEntityIndex])
-    // "entity",
-    // entity ? (entity as any)["name"] : "entity not found for deployment"
-  );
-  const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
-    deploymentUuid,
-    section,
-    instanceCollection.parentUuid,
-    "loading",
-    state
+    instanceCollectionEntityIndex
   );
 
   // gets rid of most warnings: "A non-serializable value was detected in the state"
@@ -354,32 +386,74 @@ function loadNewEntityInstancesInLocalCache(
       : i
   );
 
-  // log.info(
-  //   "loadNewEntityInstancesInLocalCache loading instances",
-  //   deploymentUuid,
-  //   section,
-  //   JSON.stringify(serializableInstances[0])
-  // );
-
-  (state as any).loading[instanceCollectionEntityIndex] = sliceEntityAdapter.setAll(
-    (state as any).loading[instanceCollectionEntityIndex],
+  applyEntityInstancesToZone(
+    deploymentUuid,
+    section,
+    instanceCollection.parentUuid,
+    "loading",
+    state,
+    segment,
+    segmentHeader,
     serializableInstances
   );
   // Also mirror into current so report-triggered fills (no full-deployment
   // rollback) are visible to sync selectors. Full refresh still finishes with
   // rollback, which replaces current from loading.
-  const currentAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
+  applyEntityInstancesToZone(
     deploymentUuid,
     section,
     instanceCollection.parentUuid,
     "current",
-    state
-  );
-  (state as any).current[instanceCollectionEntityIndex] = currentAdapter.setAll(
-    (state as any).current[instanceCollectionEntityIndex],
+    state,
+    segment,
+    segmentHeader,
     serializableInstances
   );
-  // log.info("loadNewInstancesInLocalCache returned state", JSON.stringify(state))
+}
+
+// ################################################################################################
+/** #214 Phase 2.4 — mark segment freshness without deleting instances. */
+export function setLocalCacheSegmentFreshness(
+  state: LocalCacheSliceState,
+  deploymentUuid: string,
+  section: ApplicationSection,
+  entityUuid: string,
+  segment: CacheSegmentKind,
+  freshness: CacheFreshness
+): void {
+  const index = getReduxDeploymentsStateIndex(deploymentUuid, section, entityUuid, segment);
+  const existing = (state as any).current?.[index];
+  if (!existing) {
+    throw new Error(
+      `setLocalCacheSegmentFreshness: no segment at ${index}`
+    );
+  }
+  const header: LocalCacheSegmentHeader =
+    existing.segment ??
+    buildLocalCacheSegmentHeader(
+      segment,
+      freshness,
+      segment === "partial" ? existing.segment?.projection : undefined
+    );
+  if (segment === "partial" && (!header.projection || header.projection.length === 0)) {
+    throw new Error(
+      `setLocalCacheSegmentFreshness: partial segment at ${index} has no projection`
+    );
+  }
+  (state as any).current[index] = {
+    ...existing,
+    segment: { ...header, freshness },
+  };
+  if ((state as any).loading?.[index]) {
+    const loadingExisting = (state as any).loading[index];
+    (state as any).loading[index] = {
+      ...loadingExisting,
+      segment: {
+        ...(loadingExisting.segment ?? header),
+        freshness,
+      },
+    };
+  }
 }
 
 //#########################################################################################
@@ -451,7 +525,7 @@ function handleInstanceAction(
           //   );
           // }
 
-          const sliceEntityAdapter: EntityAdapter<EntityInstance, string> =
+          const { adapter: sliceEntityAdapter } =
             initializeLocalCacheSliceStateWithEntityAdapter(
               deploymentUuid,
               instanceAction.payload.applicationSection,
@@ -537,7 +611,7 @@ function handleInstanceAction(
             //   instanceCollectionEntityIndex
             // );
 
-            const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
+            const { adapter: sliceEntityAdapter } = initializeLocalCacheSliceStateWithEntityAdapter(
               deploymentUuid,
               instanceAction.payload.applicationSection,
               resolvedParentUuid,
@@ -589,7 +663,7 @@ function handleInstanceAction(
             instanceAction.payload.applicationSection,
             resolvedParentUuid
           );
-          const sliceEntityAdapter = initializeLocalCacheSliceStateWithEntityAdapter(
+          const { adapter: sliceEntityAdapter } = initializeLocalCacheSliceStateWithEntityAdapter(
             deploymentUuid,
             instanceAction.payload.applicationSection,
             resolvedParentUuid,
