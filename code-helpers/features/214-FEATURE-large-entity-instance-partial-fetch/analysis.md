@@ -1,9 +1,10 @@
 # 214 - Large entity instances: partial fetch, partial objects, cache evolution
 
 Related issue: https://github.com/miroir-framework/miroir/issues/214  
-Follow-up: #208
+Follow-up: #208 · synergy with [#114](https://github.com/miroir-framework/miroir/issues/114)  
+TDD plan: [tdd-implementation-plan.md](./tdd-implementation-plan.md)
 
-Status: analysis only (no implementation in this document).
+Status: analysis + TDD plan (Option C′ favored incremental path; Option B remains long-term target).
 
 ---
 
@@ -21,7 +22,9 @@ The terms below are used precisely throughout this document.
 | **Partial object** | An entity instance carrying only a declared subset of its attributes (a *projection*). Immutable; cannot be used as a create/update payload. |
 | **Projection** | An explicit allow-list of attribute names requested for a fetch. |
 | **Partial query** | A query whose extractor carries a projection constraint; its result set consists of partial objects. |
-| **Completeness metadata** | Per-instance metadata in the local cache recording whether an entry is `full` or `partial`, and in the partial case which attributes are present. |
+| **Completeness metadata** | Per-instance metadata in the local cache recording whether an entry is `full` or `partial`, and in the partial case which attributes are present (`coveredFields`). |
+| **Freshness metadata** | Per-instance metadata recording whether an entry is `fresh` or `stale`. `stale` means UI hooks may still read it, but the next report/`ensureLoaded` cycle is expected to query the server. |
+| **Option C′** | Projected fetch on the wire **plus** writing partial objects into the **canonical** local cache with completeness + freshness metadata, remount-filled via the #114 report loader. Not pure Option C. |
 
 ---
 
@@ -72,12 +75,16 @@ Impact: every caller currently receives full entity instances from the server.
 
 Impact: over-fetch from the persistence store is systemic across all backends.
 
-## 2.4 Server load path pushes whole entity collections into the local cache
+## 2.4 Refresh / report load path (updated by #114)
 
-- `DomainController.loadConfigurationFromPersistenceStore` fetches entity collections from the server and pushes all into the local cache via `loadNewInstancesInLocalCache`:
-  - `packages/miroir-core/src/3_controllers/DomainController.ts` (`L350+`, `L520-L583`)
+- Historically, `DomainController` refresh fetched whole entity collections and pushed them via `loadNewInstancesInLocalCache` (stages ending in data stage-C).
+- **#114** introduced per-Entity `cache.cacheAllInstancesOnRefresh`:
+  - `true` / absent → stage-C still loads all data instances for that Entity (full objects).
+  - `false` → **omit** stage-C persistence read for that Entity (model stages A/B still load).
+  - Report-triggered fill: `ReportQueryLoadService` + `useEnsureReportQueryLoaded` + `createReportQueryLoadExecutor` write into the **canonical** local cache; selectors remain synchronous.
+  - Tracer: Miroir Blob with `cacheAllInstancesOnRefresh: false`.
 
-Impact: startup/refresh path is explicitly "entity-wide full load" into the local cache.
+Impact: refresh is no longer uniformly “entity-wide full load”. Report UI still **requires** local-cache writes for selectors to see data. Any #214 design that refuses to write projected results into that cache collides with this architecture.
 
 ## 2.5 Local cache assumes one completeness level per instance value
 
@@ -150,7 +157,7 @@ When a query on Entity A is executed against the local cache:
 
 Implementation implication: the sufficiency check requires a two-step lookup (canonical slot first, then partial-views slot), plus a projection-coverage comparison on each cache hit.
 
-## Option B - Unified canonical local cache with completeness metadata (recommended)
+## Option B - Unified canonical local cache with completeness metadata (long-term target)
 
 Summary:
 - Keep one canonical instance map per entity key in the local cache.
@@ -201,50 +208,144 @@ Summary:
 
 Pros:
 - Very low local cache-model complexity.
-- Minimal impact on existing local cache structures.
+- Minimal impact on existing local cache *structures*.
 - Strong separation of responsibilities (local cache = full objects only; projection = a read-optimisation concern of the query engine).
 
 Cons:
-- Repeated queries likely re-fetch the same projected data from the persistence store on every render cycle.
+- Repeated queries re-fetch the same projected data unless some other client store appears.
 - Limited benefit for UI flows that rely on local-cache-driven re-use.
 - Contradicts the issue intent of partial objects living in application space with lifecycle.
+- **After #114: architectural collision** — Reports and related UI are fed by synchronous selectors over the local cache; `ensureLoaded` exists precisely to fill that cache. Ephemeral-only results force a second async data path (or render-time fetch), undoing #114’s “render never dispatches / single-flight ensure” contract. The apparent “low cache complexity” is paid back as **hook/selector complexity** across Reports and any consumer that currently assumes cache-backed sync reads.
 
 Impact assessment:
-- Functional risk: low.
-- Implementation effort: low-medium (only projection plumbing to the server and persistence stores; no local cache changes).
-- Performance gain: medium on network (fewer bytes from the persistence store), low on client re-use.
-- Backward compatibility: very high.
+- Functional risk: **high for UI architecture** (not for store backends alone).
+- Implementation effort: low-medium for projection plumbing; **high** if UI must be re-plumbed around ephemeral bags.
+- Performance gain: medium on network; low on client re-use; **negative** if remount storms reappear.
+- Backward compatibility: high for cache maps; **low** for #114 Report path.
+
+### Why pure Option C is not worth it (post-#114)
+
+| Hoped benefit of pure C | Post-#114 reality |
+|---|---|
+| Skip local-cache evolution | True, but then Reports cannot consume projected data without a parallel channel |
+| Network savings | Still available under C′ / B without abandoning the cache |
+| Simpler mental model | False once UI needs both “cache for full” and “ephemeral for partial” |
+| Positive points vs effort | **Insufficient** — pay projection work *and* fracture the selector architecture |
+
+**Verdict:** reject pure Option C as the delivery vehicle for #214. Keep its *network* idea; drop its *never write to cache* rule.
+
+## Option C′ - Projected fetch + stale/partial entries in the canonical local cache (favored incremental path)
+
+Summary:
+- Projection on the wire (Option C’s network win).
+- Write projected results into the **same** canonical local-cache slot as full instances, with:
+  - `completeness: full | partial` + `coveredFields` when partial
+  - `freshness: fresh | stale`
+- UI hooks may render stale/partial data at will after refresh (or after a prior report fill).
+- **Report mount** (and the existing #114 `ReportQueryLoadService.ensureLoaded`) triggers a server query when the entry is missing, incomplete for the requested projection, `stale`, or `forceRefresh`.
+- Mutations still require full objects (same safety as Option B).
+
+This is a **subset / first slice of Option B**: entry-level completeness + freshness + #114 remount load, without yet requiring full scope-level completeness for arbitrary filter/order/paging (that remains Option B’s later phase).
+
+Pros:
+- Preserves #114 invariants (sync selectors, effect-driven load, single-flight).
+- Delivers #214 partial objects in application space with lifecycle.
+- Network savings without dual caches (avoids Option A).
+- Natural upgrade path to full Option B (add scope markers later).
+
+Cons:****
+- Still requires local-cache meta (not zero cache change).
+- Sufficiency logic must understand projection coverage + freshness (shared with B).
+- Refresh may still leave large Entities empty until report mount (#114 lazy) — seeding “stale partial headers” on refresh is optional and deferred.
+
+Impact assessment:
+- Functional risk: medium-low (central meta + reuse of proven loader).
+- Implementation effort: medium (projection + meta + loader extension; not full B scope markers).
+- Performance gain: high on network for large attributes; good remount re-use when `fresh` + covering fields.
+- Backward compatibility: medium (internal meta; default without projection stays full/fresh).
+
+### Sufficiency check for Option C′ (entry-level, report path)
+
+When `ensureLoaded` runs for a report query with optional projection:
+
+1. If no local entry (and lazy-on-refresh Entity) → fetch with projection → write `partial`+`fresh` (or `full` if no projection).
+2. If entry `full` and `fresh` → short-circuit (no network).
+3. If entry `partial` and `fresh` and `coveredFields ⊇ requested` → short-circuit.
+4. If entry `stale` or coverage insufficient or `forceRefresh` → one server query (single-flight) → merge/upgrade meta.
+
+Filter/order/paging **scope** completeness remains out of C′ gate (see Option B § sufficiency #4); report fingerprints already limit remount identity as in #114.
+
+---
+
+## 4bis. Synergy with #114 and #208 (architecture context larger than one TDD slice)
+
+### #114 — cache usage regulation by Entity
+
+| Concern | #114 answer | #214 / C′ extension |
+|---|---|---|
+| Who loads data for lazy Entities? | Report `ensureLoaded` | Same; request may carry `projection` |
+| Where do results live? | Canonical local cache | Same; entries may be partial/stale |
+| Sync UI? | Selectors over cache | Unchanged; meta-aware later |
+| Refresh stage-C skip | `cacheAllInstancesOnRefresh: false` | Orthogonal to projection; may later seed stale partials |
+
+Documents: `code-helpers/features/114-FEATURE- enable of cache usage regulation policy by Entity/{analysis.md,tdd-implementation-plan.md}`.
+
+### #208 — cardinality / payload / freshness axes
+
+| Axis | Primary owner | Notes |
+|---|---|---|
+| Cardinality (# instances) | #114 (all-or-none) + later windows | Projection alone does not shrink row count |
+| Payload size (bytes/instance) | **#214** | Attribute projection |
+| Freshness | #208 policy + **C′ `stale`** + #114 remount | `neverTrustCache` ≈ always treat as stale / forceRefresh |
+
+Do not merge “lazy on refresh” with “always stale”: a lazy Entity can still hold a `fresh` partial after report fill until invalidated.
+
+### Larger concerns (tracked here; not all in first TDD gates)
+
+1. **Scope completeness** (filter/order/paging membership) — Option B; deferred past C′.
+2. **Refresh seeding of stale partial headers** vs absent-until-report — product choice; default keep #114 absent for Phase 1–5.
+3. **Backend-native projection** (Postgres `SELECT cols`) vs filter-after-full-read (filesystem) — performance quality, same client contract.
+4. Dual Redux/Zustand meta parity — mandatory for any cache meta work.
+
+These concerns are why analysis recommends C′ as the **incremental vehicle**, with Option B as the **end-state**, rather than treating pure C as a cheap shortcut.
 
 ---
 
 ## 5. Recommendation
 
-Recommend Option B as target architecture, delivered incrementally.
+**Long-term target:** Option B (unified canonical cache + completeness, including scope markers).  
+**Near-term delivery vehicle:** **Option C′** (projection + entry-level partial/stale meta + #114 remount `ensureLoaded`).  
+**Reject:** pure Option C (ephemeral-only) after #114.  
+**Avoid as primary:** Option A (dual slots), unless a temporary spike proves otherwise.
 
-Why Option B:
+Why this split:
 
-1. Best matches #214's core question: explicit relationship between partial and full objects for same entity key.
-2. Avoids long-term duplication/consistency issues of dual caches (Option A).
-3. Preserves cache reuse benefits unlike ephemeral-only model (Option C).
-4. Aligns with #208 direction (consistency/provenance-aware caching).
+1. Option B still best matches #214’s full question (partial/full identity + future scope coverage) and #208 provenance direction.
+2. Pure Option C’s “save cache work” is illusory once Reports must stay selector-driven.
+3. C′ reuses #114’s loader/hook architecture, so implementation risk stays in projection + meta, not UI re-architecture.
+4. C′ is a strict subset of B’s entry-level story; scope markers can land in a follow-up without rewriting the cache slot again.
 
-Pragmatic rollout suggestion:
+Pragmatic rollout (see [tdd-implementation-plan.md](./tdd-implementation-plan.md)):
 
-- Phase 1: add projection contract to query schema and `InstanceAction`; add projection support to the server REST endpoint and all persistence store backends; introduce `PartialEntityInstance` TypeScript type.
-- Phase 2: add completeness metadata to local cache entries (Redux + Zustand `LocalCacheSlice`); implement the two-level sufficiency check (field coverage + scope coverage).
-- Phase 3: enforce mutation guardrails — `createInstance` / `updateInstance` reject partial payloads at the DomainController level before forwarding to the server.
-- Phase 4: add selector/query behaviour for mixed completeness states, full-upgrade paths, and scope-level coverage markers.
+- Phase 1: projection contract on extractors / REST / at least one backend.
+- Phase 2: local-cache completeness + freshness meta (Redux + Zustand).
+- Phase 3: extend #114 report executor/`ensureLoaded` for projection + stale remount.
+- Phase 4: mutation rejects partial.
+- Phase 5: tracer E2E (e.g. Blob list without `contents`).
+- Later (Option B remainder): scope-level completeness for filter/order/paging.
 
 ---
 
-## 6. Proposed invariants (for Option B)
+## 6. Proposed invariants (for Option B / C′)
 
 1. Identity invariant: one canonical local cache entry per `(deployment, section, entity, primaryKey)`.
-2. Coverage invariant: each canonical local cache entry carries completeness metadata.
-3. Upgrade invariant: a full fetch from the server always supersedes partial coverage in the local cache.
-4. Merge invariant: a projected fetch merges only the projected fields into the local cache entry; un-fetched fields remain unchanged.
-5. Safety invariant: mutation payloads sent to the server must be full objects (or satisfy an explicit required-coverage policy); the DomainController enforces this before the REST call.
-6. Immutability invariant: partial query results exposed to consumers (UI components, selectors) are read-only snapshots.
+2. Coverage invariant: each canonical local cache entry carries completeness metadata (`full` | `partial` + `coveredFields` when partial).
+3. Freshness invariant (C′): each entry carries `fresh` | `stale`; `stale` does not delete data and does not by itself forbid UI read; it obliges the next `ensureLoaded` (when consulted) to hit the server.
+4. Upgrade invariant: a full fetch from the server always supersedes partial coverage in the local cache and sets `fresh`.
+5. Merge invariant: a projected fetch merges only the projected fields into the local cache entry; un-fetched fields remain unchanged; coverage expands.
+6. Safety invariant: mutation payloads sent to the server must be full objects (or satisfy an explicit required-coverage policy); the DomainController enforces this before the REST call.
+7. Immutability invariant: partial query results exposed to consumers (UI components, selectors) are read-only snapshots.
+8. Loader invariant (#114): Report render never dispatches network I/O; only `ensureLoaded` / effects do; projected fills use the same single-flight loader.
 
 ---
 
@@ -272,25 +373,31 @@ Pragmatic rollout suggestion:
 Integration-first coverage should include:
 
 1. Projection query to the server returns only the requested fields (not the full object).
-2. Partial result stored in the local cache with correct completeness metadata.
-3. Subsequent full fetch from the server upgrades the same local cache entry to `full`.
+2. Partial result stored in the local cache with correct completeness **and** freshness metadata.
+3. Subsequent full fetch from the server upgrades the same local cache entry to `full` + `fresh`.
 4. Mutation (`createInstance` / `updateInstance`) with a partial object payload is rejected by the DomainController with an explicit error before reaching the server.
 5. Local cache coherence across create/update/delete after partial/full coexistence.
-6. Persistence store parity: filesystem, indexedDb, postgres all satisfy projection contracts.
+6. Persistence store parity: filesystem, indexedDb, postgres all satisfy projection contracts (native or filter-after-read).
+7. **#114 synergy:** `ensureLoaded` projected fill; remount short-circuit when `fresh` + covering fields; exactly one refetch when `stale` / `forceRefresh`.
+8. Non-regression: eager Entities and Blob lazy path without projection still behave as today.
 
 ---
 
-## 9. Open decisions for implementation PRD
+## 9. Open decisions for implementation (Gate 0)
 
-1. Projection syntax: allow-list only (`attributes: string[]`) vs richer field paths.
-2. Required coverage for `updateInstance`: full-only or "fields-being-updated must be present".
+1. Projection syntax: allow-list only (`attributes: string[]`) vs richer field paths. **Default for C′:** allow-list.
+2. Required coverage for `updateInstance`: full-only or "fields-being-updated must be present". **Default:** full-only.
 3. Metadata location: inline with entities vs sidecar map keyed by same index.
-4. Policy defaults for entities without explicit cache/projection directives.
+4. Policy defaults for entities without explicit cache/projection directives. **Default:** full fetch, `completeness: full`, `freshness: fresh`.
 5. Exact immutability mechanism (frozen objects vs readonly typing + discipline).
+6. Confirm delivery vehicle **Option C′** (vs pure C / big-bang B).
+7. Tracer Entity for Phase 5 (Blob without `contents` vs other).
+8. Whether refresh may seed **stale partial headers**, or keep #114 absent-until-report for first slices.
 
 ---
 
 ## 10. Short conclusion
 
-The current stack is full-object centric end-to-end (schema, API, persistence store, local cache).  
-Option B (unified local cache + completeness metadata) is the strongest fit for #214 goals, with Option A as a possible tactical fallback if immediate scope must be reduced.
+The stack remains largely full-object centric (schema, API, persistence store, local cache), but **#114 already changed the load topology**: lazy Entities skip refresh stage-C and rely on report `ensureLoaded` writing into the canonical local cache for sync selectors.
+
+**Pure Option C** (project on the wire, never write partials) does not buy enough positive points after that change — it would reopen a parallel UI data path. **Option C′** keeps projection, stores partials with `stale`/`fresh` + completeness in the canonical cache, and remount-refreshes via #114. **Option B** remains the long-term target once scope-level completeness is needed.
