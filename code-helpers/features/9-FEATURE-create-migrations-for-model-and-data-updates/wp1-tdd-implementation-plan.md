@@ -76,7 +76,7 @@ Legend:
 
 ---
 
-## Phase 0 — Lock contracts and fixtures
+## Phase 0 — Lock contracts and fixtures  ✅ DONE
 
 ### 0.1 RED
 Add a focused failing test/spec file (core) asserting expected trace policy matrix:
@@ -85,165 +85,486 @@ Add a focused failing test/spec file (core) asserting expected trace policy matr
 - Miroir + model section -> trace
 - Miroir + data section -> trace
 
+Test file: `packages/miroir-core/tests/2_domain/evolutionTracePolicy.unit.test.ts`
+
+#### Validation (RED)
+```
+npm run testByFile -w miroir-core -- evolutionTracePolicy
+```
+Expected: `1 failed` (module not found — `src/2_domain/evolutionTracePolicy.ts` absent).
+
 ### 0.1 GREEN
-Add pure helper (e.g. `shouldTraceEvolutionEvent(...)`) and unit tests.
+Add pure helper (`shouldTraceEvolutionEvent(...)`) in `src/2_domain/evolutionTracePolicy.ts`.
+
+#### Validation (GREEN)
+```
+npm run testByFile -w miroir-core -- evolutionTracePolicy
+```
+Expected: `1 passed` — **6/6 tests pass**.
+
+Assertions covered:
+| Input | Expected return |
+|---|---|
+| `(LIBRARY_UUID, "model")` | `true` |
+| `(LIBRARY_UUID, "data")` | `false` |
+| `(MIROIR_UUID, "model")` | `true` |
+| `(MIROIR_UUID, "data")` | `true` |
+| `(LIBRARY_UUID, "metaModel")` | `false` |
+| `(MIROIR_UUID, "metaModel")` | `false` |
 
 ### NON-REGRESSION
-- Existing model/data CRUD suites still pass.
+```
+npm run testByFile -w miroir-core
+```
+Expected: pre-existing pass/fail counts unchanged (`5 failed | 74 passed` baseline).
 
 ---
 
 ## Phase 1 — Introduce WP1 entities and generated types
 
 ### 1.1 RED
-Failing tests validate schema presence and runtime validation for:
-- `ApplicationEvolutionTrace`
-- `ApplicationEvolutionTraceEvent`
+Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.schema.unit.test.ts`
+
+Tests validate:
+- Importing `ApplicationEvolutionTrace` and `ApplicationEvolutionTraceEvent` from the deployment package throws "not found" or the exports do not exist yet.
+- Zod parse of a minimal valid `ApplicationEvolutionTrace` instance fails (schema absent).
+- Zod parse of a minimal valid `ApplicationEvolutionTraceEvent` instance fails (schema absent).
+
+#### Validation (RED)
+```
+npm run testByFile -w miroir-core -- evolutionTrace.schema
+```
+Expected: `1 failed` (module or symbol absent).
 
 ### 1.1 GREEN
-Add entity + entityDefinition assets in `miroir-test-app_deployment-miroir`, regenerate core types (`devBuild` path as needed), export through model/bootstrap surfaces.
+- Add Entity JSON at `miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/<new-entity-uuid>.json` for both entities.
+- Add EntityDefinition JSON at `miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/<new-entitydef-uuid>.json` for both.
+- Export from `packages/miroir-test-app_deployment-miroir/index.ts`.
+- Add to meta-model assembly in `packages/miroir-test-app_deployment-miroir/src/Model.ts`.
+- Run `npm run devBuild -w miroir-core` to regenerate `miroirFundamentalType.ts`.
+
+#### Validation (GREEN)
+```bash
+# 1. Build succeeds
+npm run devBuild -w miroir-core
+
+# 2. Type check clean
+npx tsc --noEmit --skipLibCheck
+
+# 3. New tests pass
+npm run testByFile -w miroir-core -- evolutionTrace.schema
+```
+
+Expected per check:
+| Check | Expected |
+|---|---|
+| `devBuild` | exits 0, no errors |
+| `tsc --noEmit` | 0 type errors |
+| `evolutionTrace.schema` tests | `1 passed` — ≥ 4 tests pass |
+| `ApplicationEvolutionTrace` exported from deployment package | importable in test |
+| `ApplicationEvolutionTraceEvent` exported from deployment package | importable in test |
+| Zod parse of minimal valid `ApplicationEvolutionTrace` | `success: true` |
+| Zod parse of minimal valid `ApplicationEvolutionTraceEvent` | `success: true` |
+| Zod parse of instance missing required field `uuid` | `success: false` |
 
 ### NON-REGRESSION
-- `npm run devBuild -w miroir-core`
-- Existing schema/type tests remain green.
+```
+npm run testByFile -w miroir-core -- zodParseCheckMiroirTransformerDefinitions
+npm run testByFile -w miroir-core -- schemaForDeployment
+npm run testByFile -w miroir-core -- zodParseActions
+```
+Expected: all pass unchanged.
 
 ---
 
 ## Phase 2 — Persist raw trace events from action flow
 
 ### 2.1 RED
-Integration test (DomainController flow):
-- model action commit creates at least one `ApplicationEvolutionTraceEvent` for target entity/instance.
+Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.persist.unit.test.ts`
+
+Test: execute a representative model-evolution action (e.g. `createEntity`) in a unit-test DomainController harness; after the action, query `ApplicationEvolutionTraceEvent` instances — expect at least one event with:
+- `operationType` matching the action type
+- `targetEntityUuid` matching the acted-upon entity
+- `sequenceNumber >= 1`
+- `traceRootUuid` pointing to a valid `ApplicationEvolutionTrace`
+
+#### Validation (RED)
+```
+npm run testByFile -w miroir-core -- evolutionTrace.persist
+```
+Expected: `1 failed` (no trace event written yet).
 
 ### 2.1 GREEN
-Wire trace-event creation into commit/action handling path with append-only semantics and monotonic sequence per trace root.
+Wire trace-event creation into commit/action handling path.
+
+#### Validation (GREEN)
+```bash
+# Unit tests pass
+npm run testByFile -w miroir-core -- evolutionTrace.persist
+
+# Type-check clean
+npx tsc --noEmit --skipLibCheck
+```
+
+Expected per check:
+| Check | Expected |
+|---|---|
+| `evolutionTrace.persist` tests | `1 passed` — ≥ 3 tests pass |
+| After `createEntity` action | exactly 1 `ApplicationEvolutionTraceEvent` in store |
+| After `renameEntity` action | 1 new event with correct `operationType` |
+| After `dropEntity` action | 1 new event with correct `operationType` |
+| Sequence numbers | monotonically increasing within same trace root |
+| `traceRootUuid` | non-null, points to existing `ApplicationEvolutionTrace` |
+| `tsc --noEmit` | 0 type errors |
 
 ### NON-REGRESSION
-- existing model-action integration tests (`createEntity`, `renameEntity`, `alterEntityAttribute`, `dropEntity`) remain green.
+```
+npm run testByFile -w miroir-core -- modelUpdates
+```
+Expected: existing model-action tests unchanged.
 
 ---
 
 ## Phase 3 — Enforce section/app tracking policy
 
 ### 3.1 RED
-Integration tests:
-1. Non-Miroir app, data-section instance update -> **no** trace event.
-2. Non-Miroir app, model-section update -> trace event created.
-3. Miroir app, data-section update -> trace event created.
+Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.policy.unit.test.ts`
+
+Three parameterised scenarios (each independently verifiable):
+1. Non-Miroir app (Library), data-section update → **zero** `ApplicationEvolutionTraceEvent` written.
+2. Non-Miroir app (Library), model-section update → **one** `ApplicationEvolutionTraceEvent` written.
+3. Miroir app, data-section update → **one** `ApplicationEvolutionTraceEvent` written.
+
+#### Validation (RED)
+```
+npm run testByFile -w miroir-core -- evolutionTrace.policy
+```
+Expected: `1 failed` (policy not yet applied in producer path).
 
 ### 3.1 GREEN
-Apply policy helper in producer path; ensure no silent behavior drift.
+Apply `shouldTraceEvolutionEvent(...)` in the producer path; remove any unconditional writes.
+
+#### Validation (GREEN)
+```bash
+npm run testByFile -w miroir-core -- evolutionTrace.policy
+npm run testByFile -w miroir-core -- evolutionTrace.persist
+npx tsc --noEmit --skipLibCheck
+```
+
+Expected per check:
+| Check | Expected |
+|---|---|
+| `evolutionTrace.policy` tests | `1 passed` — 3/3 tests pass |
+| Scenario 1: Library + data update | 0 events in store |
+| Scenario 2: Library + model update | 1 event, `applicationSection = "model"` |
+| Scenario 3: Miroir + data update | 1 event, `applicationSection = "data"` |
+| `evolutionTrace.persist` tests | still pass (no regression from policy gate) |
+| `tsc --noEmit` | 0 type errors |
 
 ### NON-REGRESSION
-- Data CRUD tests for Library/Admin still pass.
+```
+npm run testByFile -w miroir-core -- cacheRefreshPolicy
+npm run testByFile -w miroir-core -- modelUpdates
+```
+Expected: all pass unchanged.
 
 ---
 
 ## Phase 4 — Add hybrid compaction model (read-side cursor)
 
 ### 4.1 RED
-Tests for history retrieval API/query:
-- `compactionLevel="raw"` returns low-level events
-- `compactionLevel="commit"` returns squashed commit blocks
-- `compactionLevel="version"` returns bird’s-eye blocks from version A to B
+Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.compaction.unit.test.ts`
+
+Setup: create 3+ raw events on the same trace root across 2 commits.
+
+Three assertions:
+1. `fetchEvolutionHistory({ compactionLevel: "raw" })` returns the individual events in order.
+2. `fetchEvolutionHistory({ compactionLevel: "commit" })` returns one block per commit (3 events → 2 blocks).
+3. `fetchEvolutionHistory({ compactionLevel: "version", fromVersion: "A", toVersion: "B" })` returns one summary block spanning the version range.
+
+#### Validation (RED)
+```
+npm run testByFile -w miroir-core -- evolutionTrace.compaction
+```
+Expected: `1 failed` (query/compaction API not yet implemented).
 
 ### 4.1 GREEN
-Implement read-model compaction transformer/query layer; keep raw storage unchanged.
+Implement read-model compaction in query/transformer layer; raw storage unchanged.
+
+#### Validation (GREEN)
+```bash
+npm run testByFile -w miroir-core -- evolutionTrace.compaction
+npm run testByFile -w miroir-core -- evolutionTrace.persist
+npx tsc --noEmit --skipLibCheck
+```
+
+Expected per check:
+| Check | Expected |
+|---|---|
+| `evolutionTrace.compaction` tests | `1 passed` — 3/3 tests pass |
+| `raw` cursor: 3 events in store | returns 3 items, each with `sequenceNumber`, `timestamp`, `operationType` |
+| `commit` cursor: events across 2 commits | returns 2 blocks, each with `commitId`, `eventCount` |
+| `version` cursor A→B | returns 1 summary block with `fromVersion`, `toVersion`, `totalEvents` |
+| Result ordering (all levels) | ascending by `sequenceNumber` / `timestamp` |
+| `evolutionTrace.persist` tests | still pass |
+| `tsc --noEmit` | 0 type errors |
 
 ### NON-REGRESSION
-- raw-history tests still pass unchanged.
+```
+npm run testByFile -w miroir-core -- queries
+npm run testByFile -w miroir-core -- resolveQueryTemplates
+```
+Expected: all pass unchanged.
 
 ---
 
 ## Phase 5 — Initial squashed baseline generation
 
 ### 5.1 RED
-Bootstrap test for an app with no prior trace history:
-- exactly one baseline squashed block is created
-- block is marked as initial baseline and linked to current version/head.
+Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.baseline.unit.test.ts`
+
+Test A — empty history:
+- call `generateEvolutionBaseline(deployment)` when no trace history exists
+- expect exactly 1 `ApplicationEvolutionTrace` root
+- expect exactly 1 `ApplicationEvolutionTraceEvent` with `operationType = "squashedBaseline"` and `compactionLevel = "version"`
+
+Test B — idempotence:
+- call `generateEvolutionBaseline(deployment)` twice
+- expect still exactly 1 baseline event (no duplicates)
+
+#### Validation (RED)
+```
+npm run testByFile -w miroir-core -- evolutionTrace.baseline
+```
+Expected: `1 failed` (generator not yet implemented).
 
 ### 5.1 GREEN
-Implement one-time baseline initializer for Miroir, Library, Admin, Postgres deployments.
+Implement `generateEvolutionBaseline(...)` and call it during deployment initialisation for all four known deployments (miroir, library, admin, postgres).
+
+#### Validation (GREEN)
+```bash
+# Unit tests
+npm run testByFile -w miroir-core -- evolutionTrace.baseline
+
+# Type check
+npx tsc --noEmit --skipLibCheck
+
+# Integration: baseline present after deployment initialisation
+npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration
+```
+
+Expected per check:
+| Check | Expected |
+|---|---|
+| `evolutionTrace.baseline` tests | `1 passed` — 2/2 tests pass |
+| Test A: baseline event count | exactly 1 event, `operationType = "squashedBaseline"` |
+| Test B: idempotence | calling twice → still 1 event |
+| Baseline `compactionLevel` | `"version"` |
+| Baseline `branchName` | `"master"` |
+| Integration: miroir deployment | 1 baseline `ApplicationEvolutionTrace` root in store |
+| Integration: library deployment | 1 baseline root in store |
+| `tsc --noEmit` | 0 type errors |
 
 ### NON-REGRESSION
-- repeated initialization is idempotent (no duplicate baseline block).
+```
+npm run testByFile -w miroir-core -- createDeploymentCompositeAction
+npm run testByFile -w miroir-core -- modelEnvironment
+```
+Expected: all pass unchanged.
 
 ---
 
 ## Phase 6 — #15-compatible definition-version resolution
 
 ### 6.1 RED
-Tests for resolution precedence:
-1. event carries `parentDefinitionVersionUuid` -> used
-2. missing on instance but present in action payload -> used
-3. missing both -> fallback via `ApplicationVersionCrossEntityDefinition`
-4. unresolved fallback path -> explicit unresolved marker + surfaced warning/error
+Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.defversion.unit.test.ts`
+
+Four focused unit tests for `resolveDefinitionVersionForTraceEvent(...)`:
+
+1. Instance carries `parentDefinitionVersionUuid` → returns `{ definitionVersionUuid: <that value>, resolution: "instanceParentDefinitionVersion" }`.
+2. Instance lacks it; action payload has `entityDefinitionUuid` → returns `{ definitionVersionUuid: <payload value>, resolution: "actionPayload" }`.
+3. Both absent; `ApplicationVersionCrossEntityDefinition` lookup returns a match → returns `{ definitionVersionUuid: <lookup value>, resolution: "applicationVersionCrossEntityDefinition" }`.
+4. All absent/lookup returns nothing → returns `{ definitionVersionUuid: undefined, resolution: "unresolved" }` and emits a warning (captured in test).
+
+#### Validation (RED)
+```
+npm run testByFile -w miroir-core -- evolutionTrace.defversion
+```
+Expected: `1 failed` (resolver not yet implemented).
 
 ### 6.1 GREEN
-Implement resolver module and use in trace-event writer.
+Implement `resolveDefinitionVersionForTraceEvent(...)` and use it in the trace-event writer.
+
+#### Validation (GREEN)
+```bash
+npm run testByFile -w miroir-core -- evolutionTrace.defversion
+npm run testByFile -w miroir-core -- evolutionTrace.persist
+npx tsc --noEmit --skipLibCheck
+```
+
+Expected per check:
+| Check | Expected |
+|---|---|
+| `evolutionTrace.defversion` tests | `1 passed` — 4/4 tests pass |
+| Path 1 (instanceParent) | `resolution = "instanceParentDefinitionVersion"` |
+| Path 2 (actionPayload) | `resolution = "actionPayload"` |
+| Path 3 (crossEntity lookup) | `resolution = "applicationVersionCrossEntityDefinition"` |
+| Path 4 (unresolved) | `resolution = "unresolved"`, `definitionVersionUuid = undefined` |
+| Path 4 warning | at least one `log.warn` / error entry captured, no silent drop |
+| Existing flows without `parentDefinitionVersionUuid` | resolve to path 2 or 3 (never crash) |
+| `evolutionTrace.persist` tests | still pass |
+| `tsc --noEmit` | 0 type errors |
 
 ### NON-REGRESSION
-- Existing flows without `parentDefinitionVersionUuid` do not crash and remain explicit.
+```
+npm run testByFile -w miroir-core -- modelUpdates
+npm run testByFile -w miroir-core -- schemaChangeKind
+```
+Expected: all pass unchanged.
 
 ---
 
 ## Phase 7 — Display surfaces (reports + menu wiring)
 
 ### 7.1 RED
-UI/integration tests verify:
-- `ApplicationEvolutionTraceList` report returns trace roots
-- `ApplicationEvolutionTraceHistory` report returns ordered events
-- menu links expose both reports
+Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.reports.unit.test.ts`
+
+Tests:
+1. Report asset `ApplicationEvolutionTraceList` is importable from deployment package.
+2. Report asset `ApplicationEvolutionTraceHistory` is importable from deployment package.
+3. Menu JSON at `dde4c883.../eaac459c....json` contains entries that reference both report UUIDs.
+
+#### Validation (RED)
+```
+npm run testByFile -w miroir-core -- evolutionTrace.reports
+```
+Expected: `1 failed` (assets absent).
 
 ### 7.1 GREEN
-Add report assets and menu items in Miroir deployment.
+- Add report JSON assets in `miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/`.
+- Update menu JSON to add entries referencing both reports.
+- Export from `packages/miroir-test-app_deployment-miroir/index.ts`.
+
+#### Validation (GREEN)
+```bash
+# Unit tests
+npm run testByFile -w miroir-core -- evolutionTrace.reports
+
+# Type check
+npx tsc --noEmit --skipLibCheck
+
+# Integration: reports appear in loaded Miroir runtime menu
+npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration
+```
+
+Expected per check:
+| Check | Expected |
+|---|---|
+| `evolutionTrace.reports` tests | `1 passed` — 3/3 tests pass |
+| `ApplicationEvolutionTraceList` report UUID | importable, non-null `uuid` field |
+| `ApplicationEvolutionTraceHistory` report UUID | importable, non-null `uuid` field |
+| Menu JSON | contains 2 new entries, each with valid `reportUuid` |
+| Integration: menu rendered | both menu items visible in loaded app |
+| `ApplicationEvolutionTraceList` report executed | returns ≥ 1 trace root (baseline) |
+| `ApplicationEvolutionTraceHistory` report executed | returns ordered events for that root |
+| `tsc --noEmit` | 0 type errors |
 
 ### NON-REGRESSION
-- Existing reports/menu entries still resolve.
+```
+npm run testByFile -w miroir-core -- menu
+npm run testByFile -w miroir-standalone-app -- menu
+```
+Expected: all pre-existing menu tests pass unchanged.
 
 ---
 
 ## Phase 8 — End-to-end WP1 tracer bullet
 
 ### 8.1 RED
-Single vertical scenario:
-1. start from app baseline
-2. execute representative model evolution actions
-3. commit
-4. fetch history with `raw`, `commit`, and `version` cursors
-5. verify ordering, compaction, and definition-version metadata.
+Add integration test suite `evolutionTraceWP1` in `packages/miroir-standalone-app/tests/`.
+
+Single vertical scenario covering the full WP1 observable behaviour:
+
+1. Start from a deployment with no prior trace (or wiped state).
+2. Verify baseline exists (1 squashed block, `branchName = "master"`).
+3. Execute `createEntity` model action (Library app).
+4. Verify 1 raw `ApplicationEvolutionTraceEvent` exists with correct `operationType`, `targetEntityUuid`, `applicationSection = "model"`.
+5. Execute `renameEntity` model action.
+6. Commit.
+7. Verify `compactionLevel = "commit"` returns 1 block for that commit containing both events.
+8. Verify `compactionLevel = "version"` returns a bird's-eye block spanning baseline → current.
+9. Execute a data-section update on Library app.
+10. Verify **no** new trace event (policy gate).
+11. Execute a data-section update on Miroir app.
+12. Verify 1 new trace event with `applicationSection = "data"`.
+13. Verify `definitionVersionResolution` field is present and non-`"unresolved"` on all events created in steps 4 and 5.
+
+#### Validation (RED)
+```
+npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration
+```
+Expected: suite fails (integration gaps still open at start of phase).
 
 ### 8.1 GREEN
-Fix remaining integration gaps only.
+Fix only the integration gaps identified by failing scenario steps. No new logic beyond what Phases 0–7 already introduced.
+
+#### Validation (GREEN)
+```bash
+# Full WP1 integration scenario
+npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration
+
+# All miroir-core unit tests
+npm run testByFile -w miroir-core
+
+# Final type check
+npx tsc --noEmit --skipLibCheck
+```
+
+Expected per check:
+| Check | Expected |
+|---|---|
+| WP1 integration suite | all 13 scenario steps pass |
+| Step 2: baseline | 1 trace root, 1 baseline event, `branchName = "master"` |
+| Step 4: raw event | 1 event, `operationType = "createEntity"`, `applicationSection = "model"` |
+| Step 7: commit compaction | 1 block, `eventCount = 2` |
+| Step 8: version compaction | 1 summary block, `fromVersion`, `toVersion` present |
+| Step 10: Library data update | `ApplicationEvolutionTraceEvent` count unchanged |
+| Step 12: Miroir data update | 1 new event, `applicationSection = "data"` |
+| Step 13: resolution field | `definitionVersionResolution ≠ "unresolved"` on all model events |
+| `testByFile -w miroir-core` | `5 failed \| 79+ passed` (pre-existing failures unchanged, new tests added) |
+| `tsc --noEmit` | 0 type errors |
 
 ### NON-REGRESSION
-- `npm run testMiroir -w miroir-core -- --suites <new-wp1-suite> --mode unit`
-- `npm run testMiroir -w miroir-standalone-app -- --suites <new-wp1-suite> --mode integration`
+```bash
+npm run testByFile -w miroir-core
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
+```
+Expected: all pre-existing pass/fail counts unchanged.
 
 ---
 
 ## Implementation checklist (phase-by-phase work items)
 
-### Phase 0 — Contracts & fixtures
-- Add `shouldTraceEvolutionEvent(...)` policy helper tests (**RED** first).
-- Implement the helper (**GREEN**) with the settled matrix:
-  - non-Miroir + model => trace
-  - non-Miroir + data => no trace
-  - Miroir + model => trace
-  - Miroir + data => trace
-- Add reusable fixtures for traceable and non-traceable actions.
+### Phase 0 — Contracts & fixtures ✅ DONE
+- [x] Add `shouldTraceEvolutionEvent(...)` policy helper tests (**RED** first).
+- [x] Implement the helper (**GREEN**).
+- [x] Verify: `npm run testByFile -w miroir-core -- evolutionTracePolicy` → **6/6 pass**.
+- [x] Verify: `npm run testByFile -w miroir-core` → same pass/fail counts as baseline.
 
-Target files:
-- `packages/miroir-core/src/2_domain/evolutionTracePolicy.ts` (new)
-- `packages/miroir-core/tests/` (new unit test file)
+Target files (done):
+- `packages/miroir-core/src/2_domain/evolutionTracePolicy.ts`
+- `packages/miroir-core/tests/2_domain/evolutionTracePolicy.unit.test.ts`
 
 ### Phase 1 — Add WP1 entities (model + types)
-- Create Entity JSON assets for `ApplicationEvolutionTrace` and `ApplicationEvolutionTraceEvent`.
-- Create matching EntityDefinition JSON assets.
-- Export new assets from the deployment package index.
-- Add both entities to the default Miroir meta-model assembly.
-- Regenerate core types via `devBuild` and verify new types exist.
-- Add schema validation tests for both entities.
+- [ ] Create Entity JSON assets for `ApplicationEvolutionTrace` and `ApplicationEvolutionTraceEvent`.
+- [ ] Create matching EntityDefinition JSON assets.
+- [ ] Export new assets from the deployment package index.
+- [ ] Add both entities to the default Miroir meta-model assembly.
+- [ ] Write schema validation test file (RED).
+- [ ] Run `npm run devBuild -w miroir-core` (regenerate types) (GREEN).
+- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.schema` → **≥ 4/4 pass**.
+- [ ] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
+- [ ] Verify NON-REGRESSION: `zodParseCheckMiroirTransformerDefinitions`, `schemaForDeployment` pass.
 
 Target files:
 - `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/*.json`
@@ -251,91 +572,108 @@ Target files:
 - `packages/miroir-test-app_deployment-miroir/index.ts`
 - `packages/miroir-test-app_deployment-miroir/src/Model.ts`
 - `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/*` (generated)
+- `packages/miroir-core/tests/2_domain/evolutionTrace.schema.unit.test.ts` (new)
 
 ### Phase 2 — Persist raw trace events in runtime flow
-- Add a failing integration test for a model-evolution commit creating trace event(s).
-- Add trace root creation/lookup logic.
-- Add append-only trace event writes with monotonic sequence numbers.
-- Store operation metadata (`operationType`, timestamp, actor/author if available).
+- [ ] Write test for trace-event creation (RED).
+- [ ] Add trace root creation/lookup logic (GREEN).
+- [ ] Add append-only trace event writes with monotonic sequence numbers.
+- [ ] Store `operationType`, `timestamp`, `traceRootUuid`.
+- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.persist` → **≥ 3/3 pass**.
+- [ ] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
+- [ ] Verify NON-REGRESSION: `modelUpdates` passes.
 
 Target files:
 - `packages/miroir-core/src/3_controllers/DomainController.ts`
 - `packages/miroir-core/src/2_domain/` (new writer helpers)
-- `packages/miroir-core/tests/` (DomainController integration tests)
+- `packages/miroir-core/tests/2_domain/evolutionTrace.persist.unit.test.ts` (new)
 
 ### Phase 3 — Enforce application/section policy
-- Add failing integration tests for the section policy (Miroir vs non-Miroir).
-- Apply the policy helper in the producer path.
-- Ensure excluded cases do not silently write history.
+- [ ] Write the three policy scenario tests (RED).
+- [ ] Apply `shouldTraceEvolutionEvent(...)` in producer path (GREEN).
+- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.policy` → **3/3 pass**.
+- [ ] Verify: `evolutionTrace.persist` tests still pass.
+- [ ] Verify NON-REGRESSION: `cacheRefreshPolicy`, `modelUpdates` pass.
 
 Target files:
 - `packages/miroir-core/src/3_controllers/DomainController.ts`
 - `packages/miroir-core/src/2_domain/evolutionTracePolicy.ts`
-- `packages/miroir-core/tests/`
+- `packages/miroir-core/tests/2_domain/evolutionTrace.policy.unit.test.ts` (new)
 
 ### Phase 4 — Read-side compaction cursor
-- Add failing tests for `compactionLevel="raw" | "commit" | "version"`.
-- Implement raw event retrieval.
-- Implement commit-level squashing.
-- Implement version A→B bird’s-eye view.
-- Add the compaction cursor to the read/query path.
+- [ ] Write three compaction tests with setup of 3+ raw events across 2 commits (RED).
+- [ ] Implement `fetchEvolutionHistory({ compactionLevel })` in query layer (GREEN).
+- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.compaction` → **3/3 pass**.
+- [ ] Verify: raw ordering is ascending by `sequenceNumber`.
+- [ ] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
+- [ ] Verify NON-REGRESSION: `queries`, `resolveQueryTemplates` pass.
 
 Target files:
-- `packages/miroir-core/src/2_domain/QuerySelectors.ts` or equivalent query helper layer
+- `packages/miroir-core/src/2_domain/QuerySelectors.ts` (or new query helper)
 - `packages/miroir-core/src/2_domain/TransformersForRuntime.ts` (if used)
-- `packages/miroir-core/tests/`
+- `packages/miroir-core/tests/2_domain/evolutionTrace.compaction.unit.test.ts` (new)
 
 ### Phase 5 — Initial squashed baseline
-- Add a failing bootstrap test for one initial baseline block when no history exists.
-- Implement the baseline generator for Miroir, Library, Admin, and Postgres deployments.
-- Ensure idempotence (running twice does not duplicate the baseline).
+- [ ] Write baseline creation and idempotence tests (RED).
+- [ ] Implement `generateEvolutionBaseline(...)` (GREEN).
+- [ ] Wire into deployment initialisation for Miroir, Library, Admin, Postgres.
+- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.baseline` → **2/2 pass**.
+- [ ] Verify: integration test shows 1 baseline root per deployment.
+- [ ] Verify: calling twice → no duplicate baseline events.
+- [ ] Verify NON-REGRESSION: `createDeploymentCompositeAction`, `modelEnvironment` pass.
 
 Target files:
-- `packages/miroir-core/src/1_core/Deployment.ts` and/or initializer flows
-- `packages/miroir-core/src/3_controllers/` (initializer/controller wiring)
-- `packages/miroir-core/tests/` and `packages/miroir-standalone-app/tests/`
+- `packages/miroir-core/src/1_core/Deployment.ts` (or initializer flows)
+- `packages/miroir-core/src/3_controllers/` (initializer wiring)
+- `packages/miroir-core/tests/2_domain/evolutionTrace.baseline.unit.test.ts` (new)
 
 ### Phase 6 — #15-compatible definition-version resolution
-- Add failing tests for resolution precedence:
-  1. instance `parentDefinitionVersionUuid`
-  2. action payload definition UUID
-  3. `ApplicationVersionCrossEntityDefinition` fallback
-  4. unresolved marker path
-- Implement `resolveDefinitionVersionForTraceEvent(...)`.
-- Persist the `definitionVersionResolution` discriminator.
+- [ ] Write 4 resolver unit tests covering all precedence paths (RED).
+- [ ] Implement `resolveDefinitionVersionForTraceEvent(...)` (GREEN).
+- [ ] Persist `definitionVersionResolution` field on every trace event.
+- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.defversion` → **4/4 pass**.
+- [ ] Verify: unresolved path emits `log.warn` (captured in test, no silent drop).
+- [ ] Verify NON-REGRESSION: `modelUpdates`, `schemaChangeKind` pass.
 
 Target files:
-- `packages/miroir-core/src/2_domain/` (new resolver module)
+- `packages/miroir-core/src/2_domain/evolutionTraceDefVersion.ts` (new resolver module)
 - `packages/miroir-core/src/3_controllers/DomainController.ts`
-- `packages/miroir-core/tests/`
+- `packages/miroir-core/tests/2_domain/evolutionTrace.defversion.unit.test.ts` (new)
 
 ### Phase 7 — Reports + menu wiring
-- Add a report asset for `ApplicationEvolutionTraceList`.
-- Add a report asset for `ApplicationEvolutionTraceHistory`.
-- Add menu entries to expose both reports in the Miroir menu.
-- Add report/UI tests and make them green.
+- [ ] Write 3 report/menu presence tests (RED).
+- [ ] Add report JSON assets for `ApplicationEvolutionTraceList` and `ApplicationEvolutionTraceHistory` (GREEN).
+- [ ] Update menu JSON to include 2 new entries.
+- [ ] Export from deployment package index.
+- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.reports` → **3/3 pass**.
+- [ ] Verify: integration → both reports execute without errors and return data.
+- [ ] Verify NON-REGRESSION: `menu` tests pass.
 
 Target files:
 - `packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/*.json` (report assets)
 - `packages/miroir-test-app_deployment-miroir/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json` (menu)
 - `packages/miroir-test-app_deployment-miroir/index.ts`
-- `packages/miroir-standalone-app/tests/`
+- `packages/miroir-core/tests/2_domain/evolutionTrace.reports.unit.test.ts` (new)
 
 ### Phase 8 — End-to-end tracer bullet
-- Add one vertical scenario test covering baseline, model evolution, commit, and history retrieval with `raw`, `commit`, and `version` views.
-- Fix only the gaps required by the scenario.
-- Lock the regression suite.
+- [ ] Write 13-step vertical integration scenario (RED).
+- [ ] Fix integration gaps only — no new logic (GREEN).
+- [ ] Verify: `npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration` → **all 13 steps pass**.
+- [ ] Verify: `npm run testByFile -w miroir-core` → pre-existing failures unchanged, new tests added to passed count.
+- [ ] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
 
 Target files:
-- `packages/miroir-core/tests/`
-- `packages/miroir-standalone-app/tests/`
+- `packages/miroir-core/tests/` (any final unit-level gaps)
+- `packages/miroir-standalone-app/tests/evolutionTraceWP1.integ.test.ts` (new)
 
 ### Command checklist (per milestone)
-- `npx tsc --noEmit --skipLibCheck`
-- `npm run testByFile -w miroir-core -- <pattern>`
-- `npm run testMiroir -w miroir-core -- --suites <suite> --mode unit`
-- `npm run testMiroir -w miroir-standalone-app -- --suites <suite> --mode integration`
-- `npm run devBuild -w miroir-core`
+```bash
+npx tsc --noEmit --skipLibCheck
+npm run testByFile -w miroir-core -- <pattern>
+npm run testMiroir -w miroir-core -- --suites <suite> --mode unit
+npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration
+npm run devBuild -w miroir-core       # only after entity/type asset changes
+```
 
 ---
 
