@@ -847,7 +847,12 @@ export {
 } from "./1_core/tools.js";
 export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/zodParseErrorHandler";
 export { shouldTraceEvolutionEvent, MIROIR_APPLICATION_UUID } from "./2_domain/evolutionTracePolicy.js";
-export { createTraceEventFromModelAction } from "./2_domain/evolutionTraceWriter.js";
+export {
+  createTraceEventFromModelAction,
+  createTraceEventFromInstanceAction,
+  produceEvolutionTraceEvent,
+} from "./2_domain/evolutionTraceWriter.js";
+export type { EvolutionTraceableAction } from "./2_domain/evolutionTraceWriter.js";
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,

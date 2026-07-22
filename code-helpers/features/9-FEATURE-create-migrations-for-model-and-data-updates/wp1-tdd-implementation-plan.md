@@ -20,7 +20,7 @@ Related:
 | 0 | Lock contracts and fixtures | ✅ DONE | 6/6 |
 | 1 | Introduce WP1 entities and generated types | ✅ DONE | 16/16 |
 | 2 | Persist raw trace events from action flow | ✅ DONE | 14/14 |
-| 3 | Enforce section/app tracking policy | 🔲 TODO | — |
+| 3 | Enforce section/app tracking policy | ✅ DONE | 3/3 |
 | 4 | Hybrid compaction model (read-side cursor) | 🔲 TODO | — |
 | 5 | Initial squashed baseline generation | 🔲 TODO | — |
 | 6 | #15-compatible definition-version resolution | 🔲 TODO | — |
@@ -241,7 +241,7 @@ Expected: existing model-action tests unchanged.
 
 ---
 
-## Phase 3 — Enforce section/app tracking policy
+## Phase 3 — Enforce section/app tracking policy  ✅ DONE
 
 ### 3.1 RED
 Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.policy.unit.test.ts`
@@ -260,29 +260,23 @@ Expected: `1 failed` (policy not yet applied in producer path).
 ### 3.1 GREEN
 Apply `shouldTraceEvolutionEvent(...)` in the producer path; remove any unconditional writes.
 
-#### Validation (GREEN)
+#### Validation (GREEN) — verified
 ```bash
 npm run testByFile -w miroir-core -- evolutionTrace.policy
 npm run testByFile -w miroir-core -- evolutionTrace.persist
 npx tsc --noEmit --skipLibCheck
 ```
 
-Expected per check:
-| Check | Expected |
+| Check | Result |
 |---|---|
-| `evolutionTrace.policy` tests | `1 passed` — 3/3 tests pass |
-| Scenario 1: Library + data update | 0 events in store |
+| `evolutionTrace.policy` tests | **3/3 pass** |
+| Scenario 1: Library + data update | 0 events |
 | Scenario 2: Library + model update | 1 event, `applicationSection = "model"` |
 | Scenario 3: Miroir + data update | 1 event, `applicationSection = "data"` |
-| `evolutionTrace.persist` tests | still pass (no regression from policy gate) |
+| `evolutionTrace.persist` tests | **14/14** still pass |
 | `tsc --noEmit` | 0 type errors |
-
-### NON-REGRESSION
-```
-npm run testByFile -w miroir-core -- cacheRefreshPolicy
-npm run testByFile -w miroir-core -- modelUpdates
-```
-Expected: all pass unchanged.
+| NON-REGRESSION `cacheRefreshPolicy` | **9/9** |
+| NON-REGRESSION `modelUpdates` | **6/6** |
 
 ---
 
@@ -602,31 +596,32 @@ Target files (done):
 - `packages/miroir-core/src/index.ts` (exports for both types + Zod validators)
 - `packages/miroir-core/tests/2_domain/evolutionTrace.schema.unit.test.ts` (new — 10 tests)
 
-### Phase 2 — Persist raw trace events in runtime flow
-- [ ] Write test for trace-event creation (RED).
-- [ ] Add trace root creation/lookup logic (GREEN).
-- [ ] Add append-only trace event writes with monotonic sequence numbers.
-- [ ] Store `operationType`, `timestamp`, `traceRootUuid`.
-- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.persist` → **≥ 3/3 pass**.
-- [ ] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
-- [ ] Verify NON-REGRESSION: `modelUpdates` passes.
+### Phase 2 — Persist raw trace events in runtime flow ✅ DONE
+- [x] Write test for trace-event creation (RED).
+- [x] Add trace root creation/lookup logic (GREEN).
+- [x] Add append-only trace event writes with monotonic sequence numbers.
+- [x] Store `operationType`, `timestamp`, `traceRootUuid`.
+- [x] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.persist` → **14/14 pass**.
+- [x] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
 
-Target files:
-- `packages/miroir-core/src/3_controllers/DomainController.ts`
-- `packages/miroir-core/src/2_domain/` (new writer helpers)
-- `packages/miroir-core/tests/2_domain/evolutionTrace.persist.unit.test.ts` (new)
+Target files (done):
+- `packages/miroir-core/src/2_domain/evolutionTraceWriter.ts` (`createTraceEventFromModelAction`)
+- `packages/miroir-core/tests/2_domain/evolutionTrace.persist.unit.test.ts`
 
-### Phase 3 — Enforce application/section policy
-- [ ] Write the three policy scenario tests (RED).
-- [ ] Apply `shouldTraceEvolutionEvent(...)` in producer path (GREEN).
-- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.policy` → **3/3 pass**.
-- [ ] Verify: `evolutionTrace.persist` tests still pass.
-- [ ] Verify NON-REGRESSION: `cacheRefreshPolicy`, `modelUpdates` pass.
+### Phase 3 — Enforce application/section policy ✅ DONE
+- [x] Write the three policy scenario tests (RED).
+- [x] Apply `shouldTraceEvolutionEvent(...)` in producer path (GREEN).
+- [x] Add `createTraceEventFromInstanceAction` for Miroir data-section path.
+- [x] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.policy` → **3/3 pass**.
+- [x] Verify: `evolutionTrace.persist` tests still pass (**14/14**).
+- [x] Verify NON-REGRESSION: `cacheRefreshPolicy` (**9/9**), `modelUpdates` (**6/6**) pass.
+- [x] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
 
-Target files:
-- `packages/miroir-core/src/3_controllers/DomainController.ts`
-- `packages/miroir-core/src/2_domain/evolutionTracePolicy.ts`
-- `packages/miroir-core/tests/2_domain/evolutionTrace.policy.unit.test.ts` (new)
+Target files (done):
+- `packages/miroir-core/src/2_domain/evolutionTraceWriter.ts` (`produceEvolutionTraceEvent`, `createTraceEventFromInstanceAction`)
+- `packages/miroir-core/src/2_domain/evolutionTracePolicy.ts` (used by producer)
+- `packages/miroir-core/src/index.ts` (exports)
+- `packages/miroir-core/tests/2_domain/evolutionTrace.policy.unit.test.ts` (new — 3 tests)
 
 ### Phase 4 — Read-side compaction cursor
 - [ ] Write three compaction tests with setup of 3+ raw events across 2 commits (RED).
