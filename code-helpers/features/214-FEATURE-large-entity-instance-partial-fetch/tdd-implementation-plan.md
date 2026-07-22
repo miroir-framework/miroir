@@ -298,11 +298,11 @@ Phase 6 — Acceptance                                             6.1
 
 **Goal:** Hook/selector picks segment from query shape; `ensureLoaded` fills that segment; remount short-circuits or refetches at **segment** level.
 
-### 3.1  resolveCacheSegmentKind — **DONE**
+### 3.1  resolveCacheSegmentKind — **DONE** (selector routing completed 2026-07-23)
 
 **Behavior:** `attributes` present (non-empty) ⇒ `"partial"`; else `"full"`. Used by selector helpers and report load request construction — **not** inside per-instance loops.
 
-**Done:** `ReportQueryLoadRequest.projection` + fingerprint includes `segment` + canonical `projection` (`forceRefresh` excluded). Helpers in `reportQueryLoadSegment.ts`.
+**Done:** `ReportQueryLoadRequest.projection` + fingerprint includes `segment` + canonical `projection` (`forceRefresh` excluded). Helpers in `reportQueryLoadSegment.ts`. **`ReduxDeploymentsStateQuerySelectors`** route projected extractors to the `__partial` index.
 
 **Validation:**
 - Phase 2 — `localCacheSegment.unit.test.ts` → `resolveCacheSegmentKind routes by attributes presence`
@@ -311,6 +311,9 @@ Phase 6 — Acceptance                                             6.1
   - `resolveReportQueryLoadAttributes canonicalizes`
 - `packages/miroir-core/tests/2_domain/ReportQueryLoadService.unit.test.ts`
   - `fingerprint changes when projection attributes change (3.1)`
+- `packages/miroir-core/tests/2_domain/ReduxDeploymentsStateQuerySelectors.segment.unit.test.ts`
+  - `with attributes: reads partial segment, ignores full`
+  - `without attributes: reads full segment only`
   - `fingerprint ignores forceRefresh (3.1)`
   - existing fingerprint cases still green
 
