@@ -137,6 +137,14 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
     case "RestPersistenceAction_read": {
       localHttpMethod = "get";
       url = "/" + (persistenceAction.payload.uuid ?? (persistenceAction.payload.parentUuid + "/all"));
+      if (
+        Array.isArray(persistenceAction.payload.attributes) &&
+        persistenceAction.payload.attributes.length > 0
+      ) {
+        url +=
+          "?attributes=" +
+          encodeURIComponent(persistenceAction.payload.attributes.join(","));
+      }
       break;
     }
     case "RestPersistenceAction_update": 
@@ -407,6 +415,10 @@ export class RestPersistenceClientAndRestClient implements RestPersistenceClient
           section: persistenceAction.payload.section,
           parentUuid: persistenceAction.payload.parentUuid,
           applicationDeploymentMap,
+          ...(Array.isArray(persistenceAction.payload.attributes) &&
+          persistenceAction.payload.attributes.length > 0
+            ? { attributes: persistenceAction.payload.attributes }
+            : {}),
         };
         // log.info(
         //   "handleNetworkPersistenceAction action",

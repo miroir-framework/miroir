@@ -4,7 +4,7 @@ Related issue: https://github.com/miroir-framework/miroir/issues/214
 Follow-up: #208 · synergy with [#114](https://github.com/miroir-framework/miroir/issues/114)  
 TDD plan: [tdd-implementation-plan.md](./tdd-implementation-plan.md)
 
-Status: analysis + TDD plan — **Option C′ (entity-bound segments)** is the favored delivery path. Instance-level completeness (classic Option B) is deferred / disfavored for near-term due to local-cache and monitoring complexity.
+Status: analysis + TDD plan — **Option C′ (entity-bound segments)** is the favored delivery path. Phase 0–1 DONE (Phase 1 schema-first remediated per AGENTS.md). Instance-level completeness (classic Option B) is deferred.
 
 ---
 

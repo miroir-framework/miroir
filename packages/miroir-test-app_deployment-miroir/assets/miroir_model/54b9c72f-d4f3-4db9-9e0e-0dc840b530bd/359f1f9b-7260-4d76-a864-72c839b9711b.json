@@ -11,16 +11,21 @@
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },
-  "viewAttributes": ["name", "defaultLabel", "description", "uuid"],
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "description",
+    "uuid"
+  ],
   "mlSchema": {
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "name": {
@@ -193,18 +198,18 @@
                 }
               },
               "parentUuid": {
-                  "type": "uuid",
-                  "tag": {
-                    "value": {
-                      "canBeTemplate": true,
-                      "defaultLabel": "Parent Uuid",
-                      "foreignKeyParams": {
-                        "targetEntityApplicationSection": "model",
-                        "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "targetEntityOrderInstancesBy": "name"
-                      }
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Parent Uuid",
+                    "foreignKeyParams": {
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
                     }
                   }
+                }
               }
             }
           },
@@ -223,7 +228,9 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "display": { "editable": false },
+                    "display": {
+                      "editable": false
+                    },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -239,7 +246,10 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": ["ASC", "DESC"]
+                    "definition": [
+                      "ASC",
+                      "DESC"
+                    ]
                   }
                 }
               },
@@ -258,8 +268,15 @@
               "AttributeOfListObjectToCompareToReferenceUuid": {
                 "type": "union",
                 "definition": [
-                  { "type": "string" },
-                  { "type": "array", "definition": { "type": "string" } }
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
                 ]
               },
               "applyTransformer": {
@@ -280,7 +297,9 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "display": { "editable": false },
+                    "display": {
+                      "editable": false
+                    },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -306,7 +325,9 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "display": { "editable": false },
+                    "display": {
+                      "editable": false
+                    },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -318,8 +339,15 @@
               "AttributeOfObjectToCompareToReferenceUuid": {
                 "type": "union",
                 "definition": [
-                  { "type": "string" },
-                  { "type": "array", "definition": { "type": "string" } }
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
                 ]
               },
               "applyTransformer": {
@@ -347,7 +375,9 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "display": { "editable": false },
+                    "display": {
+                      "editable": false
+                    },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -375,6 +405,19 @@
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              },
+              "attributes": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                },
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Projected Attributes",
+                    "description": "Optional attribute allow-list for partial fetch (#214)"
+                  }
                 }
               }
             }
@@ -412,7 +455,9 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "display": { "editable": false },
+                    "display": {
+                      "editable": false
+                    },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -428,7 +473,10 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": ["ASC", "DESC"]
+                    "definition": [
+                      "ASC",
+                      "DESC"
+                    ]
                   }
                 }
               },
@@ -469,6 +517,19 @@
                         "defaultLabel": "Values"
                       }
                     }
+                  }
+                }
+              },
+              "attributes": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                },
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Projected Attributes",
+                    "description": "Optional attribute allow-list for partial fetch (#214)"
                   }
                 }
               }
@@ -525,7 +586,9 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "display": { "editable": false },
+                    "display": {
+                      "editable": false
+                    },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -541,7 +604,10 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": ["ASC", "DESC"]
+                    "definition": [
+                      "ASC",
+                      "DESC"
+                    ]
                   }
                 }
               },
@@ -650,7 +716,9 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "display": { "editable": false },
+                    "display": {
+                      "editable": false
+                    },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -666,7 +734,10 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": ["ASC", "DESC"]
+                    "definition": [
+                      "ASC",
+                      "DESC"
+                    ]
                   }
                 }
               },
@@ -729,7 +800,9 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "display": { "editable": false },
+                    "display": {
+                      "editable": false
+                    },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -756,7 +829,9 @@
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
-                    "display": { "editable": false },
+                    "display": {
+                      "editable": false
+                    },
                     "defaultLabel": "Extractor Or Combiner Type"
                   }
                 },
@@ -848,7 +923,9 @@
                     "tag": {
                       "value": {
                         "canBeTemplate": false,
-                        "display": { "editable": false },
+                        "display": {
+                          "editable": false
+                        },
                         "defaultLabel": "Extractor Or Combiner Type"
                       }
                     },

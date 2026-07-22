@@ -54,7 +54,7 @@
                     "defaultLabel": "Parent Name",
                     "display": {
                       "editable": false
-                    } 
+                    }
                   }
                 }
               },
@@ -71,7 +71,7 @@
                     "defaultLabel": "Parent Uuid",
                     "display": {
                       "editable": false
-                    } 
+                    }
                   }
                 }
               },
@@ -88,7 +88,7 @@
                     "defaultLabel": "Uuid",
                     "display": {
                       "editable": false
-                    } 
+                    }
                   }
                 }
               },
@@ -196,6 +196,19 @@
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "entityInstance"
+                  }
+                }
+              },
+              "attributes": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                },
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Projected Attributes",
+                    "description": "Optional attribute allow-list for partial fetch (#214)"
                   }
                 }
               }
@@ -581,6 +594,19 @@
                   "definition": {
                     "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                     "relativePath": "entityInstance"
+                  }
+                }
+              },
+              "attributes": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                },
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Projected Attributes",
+                    "description": "Optional attribute allow-list for partial fetch (#214)"
                   }
                 }
               }

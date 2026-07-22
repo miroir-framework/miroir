@@ -28,6 +28,11 @@ import {
 // import { applyModelEntityUpdate } from "../3_controllers/ActionRunner";
 import { modelInitialize } from "../3_controllers/ModelInitializer";
 import { packageName } from "../constants";
+import {
+  projectEntityInstance,
+  projectEntityInstances,
+  resolveProjectionIdentityFields,
+} from "../1_core/instanceProjection.js";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { cleanLevel } from "./constants";
 
@@ -341,14 +346,16 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         return this.getInstance(
           persistenceStoreControllerAction.payload.applicationSection,
           persistenceStoreControllerAction.payload.parentUuid,
-          persistenceStoreControllerAction.payload.uuid
+          persistenceStoreControllerAction.payload.uuid,
+          (persistenceStoreControllerAction.payload as { attributes?: string[] }).attributes
         );
         break;
       }
       case "getInstances": {
         return this.getInstances(
           persistenceStoreControllerAction.payload.applicationSection,
-          persistenceStoreControllerAction.payload.parentUuid
+          persistenceStoreControllerAction.payload.parentUuid,
+          (persistenceStoreControllerAction.payload as { attributes?: string[] }).attributes
         );
         break;
       }
@@ -682,7 +689,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async getInstance(
     section: ApplicationSection,
     entityUuid: string,
-    instancePrimaryKey: Uuid
+    instancePrimaryKey: Uuid,
+    attributes?: string[],
+    entityDefinition?: EntityDefinition
   ): Promise<Action2EntityInstanceReturnType> {
     log.info(this.logHeader, "getInstance", "section", section, "entity", entityUuid, "instancePrimaryKey", instancePrimaryKey);
 
@@ -705,13 +714,33 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       "result",
       result
     );
+    if (
+      attributes &&
+      attributes.length > 0 &&
+      !(result instanceof Action2Error) &&
+      !(result.returnedDomainElement instanceof Domain2ElementFailed) &&
+      result.returnedDomainElement &&
+      typeof result.returnedDomainElement === "object"
+    ) {
+      const identityFields = resolveProjectionIdentityFields(entityDefinition);
+      return {
+        ...result,
+        returnedDomainElement: projectEntityInstance(
+          result.returnedDomainElement as Record<string, unknown>,
+          attributes,
+          identityFields
+        ) as EntityInstance,
+      };
+    }
     return result;
   }
 
   // #############################################################################################
   async getInstances(
     section: ApplicationSection,
-    entityUuid: string
+    entityUuid: string,
+    attributes?: string[],
+    entityDefinition?: EntityDefinition
   ): Promise<Action2EntityInstanceCollectionOrFailure> {
     // TODO: fix applicationSection!!!
     
@@ -743,6 +772,22 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         "FailedToGetInstances",
         `getInstances failed for section: ${section}, entityUuid ${entityUuid}, error: ${instances}`
       );
+    }
+
+    if (attributes && attributes.length > 0) {
+      const collection = instances.returnedDomainElement;
+      const identityFields = resolveProjectionIdentityFields(entityDefinition);
+      return {
+        ...instances,
+        returnedDomainElement: {
+          ...collection,
+          instances: projectEntityInstances(
+            (collection.instances ?? []) as Record<string, unknown>[],
+            attributes,
+            identityFields
+          ) as EntityInstance[],
+        },
+      };
     }
 
     // log.info(this.logHeader,'getInstances succeeded','section',section,'entity',entityUuid, "result", instances);

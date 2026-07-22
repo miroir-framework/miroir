@@ -11,8 +11,8 @@
 
 | Phase | Scope | Status |
 |---|---|---|
-| **0** | Design decisions (segments C′; defer instance-level B) | **Pending confirmation** |
-| **1** | Projection contract on extractors / persistence reads | Not started |
+| **0** | Design decisions (segments C′; defer instance-level B) | **DONE** (defaults locked 2026-07-22) |
+| **1** | Projection contract on extractors / persistence reads | **DONE** (2026-07-22; schema-first remediated same day) |
 | **2** | Local-cache segments: `full` + `partial` (≤2 per entity) | Not started |
 | **3** | Hook/selector routing + `#114` loader → correct segment | Not started |
 | **4** | Mutation guardrails (partial forbidden; full segment only) | Not started |
@@ -152,7 +152,20 @@ Phase 6 — Acceptance                                             6.1
 
 ## Phase 0 — Design decisions
 
-**Gate 0:** Confirm D1 = segments C′, D5 hit rule, D7 mutation→stale vs drop, D8 tracer, D10 section in key.
+**Gate 0:** DONE — defaults locked 2026-07-22:
+
+| # | Locked choice |
+|---|---|
+| D1 | C′ segments |
+| D2 | `attributes?: string[]` allow-list |
+| D3 | Existing map = full; sibling partial + header |
+| D4 | No projection ⇒ full segment (today) |
+| D5 | Sorted-set equality for partial-segment hit |
+| D6 | Reuse #114 ensureLoaded; fingerprint includes segment + projection |
+| D7 | Reject partial mutations; mark partial segment `stale` on full mutation |
+| D8 | Tracer deferred to Phase 5 (Blob without `contents` preferred) |
+| D9 | Contract first; filter-after-read OK for Phase 1 |
+| D10 | Segment key includes `applicationSection` |
 
 ---
 
@@ -160,23 +173,39 @@ Phase 6 — Acceptance                                             6.1
 
 **Goal:** A read with `attributes: [...]` returns **only** those fields (or filters to them when the backend cannot project natively).
 
-### 1.1  Schema / type: extractor may carry `attributes`
+### 1.1  Schema / type: extractor may carry `attributes` — **DONE**
 
 **Behavior:** Zod/types accept optional `attributes: string[]` on `extractorInstancesByEntity` / `extractorByPrimaryKey`.
 
-### 1.2  REST / PersistenceAction carries projection
+**Done:** types + zod regenerated via schema-first path (Query ED + Endpoint assets → `devBuild`); tests in `instanceProjectionSchema.unit.test.ts`.
+
+### 1.2  REST / PersistenceAction carries projection — **DONE**
 
 **Behavior:** Forward projection; absent ⇒ full object as today.
 
-### 1.3  At least one backend honors projection
+**Done:** `attributes?: string[]` on `RestPersistenceAction_read` / `LocalPersistenceAction_read` / `getInstances` in **deployment assets** then regenerated; Rest client appends `?attributes=`; RestServer + `miroir-server` merge query params; LocalPersistenceAction→getInstances forwards attributes.
+
+### 1.3  At least one backend honors projection — **DONE**
 
 **Behavior (integ):** Response keys ⊆ allow-list ∪ identity fields (`uuid` / PK, `parentUuid`).
 
-### 1.4  Non-regression: omit projection ⇒ full instance
+**Done:** `PersistenceStoreController.getInstances` / `getInstance` apply `projectEntityInstance(s)` after store read (filter-after-read). Identity via `resolveProjectionIdentityFields` → `getEntityPrimaryKeyAttributes`. Filesystem integ: `PersistenceStoreController.integ.test.tsx` (“get Miroir Entities with attribute projection”).
+
+### 1.4  Non-regression: omit projection ⇒ full instance — **DONE**
 
 **Behavior:** Existing paths without `attributes` unchanged.
 
+**Done:** covered by schema + controller unit tests (omit attributes ⇒ same full objects).
+
 **Gate 1:** 1.1–1.4 green.
+
+#### Schema-first remediation (post Gate 1 review vs AGENTS.md)
+
+| Issue | Fix |
+|---|---|
+| Hand-edited `preprocessor-generated/*` | Source of truth moved to Query ED `359f1f9b-…` + Endpoints `a93598b3-…` / `ed520de4-…`; `npm run build -w miroir-test-app_deployment-miroir` + `npm run devBuild -w miroir-core` |
+| Unit-only / mocks | Added filesystem integ projection assertion |
+| Hardcoded `uuid` identity | `resolveProjectionIdentityFields` uses PK helpers; optional `entityDefinition` on controller get APIs |
 
 ---
 
@@ -306,8 +335,9 @@ RIGHT:  1.1 RED→GREEN → segments → routing/#114 → mutations → tracer
 
 ## Open questions for Gate 0 (user)
 
-1. Confirm **D1 = segments C′** and **defer instance-level B**.
-2. Confirm **D5** hit rule (exact sorted-set equality vs ⊆).
-3. Confirm **D7** on mutation: mark partial **`stale`** vs drop.
-4. Confirm **D8** tracer (Blob without `contents`?).
-5. Confirm **D10** segment key includes `applicationSection`.
+**Resolved by defaults (2026-07-22).** Remaining only for later phases:
+
+1. Phase 5 tracer confirmation (Blob without `contents`?).
+2. Refresh seeding of stale partial segment (default: absent until report).
+
+**Next coding slice:** **Phase 2 — local cache segments**.

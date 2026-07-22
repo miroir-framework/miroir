@@ -74,6 +74,18 @@ npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorSes
 npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorFootprint.acceptance.unit.test.tsx
 npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
+
+# Attribute projection (#214) — unit (no store)
+npm run testByFile -w miroir-core -- tests/1_core/instanceProjection.unit.test.ts
+npm run testByFile -w miroir-core -- tests/1_core/instanceProjectionSchema.unit.test.ts
+npm run testByFile -w miroir-core -- tests/4_services/PersistenceStoreController.projection.unit.test.ts
+```
+
+After changing Query / Endpoint Jzod for `attributes` (or any fundamental schema), rebuild before these tests:
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir
+npm run devBuild -w miroir-core
 ```
 
 ### MiroirTest integration (`testMiroir`)
@@ -120,6 +132,10 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
+
+# Same suite — filesystem profile (includes #214 attribute-projection assertion)
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-filesystem PersistenceStoreController.integ
 
 # Extractor runner (IndexedDB example)
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-indexedDb.json \

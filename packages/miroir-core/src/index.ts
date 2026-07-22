@@ -811,6 +811,15 @@ export {
   type EntityFetchOnRefresh,
 } from "./1_core/cacheRefreshPolicy.js";
 export {
+  INSTANCE_PROJECTION_IDENTITY_FIELDS,
+  INSTANCE_PROJECTION_STRUCTURAL_FIELDS,
+  parseAttributesProjectionParam,
+  projectEntityInstance,
+  projectEntityInstances,
+  resolveProjectionIdentityFields,
+} from "./1_core/instanceProjection.js";
+export type { InstanceProjectionAttributes } from "./1_core/instanceProjection.js";
+export {
   formatRelativePath,
   formatRelativePaths,
   listSelfApplicationUuidPaths,

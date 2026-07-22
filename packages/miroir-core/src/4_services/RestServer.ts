@@ -27,6 +27,7 @@ import { generateRestServiceResponse } from "./RestTools";
 import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { defaultMiroirModelEnvironment } from "../1_core/Model";
+import { parseAttributesProjectionParam } from "../1_core/instanceProjection.js";
 import {
   // getExtractorTemplateRunnerParamsForDomainState,
   getQueryTemplateRunnerParamsForDomainState,
@@ -103,6 +104,20 @@ export async function restMethodGetHandler
   const parentUuid: string =
     typeof params["parentUuid"] == "string" ? params["parentUuid"] : params["parentUuid"][0];
 
+  // #214 projection: prefer explicit params (RestClientStub), else parse ?attributes= from URL
+  const attributesFromUrl = (() => {
+    try {
+      const qIndex = effectiveUrl.indexOf("?");
+      if (qIndex < 0) return undefined;
+      return new URLSearchParams(effectiveUrl.slice(qIndex + 1)).get("attributes") ?? undefined;
+    } catch {
+      return undefined;
+    }
+  })();
+  if (attributesFromUrl !== undefined && params["attributes"] === undefined) {
+    params = { ...params, attributes: attributesFromUrl };
+  }
+
   const localPersistenceStoreController = persistenceStoreControllerManager.getPersistenceStoreController(
     deploymentUuid
   );
@@ -141,10 +156,11 @@ export async function restMethodGetHandler
       ["section", "parentUuid"],
       [],
       async (section: ApplicationSection, parentUuid: string): Promise<HttpResponseBodyFormat> => {
+        const attributes = parseAttributesProjectionParam(params["attributes"]);
         const getInstancesFunction = targetPersistenceStoreController.getInstances.bind(
           targetPersistenceStoreController
         ); // TODO: is this bind useful? why not call targetPersistenceStoreController.getInstances(...) directly?
-        const results: Action2ReturnType = await getInstancesFunction(section, parentUuid);
+        const results: Action2ReturnType = await getInstancesFunction(section, parentUuid, attributes);
         if (results instanceof Action2Error) {
           throw new Error(
             "restMethodGetHandler could not get instances for parentUuid: " +
