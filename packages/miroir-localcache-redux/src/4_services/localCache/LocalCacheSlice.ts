@@ -32,6 +32,8 @@ import {
   getLocalCacheIndexEntityUuid,
   getReduxDeploymentsStateIndex,
   isPartialLocalCacheIndex,
+  markSiblingPartialSegmentStale,
+  rejectPartialMutationInstanceAction,
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
   serializeCompositeKeyValue,
@@ -463,6 +465,11 @@ function handleInstanceAction(
   instanceAction: InstanceAction,
   applicationDeploymentMap: ApplicationDeploymentMap
 ): Action2ReturnType {
+  const rejectedPartial = rejectPartialMutationInstanceAction(instanceAction);
+  if (rejectedPartial) {
+    return rejectedPartial;
+  }
+
   const deploymentUuid =
     applicationDeploymentMap[instanceAction.payload.application];
   // log.info(
@@ -556,6 +563,13 @@ function handleInstanceAction(
           //   JSON.stringify(result, null, 2)
           // );
 
+          markSiblingPartialSegmentStale(
+            state as any,
+            deploymentUuid,
+            instanceAction.payload.applicationSection,
+            resolvedParentUuid
+          );
+
           if (resolvedParentUuid == entityDefinitionEntityDefinition.uuid) {
             // When creating an EntityDefinition, register a custom adapter if it uses a non-UUID PK
             registerEntityAdapterFromDefinition(
@@ -634,6 +648,12 @@ function handleInstanceAction(
               state.current[instanceCollectionEntityIndex],
               deletePkValue
             );
+            markSiblingPartialSegmentStale(
+              state as any,
+              deploymentUuid,
+              instanceAction.payload.applicationSection,
+              resolvedParentUuid
+            );
             log.info(
               "localCacheSliceObject handleInstanceAction delete state after removeOne for instance",
               instance,
@@ -683,6 +703,12 @@ function handleInstanceAction(
             id: updatePkValue,
             changes: instance,
           });
+          markSiblingPartialSegmentStale(
+            state as any,
+            deploymentUuid,
+            instanceAction.payload.applicationSection,
+            resolvedParentUuid
+          );
         }
         break;
       }

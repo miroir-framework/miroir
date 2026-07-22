@@ -26,6 +26,8 @@ import {
   getLocalCacheIndexEntityUuid,
   getReduxDeploymentsStateIndex,
   isPartialLocalCacheIndex,
+  markSiblingPartialSegmentStale,
+  rejectPartialMutationInstanceAction,
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
   stripLocalCacheSegmentSuffix,
@@ -338,6 +340,16 @@ function handleInstanceAction(
   instanceAction: InstanceAction,
   applicationDeploymentMap: ApplicationDeploymentMap
 ): void {
+  const rejectedPartial = rejectPartialMutationInstanceAction(instanceAction);
+  if (rejectedPartial) {
+    log.error(
+      "handleInstanceAction rejected partial mutation (#214)",
+      instanceAction.actionType,
+      rejectedPartial
+    );
+    return;
+  }
+
   const deploymentUuid = applicationDeploymentMap[instanceAction.payload.application];
   
   switch (instanceAction.actionType) {
@@ -356,6 +368,7 @@ function handleInstanceAction(
         
         const currentState = state.current[index] as EntityState;
         state.current[index] = addManyToEntityState(currentState, [instance], idAttribute);
+        markSiblingPartialSegmentStale(state as any, deploymentUuid, section, resolvedParentUuid);
       }
       break;
     }
@@ -375,6 +388,7 @@ function handleInstanceAction(
         if (state.current[index]) {
           state.current[index] = removeOneFromEntityState(state.current[index] as EntityState, pk);
         }
+        markSiblingPartialSegmentStale(state as any, deploymentUuid, section, resolvedParentUuid);
       }
       break;
     }
@@ -392,6 +406,7 @@ function handleInstanceAction(
         if (state.current[index]) {
           state.current[index] = updateOneInEntityState(state.current[index] as EntityState, instance, idAttribute);
         }
+        markSiblingPartialSegmentStale(state as any, deploymentUuid, section, resolvedParentUuid);
       }
       break;
     }

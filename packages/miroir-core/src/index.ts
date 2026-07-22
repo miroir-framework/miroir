@@ -836,6 +836,14 @@ export type {
   LocalCacheSegmentHeader,
 } from "./1_core/localCacheSegment.js";
 export {
+  MIROIR_CACHE_SEGMENT_MARKER,
+  PARTIAL_MUTATION_REJECTED_MESSAGE,
+  isPartialMutationInstance,
+  isPartialMutationInstanceAction,
+  markSiblingPartialSegmentStale,
+  rejectPartialMutationInstanceAction,
+} from "./1_core/partialMutationGuard.js";
+export {
   formatRelativePath,
   formatRelativePaths,
   listSelfApplicationUuidPaths,

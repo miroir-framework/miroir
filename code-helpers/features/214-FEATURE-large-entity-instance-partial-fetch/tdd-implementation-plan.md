@@ -15,7 +15,7 @@
 | **1** | Projection contract on extractors / persistence reads | **DONE** (2026-07-22; schema-first remediated same day) |
 | **2** | Local-cache segments: `full` + `partial` (≤2 per entity) | **DONE** (2026-07-22) |
 | **3** | Hook/selector routing + `#114` loader → correct segment | **DONE** (2026-07-22) |
-| **4** | Mutation guardrails (partial forbidden; full segment only) | Not started |
+| **4** | Mutation guardrails (partial forbidden; full segment only) | **DONE** (2026-07-22) |
 | **5** | Tracer entity end-to-end | Not started |
 | **6** | Acceptance / non-regression | Not started |
 
@@ -354,37 +354,43 @@ Phase 6 — Acceptance                                             6.1
 
 **Gate 3:** 3.1–3.4 green; still `useEnsureReportQueryLoaded` + sync selectors; **no** instance-level coverage checks — **DONE** (2026-07-22).
 
-**Next coding slice:** **Phase 4 — mutation guardrails**.
+**Next coding slice:** **Phase 5 — tracer end-to-end** (Phase 4 DONE).
 
 ---
 
 ## Phase 4 — Mutation guardrails
 
-### 4.1  DomainController rejects partial create/update
+### 4.1  DomainController rejects partial create/update — **DONE**
 
 **Behavior:** Payload identified as partial (type tag / missing required full shape / sourced from partial segment) ⇒ `Action2Error` before REST.
 
-**Expected validation:**
-- Unit — DomainController (or mutation pre-check helper) under `packages/miroir-core/tests/…`:
-  - `createInstance with partial payload returns Action2Error before remote call`
-  - `updateInstance with partial payload returns Action2Error before remote call`
-  - assert remote store / REST not invoked (spy)
-- Non-regression — full-shape create/update still succeed (existing `LocalCache.unit.test.ts` create/update cases remain green)
-- Optional: LocalCache path never writes mutations into the partial index (mutations stay on full segment only)
+**Done:** Soft tag `miroirCacheSegment: "partial"` (instance or payload); `rejectPartialMutationInstanceAction` in DomainController + Redux/Zustand `LocalCache.handleLocalCacheAction` before persistence/cache write.
 
-### 4.2  Successful mutation vs partial segment
+**Validation:**
+- `packages/miroir-core/tests/1_core/partialMutationGuard.unit.test.ts`
+  - marker detection on instance / payload
+  - `rejectPartialMutationInstanceAction returns Action2Error for partial create`
+  - full create / delete allowed
+- `LocalCache.segments.unit.test.ts` (Redux + Zustand)
+  - `4.1 createInstance with partial marker returns Action2Error before mutating`
+  - `4.1 updateInstance with partial marker returns Action2Error`
+
+### 4.2  Successful mutation vs partial segment — **DONE**
 
 **Behavior:** After successful create/update/delete on the full segment, partial segment for that entity is marked **`stale`** (D7) or dropped — test asserts it is not left silently `fresh` with outdated rows.
 
-**Expected validation:**
-- Extend `LocalCache.segments.unit.test.ts` (Redux **and** Zustand parity):
-  - `after createInstance on full segment, sibling partial segment is stale (or absent)`
-  - `after updateInstance on full segment, sibling partial segment is stale (or absent)`
-  - `after deleteInstance on full segment, sibling partial segment is stale (or absent)`
-  - assert: when stale-and-kept, instances still readable; when dropped, partial index undefined
-- If invalidation lives in DomainController after successful remote mutation (not only LocalCache), add a DomainController unit that stubs local cache and asserts `setLocalCacheSegmentFreshness(..., "stale")` (or equivalent) is invoked
+**Done:** `markSiblingPartialSegmentStale` from Redux + Zustand instance CUD handlers; instances kept readable.
 
-**Gate 4:** 4.1–4.2 green.
+**Validation:**
+- `partialMutationGuard.unit.test.ts` — `sets partial segment freshness to stale without deleting instances`
+- `LocalCache.segments.unit.test.ts` (Redux + Zustand)
+  - `4.2 after createInstance on full segment, sibling partial is stale`
+  - `4.2 after updateInstance on full segment, sibling partial is stale`
+  - `4.2 after deleteInstance on full segment, sibling partial is stale`
+
+**Gate 4:** 4.1–4.2 green — **DONE** (2026-07-22).
+
+**Next coding slice:** **Phase 5 — tracer end-to-end**.
 
 ---
 
@@ -452,4 +458,4 @@ RIGHT:  1.1 RED→GREEN → segments → routing/#114 → mutations → tracer
 1. Phase 5 tracer confirmation (Blob without `contents`?).
 2. Refresh seeding of stale partial segment (default: absent until report).
 
-**Next coding slice:** **Phase 4 — mutation guardrails**.
+**Next coding slice:** **Phase 5 — tracer end-to-end**.

@@ -28,6 +28,7 @@ import {
   getDomainStateExtractorRunnerMap,
   getExtractorRunnerParamsForDomainState,
   getQueryRunnerParamsForDomainState,
+  rejectPartialMutationInstanceAction,
   type ApplicationDeploymentMap,
   type LocalCacheMonitorSnapshot,
   type MiroirModelEnvironment,
@@ -162,6 +163,28 @@ export class LocalCache implements LocalCacheInterface {
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Action2ReturnType {
     log.info("LocalCache handleLocalCacheAction", action, applicationDeploymentMap);
+
+    const actionType = (action as any)?.actionType;
+    if (
+      actionType === "createInstance" ||
+      actionType === "updateInstance" ||
+      actionType === "deleteInstance" ||
+      actionType === "deleteInstanceWithCascade"
+    ) {
+      const rejected = rejectPartialMutationInstanceAction(action as any);
+      if (rejected) {
+        return rejected;
+      }
+    }
+    if (actionType === "transactionalInstanceAction") {
+      const inner = (action as TransactionalInstanceAction).payload?.instanceAction;
+      if (inner) {
+        const rejected = rejectPartialMutationInstanceAction(inner);
+        if (rejected) {
+          return rejected;
+        }
+      }
+    }
 
     const result: Action2ReturnType = exceptionToActionReturnType(() =>
       this.store.getState().handleAction(action, applicationDeploymentMap)

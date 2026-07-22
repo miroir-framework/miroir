@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  Action2Error,
   getReduxDeploymentsStateIndex,
+  MIROIR_CACHE_SEGMENT_MARKER,
+  PARTIAL_MUTATION_REJECTED_MESSAGE,
   type ApplicationDeploymentMap,
   type EntityInstance,
   type EntityInstanceCollection,
@@ -197,6 +200,192 @@ describe("LocalCache segments (#214 Phase 2) — Redux", () => {
     });
     expect(state.current[partialIndex].entities[testInstanceUuid]).toMatchObject({
       name: "keep-me",
+    });
+  });
+
+  function seedFullAndPartial(localCache: LocalCache): void {
+    loadCollection(localCache, {
+      parentUuid: testEntityUuid,
+      applicationSection: "data",
+      instances: [
+        {
+          uuid: testInstanceUuid,
+          parentUuid: testEntityUuid,
+          name: "full-name",
+          body: "big",
+        } as EntityInstance,
+      ],
+    });
+    loadCollection(localCache, {
+      parentUuid: testEntityUuid,
+      applicationSection: "data",
+      attributes: ["name", "uuid"],
+      instances: [
+        {
+          uuid: testInstanceUuid,
+          parentUuid: testEntityUuid,
+          name: "partial-name",
+        } as EntityInstance,
+      ],
+    });
+  }
+
+  it("4.1 createInstance with partial marker returns Action2Error before mutating", () => {
+    const localCache = new LocalCache();
+    seedFullAndPartial(localCache);
+    const before = localCache.getState().presentModelSnapshot.current[partialIndex]?.segment;
+
+    const result = localCache.handleLocalCacheAction(
+      {
+        actionType: "createInstance",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        payload: {
+          application: testApplicationUuid,
+          applicationSection: "data",
+          objects: [
+            {
+              uuid: "66666666-6666-6666-6666-666666666666",
+              parentUuid: testEntityUuid,
+              name: "nope",
+              [MIROIR_CACHE_SEGMENT_MARKER]: "partial",
+            } as EntityInstance,
+          ],
+        },
+      },
+      applicationDeploymentMap
+    );
+
+    expect(result).toMatchObject({
+      status: "error",
+      errorMessage: PARTIAL_MUTATION_REJECTED_MESSAGE,
+    });
+    expect(
+      localCache.getState().presentModelSnapshot.current[partialIndex]?.segment
+    ).toEqual(before);
+  });
+
+  it("4.1 updateInstance with partial marker returns Action2Error", () => {
+    const localCache = new LocalCache();
+    seedFullAndPartial(localCache);
+
+    const result = localCache.handleLocalCacheAction(
+      {
+        actionType: "updateInstance",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        payload: {
+          application: testApplicationUuid,
+          applicationSection: "data",
+          objects: [
+            {
+              uuid: testInstanceUuid,
+              parentUuid: testEntityUuid,
+              name: "patched",
+              [MIROIR_CACHE_SEGMENT_MARKER]: "partial",
+            } as EntityInstance,
+          ],
+        },
+      },
+      applicationDeploymentMap
+    );
+
+    expect(result).toMatchObject({
+      status: "error",
+      errorMessage: PARTIAL_MUTATION_REJECTED_MESSAGE,
+    });
+    expect(
+      (localCache.getState().presentModelSnapshot.current[fullIndex]?.entities as any)?.[
+        testInstanceUuid
+      ]?.name
+    ).toBe("full-name");
+  });
+
+  it("4.2 after createInstance on full segment, sibling partial is stale", () => {
+    const localCache = new LocalCache();
+    seedFullAndPartial(localCache);
+
+    const result = localCache.handleLocalCacheAction(
+      {
+        actionType: "createInstance",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        payload: {
+          application: testApplicationUuid,
+          applicationSection: "data",
+          objects: [
+            {
+              uuid: "77777777-7777-7777-7777-777777777777",
+              parentUuid: testEntityUuid,
+              name: "new-full",
+              body: "x",
+            } as EntityInstance,
+          ],
+        },
+      },
+      applicationDeploymentMap
+    );
+
+    expect(result).toMatchObject({ status: "ok" });
+    const snap = localCache.getState().presentModelSnapshot;
+    expect(snap.current[partialIndex]?.segment?.freshness).toBe("stale");
+    expect(snap.current[partialIndex]?.entities?.[testInstanceUuid]).toMatchObject({
+      name: "partial-name",
+    });
+  });
+
+  it("4.2 after updateInstance on full segment, sibling partial is stale", () => {
+    const localCache = new LocalCache();
+    seedFullAndPartial(localCache);
+
+    localCache.handleLocalCacheAction(
+      {
+        actionType: "updateInstance",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        payload: {
+          application: testApplicationUuid,
+          applicationSection: "data",
+          objects: [
+            {
+              uuid: testInstanceUuid,
+              parentUuid: testEntityUuid,
+              name: "updated-full",
+              body: "bigger",
+            } as EntityInstance,
+          ],
+        },
+      },
+      applicationDeploymentMap
+    );
+
+    expect(
+      localCache.getState().presentModelSnapshot.current[partialIndex]?.segment?.freshness
+    ).toBe("stale");
+  });
+
+  it("4.2 after deleteInstance on full segment, sibling partial is stale", () => {
+    const localCache = new LocalCache();
+    seedFullAndPartial(localCache);
+
+    localCache.handleLocalCacheAction(
+      {
+        actionType: "deleteInstance",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        payload: {
+          application: testApplicationUuid,
+          applicationSection: "data",
+          objects: [
+            {
+              uuid: testInstanceUuid,
+              parentUuid: testEntityUuid,
+            } as EntityInstance,
+          ],
+        },
+      },
+      applicationDeploymentMap
+    );
+
+    const snap = localCache.getState().presentModelSnapshot;
+    expect(snap.current[partialIndex]?.segment?.freshness).toBe("stale");
+    expect(snap.current[partialIndex]?.entities?.[testInstanceUuid]).toMatchObject({
+      name: "partial-name",
     });
   });
 });

@@ -69,6 +69,7 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
+import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGuard.js";
 import {
   resolveEntitiesToFetchOnRefresh,
 } from "../1_core/cacheRefreshPolicy.js";
@@ -864,6 +865,16 @@ export class DomainController implements DomainControllerInterface {
     instanceAction: InstanceAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2VoidReturnType> {
+    const rejectedPartial = rejectPartialMutationInstanceAction(instanceAction);
+    if (rejectedPartial) {
+      log.error(
+        "DomainController handleInstanceAction rejected partial mutation (#214)",
+        instanceAction.actionType,
+        rejectedPartial
+      );
+      return Promise.resolve(rejectedPartial);
+    }
+
     const deploymentUuid = applicationDeploymentMap[instanceAction.payload.application];
 
     // log.info(
