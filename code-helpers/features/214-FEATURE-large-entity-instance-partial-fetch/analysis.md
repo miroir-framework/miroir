@@ -4,7 +4,7 @@ Related issue: https://github.com/miroir-framework/miroir/issues/214
 Follow-up: #208 · synergy with [#114](https://github.com/miroir-framework/miroir/issues/114)  
 TDD plan: [tdd-implementation-plan.md](./tdd-implementation-plan.md)
 
-Status: analysis + TDD plan (Option C′ favored incremental path; Option B remains long-term target).
+Status: analysis + TDD plan — **Option C′ (entity-bound segments)** is the favored delivery path. Instance-level completeness (classic Option B) is deferred / disfavored for near-term due to local-cache and monitoring complexity.
 
 ---
 
@@ -21,10 +21,11 @@ The terms below are used precisely throughout this document.
 | **Full object** | An entity instance carrying all attributes declared in its EntityDefinition. |
 | **Partial object** | An entity instance carrying only a declared subset of its attributes (a *projection*). Immutable; cannot be used as a create/update payload. |
 | **Projection** | An explicit allow-list of attribute names requested for a fetch. |
-| **Partial query** | A query whose extractor carries a projection constraint; its result set consists of partial objects. |
-| **Completeness metadata** | Per-instance metadata in the local cache recording whether an entry is `full` or `partial`, and in the partial case which attributes are present (`coveredFields`). |
-| **Freshness metadata** | Per-instance metadata recording whether an entry is `fresh` or `stale`. `stale` means UI hooks may still read it, but the next report/`ensureLoaded` cycle is expected to query the server. |
-| **Option C′** | Projected fetch on the wire **plus** writing partial objects into the **canonical** local cache with completeness + freshness metadata, remount-filled via the #114 report loader. Not pure Option C. |
+| **Partial query** | A query whose extractor carries a projection constraint (`attributes`); its result set consists of partial objects. |
+| **Segment** | An entity-bound slice of the local cache for one `(deployment, section, entity)`. At most **two** segments exist: **`full`** and **`partial`**. All instances inside a segment share the same completeness class — no mixed full/partial rows in one segment. |
+| **Segment freshness** | Segment-level `fresh` \| `stale`. UI may still read a stale segment; the next report/`ensureLoaded` for that segment is expected to query the server. |
+| **Segment projection** | For the `partial` segment only: the attribute allow-list that defines what every instance in that segment carries. Owned at **segment** level, not per instance. |
+| **Option C′** | Projected fetch on the wire **plus** writing into the **partial segment** of the local cache (with segment freshness), remount-filled via the #114 report loader. Queries without projection use the **full segment** (today’s behavior). Not pure Option C; not instance-level Option B. |
 
 ---
 
@@ -79,23 +80,23 @@ Impact: over-fetch from the persistence store is systemic across all backends.
 
 - Historically, `DomainController` refresh fetched whole entity collections and pushed them via `loadNewInstancesInLocalCache` (stages ending in data stage-C).
 - **#114** introduced per-Entity `cache.cacheAllInstancesOnRefresh`:
-  - `true` / absent → stage-C still loads all data instances for that Entity (full objects).
+  - `true` / absent → stage-C still loads all data instances for that Entity (full objects into today’s single slice = future **full segment**).
   - `false` → **omit** stage-C persistence read for that Entity (model stages A/B still load).
-  - Report-triggered fill: `ReportQueryLoadService` + `useEnsureReportQueryLoaded` + `createReportQueryLoadExecutor` write into the **canonical** local cache; selectors remain synchronous.
+  - Report-triggered fill: `ReportQueryLoadService` + `useEnsureReportQueryLoaded` + `createReportQueryLoadExecutor` write into the local cache; selectors remain synchronous.
   - Tracer: Miroir Blob with `cacheAllInstancesOnRefresh: false`.
 
-Impact: refresh is no longer uniformly “entity-wide full load”. Report UI still **requires** local-cache writes for selectors to see data. Any #214 design that refuses to write projected results into that cache collides with this architecture.
+Impact: refresh is no longer uniformly “entity-wide full load”. Report UI still **requires** local-cache writes for selectors to see data. Any #214 design that refuses to write projected results into that cache collides with this architecture — but writes should target the **partial segment**, not mix completeness into the full segment.
 
-## 2.5 Local cache assumes one completeness level per instance value
+## 2.5 Local cache assumes one slice per entity (full objects only)
 
-- Local cache state is `ids + entities` map (`EntityState`) with no completeness/projection metadata:
+- Local cache state is `ids + entities` map (`EntityState`) with no segment dimension and no projection metadata:
   - `packages/miroir-core/src/0_interfaces/2_domain/ReduxDeploymentsStateInterface.ts`
   - `packages/miroir-localcache-redux/src/4_services/localCache/LocalCacheSlice.ts`
   - `packages/miroir-localcache-zustand/src/4_services/localCache/LocalCacheSlice.ts`
 - Domain state contracts expose `EntityInstancesUuidIndex` (plain instance map):
   - `packages/miroir-core/src/0_interfaces/2_domain/DomainControllerInterface.ts` (`L56-L71`)
 
-Impact: no native way to represent partial/full coexistence in the local cache for the same entity key.
+Impact: today’s map is effectively the **full segment**. There is no second slot for a homogeneous partial population.
 
 ## 2.6 Mutation path does not distinguish full vs partial payloads
 
@@ -104,7 +105,7 @@ Impact: no native way to represent partial/full coexistence in the local cache f
 - DomainController sends the payload to the server (persistence store) then mirrors the change into the local cache:
   - `packages/miroir-core/src/3_controllers/DomainController.ts` (`handleInstanceAction`, `L863+`)
 
-Impact: by type contract, partial objects cannot currently be prevented from mutation payloads sent to the persistence store.
+Impact: by type contract, partial objects cannot currently be prevented from mutation payloads sent to the persistence store. Mutations must remain **full-segment-only**.
 
 ---
 
@@ -113,180 +114,104 @@ Impact: by type contract, partial objects cannot currently be prevented from mut
 1. Projection gap: query schema/action contracts must carry requested fields.
 2. Transport gap: REST and persistence-store interface signatures need projection-aware variants.
 3. Persistence store gap: store implementations must fetch projected attributes only (or derive projected objects from full records when the backend cannot project natively).
-4. Local cache semantics gap: the local cache must track completeness/projection coverage per instance or per view.
-5. Mutation safety gap: runtime and schema checks must reject partial object payloads for `createInstance` / `updateInstance` (at both the local cache ingestion point and the server endpoint).
-6. Immutability gap: partial objects need explicit immutability guarantees.
-7. Selector gap: query selectors must behave correctly when the local cache holds a mix of full and partial instances.
+4. **Segment gap:** local cache must expose at most two segments per `(deployment, section, entity)` — `full` and `partial` — with segment-level projection + freshness on the partial segment.
+5. **Routing gap:** hooks/selectors must choose segment by query shape (`attributes` present → partial; else → full). No per-instance completeness test inside a segment.
+6. Mutation safety gap: reject partial payloads for `createInstance` / `updateInstance`; mutation mirror writes only the full segment (and invalidate or mark stale the partial segment).
+7. Immutability gap: partial objects need explicit immutability guarantees.
+8. Loader gap: #114 `ensureLoaded` must write projected fills into the partial segment (and full fills into the full segment).
 
 ---
 
-## 4. Three design options
+## 4. Design options
 
-## Option A - Separate partial-view slot in the local cache (query-result scoped)
-
-Summary:
-- Keep the existing canonical entity slot in the local cache unchanged (full objects only).
-- Add a dedicated "partial views" slot in the local cache, keyed by `(deployment, section, entity, projectionSignature, filter/order/paging key)`.
-- Partial queries read/write this separate local cache slot only; results are never merged into the canonical full-object slot.
-- The server (and underlying persistence stores) still serves the projected subset of attributes.
-
-Pros:
-- Lowest disruption to existing selectors and mutation flow.
-- No immediate change to canonical entity maps in the local cache.
-- Clear safety boundary: partial objects never enter the canonical local cache slot.
-
-Cons:
-- Data duplication: the same entity row can exist both as a full object in the canonical local cache slot and as a partial object in the views slot.
-- Harder consistency: when a full object is updated or deleted in the canonical local cache slot, the views slot must be invalidated.
-- More invalidation paths and additional memory overhead.
-
-Impact assessment:
-- Functional risk: medium (staleness divergence across the two local cache slots).
-- Implementation effort: medium.
-- Performance gain: good on network (fewer bytes from the persistence store); mixed on local cache memory due to duplication.
-- Backward compatibility: high.
-
-### Sufficiency check for Option A
-
-When a query on Entity A is executed against the local cache:
-
-1. **Projection matching**: compare the query's projection (attribute allow-list) against the projection key stored in the partial-views slot. An exact match (or a super-set already cached) is sufficient; a request for an attribute not covered requires a new fetch from the server/persistence store.
-2. **Filter/order/paging scope**: the cached slot is also keyed by the filter and paging parameters. Any difference — even a narrower filter — must be treated as a cache miss and re-fetched from the server, because the partial-views slot holds only the result of the *exact* previous query, not a superset from which a sub-filter could be derived in-memory.
-3. **Staleness policy**: the partial-views slot carries no inherent freshness guarantee. A staleness budget (TTL, or explicit invalidation on write to the canonical slot) must be defined; absent that, every navigation away and back would re-fetch.
-4. **Canonical upgrade**: if the canonical local cache slot already holds a full object for the requested primary key, the full object can satisfy any projection query in-memory without going to the server — the sufficiency check should consult the canonical slot first.
-
-Implementation implication: the sufficiency check requires a two-step lookup (canonical slot first, then partial-views slot), plus a projection-coverage comparison on each cache hit.
-
-## Option B - Unified canonical local cache with completeness metadata (long-term target)
+## Option A - N partial-view slots (query-result scoped)
 
 Summary:
-- Keep one canonical instance map per entity key in the local cache.
-- Each local cache entry carries completeness metadata:
-  - completeness state (`full` | `partial`)
-  - covered field set for partial state
-  - optional provenance/version markers.
-- A projection fetch from the server merges into the canonical local cache entry and updates coverage metadata.
-- A full fetch from the server upgrades the local cache entry to `full`.
-- Mutation actions (`createInstance` / `updateInstance`) require `full` coverage (or an explicit required-field policy), otherwise the action is rejected before reaching the server.
+- Keep the existing canonical entity slot (full objects only).
+- Add many “partial views” keyed by `(deployment, section, entity, projectionSignature, filter/order/paging key)`.
+- Partial queries read/write those slots only.
 
-Pros:
-- Single source of truth for identity in the local cache.
-- No duplicate rows across full/partial slots.
-- Deterministic merge/upgrade semantics.
-- Strong foundation for future cache policy work from #208.
+Pros: clear isolation from full objects.  
+Cons: unbounded slot count, invalidation matrix, memory churn; heavier than needed for #214’s first cut.
 
-Cons:
-- Requires touching core local cache state contracts and selectors.
-- Broader rollout across Redux and Zustand implementations.
-- Requires careful migration to avoid regressions.
+**Not favored** as primary — see **segments** (C′) which caps at **two** slots per entity.
 
-Impact assessment:
-- Functional risk: medium-low (if invariants are enforced centrally).
-- Implementation effort: high.
-- Performance gain: high (fewer bytes from the persistence store + controlled local cache memory growth).
-- Backward compatibility: medium (internal local cache contract evolution needed).
-
-### Sufficiency check for Option B
-
-When a query on Entity A is executed against the local cache:
-
-1. **Look up the local cache entry**: retrieve the entry for the requested primary key (or all entries for `getInstances`).
-2. **Inspect completeness metadata**:
-   - If the entry is `full`, any projection can be satisfied in-memory — no fetch needed.
-   - If the entry is `partial`, compare the query's requested attribute set against the `coveredFields` set in the metadata. If the covered set is a superset of the requested set, the query is satisfiable in-memory. Otherwise, a fetch with the missing attributes (or a full fetch) is required from the server.
-3. **Missing entries**: if no local cache entry exists for the key, fetch from the server with the declared projection.
-4. **Filter/order/paging scope**: for `getInstances`-style queries, the local cache must hold a complete result set for the scope (entity + filter + order). A projection hit on individual entries is insufficient if the filter scope was never fully loaded; a "scope completeness" marker (analogous to entry-level coverage, but for result-set membership) is therefore also needed.
-
-Implementation implication: the sufficiency check is a two-level test — entry-level field coverage, and scope-level membership coverage. Both must pass before the local cache can serve the query without a server round-trip.
-
-## Option C - No persistent partial objects; projection only as ephemeral query result
+## Option B - Unified map with **instance-level** completeness metadata
 
 Summary:
-- Support projection at the persistence-store/query layer so the server returns fewer bytes, but do not store partial objects in the local cache at all.
-- Partial query results are transient output of query execution, consumed and discarded by the UI component; they are never written to the local cache.
-- The local cache stores only full instances.
+- One map per entity; each instance carries `full | partial`, `coveredFields`, optional freshness.
+- Selectors/extractors must test each instance for inclusion and attribute coverage; mixed completeness inside one slice is normal.
 
-Pros:
-- Very low local cache-model complexity.
-- Minimal impact on existing local cache *structures*.
-- Strong separation of responsibilities (local cache = full objects only; projection = a read-optimisation concern of the query engine).
+Pros: single identity map; elegant merge/upgrade story on paper.  
+Cons (**decisive for deferral**):
+- Query execution against local cache must inspect **every** instance’s meta (inclusion + coverage).
+- Mixed full/partial in one slice complicates error management, monitoring, and “what does this Entity look like in cache?” diagnostics.
+- Higher Redux/Zustand churn and selector complexity than segment routing.
 
-Cons:
-- Repeated queries re-fetch the same projected data unless some other client store appears.
-- Limited benefit for UI flows that rely on local-cache-driven re-use.
-- Contradicts the issue intent of partial objects living in application space with lifecycle.
-- **After #114: architectural collision** — Reports and related UI are fed by synchronous selectors over the local cache; `ensureLoaded` exists precisely to fill that cache. Ephemeral-only results force a second async data path (or render-time fetch), undoing #114’s “render never dispatches / single-flight ensure” contract. The apparent “low cache complexity” is paid back as **hook/selector complexity** across Reports and any consumer that currently assumes cache-backed sync reads.
+Impact assessment: high implementation and operational cost relative to benefit for the first #214 slices.
 
-Impact assessment:
-- Functional risk: **high for UI architecture** (not for store backends alone).
-- Implementation effort: low-medium for projection plumbing; **high** if UI must be re-plumbed around ephemeral bags.
-- Performance gain: medium on network; low on client re-use; **negative** if remount storms reappear.
-- Backward compatibility: high for cache maps; **low** for #114 Report path.
+**Deferred** — not the near-term vehicle. May be revisited only if segment model proves insufficient.
 
-### Why pure Option C is not worth it (post-#114)
+## Option C - Ephemeral partials only (never write to local cache)
 
-| Hoped benefit of pure C | Post-#114 reality |
-|---|---|
-| Skip local-cache evolution | True, but then Reports cannot consume projected data without a parallel channel |
-| Network savings | Still available under C′ / B without abandoning the cache |
-| Simpler mental model | False once UI needs both “cache for full” and “ephemeral for partial” |
-| Positive points vs effort | **Insufficient** — pay projection work *and* fracture the selector architecture |
+Summary: project on the wire; discard results after the consumer finishes; local cache stays full-only.
 
-**Verdict:** reject pure Option C as the delivery vehicle for #214. Keep its *network* idea; drop its *never write to cache* rule.
+**Rejected after #114** — Reports need sync selectors over cache; ephemeral bags reopen a parallel UI path. See prior critique in history / TDD preamble.
 
-## Option C′ - Projected fetch + stale/partial entries in the canonical local cache (favored incremental path)
+## Option C′ - Entity-bound segments (favored)
 
 Summary:
 - Projection on the wire (Option C’s network win).
-- Write projected results into the **same** canonical local-cache slot as full instances, with:
-  - `completeness: full | partial` + `coveredFields` when partial
-  - `freshness: fresh | stale`
-- UI hooks may render stale/partial data at will after refresh (or after a prior report fill).
-- **Report mount** (and the existing #114 `ReportQueryLoadService.ensureLoaded`) triggers a server query when the entry is missing, incomplete for the requested projection, `stale`, or `forceRefresh`.
-- Mutations still require full objects (same safety as Option B).
+- Local cache per `(deployment, section, entity)` has **at most two segments**:
+  - **`full`** — today’s behavior; all instances are full objects.
+  - **`partial`** — homogeneous partial instances under one **segment-level** projection allow-list; segment-level freshness `fresh | stale`.
+- **Routing (hook- or selector-level):**
+  - extractor / load request carries `attributes` → run against **partial** segment;
+  - otherwise → run against **full** segment (default; current behavior).
+- **No instance-level completeness decision** for query inclusion: a segment is all-or-nothing for completeness class.
+- **#114 remount:** `ensureLoaded` with projection fills/refreshes the **partial** segment; without projection fills the **full** segment. Segment `stale` or projection mismatch ⇒ one server round-trip (single-flight).
+- Mutations use / write **full** segment only; partial segment is invalidated or marked `stale` on successful mutation of that entity.
 
-This is a **subset / first slice of Option B**: entry-level completeness + freshness + #114 remount load, without yet requiring full scope-level completeness for arbitrary filter/order/paging (that remains Option B’s later phase).
+### Why segments beat instance-level B for this issue
 
-Pros:
-- Preserves #114 invariants (sync selectors, effect-driven load, single-flight).
-- Delivers #214 partial objects in application space with lifecycle.
-- Network savings without dual caches (avoids Option A).
-- Natural upgrade path to full Option B (add scope markers later).
+| Concern | Instance-level B | Segment C′ |
+|---|---|---|
+| Query inclusion | Per-instance meta tests | Segment pick once, then normal extractor over homogeneous map |
+| Mixed rows in a slice | Yes | **Forbidden** |
+| Monitoring / errors | “Which rows are partial?” noise | Segment status + projection signature |
+| Local-cache churn | Meta on every EntityAdapter entry | Second sibling map + small segment header |
+| Cap on views | N/A (one map) | **≤ 2 segments** per entity |
 
-Cons:****
-- Still requires local-cache meta (not zero cache change).
-- Sufficiency logic must understand projection coverage + freshness (shared with B).
-- Refresh may still leave large Entities empty until report mount (#114 lazy) — seeding “stale partial headers” on refresh is optional and deferred.
+### Sufficiency check for Option C′ (segment-level)
 
-Impact assessment:
-- Functional risk: medium-low (central meta + reuse of proven loader).
-- Implementation effort: medium (projection + meta + loader extension; not full B scope markers).
-- Performance gain: high on network for large attributes; good remount re-use when `fresh` + covering fields.
-- Backward compatibility: medium (internal meta; default without projection stays full/fresh).
+When `ensureLoaded` / a selector runs for Entity E:
 
-### Sufficiency check for Option C′ (entry-level, report path)
+1. **Choose segment:** `attributes` present → `partial`; else → `full`.
+2. **Full segment:** if missing and lazy (#114) → fetch full (or empty interim); if `fresh` with data → short-circuit; if `stale` / `forceRefresh` → refetch full into full segment.
+3. **Partial segment:**
+   - If absent → projected fetch → replace/create partial segment with that projection + `fresh`.
+   - If present and segment projection **equals** (or is a declared compatible match of) requested `attributes`, and freshness is `fresh` → short-circuit.
+   - If projection **mismatch**, or `stale`, or `forceRefresh` → one projected fetch → **replace** partial segment (homogeneous rebuild; no per-row merge).
+4. Do **not** satisfy a partial query by reading the full segment in the default path (optional later optimization: project-from-full in memory). Keeping paths separate preserves monitoring clarity for the first slices.
 
-When `ensureLoaded` runs for a report query with optional projection:
+Filter/order/paging **scope** completeness (membership of “all rows matching filter”) remains a later concern; report fingerprints already bound remount identity as in #114.
 
-1. If no local entry (and lazy-on-refresh Entity) → fetch with projection → write `partial`+`fresh` (or `full` if no projection).
-2. If entry `full` and `fresh` → short-circuit (no network).
-3. If entry `partial` and `fresh` and `coveredFields ⊇ requested` → short-circuit.
-4. If entry `stale` or coverage insufficient or `forceRefresh` → one server query (single-flight) → merge/upgrade meta.
+### Relation to Option A
 
-Filter/order/paging **scope** completeness remains out of C′ gate (see Option B § sufficiency #4); report fingerprints already limit remount identity as in #114.
+Segments are a **strictly smaller** dual-slot model than A’s N query-keyed views: one partial segment per entity, not one per (projection × filter × page). When a different projection is needed, the partial segment is rebuilt, not accumulated.
 
 ---
 
-## 4bis. Synergy with #114 and #208 (architecture context larger than one TDD slice)
+## 4bis. Synergy with #114 and #208
 
 ### #114 — cache usage regulation by Entity
 
-| Concern | #114 answer | #214 / C′ extension |
+| Concern | #114 answer | #214 / C′ (segments) |
 |---|---|---|
-| Who loads data for lazy Entities? | Report `ensureLoaded` | Same; request may carry `projection` |
-| Where do results live? | Canonical local cache | Same; entries may be partial/stale |
-| Sync UI? | Selectors over cache | Unchanged; meta-aware later |
-| Refresh stage-C skip | `cacheAllInstancesOnRefresh: false` | Orthogonal to projection; may later seed stale partials |
+| Who loads data for lazy Entities? | Report `ensureLoaded` | Same; request may carry `projection` → **partial segment** |
+| Where do results live? | Local cache entity slice | **Full or partial segment** under that entity |
+| Sync UI? | Selectors over cache | Selectors take an explicit **segment** (or infer from extractor) |
+| Refresh stage-C skip | `cacheAllInstancesOnRefresh: false` | Orthogonal; stage-C still targets **full** segment when it runs |
 
 Documents: `code-helpers/features/114-FEATURE- enable of cache usage regulation policy by Entity/{analysis.md,tdd-implementation-plan.md}`.
 
@@ -295,109 +220,99 @@ Documents: `code-helpers/features/114-FEATURE- enable of cache usage regulation 
 | Axis | Primary owner | Notes |
 |---|---|---|
 | Cardinality (# instances) | #114 (all-or-none) + later windows | Projection alone does not shrink row count |
-| Payload size (bytes/instance) | **#214** | Attribute projection |
-| Freshness | #208 policy + **C′ `stale`** + #114 remount | `neverTrustCache` ≈ always treat as stale / forceRefresh |
+| Payload size (bytes/instance) | **#214** | Attribute projection into **partial segment** |
+| Freshness | #208 + **segment `stale`** + #114 remount | `neverTrustCache` ≈ forceRefresh on the chosen segment |
 
-Do not merge “lazy on refresh” with “always stale”: a lazy Entity can still hold a `fresh` partial after report fill until invalidated.
+Do not conflate “lazy on refresh” with “segment stale”: after a report fill, the partial segment can be `fresh` until invalidated.
 
 ### Larger concerns (tracked here; not all in first TDD gates)
 
-1. **Scope completeness** (filter/order/paging membership) — Option B; deferred past C′.
-2. **Refresh seeding of stale partial headers** vs absent-until-report — product choice; default keep #114 absent for Phase 1–5.
-3. **Backend-native projection** (Postgres `SELECT cols`) vs filter-after-full-read (filesystem) — performance quality, same client contract.
-4. Dual Redux/Zustand meta parity — mandatory for any cache meta work.
-
-These concerns are why analysis recommends C′ as the **incremental vehicle**, with Option B as the **end-state**, rather than treating pure C as a cheap shortcut.
+1. **Projection mismatch policy** on partial segment: always replace vs require exact attribute-list equality for hit (default: exact match for hit; mismatch ⇒ replace).
+2. **Optional** “project from full segment in memory” to avoid network when full is present — deferred (blurs monitoring).
+3. Scope completeness for filter/order/paging — later.
+4. Whether refresh may seed a **stale partial** segment (headers) vs #114 absent-until-report — default keep absent for Phase 1–5.
+5. Redux + Zustand segment parity.
+6. Instance-level Option B — only if segments fail product needs.
 
 ---
 
 ## 5. Recommendation
 
-**Long-term target:** Option B (unified canonical cache + completeness, including scope markers).  
-**Near-term delivery vehicle:** **Option C′** (projection + entry-level partial/stale meta + #114 remount `ensureLoaded`).  
-**Reject:** pure Option C (ephemeral-only) after #114.  
-**Avoid as primary:** Option A (dual slots), unless a temporary spike proves otherwise.
+**Near-term delivery vehicle:** **Option C′ — entity-bound full/partial segments** + projection on the wire + #114 remount fill.  
+**Reject:** pure Option C (ephemeral-only).  
+**Defer:** instance-level Option B (mixed completeness in one map).  
+**Avoid as primary:** Option A’s unbounded view keys (segments already give the dual-slot isolation without N keys).
 
-Why this split:
+Why:
 
-1. Option B still best matches #214’s full question (partial/full identity + future scope coverage) and #208 provenance direction.
-2. Pure Option C’s “save cache work” is illusory once Reports must stay selector-driven.
-3. C′ reuses #114’s loader/hook architecture, so implementation risk stays in projection + meta, not UI re-architecture.
-4. C′ is a strict subset of B’s entry-level story; scope markers can land in a follow-up without rewriting the cache slot again.
+1. Preserves #114’s sync selectors / `ensureLoaded` contract without instance-level meta sprawl.
+2. Homogeneous segments simplify query execution, errors, and monitoring.
+3. Caps local-cache structural growth at **+1 segment** per entity that uses partials.
+4. Still delivers #214 partial objects in application space with lifecycle and mutation safety.
 
 Pragmatic rollout (see [tdd-implementation-plan.md](./tdd-implementation-plan.md)):
 
 - Phase 1: projection contract on extractors / REST / at least one backend.
-- Phase 2: local-cache completeness + freshness meta (Redux + Zustand).
-- Phase 3: extend #114 report executor/`ensureLoaded` for projection + stale remount.
-- Phase 4: mutation rejects partial.
-- Phase 5: tracer E2E (e.g. Blob list without `contents`).
-- Later (Option B remainder): scope-level completeness for filter/order/paging.
+- Phase 2: local-cache **segment** plumbing (full = existing; add partial + segment header).
+- Phase 3: hook/selector routing + #114 loader writes to the correct segment; segment stale remount.
+- Phase 4: mutation rejects partial; mutations touch full segment only; invalidate/stale partial.
+- Phase 5: tracer E2E (e.g. Blob list without `contents` → partial segment).
 
 ---
 
-## 6. Proposed invariants (for Option B / C′)
+## 6. Proposed invariants (Option C′ segments)
 
-1. Identity invariant: one canonical local cache entry per `(deployment, section, entity, primaryKey)`.
-2. Coverage invariant: each canonical local cache entry carries completeness metadata (`full` | `partial` + `coveredFields` when partial).
-3. Freshness invariant (C′): each entry carries `fresh` | `stale`; `stale` does not delete data and does not by itself forbid UI read; it obliges the next `ensureLoaded` (when consulted) to hit the server.
-4. Upgrade invariant: a full fetch from the server always supersedes partial coverage in the local cache and sets `fresh`.
-5. Merge invariant: a projected fetch merges only the projected fields into the local cache entry; un-fetched fields remain unchanged; coverage expands.
-6. Safety invariant: mutation payloads sent to the server must be full objects (or satisfy an explicit required-coverage policy); the DomainController enforces this before the REST call.
-7. Immutability invariant: partial query results exposed to consumers (UI components, selectors) are read-only snapshots.
-8. Loader invariant (#114): Report render never dispatches network I/O; only `ensureLoaded` / effects do; projected fills use the same single-flight loader.
+1. **Segment cardinality:** for each `(deployment, section, entity)`, at most one `full` segment and at most one `partial` segment.
+2. **Homogeneity:** every instance in the full segment is a full object; every instance in the partial segment is a partial object under the **same** segment projection.
+3. **No instance-level completeness:** query routing never inspects per-row `coveredFields`; it selects a segment, then runs the extractor on that map.
+4. **Routing:** presence of projection/`attributes` on the query/load request selects the partial segment; absence selects the full segment.
+5. **Freshness:** segment-level `fresh | stale`; stale does not forbid UI read; `ensureLoaded` for that segment must hit the server when consulted.
+6. **Partial replace:** a projected fetch rebuilds the partial segment as a unit (no per-row merge with different projections).
+7. **Mutation safety:** create/update payloads must be full objects; DomainController rejects partials; successful mutations write the full segment and invalidate or mark stale the partial segment for that entity.
+8. **Immutability:** partial objects exposed to consumers are read-only snapshots.
+9. **Loader (#114):** Report render never dispatches network I/O; only `ensureLoaded` / effects do; projected fills target the partial segment.
 
 ---
 
 ## 7. Implementation surfaces to change
 
-- Schemas / generated types:
-  - extractor definitions (`ExtractorInstancesByEntity`, `ExtractorByPrimaryKey`)
-  - `InstanceAction` if projection-enabled direct-get actions are retained.
-- Server / transport:
-  - `PersistenceStoreController` projection-aware get APIs
-  - `RestServer` request/response projection carriage.
-- Persistence store backends:
-  - filesystem, indexedDb, postgres instance-store mixins and SQL generators.
-- Local cache implementations:
-  - Redux and Zustand `LocalCacheSlice` state models + reducers + selectors.
-- Domain/query runners:
-  - in-memory and SQL runners honoring projection contracts and local cache sufficiency checks.
-- Guardrails:
-  - mutation validation in `DomainController` and/or action schema validators (blocks partial objects before they reach the server).
+- Schemas / generated types: extractor `attributes?: string[]`.
+- Server / transport / persistence backends: projection-aware reads.
+- Local cache (Redux + Zustand): sibling **partial segment** + segment header (`projection`, `freshness`); existing map becomes the full segment.
+- Selectors / report hooks: segment selection from extractor shape.
+- `ReportQueryLoadService` / executor: write target = segment; fingerprint includes segment + projection.
+- DomainController mutations: full-only; partial-segment invalidation.
 
 ---
 
 ## 8. Test impact and required coverage
 
-Integration-first coverage should include:
-
-1. Projection query to the server returns only the requested fields (not the full object).
-2. Partial result stored in the local cache with correct completeness **and** freshness metadata.
-3. Subsequent full fetch from the server upgrades the same local cache entry to `full` + `fresh`.
-4. Mutation (`createInstance` / `updateInstance`) with a partial object payload is rejected by the DomainController with an explicit error before reaching the server.
-5. Local cache coherence across create/update/delete after partial/full coexistence.
-6. Persistence store parity: filesystem, indexedDb, postgres all satisfy projection contracts (native or filter-after-read).
-7. **#114 synergy:** `ensureLoaded` projected fill; remount short-circuit when `fresh` + covering fields; exactly one refetch when `stale` / `forceRefresh`.
-8. Non-regression: eager Entities and Blob lazy path without projection still behave as today.
+1. Projection query returns only requested fields on the wire.
+2. Projected fill lands in the **partial** segment with matching segment projection + `fresh`.
+3. Non-projected fill lands in the **full** segment; partial segment untouched (unless invalidate policy says otherwise).
+4. Selector/hook with `attributes` reads partial segment only; without reads full segment only — **no mixed-slice behavior**.
+5. Projection mismatch or segment `stale` / `forceRefresh` ⇒ exactly one refetch and partial-segment replace.
+6. Mutation with partial payload rejected; mutation of full instance does not leave partial segment silently “fresh” with outdated rows (invalidate or stale).
+7. #114 single-flight + effect contract preserved.
+8. Non-regression: eager Entities and Blob lazy path without projection still use the full segment as today.
 
 ---
 
 ## 9. Open decisions for implementation (Gate 0)
 
-1. Projection syntax: allow-list only (`attributes: string[]`) vs richer field paths. **Default for C′:** allow-list.
-2. Required coverage for `updateInstance`: full-only or "fields-being-updated must be present". **Default:** full-only.
-3. Metadata location: inline with entities vs sidecar map keyed by same index.
-4. Policy defaults for entities without explicit cache/projection directives. **Default:** full fetch, `completeness: full`, `freshness: fresh`.
-5. Exact immutability mechanism (frozen objects vs readonly typing + discipline).
-6. Confirm delivery vehicle **Option C′** (vs pure C / big-bang B).
-7. Tracer Entity for Phase 5 (Blob without `contents` vs other).
-8. Whether refresh may seed **stale partial headers**, or keep #114 absent-until-report for first slices.
+1. Projection syntax: allow-list only (`attributes: string[]`). **Default:** allow-list.
+2. Partial-segment hit rule: exact attribute-list equality vs sorted-set equality vs “requested ⊆ segment projection”. **Default proposal:** sorted-set equality for hit; otherwise replace.
+3. On full-segment mutation: **invalidate** (drop) partial segment vs mark `stale`. **Default proposal:** mark `stale` (UI can still show list until remount refresh).
+4. Segment key includes `applicationSection`? **Default:** yes (`deployment, section, entity`).
+5. Immutability mechanism (freeze vs readonly discipline).
+6. Tracer for Phase 5 (Blob without `contents`?).
+7. Refresh seeding of stale partial segment vs #114 absent-until-report. **Default:** absent until report.
+8. Confirm **defer instance-level Option B**.
 
 ---
 
 ## 10. Short conclusion
 
-The stack remains largely full-object centric (schema, API, persistence store, local cache), but **#114 already changed the load topology**: lazy Entities skip refresh stage-C and rely on report `ensureLoaded` writing into the canonical local cache for sync selectors.
+#114 made Reports depend on local-cache fills and sync selectors. #214 needs projected fetches and partial objects without blowing up that architecture.
 
-**Pure Option C** (project on the wire, never write partials) does not buy enough positive points after that change — it would reopen a parallel UI data path. **Option C′** keeps projection, stores partials with `stale`/`fresh` + completeness in the canonical cache, and remount-refreshes via #114. **Option B** remains the long-term target once scope-level completeness is needed.
+**Pure Option C** (never cache partials) is rejected. **Instance-level Option B** (mixed completeness in one map) is deferred — too costly for query inclusion, errors, and monitoring. **Option C′** stores at most two **homogeneous segments** per entity (`full` / `partial`), routes at hook/selector level by whether the query specifies `attributes`, and remount-refreshes via #114 `ensureLoaded` with segment-level freshness.
