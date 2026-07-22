@@ -1,0 +1,53 @@
+{
+  "uuid": "a8b9c0d1-2e3f-4a5b-6c7d-8e9f0a1b2c3d",
+  "parentName": "EntityDefinition",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
+  "conceptLevel": "Model",
+  "name": "ApplicationEvolutionTrace",
+  "description": "Definition of the ApplicationEvolutionTrace entity: a trace root per application/branch.",
+  "viewAttributes": ["name", "applicationUuid", "branchName", "createdAt", "uuid"],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "optional": true,
+        "tag": { "value": { "defaultLabel": "Name", "display": { "editable": true } } }
+      },
+      "applicationUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Application",
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityApplicationSection": "data",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "branchName": {
+        "type": "string",
+        "tag": { "value": { "defaultLabel": "Branch Name", "display": { "editable": false } } }
+      },
+      "createdAt": {
+        "type": "string",
+        "tag": { "value": { "defaultLabel": "Created At", "display": { "editable": false } } }
+      }
+    }
+  }
+}

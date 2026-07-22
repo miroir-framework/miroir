@@ -13,7 +13,23 @@ Related:
 
 ---
 
-## Settled decisions (from your inputs)
+## Progress summary
+
+| Phase | Title | Status | Tests |
+|---|---|---|---|
+| 0 | Lock contracts and fixtures | ✅ DONE | 6/6 |
+| 1 | Introduce WP1 entities and generated types | ✅ DONE | 16/16 |
+| 2 | Persist raw trace events from action flow | 🔲 TODO | — |
+| 3 | Enforce section/app tracking policy | 🔲 TODO | — |
+| 4 | Hybrid compaction model (read-side cursor) | 🔲 TODO | — |
+| 5 | Initial squashed baseline generation | 🔲 TODO | — |
+| 6 | #15-compatible definition-version resolution | 🔲 TODO | — |
+| 7 | Display surfaces (reports + menu wiring) | 🔲 TODO | — |
+| 8 | End-to-end WP1 tracer bullet | 🔲 TODO | — |
+
+---
+
+
 
 | Decision | Choice |
 |---|---|
@@ -120,7 +136,7 @@ Expected: pre-existing pass/fail counts unchanged (`5 failed | 74 passed` baseli
 
 ---
 
-## Phase 1 — Introduce WP1 entities and generated types
+## Phase 1 — Introduce WP1 entities and generated types  ✅ DONE
 
 ### 1.1 RED
 Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.schema.unit.test.ts`
@@ -555,24 +571,36 @@ Target files (done):
 - `packages/miroir-core/src/2_domain/evolutionTracePolicy.ts`
 - `packages/miroir-core/tests/2_domain/evolutionTracePolicy.unit.test.ts`
 
-### Phase 1 — Add WP1 entities (model + types)
-- [ ] Create Entity JSON assets for `ApplicationEvolutionTrace` and `ApplicationEvolutionTraceEvent`.
-- [ ] Create matching EntityDefinition JSON assets.
-- [ ] Export new assets from the deployment package index.
-- [ ] Add both entities to the default Miroir meta-model assembly.
-- [ ] Write schema validation test file (RED).
-- [ ] Run `npm run devBuild -w miroir-core` (regenerate types) (GREEN).
-- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.schema` → **≥ 4/4 pass**.
-- [ ] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
-- [ ] Verify NON-REGRESSION: `zodParseCheckMiroirTransformerDefinitions`, `schemaForDeployment` pass.
+### Phase 1 — Add WP1 entities (model + types) ✅ DONE
+- [x] Create Entity JSON assets for `ApplicationEvolutionTrace` and `ApplicationEvolutionTraceEvent`.
+- [x] Create matching EntityDefinition JSON assets.
+- [x] Export new assets from the deployment package index.
+- [x] Add both entities to the default Miroir meta-model assembly.
+- [x] Update `getMiroirFundamentalJzodSchema.ts` — add 2 new parameters and context entries.
+- [x] Update `generate-ts-types.ts` — import and pass new entityDefs to schema generator.
+- [x] Write schema validation test file (RED).
+- [x] Run `npm run devBuild -w miroir-core` (regenerate types) (GREEN).
+- [x] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.schema` → **16/16 pass** (incl. TS type assignability tests).
+- [x] Verify NON-REGRESSION: `zodParseCheckMiroirTransformerDefinitions` → **32/32 pass**.
 
-Target files:
-- `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/*.json`
-- `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/*.json`
-- `packages/miroir-test-app_deployment-miroir/index.ts`
-- `packages/miroir-test-app_deployment-miroir/src/Model.ts`
-- `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/*` (generated)
-- `packages/miroir-core/tests/2_domain/evolutionTrace.schema.unit.test.ts` (new)
+Generated types in `miroirFundamentalType.ts`:
+- `ApplicationEvolutionTrace`: `{ uuid, parentUuid, applicationUuid, branchName, createdAt, ... }`
+- `ApplicationEvolutionTraceEvent`: `{ uuid, parentUuid, traceRootUuid, sequenceNumber, operationType, applicationSection, compactionLevel, timestamp, definitionVersionResolution, targetEntityUuid, ... }`
+- Matching Zod validators `applicationEvolutionTrace` and `applicationEvolutionTraceEvent` (used in parse tests).
+
+Target files (done):
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/de089f57-....json` (Entity: ApplicationEvolutionTrace)
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/f4c2b3a1-....json` (Entity: ApplicationEvolutionTraceEvent)
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/a8b9c0d1-....json` (EntityDefinition: ApplicationEvolutionTrace)
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b1c2d3e4-....json` (EntityDefinition: ApplicationEvolutionTraceEvent — 12 domain fields)
+- `packages/miroir-test-app_deployment-miroir/index.ts` (4 new exports)
+- `packages/miroir-test-app_deployment-miroir/index.d.ts` (4 new declare stubs)
+- `packages/miroir-test-app_deployment-miroir/src/Model.ts` (entities[] + entityDefinitions[])
+- `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` (2 params + 2 context entries)
+- `packages/miroir-core/scripts/generate-ts-types.ts` (2 imports + 2 args)
+- `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` (generated — contains new types)
+- `packages/miroir-core/src/index.ts` (exports for both types + Zod validators)
+- `packages/miroir-core/tests/2_domain/evolutionTrace.schema.unit.test.ts` (new — 10 tests)
 
 ### Phase 2 — Persist raw trace events in runtime flow
 - [ ] Write test for trace-event creation (RED).

@@ -36,6 +36,8 @@ import {
   entityDefinitionTest,
   entityDefinitionTransformerDefinition,
   entityDefinitionMiroirTest,
+  entityDefinitionApplicationEvolutionTrace,
+  entityDefinitionApplicationEvolutionTraceEvent,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
   localCacheEndpointVersionV1,
@@ -353,6 +355,8 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         entityDefinitionMiroirTest,
         entityDefinitionTransformerDefinition,
         entityDefinitionEndpoint,
+        entityDefinitionApplicationEvolutionTrace,
+        entityDefinitionApplicationEvolutionTraceEvent,
       );
       // console.log("miroir-core generateSchemas miroirFundamentalJzodSchema:", miroirFundamentalJzodSchema);
       _t_getMiroirFundamental = Date.now() - generateSchemasStartTime;

@@ -19,6 +19,8 @@ export { default as entityMiroirTest } from "./assets/miroir_model/16dbfe28-e1d7
 export { default as entityBlob } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/62209e4a-e429-4d7d-9b28-dcc1da6b51a2.json" with { type: "json" };
 export { default as entityCommit } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/73bb0c69-e636-4e3b-a230-51f25469c089.json" with { type: "json" };
 export { default as entityApplicationVersionCrossEntityDefinition } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bec933d-6287-4de7-8a88-5c24216de9f4.json" with { type: "json" };
+export { default as entityApplicationEvolutionTrace } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/de089f57-5fa5-4c0e-a43e-20f1a6df5a37.json" with { type: "json" };
+export { default as entityApplicationEvolutionTraceEvent } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Model - Entity Definitions (parentUuid = entityEntityDefinition = 54b9c72f)
@@ -43,6 +45,8 @@ export { default as entityDefinitionQueryVersionV1 } from "./assets/miroir_model
 // Additional EntityDefinitions
 export { default as entityDefinitionBlob } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c3179f1d-10bd-4b0f-9a6b-f118d8eb2312.json" with { type: "json" };
 export { default as entityDefinitionApplicationVersionCrossEntityDefinition } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c0b71083-8cc8-43db-bf52-572f1f03bbb5.json" with { type: "json" };
+export { default as entityDefinitionApplicationEvolutionTrace } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/a8b9c0d1-2e3f-4a5b-6c7d-8e9f0a1b2c3d.json" with { type: "json" };
+export { default as entityDefinitionApplicationEvolutionTraceEvent } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b1c2d3e4-5f6a-7b8c-9d0e-1f2a3b4c5d6e.json" with { type: "json" };
 // Aliases for backward compatibility ("Deployment" naming used in legacy tests)
 export { default as entityApplicationVersionCrossEntityDeployment } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bec933d-6287-4de7-8a88-5c24216de9f4.json" with { type: "json" };
 export { default as entityDefinitionApplicationVersionCrossEntityDeployment } from "./assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c0b71083-8cc8-43db-bf52-572f1f03bbb5.json" with { type: "json" };

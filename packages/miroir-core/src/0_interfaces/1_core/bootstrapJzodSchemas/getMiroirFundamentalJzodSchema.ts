@@ -209,6 +209,8 @@ export function getMiroirFundamentalJzodSchema(
   entityDefinitionMiroirTest: any,
   entityDefinitionTransformerDefinition: any,
   entityDefinitionEndpointDefinition: any,
+  entityDefinitionApplicationEvolutionTrace: any,
+  entityDefinitionApplicationEvolutionTraceEvent: any,
 // ): JzodReference {
   // ): any /** JzodReference, avoiding reference to ensure proper compilation */ {
   ): any /** MlSchema, avoiding reference to ensure proper compilation */ {
@@ -1713,6 +1715,8 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
+        applicationEvolutionTrace: entityDefinitionApplicationEvolutionTrace.mlSchema as any,
+        applicationEvolutionTraceEvent: entityDefinitionApplicationEvolutionTraceEvent.mlSchema as any,
         miroirAllFundamentalTypesUnion: {
           type: "union",
           definition: [

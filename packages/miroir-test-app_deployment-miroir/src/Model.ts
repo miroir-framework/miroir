@@ -78,6 +78,10 @@ import {
   undoRedoEndpointVersionV1,
   entityMiroirTest,
   entityDefinitionMiroirTest,
+  entityApplicationEvolutionTrace,
+  entityApplicationEvolutionTraceEvent,
+  entityDefinitionApplicationEvolutionTrace,
+  entityDefinitionApplicationEvolutionTraceEvent,
   miroirTest_adminTransformers,
   miroirTest_alterObject,
   miroirTest_ansiColumnsToJzodSchema,
@@ -156,6 +160,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     entitySelfApplicationVersion as Entity,
     entityMiroirTest as Entity,
     entityTheme as Entity,
+    entityApplicationEvolutionTrace as Entity,
+    entityApplicationEvolutionTraceEvent as Entity,
   ],
   entityDefinitions: [
     // bootstrap entities have to come first
@@ -173,6 +179,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityDefinitionSelfApplicationVersion as EntityDefinition,
     entityDefinitionMiroirTest as EntityDefinition,
     entityDefinitionTheme as EntityDefinition,
+    entityDefinitionApplicationEvolutionTrace as EntityDefinition,
+    entityDefinitionApplicationEvolutionTraceEvent as EntityDefinition,
   ],
   endpoints: [
     applicationEndpointV1 as any as EndpointDefinition,

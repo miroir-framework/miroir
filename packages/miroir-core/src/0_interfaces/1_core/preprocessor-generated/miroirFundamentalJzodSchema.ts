@@ -12419,6 +12419,262 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "applicationEvolutionTrace": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "applicationUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Application",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityApplicationSection": "data",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "branchName": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Branch Name",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Created At",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "applicationEvolutionTraceEvent": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "traceRootUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Trace Root",
+                "foreignKeyParams": {
+                  "targetEntity": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
+                  "targetEntityApplicationSection": "model",
+                  "targetEntityOrderInstancesBy": "applicationUuid"
+                }
+              }
+            }
+          },
+          "sequenceNumber": {
+            "type": "number",
+            "tag": {
+              "value": {
+                "defaultLabel": "Sequence Number",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "operationType": {
+            "type": "enum",
+            "definition": [
+              "createEntity",
+              "renameEntity",
+              "alterEntityAttribute",
+              "dropEntity",
+              "createEntityDefinition",
+              "updateEntityDefinition",
+              "createInstance",
+              "updateInstance",
+              "deleteInstance",
+              "squashedBaseline"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Operation Type",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "applicationSection": {
+            "type": "enum",
+            "definition": [
+              "model",
+              "data"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Application Section",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "compactionLevel": {
+            "type": "enum",
+            "definition": [
+              "raw",
+              "commit",
+              "version"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Compaction Level",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "targetEntityUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Target Entity",
+                "foreignKeyParams": {
+                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                  "targetEntityApplicationSection": "model",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "targetInstanceUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Target Instance",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "commitUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Commit",
+                "foreignKeyParams": {
+                  "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
+                  "targetEntityApplicationSection": "model",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "fromVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "From Version",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "toVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "To Version",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Timestamp",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "definitionVersionResolution": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "instanceParentDefinitionVersion",
+              "actionPayload",
+              "applicationVersionCrossEntityDefinition",
+              "unresolved"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Definition Version Resolution",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "targetDefinitionVersionUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Target Definition Version",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          }
+        }
+      },
       "miroirAllFundamentalTypesUnion": {
         "type": "union",
         "definition": [
