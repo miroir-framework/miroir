@@ -17,7 +17,7 @@
 | **3** | Hook/selector routing + `#114` loader → correct segment | **DONE** (2026-07-22) |
 | **4** | Mutation guardrails (partial forbidden; full segment only) | **DONE** (2026-07-22) |
 | **5** | Tracer entity end-to-end | **DONE** (2026-07-22) |
-| **6** | Acceptance / non-regression | Not started |
+| **6** | Acceptance / non-regression | **DONE** (2026-07-23) |
 
 ---
 
@@ -426,20 +426,28 @@ BlobList report extractorTemplates carry `attributes`; `resolveReportQueryLoadAt
 
 ---
 
-## Phase 6 — Acceptance / non-regression
+## Phase 6 — Acceptance / non-regression — **DONE** (2026-07-23)
 
-| Check | Covered by |
-|---|---|
-| No projection ⇒ full objects / full segment | 1.4, 2.2 |
-| Projection ⇒ wire subset + partial segment | 1.3, 2.1 |
-| ≤2 segments; homogeneous | 2.3 |
-| Routing by query shape, not per instance | 3.1 |
-| #114 single-flight preserved | 3.x |
-| Segment stale remount once | 3.4 |
-| Mutations reject partial; stale partial segment | 4.x |
-| Blob/lazy noise stays quiet | #114 + full-segment empty interim |
+| Check | Covered by | Gate 6 |
+|---|---|---|
+| No projection ⇒ full objects / full segment | 1.4, 2.2 | ✓ |
+| Projection ⇒ wire subset + partial segment | 1.3, 2.1 | ✓ |
+| ≤2 segments; homogeneous | 2.3 | ✓ |
+| Routing by query shape, not per instance | 3.1 (+ selector `__partial` routing) | ✓ |
+| #114 single-flight preserved | 3.x / hooks | ✓ |
+| Segment stale remount once | 3.4 | ✓ |
+| Mutations reject partial; stale partial segment | 4.x | ✓ |
+| Blob/lazy noise stays quiet | #114 + Blob tracer 5.x | ✓ |
 
-Non-regression pack: ConfigurationService startup; ReportHooks eager entities (full segment); Blob lazy path from #114.
+**Non-regression pack run (2026-07-23):**
+- `miroir-core`: instanceProjection (+ schema), localCacheSegment, reportQueryLoadSegment, partialMutationGuard, cacheRefreshPolicy, ReportQueryLoadService, createReportQueryLoadExecutor, ReduxDeploymentsStateQuerySelectors.segment, PersistenceStoreController.projection — **70** passed
+- `miroir-localcache-redux`: LocalCache.segments + Blob.partialFetch.tracer — **15** passed
+- `miroir-localcache-zustand`: LocalCache.segments — **9** passed
+- `miroir-standalone-app`: useReportQueryLoadService, useEnsureReportQueryLoaded, LocalCacheMonitorSummary — **13** passed
+
+**Gate 6:** acceptance checklist green — **DONE**.
+
+**Follow-ups (out of plan / optional):** refresh seeding of stale partial segment; Postgres native projection; in-memory project-from-full opt-in.
 
 ---
 
@@ -469,6 +477,6 @@ RIGHT:  1.1 RED→GREEN → segments → routing/#114 → mutations → tracer
 **Resolved by defaults (2026-07-22).** Remaining only for later phases:
 
 1. ~~Phase 5 tracer confirmation (Blob without `contents`?)~~ → **Blob** locked (Gate 5).
-2. Refresh seeding of stale partial segment (default: absent until report).
+2. Refresh seeding of stale partial segment (default: absent until report) — **deferred** (post-#214).
 
-**Next coding slice:** **Phase 6 — Acceptance / non-regression**.
+**Plan complete through Gate 6** (2026-07-23).
