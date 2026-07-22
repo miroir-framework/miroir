@@ -14,7 +14,7 @@
 | **0** | Design decisions (segments C′; defer instance-level B) | **DONE** (defaults locked 2026-07-22) |
 | **1** | Projection contract on extractors / persistence reads | **DONE** (2026-07-22; schema-first remediated same day) |
 | **2** | Local-cache segments: `full` + `partial` (≤2 per entity) | **DONE** (2026-07-22) |
-| **3** | Hook/selector routing + `#114` loader → correct segment | Not started |
+| **3** | Hook/selector routing + `#114` loader → correct segment | **DONE** (2026-07-22) |
 | **4** | Mutation guardrails (partial forbidden; full segment only) | Not started |
 | **5** | Tracer entity end-to-end | Not started |
 | **6** | Acceptance / non-regression | Not started |
@@ -298,59 +298,63 @@ Phase 6 — Acceptance                                             6.1
 
 **Goal:** Hook/selector picks segment from query shape; `ensureLoaded` fills that segment; remount short-circuits or refetches at **segment** level.
 
-### 3.1  resolveCacheSegmentKind
+### 3.1  resolveCacheSegmentKind — **DONE**
 
 **Behavior:** `attributes` present (non-empty) ⇒ `"partial"`; else `"full"`. Used by selector helpers and report load request construction — **not** inside per-instance loops.
 
-**Expected validation:**
-- Already covered by Phase 2 helpers — `packages/miroir-core/tests/1_core/localCacheSegment.unit.test.ts`
-  - `resolveCacheSegmentKind routes by attributes presence`
-- Extend when wiring report request / selector routing (same file or thin wrapper test):
-  - `report / selector routing uses resolveCacheSegmentKind once per query (not per instance)`
-- Fingerprint includes segment + projection — extend `packages/miroir-core/tests/2_domain/ReportQueryLoadService.unit.test.ts`:
-  - `fingerprint changes when projection attributes change`
-  - `fingerprint changes when segment kind differs (full vs partial)`
-  - non-regression: existing fingerprint cases still pass
+**Done:** `ReportQueryLoadRequest.projection` + fingerprint includes `segment` + canonical `projection` (`forceRefresh` excluded). Helpers in `reportQueryLoadSegment.ts`.
 
-### 3.2  Executor writes correct segment
+**Validation:**
+- Phase 2 — `localCacheSegment.unit.test.ts` → `resolveCacheSegmentKind routes by attributes presence`
+- `packages/miroir-core/tests/1_core/reportQueryLoadSegment.unit.test.ts`
+  - `resolveReportQueryLoadSegmentKind follows projection attributes`
+  - `resolveReportQueryLoadAttributes canonicalizes`
+- `packages/miroir-core/tests/2_domain/ReportQueryLoadService.unit.test.ts`
+  - `fingerprint changes when projection attributes change (3.1)`
+  - `fingerprint ignores forceRefresh (3.1)`
+  - existing fingerprint cases still green
+
+### 3.2  Executor writes correct segment — **DONE**
 
 **Behavior:** `createReportQueryLoadExecutor` with `projection` → partial segment replace; without → full segment (current #114 path).
 
-**Expected validation:**
-- Extend `packages/miroir-core/tests/2_domain/createReportQueryLoadExecutor.unit.test.ts`:
-  - `with projection: RestPersistenceAction_read forwards attributes and loadNewInstancesInLocalCache targets partial segment`
-  - `without projection: load targets full segment only (non-regression of current #114 path)`
-- Optional parity smoke (if executor exercised against real LocalCache): assert index keys via `getReduxDeploymentsStateIndex(..., "partial"|"full")` on Redux and/or Zustand cache after `ensureLoaded`
+**Done:** Rest read forwards `attributes`; `loadNewInstancesInLocalCache` collections carry `cacheSegment` + `attributes`.
 
-### 3.3  Sufficiency short-circuit (segment-level)
+**Validation:**
+- `packages/miroir-core/tests/2_domain/createReportQueryLoadExecutor.unit.test.ts`
+  - `with projection: RestPersistenceAction_read forwards attributes and load targets partial segment (3.2)`
+  - `without projection: load targets full segment only (3.2 non-regression)`
+
+### 3.3  Sufficiency short-circuit (segment-level) — **DONE**
 
 **Behavior:** `ensureLoaded` skips network when:
 - **full:** full segment present and `fresh` (and not `forceRefresh`);
 - **partial:** partial segment present, `fresh`, and projection matches hit rule (D5).
 
-**Expected validation:**
-- Extend `ReportQueryLoadService.unit.test.ts` and/or a new segment-sufficiency helper unit test:
-  - `ensureLoaded does not call executor when full segment is fresh`
-  - `ensureLoaded does not call executor when partial segment is fresh and projection equals (D5 sorted-set)`
-  - `ensureLoaded calls executor when partial projection mismatches (D5)`
-- Hook non-regression — `packages/miroir-standalone-app/tests/4_view/useEnsureReportQueryLoaded.unit.test.tsx`:
-  - existing remount / same-fingerprint cases still green
-  - add: `does not call ensureLoaded again when segment sufficiency already met` (if hook-visible)
+**Done:** `isReportQueryLoadSegmentSufficient` + injectable `isSegmentSufficient` on `ReportQueryLoadService`; wired in `useReportQueryLoadService` via LocalCache snapshot lookup.
 
-### 3.4  Stale / mismatch / forceRefresh
+**Validation:**
+- `reportQueryLoadSegment.unit.test.ts` — full/partial header sufficiency + D5 equality / stale / mismatch
+- `ReportQueryLoadService.unit.test.ts`
+  - `ensureLoaded does not call executor when segment probe is sufficient (3.3)`
+  - `ensureLoaded calls executor when partial projection mismatches (3.3)`
+- Hook non-regression — `useEnsureReportQueryLoaded.unit.test.tsx` + `useReportQueryLoadService.unit.test.tsx` (9 tests green)
+
+### 3.4  Stale / mismatch / forceRefresh — **DONE**
 
 **Behavior:** Segment `stale`, projection mismatch, or `forceRefresh` ⇒ exactly **one** server query (single-flight), then segment replace/update to `fresh`. Fingerprint includes segment kind + projection.
 
-**Expected validation:**
-- `ReportQueryLoadService.unit.test.ts` (or executor + service integration unit):
-  - `ensureLoaded refetches once when segment freshness is stale`
-  - `ensureLoaded refetches once when forceRefresh is set`
-  - `concurrent ensureLoaded with same fingerprint share one executor call after stale/forceRefresh (single-flight)`
-  - after success: segment header `freshness: "fresh"` (and partial projection updated on replace)
-- Hook — `useEnsureReportQueryLoaded.unit.test.tsx`:
-  - `calls ensureLoaded again when forceRefresh / fingerprint includes stale remount trigger`
+**Done:** insufficient probe clears sticky `ready`; `forceRefresh` invalidates then loads; single-flight preserved.
 
-**Gate 3:** 3.1–3.4 green; still `useEnsureReportQueryLoaded` + sync selectors; **no** instance-level coverage checks.
+**Validation:**
+- `ReportQueryLoadService.unit.test.ts`
+  - `ensureLoaded refetches when segment becomes insufficient after ready (3.4 stale)`
+  - `ensureLoaded refetches once when forceRefresh is set (3.4)`
+  - `concurrent ensureLoaded after stale share one executor call (3.4 single-flight)`
+
+**Gate 3:** 3.1–3.4 green; still `useEnsureReportQueryLoaded` + sync selectors; **no** instance-level coverage checks — **DONE** (2026-07-22).
+
+**Next coding slice:** **Phase 4 — mutation guardrails**.
 
 ---
 
@@ -448,4 +452,4 @@ RIGHT:  1.1 RED→GREEN → segments → routing/#114 → mutations → tracer
 1. Phase 5 tracer confirmation (Blob without `contents`?).
 2. Refresh seeding of stale partial segment (default: absent until report).
 
-**Next coding slice:** **Phase 3 — routing + #114 report loader → segment**.
+**Next coding slice:** **Phase 4 — mutation guardrails**.

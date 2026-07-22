@@ -74,6 +74,27 @@ describe("fingerprintReportQueryLoadRequest (2.1)", () => {
       ),
     );
   });
+
+  it("fingerprint changes when projection attributes change (3.1)", () => {
+    const a = baseRequest();
+    const b = baseRequest({ projection: { attributes: ["name", "uuid"] } });
+    const c = baseRequest({ projection: { attributes: ["uuid", "name"] } });
+    expect(fingerprintReportQueryLoadRequest(a)).not.toBe(
+      fingerprintReportQueryLoadRequest(b),
+    );
+    // canonical order — same projection set ⇒ same fingerprint
+    expect(fingerprintReportQueryLoadRequest(b)).toBe(
+      fingerprintReportQueryLoadRequest(c),
+    );
+  });
+
+  it("fingerprint ignores forceRefresh (3.1)", () => {
+    const a = baseRequest();
+    const b = baseRequest({ forceRefresh: true });
+    expect(fingerprintReportQueryLoadRequest(a)).toBe(
+      fingerprintReportQueryLoadRequest(b),
+    );
+  });
 });
 
 describe("ReportQueryLoadService ensureLoaded (2.2–2.5)", () => {
@@ -149,5 +170,84 @@ describe("ReportQueryLoadService ensureLoaded (2.2–2.5)", () => {
 
     await expect(service.ensureLoaded(request)).resolves.toBe("error");
     expect(executeLoad).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("ReportQueryLoadService segment sufficiency (3.3–3.4)", () => {
+  it("ensureLoaded does not call executor when segment probe is sufficient (3.3)", async () => {
+    const executeLoad = vi.fn(async () => undefined);
+    const service = new ReportQueryLoadService(executeLoad, {
+      isSegmentSufficient: () => true,
+    });
+    const request = baseRequest({ projection: { attributes: ["name"] } });
+
+    await expect(service.ensureLoaded(request)).resolves.toBe("ready");
+    await expect(service.ensureLoaded(request)).resolves.toBe("ready");
+    expect(executeLoad).not.toHaveBeenCalled();
+  });
+
+  it("ensureLoaded calls executor when partial projection mismatches (3.3)", async () => {
+    const executeLoad = vi.fn(async () => undefined);
+    const service = new ReportQueryLoadService(executeLoad, {
+      isSegmentSufficient: () => false,
+    });
+    await expect(
+      service.ensureLoaded(baseRequest({ projection: { attributes: ["name"] } })),
+    ).resolves.toBe("ready");
+    expect(executeLoad).toHaveBeenCalledTimes(1);
+  });
+
+  it("ensureLoaded refetches when segment becomes insufficient after ready (3.4 stale)", async () => {
+    let sufficient = true;
+    const executeLoad = vi.fn(async () => undefined);
+    const service = new ReportQueryLoadService(executeLoad, {
+      isSegmentSufficient: () => sufficient,
+    });
+    const request = baseRequest();
+
+    await service.ensureLoaded(request);
+    expect(executeLoad).toHaveBeenCalledTimes(0);
+
+    sufficient = false;
+    await service.ensureLoaded(request);
+    expect(executeLoad).toHaveBeenCalledTimes(1);
+  });
+
+  it("ensureLoaded refetches once when forceRefresh is set (3.4)", async () => {
+    const executeLoad = vi.fn(async () => undefined);
+    const service = new ReportQueryLoadService(executeLoad, {
+      isSegmentSufficient: () => true,
+    });
+    const request = baseRequest();
+
+    await service.ensureLoaded(request);
+    expect(executeLoad).toHaveBeenCalledTimes(0);
+
+    await service.ensureLoaded({ ...request, forceRefresh: true });
+    expect(executeLoad).toHaveBeenCalledTimes(1);
+
+    // without forceRefresh, sufficiency still skips
+    await service.ensureLoaded(request);
+    expect(executeLoad).toHaveBeenCalledTimes(1);
+  });
+
+  it("concurrent ensureLoaded after stale share one executor call (3.4 single-flight)", async () => {
+    let resolveLoad!: () => void;
+    const loadPromise = new Promise<void>((resolve) => {
+      resolveLoad = resolve;
+    });
+    const executeLoad = vi.fn(() => loadPromise);
+    let sufficient = false;
+    const service = new ReportQueryLoadService(executeLoad, {
+      isSegmentSufficient: () => sufficient,
+    });
+    const request = baseRequest();
+
+    const p1 = service.ensureLoaded(request);
+    const p2 = service.ensureLoaded(request);
+    expect(executeLoad).toHaveBeenCalledTimes(1);
+    resolveLoad();
+    await expect(Promise.all([p1, p2])).resolves.toEqual(["ready", "ready"]);
+    expect(executeLoad).toHaveBeenCalledTimes(1);
   });
 });

@@ -920,11 +920,21 @@ export {
   type ReportLoadStatus,
   type ReportQueryLoadExecutor,
   type ReportQueryLoadRequest,
+  type ReportQueryLoadSegmentSufficiencyProbe,
+  type ReportQueryLoadServiceOptions,
 } from "./2_domain/ReportQueryLoadService.js";
 export {
   createReportQueryLoadExecutor,
   parentUuidsFromResolvedReportQuery,
 } from "./2_domain/createReportQueryLoadExecutor.js";
+export {
+  createSegmentHeaderLookupFromLocalCacheSnapshot,
+  isLocalCacheSegmentHeaderSufficient,
+  isReportQueryLoadSegmentSufficient,
+  resolveReportQueryLoadAttributes,
+  resolveReportQueryLoadSegmentKind,
+  type LocalCacheSegmentHeaderLookup,
+} from "./1_core/reportQueryLoadSegment.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
 export {
   aggregateAttributedByEntity,
