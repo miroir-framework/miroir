@@ -1,4 +1,4 @@
-import { describe, expect, beforeAll, afterAll, beforeEach, afterEach, it } from "vitest";
+import { describe, expect, beforeAll, afterAll, beforeEach, it } from "vitest";
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
@@ -24,15 +24,20 @@ import {
   StoreUnitConfiguration,
   ConfigurationService,
   defaultLevels,
+  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   ignorePostgresExtraAttributesOnList,
   miroirCoreStartup,
   resetLibraryPlayfield,
+  testUtils_deleteApplicationDeployment,
   type ApplicationDeploymentMap,
   type Deployment,
   type Entity,
 } from "miroir-core";
-import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
+import {
+  deployment_Admin,
+  deployment_Miroir,
+} from "miroir-test-app_deployment-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -48,13 +53,14 @@ import {
 import { cleanLevel, packageName } from "../../src/constants.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
-  adminApplicationDeploymentConfigurations,
-  deleteAndCloseApplicationDeployments,
   selfApplicationDeploymentConfigurationsTO_REMOVE,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 let domainController: DomainControllerInterface;
@@ -124,12 +130,35 @@ const adminDeployment: Deployment = {
   configuration: adminDeploymentStorageConfiguration,
 };
 
+const adminAssetsRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../assets",
+);
+const miroirDeploymentFixturePath = path.join(
+  adminAssetsRoot,
+  "admin_data",
+  "7959d814-400c-4e80-988f-a00fe582ab98",
+  `${deployment_Miroir.uuid}.json`,
+);
+const miroirApplicationFixturePath = path.join(
+  adminAssetsRoot,
+  "admin_data",
+  "25d935e7-9e93-42c2-aade-0472b883492b",
+  "360fcf1f-f0d4-4f8a-9262-07886e70fa15.json",
+);
+const adminFixtureSnapshots = new Map<string, string>();
+
 // ################################################################################################
 beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
     throw new Error(
       "LocalPersistenceStoreController state do not make sense for real server configurations! Please use only 'emulateServer: true' configurations for this test.",
     );
+  }
+
+  // Snapshot before bootstrap: deployMiroir upserts Deployment/Application into admin assets.
+  for (const fixturePath of [miroirDeploymentFixturePath, miroirApplicationFixturePath]) {
+    adminFixtureSnapshots.set(fixturePath, fs.readFileSync(fixturePath, "utf8"));
   }
 
   const session = new AppStackIntegrationTestSession(miroirConfig, {
@@ -174,19 +203,29 @@ beforeEach(async () => {
 
 // ################################################################################################
 afterAll(async () => {
-  console.log(
-    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deleteAndCloseApplicationDeployments",
-  );
-  await deleteAndCloseApplicationDeployments(
-    miroirConfig,
-    domainController,
+  // Remove Library Application/Deployment instances written into shared admin assets.
+  // Do not reset/delete the Admin store itself — tests/assets/admin_* are fixtures.
+  const deleteLibraryResult = await domainController.handleCompositeAction(
+    testUtils_deleteApplicationDeployment(
+      miroirConfig,
+      selfApplicationLibrary.uuid,
+      deployment_Library_DO_NO_USE.uuid,
+    ),
     applicationDeploymentMap,
-    adminApplicationDeploymentConfigurations,
+    defaultMiroirModelEnvironment,
+    {},
   );
+  if (deleteLibraryResult.status !== "ok") {
+    console.error(
+      "PersistenceStoreController.integ afterAll: failed to delete library deployment from admin",
+      JSON.stringify(deleteLibraryResult, null, 2),
+    );
+  }
 
-  console.log(
-    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Done deleteAndCloseApplicationDeployments",
-  );
+  // Restore Admin fixtures overwritten by deployMiroir bootstrap.
+  for (const [fixturePath, snapshot] of adminFixtureSnapshots) {
+    fs.writeFileSync(fixturePath, snapshot, "utf8");
+  }
 });
 
 // ##############################################################################################

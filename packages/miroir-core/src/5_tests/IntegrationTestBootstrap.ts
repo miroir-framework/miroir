@@ -84,7 +84,9 @@ export function getBootstrapPhasesForSessionKind(
     case "transformer":
       return [];
     case "appStackPersistenceStoreController":
-      return ["wireEmulatedStack", "deployMiroir", "deployLibrary"];
+      // Same Miroir readiness as DomainController miroirPlatform: SQL needs
+      // resetModel+initModel to create schema tables (e.g. miroir.Entity).
+      return ["wireEmulatedStack", "deployMiroir", "resetMiroirModel", "deployLibrary"];
     case "domainController":
       throw new Error(
         "getBootstrapPhasesForSessionKind: use getBootstrapPhasesForDomainControllerProfile for kind domainController",

@@ -129,4 +129,31 @@ describe("useEnsureReportQueryLoaded (Phase 3)", () => {
     expect(result.current).toBe("error");
     expect(ensureSpy).toHaveBeenCalledTimes(1);
   });
+
+  /**
+   * Documents the list-report infinite-refresh loop: when ReportViewWithEditor
+   * recreates ReportQueryLoadService because applicationDeploymentMap got a new
+   * object identity (common after loadNewInstancesInLocalCache → Redux update →
+   * RootComponent rememoizes the map), the hook treats it as a new load and
+   * re-enters "loading" forever.
+   */
+  it("re-dispatches when the service instance is replaced after ready (loop cause)", async () => {
+    const executeLoad = vi.fn(async () => undefined);
+    const service1 = new ReportQueryLoadService(executeLoad);
+    const request = baseRequest();
+
+    const { result, rerender } = renderHook(
+      ({ svc }) => useEnsureReportQueryLoaded(svc, request),
+      { initialProps: { svc: service1 } },
+    );
+
+    await waitFor(() => expect(result.current).toBe("ready"));
+    expect(executeLoad).toHaveBeenCalledTimes(1);
+
+    const service2 = new ReportQueryLoadService(executeLoad);
+    rerender({ svc: service2 });
+
+    await waitFor(() => expect(executeLoad).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(result.current).toBe("ready"));
+  });
 });

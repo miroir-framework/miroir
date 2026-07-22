@@ -29,7 +29,6 @@ import {
   type Deployment
 } from "miroir-core";
 import {
-  deployment_Admin,
   deployment_Miroir
 } from "miroir-test-app_deployment-admin";
 import {
@@ -87,8 +86,10 @@ const deployment_Library_DO_NO_USE: AdminApplicationDeploymentConfiguration = {
 // const deployments = [deployment_Miroir, deployment_Library_DO_NO_USE ];
 
 
+// Library only — never include deployment_Admin here. Filesystem admin assets under
+// tests/assets/admin_* are shared fixtures; resetModel → clear() rmSync's those dirs.
 export const selfApplicationDeploymentConfigurationsTO_REMOVE: Deployment[] = [
-    deployment_Admin as Deployment,
+    // deployment_Admin as Deployment,
     {
       "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
       "parentName":"Deployment",

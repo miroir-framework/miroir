@@ -274,7 +274,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         defaultLibraryModelEnvironment.currentModel as any,
         [entityAuthor.uuid, entityBook.uuid, entityPublisher.uuid],
       ),
-      afterEach: testUtils_resetApplicationDeployment(deployment_Library_DO_NO_USE.uuid),
+      afterEach: testUtils_resetApplicationDeployment(selfApplicationLibrary.uuid),
       afterAll: testUtils_deleteApplicationDeployment(
         miroirConfig,
         selfApplicationLibrary.uuid,

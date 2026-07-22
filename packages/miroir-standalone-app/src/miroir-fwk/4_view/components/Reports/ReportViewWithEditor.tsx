@@ -5,14 +5,12 @@ import { Formik } from 'formik';
 
 import {
   Action2Error,
-  createReportQueryLoadExecutor,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   Domain2ElementFailed,
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
-  ReportQueryLoadService,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
@@ -31,6 +29,7 @@ import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
 import { useEnsureReportQueryLoaded } from './useEnsureReportQueryLoaded.js';
+import { useReportQueryLoadService } from './useReportQueryLoadService.js';
 
 import { reportReportDetails } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
@@ -69,12 +68,11 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const { showSnackbar, handleAsyncAction } = useSnackbar();
   const domainController: DomainControllerInterface = useDomainControllerService();
 
-  const reportQueryLoadService = useMemo(
-    () =>
-      new ReportQueryLoadService(
-        createReportQueryLoadExecutor(domainController, props.applicationDeploymentMap),
-      ),
-    [domainController, props.applicationDeploymentMap],
+  // Keep service identity stable across applicationDeploymentMap object churn
+  // (see useReportQueryLoadService) so load status does not reset to "loading".
+  const reportQueryLoadService = useReportQueryLoadService(
+    domainController,
+    props.applicationDeploymentMap,
   );
 
   const generalEditMode = context.viewParams.generalEditMode;
