@@ -38,17 +38,59 @@ export function parentUuidsFromResolvedReportQuery(
   return [...uuids];
 }
 
-/** Attributes that drive partial-segment routing for a report load request. */
+/**
+ * Collect attributes from extractorInstancesByEntity extractors in a resolved query.
+ * When several extractors declare attributes, they must agree (sorted-set equality);
+ * otherwise returns undefined (caller should set request.projection explicitly).
+ */
+export function attributesFromResolvedReportQueryExtractors(
+  resolvedQuery: ReportQueryLoadRequest["resolvedQuery"]
+): string[] | undefined {
+  const extractors = (resolvedQuery as { extractors?: Record<string, any> })
+    ?.extractors;
+  if (!extractors) return undefined;
+
+  let agreed: string[] | undefined;
+  for (const extractor of Object.values(extractors)) {
+    if (
+      !extractor ||
+      extractor.extractorOrCombinerType !== "extractorInstancesByEntity" ||
+      !Array.isArray(extractor.attributes) ||
+      extractor.attributes.length === 0
+    ) {
+      continue;
+    }
+    const next = canonicalizeProjection(extractor.attributes);
+    if (!agreed) {
+      agreed = next;
+      continue;
+    }
+    if (!projectionsEqual(agreed, next)) {
+      return undefined;
+    }
+  }
+  return agreed;
+}
+
+/**
+ * Attributes that drive partial-segment routing for a report load request.
+ * Prefer explicit `request.projection`; else derive from extractor `attributes`.
+ */
 export function resolveReportQueryLoadAttributes(
-  request: Pick<ReportQueryLoadRequest, "projection">
+  request: Pick<ReportQueryLoadRequest, "projection" | "resolvedQuery">
 ): string[] | undefined {
   const attrs = request.projection?.attributes;
-  if (!attrs || attrs.length === 0) return undefined;
-  return canonicalizeProjection(attrs);
+  if (attrs && attrs.length > 0) {
+    return canonicalizeProjection(attrs);
+  }
+  if (request.resolvedQuery) {
+    return attributesFromResolvedReportQueryExtractors(request.resolvedQuery);
+  }
+  return undefined;
 }
 
 export function resolveReportQueryLoadSegmentKind(
-  request: Pick<ReportQueryLoadRequest, "projection">
+  request: Pick<ReportQueryLoadRequest, "projection" | "resolvedQuery">
 ): CacheSegmentKind {
   return resolveCacheSegmentKind({
     attributes: resolveReportQueryLoadAttributes(request),

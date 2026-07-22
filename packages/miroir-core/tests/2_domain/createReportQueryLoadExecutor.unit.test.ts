@@ -169,6 +169,59 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
     });
   });
 
+  it("derives projection from extractor attributes when request.projection omitted (#214 Phase 5)", async () => {
+    const handlePersistenceAction = vi.fn(async (_action: unknown, _map?: unknown) => ({
+      status: "ok" as const,
+      returnedDomainElement: {
+        parentUuid: BLOB_UUID,
+        applicationSection: "data",
+        instances: [],
+      },
+    }));
+    const handleLocalCacheAction = vi.fn((_action: unknown, _map?: unknown) => ({
+      status: "ok" as const,
+      returnedDomainElement: undefined,
+    }));
+    const domainController = {
+      getRemoteStore: () => ({ handlePersistenceAction, handleLocalCacheAction }),
+    } as any;
+
+    const executor = createReportQueryLoadExecutor(domainController, { [APP]: DEPLOY });
+    await executor({
+      application: APP,
+      deploymentUuid: DEPLOY,
+      applicationSection: "data",
+      resolvedQuery: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        application: APP,
+        extractors: {
+          blobs: {
+            extractorOrCombinerType: "extractorInstancesByEntity",
+            parentUuid: BLOB_UUID,
+            attributes: ["name", "defaultLabel", "uuid"],
+          },
+        },
+      },
+      queryParams: {},
+    });
+
+    expect(firstCallArg(handlePersistenceAction)).toMatchObject({
+      payload: {
+        attributes: ["defaultLabel", "name", "uuid"],
+      },
+    });
+    expect(firstCallArg(handleLocalCacheAction)).toMatchObject({
+      payload: {
+        objects: [
+          {
+            cacheSegment: "partial",
+            attributes: ["defaultLabel", "name", "uuid"],
+          },
+        ],
+      },
+    });
+  });
+
   it("without projection: load targets full segment only (3.2 non-regression)", async () => {
     const handlePersistenceAction = vi.fn(async (_action: unknown, _map?: unknown) => ({
       status: "ok" as const,

@@ -54,6 +54,49 @@ describe("reportQueryLoadSegment routing (3.1)", () => {
       )
     ).toEqual(["a", "b"]);
   });
+
+  it("derives attributes from extractorInstancesByEntity when projection omitted", () => {
+    const derived = request({
+      resolvedQuery: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        application: APP,
+        extractors: {
+          blobs: {
+            extractorOrCombinerType: "extractorInstancesByEntity",
+            parentUuid: ENT,
+            attributes: ["name", "defaultLabel", "uuid"],
+          },
+        },
+      },
+    });
+    expect(resolveReportQueryLoadAttributes(derived)).toEqual([
+      "defaultLabel",
+      "name",
+      "uuid",
+    ]);
+    expect(resolveReportQueryLoadSegmentKind(derived)).toBe("partial");
+  });
+
+  it("explicit request.projection wins over extractor attributes", () => {
+    expect(
+      resolveReportQueryLoadAttributes(
+        request({
+          projection: { attributes: ["uuid"] },
+          resolvedQuery: {
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: APP,
+            extractors: {
+              blobs: {
+                extractorOrCombinerType: "extractorInstancesByEntity",
+                parentUuid: ENT,
+                attributes: ["name", "uuid"],
+              },
+            },
+          },
+        })
+      )
+    ).toEqual(["uuid"]);
+  });
 });
 
 describe("segment header sufficiency (3.3)", () => {

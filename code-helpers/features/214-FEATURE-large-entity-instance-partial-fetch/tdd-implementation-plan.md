@@ -16,7 +16,7 @@
 | **2** | Local-cache segments: `full` + `partial` (≤2 per entity) | **DONE** (2026-07-22) |
 | **3** | Hook/selector routing + `#114` loader → correct segment | **DONE** (2026-07-22) |
 | **4** | Mutation guardrails (partial forbidden; full segment only) | **DONE** (2026-07-22) |
-| **5** | Tracer entity end-to-end | Not started |
+| **5** | Tracer entity end-to-end | **DONE** (2026-07-22) |
 | **6** | Acceptance / non-regression | Not started |
 
 ---
@@ -92,7 +92,7 @@ This keeps #114’s architecture, delivers #214 network wins, and limits local-c
 | D5 | Partial hit rule | Sorted-set **equality** of attribute lists ⇒ hit if `fresh`; else replace | Requested ⊆ segment projection |
 | D6 | Remount / ensureLoaded | Reuse #114; fingerprint includes `segment` + projection; `stale` / mismatch / `forceRefresh` ⇒ one fetch | Always refetch |
 | D7 | Mutation safety | Reject partial payloads; write **full** segment only; mark partial segment **`stale`** (or drop) | Always drop partial |
-| D8 | Phase 5 tracer | TBD: Blob list without `contents` → partial segment | Other Entity |
+| D8 | Phase 5 tracer | **Blob** list without `contents` → partial segment | Other Entity |
 | D9 | Persistence backends | Contract first; Postgres native cols; FS/IDB filter-after-read until optimized | — |
 | D10 | Segment key | `(deployment, applicationSection, entityUuid)` | Omit section |
 
@@ -354,7 +354,7 @@ Phase 6 — Acceptance                                             6.1
 
 **Gate 3:** 3.1–3.4 green; still `useEnsureReportQueryLoaded` + sync selectors; **no** instance-level coverage checks — **DONE** (2026-07-22).
 
-**Next coding slice:** **Phase 5 — tracer end-to-end** (Phase 4 DONE).
+**Next coding slice:** **Phase 6 — Acceptance / non-regression** (Phases 4–5 DONE).
 
 ---
 
@@ -390,17 +390,18 @@ Phase 6 — Acceptance                                             6.1
 
 **Gate 4:** 4.1–4.2 green — **DONE** (2026-07-22).
 
-**Next coding slice:** **Phase 5 — tracer end-to-end**.
+**Next coding slice:** **Phase 6 — Acceptance / non-regression** (Phase 5 DONE).
 
 ---
 
 ## Phase 5 — Tracer end-to-end
 
-### 5.1  Tracer choice (D8)
+### 5.1  Tracer choice (D8) — **DONE**
 
-Confirm: e.g. Blob list projecting `{ name, defaultLabel, uuid }` **without** `contents` → **partial segment**.
+**Blob** (`62209e4a-…`): list projecting `{ name, defaultLabel, uuid }` **without** `contents` → **partial segment**.
+BlobList report extractorTemplates carry `attributes`; `resolveReportQueryLoadAttributes` derives projection from extractors when `request.projection` is omitted; `ReportViewWithEditor` sets projection on the load request.
 
-### 5.2  Behaviors
+### 5.2  Behaviors — **DONE**
 
 1. Refresh does not stage-C full Blob bodies if still lazy (#114); full segment absent/empty for Blob.
 2. Open list report with projection → one projected read; **partial** segment filled `fresh`; UI lists labels.
@@ -409,7 +410,16 @@ Confirm: e.g. Blob list projecting `{ name, defaultLabel, uuid }` **without** `c
 5. Query **without** `attributes` still targets **full** segment (does not silently read partial).
 6. `updateInstance` with partial payload → rejected.
 
-**Gate 5:** 5.2 green.
+**Validation:**
+- `packages/miroir-localcache-redux/tests/Blob.partialFetch.tracer.unit.test.ts` (6 cases covering 5.1–5.2)
+- `reportQueryLoadSegment.unit.test.ts` — extractor-derived attributes
+- `createReportQueryLoadExecutor.unit.test.ts` — derive projection from extractor attributes
+- BlobList asset + `miroir-test-app_deployment-miroir` rebuild
+- `cacheRefreshPolicy.unit.test.ts` (Blob excluded from stage-C) — non-regression
+
+**Gate 5:** 5.2 green — **DONE** (2026-07-22).
+
+**Next coding slice:** **Phase 6 — Acceptance / non-regression**.
 
 ---
 
@@ -455,7 +465,7 @@ RIGHT:  1.1 RED→GREEN → segments → routing/#114 → mutations → tracer
 
 **Resolved by defaults (2026-07-22).** Remaining only for later phases:
 
-1. Phase 5 tracer confirmation (Blob without `contents`?).
+1. ~~Phase 5 tracer confirmation (Blob without `contents`?)~~ → **Blob** locked (Gate 5).
 2. Refresh seeding of stale partial segment (default: absent until report).
 
-**Next coding slice:** **Phase 5 — tracer end-to-end**.
+**Next coding slice:** **Phase 6 — Acceptance / non-regression**.

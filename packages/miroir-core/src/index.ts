@@ -939,6 +939,7 @@ export {
   createSegmentHeaderLookupFromLocalCacheSnapshot,
   isLocalCacheSegmentHeaderSufficient,
   isReportQueryLoadSegmentSufficient,
+  attributesFromResolvedReportQueryExtractors,
   resolveReportQueryLoadAttributes,
   resolveReportQueryLoadSegmentKind,
   type LocalCacheSegmentHeaderLookup,
