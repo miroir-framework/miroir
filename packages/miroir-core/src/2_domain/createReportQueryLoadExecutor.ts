@@ -14,6 +14,18 @@ import type {
   ReportQueryLoadExecutor,
   ReportQueryLoadRequest,
 } from "./ReportQueryLoadService.js";
+import type { LoggerInterface } from "../../dist/index.js";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "./constants.js";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "createReportQueryLoadExecutor"),
+  "UI"
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 type DomainControllerWithRemoteStore = DomainControllerInterface & {
   getRemoteStore: () => PersistenceStoreLocalOrRemoteInterface;
@@ -79,6 +91,7 @@ export function createReportQueryLoadExecutor(
     const store = withStore.getRemoteStore();
     const collections: EntityInstanceCollection[] = [];
 
+    log.info("createReportQueryLoadExecutor: parentUuids", parentUuids);
     for (const parentUuid of parentUuids) {
       const readAction: RestPersistenceAction = {
         actionType: "RestPersistenceAction_read",
