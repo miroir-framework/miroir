@@ -271,4 +271,4 @@ Entity files are keyed by the **Entity** uuid under the Entity’s parent Entity
 - [Library tutorial — editing Book](../../tutorials/library-tutorial.md)
 - [Creating applications](creating-applications.md) (placeholder; links here)
 - Feature notes: `code-helpers/features/173-FEATURE- enable non-uuid primary keys for Entities/plan.md`, `code-helpers/features/176-FEATURE- support tables & entities with composite PK/plan.md`
-- Copilot / agent summary of PK helpers: `.github/copilot-instructions.md` (“Primary Key Support”)
+- Agent summary of PK helpers: `AGENTS.md` (“Primary Key Support”)
