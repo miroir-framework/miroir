@@ -37,7 +37,6 @@ import {
   collectEvolutionTraceStateFromDomainState,
 } from "../2_domain/evolutionTraceRuntime.js";
 import type { EvolutionTraceableAction } from "../2_domain/evolutionTraceWriter.js";
-import { MIROIR_APPLICATION_UUID } from "../2_domain/evolutionTracePolicy.js";
 import {
   ApplicationSection,
   ApplicationVersion,
@@ -940,7 +939,8 @@ export class DomainController implements DomainControllerInterface {
   }
 
   /**
-   * Append-only evolution-trace persistence (WP1). Trace instances live in Miroir data.
+   * Append-only evolution-trace persistence (WP1). Trace instances live in the
+   * evolving application's model section.
    * No-ops when policy skips or when the action itself mutates evolution-trace entities.
    */
   private async maybeRecordEvolutionTrace(
@@ -967,15 +967,15 @@ export class DomainController implements DomainControllerInterface {
       return;
     }
 
-    const miroirDeploymentUuid = applicationDeploymentMap[MIROIR_APPLICATION_UUID];
-    if (!miroirDeploymentUuid) {
+    const targetApplicationUuid = action.payload.application;
+    const targetDeploymentUuid = applicationDeploymentMap[targetApplicationUuid];
+    if (!targetDeploymentUuid) {
       return;
     }
 
-    const targetApplicationUuid = action.payload.application;
     const existing = collectEvolutionTraceStateFromDomainState(
       this.localCache.getDomainState(),
-      miroirDeploymentUuid,
+      targetDeploymentUuid,
       targetApplicationUuid,
     );
 
@@ -983,7 +983,7 @@ export class DomainController implements DomainControllerInterface {
       action as EvolutionTraceableAction,
       existing,
       undefined,
-      new Date().toISOString(),
+      new Date(),
       commitContext,
     );
     for (const persistenceAction of persistenceActions) {

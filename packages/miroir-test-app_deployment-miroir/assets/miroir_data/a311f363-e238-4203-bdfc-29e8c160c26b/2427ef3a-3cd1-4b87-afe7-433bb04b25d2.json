@@ -5,7 +5,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "evolutionTraceWP1",
-  "description": "WP1 end-to-end evolution trace tracer bullet (Feature 9 Phase 8)",
+  "description": "WP1 end-to-end evolution trace tracer bullet (Feature 9 Phase 8). Evolution history is stored in the evolving application's model section.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "evolutionTrace.WP1",
@@ -49,21 +49,21 @@
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
-                    "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    "applicationSection": "data",
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
-                      "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                       "extractors": {
                         "traces": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "data",
+                          "applicationSection": "model",
                           "parentName": "ApplicationEvolutionTrace",
                           "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
                         },
                         "events": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "data",
+                          "applicationSection": "model",
                           "parentName": "ApplicationEvolutionTraceEvent",
                           "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
                         }
@@ -81,7 +81,7 @@
                   "entities": [
                     {
                       "entity": {
-                        "uuid": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0",
+                        "uuid": "a7c3e1f0-2b4d-4e6a-8c0e-1f3a5b7d9e2c",
                         "parentName": "Entity",
                         "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                         "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
@@ -91,11 +91,11 @@
                         "description": "Evolution trace WP1 test entity."
                       },
                       "entityDefinition": {
-                        "uuid": "e1e1e1e1-e1e1-4e1e-8e1e-e1e1e1e1e1e1",
+                        "uuid": "b8d4f2a1-3c5e-4f7b-9d1f-2a4c6e8f0b3d",
                         "parentName": "EntityDefinition",
                         "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                         "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                        "entityUuid": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0",
+                        "entityUuid": "a7c3e1f0-2b4d-4e6a-8c0e-1f3a5b7d9e2c",
                         "conceptLevel": "Model",
                         "name": "TestEntityWP1",
                         "description": "Evolution trace WP1 test entity definition.",
@@ -124,8 +124,8 @@
                 "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                  "entityUuid": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0",
-                  "entityDefinitionUuid": "e1e1e1e1-e1e1-4e1e-8e1e-e1e1e1e1e1e1",
+                  "entityUuid": "a7c3e1f0-2b4d-4e6a-8c0e-1f3a5b7d9e2c",
+                  "entityDefinitionUuid": "b8d4f2a1-3c5e-4f7b-9d1f-2a4c6e8f0b3d",
                   "entityName": "TestEntityWP1",
                   "targetValue": "TestEntityWP1Renamed"
                 }
@@ -147,21 +147,21 @@
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
-                    "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    "applicationSection": "data",
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
-                      "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                       "extractors": {
                         "traces": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "data",
+                          "applicationSection": "model",
                           "parentName": "ApplicationEvolutionTrace",
                           "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
                         },
                         "events": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "data",
+                          "applicationSection": "model",
                           "parentName": "ApplicationEvolutionTraceEvent",
                           "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
                         }
@@ -198,21 +198,53 @@
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "extractors": {
+                        "traces": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationEvolutionTrace",
+                          "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
+                        },
+                        "events": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationEvolutionTraceEvent",
+                          "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryTraceMiroirBefore",
+                "nameGivenToResult": "traceStateMiroirBefore",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
                     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    "applicationSection": "data",
+                    "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       "extractors": {
                         "traces": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "data",
+                          "applicationSection": "model",
                           "parentName": "ApplicationEvolutionTrace",
                           "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
                         },
                         "events": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "data",
+                          "applicationSection": "model",
                           "parentName": "ApplicationEvolutionTraceEvent",
                           "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
                         }
@@ -268,20 +300,20 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    "applicationSection": "data",
+                    "applicationSection": "model",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       "extractors": {
                         "traces": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "data",
+                          "applicationSection": "model",
                           "parentName": "ApplicationEvolutionTrace",
                           "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
                         },
                         "events": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "data",
+                          "applicationSection": "model",
                           "parentName": "ApplicationEvolutionTraceEvent",
                           "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
                         }
@@ -300,7 +332,7 @@
             "nameGivenToResult": "libraryMasterTraceRoot",
             "testAssertion": {
               "testType": "testAssertion",
-              "testLabel": "Library master trace root exists after model commit",
+              "testLabel": "Library master trace root exists in Library model after model commit",
               "definition": {
                 "resultTransformer": {
                   "transformerType": "aggregate",
@@ -485,7 +517,7 @@
                             "targetEntityUuid"
                           ]
                         },
-                        "right": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0"
+                        "right": "a7c3e1f0-2b4d-4e6a-8c0e-1f3a5b7d9e2c"
                       }
                     }
                   }
@@ -561,7 +593,7 @@
                             "targetEntityUuid"
                           ]
                         },
-                        "right": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0"
+                        "right": "a7c3e1f0-2b4d-4e6a-8c0e-1f3a5b7d9e2c"
                       }
                     }
                   }
@@ -776,7 +808,7 @@
             "nameGivenToResult": "miroirDataTraces",
             "testAssertion": {
               "testType": "testAssertion",
-              "testLabel": "Miroir data update adds one data event",
+              "testLabel": "Miroir data update adds one data event in Miroir model",
               "definition": {
                 "resultTransformer": {
                   "transformerType": "aggregate",
@@ -815,7 +847,7 @@
                   }
                 },
                 "expectedValue": {
-                  "count": 2
+                  "count": 1
                 },
                 "resultAccessPath": [
                   "0"
@@ -829,7 +861,7 @@
             "nameGivenToResult": "miroirDataIncrementsTotal",
             "testAssertion": {
               "testType": "testAssertion",
-              "testLabel": "Miroir data update increases total trace event count",
+              "testLabel": "Miroir data update increases Miroir model trace event count",
               "definition": {
                 "resultTransformer": {
                   "transformerType": "boolExpr",
@@ -843,7 +875,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "traceStateAfterLibraryData",
+                        "traceStateMiroirBefore",
                         "events"
                       ]
                     }

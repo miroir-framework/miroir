@@ -12466,11 +12466,12 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "createdAt": {
-            "type": "string",
+          "timestamp": {
+            "type": "date",
+            "optional": true,
             "tag": {
               "value": {
-                "defaultLabel": "Created At",
+                "defaultLabel": "Timestamp",
                 "display": {
                   "editable": false
                 }

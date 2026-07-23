@@ -12,15 +12,14 @@ import {
   EVOLUTION_TRACE_ENTITY_UUID,
   EVOLUTION_TRACE_EVENT_ENTITY_UUID,
 } from "../../src/2_domain/evolutionTraceBaseline.js";
-import { MIROIR_APPLICATION_UUID } from "../../src/2_domain/evolutionTracePolicy.js";
 
 const LIBRARY_UUID = "dd986507-6b28-4aac-a27a-f2dfba2aa0e4";
 const ENTITY_UUID = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
 const ENTITYDEF_UUID = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
-const TIMESTAMP = "2024-01-02T00:00:00.000Z";
+const TIMESTAMP = new Date("2024-01-02T00:00:00.000Z");
 
 describe("buildEvolutionTracePersistenceActions", () => {
-  it("Library model createEntity → baseline root/event + raw createEntity event on Miroir data", () => {
+  it("Library model createEntity → baseline root/event + raw createEntity event in Library model", () => {
     const action: ModelActionCreateEntity = {
       actionType: "createEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -53,8 +52,8 @@ describe("buildEvolutionTracePersistenceActions", () => {
     );
 
     expect(actions.length).toBeGreaterThanOrEqual(2);
-    expect(actions.every((a) => a.payload.application === MIROIR_APPLICATION_UUID)).toBe(true);
-    expect(actions.every((a) => a.payload.applicationSection === "data")).toBe(true);
+    expect(actions.every((a) => a.payload.application === LIBRARY_UUID)).toBe(true);
+    expect(actions.every((a) => a.payload.applicationSection === "model")).toBe(true);
 
     const rootAction = actions.find((a) => a.payload.parentUuid === EVOLUTION_TRACE_ENTITY_UUID);
     const eventActions = actions.filter(
@@ -81,8 +80,8 @@ describe("buildEvolutionTracePersistenceActions", () => {
         actionType: "createInstance",
         endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
         payload: {
-          application: MIROIR_APPLICATION_UUID,
-          applicationSection: "data",
+          application: LIBRARY_UUID,
+          applicationSection: "model",
           objects: [
             {
               uuid: "11111111-1111-4111-8111-111111111111",
@@ -91,7 +90,7 @@ describe("buildEvolutionTracePersistenceActions", () => {
           ],
         },
       },
-      { applicationUuid: MIROIR_APPLICATION_UUID, roots: [], events: [] },
+      { applicationUuid: LIBRARY_UUID, roots: [], events: [] },
       undefined,
       TIMESTAMP,
     );

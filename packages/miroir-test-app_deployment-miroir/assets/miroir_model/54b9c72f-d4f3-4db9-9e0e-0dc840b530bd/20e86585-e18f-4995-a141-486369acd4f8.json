@@ -7,7 +7,7 @@
   "conceptLevel": "Model",
   "name": "ApplicationEvolutionTrace",
   "description": "Definition of the ApplicationEvolutionTrace entity: a trace root per application/branch.",
-  "viewAttributes": ["name", "applicationUuid", "branchName", "createdAt", "uuid"],
+  "viewAttributes": ["name", "applicationUuid", "branchName", "uuid"],
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },
@@ -43,6 +43,11 @@
       "branchName": {
         "type": "string",
         "tag": { "value": { "defaultLabel": "Branch Name", "display": { "editable": false } } }
+      },
+      "timestamp": {
+        "type": "date",
+        "optional": true,
+        "tag": { "value": { "defaultLabel": "Timestamp", "display": { "editable": false } } }
       }
     }
   }

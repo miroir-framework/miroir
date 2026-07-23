@@ -566,6 +566,20 @@ export async function modelInitialize(
       persistenceStoreController.getEntityUuids(),
     );
 
+    // bootstrap MlSchema (required by loadConfigurationFromPersistenceStore metaModelEntities)
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityJzodSchema as Entity,
+      entityDefinitionWithResolvedMLSchema(entityDefinitionJzodSchema as EntityDefinition),
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(
+      logHeader,
+      "app initialized entity MlSchema",
+      persistenceStoreController.getEntityUuids(),
+    );
+
     // bootstrap QueryVersion
     log.info(
       logHeader,

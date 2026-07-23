@@ -488,7 +488,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
           },
         })),
         // Squashed evolution baseline when ApplicationEvolutionTrace is part of this init.
-        // Trace instances are stored in Miroir data; root.applicationUuid is the app being initialized.
+        // Trace instances are stored in that application's model section.
         ...(entities.some((e) => e.entity.uuid === EVOLUTION_TRACE_ENTITY_UUID)
           ? buildEvolutionBaselineCreateInstanceActions(applicationUuid)
           : []),

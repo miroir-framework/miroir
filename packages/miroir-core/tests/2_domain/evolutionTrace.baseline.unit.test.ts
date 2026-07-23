@@ -10,7 +10,7 @@ import {
 } from "../../src/2_domain/evolutionTraceBaseline.js";
 
 const APPLICATION_UUID = "dd986507-6b28-4aac-a27a-f2dfba2aa0e4";
-const TIMESTAMP = "2024-01-01T00:00:00.000Z";
+const TIMESTAMP = new Date("2024-01-01T00:00:00.000Z");
 
 function emptyDeployment(): EvolutionTraceDeploymentState {
   return {
@@ -36,7 +36,7 @@ describe("generateEvolutionBaseline", () => {
 
   it("calling twice is idempotent — still exactly 1 baseline event", () => {
     const first = generateEvolutionBaseline(emptyDeployment(), TIMESTAMP);
-    const second = generateEvolutionBaseline(first, "2024-01-02T00:00:00.000Z");
+    const second = generateEvolutionBaseline(first, new Date("2024-01-02T00:00:00.000Z"));
 
     expect(second.roots).toHaveLength(1);
     expect(second.events).toHaveLength(1);
