@@ -68,20 +68,21 @@ export const metaMetaModelEntities: Entity[] = [
 ];
 export const metaMetaModelEntityUuids: Uuid[] = metaMetaModelEntities.map((e) => e.uuid!);
 
-export const metaModelEntities: Entity[] = [
-  entitySelfApplication,
-  entityEndpointVersion,
-  entityEntity, 
-  entityEntityDefinition,
-  entityMenu,
-  entityQueryVersion,
-  entityReport,
-  entityRunner,
-  entitySelfApplicationModelBranch,
-  entitySelfApplicationVersion,
-  entityTheme,
-  entityMiroirTest,
-] as Entity[];
+export const metaModelEntities: Entity[] = defaultMiroirMetaModel.entities;
+// export const metaModelEntities: Entity[] = [
+//   entitySelfApplication,
+//   entityEndpointVersion,
+//   entityEntity, 
+//   entityEntityDefinition,
+//   entityMenu,
+//   entityQueryVersion,
+//   entityReport,
+//   entityRunner,
+//   entitySelfApplicationModelBranch,
+//   entitySelfApplicationVersion,
+//   entityTheme,
+//   entityMiroirTest,
+// ] as Entity[];
 
 export const metaModelEntityUuids: Uuid[] = metaModelEntities.map((e) => e.uuid);
 // console.log("metaModelEntities", metaModelEntities)

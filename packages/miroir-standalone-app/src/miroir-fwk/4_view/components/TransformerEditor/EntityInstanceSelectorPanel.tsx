@@ -6,13 +6,13 @@ import {
   MiroirLoggerFactory,
   Uuid,
   defaultAdminApplicationDeploymentMapNOTGOOD,
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   defaultTransformerInput,
-  defaultTransformers,
   getEntityInstancesIndexNonHook,
+  metaMetaModelEntityUuids,
   noValue,
   type ApplicationDeploymentMap,
+  type ApplicationSection,
   type Entity,
   type EntityDefinition,
   type JzodElement,
@@ -37,6 +37,7 @@ import {
   entityApplicationForAdmin,
 } from "miroir-test-app_deployment-admin";
 import { selfApplicationLibrary } from 'miroir-test-app_deployment-library';
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
 import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
@@ -143,9 +144,16 @@ export function EntityInstanceSelectorPanel(props:{
     persistedState?.currentInstanceIndex || 0
   );
 
+  // data (default): browse application data entities / instances
+  // model: browse application model section; available entity types come from Miroir Entity instances
+  const [applicationSection, setApplicationSection] = useState<ApplicationSection>(
+    persistedState?.applicationSection || "data"
+  );
 
   const inputSelector_applicationUuid: Uuid =
     formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application ||
+    persistedState?.selectedApplicationUuid ||
+    context.toolsPageState?.[formikPath_EntityInstanceSelectorPanel]?.application ||
     selfApplicationLibrary.uuid;
 
   const inputSelector_deploymentUuidFromApplicationUuid: Uuid = 
@@ -154,30 +162,53 @@ export function EntityInstanceSelectorPanel(props:{
       : defaultAdminApplicationDeploymentMapNOTGOOD[inputSelector_applicationUuid];
 
   const currentModel = useCurrentModel(inputSelector_applicationUuid, applicationDeploymentMap);
-  // const currentModel = useCurrentModel(inputSelector_deploymentUuidFromApplicationUuid);
+  const miroirMetaModel = useCurrentModel(selfApplicationMiroir.uuid, applicationDeploymentMap);
+  const isMiroirApp = inputSelector_applicationUuid === selfApplicationMiroir.uuid;
 
-  // Entities are always defined in the 'model' section, sorted by name
+  // model (user apps): every Entity instance from the miroir meta-app model section.
+  // model (Miroir): only Entity + EntityDefinition (meta-meta-model).
+  // data (user apps): the application's own entities.
+  // data (Miroir): miroir entities excluding Entity + EntityDefinition.
   const currentReportDeploymentSectionEntities: Entity[] = useMemo(() => {
-    return [...currentModel.entities].sort((a, b) => {
-      const nameA = a.name?.toLowerCase() ?? "";
-      const nameB = b.name?.toLowerCase() ?? "";
-      return nameA.localeCompare(nameB);
-    });
-  }, [currentModel.entities]);
+    let entities: Entity[];
+    if (applicationSection === "model") {
+      entities = isMiroirApp
+        ? (miroirMetaModel.entities ?? []).filter(
+            (e) => !!e?.uuid && metaMetaModelEntityUuids.includes(e.uuid),
+          )
+        : (miroirMetaModel.entities ?? []);
+    } else {
+      entities = isMiroirApp
+        ? (currentModel.entities ?? []).filter(
+            (e) => !!e?.uuid && !metaMetaModelEntityUuids.includes(e.uuid),
+          )
+        : (currentModel.entities ?? []);
+    }
+    return [...entities]
+      .filter((e) => !!e?.uuid)
+      .sort((a, b) => {
+        const nameA = a.name?.toLowerCase() ?? "";
+        const nameB = b.name?.toLowerCase() ?? "";
+        return nameA.localeCompare(nameB);
+      });
+  }, [
+    applicationSection,
+    isMiroirApp,
+    miroirMetaModel.entities,
+    currentModel.entities,
+  ]);
+  // Schemas for model-section entity types come from Miroir; data-section types from the app model
+  // (for Miroir those are the same MetaModel).
   const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
-    currentModel.entityDefinitions; // EntityDefinitions are always defined in the 'model' section
+    applicationSection === "model"
+      ? miroirMetaModel.entityDefinitions
+      : currentModel.entityDefinitions;
 
-  const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(initialEntityUuid);
+  const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(
+    persistedState?.selectedEntityUuid || initialEntityUuid
+  );
   // Ensure selected entity is valid when available entities change
   useEffect(() => {
-    // if (
-    //   formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application &&
-    //   formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application !== noValue.uuid) {
-    //     context.updateTransformerEditorState({
-    //       ...context.toolsPageState.transformerEditor,
-    //       selectedApplicationUuid: formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application,
-    //     });
-    // }
     const availableEntityUuids =
       currentReportDeploymentSectionEntities?.map((e) => e.uuid) || [];
     if (
@@ -189,10 +220,10 @@ export function EntityInstanceSelectorPanel(props:{
     }
   }, [currentReportDeploymentSectionEntities, selectedEntityUuid]);
 
-  // Reset index when entity changes
+  // Reset index when entity or section changes
   useEffect(() => {
     setCurrentInstanceIndex(0);
-  }, [selectedEntityUuid]); // Remove context from dependencies to prevent infinite refresh
+  }, [selectedEntityUuid, applicationSection]);
 
   const currentReportTargetEntity: Entity | undefined =
     currentReportDeploymentSectionEntities?.find((e) => e?.uuid === selectedEntityUuid);
@@ -201,6 +232,14 @@ export function EntityInstanceSelectorPanel(props:{
     currentReportDeploymentSectionEntityDefinitions?.find(
       (e) => e?.entityUuid === currentReportTargetEntity?.uuid
     );
+
+  // Avoid rendering with a stale / mismatched schema while selection catches up
+  const schemaMatchesSelection =
+    !!currentReportTargetEntity &&
+    !!currentReportTargetEntityDefinition &&
+    currentReportTargetEntityDefinition.entityUuid === selectedEntityUuid;
+
+  const instanceEditorKey = `instance-editor-${applicationSection}-${selectedEntityUuid}-${currentReportTargetEntityDefinition?.uuid ?? "noschema"}-${showAllInstances ? "all" : "single"}`;
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
@@ -232,7 +271,10 @@ export function EntityInstanceSelectorPanel(props:{
     )
   );
 
-  // Fetch all instances of the target entity with stable reference
+  // Fetch all instances of the target entity with stable reference.
+  // Pass the UI section explicitly: getApplicationSection()'s hardcoded metaModelEntityUuids
+  // is stale (e.g. misses ApplicationEvolutionTrace), so relying on it here would fetch
+  // from the wrong store section for newer meta-model entities.
   const entityInstances: EntityInstance[] = useMemo(() => {
     try {
       return getEntityInstancesIndexNonHook(
@@ -242,7 +284,8 @@ export function EntityInstanceSelectorPanel(props:{
         applicationDeploymentMap,
         inputSelector_deploymentUuidFromApplicationUuid,
         selectedEntityUuid,
-        "name" // Order by name if available
+        "name", // Order by name if available
+        applicationSection,
       );
     } catch (error) {
       log.error("Error fetching entity instances:", error);
@@ -252,7 +295,9 @@ export function EntityInstanceSelectorPanel(props:{
     deploymentEntityState,
     currentMiroirModelEnvironment,
     inputSelector_deploymentUuidFromApplicationUuid,
+    inputSelector_applicationUuid,
     selectedEntityUuid,
+    applicationSection,
   ]);
 
   // ##############################################################################################
@@ -370,30 +415,58 @@ export function EntityInstanceSelectorPanel(props:{
     [context.toolsPageState.transformerEditor]
   ); // Remove context from dependencies
 
+  const handleApplicationSectionChange = useCallback(
+    (newSection: ApplicationSection) => {
+      setApplicationSection(newSection);
+      context.updateTransformerEditorState({
+        ...context.toolsPageState.transformerEditor,
+        applicationSection: newSection,
+        currentInstanceIndex: 0,
+      });
+    },
+    [context.toolsPageState.transformerEditor]
+  );
+
+  // Persist chosen application so it survives leave/return to the search page
+  useEffect(() => {
+    const app =
+      formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application;
+    if (!app || app === noValue.uuid) {
+      return;
+    }
+    const persistedPanelApp =
+      context.toolsPageState?.[formikPath_EntityInstanceSelectorPanel]?.application;
+    const persistedEditorApp =
+      context.toolsPageState.transformerEditor?.selectedApplicationUuid;
+    if (persistedPanelApp === app && persistedEditorApp === app) {
+      return;
+    }
+    context.updateToolsPageStateDEFUNCT({
+      [formikPath_EntityInstanceSelectorPanel]: {
+        ...context.toolsPageState?.[formikPath_EntityInstanceSelectorPanel],
+        application: app,
+      },
+    });
+    context.updateTransformerEditorState({
+      selectedApplicationUuid: app,
+    });
+  }, [formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application]);
+
   // ##################################################################################
   // input -> formik when formikContext.values[formikPath_TransformerEditorInputModeSelector].mode is changed or when selected instance(s) change
   useEffect(() => {
     // formikPath_EntityInstanceSelectorPanel initial value
-    if (!formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application) {
-      const initialValue = defaultTransformers.transformer_extended_apply(
-        "runtime",
-        [],
-        "get default values for EntityInstanceSelectorPanel",
-        {
-          transformerType: "defaultValueForMLSchema",
-          label: "EntityInstanceSelectorPanel initial value",
-          mlSchema: entityInstanceSelectorPanelSchema,
-        } as any, // TODO: correct type to enable defaultValueForMLSchema and not only CoreTransformerForBuildPlusRuntime
-        "value",
-        defaultMiroirModelEnvironment, //modelEnvironment, // TODO: use real deployment environment!
-        {},
-        {}
-      );
-      log.info("Setting initial value for EntityInstanceSelectorPanel", initialValue);
-      formikContext.setFieldValue(
-        formikPath_EntityInstanceSelectorPanel,
-        initialValue[formikPath_EntityInstanceSelectorPanel]
-      );
+    const currentApplication =
+      formikContext.values[formikPath_EntityInstanceSelectorPanel]?.application;
+    if (!currentApplication || currentApplication === noValue.uuid) {
+      const restoredApplication =
+        context.toolsPageState?.[formikPath_EntityInstanceSelectorPanel]?.application ||
+        context.toolsPageState.transformerEditor?.selectedApplicationUuid ||
+        selfApplicationLibrary.uuid;
+      formikContext.setFieldValue(formikPath_EntityInstanceSelectorPanel, {
+        ...(formikContext.values[formikPath_EntityInstanceSelectorPanel] ?? {}),
+        application: restoredApplication,
+      });
     }
     if (formikContext.values[formikPath_TransformerEditorInputModeSelector].mode == "instance") {
       formikContext.setFieldValue("transformerEditor_input", inputSelectorData);
@@ -423,6 +496,7 @@ export function EntityInstanceSelectorPanel(props:{
           label: `EntityInstanceSelectorPanel`,
           data: {
             props,
+            applicationSection,
             currentReportDeploymentSectionEntities: currentReportDeploymentSectionEntities?.map(
               (e) => ({ uuid: e.uuid, name: e.name }),
             ),
@@ -441,24 +515,40 @@ export function EntityInstanceSelectorPanel(props:{
                 </span>
               )}
             </ThemedTitle>
-            {/* Toggle button for Single/All mode */}
-            {entityInstances.length > 1 && (
-              <button
-                onClick={handleToggleShowAll}
-                style={{
-                  padding: "6px 12px",
-                  fontSize: "13px",
-                  backgroundColor: showAllInstances ? "#e6f3ff" : "#f0f0f0",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontWeight: showAllInstances ? "bold" : "normal",
-                }}
-                title={showAllInstances ? "Switch to single instance view" : "Show all instances"}
-              >
-                {showAllInstances ? "👤 Show Single" : "👥 Show All"}
-              </button>
-            )}
+            {/* Always visible; disabled when there is nothing to toggle between */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleToggleShowAll();
+              }}
+              disabled={entityInstances.length <= 1}
+              style={{
+                padding: "6px 12px",
+                fontSize: "13px",
+                backgroundColor:
+                  entityInstances.length <= 1
+                    ? "#f5f5f5"
+                    : showAllInstances
+                      ? "#e6f3ff"
+                      : "#f0f0f0",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                cursor: entityInstances.length <= 1 ? "not-allowed" : "pointer",
+                fontWeight: showAllInstances ? "bold" : "normal",
+                opacity: entityInstances.length <= 1 ? 0.5 : 1,
+              }}
+              title={
+                entityInstances.length <= 1
+                  ? "Need at least 2 instances to toggle single/all view"
+                  : showAllInstances
+                    ? "Switch to single instance view"
+                    : "Show all instances"
+              }
+            >
+              {showAllInstances ? "👤 Show Single" : "👥 Show All"}
+            </button>
           </div>
 
           {/* Application Selector */}
@@ -479,6 +569,29 @@ export function EntityInstanceSelectorPanel(props:{
               // readonly={true}
             />
           )}
+
+          {/* Section Selector: data (application instances) | model (meta-model entity types) */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <label style={{ fontSize: "14px", fontWeight: "bold", minWidth: "60px" }}>
+              Section:
+            </label>
+            <select
+              value={applicationSection}
+              onChange={(e) => handleApplicationSectionChange(e.target.value as ApplicationSection)}
+              style={{
+                padding: "6px 12px",
+                fontSize: "14px",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                backgroundColor: "white",
+                cursor: "pointer",
+                minWidth: "200px",
+              }}
+            >
+              <option value="data">data</option>
+              <option value="model">model</option>
+            </select>
+          </div>
 
           {/* Entity Selector */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -504,60 +617,78 @@ export function EntityInstanceSelectorPanel(props:{
                 </option>
               ))}
             </select>
-            {/* Navigation buttons - only show when in single instance mode */}
-            {!showAllInstances && entityInstances.length > 1 && (
+            {/* Navigation buttons: always visible in single mode; greyed out when not usable */}
+            {!showAllInstances && (
               <div style={{ display: "flex", gap: "8px" }}>
                 <button
-                  onClick={navigateToPreviousInstance}
                   type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigateToPreviousInstance();
+                  }}
+                  disabled={entityInstances.length <= 1}
                   style={{
                     padding: "4px 8px",
                     fontSize: "14px",
                     backgroundColor: "#f0f0f0",
                     border: "1px solid #ccc",
                     borderRadius: "4px",
-                    cursor: "pointer",
+                    cursor: entityInstances.length <= 1 ? "not-allowed" : "pointer",
                     display: "flex",
                     alignItems: "center",
                     gap: "4px",
+                    opacity: entityInstances.length <= 1 ? 0.5 : 1,
                   }}
                   title="Previous instance"
                 >
                   ↑ Prev
                 </button>
                 <button
-                  onClick={navigateToNextInstance}
                   type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigateToNextInstance();
+                  }}
+                  disabled={entityInstances.length <= 1}
                   style={{
                     padding: "4px 8px",
                     fontSize: "14px",
                     backgroundColor: "#f0f0f0",
                     border: "1px solid #ccc",
                     borderRadius: "4px",
-                    cursor: "pointer",
+                    cursor: entityInstances.length <= 1 ? "not-allowed" : "pointer",
                     display: "flex",
                     alignItems: "center",
                     gap: "4px",
+                    opacity: entityInstances.length <= 1 ? 0.5 : 1,
                   }}
                   title="Next instance"
                 >
                   Next ↓
                 </button>
                 <button
-                  onClick={navigateToRandomInstance}
                   type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigateToRandomInstance();
+                  }}
+                  disabled={entityInstances.length <= 1}
                   style={{
                     padding: "4px 8px",
                     fontSize: "14px",
                     backgroundColor: "#f0f0f0",
                     border: "1px solid #ccc",
                     borderRadius: "4px",
-                    cursor: "pointer",
+                    cursor: entityInstances.length <= 1 ? "not-allowed" : "pointer",
                     display: "flex",
                     alignItems: "center",
                     gap: "4px",
+                    opacity: entityInstances.length <= 1 ? 0.5 : 1,
                   }}
-                  title="Next instance"
+                  title="Random instance"
                 >
                   Random 🔀
                 </button>
@@ -567,7 +698,7 @@ export function EntityInstanceSelectorPanel(props:{
         </ThemedHeaderSection>
         {showAllInstances ? (
           /* Show all instances */
-          entityInstances.length > 0 ? (
+          entityInstances.length > 0 && schemaMatchesSelection ? (
             <>
               <JsonDisplayHelper debug={true}
                 componentName="EntityInstanceSelectorPanel"
@@ -596,6 +727,7 @@ export function EntityInstanceSelectorPanel(props:{
                 initiallyFolded={true}
               >
                 <TypedValueObjectEditorWithFormik
+                  key={instanceEditorKey}
                   labelElement={<></>}
                   initialValueObject={{ entityInstances }}
                   formValueMLSchema={
@@ -610,7 +742,7 @@ export function EntityInstanceSelectorPanel(props:{
                   application={inputSelector_applicationUuid}
                   applicationDeploymentMap={applicationDeploymentMap}
                   deploymentUuid={deploymentUuid}
-                  applicationSection={"data"}
+                  applicationSection={applicationSection}
                   formLabel={"All Entity Instances Viewer"}
                   onSubmit={async () => {
                     log.warn("Submit called on read-only EntityInstanceSelectorPanel for all instances, this should not happen");
@@ -623,17 +755,20 @@ export function EntityInstanceSelectorPanel(props:{
             </>
           ) : (
             <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
-              No entity instances found
+              {entityInstances.length === 0
+                ? "No entity instances found"
+                : "Loading entity schema…"}
             </div>
           )
         ) : /* Show single instance */
-        selectedEntityInstance ? (
+        selectedEntityInstance && schemaMatchesSelection ? (
           <ThemedFoldableContainer
             style={{ flex: 1, padding: 0 }}
             title="Selected Entity Instance"
             initiallyFolded={false}
           >
             <TypedValueObjectEditorWithFormik
+              key={instanceEditorKey}
               valueObjectEditMode="create"
               labelElement={<></>}
               initialValueObject={{ selectedEntityInstance }}
@@ -650,7 +785,7 @@ export function EntityInstanceSelectorPanel(props:{
               deploymentUuid={deploymentUuid}
               application={inputSelector_applicationUuid}
               applicationDeploymentMap={applicationDeploymentMap}
-              applicationSection={"data"}
+              applicationSection={applicationSection}
               formLabel={"Entity Instance Viewer"}
               onSubmit={async () => {
                 log.warn("Submit called on read-only EntityInstanceSelectorPanel for single instance, this should not happen");
@@ -661,7 +796,9 @@ export function EntityInstanceSelectorPanel(props:{
           </ThemedFoldableContainer>
         ) : (
           <div style={{ padding: "12px", background: "#f5f5f5", borderRadius: "4px" }}>
-            No entity instances found
+            {!selectedEntityInstance
+              ? "No entity instances found"
+              : "Loading entity schema…"}
           </div>
         )}
       </ThemedContainer>

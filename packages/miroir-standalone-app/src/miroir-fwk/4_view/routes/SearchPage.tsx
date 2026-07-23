@@ -1,4 +1,5 @@
 import { Formik } from "formik";
+import { useMemo } from "react";
 import { Params, useParams } from "react-router-dom";
 
 import {
@@ -15,7 +16,10 @@ import {
 } from "../components/TransformerEditor/EntityInstanceSelectorPanel";
 import { cleanLevel } from "../constants";
 import { usePageConfiguration } from "../services";
-import { useMiroirContextService } from "miroir-react";
+import {
+  formikPath_EntityInstanceSelectorPanel,
+  useMiroirContextService,
+} from "miroir-react";
 import { formikPath_TransformerEditorInputModeSelector } from "../components/TransformerEditor/TransformerEditorInterface";
 import { deployment_Library_DO_NO_USE, entityBook, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
@@ -48,15 +52,32 @@ export function SearchPage() {
   // const initialEntityUuid: Uuid = "381ab1be-337f-4198-b1d3-f686867fc1dd"; // Entity entityDefinition UUID
   const initialEntityUuid: Uuid = entityBook.uuid;
 
-  const initialFormValues = {
-    [formikPath_TransformerEditorInputModeSelector]: {
-      mode: "instance",
-      application: selfApplicationLibrary.uuid
-    },
-    transformerEditor_input: {},
-    selectedEntityInstance: undefined,
-    entityInstances: [],
-  };
+  const persistedApplicationUuid = useMemo(() => {
+    return (
+      context.toolsPageState?.[formikPath_EntityInstanceSelectorPanel]?.application ||
+      persistedState?.selectedApplicationUuid ||
+      selfApplicationLibrary.uuid
+    );
+  }, [
+    context.toolsPageState?.[formikPath_EntityInstanceSelectorPanel]?.application,
+    persistedState?.selectedApplicationUuid,
+  ]);
+
+  const initialFormValues = useMemo(
+    () => ({
+      [formikPath_TransformerEditorInputModeSelector]: {
+        mode: "instance",
+        application: persistedApplicationUuid,
+      },
+      [formikPath_EntityInstanceSelectorPanel]: {
+        application: persistedApplicationUuid,
+      },
+      transformerEditor_input: {},
+      selectedEntityInstance: undefined,
+      entityInstances: [],
+    }),
+    [persistedApplicationUuid],
+  );
 
   return (
     <PageContainer>

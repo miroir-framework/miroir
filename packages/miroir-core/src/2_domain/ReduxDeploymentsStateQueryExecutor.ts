@@ -48,6 +48,7 @@ import { cleanLevel } from "./constants";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { getApplicationSection } from "../1_core/Model";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import type { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 
 
@@ -103,7 +104,8 @@ export function executeReduxDeploymentsStateQuery<T>(
 
 // ################################################################################################
 /**
- * Gets entity instances index for a specific entity without hooks
+ * Gets entity instances index for a specific entity without hooks.
+ * When `applicationSectionOverride` is set, it is used instead of getApplicationSection().
  */
 export function getEntityInstancesIndexNonHook(
   deploymentEntityState: ReduxDeploymentsState,
@@ -113,6 +115,7 @@ export function getEntityInstancesIndexNonHook(
   currentDeploymentUuid: Uuid,
   targetEntity: Uuid,
   orderBy?: string,
+  applicationSectionOverride?: ApplicationSection,
 // ): EntityInstancesUuidIndex {
 ): EntityInstance[] {
   log.info(
@@ -124,7 +127,9 @@ export function getEntityInstancesIndexNonHook(
     "targetEntity",
     targetEntity,
     "orderBy",
-    orderBy
+    orderBy,
+    "applicationSectionOverride",
+    applicationSectionOverride
   );
   // Create selector map (non-memoized)
   const selectorMap = createReduxDeploymentsStateSelectorMap();
@@ -137,7 +142,8 @@ export function getEntityInstancesIndexNonHook(
       extractors: {
         [targetEntity]: {
           extractorOrCombinerType: "extractorInstancesByEntity",
-          applicationSection: getApplicationSection(application, targetEntity),
+          applicationSection:
+            applicationSectionOverride ?? getApplicationSection(application, targetEntity),
           parentName: "",
           parentUuid: targetEntity,
           orderBy: orderBy ? {
