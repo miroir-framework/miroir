@@ -23,7 +23,7 @@ Related:
 | 3 | Enforce section/app tracking policy | ✅ DONE | 3/3 |
 | 4 | Hybrid compaction model (read-side cursor) | ✅ DONE | 3/3 |
 | 5 | Initial squashed baseline generation | ✅ DONE | 2/2 |
-| 6 | #15-compatible definition-version resolution | 🔲 TODO | — |
+| 6 | #15-compatible definition-version resolution | ✅ DONE | 4/4 |
 | 7 | Display surfaces (reports + menu wiring) | 🔲 TODO | — |
 | 8 | End-to-end WP1 tracer bullet | 🔲 TODO | — |
 
@@ -364,7 +364,7 @@ Note: `evolutionTraceWP1` integration suite is Phase 8 (not yet present).
 
 ---
 
-## Phase 6 — #15-compatible definition-version resolution
+## Phase 6 — #15-compatible definition-version resolution  ✅ DONE
 
 ### 6.1 RED
 Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.defversion.unit.test.ts`
@@ -385,32 +385,25 @@ Expected: `1 failed` (resolver not yet implemented).
 ### 6.1 GREEN
 Implement `resolveDefinitionVersionForTraceEvent(...)` and use it in the trace-event writer.
 
-#### Validation (GREEN)
+#### Validation (GREEN) — verified
 ```bash
 npm run testByFile -w miroir-core -- evolutionTrace.defversion
 npm run testByFile -w miroir-core -- evolutionTrace.persist
 npx tsc --noEmit --skipLibCheck
 ```
 
-Expected per check:
-| Check | Expected |
+| Check | Result |
 |---|---|
-| `evolutionTrace.defversion` tests | `1 passed` — 4/4 tests pass |
+| `evolutionTrace.defversion` tests | **4/4 pass** |
 | Path 1 (instanceParent) | `resolution = "instanceParentDefinitionVersion"` |
 | Path 2 (actionPayload) | `resolution = "actionPayload"` |
 | Path 3 (crossEntity lookup) | `resolution = "applicationVersionCrossEntityDefinition"` |
-| Path 4 (unresolved) | `resolution = "unresolved"`, `definitionVersionUuid = undefined` |
-| Path 4 warning | at least one `log.warn` / error entry captured, no silent drop |
-| Existing flows without `parentDefinitionVersionUuid` | resolve to path 2 or 3 (never crash) |
-| `evolutionTrace.persist` tests | still pass |
+| Path 4 (unresolved) | `resolution = "unresolved"`, warning emitted |
+| Writer wiring | every created event gets `definitionVersionResolution` (+ `targetDefinitionVersionUuid` when resolved) |
+| `evolutionTrace.persist` tests | **14/14** still pass |
 | `tsc --noEmit` | 0 type errors |
-
-### NON-REGRESSION
-```
-npm run testByFile -w miroir-core -- modelUpdates
-npm run testByFile -w miroir-core -- schemaChangeKind
-```
-Expected: all pass unchanged.
+| NON-REGRESSION `modelUpdates` | **6/6** |
+| NON-REGRESSION `schemaChangeKind` | pass |
 
 ---
 
@@ -630,18 +623,19 @@ Target files (done):
 - `packages/miroir-core/src/index.ts` (exports)
 - `packages/miroir-core/tests/2_domain/evolutionTrace.baseline.unit.test.ts` (new — 2 tests)
 
-### Phase 6 — #15-compatible definition-version resolution
-- [ ] Write 4 resolver unit tests covering all precedence paths (RED).
-- [ ] Implement `resolveDefinitionVersionForTraceEvent(...)` (GREEN).
-- [ ] Persist `definitionVersionResolution` field on every trace event.
-- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.defversion` → **4/4 pass**.
-- [ ] Verify: unresolved path emits `log.warn` (captured in test, no silent drop).
-- [ ] Verify NON-REGRESSION: `modelUpdates`, `schemaChangeKind` pass.
+### Phase 6 — #15-compatible definition-version resolution ✅ DONE
+- [x] Write 4 resolver unit tests covering all precedence paths (RED).
+- [x] Implement `resolveDefinitionVersionForTraceEvent(...)` (GREEN).
+- [x] Persist `definitionVersionResolution` field on every trace event (writer wiring).
+- [x] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.defversion` → **4/4 pass**.
+- [x] Verify: unresolved path emits warning (captured in test, no silent drop).
+- [x] Verify NON-REGRESSION: `modelUpdates` (**6/6**), `schemaChangeKind` (**12/12**) pass.
 
-Target files:
-- `packages/miroir-core/src/2_domain/evolutionTraceDefVersion.ts` (new resolver module)
-- `packages/miroir-core/src/3_controllers/DomainController.ts`
-- `packages/miroir-core/tests/2_domain/evolutionTrace.defversion.unit.test.ts` (new)
+Target files (done):
+- `packages/miroir-core/src/2_domain/evolutionTraceDefVersion.ts` (new resolver)
+- `packages/miroir-core/src/2_domain/evolutionTraceWriter.ts` (wires resolution onto events)
+- `packages/miroir-core/src/index.ts` (exports)
+- `packages/miroir-core/tests/2_domain/evolutionTrace.defversion.unit.test.ts` (new — 4 tests)
 
 ### Phase 7 — Reports + menu wiring
 - [ ] Write 3 report/menu presence tests (RED).

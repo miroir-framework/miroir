@@ -8,15 +8,43 @@ import type {
   ModelActionReplayableAction,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { shouldTraceEvolutionEvent } from "./evolutionTracePolicy.js";
-
-/**
- * UUID of the ApplicationEvolutionTraceEvent entity — used as parentUuid on
- * every instance to anchor it to its defining entity (same convention as all
- * other Miroir entity instances).
- */
-const EVOLUTION_TRACE_EVENT_ENTITY_UUID = "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c";
+import {
+  resolveDefinitionVersionForTraceEvent,
+  type ResolveDefinitionVersionInput,
+} from "./evolutionTraceDefVersion.js";
+import { EVOLUTION_TRACE_EVENT_ENTITY_UUID } from "./evolutionTraceBaseline.js";
 
 export type EvolutionTraceableAction = ModelActionReplayableAction | InstanceCUDAction;
+
+export type TraceEventResolutionContext = Pick<
+  ResolveDefinitionVersionInput,
+  "crossEntityLookup" | "warn"
+>;
+
+function entityDefinitionUuidFromModelAction(
+  action: ModelActionReplayableAction,
+): string | undefined {
+  switch (action.actionType) {
+    case "createEntity":
+      return action.payload.entities[0]?.entityDefinition?.uuid;
+    case "renameEntity":
+    case "dropEntity":
+    case "alterEntityAttribute":
+      return action.payload.entityDefinitionUuid;
+  }
+}
+
+function applyDefinitionVersionResolution(
+  event: ApplicationEvolutionTraceEvent,
+  input: ResolveDefinitionVersionInput,
+): ApplicationEvolutionTraceEvent {
+  const resolved = resolveDefinitionVersionForTraceEvent(input);
+  return {
+    ...event,
+    definitionVersionResolution: resolved.resolution,
+    targetDefinitionVersionUuid: resolved.definitionVersionUuid,
+  };
+}
 
 /**
  * Pure function: maps a model-level replayable action to a raw trace event.
@@ -34,6 +62,7 @@ export function createTraceEventFromModelAction(
   traceRoot: ApplicationEvolutionTrace,
   sequenceNumber: number,
   timestamp: string,
+  resolutionContext?: TraceEventResolutionContext,
 ): ApplicationEvolutionTraceEvent {
   const base = {
     uuid: uuidv4(),
@@ -46,20 +75,35 @@ export function createTraceEventFromModelAction(
     timestamp,
   };
 
+  let event: ApplicationEvolutionTraceEvent;
   switch (action.actionType) {
     case "createEntity":
-      return {
+      event = {
         ...base,
         targetEntityUuid: action.payload.entities[0]?.entity.uuid,
       };
+      break;
     case "renameEntity":
     case "dropEntity":
     case "alterEntityAttribute":
-      return {
+      event = {
         ...base,
         targetEntityUuid: action.payload.entityUuid,
       };
+      break;
   }
+
+  return applyDefinitionVersionResolution(event, {
+    entityDefinitionUuidFromPayload: entityDefinitionUuidFromModelAction(action),
+    crossEntityLookup: resolutionContext?.crossEntityLookup
+      ? {
+          ...resolutionContext.crossEntityLookup,
+          targetEntityUuid:
+            resolutionContext.crossEntityLookup.targetEntityUuid ?? event.targetEntityUuid,
+        }
+      : undefined,
+    warn: resolutionContext?.warn,
+  });
 }
 
 /**
@@ -73,9 +117,10 @@ export function createTraceEventFromInstanceAction(
   traceRoot: ApplicationEvolutionTrace,
   sequenceNumber: number,
   timestamp: string,
+  resolutionContext?: TraceEventResolutionContext,
 ): ApplicationEvolutionTraceEvent {
   const firstObject = action.payload.objects[0];
-  return {
+  const event: ApplicationEvolutionTraceEvent = {
     uuid: uuidv4(),
     parentUuid: EVOLUTION_TRACE_EVENT_ENTITY_UUID,
     traceRootUuid: traceRoot.uuid,
@@ -87,6 +132,24 @@ export function createTraceEventFromInstanceAction(
     targetEntityUuid: firstObject?.parentUuid,
     targetInstanceUuid: firstObject?.uuid,
   };
+
+  return applyDefinitionVersionResolution(event, {
+    instance: firstObject
+      ? {
+          parentDefinitionVersionUuid: (
+            firstObject as { parentDefinitionVersionUuid?: string }
+          ).parentDefinitionVersionUuid,
+        }
+      : undefined,
+    crossEntityLookup: resolutionContext?.crossEntityLookup
+      ? {
+          ...resolutionContext.crossEntityLookup,
+          targetEntityUuid:
+            resolutionContext.crossEntityLookup.targetEntityUuid ?? event.targetEntityUuid,
+        }
+      : undefined,
+    warn: resolutionContext?.warn,
+  });
 }
 
 function resolveActionSection(action: EvolutionTraceableAction): ApplicationSection {
@@ -108,6 +171,7 @@ export function produceEvolutionTraceEvent(
   traceRoot: ApplicationEvolutionTrace,
   sequenceNumber: number,
   timestamp: string,
+  resolutionContext?: TraceEventResolutionContext,
 ): ApplicationEvolutionTraceEvent | undefined {
   const applicationUuid = action.payload.application;
   const applicationSection = resolveActionSection(action);
@@ -117,10 +181,22 @@ export function produceEvolutionTraceEvent(
   }
 
   if (isModelReplayableAction(action)) {
-    return createTraceEventFromModelAction(action, traceRoot, sequenceNumber, timestamp);
+    return createTraceEventFromModelAction(
+      action,
+      traceRoot,
+      sequenceNumber,
+      timestamp,
+      resolutionContext,
+    );
   }
 
-  return createTraceEventFromInstanceAction(action, traceRoot, sequenceNumber, timestamp);
+  return createTraceEventFromInstanceAction(
+    action,
+    traceRoot,
+    sequenceNumber,
+    timestamp,
+    resolutionContext,
+  );
 }
 
 function isModelReplayableAction(

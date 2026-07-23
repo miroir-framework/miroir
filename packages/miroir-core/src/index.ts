@@ -852,7 +852,10 @@ export {
   createTraceEventFromInstanceAction,
   produceEvolutionTraceEvent,
 } from "./2_domain/evolutionTraceWriter.js";
-export type { EvolutionTraceableAction } from "./2_domain/evolutionTraceWriter.js";
+export type {
+  EvolutionTraceableAction,
+  TraceEventResolutionContext,
+} from "./2_domain/evolutionTraceWriter.js";
 export {
   fetchEvolutionHistory,
 } from "./2_domain/evolutionTraceCompaction.js";
@@ -871,6 +874,12 @@ export {
   EVOLUTION_TRACE_EVENT_ENTITY_UUID,
 } from "./2_domain/evolutionTraceBaseline.js";
 export type { EvolutionTraceDeploymentState } from "./2_domain/evolutionTraceBaseline.js";
+export { resolveDefinitionVersionForTraceEvent } from "./2_domain/evolutionTraceDefVersion.js";
+export type {
+  DefinitionVersionResolutionMethod,
+  ResolveDefinitionVersionInput,
+  ResolveDefinitionVersionResult,
+} from "./2_domain/evolutionTraceDefVersion.js";
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
