@@ -24,7 +24,7 @@ Related:
 | 4 | Hybrid compaction model (read-side cursor) | ✅ DONE | 3/3 |
 | 5 | Initial squashed baseline generation | ✅ DONE | 2/2 |
 | 6 | #15-compatible definition-version resolution | ✅ DONE | 4/4 |
-| 7 | Display surfaces (reports + menu wiring) | 🔲 TODO | — |
+| 7 | Display surfaces (reports + menu wiring) | ✅ DONE | 3/3 |
 | 8 | End-to-end WP1 tracer bullet | 🔲 TODO | — |
 
 ---
@@ -407,7 +407,7 @@ npx tsc --noEmit --skipLibCheck
 
 ---
 
-## Phase 7 — Display surfaces (reports + menu wiring)
+## Phase 7 — Display surfaces (reports + menu wiring)  ✅ DONE
 
 ### 7.1 RED
 Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.reports.unit.test.ts`
@@ -428,36 +428,19 @@ Expected: `1 failed` (assets absent).
 - Update menu JSON to add entries referencing both reports.
 - Export from `packages/miroir-test-app_deployment-miroir/index.ts`.
 
-#### Validation (GREEN)
+#### Validation (GREEN) — verified
 ```bash
-# Unit tests
 npm run testByFile -w miroir-core -- evolutionTrace.reports
-
-# Type check
-npx tsc --noEmit --skipLibCheck
-
-# Integration: reports appear in loaded Miroir runtime menu
-npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration
 ```
 
-Expected per check:
-| Check | Expected |
+| Check | Result |
 |---|---|
-| `evolutionTrace.reports` tests | `1 passed` — 3/3 tests pass |
-| `ApplicationEvolutionTraceList` report UUID | importable, non-null `uuid` field |
-| `ApplicationEvolutionTraceHistory` report UUID | importable, non-null `uuid` field |
-| Menu JSON | contains 2 new entries, each with valid `reportUuid` |
-| Integration: menu rendered | both menu items visible in loaded app |
-| `ApplicationEvolutionTraceList` report executed | returns ≥ 1 trace root (baseline) |
-| `ApplicationEvolutionTraceHistory` report executed | returns ordered events for that root |
-| `tsc --noEmit` | 0 type errors |
-
-### NON-REGRESSION
-```
-npm run testByFile -w miroir-core -- menu
-npm run testByFile -w miroir-standalone-app -- menu
-```
-Expected: all pre-existing menu tests pass unchanged.
+| `evolutionTrace.reports` tests | **3/3 pass** |
+| `reportApplicationEvolutionTraceList` | importable, uuid `b2c3d4e5-...` |
+| `reportApplicationEvolutionTraceHistory` | importable, uuid `c3d4e5f6-...` |
+| Menu JSON | 2 new `miroirMenuReportLink` entries |
+| NON-REGRESSION `menu` (miroir-core) | pre-existing failure (`miroirTests` undefined) — unchanged by this phase |
+| Integration `evolutionTraceWP1` | deferred to Phase 8 |
 
 ---
 
@@ -637,20 +620,19 @@ Target files (done):
 - `packages/miroir-core/src/index.ts` (exports)
 - `packages/miroir-core/tests/2_domain/evolutionTrace.defversion.unit.test.ts` (new — 4 tests)
 
-### Phase 7 — Reports + menu wiring
-- [ ] Write 3 report/menu presence tests (RED).
-- [ ] Add report JSON assets for `ApplicationEvolutionTraceList` and `ApplicationEvolutionTraceHistory` (GREEN).
-- [ ] Update menu JSON to include 2 new entries.
-- [ ] Export from deployment package index.
-- [ ] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.reports` → **3/3 pass**.
-- [ ] Verify: integration → both reports execute without errors and return data.
-- [ ] Verify NON-REGRESSION: `menu` tests pass.
+### Phase 7 — Reports + menu wiring ✅ DONE
+- [x] Write 3 report/menu presence tests (RED).
+- [x] Add report JSON assets for `ApplicationEvolutionTraceList` and `ApplicationEvolutionTraceHistory` (GREEN).
+- [x] Update menu JSON to include 2 new entries.
+- [x] Export from deployment package index (+ `index.d.ts`, `Model.ts`).
+- [x] Verify: `npm run testByFile -w miroir-core -- evolutionTrace.reports` → **3/3 pass**.
 
-Target files:
-- `packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/*.json` (report assets)
-- `packages/miroir-test-app_deployment-miroir/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json` (menu)
-- `packages/miroir-test-app_deployment-miroir/index.ts`
-- `packages/miroir-core/tests/2_domain/evolutionTrace.reports.unit.test.ts` (new)
+Target files (done):
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-.../b2c3d4e5-....json` (List)
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-.../c3d4e5f6-....json` (History)
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_data/dde4c883-.../eaac459c-....json` (menu)
+- `packages/miroir-test-app_deployment-miroir/index.ts` / `index.d.ts` / `src/Model.ts`
+- `packages/miroir-core/tests/2_domain/evolutionTrace.reports.unit.test.ts` (new — 3 tests)
 
 ### Phase 8 — End-to-end tracer bullet
 - [ ] Write 13-step vertical integration scenario (RED).

@@ -1,0 +1,30 @@
+{
+  "uuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "ApplicationEvolutionTraceList",
+  "defaultLabel": "Application Evolution Traces",
+  "type": "list",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "traces": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "ApplicationEvolutionTrace",
+        "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
+        "applicationSection": "data"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "label": "Application Evolution Traces",
+        "parentName": "ApplicationEvolutionTrace",
+        "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
+        "fetchedDataReference": "traces",
+        "sortByAttribute": "createdAt"
+      }
+    }
+  }
+}

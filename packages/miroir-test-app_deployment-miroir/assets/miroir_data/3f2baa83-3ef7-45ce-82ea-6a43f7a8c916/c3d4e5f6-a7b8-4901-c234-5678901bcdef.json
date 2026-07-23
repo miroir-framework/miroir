@@ -1,0 +1,30 @@
+{
+  "uuid": "c3d4e5f6-a7b8-4901-c234-5678901bcdef",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "ApplicationEvolutionTraceHistory",
+  "defaultLabel": "Application Evolution Trace History",
+  "type": "list",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "events": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "ApplicationEvolutionTraceEvent",
+        "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c",
+        "applicationSection": "data"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "label": "Application Evolution Trace History",
+        "parentName": "ApplicationEvolutionTraceEvent",
+        "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c",
+        "fetchedDataReference": "events",
+        "sortByAttribute": "sequenceNumber"
+      }
+    }
+  }
+}

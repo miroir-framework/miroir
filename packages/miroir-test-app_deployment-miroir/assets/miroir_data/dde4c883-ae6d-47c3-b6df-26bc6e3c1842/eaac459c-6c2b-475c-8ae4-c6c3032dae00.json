@@ -118,6 +118,22 @@
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "9cdc1af9-13d6-4477-8482-8af43e3c161e",
             "icon": "description"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Application Evolution Traces",
+            "section": "data",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
+            "icon": "timeline"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Application Evolution Trace History",
+            "section": "data",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "c3d4e5f6-a7b8-4901-c234-5678901bcdef",
+            "icon": "history"
           }
         ]
       }
