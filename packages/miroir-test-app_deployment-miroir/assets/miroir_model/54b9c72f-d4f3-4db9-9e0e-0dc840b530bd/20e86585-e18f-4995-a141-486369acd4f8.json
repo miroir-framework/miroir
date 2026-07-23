@@ -1,5 +1,5 @@
 {
-  "uuid": "a8b9c0d1-2e3f-4a5b-6c7d-8e9f0a1b2c3d",
+  "uuid": "20e86585-e18f-4995-a141-486369acd4f8",
   "parentName": "EntityDefinition",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
@@ -43,10 +43,6 @@
       "branchName": {
         "type": "string",
         "tag": { "value": { "defaultLabel": "Branch Name", "display": { "editable": false } } }
-      },
-      "createdAt": {
-        "type": "string",
-        "tag": { "value": { "defaultLabel": "Created At", "display": { "editable": false } } }
       }
     }
   }

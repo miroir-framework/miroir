@@ -14,24 +14,22 @@ import {
 
 import { Alert, Snackbar } from "@mui/material";
 
-import {
-  ApplicationSection,
-  DeploymentUuidToReportsEntitiesDefinitionsMapping,
-  DomainControllerInterface,
-  GridType,
-  LoggerInterface,
+import { selectCurrentTransaction, useSelector, type ReduxStateChanges } from "../miroir-localcache-imports.js";
+import { MiroirLoggerFactory, ViewParams, getClientEnvironment } from "miroir-core";
+import type { 
+  LoggerInterface, 
+  Uuid, 
+  ApplicationSection, 
+  CoreTransformerForBuildPlusRuntime,
   MiroirContextInterface,
-  MiroirLoggerFactory,
+  DomainControllerInterface, 
+  ClientEnvironment,
+  ApplicationDeploymentMap, 
   MlSchema,
-  Uuid,
-  ViewParams,
-  getClientEnvironment,
-  type ApplicationDeploymentMap,
-  type ClientEnvironment,
-  type CoreTransformerForBuildPlusRuntime,
-  type MetaModel,
-  type MiroirEvent,
-  type ReduxStateChanges,
+  MetaModel,
+  DeploymentUuidToReportsEntitiesDefinitionsMapping,
+  GridType, 
+  MiroirEvent,
 } from "miroir-core";
 
 import {
@@ -46,12 +44,7 @@ import {
   type ErrorLogServiceClass,
 } from "../components/logs/ErrorLogService.js";
 import { cleanLevel, packageName } from "../constants.js";
-// import {
-//   errorLogService,
-//   logServerError
-// } from "miroir-react";
 
-import { selectCurrentTransaction, useSelector } from "../miroir-localcache-imports.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -83,6 +76,7 @@ export interface ToolsPageState {
   transformerEditor?: {
     selectedApplicationUuid?: string;
     selectedEntityUuid?: string;
+    applicationSection?: ApplicationSection;
     currentInstanceIndex?: number;
     showAllInstances?: boolean;
     // selector

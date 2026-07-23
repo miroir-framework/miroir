@@ -705,7 +705,12 @@ export {
 } from "./0_interfaces/4-services/PersistenceStoreControllerInterface";
 export { PersistenceStoreControllerManagerInterface } from "./0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 export {
-  AppTheme, GridType, ToolsPageState, ViewParams, viewParams, ViewParamsData
+  AppTheme,
+  GridType,
+  ToolsPageState,
+  ViewParams,
+  viewParams,
+  ViewParamsData,
 } from "./0_interfaces/4-views/ViewParams";
 export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_core/constants.js";
 export {

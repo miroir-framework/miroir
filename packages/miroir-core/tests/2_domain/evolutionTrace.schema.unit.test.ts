@@ -4,8 +4,8 @@ import type { ApplicationEvolutionTrace, ApplicationEvolutionTraceEvent } from "
 // UUIDs chosen for the WP1 trace entities
 const TRACE_ROOT_ENTITY_UUID = "de089f57-5fa5-4c0e-a43e-20f1a6df5a37";
 const TRACE_EVENT_ENTITY_UUID = "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c";
-const TRACE_ROOT_ENTITYDEF_UUID = "a8b9c0d1-2e3f-4a5b-6c7d-8e9f0a1b2c3d";
-const TRACE_EVENT_ENTITYDEF_UUID = "b1c2d3e4-5f6a-7b8c-9d0e-1f2a3b4c5d6e";
+const TRACE_ROOT_ENTITYDEF_UUID = "20e86585-e18f-4995-a141-486369acd4f8";
+const TRACE_EVENT_ENTITYDEF_UUID = "45491bf9-a923-4a9c-a0da-6b0c3df2f296";
 
 const ENTITY_PARENT_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 const ENTITYDEF_PARENT_UUID = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
@@ -98,7 +98,7 @@ describe("ApplicationEvolutionTrace entity assets", () => {
 
     it("ApplicationEvolutionTraceEvent type is exported from miroir-core and has required fields", () => {
       const event: ApplicationEvolutionTraceEvent = {
-        uuid: "b1c2d3e4-5f6a-7b8c-9d0e-1f2a3b4c5d6e",
+        uuid: "45491bf9-a923-4a9c-a0da-6b0c3df2f296",
         parentUuid: ENTITYDEF_PARENT_UUID,
         traceRootUuid: "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
         sequenceNumber: 1,
