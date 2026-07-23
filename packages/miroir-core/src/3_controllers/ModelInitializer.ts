@@ -17,6 +17,8 @@ import {
   entityDefinitionSelfApplicationModelBranch,
   entityDefinitionSelfApplicationVersion,
   entityDefinitionTheme,
+  entityDefinitionApplicationEvolutionTrace,
+  entityDefinitionApplicationEvolutionTraceEvent,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -30,6 +32,8 @@ import {
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
   entityTheme,
+  entityApplicationEvolutionTrace,
+  entityApplicationEvolutionTraceEvent,
   instanceEndpointV1,
   materialStoredMiroirTheme,
   menuDefaultMiroir,
@@ -39,6 +43,8 @@ import {
   reportApplicationList,
   reportApplicationModelBranchList,
   reportApplicationVersionList,
+  reportApplicationEvolutionTraceList,
+  reportApplicationEvolutionTraceHistory,
   reportEndpointVersionList,
   reportEntityDefinitionList,
   reportEntityList,
@@ -288,6 +294,38 @@ export async function modelInitialize(
     }
     log.info(logHeader, "created entity Query", persistenceStoreController.getEntityUuids());
 
+    // bootstrap ApplicationEvolutionTrace (WP1)
+    result = await persistenceStoreController.createEntity(
+      entityApplicationEvolutionTrace as Entity,
+      entityDefinitionWithResolvedMLSchema(
+        entityDefinitionApplicationEvolutionTrace as EntityDefinition,
+      ),
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(
+      logHeader,
+      "created entity ApplicationEvolutionTrace",
+      persistenceStoreController.getEntityUuids(),
+    );
+
+    // bootstrap ApplicationEvolutionTraceEvent (WP1)
+    result = await persistenceStoreController.createEntity(
+      entityApplicationEvolutionTraceEvent as Entity,
+      entityDefinitionWithResolvedMLSchema(
+        entityDefinitionApplicationEvolutionTraceEvent as EntityDefinition,
+      ),
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(
+      logHeader,
+      "created entity ApplicationEvolutionTraceEvent",
+      persistenceStoreController.getEntityUuids(),
+    );
+
     // await persistenceStoreController.upsertInstance('data', reportEndpointList as EntityInstance);
     result = await persistenceStoreController.upsertInstance(
       "data",
@@ -337,6 +375,20 @@ export async function modelInitialize(
       return result;
     }
     result = await persistenceStoreController.upsertInstance("data", reportJzodSchemaList as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      reportApplicationEvolutionTraceList as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      reportApplicationEvolutionTraceHistory as EntityInstance,
+    );
     if (result instanceof Action2Error) {
       return result;
     }
@@ -600,6 +652,25 @@ export async function modelInitialize(
       "app initialized entity Theme",
       persistenceStoreController.getEntityUuids(),
     );
+
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityApplicationEvolutionTrace as Entity,
+      entityDefinitionWithResolvedMLSchema(
+        entityDefinitionApplicationEvolutionTrace as EntityDefinition,
+      ),
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityApplicationEvolutionTraceEvent as Entity,
+      entityDefinitionWithResolvedMLSchema(
+        entityDefinitionApplicationEvolutionTraceEvent as EntityDefinition,
+      ),
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
     result = await persistenceStoreController.upsertInstance("model", selfApplication);
     if (result instanceof Action2Error) {

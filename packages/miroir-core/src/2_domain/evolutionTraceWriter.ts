@@ -21,6 +21,13 @@ export type TraceEventResolutionContext = Pick<
   "crossEntityLookup" | "warn"
 >;
 
+/** Optional commit / version stamps applied during model-commit replay. */
+export type EvolutionTraceCommitContext = {
+  commitUuid: string;
+  fromVersionUuid: string;
+  toVersionUuid: string;
+};
+
 function entityDefinitionUuidFromModelAction(
   action: ModelActionReplayableAction,
 ): string | undefined {
@@ -63,6 +70,7 @@ export function createTraceEventFromModelAction(
   sequenceNumber: number,
   timestamp: string,
   resolutionContext?: TraceEventResolutionContext,
+  commitContext?: EvolutionTraceCommitContext,
 ): ApplicationEvolutionTraceEvent {
   const base = {
     uuid: uuidv4(),
@@ -73,6 +81,13 @@ export function createTraceEventFromModelAction(
     applicationSection: "model" as const,
     compactionLevel: "raw" as const,
     timestamp,
+    ...(commitContext
+      ? {
+          commitUuid: commitContext.commitUuid,
+          fromVersionUuid: commitContext.fromVersionUuid,
+          toVersionUuid: commitContext.toVersionUuid,
+        }
+      : {}),
   };
 
   let event: ApplicationEvolutionTraceEvent;
@@ -172,6 +187,7 @@ export function produceEvolutionTraceEvent(
   sequenceNumber: number,
   timestamp: string,
   resolutionContext?: TraceEventResolutionContext,
+  commitContext?: EvolutionTraceCommitContext,
 ): ApplicationEvolutionTraceEvent | undefined {
   const applicationUuid = action.payload.application;
   const applicationSection = resolveActionSection(action);
@@ -187,6 +203,7 @@ export function produceEvolutionTraceEvent(
       sequenceNumber,
       timestamp,
       resolutionContext,
+      commitContext,
     );
   }
 

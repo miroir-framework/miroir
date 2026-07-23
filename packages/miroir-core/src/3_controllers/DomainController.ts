@@ -33,6 +33,12 @@ import {
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
+  buildEvolutionTracePersistenceActions,
+  collectEvolutionTraceStateFromDomainState,
+} from "../2_domain/evolutionTraceRuntime.js";
+import type { EvolutionTraceableAction } from "../2_domain/evolutionTraceWriter.js";
+import { MIROIR_APPLICATION_UUID } from "../2_domain/evolutionTracePolicy.js";
+import {
   ApplicationSection,
   ApplicationVersion,
   CompositeActionSequence,
@@ -917,6 +923,10 @@ export class DomainController implements DomainControllerInterface {
       instanceAction,
     );
 
+    if (!(result instanceof Action2Error)) {
+      await this.maybeRecordEvolutionTrace(instanceAction, applicationDeploymentMap);
+    }
+
     // log.info(
     //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
     //   deploymentUuid,
@@ -927,6 +937,65 @@ export class DomainController implements DomainControllerInterface {
     // );
     return Promise.resolve(ACTION_OK);
     // return Promise.resolve(result);
+  }
+
+  /**
+   * Append-only evolution-trace persistence (WP1). Trace instances live in Miroir data.
+   * No-ops when policy skips or when the action itself mutates evolution-trace entities.
+   */
+  private async maybeRecordEvolutionTrace(
+    action: InstanceAction | ModelAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    commitContext?: {
+      commitUuid: string;
+      fromVersionUuid: string;
+      toVersionUuid: string;
+    },
+  ): Promise<void> {
+    const actionType = action.actionType;
+    const isModelReplayable =
+      actionType === "createEntity" ||
+      actionType === "renameEntity" ||
+      actionType === "dropEntity" ||
+      actionType === "alterEntityAttribute";
+    const isInstanceCud =
+      actionType === "createInstance" ||
+      actionType === "updateInstance" ||
+      actionType === "deleteInstance";
+
+    if (!isModelReplayable && !isInstanceCud) {
+      return;
+    }
+
+    const miroirDeploymentUuid = applicationDeploymentMap[MIROIR_APPLICATION_UUID];
+    if (!miroirDeploymentUuid) {
+      return;
+    }
+
+    const targetApplicationUuid = action.payload.application;
+    const existing = collectEvolutionTraceStateFromDomainState(
+      this.localCache.getDomainState(),
+      miroirDeploymentUuid,
+      targetApplicationUuid,
+    );
+
+    const persistenceActions = buildEvolutionTracePersistenceActions(
+      action as EvolutionTraceableAction,
+      existing,
+      undefined,
+      new Date().toISOString(),
+      commitContext,
+    );
+    for (const persistenceAction of persistenceActions) {
+      const result = await this.handleInstanceAction(persistenceAction, applicationDeploymentMap);
+      if (result instanceof Action2Error) {
+        log.warn(
+          "DomainController maybeRecordEvolutionTrace failed to persist trace action",
+          persistenceAction.actionLabel,
+          result,
+        );
+      }
+    }
   }
 
   // ##############################################################################################
@@ -1606,6 +1675,12 @@ export class DomainController implements DomainControllerInterface {
                   );
                   return replayActionResult;
                 }
+                await this.maybeRecordEvolutionTrace(replayAction, applicationDeploymentMap, {
+                  commitUuid: newModelVersionUuid,
+                  fromVersionUuid:
+                    newModelVersion.previousVersion ?? "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa",
+                  toVersionUuid: newModelVersionUuid,
+                });
                 break;
               }
               default:

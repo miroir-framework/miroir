@@ -123,6 +123,7 @@ import {
   miroirTest_domain_controller_non_uuid_pk_data_crud,
   miroirTest_domain_controller_no_parent_uuid_crud,
   miroirTest_domain_controller_model_undo_redo,
+  miroirTest_evolutionTraceWP1,
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
 } from "..";
@@ -269,6 +270,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     miroirTest_domain_controller_non_uuid_pk_data_crud as MiroirTestDefinition,
     miroirTest_domain_controller_no_parent_uuid_crud as MiroirTestDefinition,
     miroirTest_domain_controller_model_undo_redo as MiroirTestDefinition,
+    miroirTest_evolutionTraceWP1 as MiroirTestDefinition,
     miroirTest_runner_create_entity as MiroirTestDefinition,
     miroirTest_runner_drop_entity as MiroirTestDefinition,
     // miroirTest_mustache as MiroirTestDefinition

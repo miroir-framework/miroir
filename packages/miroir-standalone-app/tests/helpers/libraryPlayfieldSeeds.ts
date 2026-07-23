@@ -66,6 +66,9 @@ export const DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY =
 export const DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY =
   "domain_controller_model_undo_redo";
 
+/** Suite registry key for the Phase 8 evolution trace tracer bullet. */
+export const EVOLUTION_TRACE_WP1_SUITE_KEY = "evolutionTraceWP1";
+
 /**
  * Seed payload for `RunnerTestSessionOptions.libraryPlayfieldSeed` /
  * `resetLibraryPlayfield` (Action Data.CRUD playfield).
@@ -565,6 +568,11 @@ export function isDomainControllerModelCrudSuite(suiteKey: string): boolean {
   return suiteKey === DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY;
 }
 
+/** Evolution Trace WP1 starts from the Model.CRUD Publisher + Country playfield. */
+export function isEvolutionTraceWP1Suite(suiteKey: string): boolean {
+  return suiteKey === EVOLUTION_TRACE_WP1_SUITE_KEY;
+}
+
 /**
  * Session playfield seed for `domain_controller_composite_pk_crud`.
  * Custom TestEntityCompositePK (idAttribute region+code) + 3 instances.
@@ -661,7 +669,8 @@ export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
     isDomainControllerNonUuidPkModelCrudSuite(suiteKey) ||
     isDomainControllerNonUuidPkDataCrudSuite(suiteKey) ||
     isDomainControllerNoParentUuidCrudSuite(suiteKey) ||
-    isDomainControllerModelUndoRedoSuite(suiteKey)
+    isDomainControllerModelUndoRedoSuite(suiteKey) ||
+    isEvolutionTraceWP1Suite(suiteKey)
   );
 }
 
@@ -688,6 +697,9 @@ export function libraryPlayfieldSeedForActionSuite(
   }
   if (isDomainControllerModelUndoRedoSuite(suiteKey)) {
     return domainControllerModelUndoRedoLibraryPlayfieldSeed;
+  }
+  if (isEvolutionTraceWP1Suite(suiteKey)) {
+    return domainControllerModelCrudLibraryPlayfieldSeed;
   }
   return undefined;
 }

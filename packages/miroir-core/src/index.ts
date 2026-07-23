@@ -874,6 +874,10 @@ export {
   EVOLUTION_TRACE_EVENT_ENTITY_UUID,
 } from "./2_domain/evolutionTraceBaseline.js";
 export type { EvolutionTraceDeploymentState } from "./2_domain/evolutionTraceBaseline.js";
+export {
+  buildEvolutionTracePersistenceActions,
+  collectEvolutionTraceStateFromDomainState,
+} from "./2_domain/evolutionTraceRuntime.js";
 export { resolveDefinitionVersionForTraceEvent } from "./2_domain/evolutionTraceDefVersion.js";
 export type {
   DefinitionVersionResolutionMethod,

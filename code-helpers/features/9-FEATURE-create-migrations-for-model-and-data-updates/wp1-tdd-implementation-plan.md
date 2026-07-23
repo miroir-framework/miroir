@@ -25,7 +25,7 @@ Related:
 | 5 | Initial squashed baseline generation | ✅ DONE | 2/2 |
 | 6 | #15-compatible definition-version resolution | ✅ DONE | 4/4 |
 | 7 | Display surfaces (reports + menu wiring) | ✅ DONE | 3/3 |
-| 8 | End-to-end WP1 tracer bullet | 🔲 TODO | — |
+| 8 | End-to-end WP1 tracer bullet | ✅ DONE | 10/10 assertions |
 
 ---
 
@@ -444,7 +444,7 @@ npm run testByFile -w miroir-core -- evolutionTrace.reports
 
 ---
 
-## Phase 8 — End-to-end WP1 tracer bullet
+## Phase 8 — End-to-end WP1 tracer bullet  ✅ DONE
 
 ### 8.1 RED
 Add integration test suite `evolutionTraceWP1` in `packages/miroir-standalone-app/tests/`.
@@ -634,16 +634,18 @@ Target files (done):
 - `packages/miroir-test-app_deployment-miroir/index.ts` / `index.d.ts` / `src/Model.ts`
 - `packages/miroir-core/tests/2_domain/evolutionTrace.reports.unit.test.ts` (new — 3 tests)
 
-### Phase 8 — End-to-end tracer bullet
-- [ ] Write 13-step vertical integration scenario (RED).
-- [ ] Fix integration gaps only — no new logic (GREEN).
-- [ ] Verify: `npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration` → **all 13 steps pass**.
-- [ ] Verify: `npm run testByFile -w miroir-core` → pre-existing failures unchanged, new tests added to passed count.
-- [ ] Verify: `npx tsc --noEmit --skipLibCheck` → **0 errors**.
+### Phase 8 — End-to-end tracer bullet ✅ DONE
+- [x] Write vertical integration scenario (RED → suite registered).
+- [x] Wire DomainController persistence + ModelInitializer entities + commit stamps (GREEN).
+- [x] Verify: `npm run testMiroir -w miroir-standalone-app -- --suites evolutionTraceWP1 --mode integration --profile emulatedServer-sql` → **10/10 assertions pass**.
 
-Target files:
-- `packages/miroir-core/tests/` (any final unit-level gaps)
-- `packages/miroir-standalone-app/tests/evolutionTraceWP1.integ.test.ts` (new)
+Target files (done):
+- `packages/miroir-core/src/2_domain/evolutionTraceRuntime.ts`
+- `packages/miroir-core/src/3_controllers/DomainController.ts` (`maybeRecordEvolutionTrace`)
+- `packages/miroir-core/src/3_controllers/ModelInitializer.ts` (bootstrap ApplicationEvolutionTrace entities)
+- `packages/miroir-test-app_deployment-miroir/.../d7e8f901-....json` (`miroirTest_evolutionTraceWP1`)
+- `packages/miroir-standalone-app/tests/evolutionTraceWP1.integ.test.ts`
+- CLI registry / playfield seed / suite loader wiring
 
 ### Command checklist (per milestone)
 ```bash

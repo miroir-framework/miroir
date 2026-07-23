@@ -155,6 +155,7 @@ export declare const miroirTest_domain_controller_non_uuid_pk_model_crud: any;
 export declare const miroirTest_domain_controller_non_uuid_pk_data_crud: any;
 export declare const miroirTest_domain_controller_no_parent_uuid_crud: any;
 export declare const miroirTest_domain_controller_model_undo_redo: any;
+export declare const miroirTest_evolutionTraceWP1: any;
 export declare const miroirTest_runner_create_entity: any;
 export declare const miroirTest_runner_drop_entity: any;
 export declare const miroirTest_unionArrayChoices: any;

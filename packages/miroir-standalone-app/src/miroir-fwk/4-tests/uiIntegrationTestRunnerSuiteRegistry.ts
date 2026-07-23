@@ -11,6 +11,7 @@ import {
   miroirTest_domain_controller_no_parent_uuid_crud,
   miroirTest_domain_controller_non_uuid_pk_data_crud,
   miroirTest_domain_controller_non_uuid_pk_model_crud,
+  miroirTest_evolutionTraceWP1,
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
@@ -24,6 +25,7 @@ import {
   DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY,
+  EVOLUTION_TRACE_WP1_SUITE_KEY,
   libraryPlayfieldSeedForActionSuite,
   type LibraryPlayfieldSeed,
 } from "../../../tests/helpers/libraryPlayfieldSeeds.js";
@@ -111,6 +113,10 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     [DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY]: actionSuiteEntry(
       DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY,
       miroirTest_domain_controller_model_undo_redo as MiroirTestDefinition,
+    ),
+    [EVOLUTION_TRACE_WP1_SUITE_KEY]: actionSuiteEntry(
+      EVOLUTION_TRACE_WP1_SUITE_KEY,
+      miroirTest_evolutionTraceWP1 as MiroirTestDefinition,
     ),
   };
 

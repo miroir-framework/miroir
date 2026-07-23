@@ -1,0 +1,873 @@
+{
+  "uuid": "d7e8f901-a2b3-4c56-d789-0e1f2a3b4c5d",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "evolutionTraceWP1",
+  "description": "WP1 end-to-end evolution trace tracer bullet (Feature 9 Phase 8)",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "evolutionTrace.WP1",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "WP1 tracer bullet",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "WP1 tracer bullet",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "rollbackMiroir",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "rollbackLibrary",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryTraceBefore",
+                "nameGivenToResult": "traceStateBefore",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                      "extractors": {
+                        "traces": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "ApplicationEvolutionTrace",
+                          "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
+                        },
+                        "events": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "ApplicationEvolutionTraceEvent",
+                          "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "createEntity",
+                "actionLabel": "createTestEntityWP1",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [
+                    {
+                      "entity": {
+                        "uuid": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0",
+                        "parentName": "Entity",
+                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "name": "TestEntityWP1",
+                        "conceptLevel": "Model",
+                        "description": "Evolution trace WP1 test entity."
+                      },
+                      "entityDefinition": {
+                        "uuid": "e1e1e1e1-e1e1-4e1e-8e1e-e1e1e1e1e1e1",
+                        "parentName": "EntityDefinition",
+                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+                        "entityUuid": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0",
+                        "conceptLevel": "Model",
+                        "name": "TestEntityWP1",
+                        "description": "Evolution trace WP1 test entity definition.",
+                        "mlSchema": {
+                          "type": "object",
+                          "definition": {
+                            "name": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "id": 1,
+                                  "defaultLabel": "Name"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "renameEntity",
+                "actionLabel": "renameTestEntityWP1",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entityUuid": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0",
+                  "entityDefinitionUuid": "e1e1e1e1-e1e1-4e1e-8e1e-e1e1e1e1e1e1",
+                  "entityName": "TestEntityWP1",
+                  "targetValue": "TestEntityWP1Renamed"
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryModel",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryTraceAfterModel",
+                "nameGivenToResult": "traceStateAfterModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                      "extractors": {
+                        "traces": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "ApplicationEvolutionTrace",
+                          "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
+                        },
+                        "events": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "ApplicationEvolutionTraceEvent",
+                          "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "updateInstance",
+                "actionLabel": "updateLibraryPublisherData",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "uuid": "1f550a2a-33f5-4a56-83ee-302701039494",
+                      "parentName": "Publisher",
+                      "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                      "name": "Penguin WP1",
+                      "icon": "",
+                      "country": "b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe"
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryTraceAfterLibraryData",
+                "nameGivenToResult": "traceStateAfterLibraryData",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                      "extractors": {
+                        "traces": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "ApplicationEvolutionTrace",
+                          "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
+                        },
+                        "events": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "ApplicationEvolutionTraceEvent",
+                          "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "updateInstance",
+                "actionLabel": "updateMiroirReportData",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                  "applicationSection": "data",
+                  "objects": [
+                    {
+                      "uuid": "0e4cf674-3a26-422a-8618-09e32302ac0c",
+                      "parentName": "Report",
+                      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                      "name": "ApplicationList WP1",
+                      "defaultLabel": "Applications",
+                      "definition": {
+                        "reportParameters": {},
+                        "extractorTemplates": {
+                          "applications": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc"
+                          }
+                        },
+                        "section": {
+                          "type": "objectListReportSection",
+                          "definition": {
+                            "label": "Applications",
+                            "parentName": "SelfApplication",
+                            "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+                            "fetchedDataReference": "applications",
+                            "sortByAttribute": "name"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryTraceAfterMiroirData",
+                "nameGivenToResult": "traceStateAfterMiroirData",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                      "extractors": {
+                        "traces": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "ApplicationEvolutionTrace",
+                          "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
+                        },
+                        "events": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "ApplicationEvolutionTraceEvent",
+                          "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "libraryMasterTraceRoot",
+            "nameGivenToResult": "libraryMasterTraceRoot",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "Library master trace root exists after model commit",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterModel",
+                        "traces"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "applicationUuid"
+                          ]
+                        },
+                        "right": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "branchName"
+                          ]
+                        },
+                        "right": "master"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                },
+                "resultAccessPath": [
+                  "0"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "squashedBaseline",
+            "nameGivenToResult": "squashedBaseline",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "squashed baseline event exists",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterModel",
+                        "events"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "operationType"
+                        ]
+                      },
+                      "right": "squashedBaseline"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                },
+                "resultAccessPath": [
+                  "0"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "createEntityEvent",
+            "nameGivenToResult": "createEntityEvent",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "one createEntity event targets WP1 entity",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterModel",
+                        "events"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "operationType"
+                          ]
+                        },
+                        "right": "createEntity"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "targetEntityUuid"
+                          ]
+                        },
+                        "right": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                },
+                "resultAccessPath": [
+                  "0"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "renameEntityEvent",
+            "nameGivenToResult": "renameEntityEvent",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "one renameEntity event targets WP1 entity",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterModel",
+                        "events"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "operationType"
+                          ]
+                        },
+                        "right": "renameEntity"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "targetEntityUuid"
+                          ]
+                        },
+                        "right": "e0e0e0e0-e0e0-4e0e-8e0e-e0e0e0e0e0e0"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                },
+                "resultAccessPath": [
+                  "0"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "modelEventCommitStamps",
+            "nameGivenToResult": "modelEventCommitStamps",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "model events carry commit and version stamps",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterModel",
+                        "events"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "&&",
+                        "left": {
+                          "transformerType": "boolExpr",
+                          "interpolation": "runtime",
+                          "operator": "!=",
+                          "left": {
+                            "transformerType": "accessDynamicPath",
+                            "interpolation": "runtime",
+                            "objectAccessPath": [
+                              {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referenceName": "__element__"
+                              },
+                              "commitUuid"
+                            ]
+                          },
+                          "right": null
+                        },
+                        "right": {
+                          "transformerType": "boolExpr",
+                          "interpolation": "runtime",
+                          "operator": "!=",
+                          "left": {
+                            "transformerType": "accessDynamicPath",
+                            "interpolation": "runtime",
+                            "objectAccessPath": [
+                              {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referenceName": "__element__"
+                              },
+                              "fromVersionUuid"
+                            ]
+                          },
+                          "right": null
+                        }
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "!=",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "toVersionUuid"
+                          ]
+                        },
+                        "right": null
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 3
+                },
+                "resultAccessPath": [
+                  "0"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "modelEventDefinitionResolution",
+            "nameGivenToResult": "modelEventDefinitionResolution",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "model events resolve definition version from action payload",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterModel",
+                        "events"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "definitionVersionResolution"
+                        ]
+                      },
+                      "right": "actionPayload"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 3
+                },
+                "resultAccessPath": [
+                  "0"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "libraryDataDoesNotTrace",
+            "nameGivenToResult": "libraryDataDoesNotTrace",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "Library data update leaves event count unchanged",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "operator": "deepEqual",
+                  "left": {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "function": "count",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterModel",
+                        "events"
+                      ]
+                    }
+                  },
+                  "right": {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "function": "count",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterLibraryData",
+                        "events"
+                      ]
+                    }
+                  }
+                },
+                "expectedValue": true
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "miroirDataTraces",
+            "nameGivenToResult": "miroirDataTraces",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "Miroir data update adds one data event",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterMiroirData",
+                        "events"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "applicationSection"
+                        ]
+                      },
+                      "right": "data"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                },
+                "resultAccessPath": [
+                  "0"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "miroirDataIncrementsTotal",
+            "nameGivenToResult": "miroirDataIncrementsTotal",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "Miroir data update increases total trace event count",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "operator": "!=",
+                  "left": {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "function": "count",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterLibraryData",
+                        "events"
+                      ]
+                    }
+                  },
+                  "right": {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "function": "count",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "traceStateAfterMiroirData",
+                        "events"
+                      ]
+                    }
+                  }
+                },
+                "expectedValue": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
