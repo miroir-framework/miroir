@@ -7630,6 +7630,20 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ]
+          },
+          "versioningEnabled": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Versioning Enabled",
+                "description": "Immutable creation-time capability: when true, the application may keep Application Version / Entity Version history. Selected at application creation and must not change afterward. Absent on legacy assets until migration populates an explicit value.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
           }
         }
       },
@@ -8181,6 +8195,173 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Description"
               }
             }
+          },
+          "defaultInstanceDetailsReportUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Report used to display instances of this Entity",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "targetEntityApplicationSection": "model",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "id": 11
+              }
+            }
+          },
+          "viewAttributes": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Attributes shown in list",
+                "description": "List of attribute names to be shown when displaying lists of instances of this entity.",
+                "display": {
+                  "editable": true
+                },
+                "id": 12
+              }
+            }
+          },
+          "icon": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirIcon"
+            },
+            "tag": {
+              "value": {
+                "id": 13
+              }
+            }
+          },
+          "display": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Display Options",
+                "id": 14
+              }
+            },
+            "definition": {
+              "foldSubLevels": {
+                "type": "record",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Unfold Sub Levels"
+                  }
+                },
+                "definition": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "cache": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Cache Options",
+                "id": 15
+              }
+            },
+            "definition": {
+              "cacheAllInstancesOnRefresh": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Enable Systematic Caching of All Instances",
+                    "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "idAttribute": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Id Attribute",
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
+                "id": 16
+              }
+            },
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "externalDataSource": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "External Data Source",
+                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the Entity has conceptLevel 'External'.",
+                "id": 17
+              }
+            },
+            "definition": {
+              "schema": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Schema",
+                    "description": "The database schema where an external table resides (e.g. 'pg_catalog'). Used by SQL stores only."
+                  }
+                }
+              },
+              "tableName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Table Name",
+                    "description": "The physical table name in the external storage. Defaults to the entity name when absent."
+                  }
+                }
+              }
+            }
+          },
+          "mlSchema": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodObject"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "ML Schema",
+                "id": 18
+              }
+            },
+            "optional": true
           }
         }
       },
@@ -35365,6 +35546,20 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ]
+          },
+          "versioningEnabled": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Versioning Enabled",
+                "description": "Immutable creation-time capability: when true, the application may keep Application Version / Entity Version history. Selected at application creation and must not change afterward. Absent on legacy assets until migration populates an explicit value.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
           }
         }
       },
@@ -35589,6 +35784,181 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Description"
               }
             }
+          },
+          "defaultInstanceDetailsReportUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Report used to display instances of this Entity",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "targetEntityApplicationSection": "model",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "id": 11
+              }
+            }
+          },
+          "viewAttributes": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Attributes shown in list",
+                "description": "List of attribute names to be shown when displaying lists of instances of this entity.",
+                "display": {
+                  "editable": true
+                },
+                "id": 12,
+                "isTemplate": true
+              }
+            }
+          },
+          "icon": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirIcon"
+            },
+            "tag": {
+              "value": {
+                "id": 13,
+                "isTemplate": true
+              }
+            }
+          },
+          "display": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Display Options",
+                "id": 14,
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "foldSubLevels": {
+                "type": "record",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Unfold Sub Levels",
+                    "isTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "cache": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Cache Options",
+                "id": 15,
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "cacheAllInstancesOnRefresh": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Enable Systematic Caching of All Instances",
+                    "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "idAttribute": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Id Attribute",
+                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
+                "id": 16,
+                "isTemplate": true
+              }
+            },
+            "definition": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "definition": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "externalDataSource": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "External Data Source",
+                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the Entity has conceptLevel 'External'.",
+                "id": 17,
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "schema": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Schema",
+                    "description": "The database schema where an external table resides (e.g. 'pg_catalog'). Used by SQL stores only."
+                  }
+                }
+              },
+              "tableName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Table Name",
+                    "description": "The physical table name in the external storage. Defaults to the entity name when absent."
+                  }
+                }
+              }
+            }
+          },
+          "mlSchema": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "ML Schema",
+                "id": 18,
+                "isTemplate": true
+              }
+            },
+            "optional": true
           }
         }
       },

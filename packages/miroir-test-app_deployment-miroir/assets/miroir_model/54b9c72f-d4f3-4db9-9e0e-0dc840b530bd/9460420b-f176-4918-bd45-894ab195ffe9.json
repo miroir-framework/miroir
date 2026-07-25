@@ -19,11 +19,11 @@
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "name": {
@@ -58,7 +58,9 @@
         "type": "union",
         "optional": true,
         "definition": [
-          { "type": "string" },
+          {
+            "type": "string"
+          },
           {
             "type": "schemaReference",
             "definition": {
@@ -67,6 +69,20 @@
             }
           }
         ]
+      },
+      "versioningEnabled": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Versioning Enabled",
+            "description": "Immutable creation-time capability: when true, the application may keep Application Version / Entity Version history. Selected at application creation and must not change afterward. Absent on legacy assets until migration populates an explicit value.",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       }
     }
   }
