@@ -9,40 +9,33 @@ import type {
   RestPersistenceAction,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
+import {
+  parentUuidsFromResolvedReportQuery,
+  resolveReportQueryLoadAttributes,
+} from "../1_core/reportQueryLoadSegment.js";
 
 import type {
   ReportQueryLoadExecutor,
   ReportQueryLoadRequest,
 } from "./ReportQueryLoadService.js";
+import type { LoggerInterface } from "../../dist/index.js";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "./constants.js";
+
+let log: LoggerInterface = console as any as LoggerInterface;
+MiroirLoggerFactory.registerLoggerToStart(
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "createReportQueryLoadExecutor"),
+  "UI"
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 type DomainControllerWithRemoteStore = DomainControllerInterface & {
   getRemoteStore: () => PersistenceStoreLocalOrRemoteInterface;
 };
 
-/**
- * Collects entity UUIDs referenced by extractorInstancesByEntity extractors
- * in a resolved report query (report-triggered cache fill).
- */
-export function parentUuidsFromResolvedReportQuery(
-  resolvedQuery: ReportQueryLoadRequest["resolvedQuery"],
-): string[] {
-  const extractors = (resolvedQuery as { extractors?: Record<string, any> })
-    ?.extractors;
-  if (!extractors) {
-    return [];
-  }
-  const uuids = new Set<string>();
-  for (const extractor of Object.values(extractors)) {
-    if (
-      extractor &&
-      extractor.extractorOrCombinerType === "extractorInstancesByEntity" &&
-      typeof extractor.parentUuid === "string"
-    ) {
-      uuids.add(extractor.parentUuid);
-    }
-  }
-  return [...uuids];
-}
+export { parentUuidsFromResolvedReportQuery };
 
 function isErrorResult(result: Action2ReturnType): result is Action2Error {
   return (
@@ -55,6 +48,9 @@ function isErrorResult(result: Action2ReturnType): result is Action2Error {
  * DomainController-backed executor: RestPersistenceAction_read per entity
  * referenced by the report query, then loadNewInstancesInLocalCache via the
  * local cache only (not handleAction — that would POST to the remote store).
+ *
+ * #214: when `request.projection.attributes` is set, reads are projected and
+ * the local-cache write targets the partial segment.
  */
 export function createReportQueryLoadExecutor(
   domainController: DomainControllerInterface,
@@ -76,9 +72,16 @@ export function createReportQueryLoadExecutor(
 
     const section =
       request.applicationSection ?? options?.applicationSection ?? "data";
+    const projectionAttributes = resolveReportQueryLoadAttributes(request);
     const store = withStore.getRemoteStore();
     const collections: EntityInstanceCollection[] = [];
 
+    log.info(
+      "createReportQueryLoadExecutor: parentUuids",
+      parentUuids,
+      "projection",
+      projectionAttributes,
+    );
     for (const parentUuid of parentUuids) {
       const readAction: RestPersistenceAction = {
         actionType: "RestPersistenceAction_read",
@@ -87,6 +90,9 @@ export function createReportQueryLoadExecutor(
           application: request.application,
           section,
           parentUuid,
+          ...(projectionAttributes && projectionAttributes.length > 0
+            ? { attributes: projectionAttributes }
+            : {}),
         },
       };
 
@@ -103,6 +109,14 @@ export function createReportQueryLoadExecutor(
       }
 
       const element = result.returnedDomainElement;
+      const segmentFields: Pick<
+        EntityInstanceCollection,
+        "attributes" | "cacheSegment"
+      > =
+        projectionAttributes && projectionAttributes.length > 0
+          ? { cacheSegment: "partial", attributes: projectionAttributes }
+          : { cacheSegment: "full" };
+
       if (element && Array.isArray((element as EntityInstanceCollection).instances)) {
         collections.push({
           parentUuid:
@@ -110,12 +124,14 @@ export function createReportQueryLoadExecutor(
           applicationSection:
             (element as EntityInstanceCollection).applicationSection || section,
           instances: (element as EntityInstanceCollection).instances,
+          ...segmentFields,
         });
       } else if (Array.isArray(element)) {
         collections.push({
           parentUuid,
           applicationSection: section,
           instances: element,
+          ...segmentFields,
         });
       } else {
         // Still register an empty entity slice so selectors stop returning EntityNotFound.
@@ -123,6 +139,7 @@ export function createReportQueryLoadExecutor(
           parentUuid,
           applicationSection: section,
           instances: [],
+          ...segmentFields,
         });
       }
     }

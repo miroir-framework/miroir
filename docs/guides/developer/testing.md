@@ -21,7 +21,7 @@ Legacy `UnitTest` and `TransformerTest` entities remain in the deployment for ba
 |------|----------|-------------|----------------|
 | **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | All miroir-core registry suites except `miroirCoreTransformers` |
 | **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `miroirCoreTransformers`, etc. via `MIROIR_TEST_*` |
-| **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD (Data.CRUD deprecated), PersistenceStoreController, extractors |
+| **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD (Data.CRUD deprecated), PersistenceStoreController (incl. #214 attribute projection), extractors |
 | **Runner / Action integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | `runner_library`, `domain_controller_data_crud` |
 
 The UI always runs **unit** mode.

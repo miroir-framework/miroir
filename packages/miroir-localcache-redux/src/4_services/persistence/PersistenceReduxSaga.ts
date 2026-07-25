@@ -470,20 +470,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
             application: action.payload.application,
             // deploymentUuid: action.payload.deploymentUuid, // ONLY for createInstance
             applicationSection: action.payload.section,
+            parentUuid: action.payload.parentUuid ?? "",
             objects: (Array.isArray(action.payload.objects)
               ? action.payload.objects
               : []) as EntityInstance[],
-            // objects: [
-            //   {
-            //     // type issue: read action does not have "objects" attribute
-            //     parentName: action.payload.parentName ?? "",
-            //     parentUuid: action.payload.parentUuid ?? "",
-            //     applicationSection: action.payload.section,
-            //     instances: (Array.isArray(action.payload.objects)
-            //       ? action.payload.objects
-            //       : []) as EntityInstance[],
-            //   },
-            // ],
+            ...(newActionType === "getInstances" &&
+            Array.isArray((action.payload as { attributes?: string[] }).attributes) &&
+            (action.payload as { attributes?: string[] }).attributes!.length > 0
+              ? { attributes: (action.payload as { attributes?: string[] }).attributes }
+              : {}),
           },
         } as PersistenceStoreControllerAction;
         log.info(

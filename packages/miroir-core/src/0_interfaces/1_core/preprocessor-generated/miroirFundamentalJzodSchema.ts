@@ -5964,6 +5964,37 @@ export const miroirFundamentalJzodSchema = {
                 "relativePath": "entityInstance"
               }
             }
+          },
+          "cacheSegment": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "full",
+              "partial"
+            ],
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Cache Segment",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            }
+          },
+          "attributes": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Attributes Projection",
+                "editable": false,
+                "canBeTemplate": true
+              }
+            }
           }
         }
       },
@@ -13067,6 +13098,19 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "coreTransformerForBuildPlusRuntime"
             },
             "context": {}
+          },
+          "attributes": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Projected Attributes",
+                "description": "Optional attribute allow-list for partial fetch (#214)"
+              }
+            }
           }
         }
       },
@@ -13171,6 +13215,19 @@ export const miroirFundamentalJzodSchema = {
                     "defaultLabel": "Values"
                   }
                 }
+              }
+            }
+          },
+          "attributes": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Projected Attributes",
+                "description": "Optional attribute allow-list for partial fetch (#214)"
               }
             }
           }
@@ -17407,6 +17464,19 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     }
+                  },
+                  "attributes": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Projected Attributes",
+                        "description": "Optional attribute allow-list for partial fetch (#214)"
+                      }
+                    }
                   }
                 }
               }
@@ -18141,6 +18211,19 @@ export const miroirFundamentalJzodSchema = {
                         "relativePath": "entityInstance"
                       }
                     }
+                  },
+                  "attributes": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Projected Attributes",
+                        "description": "Optional attribute allow-list for partial fetch (#214)"
+                      }
+                    }
                   }
                 }
               }
@@ -18512,6 +18595,19 @@ export const miroirFundamentalJzodSchema = {
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "entityInstance"
+                      }
+                    }
+                  },
+                  "attributes": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Projected Attributes",
+                        "description": "Optional attribute allow-list for partial fetch (#214)"
                       }
                     }
                   }
@@ -18897,6 +18993,19 @@ export const miroirFundamentalJzodSchema = {
                         "relativePath": "entityInstance"
                       }
                     }
+                  },
+                  "attributes": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Projected Attributes",
+                        "description": "Optional attribute allow-list for partial fetch (#214)"
+                      }
+                    }
                   }
                 }
               }
@@ -19182,6 +19291,19 @@ export const miroirFundamentalJzodSchema = {
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                         "relativePath": "entityInstance"
+                      }
+                    }
+                  },
+                  "attributes": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Projected Attributes",
+                        "description": "Optional attribute allow-list for partial fetch (#214)"
                       }
                     }
                   }
@@ -28792,6 +28914,20 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
             }
+          },
+          "attributes": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Projected Attributes",
+                "description": "Optional attribute allow-list for partial fetch (#214)",
+                "isTemplate": true
+              }
+            }
           }
         }
       },
@@ -28977,6 +29113,20 @@ export const miroirFundamentalJzodSchema = {
                   "transformerType",
                   "interpolation"
                 ]
+              }
+            }
+          },
+          "attributes": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Projected Attributes",
+                "description": "Optional attribute allow-list for partial fetch (#214)",
+                "isTemplate": true
               }
             }
           }
@@ -32425,6 +32575,20 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     }
+                  },
+                  "attributes": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Projected Attributes",
+                        "description": "Optional attribute allow-list for partial fetch (#214)",
+                        "isTemplate": true
+                      }
+                    }
                   }
                 }
               }
@@ -35051,6 +35215,90 @@ export const miroirFundamentalJzodSchema = {
                 }
               ]
             }
+          },
+          "cacheSegment": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "full",
+                  "partial"
+                ],
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Cache Segment",
+                    "editable": false,
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            ],
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Cache Segment",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ]
+          },
+          "attributes": {
+            "type": "union",
+            "optional": true,
+            "definition": [
+              {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                },
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Attributes Projection",
+                    "editable": false,
+                    "canBeTemplate": true,
+                    "isTemplate": true
+                  }
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntimeWithoutArray"
+                }
+              }
+            ],
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Attributes Projection",
+                "editable": false,
+                "canBeTemplate": true,
+                "isTemplate": true
+              }
+            },
+            "discriminator": [
+              "transformerType",
+              "interpolation"
+            ]
           }
         }
       },

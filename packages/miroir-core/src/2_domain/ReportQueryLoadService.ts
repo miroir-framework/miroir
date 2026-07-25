@@ -2,6 +2,10 @@ import stringify from "fast-json-stable-stringify";
 
 import type { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
 import type { BoxedQueryWithExtractorCombinerTransformer } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  resolveReportQueryLoadAttributes,
+  resolveReportQueryLoadSegmentKind,
+} from "../1_core/reportQueryLoadSegment.js";
 
 export type ReportLoadStatus = "idle" | "loading" | "ready" | "error";
 
@@ -13,6 +17,13 @@ export interface ReportQueryLoadRequest {
   applicationSection?: "data" | "model";
   resolvedQuery: BoxedQueryWithExtractorCombinerTransformer | Record<string, unknown>;
   queryParams?: Record<string, unknown>;
+  /**
+   * #214 — when set, projected read + write/replace partial segment.
+   * Fingerprint includes segment kind + canonical projection (not forceRefresh).
+   */
+  projection?: { attributes: string[] };
+  /** #214 — bypass segment sufficiency and service ready short-circuit once. */
+  forceRefresh?: boolean;
 }
 
 /**
@@ -24,9 +35,19 @@ export type ReportQueryLoadExecutor = (
   request: ReportQueryLoadRequest,
 ) => Promise<void>;
 
+/** Optional #214 probe: true ⇒ skip network (segment already sufficient). */
+export type ReportQueryLoadSegmentSufficiencyProbe = (
+  request: ReportQueryLoadRequest,
+) => boolean;
+
+export type ReportQueryLoadServiceOptions = {
+  isSegmentSufficient?: ReportQueryLoadSegmentSufficiencyProbe;
+};
+
 export function fingerprintReportQueryLoadRequest(
   request: ReportQueryLoadRequest,
 ): string {
+  const projection = resolveReportQueryLoadAttributes(request) ?? null;
   return stringify({
     application: request.application,
     deploymentUuid: request.deploymentUuid,
@@ -34,6 +55,9 @@ export function fingerprintReportQueryLoadRequest(
     applicationSection: request.applicationSection ?? "data",
     resolvedQuery: request.resolvedQuery,
     queryParams: request.queryParams ?? {},
+    // #214 Phase 3.1 — segment routing in fingerprint (forceRefresh excluded)
+    segment: resolveReportQueryLoadSegmentKind(request),
+    projection,
   });
 }
 
@@ -45,8 +69,14 @@ export class ReportQueryLoadService {
   private readonly statusByKey = new Map<string, ReportLoadStatus>();
   private readonly errorByKey = new Map<string, unknown>();
   private readonly inFlightByKey = new Map<string, Promise<ReportLoadStatus>>();
+  private readonly isSegmentSufficient?: ReportQueryLoadSegmentSufficiencyProbe;
 
-  constructor(private readonly executeLoad: ReportQueryLoadExecutor) {}
+  constructor(
+    private readonly executeLoad: ReportQueryLoadExecutor,
+    options?: ReportQueryLoadServiceOptions,
+  ) {
+    this.isSegmentSufficient = options?.isSegmentSufficient;
+  }
 
   fingerprint(request: ReportQueryLoadRequest): string {
     return fingerprintReportQueryLoadRequest(request);
@@ -62,17 +92,31 @@ export class ReportQueryLoadService {
 
   /**
    * Ensures the request is loaded. Concurrent calls with the same fingerprint
-   * share one in-flight promise. Ready keys short-circuit. Error keys stay sticky
-   * (no automatic re-dispatch) until invalidate.
+   * share one in-flight promise. Ready keys short-circuit unless forceRefresh
+   * or segment sufficiency fails (#214). Error keys stay sticky until invalidate.
    */
   ensureLoaded(request: ReportQueryLoadRequest): Promise<ReportLoadStatus> {
     const key = this.fingerprint(request);
-    const current = this.getStatus(key);
 
-    if (current === "ready") {
+    if (request.forceRefresh) {
+      this.invalidate(key);
+    }
+
+    if (!request.forceRefresh && this.isSegmentSufficient) {
+      if (this.isSegmentSufficient(request)) {
+        this.statusByKey.set(key, "ready");
+        this.errorByKey.delete(key);
+        return Promise.resolve("ready");
+      }
+      // Segment insufficient (stale / missing / projection mismatch): drop sticky ready.
+      if (this.getStatus(key) === "ready") {
+        this.statusByKey.delete(key);
+      }
+    } else if (this.getStatus(key) === "ready") {
       return Promise.resolve("ready");
     }
-    if (current === "error") {
+
+    if (this.getStatus(key) === "error") {
       return Promise.resolve("error");
     }
 

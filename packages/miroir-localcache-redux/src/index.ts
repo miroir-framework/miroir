@@ -11,6 +11,7 @@ export {
   getLocalCacheKeysForDeploymentUuid,
   getPersistenceActionReduxEventNames,
   localCacheStateToDomainState,
+  setLocalCacheSegmentFreshness,
   LocalCacheSlice,
 } from "./4_services/localCache/LocalCacheSlice.js";
 export {

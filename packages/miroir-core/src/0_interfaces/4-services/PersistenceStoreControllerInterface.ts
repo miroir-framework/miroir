@@ -210,15 +210,20 @@ export interface PersistenceStoreControllerInterface
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
 
+  getInstances(
+    section: ApplicationSection,
+    parentUuid: string,
+    attributes?: string[],
+    /** When set, PK attributes from this EntityDefinition are retained under projection. */
+    entityDefinition?: EntityDefinition
+  ): Promise<Action2EntityInstanceCollectionOrFailure>;
   getInstance(
     section: ApplicationSection,
     parentUuid: string,
-    uuid: Uuid
+    uuid: Uuid,
+    attributes?: string[],
+    entityDefinition?: EntityDefinition
   ): Promise<Action2EntityInstanceReturnType>;
-  getInstances(
-    section: ApplicationSection,
-    parentUuid: string
-  ): Promise<Action2EntityInstanceCollectionOrFailure>;
   upsertInstance(
     section: ApplicationSection,
     instance: EntityInstance,

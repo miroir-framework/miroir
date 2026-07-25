@@ -44,6 +44,23 @@ describe("LocalCacheMonitorSummary (Phase 7)", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  it("does not violate Rules of Hooks when monitor gate flips off → on", () => {
+    showLocalCacheMonitorRef.current = false;
+    const { rerender } = render(<LocalCacheMonitorSummary />);
+    showLocalCacheMonitorRef.current = true;
+    localCacheMonitorRegistry.setSnapshot({
+      breakdown: {
+        presentSnapshotBytes: 10,
+        transactionHistoryBytes: 0,
+        queriesResultsCacheBytes: 0,
+        effectiveBytes: 10,
+      },
+      attributedInstances: [],
+    });
+    expect(() => rerender(<LocalCacheMonitorSummary />)).not.toThrow();
+    expect(screen.getByTestId("localcache-monitor-summary")).toBeInTheDocument();
+  });
+
   it("shows effective, present, history, and query-cache sizes when on", () => {
     showLocalCacheMonitorRef.current = true;
     localCacheMonitorRegistry.setSnapshot({

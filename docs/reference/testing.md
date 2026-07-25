@@ -688,7 +688,7 @@ Tests persistence below the domain layer, including the persistence controller a
 
 | File | Setup | Focus |
 |------|-------|-------|
-| `PersistenceStoreController.integ.test.tsx` | `AppStackIntegrationTestSession` | PersistenceStoreController open/create/read/write, model actions |
+| `PersistenceStoreController.integ.test.tsx` | `AppStackIntegrationTestSession` | PersistenceStoreController open/create/read/write, model actions; **#214** projected `getInstances` (keys ⊆ allow-list ∪ identity) |
 | `ExtractorPersistenceStoreRunner.integ.test.tsx` | `AppStackIntegrationTestSession` | `ExtractorPersistenceStoreRunner` end-to-end |
 | `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | `AppStackIntegrationTestSession` | Extractor templates against live store |
 
@@ -696,9 +696,31 @@ Tests persistence below the domain layer, including the persistence controller a
 npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-sql PersistenceStoreController.integ
 
+# Filesystem profile — preferred for #214 projection smoke (filter-after-read)
+npm run testByFile -w miroir-standalone-app -- \
+  --profile emulatedServer-filesystem PersistenceStoreController.integ
+
 npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-indexedDb ExtractorPersistenceStoreRunner.integ
 ```
+
+##### Attribute projection (#214)
+
+Partial-fetch contract and controller projection live in Feature [#214](https://github.com/miroir-framework/miroir/issues/214) (`code-helpers/features/214-FEATURE-large-entity-instance-partial-fetch/`).
+
+| Layer | What to run | Notes |
+|-------|-------------|--------|
+| Unit | `packages/miroir-core/tests/1_core/instanceProjection*.unit.test.ts`, `…/PersistenceStoreController.projection.unit.test.ts` | Pure projection + Zod accept `attributes`; mocked store section OK |
+| Integ | `PersistenceStoreController.integ` case *get Miroir Entities with attribute projection* | Real store via controller; assert projected keys only |
+
+**Schema-first:** do **not** hand-edit `preprocessor-generated/miroirFundamentalType.ts` for `attributes`. Edit deployment assets (Query ED `359f1f9b-…`, Endpoints `a93598b3-…` / `ed520de4-…`), then:
+
+```bash
+npm run build -w miroir-test-app_deployment-miroir
+npm run devBuild -w miroir-core
+```
+
+Identity under projection uses `resolveProjectionIdentityFields` → `getEntityPrimaryKeyAttributes` (UUID default; pass `entityDefinition` for non-UUID / composite PK).
 
 #### View / React (`tests/4_view/`)
 
@@ -1304,12 +1326,19 @@ Real-server profiles require a reachable `miroir-server` and the selected backen
 # After changing MiroirTest JSON assets
 npm run build -w miroir-test-app_deployment-miroir
 
-# After changing miroir-core entity definitions or generated types
+# After changing Query / Endpoint / EntityDefinition Jzod in deployment-miroir
+# (e.g. #214 attributes on extractors or RestPersistenceAction_read)
+npm run build -w miroir-test-app_deployment-miroir
+npm run devBuild -w miroir-core   # regenerates preprocessor-generated types + package build
+
+# After changing miroir-core entity definitions or generated types only
 npm run devBuild -w miroir-core
 
 # After changing miroir-react source
 npm run build -w miroir-react
 ```
+
+Hand-editing `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/*` is not durable — the next `devBuild` overwrites it from deployment Jzod.
 
 ---
 

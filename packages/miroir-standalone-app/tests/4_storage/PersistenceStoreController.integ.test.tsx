@@ -416,6 +416,26 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   });
 
   // ################################################################################################
+  it("get Miroir Entities with attribute projection (#214)", async () => {
+    const result = await localMiroirPersistenceStoreController.getInstances(
+      "model",
+      entityEntity.uuid,
+      ["name"],
+    );
+    expect(result).toMatchObject({ status: "ok" });
+    const instances = (result as any).returnedDomainElement.instances as EntityInstance[];
+    expect(instances.length).toBeGreaterThan(0);
+    const allowed = new Set(["uuid", "parentUuid", "parentName", "name"]);
+    for (const instance of instances) {
+      const keys = Object.keys(instance);
+      expect(keys.every((k) => allowed.has(k)), `unexpected keys ${keys.join(",")}`).toBe(true);
+      expect(instance).toHaveProperty("uuid");
+      expect(instance).toHaveProperty("name");
+      expect(instance).not.toHaveProperty("description");
+    }
+  });
+
+  // ################################################################################################
   it("get Library Entities", async () => {
     await chainVitestSteps(
       "actualTest_getInstancesAndCheckResult",

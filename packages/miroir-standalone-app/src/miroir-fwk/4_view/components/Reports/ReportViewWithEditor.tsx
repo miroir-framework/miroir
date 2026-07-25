@@ -11,6 +11,7 @@ import {
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
+  resolveReportQueryLoadAttributes,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
@@ -144,7 +145,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     if (!resolvedQuery || !extractors || Object.keys(extractors).length === 0) {
       return undefined;
     }
-    return {
+    const draft: ReportQueryLoadRequest = {
       application: props.application,
       deploymentUuid: props.deploymentUuid,
       reportUuid: props.reportDefinition?.uuid,
@@ -152,6 +153,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       resolvedQuery,
       queryParams: {},
     };
+    // #214 — derive projection from extractor attributes (e.g. BlobList without contents)
+    const projectionAttributes = resolveReportQueryLoadAttributes(draft);
+    if (projectionAttributes?.length) {
+      draft.projection = { attributes: projectionAttributes };
+    }
+    return draft;
   }, [
     props.application,
     props.deploymentUuid,
@@ -164,10 +171,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     reportQueryLoadService,
     reportQueryLoadRequest,
   );
-
-  if (reportDataQueryResults instanceof Domain2ElementFailed) { // should never happen
-    throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));
-  }
 
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];
@@ -334,6 +337,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     [domainController, props]
   );
 
+  if (reportDataQueryResults instanceof Domain2ElementFailed) { // should never happen
+    throw new Error("ReportView: failed to get report data: " + JSON.stringify(reportDataQueryResults, null, 2));
+  }
+
   
   // ##############################################################################################
   // ##############################################################################################
@@ -348,7 +355,13 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         {reportQueryLoadStatus === "error" ? (
           <ThemedSpan>Report async load failed (showing cached data if available).</ThemedSpan>
         ) : null}
-        {props.applicationSection ? (
+        {/* While async report load is in flight, skip EntityNotFound failure dump — expected for lazy-on-refresh entities. */}
+        {reportQueryLoadStatus === "loading" &&
+        reportData &&
+        typeof reportData === "object" &&
+        ((reportData as any).queryFailure === "ReferenceNotFound" ||
+          (reportData as any).queryFailure === "EntityNotFound" ||
+          (reportData as any).elementType === "failure") ? null : props.applicationSection ? (
           reportData.elementType == "failure" ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
           ) : // (<>failure</>)

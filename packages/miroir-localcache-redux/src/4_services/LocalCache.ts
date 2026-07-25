@@ -31,6 +31,7 @@ import {
   MiroirLoggerFactory,
   ModelActionReplayableAction,
   // RunBoxedExtractorOrQueryAction,
+  rejectPartialMutationInstanceAction,
   TransactionalInstanceAction,
   type ApplicationDeploymentMap,
   type LocalCacheMonitorSnapshot,
@@ -211,6 +212,28 @@ export class LocalCache implements LocalCacheInterface {
   ): Action2ReturnType {
     log.info("LocalCache handleLocalCacheAction", action, applicationDeploymentMap);
     // log.info("LocalCache handleAction", JSON.stringify(action, undefined, 2));
+
+    const actionType = (action as any)?.actionType;
+    if (
+      actionType === "createInstance" ||
+      actionType === "updateInstance" ||
+      actionType === "deleteInstance" ||
+      actionType === "deleteInstanceWithCascade"
+    ) {
+      const rejected = rejectPartialMutationInstanceAction(action as any);
+      if (rejected) {
+        return rejected;
+      }
+    }
+    if (actionType === "transactionalInstanceAction") {
+      const inner = (action as TransactionalInstanceAction).payload?.instanceAction;
+      if (inner) {
+        const rejected = rejectPartialMutationInstanceAction(inner);
+        if (rejected) {
+          return rejected;
+        }
+      }
+    }
 
     const result: Action2ReturnType = exceptionToActionReturnType(() =>
       this.innerReduxStore.dispatch(

@@ -439,7 +439,7 @@ for (const op of restServerDefaultHandlers) {
         op.method,
         request.originalUrl,
         body,
-        request.params
+        { ...request.params, ...request.query }
       );
 
       myLogger.info(`[CONSOLE DEBUG] Handler completed successfully`);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  isLazyCacheOnRefreshEntity,
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
 } from "../../src/1_core/cacheRefreshPolicy.js";
@@ -51,6 +52,13 @@ describe("shouldCacheAllInstancesOnRefresh (1.1 default eager)", () => {
 
   it("returns false when cacheAllInstancesOnRefresh is false", () => {
     expect(shouldCacheAllInstancesOnRefresh(entityDefinition("e1", false))).toBe(false);
+  });
+
+  it("isLazyCacheOnRefreshEntity is true only for explicit false", () => {
+    expect(isLazyCacheOnRefreshEntity(undefined)).toBe(false);
+    expect(isLazyCacheOnRefreshEntity(entityDefinition("e1"))).toBe(false);
+    expect(isLazyCacheOnRefreshEntity(entityDefinition("e1", true))).toBe(false);
+    expect(isLazyCacheOnRefreshEntity(entityDefinition("e1", false))).toBe(true);
   });
 });
 

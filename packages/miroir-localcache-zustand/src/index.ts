@@ -25,6 +25,7 @@ export {
   getLocalCacheKeysForDeploymentSection,
   getLocalCacheKeysForDeploymentUuid,
   localCacheStateToDomainState,
+  setLocalCacheSegmentFreshness,
 } from "./4_services/localCache/LocalCacheSlice.js";
 
 // Model selectors

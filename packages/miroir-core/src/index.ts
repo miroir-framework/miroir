@@ -816,8 +816,42 @@ export {
 export {
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
+  isLazyCacheOnRefreshEntity,
   type EntityFetchOnRefresh,
 } from "./1_core/cacheRefreshPolicy.js";
+export {
+  INSTANCE_PROJECTION_IDENTITY_FIELDS,
+  INSTANCE_PROJECTION_STRUCTURAL_FIELDS,
+  parseAttributesProjectionParam,
+  projectEntityInstance,
+  projectEntityInstances,
+  resolveProjectionIdentityFields,
+} from "./1_core/instanceProjection.js";
+export type { InstanceProjectionAttributes } from "./1_core/instanceProjection.js";
+export {
+  LOCAL_CACHE_PARTIAL_SEGMENT_SUFFIX,
+  buildLocalCacheSegmentHeader,
+  canonicalizeProjection,
+  isPartialLocalCacheIndex,
+  projectionsEqual,
+  resolveCacheSegmentKind,
+  resolveLoadCacheSegment,
+  stripLocalCacheSegmentSuffix,
+} from "./1_core/localCacheSegment.js";
+export type {
+  CacheFreshness,
+  CacheSegmentKind,
+  LocalCacheLoadSegmentHint,
+  LocalCacheSegmentHeader,
+} from "./1_core/localCacheSegment.js";
+export {
+  MIROIR_CACHE_SEGMENT_MARKER,
+  PARTIAL_MUTATION_REJECTED_MESSAGE,
+  isPartialMutationInstance,
+  isPartialMutationInstanceAction,
+  markSiblingPartialSegmentStale,
+  rejectPartialMutationInstanceAction,
+} from "./1_core/partialMutationGuard.js";
 export {
   formatRelativePath,
   formatRelativePaths,
@@ -941,11 +975,22 @@ export {
   type ReportLoadStatus,
   type ReportQueryLoadExecutor,
   type ReportQueryLoadRequest,
+  type ReportQueryLoadSegmentSufficiencyProbe,
+  type ReportQueryLoadServiceOptions,
 } from "./2_domain/ReportQueryLoadService.js";
 export {
   createReportQueryLoadExecutor,
   parentUuidsFromResolvedReportQuery,
 } from "./2_domain/createReportQueryLoadExecutor.js";
+export {
+  createSegmentHeaderLookupFromLocalCacheSnapshot,
+  isLocalCacheSegmentHeaderSufficient,
+  isReportQueryLoadSegmentSufficient,
+  attributesFromResolvedReportQueryExtractors,
+  resolveReportQueryLoadAttributes,
+  resolveReportQueryLoadSegmentKind,
+  type LocalCacheSegmentHeaderLookup,
+} from "./1_core/reportQueryLoadSegment.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
 export {
   aggregateAttributedByEntity,
@@ -974,7 +1019,9 @@ export {
 export {
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
-  getLocalCacheIndexEntityUuid, getReduxDeploymentsStateIndex
+  getLocalCacheIndexEntityUuid,
+  getLocalCacheIndexSegmentKind,
+  getReduxDeploymentsStateIndex,
 } from "./2_domain/ReduxDeploymentsState.js";
 export {
   createReduxDeploymentsStateSelectorMap,
