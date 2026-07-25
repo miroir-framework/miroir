@@ -737,18 +737,25 @@ export {
   getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
   getInstancePrimaryKeyValue,
+  getResolvedEntityPrimaryKeyAttribute,
+  getResolvedEntityPrimaryKeyAttributes,
   instanceMatchesForeignKey,
   parseCompositeKeyValue,
   resolveInstanceParentUuid,
   serializeCompositeKeyValue
 } from "./1_core/EntityPrimaryKey";
+export type { EntityPrimaryKeySource } from "./1_core/EntityPrimaryKey";
 export {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+  EntityPresentModelResolutionError,
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
   compareEntityPresentModelDefinitions,
+  entityHasCompletePresentModel,
   inventoryEntityEntityDefinitionJoins,
+  overlappingPresentModelDifferences,
   projectEntityPresentModelDefinition,
+  resolveCurrentEntityModel,
 } from "./1_core/entityPresentModel.js";
 export type {
   EntityEntityDefinitionJoinInventory,
@@ -756,6 +763,8 @@ export type {
   EntityPresentModelDefinitionComparison,
   EntityPresentModelDefinitionField,
   EntityPresentModelDefinitionProjection,
+  EntityPresentModelResolutionErrorCode,
+  ResolveCurrentEntityModelOptions,
 } from "./1_core/entityPresentModel.js";
 export {
   actionsWithDeploymentInPayload, noValue

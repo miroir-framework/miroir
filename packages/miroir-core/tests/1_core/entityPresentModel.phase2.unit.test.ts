@@ -1,0 +1,164 @@
+import { describe, expect, it } from "vitest";
+
+import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
+
+import type {
+  Entity,
+  EntityDefinition,
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  EntityPresentModelResolutionError,
+  entityHasCompletePresentModel,
+  resolveCurrentEntityModel,
+} from "../../src/1_core/entityPresentModel.js";
+import {
+  getEntityPrimaryKeyAttribute,
+  getResolvedEntityPrimaryKeyAttribute,
+} from "../../src/1_core/EntityPrimaryKey.js";
+
+function entity(overrides: Partial<Entity> & Pick<Entity, "uuid" | "name">): Entity {
+  return {
+    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+    parentName: "Entity",
+    ...overrides,
+  };
+}
+
+function entityDefinition(
+  overrides: Partial<EntityDefinition> &
+    Pick<EntityDefinition, "uuid" | "name" | "entityUuid" | "mlSchema">,
+): EntityDefinition {
+  return {
+    parentUuid: "e432ecc7-9415-4fd8-b040-c6fbaea17e9a",
+    parentName: "EntityDefinition",
+    ...overrides,
+  };
+}
+
+const bookEntity = defaultLibraryAppModel.entities.find(
+  (e) => e.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+)!;
+const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+  (d) => d.entityUuid === bookEntity.uuid,
+)!;
+
+describe("resolveCurrentEntityModel", () => {
+  it("returns the Entity when it already carries mlSchema (complete)", () => {
+    const complete: Entity = {
+      ...bookEntity,
+      mlSchema: bookDefinition.mlSchema,
+      viewAttributes: bookDefinition.viewAttributes,
+      idAttribute: bookDefinition.idAttribute,
+    };
+    const resolved = resolveCurrentEntityModel(complete, [bookDefinition]);
+    expect(resolved).toBe(complete);
+    expect(entityHasCompletePresentModel(resolved)).toBe(true);
+  });
+
+  it("enriches an incomplete legacy Entity from its single EntityDefinition", () => {
+    const resolved = resolveCurrentEntityModel(bookEntity, [bookDefinition]);
+    expect(resolved).not.toBe(bookEntity);
+    expect(resolved.uuid).toBe(bookEntity.uuid);
+    expect(resolved.name).toBe(bookEntity.name);
+    expect(resolved.mlSchema).toEqual(bookDefinition.mlSchema);
+    expect(resolved.viewAttributes).toEqual(bookDefinition.viewAttributes);
+    expect(resolved.idAttribute).toEqual(bookDefinition.idAttribute);
+    expect(resolved.cache).toEqual(bookDefinition.cache);
+    expect(resolved.defaultInstanceDetailsReportUuid).toBe(
+      bookDefinition.defaultInstanceDetailsReportUuid,
+    );
+  });
+
+  it("prefers Entity-owned definition fields when enriching incomplete Entities", () => {
+    const incomplete: Entity = {
+      ...bookEntity,
+      viewAttributes: ["customOnly"],
+    };
+    const resolved = resolveCurrentEntityModel(incomplete, [bookDefinition]);
+    expect(resolved.viewAttributes).toEqual(["customOnly"]);
+    expect(resolved.mlSchema).toEqual(bookDefinition.mlSchema);
+  });
+
+  it("throws when complete Entity and EntityDefinition definition fields diverge", () => {
+    const complete: Entity = {
+      ...bookEntity,
+      mlSchema: bookDefinition.mlSchema,
+      viewAttributes: ["diverged"],
+    };
+    expect(() => resolveCurrentEntityModel(complete, [bookDefinition])).toThrow(
+      EntityPresentModelResolutionError,
+    );
+    try {
+      resolveCurrentEntityModel(complete, [bookDefinition]);
+    } catch (error) {
+      expect(error).toBeInstanceOf(EntityPresentModelResolutionError);
+      expect((error as EntityPresentModelResolutionError).code).toBe("inconsistent");
+    }
+  });
+
+  it("can prefer Entity when onInconsistency is preferEntity", () => {
+    const complete: Entity = {
+      ...bookEntity,
+      mlSchema: bookDefinition.mlSchema,
+      viewAttributes: ["diverged"],
+    };
+    const resolved = resolveCurrentEntityModel(complete, [bookDefinition], {
+      onInconsistency: "preferEntity",
+    });
+    expect(resolved).toBe(complete);
+    expect(resolved.viewAttributes).toEqual(["diverged"]);
+  });
+
+  it("throws on ambiguous EntityDefinitions for the same Entity", () => {
+    const second = entityDefinition({
+      uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      name: "BookAlt",
+      entityUuid: bookEntity.uuid,
+      mlSchema: { type: "object", definition: {} },
+    });
+    expect(() => resolveCurrentEntityModel(bookEntity, [bookDefinition, second])).toThrow(
+      EntityPresentModelResolutionError,
+    );
+    try {
+      resolveCurrentEntityModel(bookEntity, [bookDefinition, second]);
+    } catch (error) {
+      expect((error as EntityPresentModelResolutionError).code).toBe("ambiguous");
+    }
+  });
+
+  it("throws when incomplete Entity has no matching EntityDefinition", () => {
+    expect(() => resolveCurrentEntityModel(bookEntity, [])).toThrow(
+      EntityPresentModelResolutionError,
+    );
+    try {
+      resolveCurrentEntityModel(bookEntity, []);
+    } catch (error) {
+      expect((error as EntityPresentModelResolutionError).code).toBe("missingDefinition");
+    }
+  });
+});
+
+describe("PK helpers — Entity-first via resolver", () => {
+  it("reads idAttribute from Entity or EntityDefinition sources", () => {
+    expect(getEntityPrimaryKeyAttribute({ idAttribute: "code" })).toBe("code");
+    expect(getEntityPrimaryKeyAttribute({ idAttribute: ["a", "b"] })).toEqual(["a", "b"]);
+    expect(getEntityPrimaryKeyAttribute({})).toBe("uuid");
+  });
+
+  it("resolves PK through present-model enrichment for legacy Entities", () => {
+    const withNonUuidPk = entityDefinition({
+      ...bookDefinition,
+      idAttribute: "isbn",
+    });
+    expect(getResolvedEntityPrimaryKeyAttribute(bookEntity, [withNonUuidPk])).toBe("isbn");
+  });
+
+  it("resolves PK from a complete Entity without needing EntityDefinition fields beyond join", () => {
+    const complete: Entity = {
+      ...bookEntity,
+      mlSchema: bookDefinition.mlSchema,
+      idAttribute: ["region", "code"],
+    };
+    expect(getResolvedEntityPrimaryKeyAttribute(complete, [])).toEqual(["region", "code"]);
+  });
+});

@@ -174,7 +174,7 @@ export function compareEntityPresentModelDefinitions(
   };
 }
 
-/** Creation-time versioning capability fixtures (#217 §3.4). Not yet on SelfApplication schema. */
+/** Creation-time versioning capability fixtures (#217 §3.4). */
 export const VERSIONED_APPLICATION_FIXTURE = {
   versioningEnabled: true as const,
 };
@@ -182,3 +182,147 @@ export const VERSIONED_APPLICATION_FIXTURE = {
 export const UNVERSIONED_APPLICATION_FIXTURE = {
   versioningEnabled: false as const,
 };
+
+export type EntityPresentModelResolutionErrorCode =
+  | "ambiguous"
+  | "missingDefinition"
+  | "inconsistent";
+
+export class EntityPresentModelResolutionError extends Error {
+  readonly code: EntityPresentModelResolutionErrorCode;
+  readonly entityUuid: string;
+  readonly details?: unknown;
+
+  constructor(
+    code: EntityPresentModelResolutionErrorCode,
+    entityUuid: string,
+    message: string,
+    details?: unknown,
+  ) {
+    super(message);
+    this.name = "EntityPresentModelResolutionError";
+    this.code = code;
+    this.entityUuid = entityUuid;
+    this.details = details;
+  }
+}
+
+export type ResolveCurrentEntityModelOptions = {
+  /**
+   * When Entity is complete (`mlSchema` present) and overlaps with a legacy
+   * EntityDefinition but overlapping fields differ:
+   * - `error` (default): throw `EntityPresentModelResolutionError`
+   * - `preferEntity`: return the Entity (Entity-authoritative)
+   */
+  onInconsistency?: "error" | "preferEntity";
+};
+
+/**
+ * Present-model completeness for #217 Phase 2: Entity carries `mlSchema`.
+ * Other definition fields may still be filled from EntityDefinition.
+ */
+export function entityHasCompletePresentModel(entity: Entity): boolean {
+  return (
+    Object.prototype.hasOwnProperty.call(entity, "mlSchema") &&
+    entity.mlSchema != null
+  );
+}
+
+function matchingEntityDefinitionsForEntity(
+  entity: Entity,
+  legacyEntityDefinitions: EntityDefinition[],
+): EntityDefinition[] {
+  return legacyEntityDefinitions.filter(
+    (entityDefinition) => entityDefinition.entityUuid === entity.uuid,
+  );
+}
+
+/**
+ * Fields present on Entity that also exist on EntityDefinition and differ.
+ * Fields only on EntityDefinition are ignored (not yet copied onto Entity).
+ */
+export function overlappingPresentModelDifferences(
+  entity: Entity,
+  entityDefinition: EntityDefinition,
+): EntityPresentModelDefinitionField[] {
+  const entityProjection = projectEntityPresentModelDefinition(entity);
+  const definitionProjection = projectEntityPresentModelDefinition(entityDefinition);
+  const differingFields: EntityPresentModelDefinitionField[] = [];
+
+  for (const field of ENTITY_PRESENT_MODEL_DEFINITION_FIELDS) {
+    if (!Object.prototype.hasOwnProperty.call(entityProjection, field)) {
+      continue;
+    }
+    if (!deepEqual(entityProjection[field], definitionProjection[field])) {
+      differingFields.push(field);
+    }
+  }
+  return differingFields;
+}
+
+function enrichEntityFromLegacyDefinition(
+  entity: Entity,
+  entityDefinition: EntityDefinition,
+): Entity {
+  const fromDefinition = projectEntityPresentModelDefinition(entityDefinition);
+  const fromEntity = projectEntityPresentModelDefinition(entity);
+  return {
+    ...entity,
+    ...fromDefinition,
+    ...fromEntity,
+  };
+}
+
+/**
+ * Entity-first present-model resolver (#217 Phase 2).
+ *
+ * - complete Entity (`mlSchema` present) → return Entity (optionally consistency-checked)
+ * - incomplete Entity + one matching EntityDefinition → in-memory enriched Entity
+ * - ambiguous definitions → error
+ * - incomplete with no definition → error
+ */
+export function resolveCurrentEntityModel(
+  entity: Entity,
+  legacyEntityDefinitions: EntityDefinition[],
+  options?: ResolveCurrentEntityModelOptions,
+): Entity {
+  const matching = matchingEntityDefinitionsForEntity(entity, legacyEntityDefinitions);
+  if (matching.length > 1) {
+    throw new EntityPresentModelResolutionError(
+      "ambiguous",
+      entity.uuid,
+      `Entity ${entity.uuid} (${entity.name}) has ${matching.length} EntityDefinitions; expected at most one current definition.`,
+      { entityDefinitionUuids: matching.map((definition) => definition.uuid) },
+    );
+  }
+
+  const onInconsistency = options?.onInconsistency ?? "error";
+
+  if (entityHasCompletePresentModel(entity)) {
+    if (matching.length === 1) {
+      const differingFields = overlappingPresentModelDifferences(entity, matching[0]);
+      if (differingFields.length > 0) {
+        if (onInconsistency === "preferEntity") {
+          return entity;
+        }
+        throw new EntityPresentModelResolutionError(
+          "inconsistent",
+          entity.uuid,
+          `Entity ${entity.uuid} (${entity.name}) definition fields diverge from EntityDefinition ${matching[0].uuid}: ${differingFields.join(", ")}`,
+          { differingFields, entityDefinitionUuid: matching[0].uuid },
+        );
+      }
+    }
+    return entity;
+  }
+
+  if (matching.length === 0) {
+    throw new EntityPresentModelResolutionError(
+      "missingDefinition",
+      entity.uuid,
+      `Entity ${entity.uuid} (${entity.name}) is incomplete (no mlSchema) and has no matching EntityDefinition fallback.`,
+    );
+  }
+
+  return enrichEntityFromLegacyDefinition(entity, matching[0]);
+}

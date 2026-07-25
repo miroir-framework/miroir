@@ -641,7 +641,7 @@ Do not infer the “current” definition from array order. If multiple historic
 
 Each phase must merge with the full relevant suite green. The rename is deliberately isolated at the end.
 
-### Phase 0 — Contract and characterization tests
+### Phase 0 — Contract and characterization tests — DONE
 
 Before production changes:
 
@@ -654,7 +654,17 @@ Before production changes:
 
 No runtime behavior changes.
 
-### Phase 1 — Additive Entity schema and immutable capability
+**Realization (DONE):**
+
+- Added pure helpers in `packages/miroir-core/src/1_core/entityPresentModel.ts`:
+  - `inventoryEntityEntityDefinitionJoins` (1:1 / orphans / multi-defs by `entityDefinition.entityUuid`);
+  - `ENTITY_PRESENT_MODEL_DEFINITION_FIELDS`, `projectEntityPresentModelDefinition`, `compareEntityPresentModelDefinitions`;
+  - `VERSIONED_APPLICATION_FIXTURE` / `UNVERSIONED_APPLICATION_FIXTURE`.
+- Characterization suite `entityPresentModel.unit.test.ts` (13 tests): synthetic joins; field projection/equality; clean 1:1 on `defaultMiroirMetaModel` and `defaultLibraryAppModel`; PK/cache still resolve from EntityDefinition; baseline that live Entity instances do not yet carry definition fields; filesystem inventory for Miroir / Library / Admin model assets.
+- Initially characterized a Miroir filesystem join anomaly (orphan `ApplicationVersionCrossEntityDefinition` Entity + multi-def on `SelfApplicationVersion`); that `entityUuid` misshap was corrected before Phase 3 (see §14.4). Characterization tests now expect clean 1:1 Miroir joins.
+- Exported helpers from `miroir-core` `index.ts`. No production runtime behavior changes.
+
+### Phase 1 — Additive Entity schema and immutable capability — DONE
 
 - add all definition fields to Entity as optional for compatibility;
 - add `SelfApplication.versioningEnabled`;
@@ -664,7 +674,16 @@ No runtime behavior changes.
 
 At this phase, EntityDefinition remains the fallback for fields absent on Entity.
 
-### Phase 2 — Central Entity-first model-property resolver
+**Realization (DONE):**
+
+- Extended Entity EntityDefinition `mlSchema` (`381ab1be-…`) with optional present-model fields mirrored from EntityDefinition: `defaultInstanceDetailsReportUuid`, `viewAttributes`, `icon`, `display`, `cache`, `idAttribute`, `externalDataSource`, `mlSchema` (optional on Entity; required on EntityDefinition).
+- Added optional `SelfApplication.versioningEnabled` boolean (`9460420b-…`) with immutable-capability documentation in the field tag; absent allowed so legacy applications still parse.
+- Left EntityDefinition schema and all Entity/SelfApplication instance assets unchanged (population is Phase 3).
+- Regenerated `miroirFundamentalType.ts` / Zod schemas via `npm run generate-ts-types -w miroir-core` after rebuilding `miroir-test-app_deployment-miroir`.
+- Contract tests in `entityPresentModel.phase1.unit.test.ts`: legacy Entity/SelfApplication assets parse; enriched Entity with all definition fields parses; `versioningEnabled` true/false parses.
+- Phase 0 characterization suite still green (baseline: live Entity instances do not yet carry definition fields).
+
+### Phase 2 — Central Entity-first model-property resolver — DONE
 
 Introduce a core abstraction, e.g.:
 
@@ -683,6 +702,15 @@ Behavior:
 - ambiguous definitions → error.
 
 Migrate common schema and PK helpers to this abstraction first. This establishes one compatibility boundary.
+
+**Realization (DONE):**
+
+- Extended `entityPresentModel.ts` with `resolveCurrentEntityModel`, `entityHasCompletePresentModel` (complete ⇔ `mlSchema` present), `overlappingPresentModelDifferences`, and `EntityPresentModelResolutionError` (`ambiguous` | `missingDefinition` | `inconsistent`).
+- Inconsistency policy: default `onInconsistency: "error"`; optional `preferEntity`. Overlap check only compares definition fields Entity already owns (fields only on EntityDefinition are not treated as divergence during transition).
+- Enrichment overlays EntityDefinition projection then Entity-owned fields (Entity wins on partial ownership).
+- Widened PK helpers to `EntityPrimaryKeySource` (`idAttribute` from Entity or EntityDefinition); added `getResolvedEntityPrimaryKeyAttribute(s)` that resolve via `resolveCurrentEntityModel` then read PK.
+- Tests: `entityPresentModel.phase2.unit.test.ts` + Phase 0 Miroir filesystem characterization updated to clean 1:1 after §14.4 misshap correction.
+- No production call-site migration yet beyond the PK helper surface (consumers still pass EntityDefinition directly where they already have it).
 
 ### Phase 3 — Populate assets and validate redundancy
 
@@ -726,6 +754,8 @@ One vertical slice per backend, all sharing updated core contracts:
 5. PostgreSQL, including external sources and SQL generation.
 
 Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/composite PK, reopen/reload, and legacy persisted state.
+
+**Open (decision §14.8):** for backends without true multi-document transactions (filesystem, IndexedDB, MongoDB as used today), Phase 6 must define an explicit dual-write policy before coding each slice — e.g. write Entity then EntityDefinition with compensating delete/restore on failure, best-effort second write + consistency detector, or a single serialized artifact. PostgreSQL can use a real transaction. Do not invent a policy here; decide per backend when implementing the vertical slice and record the choice in that slice’s realization notes.
 
 ### Phase 7 — Cache and current-model assembly switch
 
@@ -969,18 +999,18 @@ Mitigation: rename only after semantic decoupling, preserve UUIDs where feasible
 
 ---
 
-## 14. Decisions still needed before implementation
+## 14. Decisions (settled)
 
-1. Exact name and default policy for immutable versioning capability (`versioningEnabled` recommended).
-2. Legacy application classification: which existing applications are migrated to enabled vs disabled?
-3. Whether the compatibility EntityDefinition copy is created for unversioned applications until the end of #217 (recommended yes, to preserve non-regression).
-4. How to identify the current definition when a legacy Entity has multiple EntityDefinitions and no reliable Application Version mapping.
-5. Whether `parentDefinitionVersionUuid` remains optional provenance or is removed/deprecated after #217.
-6. Whether the final rename preserves EntityDefinition’s Entity UUID and instance UUIDs (recommended: preserve identity, rename vocabulary).
-7. Supported compatibility horizon for deprecated `EntityDefinition` exports and old Action payloads.
-8. Transaction/compensation policy for filesystem, IndexedDB and MongoDB dual-writes.
+1. **Capability name:** `versioningEnabled` on `SelfApplication` (optional during migration; immutable after creation once populated).
+2. **Legacy classification:** migrate **all** canonical applications to `versioningEnabled: true` — Miroir, Admin, Postgres, Library (and Designer when populated in Phase 3).
+3. **Unversioned dual-write:** yes — keep creating/updating the compatibility EntityDefinition copy for unversioned applications until the end of #217 (non-regression).
+4. **Multiple current definitions:** the Miroir `SelfApplicationVersion` / `ApplicationVersionCrossEntityDefinition` `entityUuid` misshap has been corrected; no multi-def selection rule is required for remaining canonical assets. Reject unexplained multiples if any reappear.
+5. **`parentDefinitionVersionUuid`:** remains relevant as provenance — it will reference the UUID of an **EntityVersion** in history (not a live EntityDefinition). At the final rename, EntityDefinition → EntityVersion with relations adjusted accordingly.
+6. **Final rename identity:** preserve EntityDefinition Entity UUID and instance UUIDs; rename vocabulary only.
+7. **Compatibility horizon:** keep exporting `EntityDefinition` symbols, marked deprecated in comments. Action payloads must be migrated as part of non-regression so existing Actions keep present behavior until explicitly updated.
+8. **Dual-write atomicity (filesystem / IndexedDB / MongoDB):** deferred — clarify concrete compensation/ordering policy in **Phase 6** when each backend dual-write path is implemented (see Phase 6 open question).
 
-These decisions do not block the additive Phase 0–2 work, but must be settled before bulk asset migration and historical snapshot semantics.
+These decisions unblocked Phase 3+ asset population and historical semantics. Phase 0–2 additive/resolver work did not depend on (8).
 
 ---
 

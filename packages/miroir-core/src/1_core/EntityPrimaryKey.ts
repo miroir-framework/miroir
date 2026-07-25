@@ -1,26 +1,38 @@
-import type { EntityDefinition, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { Entity, EntityDefinition, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
+import {
+  resolveCurrentEntityModel,
+  type ResolveCurrentEntityModelOptions,
+} from "./entityPresentModel.js";
 
 // Composite key separator. Individual values are escaped so this separator is unambiguous.
 const COMPOSITE_KEY_SEPARATOR = "|";
 const COMPOSITE_KEY_ESCAPE = "\\";
 
+/**
+ * Any present-model source that may declare `idAttribute` (Entity after #217 Phase 1,
+ * or legacy EntityDefinition).
+ */
+export type EntityPrimaryKeySource = {
+  idAttribute?: (string | string[]) | undefined;
+};
+
 // ##############################################################################################
 /**
  * Returns the attribute name(s) used as the primary key for instances of the given entity.
- * Defaults to "uuid" when the EntityDefinition does not specify an idAttribute.
+ * Defaults to "uuid" when the source does not specify an idAttribute.
  * For backward compatibility, returns a single string for single-attribute PKs.
  */
-export function getEntityPrimaryKeyAttribute(entityDefinition: EntityDefinition): string | string[] {
-  return (entityDefinition as any).idAttribute ?? "uuid";
+export function getEntityPrimaryKeyAttribute(source: EntityPrimaryKeySource): string | string[] {
+  return source.idAttribute ?? "uuid";
 }
 
 // ##############################################################################################
 /**
  * Returns the attribute names as an array, always. Wraps single-attribute PKs in an array.
  */
-export function getEntityPrimaryKeyAttributes(entityDefinition: EntityDefinition): string[] {
-  const idAttribute = getEntityPrimaryKeyAttribute(entityDefinition);
+export function getEntityPrimaryKeyAttributes(source: EntityPrimaryKeySource): string[] {
+  const idAttribute = getEntityPrimaryKeyAttribute(source);
   return Array.isArray(idAttribute) ? idAttribute : [idAttribute];
 }
 
@@ -28,8 +40,32 @@ export function getEntityPrimaryKeyAttributes(entityDefinition: EntityDefinition
 /**
  * Returns true if the entity has a composite (multi-attribute) primary key.
  */
-export function entityHasCompositePrimaryKey(entityDefinition: EntityDefinition): boolean {
-  return Array.isArray((entityDefinition as any).idAttribute);
+export function entityHasCompositePrimaryKey(source: EntityPrimaryKeySource): boolean {
+  return Array.isArray(source.idAttribute);
+}
+
+/**
+ * Entity-first PK resolution: enrich legacy Entity via {@link resolveCurrentEntityModel},
+ * then read `idAttribute`.
+ */
+export function getResolvedEntityPrimaryKeyAttribute(
+  entity: Entity,
+  legacyEntityDefinitions: EntityDefinition[],
+  options?: ResolveCurrentEntityModelOptions,
+): string | string[] {
+  return getEntityPrimaryKeyAttribute(
+    resolveCurrentEntityModel(entity, legacyEntityDefinitions, options),
+  );
+}
+
+export function getResolvedEntityPrimaryKeyAttributes(
+  entity: Entity,
+  legacyEntityDefinitions: EntityDefinition[],
+  options?: ResolveCurrentEntityModelOptions,
+): string[] {
+  return getEntityPrimaryKeyAttributes(
+    resolveCurrentEntityModel(entity, legacyEntityDefinitions, options),
+  );
 }
 
 // ##############################################################################################
@@ -109,8 +145,8 @@ export function parseCompositeKeyValue(pkAttributes: string[], serializedKey: st
  * Returns the primary key value for a given entity instance, based on its EntityDefinition.
  * For composite PKs, returns the serialized composite key string.
  */
-export function getInstancePrimaryKeyValue(entityDefinition: EntityDefinition, instance: EntityInstance): string {
-  const pkAttributes = getEntityPrimaryKeyAttributes(entityDefinition);
+export function getInstancePrimaryKeyValue(source: EntityPrimaryKeySource, instance: EntityInstance): string {
+  const pkAttributes = getEntityPrimaryKeyAttributes(source);
   return serializeCompositeKeyValue(pkAttributes, instance);
 }
 
@@ -118,8 +154,8 @@ export function getInstancePrimaryKeyValue(entityDefinition: EntityDefinition, i
 /**
  * Returns true if the entity uses the default uuid-based primary key.
  */
-export function entityHasUuidPrimaryKey(entityDefinition: EntityDefinition): boolean {
-  const idAttr = getEntityPrimaryKeyAttribute(entityDefinition);
+export function entityHasUuidPrimaryKey(source: EntityPrimaryKeySource): boolean {
+  const idAttr = getEntityPrimaryKeyAttribute(source);
   return idAttr === "uuid";
 }
 

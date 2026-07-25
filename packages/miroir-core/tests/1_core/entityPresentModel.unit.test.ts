@@ -294,7 +294,7 @@ function loadDeploymentEntityJoinInputs(modelRootRelativePath: string): {
 }
 
 describe("characterization — filesystem deployment asset joins", () => {
-  it("documents Miroir model asset join anomalies that migration must address", () => {
+  it("Miroir model assets are a clean 1:1 Entity ↔ EntityDefinition join", () => {
     const { entities, entityDefinitions } = loadDeploymentEntityJoinInputs(
       "packages/miroir-test-app_deployment-miroir/assets/miroir_model",
     );
@@ -302,23 +302,10 @@ describe("characterization — filesystem deployment asset joins", () => {
 
     expect(entities).toHaveLength(20);
     expect(entityDefinitions).toHaveLength(20);
-    expect(inventory.matched).toHaveLength(18);
-    expect(inventory.orphanEntities).toEqual([
-      {
-        uuid: "8bec933d-6287-4de7-8a88-5c24216de9f4",
-        name: "ApplicationVersionCrossEntityDefinition",
-      },
-    ]);
+    expect(inventory.orphanEntities).toEqual([]);
     expect(inventory.orphanEntityDefinitions).toEqual([]);
-    expect(inventory.multipleDefinitions).toEqual([
-      {
-        entityUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-        entityDefinitionUuids: [
-          "27046fce-742f-4cc4-bb95-76b271f490a5",
-          "c0b71083-8cc8-43db-bf52-572f1f03bbb5",
-        ],
-      },
-    ]);
+    expect(inventory.multipleDefinitions).toEqual([]);
+    expect(inventory.matched).toHaveLength(entities.length);
   });
 
   it("Library model assets are a clean 1:1 Entity ↔ EntityDefinition join", () => {
