@@ -743,6 +743,21 @@ export {
   serializeCompositeKeyValue
 } from "./1_core/EntityPrimaryKey";
 export {
+  ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+  UNVERSIONED_APPLICATION_FIXTURE,
+  VERSIONED_APPLICATION_FIXTURE,
+  compareEntityPresentModelDefinitions,
+  inventoryEntityEntityDefinitionJoins,
+  projectEntityPresentModelDefinition,
+} from "./1_core/entityPresentModel.js";
+export type {
+  EntityEntityDefinitionJoinInventory,
+  EntityEntityDefinitionJoinMatch,
+  EntityPresentModelDefinitionComparison,
+  EntityPresentModelDefinitionField,
+  EntityPresentModelDefinitionProjection,
+} from "./1_core/entityPresentModel.js";
+export {
   actionsWithDeploymentInPayload, noValue
 } from "./1_core/Instance";
 export {
