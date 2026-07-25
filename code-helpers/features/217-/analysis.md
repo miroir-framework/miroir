@@ -1,0 +1,1049 @@
+# Issue #217 — Analysis: Entity as the Authoritative Present Model
+
+## Status and sequencing
+
+GitHub issue: https://github.com/miroir-framework/miroir/issues/217
+
+This issue is the first prerequisite for all further work on Issue #9:
+
+1. **#217 — Entity becomes the authoritative present-model definition**
+2. #216 — effective Application Versions and freeze Action, redesigned on top of #217
+3. #9 WP2 — replayable Application Version migrations
+4. #215 — paired model/data migrations
+
+Related issue #15 must also be reconsidered: its current proposal makes each data instance resolve its schema through `parentDefinitionVersionUuid`. That would keep live runtime behavior coupled to historical Entity Definitions, which conflicts with #217’s separation. See §12.
+
+---
+
+## 1. Architectural objective
+
+The present model of an application must become a self-contained island:
+
+- each live `Entity` instance carries everything required to interpret, display, validate, cache, and persist its instances;
+- live model behavior resolves directly from `Entity`;
+- Application Version history is optional and external to the present model;
+- when versioning is enabled, historical snapshots copy Entity state into version records;
+- `EntityDefinition` remains unchanged and redundant throughout the compatibility migration;
+- only after all present-model consumers have moved to `Entity`, `EntityDefinition` is renamed to `EntityVersion` as the final task.
+
+The application decides at creation whether versioning is enabled. That choice is immutable for the lifetime of the application.
+
+### 1.1 Required Entity fields
+
+The initially identified fields are necessary but not sufficient. To remove all present-state dependencies on `EntityDefinition`, `Entity` must carry every model-behavior field currently borne there:
+
+- `defaultInstanceDetailsReportUuid`
+- `viewAttributes`
+- `cache`
+- `mlSchema`
+- `icon`
+- `display`
+- `idAttribute`
+- `externalDataSource`
+
+The existing Entity identity fields remain:
+
+- `uuid`
+- `name`
+- `description`
+- `storageAccess`
+- `selfApplication`
+- `author`
+- root instance metadata (`parentUuid`, `parentName`, `conceptLevel`, etc.)
+
+Why the additional fields are mandatory:
+
+- `idAttribute` controls UUID, non-UUID, and composite primary-key behavior in caches and every store;
+- `externalDataSource` controls PostgreSQL external schema/table mapping;
+- `display.foldSubLevels` controls form presentation;
+- `icon` participates in model/UI representation.
+
+### 1.2 Meaning of “EntityDefinition does not change”
+
+During this issue’s migration phases:
+
+- do not remove fields from `EntityDefinition`;
+- do not require existing assets to stop carrying EntityDefinition data;
+- do not immediately change public APIs or persisted collection names;
+- keep Entity and EntityDefinition values synchronized while compatibility consumers remain;
+- preserve generated `EntityDefinition` types and exports.
+
+The final rename to `EntityVersion` is intentionally last. It is a semantic/name change after runtime authority has already moved; it must not be used as the mechanism for moving authority.
+
+---
+
+## 2. Current state
+
+Generated types currently encode a split:
+
+- `Entity` contains identity and basic metadata only;
+- `EntityDefinition` contains schema, display, cache, primary-key, and external-storage behavior;
+- `MetaModel` contains both `entities[]` and `entityDefinitions[]`.
+
+The repository has no single production resolver for “current properties of Entity X.” Consumers repeatedly perform:
+
+```typescript
+currentModel.entityDefinitions.find(
+  (entityDefinition) => entityDefinition.entityUuid === entityUuid,
+)
+```
+
+This assumes one effective EntityDefinition per Entity. It is not actually Application-Version-aware. Application Version mappings are largely absent from live selectors and UI.
+
+The existing behavior therefore has the disadvantages of both designs:
+
+- the current model is coupled to EntityDefinition;
+- yet most consumers do not reliably select an EntityDefinition through Application Version history.
+
+### 2.1 Asset baseline
+
+Two inventory methods expose metadata inconsistencies that the migration must
+not conceal:
+
+- a strict `parentName` scan of canonical deployment assets finds 38 Entity
+  instances and 40 EntityDefinition instances;
+- a folder/UUID-based scan of the canonical Entity and EntityDefinition
+  collections finds 40 / 40 (Miroir 20 / 20, Admin 6 / 6, Library 6 / 6,
+  PostgreSQL 3 / 3, Designer 5 / 5);
+- including fixture mirrors yields 53 / 53 pairs;
+- repository-wide references span 249 files mentioning `EntityDefinition`,
+  105 mentioning `entityDefinitions`, 27 mentioning
+  `entityDefinitionUuid`, and no existing `EntityVersion`.
+
+The difference means some assets cannot be classified reliably from
+`parentName` alone. The initial strict scan appeared to leave `MiroirTest` and
+`Test` unmatched; the collection-folder scan finds their pairs. The migration
+must validate UUID/folder/foreign-key relationships and normalize bad metadata
+rather than assume either naming or location alone is authoritative.
+
+Beyond canonical assets, the migration must cover:
+
+- four current-model/current-Miroir-model snapshot files;
+- Admin model mirrors in standalone, core, and MCP tests;
+- 45 MiroirTest JSON files, several embedding `{ entity, entityDefinition }`
+  Action payloads;
+- at least 13 nested `createEntity` payloads;
+- legacy `miroir-core/src/assets` and local-cache reference snapshots.
+
+### 2.2 Bootstrap today
+
+`ModelInitializer.modelInitialize` bootstraps storage by passing Entity + EntityDefinition pairs:
+
+- Entity storage is created using `entityDefinitionEntity`;
+- EntityDefinition storage is created using `entityDefinitionEntityDefinition`;
+- every subsequent metamodel Entity is created through
+  `createEntity(entity, entityDefinitionWithResolvedMLSchema(entityDefinition))`.
+
+The bootstrap is circular:
+
+1. Entity’s schema is itself described by the EntityDefinition of Entity.
+2. EntityDefinition’s schema is described by the EntityDefinition of EntityDefinition.
+3. `generate-ts-types.ts` imports EntityDefinition assets and derives generated TypeScript/Zod artifacts from their `mlSchema`.
+
+#217 must break runtime dependence on this circle without breaking the bootstrap build order.
+
+### 2.3 Application Version structures are not live-model authority today
+
+The runtime confirms that #217 is a separation of actual behavior, not merely
+a conceptual inversion:
+
+- Redux and Zustand `currentModel` builders hardcode
+  `applicationVersionCrossEntityDefinition: []`;
+- `ModelInitializer` does not bootstrap the
+  `ApplicationVersionCrossEntityDefinition` Entity as an effective runtime
+  index;
+- model reload fetches Entities and EntityDefinitions directly, not through an
+  Application Version;
+- `alterEntityAttribute` mutates the same EntityDefinition UUID in place;
+- commit constructs an Application Version with placeholder values, does not
+  persist it reliably, and does not maintain cross rows;
+- CLI, MCP, and some server paths use static default MetaModels rather than a
+  version-selected live model.
+
+Consequently, the present runtime already behaves as a squashed model. #217
+makes that squashed authority explicit on Entity and prevents future history
+mechanisms from becoming a hidden dependency of ordinary operation.
+
+---
+
+## 3. Required invariants
+
+### 3.1 Present-model authority
+
+1. Every live Entity has a complete, valid `mlSchema`.
+2. Every current-model operation can run without looking up an EntityDefinition.
+3. The Entity UUID is the stable identity used by runtime Actions, selectors, stores, and UI.
+4. `MetaModel.entities[]` is sufficient to describe all live Entities.
+
+### 3.2 Transitional redundancy
+
+1. Existing EntityDefinitions remain readable and structurally unchanged.
+2. For every legacy current EntityDefinition with a matching Entity, duplicated fields equal the Entity fields.
+3. New and altered Entities dual-write the redundant EntityDefinition until all compatibility readers are removed.
+4. Divergence is detected explicitly; it must never silently select whichever copy was loaded last.
+5. During transition, Entity is authoritative when present; EntityDefinition is fallback only for legacy assets.
+
+### 3.3 Historical model
+
+1. A historical copy is immutable after creation.
+2. Historical copies are not consulted to interpret the live model.
+3. Application Versions refer to historical copies, eventually named EntityVersions.
+4. An unversioned application creates no Application Version / Entity Version history.
+5. A versioned application snapshots Entity state; it does not move live authority away from Entity.
+
+### 3.4 Immutable versioning capability
+
+Add an explicit creation-time property to `SelfApplication`, provisionally:
+
+```typescript
+versioningEnabled: boolean
+```
+
+Requirements:
+
+- selected when the application is created;
+- persisted on `SelfApplication`;
+- immutable after creation;
+- explicit default for old applications (recommended compatibility default: `true` for applications that already contain version records, otherwise a migration decision rather than inference at every runtime load);
+- all version/freeze/trace-history Actions reject unversioned applications;
+- normal model CRUD works identically whether versioning is enabled or disabled.
+
+Do not model this solely as the presence of Application Version rows. Capability must be explicit and stable.
+
+Existing configuration already declares:
+
+- `monoUserVersionControl`;
+- `versionControlForDataConceptLevel`.
+
+They appear in Miroir configuration fixtures (currently `false`) but have no
+effective runtime readers outside their declarations. They are environment
+configuration, not an immutable property of a particular application.
+
+Before adding `versioningEnabled`, decide whether to:
+
+1. replace these unused flags with the per-application property;
+2. retain them only as creation defaults that initialize the immutable
+   application property; or
+3. deprecate them explicitly.
+
+Do not wire the existing mutable configuration flags directly as the ongoing
+source of truth, because that would allow the application’s versioning mode to
+change after creation.
+
+---
+
+## 4. Impact: metamodel, bootstrap, and generated types
+
+### 4.1 Primary files and symbols
+
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_model/.../381ab1be-337f-4198-b1d3-f686867fc1dd.json`
+  - Entity’s current EntityDefinition; must add the full definition fields to the Entity schema.
+- `packages/miroir-test-app_deployment-miroir/assets/miroir_model/.../9460420b-f176-4918-bd45-894ab195ffe9.json`
+  - `SelfApplication`; must add immutable versioning capability.
+- all Entity JSON assets under
+  `packages/miroir-test-app_deployment-*/assets/*_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/`
+  - must receive copied current-definition fields.
+- corresponding EntityDefinition assets under entity UUID
+  `54b9c72f-d4f3-4db9-9e0e-0dc840b530bd`
+  - remain unchanged during transition.
+- `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts`
+  - `entityDefinitionRoot`, fundamental schema construction, Action schemas, and generated context names.
+- `packages/miroir-core/scripts/generate-ts-types.ts`
+  - currently imports many `entityDefinition*` assets and calls a local `entityDefinitionMLSchema`.
+- `packages/miroir-core/src/0_interfaces/1_core/EntityDefinition.ts`
+  - `entityDefinitionMLSchema`, `entityDefinitionWithResolvedMLSchema`.
+- generated:
+  - `preprocessor-generated/miroirFundamentalType.ts`
+  - `preprocessor-generated/miroirFundamentalJzodSchema.ts`
+- deployment package exports:
+  - `miroir-test-app_deployment-miroir/index.ts`, `index.d.ts`, `src/Model.ts`
+  - equivalent Admin, Library, Designer, PostgreSQL exports.
+
+### 4.2 Requirements
+
+1. Add the complete definition fields to Entity’s metamodel schema while keeping EntityDefinition unchanged.
+2. Introduce `entityMLSchema` / `entityWithResolvedMLSchema`; retain deprecated EntityDefinition helpers during transition.
+3. Make code generation consume Entity-carried schemas.
+4. Preserve a bootstrap-only bridge until the generated `Entity` type itself includes `mlSchema`; avoid a big-bang circular dependency.
+5. Regenerate types in canonical build order.
+6. Change schema revision/fingerprint logic to include Entity-carried behavior fields.
+7. Keep compatibility exports until the final rename.
+
+### 4.3 Downstream build impact
+
+The ordered chain is:
+
+1. `miroir-test-app_deployment-miroir` assets and exports
+2. `miroir-core` `devBuild` / type generation
+3. caches and stores
+4. `miroir-react`, standalone UI, diagrams, AI, MCP, CLI
+5. application deployment packages and integration tests
+
+Both locally linked `jzod` and `jzod-ts` may be exercised by generation, even if no sibling change is ultimately required.
+
+---
+
+## 5. Impact: current model assembly, cache, and selectors
+
+### 5.1 Model representations
+
+Affected types/functions:
+
+- `MetaModel.entityDefinitions`
+- `DeploymentUuidToReportsEntitiesDefinitions`
+- `getReportsAndEntitiesDefinitionsForDeploymentUuid`
+- `extractApplicationModel`
+- Redux and Zustand `currentModel` / `currentModelEnvironment`
+- Redux/Zustand `selectModelForDeploymentFromReduxState`
+- `useCurrentModel`
+- `useCurrentModelEnvironment`
+- `ModelEnvironmentSync`
+
+Primary files:
+
+- `packages/miroir-core/src/0_interfaces/1_core/Model.ts`
+- `packages/miroir-core/src/1_core/Model.ts`
+- `packages/miroir-localcache-redux/src/4_services/localCache/Model.ts`
+- `packages/miroir-localcache-redux/src/4_services/localCache/LocalCacheSliceModelSelector.ts`
+- matching Zustand files
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts`
+- `packages/miroir-standalone-app/src/miroir-fwk/4_view/ModelEnvironmentSync.tsx`
+
+Requirements:
+
+1. Continue loading EntityDefinitions during compatibility.
+2. Assemble Entities with complete fields as the live model.
+3. Add one central resolver:
+   - Entity first;
+   - legacy EntityDefinition fallback;
+   - consistency error/warning when both differ.
+4. Stop adding new ad-hoc `.find(ed => ed.entityUuid)` calls.
+5. Make `MetaModel.entityDefinitions` optional/historical only in a late phase, not at the start.
+
+### 5.2 Primary-key registration
+
+`idAttribute` currently drives:
+
+- Redux EntityAdapter registration;
+- Zustand identity extraction;
+- store `entityIdAttributes` maps;
+- `EntityPrimaryKey.ts` helpers;
+- FK-to-PK joins and CRUD tests.
+
+Affected files include:
+
+- `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`
+- Redux/Zustand `LocalCacheSlice.ts`
+- filesystem, IndexedDB, PostgreSQL, MongoDB and bundled store sections.
+
+Migration requirement:
+
+- first generalize PK helpers to accept a schema-bearing Entity-like object;
+- register adapters/maps from Entity;
+- retain EntityDefinition fallback for old persisted models;
+- only later narrow APIs to Entity.
+
+Specific defect to lock with a regression test while changing this path:
+Redux `LocalCacheSlice.ts` contains one comparison against
+`entityDefinitionEntityDefinition.uuid` (the UUID of the EntityDefinition
+*instance describing EntityDefinition*) where the collection discriminator
+should be `entityEntityDefinition.uuid` (the Entity UUID whose instances are
+EntityDefinitions). Another path uses the correct UUID. The incorrect branch
+may therefore never register as intended; do not preserve this behavior as a
+compatibility requirement.
+
+### 5.3 Cache refresh
+
+`cacheRefreshPolicy.ts` currently interprets
+`EntityDefinition.cache.cacheAllInstancesOnRefresh`.
+`DomainController.loadConfigurationFromPersistenceStore` builds an
+EntityDefinition-by-Entity UUID map for this purpose.
+
+Move this policy to Entity, with compatibility fallback and unchanged default:
+missing/true means eager; explicit false means do not preload data instances.
+
+---
+
+## 6. Impact: model Actions and lifecycle
+
+### 6.1 Current coupling
+
+`ModelActionCreateEntity` carries pairs:
+
+```typescript
+{ entity, entityDefinition }
+```
+
+Rename, alter, and drop payloads carry both:
+
+- `entityUuid`
+- `entityDefinitionUuid`
+
+`ModelEntityActionTransformer`:
+
+- creates both instances;
+- renames both;
+- alters only `EntityDefinition.mlSchema`;
+- drops both.
+
+All persistence backends repeat versions of that logic.
+
+### 6.2 Requirements
+
+1. Entity creation accepts a full Entity as the authoritative input.
+2. During compatibility, create or receive a redundant EntityDefinition copy.
+3. Rename updates Entity; redundant current EntityDefinition is dual-written.
+4. Alter-attribute updates `Entity.mlSchema`; redundant EntityDefinition is dual-written.
+5. Drop removes live Entity and its data storage; historical EntityVersions must not be deleted merely because the live Entity is dropped.
+6. Current-state Action payloads ultimately stop requiring `entityDefinitionUuid`.
+7. Historical snapshot creation is a separate versioning operation, not an incidental side effect of normal model CRUD.
+8. Evolution tracing targets Entity identity for live changes and may separately record resulting EntityVersion identity when versioning is enabled.
+
+Primary files:
+
+- `packages/miroir-core/src/2_domain/ModelEntityActionTransformer.ts`
+- `packages/miroir-core/src/1_core/model/ModelUpdate.ts`
+- `packages/miroir-core/src/3_controllers/DomainController.ts`
+- `packages/miroir-core/src/4_services/PersistenceStoreController.ts`
+- `packages/miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerInterface.ts`
+- generated model Action schemas/types
+- importer, spreadsheet and AI Action producers.
+
+### 6.3 Atomicity requirement
+
+While dual-write is active, Entity and EntityDefinition updates form one logical operation. A failure after updating only one copy creates ambiguity.
+
+Required approach:
+
+- construct both post-change values from one pure function;
+- validate equality before persistence;
+- execute in one backend transaction where available;
+- where a backend lacks transaction support, define compensation/failure semantics and detect divergence on next load.
+
+---
+
+## 7. Impact: persistence and storage backends
+
+### 7.1 Shared interfaces
+
+Today these accept Entity + EntityDefinition:
+
+- `bootFromPersistedState(entities, entityDefinitions)`
+- `createStorageSpaceForInstancesOfEntity(entity, entityDefinition)`
+- `renameStorageSpaceForInstancesOfEntity(..., entity, entityDefinition)`
+- `createEntity(entity, entityDefinition)`
+- `createEntities([{ entity, entityDefinition }])`
+- controller `createModelStorageSpaceForInstancesOfEntity`.
+
+Target:
+
+- storage schema and physical options come from Entity;
+- historical EntityVersion is not needed to create/open live storage;
+- transitional overloads/adapters preserve old callers.
+
+### 7.2 Filesystem
+
+Files:
+
+- `FileSystemStoreSection.ts`
+- `FileSystemEntityStoreSectionMixin.ts`
+- instance-store mixins.
+
+Impacts:
+
+- boot primary-key map from Entity;
+- storage folders remain keyed by Entity UUID;
+- alter/rename must mutate Entity first and dual-write legacy EntityDefinition;
+- drop must not delete historical versions.
+
+### 7.3 IndexedDB
+
+Files:
+
+- `IndexedDbStoreSection.ts`
+- `IndexedDbEntityStoreSectionMixin.ts`
+- `IndexedDbInstanceStoreSectionMixin.ts`
+- `IndexedDb.ts`.
+
+Same Entity/PK/action changes as filesystem. Upgrade behavior must account for stores opened from old Entity-only-lite + EntityDefinition assets.
+
+### 7.4 PostgreSQL
+
+Files:
+
+- `SqlDbStoreSection.ts`
+- `sqlDbEntityStoreSectionMixin.ts`
+- `sqlDbInstanceStoreSectionMixin.ts`
+- `SqlGenerator.ts`
+- `utils.ts`.
+
+High-risk dependencies:
+
+- `fromMiroirEntityDefinitionToSequelizeEntityDefinition`
+- `entityDefinitionMLSchema`
+- `idAttribute` for primary/composite keys;
+- `externalDataSource.schema` and `.tableName`;
+- schema/table DDL during create/alter/rename;
+- query SQL generation from EntityDefinition schemas.
+
+Rename helpers to Entity-oriented forms only after Entity-first versions exist. Preserve old wrappers during transition.
+
+### 7.5 MongoDB
+
+Files:
+
+- `MongoDbStoreSection.ts`
+- `MongoDbEntityStoreSectionMixin.ts`
+- instance-store mixins.
+
+Impacts mirror IndexedDB: collection creation, PK map, alter/rename/drop and redundant persistence.
+
+Existing backend gap: `MongoDbStoreSection.bootFromPersistedState` is
+effectively a no-op for primary-key registration and
+`getEntityIdAttribute` returns `"uuid"`. MongoDB therefore does not currently
+have parity for non-UUID/composite keys. #217 must avoid presenting this latent
+defect as an Entity-authority regression: either fix it in the MongoDB vertical
+slice with parity tests, or record it as an explicit pre-existing limitation.
+
+### 7.6 Bundled/read-only store
+
+Files:
+
+- `BundledModelStoreSection.ts`
+- `BundledDataStoreSection.ts`.
+
+Boot currently derives `entityIdAttributes` from EntityDefinitions. Bundled deployments must derive from Entity while accepting legacy bundles during compatibility.
+
+---
+
+## 8. Impact: schema consumers, queries, UI, and tooling
+
+### 8.1 Domain/query/schema resolution
+
+Affected:
+
+- `DomainStateQuerySelectors.ts`
+- `ExtractorRunnerInMemory.ts`
+- `TransformersForRuntime.ts`
+- `resolveConditionalSchema.ts`
+- Jzod unfolding/reference resolution
+- `schemaChangeKind.ts`
+- `schemaForDeployment.ts`
+- FK/PK resolution.
+
+All current-schema walks must resolve `Entity.mlSchema`. Schema cache invalidation must fingerprint the Entity fields, otherwise an Entity schema change can leave stale runtime Zod/Jzod schemas.
+
+### 8.2 Reports, forms, and grids
+
+High-density consumers:
+
+- `ReportTools.ts`
+- `ReportSectionListDisplay.tsx`
+- `ReportSectionEntityInstance.tsx`
+- `ReportViewWithEditor.tsx`
+- `EntityInstanceGrid.tsx`
+- `EntityInstanceGridInterface.ts`
+- `GlideDataGridComponent.tsx`
+- `ValueObjectGrid.tsx`
+- `getColumnDefinitionsFromEntityAttributes.ts`
+- `JsonObjectEditFormDialog.tsx`
+- `JsonObjectDeleteFormDialog.tsx`
+- `JzodArrayEditor.tsx`
+- `foreignKeyAttributeAnalyzer.ts`.
+
+Properties to move:
+
+- form/validation schema → `Entity.mlSchema`;
+- grid column selection/order → `Entity.viewAttributes`;
+- details navigation → `Entity.defaultInstanceDetailsReportUuid`;
+- folded sections → `Entity.display`;
+- PK behavior → `Entity.idAttribute`.
+
+Use an Entity-oriented hook/resolver instead of renaming variables while retaining EntityDefinition lookup underneath.
+
+### 8.3 Diagrams
+
+Affected:
+
+- `miroir-diagram-class/.../entityDefinitionsToMermaidClassDiagram.ts`
+- `entityDefinitionsToMermaidErDiagram.ts`
+- `MermaidClassDiagram.tsx`
+- standalone model diagram views.
+
+Live diagrams should consume Entity. A separate historical diagram mode may consume EntityVersions for a selected Application Version.
+
+### 8.4 Import, AI, CLI, MCP, sandbox
+
+Affected areas include:
+
+- spreadsheet schema generation and import runners;
+- `Importer.tsx` and `scripts.ts`;
+- AI Entity proposal forms/tools/prompts;
+- MCP and CLI integration tests;
+- sandbox/admin migration helpers;
+- deployment extraction scripts.
+
+Generated proposals should produce a full Entity and, only during compatibility, a redundant EntityDefinition copy.
+
+---
+
+## 9. Assets and data migration requirements
+
+### 9.1 Canonical copy direction
+
+For legacy assets, initial population is:
+
+```text
+EntityDefinition fields → matching Entity fields
+```
+
+After migration, the direction reverses:
+
+```text
+Entity fields → redundant EntityDefinition compatibility copy
+```
+
+Never keep bidirectional last-write-wins synchronization.
+
+### 9.2 Asset sets
+
+Update:
+
+- Miroir deployment model;
+- Admin;
+- Library;
+- Designer;
+- PostgreSQL example;
+- standalone and MCP test assets;
+- `miroir-core/src/assets` leftovers still used by tests/tools;
+- generated current-model JSON snapshots;
+- test seeds and expected serialized models.
+
+### 9.3 Migration tool requirements
+
+A deterministic migration helper should:
+
+1. identify Entity ↔ EntityDefinition by `entityDefinition.entityUuid`;
+2. reject zero or multiple unexplained current candidates;
+3. copy all definition fields;
+4. preserve Entity identity fields;
+5. validate resulting Entity against the new Entity schema;
+6. verify Entity/EntityDefinition redundant equality;
+7. report orphan Entities and orphan EntityDefinitions;
+8. be idempotent;
+9. avoid rewriting unrelated JSON formatting where practical.
+
+Do not infer the “current” definition from array order. If multiple historical definitions exist, the migration requires an explicit current-selection rule or input mapping.
+
+---
+
+## 10. Non-regressing migration path
+
+Each phase must merge with the full relevant suite green. The rename is deliberately isolated at the end.
+
+### Phase 0 — Contract and characterization tests
+
+Before production changes:
+
+- characterize current Entity/EntityDefinition joins;
+- test all duplicated field mappings;
+- inventory orphans/multiple definitions;
+- add consistency-comparison helper tests;
+- lock PK/cache/UI behavior;
+- establish versioned/unversioned application fixtures.
+
+No runtime behavior changes.
+
+### Phase 1 — Additive Entity schema and immutable capability
+
+- add all definition fields to Entity as optional for compatibility;
+- add `SelfApplication.versioningEnabled`;
+- keep EntityDefinition unchanged;
+- regenerate types;
+- old assets still parse.
+
+At this phase, EntityDefinition remains the fallback for fields absent on Entity.
+
+### Phase 2 — Central Entity-first model-property resolver
+
+Introduce a core abstraction, e.g.:
+
+```typescript
+resolveCurrentEntityModel(
+  entity,
+  legacyEntityDefinitions,
+): Entity
+```
+
+Behavior:
+
+- complete Entity → return Entity;
+- incomplete legacy Entity + one matching EntityDefinition → return an in-memory enriched Entity;
+- both complete but different → explicit consistency failure/warning according to environment policy;
+- ambiguous definitions → error.
+
+Migrate common schema and PK helpers to this abstraction first. This establishes one compatibility boundary.
+
+### Phase 3 — Populate assets and validate redundancy
+
+- copy definition fields into all Entity assets;
+- add immutable versioning choices to applications;
+- fix or explicitly map orphan/ambiguous cases;
+- add repository-wide asset consistency tests;
+- retain EntityDefinition files unchanged.
+
+No consumer is removed yet.
+
+### Phase 4 — Bootstrap and code generation switch
+
+- introduce Entity-oriented schema-resolution helpers;
+- make `generate-ts-types` consume Entity `mlSchema`;
+- make `ModelInitializer` create storage from full Entity;
+- still persist redundant EntityDefinition;
+- regenerate and rebuild in canonical order.
+
+This is the pivotal bootstrap phase and should be kept narrow.
+
+### Phase 5 — Model Actions become Entity-authoritative with dual-write
+
+- create Entity from full payload;
+- alter Entity `mlSchema`;
+- rename Entity;
+- drop live Entity without destroying history;
+- derive the redundant EntityDefinition update from the authoritative Entity;
+- remove EntityDefinition as an independent editable input.
+
+Legacy Action payloads remain accepted through adapters.
+
+### Phase 6 — Persistence backends switch
+
+One vertical slice per backend, all sharing updated core contracts:
+
+1. bundled (read-only / simplest);
+2. filesystem;
+3. IndexedDB;
+4. MongoDB;
+5. PostgreSQL, including external sources and SQL generation.
+
+Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/composite PK, reopen/reload, and legacy persisted state.
+
+### Phase 7 — Cache and current-model assembly switch
+
+- register PK/cache policy from Entity;
+- update Redux and Zustand in parallel;
+- assemble live MetaModel from full Entities;
+- retain EntityDefinition collections only as compatibility/history data;
+- update schema fingerprints to Entity.
+
+### Phase 8 — Domain selectors and transformers switch
+
+- replace current EntityDefinition joins in query selectors;
+- FK and conditional-schema resolution use Entity;
+- runtime transformers and extractors use Entity;
+- remove scattered current-definition resolution.
+
+### Phase 9 — UI and tooling switch
+
+Vertical slices:
+
+1. list report/grid columns and PK;
+2. details report/forms/default report;
+3. FK editors and nested/array forms;
+4. diagrams;
+5. import/spreadsheet;
+6. AI, MCP, CLI and sandbox.
+
+Each slice uses Entity end-to-end and retains legacy EntityDefinition fallback only at the central boundary.
+
+### Phase 10 — Separate optional version history
+
+- redesign #216:
+  - unversioned application: no `current` Application Version is required;
+  - versioned application: freeze snapshots current Entities into immutable EntityDefinitions/EntityVersions;
+  - `ApplicationVersionCrossEntityDefinition` maps only Application Versions to historical copies;
+  - live current state is never reconstructed through that mapping.
+- enforce immutable `versioningEnabled`;
+- define initial baseline behavior for versioned applications.
+
+### Phase 11 — Remove live EntityDefinition dependency
+
+Acceptance gate:
+
+- no production current-model path reads EntityDefinition;
+- no store requires EntityDefinition to open/create live storage;
+- no UI resolves live schema from EntityDefinition;
+- no current model Action requires EntityDefinition UUID;
+- legacy fallback is isolated and can be removed after supported upgrade horizon;
+- EntityDefinition records are immutable historical copies only.
+
+### Phase 12 — Final task: rename EntityDefinition to EntityVersion
+
+Only now:
+
+- rename metamodel Entity and EntityDefinition assets;
+- rename TypeScript/Jzod types and schemas;
+- rename `entityDefinitionUuid` historical fields where semantically appropriate;
+- rename `ApplicationVersionCrossEntityDefinition` to
+  `ApplicationVersionCrossEntityVersion`;
+- update reports, menus, exports, folders, docs, prompts, diagrams and tests;
+- provide a deprecated `EntityDefinition` type/export alias for one compatibility release if public API stability requires it;
+- migrate persisted parent UUIDs/entity UUIDs only through an explicit data migration if identity changes; prefer retaining UUID identity and changing names where possible.
+
+This phase must contain no architectural authority change—only the final vocabulary/compatibility migration.
+
+---
+
+## 11. Test strategy
+
+### 11.1 New contract tests
+
+- Entity complete-definition schema parsing.
+- Legacy Entity + EntityDefinition enrichment.
+- duplicate-field equality and mismatch detection.
+- ambiguous/missing EntityDefinition migration failures.
+- versioning capability immutability.
+- versioned vs unversioned lifecycle.
+- snapshot immutability and copy fidelity.
+- live Entity mutation does not mutate historical snapshot.
+
+### 11.2 Existing priority suites
+
+P0:
+
+- `cacheRefreshPolicy.unit.test.ts`
+- Redux and Zustand LocalCache tests
+- composite/non-UUID/no-parent UUID CRUD integration tests
+- `PersistenceStoreController.integ.test.tsx`
+- model CRUD and undo/redo integration tests
+- deployment package model validation.
+
+P1:
+
+- `schemaChangeKind.unit.test.ts`
+- `schemaReloadPolicy.unit.test.ts`
+- `useCurrentModelEnvironment.unit.test.tsx`
+- FK analyzer tests
+- Jzod editor/form tests
+- report/grid tests
+- per-store reopen/boot tests.
+
+P2:
+
+- evolution trace tests
+- diagram tests
+- AI tools
+- MCP
+- CLI
+- importer/spreadsheet
+- generated-type smoke tests.
+
+### 11.3 Required equivalence tests during dual-write
+
+For every model mutation:
+
+```text
+projectDefinitionFields(Entity after action)
+==
+projectDefinitionFields(EntityDefinition compatibility copy after action)
+```
+
+For every migrated legacy deployment:
+
+```text
+behavior before enrichment
+==
+behavior after Entity-first resolution
+```
+
+For every version snapshot:
+
+```text
+EntityVersion at freeze time
+==
+definition-bearing projection of Entity at freeze time
+```
+
+---
+
+## 12. Consequences for related issues
+
+### 12.1 Issue #15
+
+#15 currently proposes that Entity instances use `parentDefinitionVersionUuid`
+to select the Entity Definition used for schema/storage/form interpretation.
+
+That conflicts with the target architecture:
+
+- data instances should identify their live Entity through `parentUuid`;
+- the live Entity supplies the current schema;
+- historical EntityVersion identity belongs to migration/history interpretation, not normal present-state reads.
+
+Recommended action: supersede or rewrite #15 after #217. If instance-level provenance still matters, keep an optional “created/validated against EntityVersion” field as audit metadata, but never make it the runtime authority for the present model.
+
+### 12.2 Issue #216
+
+#216’s existing design requires every application to have an Application Version named `current`, with mappings to EntityDefinitions.
+
+#217 changes that premise:
+
+- present state is always the Entity island;
+- versioning may be disabled;
+- `current` Application Version can only exist for version-enabled applications, and even there it must not be the authority for present-state model reads;
+- freeze copies Entities into EntityVersions and maps the numbered Application Version to those copies.
+
+#216 must be revised before implementation.
+
+### 12.3 Issue #9 WP2
+
+The previous WP2 diagram/design must become:
+
+- Application ↔ live Entities directly;
+- Application Version ↔ historical EntityVersions;
+- trace/replay Actions mutate live Entities;
+- version boundaries snapshot or refer to the resulting EntityVersions only when versioning is enabled.
+
+This separation simplifies replay: applying a migration updates the Entity island; history records the before/after snapshots without participating in ordinary model interpretation.
+
+### 12.4 Issue #215
+
+Paired data migrations remain valid. Their validation should compare:
+
+- old live Entity schema;
+- model Action;
+- new live Entity schema;
+- associated data migration.
+
+EntityVersions can preserve historical schemas but are not required to execute ordinary current-state validation.
+
+---
+
+## 13. Risks and mitigations
+
+### Split-brain redundancy
+
+Risk: Entity and EntityDefinition differ.
+
+Mitigation: one-way authority, pure projection, equality validation, atomic dual-write, no last-write-wins.
+
+### Bootstrap circularity
+
+Risk: code generation needs Entity schema before Entity carries `mlSchema`.
+
+Mitigation: additive schema first, bootstrap bridge, then switch generator in a narrow phase.
+
+### Accidental historical deletion
+
+Risk: current `dropEntity` removes all definitions for an Entity.
+
+Mitigation: distinguish compatibility current copy from immutable historical EntityVersions before version snapshots are enabled.
+
+### Stale schema caches
+
+Risk: revision logic fingerprints EntityDefinitions, so Entity changes may not reload schemas.
+
+Mitigation: migrate schema fingerprint/cache invalidation before UI relies on Entity-only updates.
+
+### Primary-key regression
+
+Risk: `idAttribute` is used across every cache/store.
+
+Mitigation: central Entity-first PK helper and full UUID/non-UUID/composite regression matrix per backend.
+
+### External PostgreSQL regression
+
+Risk: `externalDataSource` remains on EntityDefinition.
+
+Mitigation: include it in Entity from Phase 1 and test external schema/table mapping before switching PostgreSQL.
+
+### Optional versioning ambiguity
+
+Risk: old applications have partial version artefacts.
+
+Mitigation: explicit migration decision per application; never infer capability repeatedly at runtime.
+
+### Rename blast radius
+
+Risk: `EntityDefinition` is embedded in generated/public APIs, asset names, reports and prose.
+
+Mitigation: rename only after semantic decoupling, preserve UUIDs where feasible, and temporarily export deprecated aliases.
+
+---
+
+## 14. Decisions still needed before implementation
+
+1. Exact name and default policy for immutable versioning capability (`versioningEnabled` recommended).
+2. Legacy application classification: which existing applications are migrated to enabled vs disabled?
+3. Whether the compatibility EntityDefinition copy is created for unversioned applications until the end of #217 (recommended yes, to preserve non-regression).
+4. How to identify the current definition when a legacy Entity has multiple EntityDefinitions and no reliable Application Version mapping.
+5. Whether `parentDefinitionVersionUuid` remains optional provenance or is removed/deprecated after #217.
+6. Whether the final rename preserves EntityDefinition’s Entity UUID and instance UUIDs (recommended: preserve identity, rename vocabulary).
+7. Supported compatibility horizon for deprecated `EntityDefinition` exports and old Action payloads.
+8. Transaction/compensation policy for filesystem, IndexedDB and MongoDB dual-writes.
+
+These decisions do not block the additive Phase 0–2 work, but must be settled before bulk asset migration and historical snapshot semantics.
+
+---
+
+## 15. Completion criteria
+
+#217 is complete only when:
+
+- Entity alone defines the present model;
+- bootstrap and generated types derive from Entity;
+- all caches, selectors, hooks, UI, schema resolution, Actions, validation, and stores use Entity for live behavior;
+- EntityDefinition has remained compatible throughout the migration;
+- versioning capability is explicit, immutable, and optional;
+- version history is completely absent from unversioned application operation;
+- version-enabled applications snapshot Entities into immutable historical copies;
+- no production live-model dependency on EntityDefinition remains;
+- the final task renames EntityDefinition to EntityVersion and updates historical relationships;
+- the full non-regression suite passes at every mergeable phase.
+
+---
+
+## 16. Evolution diagram
+
+```mermaid
+flowchart LR
+  subgraph BEFORE["Before #217 — present state coupled to history-shaped objects"]
+    A0["Application"]
+    E0["Entity\nidentity only"]
+    ED0["EntityDefinition\nschema + UI + cache + storage"]
+    AV0["ApplicationVersion"]
+    A0 --> E0
+    E0 --> ED0
+    AV0 -. "partially / inconsistently selects" .-> ED0
+    ED0 --> R0["Runtime interpretation"]
+  end
+
+  subgraph TRANSITION["#217 transition — Entity authoritative, redundant compatibility copy"]
+    A1["Application\nversioningEnabled (immutable)"]
+    E1["Entity\nidentity + mlSchema + UI + cache\n+ PK + external storage"]
+    ED1["EntityDefinition\nunchanged compatibility copy"]
+    C1["Consistency projection\nEntity → EntityDefinition"]
+    R1["Runtime interpretation"]
+    A1 --> E1
+    E1 --> R1
+    E1 --> C1 --> ED1
+    ED1 -. "legacy fallback only" .-> R1
+  end
+
+  subgraph TARGET["Target — present model is an island; history is optional"]
+    A2["Application"]
+    FLAG{"versioningEnabled?"}
+    E2["Entity\ncomplete present model"]
+    R2["Runtime / UI / cache / stores"]
+    AV2["ApplicationVersion"]
+    EV2["EntityVersion\nimmutable Entity snapshot"]
+
+    A2 --> E2 --> R2
+    A2 --> FLAG
+    FLAG -- "false" --> NOH["No version-history objects"]
+    FLAG -- "true / freeze" --> AV2
+    AV2 --> EV2
+    E2 -. "copied at version boundary" .-> EV2
+    EV2 -. "never used for ordinary\npresent-state interpretation" .-> R2
+  end
+
+  BEFORE ==> TRANSITION ==> TARGET
+```
