@@ -3,7 +3,6 @@ import { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
 import {
   EntityDefinition,
   JzodElement,
-  // type TransformerForBuild_resolveConditionalSchema,
   type TransformerForBuildPlusRuntime_resolveConditionalSchema
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
@@ -15,6 +14,7 @@ import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { RelativePath, resolveRelativePath } from '../../tools';
 import { cleanLevel } from "../constants";
+import { resolvePresentEntityFromModel } from "../entityPresentModel.js";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =
@@ -105,7 +105,10 @@ export function resolveConditionalSchema(
     const ifThenElseConfig = mlSchema.tag.value.ifThenElseMMLS;
     // the runtime path is given by the parentUuid, to be found in the reduxDeploymentsState
     if (ifThenElseConfig.parentUuid && typeof ifThenElseConfig.parentUuid === "object") {
-      if (!modelEnvironment.currentModel || modelEnvironment.currentModel.entityDefinitions.length === 0) {
+      if (!modelEnvironment.currentModel || (
+        (modelEnvironment.currentModel.entities?.length ?? 0) === 0 &&
+        (modelEnvironment.currentModel.entityDefinitions?.length ?? 0) === 0
+      )) {
         return { error: 'NO_REDUX_DEPLOYMENTS_STATE' };
       }
 
@@ -178,25 +181,21 @@ export function resolveConditionalSchema(
       }
 
       // log.info("resolveConditionalSchema found parentUuid", parentUuid, "parentUuidStr", parentUuidStr);
-      const currentDeploymentEntityDefinitions: EntityDefinition[] = modelEnvironment.currentModel?.entityDefinitions || [];
-      // log.info(
-      //   "resolveConditionalSchema currentDeploymentEntityDefinitions",
-      //   currentDeploymentEntityDefinitions
-      // );
-      const parentEntityDefinition = (
-        currentDeploymentEntityDefinitions.find(e => e.entityUuid === parentUuidStr) as EntityDefinition
+      const parentPresentEntity = resolvePresentEntityFromModel(
+        modelEnvironment.currentModel,
+        parentUuidStr,
       );
       // log.info(
       //   "resolveConditionalSchema parentEntityDefinition",
       //   parentEntityDefinition
       // );
-      if (!parentEntityDefinition) {
+      if (!parentPresentEntity?.mlSchema) {
         return {
           error: 'PARENT_NOT_FOUND',
-          details: `No entity definition found for parentUuid ${parentUuidStr} in deployment ${modelEnvironment.deploymentUuid}`
+          details: `No present Entity (or EntityDefinition fallback) found for parentUuid ${parentUuidStr} in deployment ${modelEnvironment.deploymentUuid}`
         };
       }
-      effectiveSchema = parentEntityDefinition.mlSchema;
+      effectiveSchema = parentPresentEntity.mlSchema;
     }
     if (ifThenElseConfig.mmlsReference) {
       effectiveSchema  = {

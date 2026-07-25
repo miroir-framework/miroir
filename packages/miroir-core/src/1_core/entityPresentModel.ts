@@ -390,3 +390,62 @@ export function assembleLivePresentModelEntities(
     }
   });
 }
+
+const ENTITY_PARENT_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+
+/**
+ * #217 Phase 8 — single hub for live present-model lookup by entity UUID.
+ * Prefer MetaModel.entities (assembled); fall back through `resolveCurrentEntityModel`
+ * using EntityDefinitions only when needed. Call sites must not
+ * `entityDefinitions.find(ed => ed.entityUuid === …)` for live schema/PK.
+ */
+export function resolvePresentEntityFromModel(
+  model:
+    | {
+        entities?: Entity[] | undefined;
+        entityDefinitions?: EntityDefinition[] | undefined;
+      }
+    | null
+    | undefined,
+  entityUuid: string,
+  options?: ResolveCurrentEntityModelOptions,
+): Entity | undefined {
+  if (!model || !entityUuid) {
+    return undefined;
+  }
+  const entities = model.entities ?? [];
+  const entityDefinitions = model.entityDefinitions ?? [];
+  const entity = entities.find((candidate) => candidate.uuid === entityUuid);
+
+  if (entity) {
+    try {
+      return resolveCurrentEntityModel(entity, entityDefinitions, {
+        onInconsistency: "preferEntity",
+        ...options,
+      });
+    } catch {
+      return entityHasCompletePresentModel(entity) ? entity : undefined;
+    }
+  }
+
+  const matching = entityDefinitions.filter(
+    (entityDefinition) => entityDefinition.entityUuid === entityUuid,
+  );
+  if (matching.length !== 1) {
+    return undefined;
+  }
+  try {
+    return resolveCurrentEntityModel(
+      {
+        uuid: entityUuid,
+        name: matching[0]!.name,
+        parentName: "Entity",
+        parentUuid: ENTITY_PARENT_UUID,
+      } as Entity,
+      matching,
+      options,
+    );
+  } catch {
+    return undefined;
+  }
+}

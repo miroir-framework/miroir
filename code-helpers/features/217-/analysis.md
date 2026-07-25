@@ -831,7 +831,7 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 - `schemaChangeKind`: fingerprints Entity present-model fields alongside EntityDefinitions; Entity-only `viewAttributes` invalidates revision (description still ignored).
 - Tests: `cacheRefreshPolicy` (12), `schemaChangeKind` (13), `entityPresentModel.phase7` (2).
 
-### Phase 8 — Domain selectors and transformers switch
+### Phase 8 — Domain selectors and transformers switch — DONE
 
 - replace current EntityDefinition joins in query selectors;
 - FK and conditional-schema resolution use Entity;
@@ -843,6 +843,14 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 - Query selector / combiner / FK analyzer tests use Entity present model.
 - Transformer/extractor suites: same outputs before/after for Library fixtures (equivalence).
 - No new production `entityDefinitions.find(ed => ed.entityUuid === …)` without going through `resolveCurrentEntityModel` (grep gate in realization notes).
+
+**Realization (DONE):**
+
+- Hub: `resolvePresentEntityFromModel(model, entityUuid)` in `entityPresentModel.ts` (Entity-first; ED only via `resolveCurrentEntityModel`).
+- Wired: `DomainStateQuerySelectors` extractorByPrimaryKey FK walk; `ExtractorRunnerInMemory`; `resolveConditionalSchema` parent mlSchema; `TransformersForRuntime` FK default PK.
+- FK analyzer accepts Entity or EntityDefinition carriers (`ForeignKeySchemaCarrier`); lookup by `entityUuid ?? uuid`.
+- Grep gate: no production `entityDefinitions.find(…entityUuid…)` left in `miroir-core/src` (UI Report* joins deferred to Phase 9).
+- Tests: `entityPresentModel.phase8` (5); FK analyzer Entity≡ED equivalence case.
 
 ### Phase 9 — UI and tooling switch
 
@@ -925,7 +933,7 @@ This phase must contain no architectural authority change—only the final vocab
 
 ### 11.1 New contract tests
 
-| Contract | Phase owning it | Status after Phase 7 |
+| Contract | Phase owning it | Status after Phase 8 |
 |---|---|---|
 | Entity complete-definition schema parsing | 1 | Done (`phase1`) |
 | Legacy Entity + EntityDefinition enrichment | 2 | Done (`phase2`) |
@@ -948,6 +956,7 @@ Suite files:
 - `modelEntityDualWrite.unit.test.ts` / `ModelEntityActionTransformer.phase5.unit.test.ts` — Phase 5
 - `modelEntityDualWritePersistence.unit.test.ts` — Phase 6 persistence policy + detector
 - `entityPresentModel.phase7.unit.test.ts` — Phase 7 MetaModel assembly
+- `entityPresentModel.phase8.unit.test.ts` — Phase 8 present-model lookup hub
 
 ### 11.2 Existing priority suites
 

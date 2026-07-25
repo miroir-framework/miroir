@@ -1,6 +1,6 @@
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 
-import { entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
 import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 import {
@@ -10,6 +10,7 @@ import {
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
+  Entity,
   EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
@@ -31,6 +32,7 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { getForeignKeyValue } from "../1_core/EntityPrimaryKey";
+import { resolvePresentEntityFromModel } from "../1_core/entityPresentModel.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -448,13 +450,20 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         return currentObject;
       }
 
-      const currentObjectEntityDefinition = Object.values(
-        domainState[deploymentUuid]["model"]?.[entityEntityDefinition.uuid]
-      ).find((e: EntityInstance) => (e as EntityDefinition).entityUuid == entityUuidReference) as EntityDefinition | undefined;
+      const modelEntities = Object.values(
+        domainState[deploymentUuid]["model"]?.[entityEntity.uuid] ?? {},
+      ) as Entity[];
+      const modelEntityDefinitions = Object.values(
+        domainState[deploymentUuid]["model"]?.[entityEntityDefinition.uuid] ?? {},
+      ) as EntityDefinition[];
+      const currentObjectPresentEntity = resolvePresentEntityFromModel(
+        { entities: modelEntities, entityDefinitions: modelEntityDefinitions },
+        entityUuidReference,
+      );
 
       // const entityDefinition = Object.keys(domainState[deploymentUuid]["model"]);
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState entityDefinition", JSON.stringify(currentObjectEntityDefinition, null, 2));
-      if (!currentObjectEntityDefinition) {
+      if (!currentObjectPresentEntity?.mlSchema?.definition) {
         return new Domain2ElementFailed({
           queryFailure: "EntityNotFound",
           deploymentUuid,
@@ -463,7 +472,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       }
 
       let foreignKeyObjects: Record<string, any> = {};
-      for (const attribute of Object.entries(currentObjectEntityDefinition.mlSchema.definition) ?? []) {
+      for (const attribute of Object.entries(currentObjectPresentEntity.mlSchema.definition) ?? []) {
         log.debug("selectEntityInstanceFromObjectQueryAndDomainState checking attribute", attribute);
         if (attribute[1].type != "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;
         if (!attribute[1].tag?.value?.foreignKeyParams?.targetEntity) {
@@ -473,7 +482,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
               "DomainStateQuerySelectors extractorByPrimaryKey did not find targetEntity in attribute " +
               attribute[0] +
               " of entity " +
-              currentObjectEntityDefinition.name,
+              currentObjectPresentEntity.name,
           });
         }
         const attributeName = attribute[0];
