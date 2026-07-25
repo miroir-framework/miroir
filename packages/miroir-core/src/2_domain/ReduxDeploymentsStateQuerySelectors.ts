@@ -20,7 +20,7 @@ import {
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
-import { entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
@@ -29,8 +29,9 @@ import {
 } from "../1_core/localCacheSegment.js";
 import {
   isLazyCacheOnRefreshEntity,
+  type CachePolicyCarrier,
 } from "../1_core/cacheRefreshPolicy.js";
-import type { EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { Entity, EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   applyExtractorTransformerInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
@@ -318,14 +319,25 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
 
 // ################################################################################################
 /**
- * Looks up EntityDefinition for an entityUuid from model section of the local cache.
- * Used to interpret cache.cacheAllInstancesOnRefresh without a network round-trip.
+ * Looks up cache policy for an entityUuid from model section of the local cache.
+ * #217 Phase 7: prefer Entity.cache; fall back to EntityDefinition.
  */
-function getEntityDefinitionFromReduxDeploymentsState(
+function getCachePolicyCarrierFromReduxDeploymentsState(
   deploymentEntityState: ReduxDeploymentsState,
   deploymentUuid: string,
   entityUuid: string,
-): EntityDefinition | undefined {
+): CachePolicyCarrier {
+  const entityIndex = getReduxDeploymentsStateIndex(
+    deploymentUuid,
+    "model",
+    entityEntity.uuid,
+  );
+  const entities = deploymentEntityState[entityIndex]?.entities;
+  const entity = entities?.[entityUuid] as Entity | undefined;
+  if (entity?.cache !== undefined) {
+    return entity;
+  }
+
   const entityDefinitionIndex = getReduxDeploymentsStateIndex(
     deploymentUuid,
     "model",
@@ -333,14 +345,14 @@ function getEntityDefinitionFromReduxDeploymentsState(
   );
   const definitions = deploymentEntityState[entityDefinitionIndex]?.entities;
   if (!definitions) {
-    return undefined;
+    return entity;
   }
   for (const def of Object.values(definitions) as EntityDefinition[]) {
     if (def?.entityUuid === entityUuid) {
       return def;
     }
   }
-  return undefined;
+  return entity;
 }
 
 // ################################################################################################
@@ -384,12 +396,12 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   if (!deploymentEntityState[deploymentEntityStateIndex]) {
     // Lazy-on-refresh entities are intentionally absent until a report load fills them.
     // Treat as empty index (not EntityNotFound) so interim selectors stay quiet.
-    const entityDefinition = getEntityDefinitionFromReduxDeploymentsState(
+    const cachePolicyCarrier = getCachePolicyCarrierFromReduxDeploymentsState(
       deploymentEntityState,
       deploymentUuid,
       entityUuid,
     );
-    if (isLazyCacheOnRefreshEntity(entityDefinition)) {
+    if (isLazyCacheOnRefreshEntity(cachePolicyCarrier)) {
       log.debug(
         "selectEntityInstanceUuidIndexFromReduxDeploymentsState: lazy-on-refresh entity not in cache yet",
         deploymentEntityStateIndex,

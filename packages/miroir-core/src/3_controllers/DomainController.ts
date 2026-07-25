@@ -522,7 +522,7 @@ export class DomainController implements DomainControllerInterface {
           };
 
           // Model is always loaded entirely (application concepts). Fetch model first so
-          // EntityDefinitions are available to interpret cacheAllInstancesOnRefresh for data.
+          // Entity (and legacy EntityDefinition) cache policies are available for data refresh.
           const modelFetchTargets = modelEntitiesToFetch.map((e) => ({
             section: "model" as ApplicationSection,
             entity: e,

@@ -370,3 +370,23 @@ export function alignEntityDefinitionToPresentEntity(
   }
   return aligned;
 }
+
+/**
+ * #217 Phase 7 — assemble live MetaModel.entities as complete present models.
+ * Incomplete Entities are enriched from EntityDefinitions; EntityDefinitions stay
+ * loaded as compatibility/history and are not removed from MetaModel.
+ */
+export function assembleLivePresentModelEntities(
+  entities: Entity[],
+  entityDefinitions: EntityDefinition[],
+): Entity[] {
+  return entities.map((entity) => {
+    try {
+      return resolveCurrentEntityModel(entity, entityDefinitions, {
+        onInconsistency: "preferEntity",
+      });
+    } catch {
+      return entity;
+    }
+  });
+}

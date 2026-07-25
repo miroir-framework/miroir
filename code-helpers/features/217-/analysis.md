@@ -808,7 +808,7 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 - **PostgreSQL:** create uses Sequelize **transaction** Entity→ED; rename/alter use compensate via `persistEntityThenEntityDefinition` then table sync (alter). External sources unchanged (read-only upsert guard remains).
 - Store mixins no longer mutate EntityDefinition alone on alter (Entity-authoritative).
 
-### Phase 7 — Cache and current-model assembly switch
+### Phase 7 — Cache and current-model assembly switch — DONE
 
 - register PK/cache policy from Entity;
 - update Redux and Zustand in parallel;
@@ -822,6 +822,14 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 - Redux **and** Zustand LocalCache tests must both pass (parity).
 - Extend `schemaChangeKind` fingerprints to Entity-carried fields; add regression that Entity-only schema edits invalidate revisions.
 - Behavioral equivalence: selectors fed Entity-first model match previous EntityDefinition-join results on Library/Miroir fixtures.
+
+**Realization (DONE):**
+
+- `cacheRefreshPolicy`: `CachePolicyCarrier` accepts Entity or EntityDefinition; `resolveCachePolicyCarrierForEntity` prefers Entity.cache with ED map fallback; DomainController + `ReduxDeploymentsStateQuerySelectors` updated.
+- LocalCache Redux + Zustand: PK adapter registration from Entity on load/create; EntityDefinition path kept as fallback; fixed wrong `entityDefinitionEntityDefinition` gate on Zustand load / Redux create.
+- `assembleLivePresentModelEntities` wired into Redux + Zustand `currentModel` (ED arrays retained).
+- `schemaChangeKind`: fingerprints Entity present-model fields alongside EntityDefinitions; Entity-only `viewAttributes` invalidates revision (description still ignored).
+- Tests: `cacheRefreshPolicy` (12), `schemaChangeKind` (13), `entityPresentModel.phase7` (2).
 
 ### Phase 8 — Domain selectors and transformers switch
 
@@ -917,7 +925,7 @@ This phase must contain no architectural authority change—only the final vocab
 
 ### 11.1 New contract tests
 
-| Contract | Phase owning it | Status after Phase 6 |
+| Contract | Phase owning it | Status after Phase 7 |
 |---|---|---|
 | Entity complete-definition schema parsing | 1 | Done (`phase1`) |
 | Legacy Entity + EntityDefinition enrichment | 2 | Done (`phase2`) |
@@ -939,6 +947,7 @@ Suite files:
 - `entityPresentModel.strategy.unit.test.ts` — §11 gap-fill / cross-phase contracts
 - `modelEntityDualWrite.unit.test.ts` / `ModelEntityActionTransformer.phase5.unit.test.ts` — Phase 5
 - `modelEntityDualWritePersistence.unit.test.ts` — Phase 6 persistence policy + detector
+- `entityPresentModel.phase7.unit.test.ts` — Phase 7 MetaModel assembly
 
 ### 11.2 Existing priority suites
 

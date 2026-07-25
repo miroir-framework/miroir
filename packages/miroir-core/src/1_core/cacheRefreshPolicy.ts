@@ -10,32 +10,55 @@ export type EntityFetchOnRefresh = {
 };
 
 /**
- * Interprets EntityDefinition.cache.cacheAllInstancesOnRefresh.
- * Absent definition or absent/true flag ⇒ eager (load all instances on refresh).
+ * Anything that may carry cache refresh policy (#217 Phase 7: Entity-authoritative;
+ * EntityDefinition remains a compatibility fallback).
+ */
+export type CachePolicyCarrier =
+  | { cache?: { cacheAllInstancesOnRefresh?: boolean | undefined } | undefined }
+  | undefined;
+
+/**
+ * Interprets cache.cacheAllInstancesOnRefresh on Entity (preferred) or EntityDefinition.
+ * Absent carrier or absent/true flag ⇒ eager (load all instances on refresh).
  * Explicit false ⇒ load none of that entity's instances on refresh.
  */
 export function shouldCacheAllInstancesOnRefresh(
-  entityDefinition: EntityDefinition | undefined,
+  carrier: CachePolicyCarrier,
 ): boolean {
-  return entityDefinition?.cache?.cacheAllInstancesOnRefresh !== false;
+  return carrier?.cache?.cacheAllInstancesOnRefresh !== false;
 }
 
 /** True when the entity is intentionally skipped on refresh (report-triggered load). */
 export function isLazyCacheOnRefreshEntity(
-  entityDefinition: EntityDefinition | undefined,
+  carrier: CachePolicyCarrier,
 ): boolean {
-  return entityDefinition?.cache?.cacheAllInstancesOnRefresh === false;
+  return carrier?.cache?.cacheAllInstancesOnRefresh === false;
+}
+
+/**
+ * Prefer Entity.cache; fall back to EntityDefinition map for incomplete/legacy Entities.
+ */
+export function resolveCachePolicyCarrierForEntity(
+  entity: Entity,
+  entityDefinitionsByEntityUuid?: Record<string, EntityDefinition> | undefined,
+): CachePolicyCarrier {
+  if (entity.cache !== undefined) {
+    return entity;
+  }
+  return entityDefinitionsByEntityUuid?.[entity.uuid];
 }
 
 /**
  * Builds the refresh fetch list.
  * - Model entities are always included (application concepts must be fully available).
  * - Data entities are included only when shouldCacheAllInstancesOnRefresh is true.
+ *
+ * #217 Phase 7: reads Entity.cache first; optional EntityDefinition map is legacy fallback.
  */
 export function resolveEntitiesToFetchOnRefresh(
   modelEntities: Entity[],
   dataEntities: Entity[],
-  entityDefinitionsByEntityUuid: Record<string, EntityDefinition>,
+  entityDefinitionsByEntityUuid: Record<string, EntityDefinition> = {},
 ): EntityFetchOnRefresh[] {
   const modelFetches: EntityFetchOnRefresh[] = modelEntities.map((entity) => ({
     section: "model" as ApplicationSection,
@@ -44,7 +67,9 @@ export function resolveEntitiesToFetchOnRefresh(
 
   const dataFetches: EntityFetchOnRefresh[] = dataEntities
     .filter((entity) =>
-      shouldCacheAllInstancesOnRefresh(entityDefinitionsByEntityUuid[entity.uuid]),
+      shouldCacheAllInstancesOnRefresh(
+        resolveCachePolicyCarrierForEntity(entity, entityDefinitionsByEntityUuid),
+      ),
     )
     .map((entity) => ({
       section: "data" as ApplicationSection,

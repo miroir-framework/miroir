@@ -38,7 +38,7 @@ import {
   type CacheSegmentKind,
   type LocalCacheSegmentHeader,
 } from "miroir-core";
-import { entityDefinitionEntityDefinition, entitySelfApplication } from "miroir-test-app_deployment-miroir";
+import { entityDefinitionEntityDefinition, entityEntity, entityEntityDefinition, entitySelfApplication } from "miroir-test-app_deployment-miroir";
 
 import type { LocalCacheSliceState, LocalCacheSliceStateZone } from "./localCacheZustandInterface.js";
 import { currentModel } from "./Model.js";
@@ -143,26 +143,29 @@ function getIdAttributeForIndex(index: string): string | string[] {
 }
 
 /**
- * Called when loading or creating EntityDefinition instances.
- * Registers the idAttribute for the entity identified by entityDefinition.entityUuid.
- * Registers for all ApplicationSections since EntityDefinitions are stored in "model"
- * but their instances may be loaded/created/deleted under any section (e.g. "data").
+ * #217 Phase 7: register non-UUID PK from Entity (preferred) or EntityDefinition fallback.
  */
+function registerPresentModelSourceInLocalCache(
+  deploymentUuid: string,
+  source: EntityInstance
+): void {
+  const idAttribute = getEntityPrimaryKeyAttribute(source as any);
+  const targetEntityUuid = (source as any).entityUuid ?? (source as any).uuid;
+  if (idAttribute !== "uuid" && targetEntityUuid) {
+    for (const targetSection of ["model", "data"] as ApplicationSection[]) {
+      const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, targetSection, targetEntityUuid);
+      idAttributeByIndex[locationIndex] = idAttribute;
+    }
+  }
+}
+
+/** @deprecated use registerPresentModelSourceInLocalCache */
 function registerEntityDefinitionInLocalCache(
   deploymentUuid: string,
   _section: ApplicationSection,
   entityDefinition: EntityInstance
 ): void {
-  const idAttribute = getEntityPrimaryKeyAttribute(entityDefinition as any);
-  if (idAttribute !== "uuid") {
-    const entityUuid = (entityDefinition as any).entityUuid;
-    if (entityUuid) {
-      for (const targetSection of ["model", "data"] as ApplicationSection[]) {
-        const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, targetSection, entityUuid);
-        idAttributeByIndex[locationIndex] = idAttribute;
-      }
-    }
-  }
+  registerPresentModelSourceInLocalCache(deploymentUuid, entityDefinition);
 }
 
 function getInitialEntityState(): EntityState {
@@ -366,6 +369,13 @@ function handleInstanceAction(
         const idAttribute = getIdAttributeForIndex(index);
         
         initializeLocalCacheSliceState(deploymentUuid, section, resolvedParentUuid, "current", state);
+
+        if (
+          resolvedParentUuid === entityEntity.uuid ||
+          resolvedParentUuid === entityEntityDefinition.uuid
+        ) {
+          registerPresentModelSourceInLocalCache(deploymentUuid, instance);
+        }
         
         const currentState = state.current[index] as EntityState;
         state.current[index] = addManyToEntityState(currentState, [instance], idAttribute);
@@ -446,10 +456,18 @@ function handleLoadNewInstancesAction(
     const { kind: segment, projection } = resolveLoadCacheSegment(instanceCollection);
     const segmentHeader = buildLocalCacheSegmentHeader(segment, "fresh", projection);
     
-    // Register custom idAttribute when loading EntityDefinition instances
-    if (instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid) {
+    // #217 Phase 7: register PK from Entity; EntityDefinition remains compatibility fallback.
+    if (instanceCollection.parentUuid === entityEntity.uuid) {
+      for (const entity of instanceCollection.instances ?? []) {
+        registerPresentModelSourceInLocalCache(deploymentUuid, entity);
+      }
+    }
+    if (
+      instanceCollection.parentUuid === entityEntityDefinition.uuid ||
+      instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid
+    ) {
       for (const entityDef of instanceCollection.instances ?? []) {
-        registerEntityDefinitionInLocalCache(deploymentUuid, section, entityDef);
+        registerPresentModelSourceInLocalCache(deploymentUuid, entityDef);
       }
     }
     

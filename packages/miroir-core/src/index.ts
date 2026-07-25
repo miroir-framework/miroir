@@ -775,6 +775,7 @@ export {
   VERSIONED_APPLICATION_FIXTURE,
   alignEntityDefinitionToPresentEntity,
   assertVersioningEnabledImmutable,
+  assembleLivePresentModelEntities,
   compareEntityPresentModelDefinitions,
   entityHasCompletePresentModel,
   inventoryEntityEntityDefinitionJoins,
@@ -863,9 +864,11 @@ export {
   metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities
 } from "./1_core/Model.js";
 export {
+  resolveCachePolicyCarrierForEntity,
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
   isLazyCacheOnRefreshEntity,
+  type CachePolicyCarrier,
   type EntityFetchOnRefresh,
 } from "./1_core/cacheRefreshPolicy.js";
 export {

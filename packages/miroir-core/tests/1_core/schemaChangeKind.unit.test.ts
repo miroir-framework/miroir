@@ -70,6 +70,23 @@ describe("computeSchemaRevision — app overlay changes (3.2)", () => {
     expect(computeSchemaRevision(libraryDeploymentUuid, mutated, libraryApplicationUuid)).not.toBe(rev1);
   });
 
+  it("revision changes when Entity present-model fields change without EntityDefinition edit (Phase 7)", () => {
+    const base = cloneModel(defaultLibraryAppModel) as MetaModel;
+    const rev1 = computeSchemaRevision(libraryDeploymentUuid, base, libraryApplicationUuid);
+
+    const mutated = cloneModel(base) as MetaModel;
+    mutated.entities = mutated.entities.map((entity) =>
+      entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        ? {
+            ...entity,
+            viewAttributes: [...(entity.viewAttributes ?? []), "isbn"],
+          }
+        : entity,
+    );
+
+    expect(computeSchemaRevision(libraryDeploymentUuid, mutated, libraryApplicationUuid)).not.toBe(rev1);
+  });
+
   it("revision changes when Book details report definition changes", () => {
     const base = cloneModel(defaultLibraryAppModel) as MetaModel;
     const rev1 = computeSchemaRevision(libraryDeploymentUuid, base, libraryApplicationUuid);
