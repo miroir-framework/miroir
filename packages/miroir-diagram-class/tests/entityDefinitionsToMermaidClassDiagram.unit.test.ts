@@ -17,6 +17,8 @@ import {
   entityDefinitionsToMermaidClassDiagram,
   metaModelToMermaidClassDiagram,
   buildEntityDefinitionClickLinks,
+  buildEntityClickLinks,
+  presentEntitiesAsDiagramCarriers,
   type ClassDiagramOptions,
 } from "../src/2_domain/entityDefinitionsToMermaidClassDiagram.js";
 import {
@@ -578,6 +580,51 @@ describe("metaModelToMermaidClassDiagram", () => {
     expect(diagram).toContain("classDiagram");
     expect(diagram).toContain("class Country {");
     expect(diagram).toContain("class Author {");
+  });
+
+  it("prefers Entity present-model mlSchema over EntityDefinitions (#217 Phase 9)", () => {
+    const metaModel = {
+      entities: [
+        {
+          uuid: countryEntityDefinition.entityUuid,
+          parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          name: "Country",
+          mlSchema: countryEntityDefinition.mlSchema,
+        },
+      ] as any[],
+      entityDefinitions: [],
+    };
+    const diagram = metaModelToMermaidClassDiagram(metaModel);
+    expect(diagram).toContain("class Country {");
+  });
+});
+
+describe("buildEntityClickLinks", () => {
+  it("maps sanitised entity name to Entity uuid", () => {
+    const links = buildEntityClickLinks([
+      { uuid: countryEntityDefinition.entityUuid, name: "Country" },
+      { uuid: authorEntityDefinition.entityUuid, name: "Author" },
+    ]);
+    expect(links).toEqual({
+      Country: countryEntityDefinition.entityUuid,
+      Author: authorEntityDefinition.entityUuid,
+    });
+  });
+});
+
+describe("presentEntitiesAsDiagramCarriers", () => {
+  it("projects Entities with mlSchema into ED-shaped carriers keyed by Entity uuid", () => {
+    const carriers = presentEntitiesAsDiagramCarriers([
+      {
+        uuid: countryEntityDefinition.entityUuid,
+        name: "Country",
+        mlSchema: countryEntityDefinition.mlSchema,
+      } as any,
+    ]);
+    expect(carriers).toHaveLength(1);
+    expect(carriers[0].entityUuid).toBe(countryEntityDefinition.entityUuid);
+    expect(carriers[0].uuid).toBe(countryEntityDefinition.entityUuid);
+    expect(carriers[0].mlSchema).toEqual(countryEntityDefinition.mlSchema);
   });
 });
 

@@ -852,7 +852,7 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 - Grep gate: no production `entityDefinitions.find(…entityUuid…)` left in `miroir-core/src` (UI Report* joins deferred to Phase 9).
 - Tests: `entityPresentModel.phase8` (5); FK analyzer Entity≡ED equivalence case.
 
-### Phase 9 — UI and tooling switch
+### Phase 9 — UI and tooling switch — DONE
 
 Vertical slices:
 
@@ -869,6 +869,15 @@ Each slice uses Entity end-to-end and retains legacy EntityDefinition fallback o
 
 - One vertical UI/tooling slice at a time with public-behavior tests (P1 report/grid/form; P2 diagram/MCP/CLI as touched).
 - Each slice proves list/details/PK/FK still resolve from Entity fields (`viewAttributes`, `defaultInstanceDetailsReportUuid`, `idAttribute`, `mlSchema`).
+
+**Realization (DONE):**
+
+- Hub UI boundary: `presentEntityAsRedundantEntityDefinition` (+ Phase 8 `resolvePresentEntityFromModel`) for components still typed as EntityDefinition.
+- Wired: `ReportSectionListDisplay`, `ReportSectionEntityInstance`, `ReportTools`, `ReportViewWithEditor`, `EntityInstanceGrid` (FK nav → Entity `defaultInstanceDetailsReportUuid`), `JzodArrayEditor`, `EntityInstanceSelectorPanel`, `deleteCascade` (Entity-first FK walk).
+- Diagrams: `metaModelToMermaidClassDiagram` prefers Entity `mlSchema`; `buildEntityClickLinks` / `presentEntitiesAsDiagramCarriers`; Model diagram page navigates to `reportEntityDetails` with Entity uuid.
+- Import spreadsheet puts `mlSchema` on Entity (dual-write ED retained); AI system prompt documents Entity present-model authority.
+- Grep gate: no `entityDefinitions.find(…entityUuid…)` left under `miroir-standalone-app/.../4_view`.
+- Tests: `entityPresentModel.phase9`; diagram `buildEntityClickLinks` / Entity-preferring `metaModelToMermaidClassDiagram`.
 
 ### Phase 10 — Separate optional version history
 
@@ -933,7 +942,7 @@ This phase must contain no architectural authority change—only the final vocab
 
 ### 11.1 New contract tests
 
-| Contract | Phase owning it | Status after Phase 8 |
+| Contract | Phase owning it | Status after Phase 9 |
 |---|---|---|
 | Entity complete-definition schema parsing | 1 | Done (`phase1`) |
 | Legacy Entity + EntityDefinition enrichment | 2 | Done (`phase2`) |
@@ -957,6 +966,7 @@ Suite files:
 - `modelEntityDualWritePersistence.unit.test.ts` — Phase 6 persistence policy + detector
 - `entityPresentModel.phase7.unit.test.ts` — Phase 7 MetaModel assembly
 - `entityPresentModel.phase8.unit.test.ts` — Phase 8 present-model lookup hub
+- `entityPresentModel.phase9.unit.test.ts` — Phase 9 UI boundary ED-shaped projection
 
 ### 11.2 Existing priority suites
 

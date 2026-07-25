@@ -492,6 +492,11 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         transformerType: "getFromParameters",
         referencePath: [runnerName, "entityName"],
       } as any,
+      // #217 Phase 9 — Entity is present-model authority; dual-write still copies to EntityDefinition
+      mlSchema: {
+        transformerType: "spreadSheetToJzodSchema",
+        spreadsheetContents: fileData,
+      } as any,
     };
     log.info("ImportEntityFromSpreadsheetRunner onSubmit entity", JSON.stringify(entity, null, 2));
     const entityDefinition: EntityDefinition = {

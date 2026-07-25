@@ -27,6 +27,7 @@ import {
   defaultViewParamsFromAdminStorageFetchQueryParams,
   getEntityPrimaryKeyAttributes,
   getInstancePrimaryKeyValue,
+  resolvePresentEntityFromModel,
 } from "miroir-core";
 
 import {
@@ -687,10 +688,10 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             const columnDef = props.columnDefs.columnDefs.find((cd: any) => cd.field === fieldName);
             const targetEntityUuid = columnDef?.cellRenderer?.entityUuid;
             
-            const targetEntityDefinition: EntityDefinition | undefined =
-              currentModel.entityDefinitions.find(
-                (e) => e.entityUuid === targetEntityUuid
-              );
+            const targetPresentEntity = resolvePresentEntityFromModel(
+              currentModel,
+              targetEntityUuid,
+            );
 
             const targetApplicationSection =
               (columnDefinitionAttribute as any)?.tag?.value?.foreignKeyParams?.targetEntityApplicationSection ||
@@ -701,7 +702,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 props.application,
                 contextDeploymentUuid ?? "",
                 targetApplicationSection,
-                targetEntityDefinition?.defaultInstanceDetailsReportUuid ?? "",
+                targetPresentEntity?.defaultInstanceDetailsReportUuid ?? "",
                 String((rowData.rawValue as any)[fieldName]),
               )
             );
@@ -787,10 +788,10 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             (columnDefinitionAttribute as any).type === "uuid" &&
             (columnDefinitionAttribute as any).tag?.value?.foreignKeyParams?.targetEntity
           ) {
-            const targetEntityDefinition: EntityDefinition | undefined =
-              currentModel.entityDefinitions.find(
-                (e) => e.entityUuid === event.colDef.cellRendererParams.entityUuid
-              );
+            const targetPresentEntity = resolvePresentEntityFromModel(
+              currentModel,
+              event.colDef.cellRendererParams.entityUuid,
+            );
 
             const targetApplicationSection =
               (columnDefinitionAttribute as any)?.tag?.value?.targetEntityApplicationSection ||
@@ -799,7 +800,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
               props.application,
               contextDeploymentUuid ?? "",
               targetApplicationSection,
-              targetEntityDefinition?.defaultInstanceDetailsReportUuid ?? "",
+              targetPresentEntity?.defaultInstanceDetailsReportUuid ?? "",
               String(event.data.rawValue[fieldName]),
             );
             log.info("onCellClicked navigating to", navigateTo);

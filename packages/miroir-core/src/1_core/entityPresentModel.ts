@@ -449,3 +449,44 @@ export function resolvePresentEntityFromModel(
     return undefined;
   }
 }
+
+/**
+ * #217 Phase 9 — UI/tooling boundary: project present Entity onto EntityDefinition shape
+ * for components still typed as EntityDefinition. Prefer aligning an existing redundant ED;
+ * otherwise synthesize a compatibility copy (Entity remains authoritative).
+ */
+export function presentEntityAsRedundantEntityDefinition(
+  entity: Entity,
+  entityDefinitions: EntityDefinition[] = [],
+): EntityDefinition {
+  const existing = entityDefinitions.find(
+    (entityDefinition) => entityDefinition.entityUuid === entity.uuid,
+  );
+  if (existing) {
+    return alignEntityDefinitionToPresentEntity(entity, existing);
+  }
+  if (!entity.mlSchema) {
+    throw new Error(
+      `presentEntityAsRedundantEntityDefinition: Entity ${entity.uuid} (${entity.name}) has no mlSchema`,
+    );
+  }
+  return {
+    uuid: entity.uuid,
+    parentName: "EntityDefinition",
+    parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+    name: entity.name,
+    entityUuid: entity.uuid,
+    conceptLevel: "Model",
+    mlSchema: entity.mlSchema,
+    ...(entity.viewAttributes !== undefined
+      ? { viewAttributes: entity.viewAttributes }
+      : {}),
+    ...(entity.defaultInstanceDetailsReportUuid !== undefined
+      ? { defaultInstanceDetailsReportUuid: entity.defaultInstanceDetailsReportUuid }
+      : {}),
+    ...(entity.idAttribute !== undefined ? { idAttribute: entity.idAttribute } : {}),
+    ...(entity.display !== undefined ? { display: entity.display } : {}),
+    ...(entity.cache !== undefined ? { cache: entity.cache } : {}),
+    ...(entity.icon !== undefined ? { icon: entity.icon } : {}),
+  } as EntityDefinition;
+}

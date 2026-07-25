@@ -186,6 +186,9 @@ export function sanitiseMermaidId(name: string): string {
  * provided entity definitions.  The resulting map is ready to be passed as
  * `ClassDiagramOptions.classClickLinks`.
  *
+ * @deprecated Prefer {@link buildEntityClickLinks} (#217 Phase 9). Retained for
+ * callers that still navigate to EntityDefinition detail reports.
+ *
  * The map value is the EntityDefinition instance UUID (i.e. `entityDefinition.uuid`),
  * NOT the entity UUID, because it is used as the `instanceUuid` segment in the
  * report URL: `/report/:application/:deployment/:section/:reportUuid/:instanceUuid`.
@@ -198,6 +201,44 @@ export function buildEntityDefinitionClickLinks(
     links[sanitiseMermaidId(ed.name)] = ed.uuid;
   }
   return links;
+}
+
+/**
+ * #217 Phase 9 — map sanitised entity name → Entity UUID for diagram click navigation
+ * to Entity detail reports (present-model authority).
+ */
+export function buildEntityClickLinks(
+  entities: Array<Pick<Entity, "uuid" | "name">>,
+): Record<string, string> {
+  const links: Record<string, string> = {};
+  for (const entity of entities) {
+    links[sanitiseMermaidId(entity.name)] = entity.uuid;
+  }
+  return links;
+}
+
+/**
+ * Project present Entities (with mlSchema) into EntityDefinition-shaped carriers
+ * for diagram generators that still consume EntityDefinition.
+ */
+export function presentEntitiesAsDiagramCarriers(
+  entities: Entity[],
+): EntityDefinition[] {
+  return entities
+    .filter((entity) => !!entity.mlSchema)
+    .map(
+      (entity) =>
+        ({
+          uuid: entity.uuid,
+          parentName: "EntityDefinition",
+          parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+          name: entity.name,
+          entityUuid: entity.uuid,
+          conceptLevel: "Model",
+          mlSchema: entity.mlSchema!,
+          ...(entity.description !== undefined ? { description: entity.description } : {}),
+        }) as EntityDefinition,
+    );
 }
 
 /**
@@ -378,10 +419,17 @@ export function entityDefinitionsToMermaidClassDiagram(
 /**
  * Convenience: generate a class diagram from a MetaModel-like structure
  * that contains both `entities` and `entityDefinitions`.
+ *
+ * #217 Phase 9 — prefer Entity present model (`mlSchema` on Entity) when available;
+ * fall back to EntityDefinitions for legacy/incomplete Entity rows.
  */
 export function metaModelToMermaidClassDiagram(
   metaModel: { entities: Entity[]; entityDefinitions: EntityDefinition[] },
   options: ClassDiagramOptions = {},
 ): string {
+  const fromEntities = presentEntitiesAsDiagramCarriers(metaModel.entities ?? []);
+  if (fromEntities.length > 0) {
+    return entityDefinitionsToMermaidClassDiagram(fromEntities, options);
+  }
   return entityDefinitionsToMermaidClassDiagram(metaModel.entityDefinitions, options);
 }

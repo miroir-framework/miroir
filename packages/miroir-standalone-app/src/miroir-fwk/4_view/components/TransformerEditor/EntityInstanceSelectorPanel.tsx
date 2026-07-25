@@ -11,6 +11,8 @@ import {
   getEntityInstancesIndexNonHook,
   metaMetaModelEntityUuids,
   noValue,
+  presentEntityAsRedundantEntityDefinition,
+  resolvePresentEntityFromModel,
   type ApplicationDeploymentMap,
   type ApplicationSection,
   type Entity,
@@ -197,12 +199,10 @@ export function EntityInstanceSelectorPanel(props:{
     miroirMetaModel.entities,
     currentModel.entities,
   ]);
-  // Schemas for model-section entity types come from Miroir; data-section types from the app model
-  // (for Miroir those are the same MetaModel).
-  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
-    applicationSection === "model"
-      ? miroirMetaModel.entityDefinitions
-      : currentModel.entityDefinitions;
+  // Present-model schemas: model-section types from Miroir; data-section from the app model
+  // (for Miroir those are the same MetaModel). Legacy ED only via presentEntityAsRedundant*.
+  const schemaModel =
+    applicationSection === "model" ? miroirMetaModel : currentModel;
 
   const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(
     persistedState?.selectedEntityUuid || initialEntityUuid
@@ -225,21 +225,26 @@ export function EntityInstanceSelectorPanel(props:{
     setCurrentInstanceIndex(0);
   }, [selectedEntityUuid, applicationSection]);
 
-  const currentReportTargetEntity: Entity | undefined =
-    currentReportDeploymentSectionEntities?.find((e) => e?.uuid === selectedEntityUuid);
+  const currentReportTargetEntity: Entity | undefined = resolvePresentEntityFromModel(
+    schemaModel,
+    selectedEntityUuid,
+  );
 
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportDeploymentSectionEntityDefinitions?.find(
-      (e) => e?.entityUuid === currentReportTargetEntity?.uuid
-    );
+    currentReportTargetEntity
+      ? presentEntityAsRedundantEntityDefinition(
+          currentReportTargetEntity,
+          schemaModel.entityDefinitions ?? [],
+        )
+      : undefined;
 
   // Avoid rendering with a stale / mismatched schema while selection catches up
   const schemaMatchesSelection =
     !!currentReportTargetEntity &&
     !!currentReportTargetEntityDefinition &&
-    currentReportTargetEntityDefinition.entityUuid === selectedEntityUuid;
+    currentReportTargetEntity.uuid === selectedEntityUuid;
 
-  const instanceEditorKey = `instance-editor-${applicationSection}-${selectedEntityUuid}-${currentReportTargetEntityDefinition?.uuid ?? "noschema"}-${showAllInstances ? "all" : "single"}`;
+  const instanceEditorKey = `instance-editor-${applicationSection}-${selectedEntityUuid}-${currentReportTargetEntity?.uuid ?? "noschema"}-${showAllInstances ? "all" : "single"}`;
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);

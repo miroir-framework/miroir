@@ -1,19 +1,18 @@
 ﻿import { FormikContextType, useFormikContext } from "formik";
 import {
   defaultSelfApplicationDeploymentMap,
-  EntityDefinition,
+  entityMLSchema,
   foldableElementTypes,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
-  getEntityInstancesIndexNonHook,
   JzodArray,
   JzodElement,
   JzodTuple,
   LoggerInterface,
-  MetaModel,
   MiroirLoggerFactory,
   ReduxDeploymentsState,
   resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
+  resolvePresentEntityFromModel,
   SyncBoxedExtractorOrQueryRunnerMap,
   type JzodPlainAttribute,
   type JzodReference,
@@ -57,7 +56,7 @@ import {
 import { getFoldedDisplayValue } from "./JzodElementEditorHooks";
 import { JzodArrayEditorProps } from "./JzodElementEditorInterface";
 import { valueToJzod } from "@miroir-framework/jzod";
-import { entityEntityDefinition, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 // import { JzodUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -517,17 +516,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               JSON.stringify(currentDeploymentUuid, null, 2)
           );
         }
-        const entityDefinitions  =  getEntityInstancesIndexNonHook(
-          deploymentEntityState,
-          currentMiroirModelEnvironment,
-          props.currentApplication,
-          props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
-          currentDeploymentUuid,
-          entityEntityDefinition.uuid,
-          "name",
-        ) as any as Array<EntityDefinition>;
-        const newItemEntity  =  entityDefinitions.find(
-          (entityDef: EntityDefinition) => entityDef.entityUuid === newItemEntityUuid
+        const newItemEntity = resolvePresentEntityFromModel(
+          currentMiroirModelEnvironment.currentModel,
+          newItemEntityUuid,
         );
 
         log.info(
@@ -550,8 +541,6 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           currentValue,
           "newItemEntityUuid",
           newItemEntityUuid,
-          "entityDefinitions",
-          entityDefinitions,
           "newItemEntity",
           newItemEntity,
         );
@@ -561,10 +550,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               JSON.stringify(newItemEntityUuid, null, 2)
           );
         }
-        newItemSchema = newItemEntity.mlSchema;
+        newItemSchema = entityMLSchema(newItemEntity);
       }
-
-      // const newItemEntity:EntityDefinition  =  entityDefinitions[newItemEntityUuid];
 
       
       const newItem = getDefaultValueForJzodSchemaWithResolutionNonHook(

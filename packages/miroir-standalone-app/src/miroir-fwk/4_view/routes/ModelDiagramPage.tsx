@@ -29,7 +29,7 @@ import { usePageConfiguration } from "../services/usePageConfiguration.js";
 import { adminSelfApplication, entityApplicationForAdmin } from "miroir-test-app_deployment-admin";
 import { Formik, type FormikProps } from "formik";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
-import { reportEntityDefinitionDetails, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { reportEntityDetails } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { reportUrl } from "../navigation.js";
 
@@ -129,18 +129,18 @@ export const ModelDiagramPage: React.FC<any> = () => {
           currentApplicationDeploymentMap,
         );
         const applicationName = currentModel.applicationName || "Application";
-        // const entityDefinitions = defaultMiroirMetaModel.entityDefinitions ?? [];
+        const entities = currentModel.entities ?? [];
         const entityDefinitions = currentModel.entityDefinitions ?? [];
 
-        const handleClassClick = (entityDefUuid: string) => {
-          log.info("Class clicked", { entityDefUuid });
+        const handleClassClick = (entityUuid: string) => {
+          log.info("Class clicked", { entityUuid });
           navigate(
             reportUrl(
               application,
               deploymentUuid,
               "model",
-              (reportEntityDefinitionDetails as any).uuid,
-              entityDefUuid,
+              (reportEntityDetails as any).uuid,
+              entityUuid,
             )
           );
         };
@@ -149,15 +149,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
             <JsonDisplayHelper debug={true}
               componentName="ModelDiagramPage"
               elements={[
-                // { label: "ModelDiagramPage miroirTheme", data: miroirTheme },
-                // { label: `ModelDiagramPage application ${application}`, data: currentModel.entityDefinitions },
-                // {
-                //   label: `ModelDiagramPage defaultMiroirMetaModel ${formikContext.values[formikPath].application}`,
-                //   data: defaultMiroirMetaModel.entityDefinitions,
-                //   useCodeBlock: false,
-                // },
-                // { label: "ModelDiagramPage currentModel", data: currentModel },
-                { label: "ModelDiagramPage entity definitions", data: currentModel.entityDefinitions },
+                { label: "ModelDiagramPage entities", data: currentModel.entities },
               ]}
             />
             <Box
@@ -200,13 +192,15 @@ export const ModelDiagramPage: React.FC<any> = () => {
               >
                 UML class diagram showing entities, their attributes, and foreign-key relationships
                 for the current application model.
-                {entityDefinitions.length > 0 && ` (${entityDefinitions.length} entities)`}
+                {(entities.length > 0 ? entities.length : entityDefinitions.length) > 0 &&
+                  ` (${entities.length > 0 ? entities.length : entityDefinitions.length} entities)`}
               </Typography>
 
               <ModelDiagramReportSectionView
+                entities={entities}
                 entityDefinitions={entityDefinitions}
                 title={`${applicationName} Model`}
-                direction={entityDefinitions.length > 10 ? "TB" : "LR"}
+                direction={(entities.length > 0 ? entities.length : entityDefinitions.length) > 10 ? "TB" : "LR"}
                 onClassClick={handleClassClick}
                 height="calc(100vh - 220px)"
               />

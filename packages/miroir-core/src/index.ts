@@ -777,6 +777,7 @@ export {
   assertVersioningEnabledImmutable,
   assembleLivePresentModelEntities,
   resolvePresentEntityFromModel,
+  presentEntityAsRedundantEntityDefinition,
   compareEntityPresentModelDefinitions,
   entityHasCompletePresentModel,
   inventoryEntityEntityDefinitionJoins,

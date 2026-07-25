@@ -430,6 +430,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "modelDiagramReportSection" && (
           <ModelDiagramReportSectionView
+            entities={entities}
             entityDefinitions={modelDiagramEntityDefinitions}
             label={(reportSectionDefinitionFromFormik as any).definition?.label}
             title={(reportSectionDefinitionFromFormik as any).definition?.title}

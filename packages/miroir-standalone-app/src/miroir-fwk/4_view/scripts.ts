@@ -11,7 +11,9 @@ import {
   InstanceAction,
   LoggerInterface,
   MiroirLoggerFactory,
+  presentEntityAsRedundantEntityDefinition,
   type ApplicationDeploymentMap,
+  type Entity,
   type Uuid
 } from "miroir-core";
 import { packageName } from "../../constants.js";
@@ -50,6 +52,8 @@ export const deleteCascade = async (p: {
   // state: LocalCacheSliceState;
   entityDefinition: EntityDefinition;
   entityDefinitions: EntityDefinition[];
+  /** #217 Phase 9 — prefer Entity present model for FK walk when provided. */
+  entities?: Entity[];
   entityInstances: EntityInstance[];
 }) => {
   log.info(
@@ -58,14 +62,21 @@ export const deleteCascade = async (p: {
     p.entityInstances
   );
 
+  const schemaCarriers: EntityDefinition[] =
+    p.entities && p.entities.length > 0
+      ? p.entities.map((entity) =>
+          presentEntityAsRedundantEntityDefinition(entity, p.entityDefinitions ?? []),
+        )
+      : p.entityDefinitions;
+
   // finding all entities which have an attribute pointing to the current entity
   const foreignKeysPointingToEntity = Object.fromEntries(
-    Object.entries(p.entityDefinitions)
-      .map((e: [string, EntityDefinition]) => {
-        const fkAttributes = Object.entries(e[1].mlSchema.definition).find(
+    schemaCarriers
+      .map((ed: EntityDefinition) => {
+        const fkAttributes = Object.entries(ed.mlSchema?.definition ?? {}).find(
           (a) => a[1].tag?.value?.foreignKeyParams?.targetEntity == p.entityDefinition.entityUuid
         );
-        return [e[1].entityUuid, fkAttributes ? fkAttributes[0] : undefined];
+        return [ed.entityUuid, fkAttributes ? fkAttributes[0] : undefined];
       })
       .filter((e) => e[1])
   );
@@ -170,10 +181,10 @@ export const deleteCascade = async (p: {
     );
     // recursive calls
     for (const entityInstance of foreignKeyObjects) {
-      const entityDefinitionTmp: [string, EntityDefinition] | undefined = Object.entries(
-        p.entityDefinitions ?? {}
-      ).find((e: [string, EntityDefinition]) => e[1].entityUuid == entityInstance.parentUuid);
-      if (!p.entityDefinitions || !entityDefinitionTmp) {
+      const entityDefinitionTmp: EntityDefinition | undefined = schemaCarriers.find(
+        (ed: EntityDefinition) => ed.entityUuid == entityInstance.parentUuid,
+      );
+      if (!entityDefinitionTmp) {
         throw new Error(
           "deleteInstanceWithCascade deleteCascade could not find definition for Entity " +
             entityInstance.parentUuid +
@@ -182,15 +193,15 @@ export const deleteCascade = async (p: {
         );
       }
 
-      const entityDefinition: EntityDefinition = entityDefinitionTmp[1];
       deleteCascade({
         domainController: p.domainController,
         application: p.application,
         applicationDeploymentMap: p.applicationDeploymentMap,
         deploymentUuid: p.deploymentUuid,
         applicationSection: p.applicationSection,
-        entityDefinition: entityDefinition,
+        entityDefinition: entityDefinitionTmp,
         entityDefinitions: p.entityDefinitions,
+        entities: p.entities,
         entityInstances: [entityInstance],
       });
     }

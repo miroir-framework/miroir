@@ -16,9 +16,12 @@ import {
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
   type DomainControllerInterface,
+  type Entity,
   type EntityDefinition,
   type InstanceAction,
   type ReportQueryLoadRequest,
+  resolvePresentEntityFromModel,
+  presentEntityAsRedundantEntityDefinition,
 } from "miroir-core";
 import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
@@ -32,7 +35,7 @@ import { reportSectionsFormValue } from './ReportTools.js';
 import { useEnsureReportQueryLoaded } from './useEnsureReportQueryLoaded.js';
 import { useReportQueryLoadService } from './useReportQueryLoadService.js';
 
-import { reportReportDetails } from "miroir-test-app_deployment-miroir";
+import { reportReportDetails, entityReport } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -180,8 +183,20 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const entityDefinitionReport: EntityDefinition | undefined = useMemo(() => {
     const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[deployment_Miroir.uuid];
     if (!miroirMapping) return undefined;
-    const result =  miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
-    log.info("ReportViewWithEditor found report entity definition", { result });
+    const reportEntity = resolvePresentEntityFromModel(
+      {
+        entities: miroirMapping["model"]?.entities,
+        entityDefinitions: miroirMapping["model"]?.entityDefinitions,
+      },
+      entityReport.uuid,
+    );
+    const result = reportEntity
+      ? presentEntityAsRedundantEntityDefinition(
+          reportEntity,
+          miroirMapping["model"]?.entityDefinitions ?? [],
+        )
+      : undefined;
+    log.info("ReportViewWithEditor found report present entity / definition", { result });
     return result;
   }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 

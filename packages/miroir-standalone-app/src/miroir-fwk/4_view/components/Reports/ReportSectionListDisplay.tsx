@@ -15,7 +15,7 @@ import {
   DomainElementSuccess,
   Entity,
   EntityDefinition,
-  entityDefinitionMLSchema,
+  entityMLSchema,
   EntityInstancesUuidIndex,
   ExtractorOrCombinerRecord,
   getApplicationSection,
@@ -32,6 +32,8 @@ import {
   objectListReportSection,
   ReduxDeploymentsState,
   resolvePathOnObject,
+  resolvePresentEntityFromModel,
+  presentEntityAsRedundantEntityDefinition,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerExtractorAndParams,
@@ -332,13 +334,19 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     
   const currentReportTargetEntity: Entity | undefined =
     objectListReportSection
-      ? entities?.find(
-          (e:Entity) =>
-            e?.uuid === objectListReportSection.definition.parentUuid
+      ? resolvePresentEntityFromModel(
+          { entities, entityDefinitions },
+          objectListReportSection.definition.parentUuid,
         )
       : undefined;
+  // EntityDefinition-shaped view of the present Entity for components still typed as ED.
   const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    entityDefinitions?.find((e:EntityDefinition) => e?.entityUuid === currentReportTargetEntity?.uuid);
+    currentReportTargetEntity
+      ? presentEntityAsRedundantEntityDefinition(
+          currentReportTargetEntity,
+          entityDefinitions ?? [],
+        )
+      : undefined;
 
   // TODO: AMBIGUOUS!! APPEARS ALSO IN THE Report DEFINITION. PROVIDE A DIRECT WAY TO DETERMINE THIS?
   const currentApplicationSection = props.chosenApplicationSection??"data";
@@ -346,12 +354,12 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // ##############################################################################################
   const instancesToDisplayJzodSchema: JzodObject | undefined = useMemo(
     () =>
-        currentReportTargetEntityDefinition
-          ? entityDefinitionMLSchema(currentReportTargetEntityDefinition)
+        currentReportTargetEntity
+          ? entityMLSchema(currentReportTargetEntity)
           : undefined,
     [
-      currentReportTargetEntityDefinition,
-      currentReportTargetEntityDefinition?.mlSchema,
+      currentReportTargetEntity,
+      currentReportTargetEntity?.mlSchema,
     ],
   );
 
@@ -371,17 +379,23 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       }
 
       const foreignKeyAttributes = analyzeForeignKeyAttributes(
-        currentReportTargetEntityDefinition,
-        entityDefinitions,
+        currentReportTargetEntity ?? currentReportTargetEntityDefinition,
+        [
+          ...(entities ?? []),
+          ...(entityDefinitions ?? []),
+        ],
         { includeTransitive: true, maxDepth: 5 }
       );
 
       return convertToLegacyFormat(foreignKeyAttributes);
     },
     [
+      currentReportTargetEntity?.mlSchema?.definition,
+      currentReportTargetEntity?.uuid,
       currentReportTargetEntityDefinition?.mlSchema.definition,
       currentReportTargetEntityDefinition?.entityUuid,
       props.tableComponentReportType,
+      entities,
       entityDefinitions,
     ]
   );
@@ -594,6 +608,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               domainController: domainController,
               entityDefinition: currentReportTargetEntityDefinition,
               entityDefinitions: currentModel.entityDefinitions,
+              entities: currentModel.entities,
               entityInstances: [data],
             }
           )
