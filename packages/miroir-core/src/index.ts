@@ -493,7 +493,10 @@ export {
 } from "./0_interfaces/1_core/Blob.js";
 export {
   entityDefinitionMLSchema,
-  entityDefinitionWithResolvedMLSchema, InstanceDictionary,
+  entityDefinitionWithResolvedMLSchema,
+  entityMLSchema,
+  entityWithResolvedMLSchema,
+  InstanceDictionary,
   InstanceDictionaryNum,
   MetaEntity,
   MetaEntitySchema,
@@ -750,6 +753,7 @@ export {
   EntityPresentModelResolutionError,
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
+  alignEntityDefinitionToPresentEntity,
   compareEntityPresentModelDefinitions,
   entityHasCompletePresentModel,
   inventoryEntityEntityDefinitionJoins,

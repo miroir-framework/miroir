@@ -731,7 +731,7 @@ No consumer is removed yet.
 - Updated Phase 0/2 characterization expectations now that canonical Entities are complete (Phase 2 enrichment tests use a synthetic incomplete Entity).
 - Rebuilt deployment packages so JSON imports pick up the populated assets.
 
-### Phase 4 — Bootstrap and code generation switch
+### Phase 4 — Bootstrap and code generation switch — DONE
 
 - introduce Entity-oriented schema-resolution helpers;
 - make `generate-ts-types` consume Entity `mlSchema`;
@@ -740,6 +740,14 @@ No consumer is removed yet.
 - regenerate and rebuild in canonical order.
 
 This is the pivotal bootstrap phase and should be kept narrow.
+
+**Realization (DONE):**
+
+- Added `entityMLSchema` / `entityWithResolvedMLSchema`; marked `entityDefinitionMLSchema` / `entityDefinitionWithResolvedMLSchema` `@deprecated`.
+- Added `alignEntityDefinitionToPresentEntity` for Entity-authoritative dual-write projection onto redundant EntityDefinitions.
+- `generate-ts-types.ts` now feeds `getMiroirFundamentalJzodSchema` from Entity assets (Miroir + Admin Application/Deployment). Leftover Bundle still uses EntityDefinition from `miroirAdmin` fixtures (no matching exported Entity UUID).
+- `ModelInitializer` routes all `createEntity` / `createModelStorageSpaceForInstancesOfEntity` calls through `bootstrapEntityDefinitionAligned(entity, entityDefinition)`.
+- Regenerated fundamental types; Phase 4 contract tests in `entityPresentModel.phase4.unit.test.ts`. All entityPresentModel suites green (46).
 
 ### Phase 5 — Model Actions become Entity-authoritative with dual-write
 

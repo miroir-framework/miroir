@@ -326,3 +326,31 @@ export function resolveCurrentEntityModel(
 
   return enrichEntityFromLegacyDefinition(entity, matching[0]);
 }
+
+/**
+ * Dual-write helper: copy Entity present-model definition fields onto the
+ * redundant EntityDefinition while preserving EntityDefinition identity UUIDs.
+ */
+export function alignEntityDefinitionToPresentEntity(
+  entity: Entity,
+  entityDefinition: EntityDefinition,
+): EntityDefinition {
+  const definitionProjection = projectEntityPresentModelDefinition(entity);
+  const aligned: EntityDefinition = {
+    ...entityDefinition,
+    ...definitionProjection,
+    uuid: entityDefinition.uuid,
+    entityUuid: entity.uuid,
+    name: entity.name,
+    mlSchema: entity.mlSchema ?? entityDefinition.mlSchema,
+  };
+  for (const field of ENTITY_PRESENT_MODEL_DEFINITION_FIELDS) {
+    if (
+      !Object.prototype.hasOwnProperty.call(definitionProjection, field) &&
+      field !== "mlSchema"
+    ) {
+      delete (aligned as Record<string, unknown>)[field];
+    }
+  }
+  return aligned;
+}
