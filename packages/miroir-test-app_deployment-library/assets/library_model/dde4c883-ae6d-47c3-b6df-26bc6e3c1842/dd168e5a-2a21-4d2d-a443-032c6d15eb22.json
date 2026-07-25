@@ -24,6 +24,15 @@
           },
           {
             "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Library Application Versions",
+            "section": "model",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "reportUuid": "0810de28-fdab-4baf-8935-7e04a8f779a9",
+            "icon": "web_asset",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Library Entities",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -149,6 +158,30 @@
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "cee26a1e-be58-497c-9d15-fa6832787907",
             "icon": "history"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuItemDivider",
+            "label": "Library Data-Evolution Divider",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Application Evolution Traces",
+            "section": "model",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "reportUuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
+            "icon": "timeline",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Application Evolution Trace Events",
+            "section": "model",
+            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "reportUuid": "230467a6-ecc3-4945-bd05-5d9e826c44fb",
+            "icon": "history",
+            "menuItemScope": "model"
           }
         ]
       }

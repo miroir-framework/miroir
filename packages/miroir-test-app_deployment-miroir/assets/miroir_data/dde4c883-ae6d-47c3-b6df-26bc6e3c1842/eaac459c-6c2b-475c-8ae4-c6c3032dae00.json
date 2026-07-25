@@ -30,6 +30,14 @@
           },
           {
             "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Miroir Application Versions",
+            "section": "model",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "0810de28-fdab-4baf-8935-7e04a8f779a9",
+            "icon": "web_asset"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Miroir Reports",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
