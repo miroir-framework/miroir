@@ -12,8 +12,7 @@
       "traces": {
         "extractorOrCombinerType": "extractorInstancesByEntity",
         "parentName": "ApplicationEvolutionTrace",
-        "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
-        "applicationSection": "data"
+        "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
       }
     },
     "section": {

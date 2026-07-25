@@ -87,6 +87,7 @@ export declare const reportTransformerDetails: any;
 export declare const reportCommitList: any;
 export declare const reportApplicationEvolutionTraceList: any;
 export declare const reportApplicationEvolutionTraceHistory: any;
+export declare const reportApplicationEvolutionTraceDetails: any;
 export declare const reportMiroirDocumentation: any;
 export declare const reportBlobList: any;
 export declare const reportSelfApplicationDetails: any;

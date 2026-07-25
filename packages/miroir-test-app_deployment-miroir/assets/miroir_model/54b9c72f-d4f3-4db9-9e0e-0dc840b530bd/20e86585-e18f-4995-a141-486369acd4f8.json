@@ -8,6 +8,7 @@
   "name": "ApplicationEvolutionTrace",
   "description": "Definition of the ApplicationEvolutionTrace entity: a trace root per application/branch.",
   "viewAttributes": ["name", "applicationUuid", "branchName", "uuid"],
+  "defaultInstanceDetailsReportUuid": "c4d5e6f7-a8b9-4c01-d345-67890abcdef1",
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },

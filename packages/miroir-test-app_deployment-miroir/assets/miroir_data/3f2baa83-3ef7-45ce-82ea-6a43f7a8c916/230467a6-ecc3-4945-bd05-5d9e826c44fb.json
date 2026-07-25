@@ -12,8 +12,7 @@
       "events": {
         "extractorOrCombinerType": "extractorInstancesByEntity",
         "parentName": "ApplicationEvolutionTraceEvent",
-        "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c",
-        "applicationSection": "data"
+        "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
       }
     },
     "section": {
