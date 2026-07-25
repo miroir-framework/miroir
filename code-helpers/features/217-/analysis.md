@@ -747,9 +747,10 @@ This is the pivotal bootstrap phase and should be kept narrow.
 - Added `alignEntityDefinitionToPresentEntity` for Entity-authoritative dual-write projection onto redundant EntityDefinitions.
 - `generate-ts-types.ts` now feeds `getMiroirFundamentalJzodSchema` from Entity assets (Miroir + Admin Application/Deployment). Leftover Bundle still uses EntityDefinition from `miroirAdmin` fixtures (no matching exported Entity UUID).
 - `ModelInitializer` routes all `createEntity` / `createModelStorageSpaceForInstancesOfEntity` calls through `bootstrapEntityDefinitionAligned(entity, entityDefinition)`.
-- Regenerated fundamental types; Phase 4 contract tests in `entityPresentModel.phase4.unit.test.ts`. All entityPresentModel suites green (46).
+- Regenerated fundamental types; Phase 4 contract tests in `entityPresentModel.phase4.unit.test.ts`.
+- §11 strategy gap-fill suite `entityPresentModel.strategy.unit.test.ts` (UI lock, dual-write equality, codegen mlSchema equivalence, versioning immutability policy, Library behavioral equivalence). Combined entityPresentModel suites: 58 green. Spot-checked §11.2 P0/P1: `cacheRefreshPolicy`, `EntityPrimaryKey`, `schemaChangeKind` green.
 
-### Phase 5 — Model Actions become Entity-authoritative with dual-write
+### Phase 5 — Model Actions become Entity-authoritative with dual-write — DONE
 
 - create Entity from full payload;
 - alter Entity `mlSchema`;
@@ -759,6 +760,23 @@ This is the pivotal bootstrap phase and should be kept narrow.
 - remove EntityDefinition as an independent editable input.
 
 Legacy Action payloads remain accepted through adapters.
+
+**Test gate (§11):**
+
+- Integration/Action tests for create / alterAttribute / rename / drop asserting §11.3 dual-write equality after each mutation.
+- Wire `assertVersioningEnabledImmutable` on any SelfApplication update path (reject flips).
+- Keep P0 model CRUD + undo/redo + `PersistenceStoreController.integ` green.
+- Adapter tests: legacy Action payloads that still supply EntityDefinition still produce Entity-authoritative dual-write results.
+
+**Realization (DONE):**
+
+- Added `packages/miroir-core/src/1_core/modelEntityDualWrite.ts`:
+  - `applyMlSchemaColumnChanges` (remove = exclude listed columns);
+  - `normalizeCreateEntityPair` (Entity complete → authoritative; legacy incomplete → enrich then align ED);
+  - `applyAlterEntityAttributePair` / `applyRenameEntityPair` with §11.3 dual-write equality assert.
+- `ModelEntityActionTransformer` create/alter/rename dual-write Entity + redundant EntityDefinition; drop deletes live Entity + named ED UUID only (not historical versions).
+- LocalCache (Redux + Zustand) `updateInstance` rejects SelfApplication `versioningEnabled` flips via `assertVersioningEnabledImmutable`.
+- Tests: `modelEntityDualWrite.unit.test.ts` (7), `ModelEntityActionTransformer.phase5.unit.test.ts` (4). Store-side alter/rename dual-write remains Phase 6.
 
 ### Phase 6 — Persistence backends switch
 
@@ -774,6 +792,14 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 
 **Open (decision §14.8):** for backends without true multi-document transactions (filesystem, IndexedDB, MongoDB as used today), Phase 6 must define an explicit dual-write policy before coding each slice — e.g. write Entity then EntityDefinition with compensating delete/restore on failure, best-effort second write + consistency detector, or a single serialized artifact. PostgreSQL can use a real transaction. Do not invent a policy here; decide per backend when implementing the vertical slice and record the choice in that slice’s realization notes.
 
+**Test gate (§11):**
+
+- Per-backend vertical slice = one public-behavior integ suite (not unit-mocked store internals): bootstrap → CRUD → reopen.
+- UUID / non-UUID / composite PK matrix per backend (extends EntityPrimaryKey + store integ).
+- PostgreSQL: external `externalDataSource` mapping tests before switching.
+- After each slice: §11.3 dual-write equality on persisted Entity vs EntityDefinition files/rows.
+- Record dual-write failure/compensation policy choice in the slice realization notes (§14.8).
+
 ### Phase 7 — Cache and current-model assembly switch
 
 - register PK/cache policy from Entity;
@@ -782,12 +808,25 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 - retain EntityDefinition collections only as compatibility/history data;
 - update schema fingerprints to Entity.
 
+**Test gate (§11):**
+
+- Update `cacheRefreshPolicy` callers/tests to accept Entity (or resolved present model), keep P0 green.
+- Redux **and** Zustand LocalCache tests must both pass (parity).
+- Extend `schemaChangeKind` fingerprints to Entity-carried fields; add regression that Entity-only schema edits invalidate revisions.
+- Behavioral equivalence: selectors fed Entity-first model match previous EntityDefinition-join results on Library/Miroir fixtures.
+
 ### Phase 8 — Domain selectors and transformers switch
 
 - replace current EntityDefinition joins in query selectors;
 - FK and conditional-schema resolution use Entity;
 - runtime transformers and extractors use Entity;
 - remove scattered current-definition resolution.
+
+**Test gate (§11):**
+
+- Query selector / combiner / FK analyzer tests use Entity present model.
+- Transformer/extractor suites: same outputs before/after for Library fixtures (equivalence).
+- No new production `entityDefinitions.find(ed => ed.entityUuid === …)` without going through `resolveCurrentEntityModel` (grep gate in realization notes).
 
 ### Phase 9 — UI and tooling switch
 
@@ -802,6 +841,11 @@ Vertical slices:
 
 Each slice uses Entity end-to-end and retains legacy EntityDefinition fallback only at the central boundary.
 
+**Test gate (§11):**
+
+- One vertical UI/tooling slice at a time with public-behavior tests (P1 report/grid/form; P2 diagram/MCP/CLI as touched).
+- Each slice proves list/details/PK/FK still resolve from Entity fields (`viewAttributes`, `defaultInstanceDetailsReportUuid`, `idAttribute`, `mlSchema`).
+
 ### Phase 10 — Separate optional version history
 
 - redesign #216:
@@ -811,6 +855,13 @@ Each slice uses Entity end-to-end and retains legacy EntityDefinition fallback o
   - live current state is never reconstructed through that mapping.
 - enforce immutable `versioningEnabled`;
 - define initial baseline behavior for versioned applications.
+
+**Test gate (§11):**
+
+- Contracts from §11.1 still open: versioned vs unversioned lifecycle; snapshot immutability/copy fidelity; live mutation does not mutate snapshot.
+- Freeze Action: §11.3 snapshot equality (`EntityVersion == project(Entity)` at freeze).
+- Unversioned app rejects freeze/version Actions; versioned app allows them.
+- `assertVersioningEnabledImmutable` enforced on persisted updates.
 
 ### Phase 11 — Remove live EntityDefinition dependency
 
@@ -822,6 +873,12 @@ Acceptance gate:
 - no current model Action requires EntityDefinition UUID;
 - legacy fallback is isolated and can be removed after supported upgrade horizon;
 - EntityDefinition records are immutable historical copies only.
+
+**Test gate (§11):**
+
+- Grep/CI or characterization test: no live-path EntityDefinition authority left.
+- Full P0 + P1 suites green with Entity-only present model.
+- Dual-write may stop; historical copies still readable for versioned apps.
 
 ### Phase 12 — Final task: rename EntityDefinition to EntityVersion
 
@@ -838,35 +895,57 @@ Only now:
 
 This phase must contain no architectural authority change—only the final vocabulary/compatibility migration.
 
+**Test gate (§11):**
+
+- Rename-only: full non-regression (P0–P2 as applicable) with **zero** behavioral deltas beyond symbol names.
+- Deprecated `EntityDefinition` alias compile/import smoke if retained.
+- No new present-model logic in this phase.
+
 ---
 
 ## 11. Test strategy
 
+**Method (always):** vertical TDD slices (one failing public-behavior test → minimal implementation). Prefer integration-style tests through public APIs over mocks. Each mergeable phase must keep its phase suite **and** the listed §11.2 priority suites for that phase green.
+
 ### 11.1 New contract tests
 
-- Entity complete-definition schema parsing.
-- Legacy Entity + EntityDefinition enrichment.
-- duplicate-field equality and mismatch detection.
-- ambiguous/missing EntityDefinition migration failures.
-- versioning capability immutability.
-- versioned vs unversioned lifecycle.
-- snapshot immutability and copy fidelity.
-- live Entity mutation does not mutate historical snapshot.
+| Contract | Phase owning it | Status after Phase 5 |
+|---|---|---|
+| Entity complete-definition schema parsing | 1 | Done (`phase1`) |
+| Legacy Entity + EntityDefinition enrichment | 2 | Done (`phase2`) |
+| duplicate-field equality and mismatch detection | 0 / 2 | Done (`unit` + `phase2`) |
+| ambiguous/missing EntityDefinition failures | 2 | Done (`phase2`) |
+| versioning capability immutability | 1 policy / 5+ Action wire | **Done for LocalCache updateInstance** (Redux + Zustand); freeze/version Actions still Phase 10 |
+| versioned vs unversioned lifecycle | 10 (#216) | Deferred |
+| snapshot immutability and copy fidelity | 10 | Deferred |
+| live Entity mutation does not mutate historical snapshot | 10 | Deferred |
+| UI fields (`viewAttributes`, default details report) | 0 lock / 3 populate | Done (`strategy`) |
+| Codegen Entity.mlSchema ≡ EntityDefinition.mlSchema | 4 | Done (`strategy`) |
+| Dual-write `project(Entity) == project(ED copy)` | 4 / 5 mutations | **Done for ModelAction path** (`modelEntityDualWrite` + transformer phase5); store backends Phase 6 |
+| Migrated deployment behavioral equivalence | 3–4 | Done for Library resolve/PK/cache (`strategy`) |
+
+Suite files:
+
+- `entityPresentModel.unit.test.ts` — Phase 0 characterization
+- `entityPresentModel.phase1.unit.test.ts` … `phase4.unit.test.ts`
+- `entityPresentModel.strategy.unit.test.ts` — §11 gap-fill / cross-phase contracts
+- `modelEntityDualWrite.unit.test.ts` / `ModelEntityActionTransformer.phase5.unit.test.ts` — Phase 5
 
 ### 11.2 Existing priority suites
 
-P0:
+P0 (run or keep green before merging Phases **5–7** especially):
 
-- `cacheRefreshPolicy.unit.test.ts`
+- `cacheRefreshPolicy.unit.test.ts` — green after Phase 4
+- `EntityPrimaryKey.unit.test.ts` — green after Phase 4
 - Redux and Zustand LocalCache tests
 - composite/non-UUID/no-parent UUID CRUD integration tests
 - `PersistenceStoreController.integ.test.tsx`
 - model CRUD and undo/redo integration tests
-- deployment package model validation.
+- deployment package model validation (Phase 3 filesystem consistency covers part of this)
 
-P1:
+P1 (Phases **7–9**):
 
-- `schemaChangeKind.unit.test.ts`
+- `schemaChangeKind.unit.test.ts` — green after Phase 4 (still fingerprints EntityDefinitions; Phase 7 must extend and re-lock)
 - `schemaReloadPolicy.unit.test.ts`
 - `useCurrentModelEnvironment.unit.test.tsx`
 - FK analyzer tests
@@ -874,7 +953,7 @@ P1:
 - report/grid tests
 - per-store reopen/boot tests.
 
-P2:
+P2 (Phases **9–12**):
 
 - evolution trace tests
 - diagram tests
@@ -886,7 +965,7 @@ P2:
 
 ### 11.3 Required equivalence tests during dual-write
 
-For every model mutation:
+For every model mutation (Phase **5+** gate — must be asserted in Action/integration tests, not only pure helpers):
 
 ```text
 projectDefinitionFields(Entity after action)
@@ -894,7 +973,7 @@ projectDefinitionFields(Entity after action)
 projectDefinitionFields(EntityDefinition compatibility copy after action)
 ```
 
-For every migrated legacy deployment:
+For every migrated legacy deployment (Phase **3–4** Done for Library; extend to Admin/Postgres/Designer integ as stores switch):
 
 ```text
 behavior before enrichment
@@ -902,13 +981,26 @@ behavior before enrichment
 behavior after Entity-first resolution
 ```
 
-For every version snapshot:
+For every version snapshot (Phase **10**):
 
 ```text
 EntityVersion at freeze time
 ==
 definition-bearing projection of Entity at freeze time
 ```
+
+### 11.4 Phase 0–4 audit notes
+
+Gaps found vs §11 and filled:
+
+1. UI field lock was only implicit → explicit Book `viewAttributes` / details-report assertion.
+2. Dual-write §11.3 formula was only partially covered by Phase 4 helper tests → Library-wide align equality + diverge-then-align.
+3. Codegen source switch lacked equivalence lock → bootstrap Entity/ED `mlSchema` pairs.
+4. `versioningEnabled` immutability was fixture-only → `assertVersioningEnabledImmutable` policy + tests (Action wiring still later).
+5. Migrated behavioral equivalence (resolve/PK/cache) added for Library.
+6. Stale Phase 0 realization text still claimed Entities lack definition fields — superseded by Phase 3; characterization test already updated.
+
+Still deferred (correctly) until later phases: versioned/unversioned lifecycle, snapshot immutability, live-vs-history isolation, full P0 integ gate on every commit (document requires them at phase merge for 5+).
 
 ---
 

@@ -37,12 +37,17 @@ import {
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
   serializeCompositeKeyValue,
+  assertVersioningEnabledImmutable,
   type ApplicationDeploymentMap,
   type CacheFreshness,
   type CacheSegmentKind,
   type LocalCacheSegmentHeader,
 } from "miroir-core";
-import { entityDefinitionEntityDefinition, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import {
+  entityDefinitionEntityDefinition,
+  entityEntityDefinition,
+  entitySelfApplication,
+} from "miroir-test-app_deployment-miroir";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -699,6 +704,22 @@ function handleInstanceAction(
           const updateIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
           const updatePkAttrs = Array.isArray(updateIdAttribute) ? updateIdAttribute : [updateIdAttribute];
           const updatePkValue = serializeCompositeKeyValue(updatePkAttrs, instance);
+          if (resolvedParentUuid === entitySelfApplication.uuid) {
+            const existing =
+              state.current[instanceCollectionEntityIndex]?.entities?.[updatePkValue];
+            if (existing) {
+              try {
+                assertVersioningEnabledImmutable(existing as any, instance as any);
+              } catch (error) {
+                return new Action2Error(
+                  "FailedToHandleAction",
+                  (error as Error).message,
+                  ["handleInstanceAction", "updateInstance", "versioningEnabled"],
+                  error as any,
+                );
+              }
+            }
+          }
           sliceEntityAdapter.updateOne(state.current[instanceCollectionEntityIndex], {
             id: updatePkValue,
             changes: instance,

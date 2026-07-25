@@ -749,11 +749,22 @@ export {
 } from "./1_core/EntityPrimaryKey";
 export type { EntityPrimaryKeySource } from "./1_core/EntityPrimaryKey";
 export {
+  applyAlterEntityAttributePair,
+  applyMlSchemaColumnChanges,
+  applyRenameEntityPair,
+  normalizeCreateEntityPair,
+} from "./1_core/modelEntityDualWrite.js";
+export type {
+  AlterEntityAttributeColumns,
+  EntityEntityDefinitionPair,
+} from "./1_core/modelEntityDualWrite.js";
+export {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   EntityPresentModelResolutionError,
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
   alignEntityDefinitionToPresentEntity,
+  assertVersioningEnabledImmutable,
   compareEntityPresentModelDefinitions,
   entityHasCompletePresentModel,
   inventoryEntityEntityDefinitionJoins,

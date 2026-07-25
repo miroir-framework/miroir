@@ -183,6 +183,22 @@ export const UNVERSIONED_APPLICATION_FIXTURE = {
   versioningEnabled: false as const,
 };
 
+/**
+ * Policy contract (#217 §11.1): `versioningEnabled` is immutable after creation.
+ * Call sites that update SelfApplication must invoke this before persisting.
+ * Runtime Action wiring is later phases; this encodes the invariant now.
+ */
+export function assertVersioningEnabledImmutable(
+  before: { versioningEnabled?: boolean | undefined },
+  after: { versioningEnabled?: boolean | undefined },
+): void {
+  if (before.versioningEnabled !== after.versioningEnabled) {
+    throw new Error(
+      `SelfApplication.versioningEnabled is immutable (was ${String(before.versioningEnabled)}, attempted ${String(after.versioningEnabled)})`,
+    );
+  }
+}
+
 export type EntityPresentModelResolutionErrorCode =
   | "ambiguous"
   | "missingDefinition"

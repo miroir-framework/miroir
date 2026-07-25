@@ -1,12 +1,10 @@
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
 import {
-  ApplicationSection,
   EntityDefinition,
-  EntityInstanceCollection,
   InstanceAction,
   MetaModel,
   ModelAction,
+  type Entity,
   type EntityInstance
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
@@ -15,6 +13,11 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
 import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 
+import {
+  applyAlterEntityAttributePair,
+  applyRenameEntityPair,
+  normalizeCreateEntityPair,
+} from "../1_core/modelEntityDualWrite.js";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
@@ -36,6 +39,9 @@ export class ModelEntityActionTransformer{
     // log.info("modelActionToInstanceAction called ", deploymentUuid, modelAction)
     switch (modelAction.actionType) {
       case "createEntity": {
+        const normalizedPairs = modelAction.payload.entities.map((pair) =>
+          normalizeCreateEntityPair(pair.entity as Entity, pair.entityDefinition as EntityDefinition),
+        );
         return [
           {
             actionType: "createInstance",
@@ -44,12 +50,11 @@ export class ModelEntityActionTransformer{
               application: modelAction.payload.application,
               applicationSection: "model",
               objects: [
-                ...modelAction.payload.entities.flatMap(
-                  a => [
-                    a.entity, a.entityDefinition
-                  ]
-                )
-              ]
+                ...normalizedPairs.flatMap((pair) => [
+                  pair.entity as EntityInstance,
+                  pair.entityDefinition as EntityInstance,
+                ]),
+              ],
             }
           }
         ];
@@ -64,6 +69,8 @@ export class ModelEntityActionTransformer{
             query: { modelAction } as any, // TODO: ill-typed
           });
         }
+        // Drops the live Entity and its current redundant EntityDefinition only.
+        // Historical EntityVersion copies (other UUIDs) are not referenced here.
         return [
           {
             actionType: "deleteInstance",
@@ -82,8 +89,6 @@ export class ModelEntityActionTransformer{
       }
       case "renameEntity":
       {
-        // log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
-
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.payload.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.payload.entityDefinitionUuid);
   
@@ -103,12 +108,15 @@ export class ModelEntityActionTransformer{
         );
         log.info("modelActionToInstanceAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
   
-        const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.payload.targetValue});
-        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.payload.targetValue});
         if (currentEntity && currentEntityDefinition) {
+          const pair = applyRenameEntityPair(
+            currentEntity as Entity,
+            currentEntityDefinition as EntityDefinition,
+            modelAction.payload.targetValue,
+          );
           const objects: EntityInstance[] = [
-            modifiedEntity as EntityInstance,
-            modifiedEntityDefinition as EntityInstance,
+            pair.entity as EntityInstance,
+            pair.entityDefinition as EntityInstance,
           ];
           const result: InstanceAction[] = [
             {
@@ -135,34 +143,20 @@ export class ModelEntityActionTransformer{
 
         const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.payload.entityUuid);
         const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.payload.entityDefinitionUuid);
-        // log.info(
-        //   "modelActionToInstanceAction alterEntityAttribute found currentEntity ",
-        //   currentEntity,
-        //   "currentEntityDefinition",
-        //   currentEntityDefinition
-        // );
         if (currentEntity && currentEntityDefinition) {
-          const localEntityJzodSchemaDefinition =
-            modelAction.payload.removeColumns != undefined && Array.isArray(modelAction.payload.removeColumns)
-              ? Object.fromEntries(
-                  Object.entries(currentEntityDefinition.mlSchema.definition).filter(
-                    (i) => modelAction.payload.removeColumns ?? ([] as string[]).includes(i[0])
-                  )
-                )
-              : currentEntityDefinition.mlSchema.definition;
-          const modifiedEntityDefinition: EntityDefinition = Object.assign({}, currentEntityDefinition, {
-            mlSchema: {
-              ...currentEntityDefinition.mlSchema,
-              definition: {
-                ...localEntityJzodSchemaDefinition,
-                ...(modelAction.payload.addColumns
-                  ? Object.fromEntries(modelAction.payload.addColumns.map((c) => [c.name, c.definition]))
-                  : {}),
-              },
+          const pair = applyAlterEntityAttributePair(
+            currentEntity as Entity,
+            currentEntityDefinition as EntityDefinition,
+            {
+              addColumns: modelAction.payload.addColumns,
+              removeColumns: modelAction.payload.removeColumns,
             },
-          });
+          );
     
-          const objects: EntityInstance[] = [modifiedEntityDefinition as EntityInstance];
+          const objects: EntityInstance[] = [
+            pair.entity as EntityInstance,
+            pair.entityDefinition as EntityInstance,
+          ];
           const result: InstanceAction[] = [
             {
               actionType: "updateInstance",
@@ -184,7 +178,7 @@ export class ModelEntityActionTransformer{
 
           return result;
         } else {
-          log.error('modelActionToInstanceAction alterEntityAttribute could not rename',modelAction);
+          log.error('modelActionToInstanceAction alterEntityAttribute could not alter',modelAction);
           return [];
         }
       }

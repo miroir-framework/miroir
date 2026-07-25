@@ -31,13 +31,14 @@ import {
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
   stripLocalCacheSegmentSuffix,
+  assertVersioningEnabledImmutable,
   type Action2VoidReturnType,
   type ApplicationDeploymentMap,
   type CacheFreshness,
   type CacheSegmentKind,
   type LocalCacheSegmentHeader,
 } from "miroir-core";
-import { entityDefinitionEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityDefinitionEntityDefinition, entitySelfApplication } from "miroir-test-app_deployment-miroir";
 
 import type { LocalCacheSliceState, LocalCacheSliceStateZone } from "./localCacheZustandInterface.js";
 import { currentModel } from "./Model.js";
@@ -402,6 +403,23 @@ function handleInstanceAction(
         const section = instanceAction.payload.applicationSection ?? "data";
         const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
         const idAttribute = getIdAttributeForIndex(index);
+
+        if (resolvedParentUuid === entitySelfApplication.uuid && state.current[index]) {
+          const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+          const pk = serializeCompositeKeyValue(pkAttrs, instance);
+          const existing = (state.current[index] as EntityState).entities?.[pk];
+          if (existing) {
+            try {
+              assertVersioningEnabledImmutable(existing as any, instance as any);
+            } catch (error) {
+              log.error(
+                "handleInstanceAction updateInstance rejected versioningEnabled change (#217)",
+                error,
+              );
+              return;
+            }
+          }
+        }
         
         if (state.current[index]) {
           state.current[index] = updateOneInEntityState(state.current[index] as EntityState, instance, idAttribute);
