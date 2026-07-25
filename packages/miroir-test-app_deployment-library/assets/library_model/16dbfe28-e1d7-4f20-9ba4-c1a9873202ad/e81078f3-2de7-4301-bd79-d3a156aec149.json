@@ -6,5 +6,69 @@
   "conceptLevel": "Model",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
   "name": "LendingHistoryItem",
-  "description": "An item representing a lending history record in the Library application."
+  "description": "An item representing a lending history record in the Library application.",
+  "defaultInstanceDetailsReportUuid": "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
+  "viewAttributes": [
+    "uuid",
+    "user",
+    "book",
+    "startDate",
+    "endDate"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "user": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "User",
+            "foreignKeyParams": {
+              "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
+              "targetEntityOrderInstancesBy": "name"
+            },
+            "display": {
+              "modifiable": false
+            }
+          }
+        },
+        "optional": false
+      },
+      "book": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Book",
+            "foreignKeyParams": {
+              "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "targetEntityOrderInstancesBy": "name"
+            },
+            "display": {
+              "modifiable": false
+            }
+          }
+        },
+        "optional": false
+      },
+      "startDate": {
+        "type": "date"
+      },
+      "endDate": {
+        "type": "date",
+        "optional": true
+      },
+      "note": {
+        "type": "string",
+        "optional": true
+      }
+    }
+  }
 }

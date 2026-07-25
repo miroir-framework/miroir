@@ -1,8 +1,8 @@
 {
   "uuid": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  "parentName":"SelfApplication",
-  "parentUuid":"a659d350-dd97-4da9-91de-524fa01745dc",
-  "name":"Miroir",
+  "parentName": "SelfApplication",
+  "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+  "name": "Miroir",
   "defaultLabel": "The Miroir selfApplication.",
   "description": "This selfApplication contains the Miroir meta-model, and the elements needed to perform the most fundamental selfApplication-editing tasks.",
   "homePageUrl": {
@@ -10,5 +10,6 @@
     "section": "data",
     "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     "reportUuid": "29ef8018-43fc-4ee9-a736-6f9d625be7b7"
-  }
+  },
+  "versioningEnabled": true
 }

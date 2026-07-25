@@ -712,7 +712,7 @@ Migrate common schema and PK helpers to this abstraction first. This establishes
 - Tests: `entityPresentModel.phase2.unit.test.ts` + Phase 0 Miroir filesystem characterization updated to clean 1:1 after §14.4 misshap correction.
 - No production call-site migration yet beyond the PK helper surface (consumers still pass EntityDefinition directly where they already have it).
 
-### Phase 3 — Populate assets and validate redundancy
+### Phase 3 — Populate assets and validate redundancy — DONE
 
 - copy definition fields into all Entity assets;
 - add immutable versioning choices to applications;
@@ -721,6 +721,15 @@ Migrate common schema and PK helpers to this abstraction first. This establishes
 - retain EntityDefinition files unchanged.
 
 No consumer is removed yet.
+
+**Realization (DONE):**
+
+- Copied definition-bearing fields from each matching EntityDefinition onto Entity JSON across Miroir / Admin / Library / Postgres / Designer model assets (55 Entities) plus Admin test mirrors (core, standalone-app, mcp). EntityDefinition files left unchanged.
+- Set `versioningEnabled: true` on Miroir, Admin, Library, Postgres, Designer SelfApplication instances (and Admin mirrors) per §14.2.
+- Idempotent helper: `code-helpers/features/217-/phase3-populate-entity-assets.py`.
+- Consistency suite `entityPresentModel.phase3.unit.test.ts`: filesystem + `defaultMiroirMetaModel` / `defaultLibraryAppModel` redundancy; SelfApplication `versioningEnabled`.
+- Updated Phase 0/2 characterization expectations now that canonical Entities are complete (Phase 2 enrichment tests use a synthetic incomplete Entity).
+- Rebuilt deployment packages so JSON imports pick up the populated assets.
 
 ### Phase 4 — Bootstrap and code generation switch
 

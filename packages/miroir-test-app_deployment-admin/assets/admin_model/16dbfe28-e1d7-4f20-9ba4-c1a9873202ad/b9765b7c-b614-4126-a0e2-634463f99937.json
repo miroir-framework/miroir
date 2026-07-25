@@ -1,11 +1,134 @@
 {
-  "uuid":"b9765b7c-b614-4126-a0e2-634463f99937",
-  "parentName":"Entity",
-  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "uuid": "b9765b7c-b614-4126-a0e2-634463f99937",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  "name":"ViewParams",
+  "name": "ViewParams",
   "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-  "conceptLevel":"Model",
+  "conceptLevel": "Model",
   "storageAccess": "localStorage",
-  "description": "Parameters for the view, local to the present deployment of applications"
+  "description": "Parameters for the view, local to the present deployment of applications",
+  "defaultInstanceDetailsReportUuid": "57b3d7ef-8c12-4891-893e-35bab00b2037",
+  "icon": "Interests",
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "sidebarWidth": {
+        "type": "number"
+      },
+      "gridType": {
+        "type": "enum",
+        "definition": [
+          "ag-grid",
+          "glide-data-grid"
+        ]
+      },
+      "appTheme": {
+        "type": "enum",
+        "definition": [
+          "default",
+          "dark",
+          "compact",
+          "material"
+        ]
+      },
+      "defaultFilesystemFolder": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Default Filesystem Folder",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "postgresConnectionString": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "PostgreSQL Connection String",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "mongoConnectionString": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "MongoDB Connection String",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "generalEditMode": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Edit Mode",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      }
+    }
+  }
 }

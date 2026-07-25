@@ -1,10 +1,62 @@
 {
-  "uuid":"d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-  "parentName":"Entity",
-  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
   "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "name":"Country",
-  "conceptLevel":"Model",
-  "description": "Country."
+  "name": "Country",
+  "conceptLevel": "Model",
+  "description": "Country.",
+  "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
+  "viewAttributes": [
+    "name",
+    "iso3166-1Alpha-2",
+    "icon",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "iso3166-1Alpha-2": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Country Code"
+          }
+        }
+      },
+      "icon": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Icon"
+          }
+        }
+      }
+    }
+  }
 }

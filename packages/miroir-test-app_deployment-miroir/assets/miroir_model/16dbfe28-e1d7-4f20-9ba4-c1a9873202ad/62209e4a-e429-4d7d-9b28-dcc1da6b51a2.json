@@ -6,5 +6,136 @@
   "name": "Blob",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
-  "description": "A Binary Large Object (image or document)."
+  "description": "A Binary Large Object (image or document).",
+  "defaultInstanceDetailsReportUuid": "5a90a36c-f167-44f3-812f-3a70772e0a58",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "uuid"
+  ],
+  "icon": "Interests",
+  "cache": {
+    "cacheAllInstancesOnRefresh": false
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "filename": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Filename",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "contents": {
+        "type": "object",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Contents",
+            "display": {
+              "editable": true
+            },
+            "isBlob": true
+          }
+        },
+        "definition": {
+          "encoding": {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "Encoding",
+                "display": {
+                  "editable": true
+                }
+              }
+            },
+            "definition": [
+              "base64",
+              "data-uri"
+            ]
+          },
+          "mimeType": {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "MIME Type",
+                "display": {
+                  "editable": true
+                }
+              }
+            },
+            "definition": [
+              "image/png",
+              "image/jpeg",
+              "image/gif",
+              "image/svg+xml",
+              "application/pdf",
+              "application/zip",
+              "text/plain",
+              "application/json"
+            ]
+          },
+          "data": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Contents",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

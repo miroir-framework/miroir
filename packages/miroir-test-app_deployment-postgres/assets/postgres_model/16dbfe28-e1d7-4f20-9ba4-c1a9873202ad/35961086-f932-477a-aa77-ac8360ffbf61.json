@@ -1,10 +1,76 @@
 {
-  "uuid":"35961086-f932-477a-aa77-ac8360ffbf61",
-  "parentName":"Entity",
-  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "uuid": "35961086-f932-477a-aa77-ac8360ffbf61",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
   "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "name":"tables",
-  "conceptLevel":"External",
-  "description": "The tables of a PostgreSQL schema."
+  "name": "tables",
+  "conceptLevel": "External",
+  "description": "The tables of a PostgreSQL schema.",
+  "defaultInstanceDetailsReportUuid": "7c80d9ec-35b2-4cb8-8164-c5fe4e20687f",
+  "icon": "building",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "idAttribute": [
+    "table_catalog",
+    "table_schema",
+    "table_name"
+  ],
+  "externalDataSource": {
+    "schema": "information_schema"
+  },
+  "mlSchema": {
+    "type": "object",
+    "definition": {
+      "table_schema": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Schema Name",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "table_name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Table Name",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "table_catalog": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Table Catalog",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "table_type": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Table Type",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      }
+    }
+  }
 }
