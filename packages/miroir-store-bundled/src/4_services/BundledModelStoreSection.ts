@@ -117,6 +117,7 @@ export class BundledModelStoreSection
     _entity: Entity,
     _entityDefinition: EntityDefinition,
   ): Promise<Action2VoidReturnType> {
+    // #217 Phase 6: bundled is read-only — dual-write N/A (no mutation of model assets).
     return Promise.resolve(ACTION_OK);
   }
 

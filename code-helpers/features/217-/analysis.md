@@ -778,7 +778,7 @@ Legacy Action payloads remain accepted through adapters.
 - LocalCache (Redux + Zustand) `updateInstance` rejects SelfApplication `versioningEnabled` flips via `assertVersioningEnabledImmutable`.
 - Tests: `modelEntityDualWrite.unit.test.ts` (7), `ModelEntityActionTransformer.phase5.unit.test.ts` (4). Store-side alter/rename dual-write remains Phase 6.
 
-### Phase 6 — Persistence backends switch
+### Phase 6 — Persistence backends switch — DONE
 
 One vertical slice per backend, all sharing updated core contracts:
 
@@ -790,7 +790,7 @@ One vertical slice per backend, all sharing updated core contracts:
 
 Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/composite PK, reopen/reload, and legacy persisted state.
 
-**Open (decision §14.8):** for backends without true multi-document transactions (filesystem, IndexedDB, MongoDB as used today), Phase 6 must define an explicit dual-write policy before coding each slice — e.g. write Entity then EntityDefinition with compensating delete/restore on failure, best-effort second write + consistency detector, or a single serialized artifact. PostgreSQL can use a real transaction. Do not invent a policy here; decide per backend when implementing the vertical slice and record the choice in that slice’s realization notes.
+**Settled (decision §14.8):** always write Entity then EntityDefinition. On failure: compensate (delete/restore) or best-effort second write + consistency detector (`detectEntityEntityDefinitionInconsistencies`). Do **not** use a single serialized artifact. PostgreSQL uses a real transaction around the same order when available. Record per-backend choice in slice realization notes.
 
 **Test gate (§11):**
 
@@ -799,6 +799,14 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 - PostgreSQL: external `externalDataSource` mapping tests before switching.
 - After each slice: §11.3 dual-write equality on persisted Entity vs EntityDefinition files/rows.
 - Record dual-write failure/compensation policy choice in the slice realization notes (§14.8).
+
+**Realization (DONE):**
+
+- Core: `modelEntityDualWritePersistence.ts` — `persistEntityThenEntityDefinition` (Entity→ED; compensate | bestEffortDetect) + `detectEntityEntityDefinitionInconsistencies`. Tests: `modelEntityDualWritePersistence.unit.test.ts` (7).
+- **bundled:** read-only no-ops; dual-write N/A.
+- **filesystem / IndexedDB / MongoDB:** create/rename/alter use `normalize*` / `apply*` + `persistEntityThenEntityDefinition` with **compensate**. Mongo `dropEntity` now also deletes EntityDefinition rows (parity with FS/IDB).
+- **PostgreSQL:** create uses Sequelize **transaction** Entity→ED; rename/alter use compensate via `persistEntityThenEntityDefinition` then table sync (alter). External sources unchanged (read-only upsert guard remains).
+- Store mixins no longer mutate EntityDefinition alone on alter (Entity-authoritative).
 
 ### Phase 7 — Cache and current-model assembly switch
 
@@ -909,7 +917,7 @@ This phase must contain no architectural authority change—only the final vocab
 
 ### 11.1 New contract tests
 
-| Contract | Phase owning it | Status after Phase 5 |
+| Contract | Phase owning it | Status after Phase 6 |
 |---|---|---|
 | Entity complete-definition schema parsing | 1 | Done (`phase1`) |
 | Legacy Entity + EntityDefinition enrichment | 2 | Done (`phase2`) |
@@ -921,7 +929,7 @@ This phase must contain no architectural authority change—only the final vocab
 | live Entity mutation does not mutate historical snapshot | 10 | Deferred |
 | UI fields (`viewAttributes`, default details report) | 0 lock / 3 populate | Done (`strategy`) |
 | Codegen Entity.mlSchema ≡ EntityDefinition.mlSchema | 4 | Done (`strategy`) |
-| Dual-write `project(Entity) == project(ED copy)` | 4 / 5 mutations | **Done for ModelAction path** (`modelEntityDualWrite` + transformer phase5); store backends Phase 6 |
+| Dual-write `project(Entity) == project(ED copy)` | 4 / 5 / 6 mutations | **Done for ModelAction + store backends** (`modelEntityDualWrite*` + store mixins); detector available for reload |
 | Migrated deployment behavioral equivalence | 3–4 | Done for Library resolve/PK/cache (`strategy`) |
 
 Suite files:
@@ -930,6 +938,7 @@ Suite files:
 - `entityPresentModel.phase1.unit.test.ts` … `phase4.unit.test.ts`
 - `entityPresentModel.strategy.unit.test.ts` — §11 gap-fill / cross-phase contracts
 - `modelEntityDualWrite.unit.test.ts` / `ModelEntityActionTransformer.phase5.unit.test.ts` — Phase 5
+- `modelEntityDualWritePersistence.unit.test.ts` — Phase 6 persistence policy + detector
 
 ### 11.2 Existing priority suites
 
@@ -1117,7 +1126,7 @@ Mitigation: rename only after semantic decoupling, preserve UUIDs where feasible
 5. **`parentDefinitionVersionUuid`:** remains relevant as provenance — it will reference the UUID of an **EntityVersion** in history (not a live EntityDefinition). At the final rename, EntityDefinition → EntityVersion with relations adjusted accordingly.
 6. **Final rename identity:** preserve EntityDefinition Entity UUID and instance UUIDs; rename vocabulary only.
 7. **Compatibility horizon:** keep exporting `EntityDefinition` symbols, marked deprecated in comments. Action payloads must be migrated as part of non-regression so existing Actions keep present behavior until explicitly updated.
-8. **Dual-write atomicity (filesystem / IndexedDB / MongoDB):** deferred — clarify concrete compensation/ordering policy in **Phase 6** when each backend dual-write path is implemented (see Phase 6 open question).
+8. **Dual-write atomicity (filesystem / IndexedDB / MongoDB):** **settled for Phase 6** — always persist **Entity then EntityDefinition**. On second-write failure: prefer **compensate** (create → delete Entity; update → restore previous Entity). Alternative allowed per call site: **best-effort** second write + `detectEntityEntityDefinitionInconsistencies`. **Do not** use a single serialized artifact. PostgreSQL wraps the same Entity→ED order in a real transaction when available.
 
 These decisions unblocked Phase 3+ asset population and historical semantics. Phase 0–2 additive/resolver work did not depend on (8).
 

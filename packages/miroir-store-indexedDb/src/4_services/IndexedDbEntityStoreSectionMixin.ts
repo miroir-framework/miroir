@@ -16,6 +16,10 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
+  applyAlterEntityAttributePair,
+  applyRenameEntityPair,
+  normalizeCreateEntityPair,
+  persistEntityThenEntityDefinition,
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
@@ -76,42 +80,55 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #############################################################################################
+    // #217 Phase 6: Entity then EntityDefinition; compensate on ED failure.
     async createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<Action2VoidReturnType> {
       if (entity.uuid != entityDefinition.entityUuid) {
-        // inconsistent input, raise exception
         log.error(
           this.logHeader,
           "createEntity",
           "inconsistent input: given entityDefinition is not related to given entity."
         );
-      } else {
-        if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
-          log.warn(
-            this.logHeader,
-            "createEntity",
-            entity.name,
-            "already existing sublevel",
-            entity.uuid,
-            this.localUuidIndexedDb.hasSubLevel(entity.uuid)
-          );
-        } else {
-          await this.dataStore.createStorageSpaceForInstancesOfEntity(entity, entityDefinition);
-          await this.upsertInstance(entityEntity.uuid, entity);
-          if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-            await this.upsertInstance(entityEntityDefinition.uuid, entityDefinition);
-          } else {
-            log.warn(
-              this.logHeader,
-              "createEntity",
-              entity.name,
-              "sublevel for entityEntityDefinition does not exist",
-              entityEntityDefinition.uuid,
-              this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)
-            );
-          }
-        }
+        return new Action2Error(
+          "FailedToCreateStore",
+          "createEntity failed: entity.uuid != entityDefinition.entityUuid",
+        );
       }
-      return Promise.resolve(ACTION_OK);
+      const pair = normalizeCreateEntityPair(entity, entityDefinition);
+      if (this.dataStore.getEntityUuids().includes(pair.entity.uuid)) {
+        log.warn(
+          this.logHeader,
+          "createEntity",
+          pair.entity.name,
+          "already existing sublevel",
+          pair.entity.uuid,
+          this.localUuidIndexedDb.hasSubLevel(pair.entity.uuid)
+        );
+      } else {
+        await this.dataStore.createStorageSpaceForInstancesOfEntity(
+          pair.entity,
+          pair.entityDefinition,
+        );
+      }
+      if (!this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
+        log.warn(
+          this.logHeader,
+          "createEntity",
+          pair.entity.name,
+          "sublevel for entityEntityDefinition does not exist",
+          entityEntityDefinition.uuid,
+        );
+      }
+      return persistEntityThenEntityDefinition(
+        pair,
+        {
+          writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
+          writeEntityDefinition: (nextEntityDefinition) =>
+            this.upsertInstance(entityEntityDefinition.uuid, nextEntityDefinition),
+          deleteEntity: (writtenEntity) =>
+            this.deleteInstance(entityEntity.uuid, writtenEntity),
+        },
+        { failurePolicy: { kind: "compensate" } },
+      );
     }
 
     // ##############################################################################################
@@ -122,7 +139,10 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       }[]
     ): Promise<Action2VoidReturnType> {
       for (const e of entities) {
-        await this.createEntity(e.entity, e.entityDefinition);
+        const result = await this.createEntity(e.entity, e.entityDefinition);
+        if (result instanceof Action2Error) {
+          return result;
+        }
       }
       return Promise.resolve(ACTION_OK);
     }
@@ -161,17 +181,35 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           `renameEntityClean failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
         ));
       }
-      const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity.returnedDomainElement,{name:update.payload.targetValue});
-      const modifiedEntityDefinition:EntityDefinition = Object.assign({},currentEntityDefinition.returnedDomainElement as EntityDefinition,{name:update.payload.targetValue});
+      const previousEntity = currentEntity.returnedDomainElement as Entity;
+      const previousEntityDefinition =
+        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+      const pair = applyRenameEntityPair(
+        previousEntity,
+        previousEntityDefinition,
+        update.payload.targetValue,
+      );
 
-      await this.upsertInstance(entityEntity.uuid, modifiedEntity);
-      await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
+      const persistResult = await persistEntityThenEntityDefinition(
+        pair,
+        {
+          writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
+          writeEntityDefinition: (nextEntityDefinition) =>
+            this.upsertInstance(entityEntityDefinition.uuid, nextEntityDefinition),
+          restoreEntity: (entityToRestore) =>
+            this.upsertInstance(entityEntity.uuid, entityToRestore),
+        },
+        { failurePolicy: { kind: "compensate" }, previousEntity },
+      );
+      if (persistResult instanceof Action2Error) {
+        return persistResult;
+      }
 
       await this.dataStore.renameStorageSpaceForInstancesOfEntity(
-        (currentEntity.returnedDomainElement as EntityInstanceWithName).name,
+        (previousEntity as EntityInstanceWithName).name,
         update.payload.targetValue,
-        modifiedEntity as Entity,
-        modifiedEntityDefinition
+        pair.entity,
+        pair.entityDefinition
       );
       return Promise.resolve(ACTION_OK);
     }
@@ -179,6 +217,21 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     // ############################################################################################
     async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "alterEntityAttribute", update);
+      const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
+        entityEntity.uuid,
+        update.payload.entityUuid
+      );
+      if (currentEntity instanceof Action2Error) {
+        return currentEntity;
+      }
+      if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeployModule",
+            `alterEntityAttribute failed for section: data, entityUuid ${update.payload.entityUuid}, error: ${currentEntity.returnedDomainElement.queryFailure}, ${currentEntity.returnedDomainElement.failureMessage}`
+          )
+        );
+      }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
         update.payload.entityDefinitionUuid
@@ -192,33 +245,31 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           `alterEntityAttribute failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
         ));
       }
-      const localEntityDefinition: EntityDefinition = currentEntityDefinition.returnedDomainElement as EntityDefinition;
-      const localEntityJzodSchemaDefinition =
-        update.payload.removeColumns != undefined && Array.isArray(update.payload.removeColumns)
-          ? Object.fromEntries(
-              Object.entries(localEntityDefinition.mlSchema.definition).filter(
-                (i) => update.payload.removeColumns ?? ([] as string[]).includes(i[0])
-              )
-            )
-          : localEntityDefinition.mlSchema.definition;
-      const modifiedEntityDefinition: EntityDefinition = Object.assign(
-        {},
-        localEntityDefinition,
+      const previousEntity = currentEntity.returnedDomainElement as Entity;
+      const previousEntityDefinition =
+        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+      const pair = applyAlterEntityAttributePair(
+        previousEntity,
+        previousEntityDefinition,
         {
-          mlSchema: {
-            ...localEntityDefinition.mlSchema,
-            definition: {
-              ...localEntityJzodSchemaDefinition,
-              ...(update.payload.addColumns?Object.fromEntries(update.payload.addColumns.map(c=>[c.name, c.definition])):{})
-            },
-          },
-        }
+          addColumns: update.payload.addColumns,
+          removeColumns: update.payload.removeColumns,
+        },
       );
 
-      log.info("alterEntityAttribute modifiedEntityDefinition", JSON.stringify(modifiedEntityDefinition, undefined, 2));
-    
-      await this.upsertInstance(entityEntityDefinition.uuid, modifiedEntityDefinition);
-      return Promise.resolve(ACTION_OK);
+      log.info("alterEntityAttribute dual-write pair", JSON.stringify(pair, undefined, 2));
+
+      return persistEntityThenEntityDefinition(
+        pair,
+        {
+          writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
+          writeEntityDefinition: (nextEntityDefinition) =>
+            this.upsertInstance(entityEntityDefinition.uuid, nextEntityDefinition),
+          restoreEntity: (entityToRestore) =>
+            this.upsertInstance(entityEntity.uuid, entityToRestore),
+        },
+        { failurePolicy: { kind: "compensate" }, previousEntity },
+      );
     }
     
     // #############################################################################################

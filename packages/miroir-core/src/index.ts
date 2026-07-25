@@ -759,6 +759,16 @@ export type {
   EntityEntityDefinitionPair,
 } from "./1_core/modelEntityDualWrite.js";
 export {
+  detectEntityEntityDefinitionInconsistencies,
+  persistEntityThenEntityDefinition,
+} from "./1_core/modelEntityDualWritePersistence.js";
+export type {
+  DualWriteFailurePolicy,
+  DualWriteInconsistency,
+  DualWriteInconsistencyReport,
+  PersistEntityThenEntityDefinitionOps,
+} from "./1_core/modelEntityDualWritePersistence.js";
+export {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   EntityPresentModelResolutionError,
   UNVERSIONED_APPLICATION_FIXTURE,
