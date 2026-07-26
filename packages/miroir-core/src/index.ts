@@ -750,6 +750,8 @@ export {
 export type { EntityPrimaryKeySource } from "./1_core/EntityPrimaryKey";
 export {
   applyAlterEntityAttributePair,
+  applyEntityOnlyAlterAttribute,
+  applyEntityOnlyRename,
   applyMlSchemaColumnChanges,
   applyRenameEntityPair,
   normalizeCreateEntityPair,

@@ -103,4 +103,25 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
       /parentUuid === entityEntityDefinition\.uuid[\s\S]{0,120}registerEntityAdapterFromPresentModelSource/,
     );
   });
+
+  it("store alter/rename prefer Entity-only when present model is complete", () => {
+    const fsMixin = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-store-filesystem/src/4_services/FileSystemEntityStoreSectionMixin.ts",
+      ),
+      "utf8",
+    );
+    const sqlMixin = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-store-postgres/src/4_services/sqlDbEntityStoreSectionMixin.ts",
+      ),
+      "utf8",
+    );
+    expect(fsMixin).toContain("applyEntityOnlyAlterAttribute");
+    expect(fsMixin).toContain("applyEntityOnlyRename");
+    expect(sqlMixin).toContain("applyEntityOnlyAlterAttribute");
+    expect(sqlMixin).toContain("applyEntityOnlyRename");
+  });
 });

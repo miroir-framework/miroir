@@ -17,6 +17,8 @@ import {
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
   applyAlterEntityAttributePair,
+  applyEntityOnlyAlterAttribute,
+  applyEntityOnlyRename,
   applyRenameEntityPair,
   normalizeCreateEntityPair,
   persistEntityThenEntityDefinition,
@@ -162,6 +164,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #########################################################################################
+    // #217 Phase 11: Entity-only rename when present model is complete; dual-write only for incomplete Entity.
     async renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType> {
       // TODO: identical to IndexedDbModelStoreSection implementation!
       log.info(this.logHeader, "renameEntityClean", update);
@@ -180,6 +183,21 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           )
         );
       }
+      const previousEntity = currentEntity.returnedDomainElement as Entity;
+      const entityOnly = applyEntityOnlyRename(previousEntity, update.payload.targetValue);
+      if (entityOnly) {
+        const upsertResult = await this.upsertInstance(entityEntity.uuid, entityOnly);
+        if (upsertResult instanceof Action2Error) {
+          return upsertResult;
+        }
+        await this.dataStore.renameStorageSpaceForInstancesOfEntity(
+          (previousEntity as EntityInstanceWithName).name,
+          update.payload.targetValue,
+          entityOnly,
+        );
+        return Promise.resolve(ACTION_OK);
+      }
+
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
         update.payload.entityDefinitionUuid
@@ -195,7 +213,6 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           `renameEntityClean failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
         ));
       }
-      const previousEntity = currentEntity.returnedDomainElement as Entity;
       const previousEntityDefinition =
         currentEntityDefinition.returnedDomainElement as EntityDefinition;
       const pair = applyRenameEntityPair(
@@ -229,6 +246,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // ############################################################################################
+    // #217 Phase 11: Entity-only alter when present model is complete; dual-write only for incomplete Entity.
     async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "alterEntityAttribute", update);
       const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
@@ -246,6 +264,16 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           )
         );
       }
+      const previousEntity = currentEntity.returnedDomainElement as Entity;
+      const entityOnly = applyEntityOnlyAlterAttribute(previousEntity, {
+        addColumns: update.payload.addColumns,
+        removeColumns: update.payload.removeColumns,
+      });
+      if (entityOnly) {
+        log.info("alterEntityAttribute Entity-only", entityOnly.uuid);
+        return this.upsertInstance(entityEntity.uuid, entityOnly);
+      }
+
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
         update.payload.entityDefinitionUuid
@@ -259,7 +287,6 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           `alterEntityAttribute failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
         ));
       }
-      const previousEntity = currentEntity.returnedDomainElement as Entity;
       const previousEntityDefinition =
         currentEntityDefinition.returnedDomainElement as EntityDefinition;
       const pair = applyAlterEntityAttributePair(

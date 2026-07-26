@@ -57,6 +57,39 @@ export function applyMlSchemaColumnChanges(
   };
 }
 
+/**
+ * #217 Phase 11 — Entity-only alter when present model is complete (store layer).
+ * Returns undefined when Entity is incomplete (caller may dual-write via ED).
+ */
+export function applyEntityOnlyAlterAttribute(
+  entity: Entity,
+  changes: AlterEntityAttributeColumns,
+): Entity | undefined {
+  if (!entityHasCompletePresentModel(entity) || !entity.mlSchema) {
+    return undefined;
+  }
+  return {
+    ...entity,
+    mlSchema: applyMlSchemaColumnChanges(entity.mlSchema, changes),
+  };
+}
+
+/**
+ * #217 Phase 11 — Entity-only rename when present model is complete (store layer).
+ */
+export function applyEntityOnlyRename(
+  entity: Entity,
+  targetName: string,
+): Entity | undefined {
+  if (!entityHasCompletePresentModel(entity)) {
+    return undefined;
+  }
+  return {
+    ...entity,
+    name: targetName,
+  };
+}
+
 function assertDualWriteEquality(pair: EntityEntityDefinitionPair): EntityEntityDefinitionPair {
   const comparison = compareEntityPresentModelDefinitions(
     pair.entity,

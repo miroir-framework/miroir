@@ -76,7 +76,7 @@ export interface StorageSpaceHandlerInterface {
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition: EntityDefinition,
+    entityDefinition?: EntityDefinition,
   ): Promise<Action2VoidReturnType>;
 }
 

@@ -936,8 +936,9 @@ Acceptance gate:
 - Slice: `createEntity` Entity-only when no ED supplied and Entity complete (`planCreateEntityMutation`); store `createEntity` / `createStorageSpaceForInstancesOfEntity` take optional ED; dual-write only when ED explicitly provided (bootstrap / legacy).
 - Slice: `Deployment` / `DomainController` reset|init Entity-only when no live ED (no synthesize).
 - Slice: LocalCache (redux + zustand) registers non-UUID PK adapters from Entity only (ED load/create no longer registers).
-- Gate tests: `entityPresentModel.phase11`; `ModelEntityActionTransformer.phase11`.
-- **Still open:** UI hub `presentEntityAsRedundantEntityDefinition` (allowed temporary); generated Action schemas still list `entityDefinition` / `entityDefinitionUuid` (runtime optional); store alter/rename still load ED by UUID when Action reaches store layer with ED uuid in payload.
+- Slice: store alter/rename (`applyEntityOnlyAlterAttribute` / `applyEntityOnlyRename`) Entity-only when present model complete; dual-write only for incomplete Entity (FS / IndexedDB / Mongo / Postgres).
+- Gate tests: `entityPresentModel.phase11`; `ModelEntityActionTransformer.phase11`; `modelEntityDualWrite` Phase 11 Entity-only helpers.
+- **Still open:** UI hub `presentEntityAsRedundantEntityDefinition` (allowed temporary); generated Action schemas still list `entityDefinition` / `entityDefinitionUuid` (runtime optional — schema regen deferred to avoid Phase 12 rename thrash).
 
 ### Phase 12 — Final task: rename EntityDefinition to EntityVersion
 

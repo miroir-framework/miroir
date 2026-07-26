@@ -8,6 +8,8 @@ import type {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   applyAlterEntityAttributePair,
+  applyEntityOnlyAlterAttribute,
+  applyEntityOnlyRename,
   applyMlSchemaColumnChanges,
   applyRenameEntityPair,
   normalizeCreateEntityPair,
@@ -101,5 +103,31 @@ describe("217 Phase 5 — applyRenameEntityPair", () => {
     expect(
       projectEntityPresentModelDefinition(pair.entity).mlSchema,
     ).toEqual(projectEntityPresentModelDefinition(pair.entityDefinition).mlSchema);
+  });
+});
+
+describe("217 Phase 11 — Entity-only store mutations", () => {
+  it("applyEntityOnlyAlterAttribute mutates Entity.mlSchema without needing EntityDefinition", () => {
+    const next = applyEntityOnlyAlterAttribute(bookEntity, {
+      addColumns: [{ name: "isbnStore", definition: { type: "string" } }],
+    });
+    expect(next).toBeDefined();
+    expect(next!.mlSchema?.definition).toHaveProperty("isbnStore");
+    expect(next!.uuid).toBe(bookEntity.uuid);
+  });
+
+  it("applyEntityOnlyRename renames Entity without needing EntityDefinition", () => {
+    const next = applyEntityOnlyRename(bookEntity, "Volume");
+    expect(next).toBeDefined();
+    expect(next!.name).toBe("Volume");
+  });
+
+  it("applyEntityOnlyAlterAttribute returns undefined for incomplete Entity", () => {
+    const incomplete = {
+      uuid: bookEntity.uuid,
+      name: bookEntity.name,
+      parentUuid: bookEntity.parentUuid,
+    } as Entity;
+    expect(applyEntityOnlyAlterAttribute(incomplete, { removeColumns: ["year"] })).toBeUndefined();
   });
 });

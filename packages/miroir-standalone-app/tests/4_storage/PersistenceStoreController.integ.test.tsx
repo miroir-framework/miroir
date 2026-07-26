@@ -573,6 +573,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           [
             {
               ...entityAuthor,
+              // #217 Phase 11 — present-model rename is Entity-authoritative
               name: entityAuthor.name + "ssss",
             },
           ],
@@ -601,8 +602,8 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           undefined,
           [
             {
+              // #217 Phase 11 — live ED is historical; rename does not dual-write
               ...entityDefinitionAuthor,
-              name: entityDefinitionAuthor.name + "ssss",
             },
           ],
         ),

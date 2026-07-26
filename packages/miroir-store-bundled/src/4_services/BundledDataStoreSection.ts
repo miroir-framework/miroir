@@ -99,7 +99,7 @@ export class BundledDataStoreSection
     _oldName: string,
     _newName: string,
     _entity: Entity,
-    _entityDefinition: EntityDefinition,
+    _entityDefinition?: EntityDefinition,
   ): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }
