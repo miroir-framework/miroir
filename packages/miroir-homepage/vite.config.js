@@ -21,6 +21,7 @@ export default defineConfig({
         main: path.resolve(__dirname, 'index.html'),
         blog: path.resolve(__dirname, 'blog/index.html'),
         whyMiroir: path.resolve(__dirname, 'blog/why-miroir/index.html'),
+        growingSystemsFromWithin: path.resolve(__dirname, 'blog/growing-systems-from-within/index.html'),
       },
     },
   },

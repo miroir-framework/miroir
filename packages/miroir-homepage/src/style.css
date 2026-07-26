@@ -71,6 +71,15 @@
   .prose-blog hr {
     @apply my-10 border-gray-200 dark:border-gray-800;
   }
+  .prose-blog figure {
+    @apply my-8;
+  }
+  .prose-blog figure img {
+    @apply w-full rounded-xl border border-gray-200 dark:border-gray-800;
+  }
+  .prose-blog figcaption {
+    @apply mt-3 text-sm text-center text-gray-500 dark:text-gray-500;
+  }
 }
 
 @layer components {
