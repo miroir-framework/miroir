@@ -501,7 +501,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     log.info("ImportEntityFromSpreadsheetRunner onSubmit entity", JSON.stringify(entity, null, 2));
     const entityDefinition: EntityDefinition = {
       uuid: uuidv4(),
-      parentName: "EntityDefinition",
+      parentName: "EntityVersion",
       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       parentDefinitionVersionUuid: "c50240e7-c451-46c2-b60a-07b3172a5ef9",
       name: {

@@ -1,13 +1,18 @@
 {
   "uuid": "20e86585-e18f-4995-a141-486369acd4f8",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
   "conceptLevel": "Model",
   "name": "ApplicationEvolutionTrace",
   "description": "Definition of the ApplicationEvolutionTrace entity: a trace root per application/branch.",
-  "viewAttributes": ["name", "applicationUuid", "branchName", "uuid"],
+  "viewAttributes": [
+    "name",
+    "applicationUuid",
+    "branchName",
+    "uuid"
+  ],
   "defaultInstanceDetailsReportUuid": "c4d5e6f7-a8b9-4c01-d345-67890abcdef1",
   "cache": {
     "cacheAllInstancesOnRefresh": true
@@ -26,7 +31,14 @@
       "name": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { "defaultLabel": "Name", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "applicationUuid": {
         "type": "uuid",
@@ -43,12 +55,26 @@
       },
       "branchName": {
         "type": "string",
-        "tag": { "value": { "defaultLabel": "Branch Name", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "Branch Name",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "timestamp": {
         "type": "date",
         "optional": true,
-        "tag": { "value": { "defaultLabel": "Timestamp", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "Timestamp",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       }
     }
   }

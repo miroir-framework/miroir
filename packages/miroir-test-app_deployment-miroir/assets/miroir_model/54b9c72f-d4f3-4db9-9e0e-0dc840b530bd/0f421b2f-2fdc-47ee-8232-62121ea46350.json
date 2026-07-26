@@ -1,6 +1,6 @@
 {
   "uuid": "0f421b2f-2fdc-47ee-8232-62121ea46350",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
@@ -21,11 +21,11 @@
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "name": {
@@ -34,7 +34,9 @@
           "value": {
             "id": 5,
             "defaultLabel": "Name",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -44,7 +46,9 @@
           "value": {
             "id": 6,
             "defaultLabel": "Default Label",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -55,7 +59,9 @@
           "value": {
             "id": 7,
             "defaultLabel": "Description",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -94,7 +100,9 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Scope",
-                    "display": { "editable": true },
+                    "display": {
+                      "editable": true
+                    },
                     "description": "What elements this menu item targets (data or model)",
                     "initializeTo": {
                       "initializeToType": "value",
@@ -116,7 +124,7 @@
               },
               "icon": {
                 "type": "schemaReference",
-                "optional":true,
+                "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirIcon"
@@ -153,7 +161,9 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Scope",
-                    "display": { "editable": true },
+                    "display": {
+                      "editable": true
+                    },
                     "description": "What elements this menu item targets (data or model)",
                     "initializeTo": {
                       "initializeToType": "value",
@@ -184,7 +194,9 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "SelfApplication",
-                    "display": { "editable": false }
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -200,7 +212,9 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Report",
-                    "display": { "editable": false }
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -216,13 +230,15 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "Instance",
-                    "display": { "editable": false }
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
               "icon": {
                 "type": "schemaReference",
-                "optional":true,
+                "optional": true,
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirIcon"
@@ -260,7 +276,9 @@
                   "value": {
                     "id": 1,
                     "defaultLabel": "SelfApplication",
-                    "display": { "editable": false }
+                    "display": {
+                      "editable": false
+                    }
                   }
                 }
               },
@@ -274,7 +292,9 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Scope",
-                    "display": { "editable": true },
+                    "display": {
+                      "editable": true
+                    },
                     "description": "What elements this menu item targets (data or model)",
                     "initializeTo": {
                       "initializeToType": "value",
@@ -401,8 +421,8 @@
           }
         },
         "definition": {
-        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-         "relativePath": "menuDefinition"
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "menuDefinition"
         }
       }
     }

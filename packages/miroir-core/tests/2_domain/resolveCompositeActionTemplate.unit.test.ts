@@ -71,7 +71,7 @@ describe('resolveTestCompositeActionTemplate', () => {
                 interpolation: "build",
                 referenceName: "createEntity_newEntityDefinitionUuid",
               },
-              parentName: "EntityDefinition",
+              parentName: "EntityVersion",
               parentUuid: {
                 transformerType: "mustacheStringTemplate",
                 interpolation: "build",
@@ -213,7 +213,7 @@ describe('resolveTestCompositeActionTemplate', () => {
                     entityDefinition: {
                       name: "newEntityName",
                       uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityDefinitionUuid,
-                      parentName: "EntityDefinition",
+                      parentName: "EntityVersion",
                       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                       entityUuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
                       conceptLevel: "Model",
@@ -280,7 +280,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
     const newEntityDefinition: EntityDefinition ={
       name: "newEntityName",
       uuid: uuidv4(),
-      parentName: "EntityDefinition",
+      parentName: "EntityVersion",
       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       entityUuid: newEntity.uuid,
       conceptLevel: "Model",
@@ -394,7 +394,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                         entityDefinition: {
                           name: "newEntityName",
                           uuid: newEntityDefinition.uuid,
-                          parentName: "EntityDefinition",
+                          parentName: "EntityVersion",
                           parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                           entityUuid: newEntity.uuid,
                           conceptLevel: "Model",

@@ -45,7 +45,7 @@ describe("217 Phase 9 — UI boundary presentEntityAsRedundantEntityDefinition",
     expect(edShaped.uuid).toBe(orphan.uuid);
     expect(edShaped.entityUuid).toBe(orphan.uuid);
     expect(edShaped.mlSchema).toEqual(orphan.mlSchema);
-    expect(edShaped.parentName).toBe("EntityDefinition");
+    expect(edShaped.parentName).toBe("EntityVersion");
   });
 
   it("Entity-shaped and ED-shaped carriers expose the same present-model mlSchema", () => {

@@ -60,7 +60,7 @@
                       },
                       "entityDefinition": {
                         "uuid": "dceae8f8-c657-49df-9967-64ac3e52f5b4",
-                        "parentName": "EntityDefinition",
+                        "parentName": "EntityVersion",
                         "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                         "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
                         "entityUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",

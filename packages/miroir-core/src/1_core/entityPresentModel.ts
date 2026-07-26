@@ -472,7 +472,7 @@ export function presentEntityAsRedundantEntityDefinition(
   }
   return {
     uuid: entity.uuid,
-    parentName: "EntityDefinition",
+    parentName: "EntityVersion",
     parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
     name: entity.name,
     entityUuid: entity.uuid,

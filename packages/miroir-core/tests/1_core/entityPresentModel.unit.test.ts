@@ -38,7 +38,7 @@ function entityDefinition(
 ): EntityDefinition {
   return {
     parentUuid: "e432ecc7-9415-4fd8-b040-c6fbaea17e9a",
-    parentName: "EntityDefinition",
+    parentName: "EntityVersion",
     ...overrides,
   };
 }

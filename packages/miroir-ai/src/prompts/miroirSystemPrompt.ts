@@ -45,7 +45,7 @@ Example Entity instance (present model — includes mlSchema):
 Example EntityDefinition instance (dual-write / historical copy; entityUuid points at Entity):
 {
   "uuid": "<new-uuid>",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "<entity-uuid-above>",

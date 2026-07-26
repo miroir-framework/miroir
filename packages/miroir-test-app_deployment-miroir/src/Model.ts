@@ -132,6 +132,7 @@ import {
 export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, string> = {
   Entity: "entities",
   EntityDefinition: "entityDefinitions",
+  EntityVersion: "entityDefinitions",
   Endpoint: "endpoints",
   JzodSchema: "jzodSchemas",
   Menu: "menus",
@@ -141,6 +142,7 @@ export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, str
   MiroirTest: "tests",
   Theme: "themes",
   ApplicationVersionCrossEntityDefinition: "applicationVersionCrossEntityDefinitions",
+  ApplicationVersionCrossEntityVersion: "applicationVersionCrossEntityDefinitions",
 };
 export const defaultMiroirMetaModel: MetaModel = {
   applicationUuid: selfApplicationMiroir.uuid,

@@ -119,10 +119,14 @@ async function fileExists(filePath: string): Promise<boolean> {
 }
 
 async function writeFile(jzodElement:any, targetFileName: any, jzodSchemaVariableName: any, newFileContents: any) {
+  const contents =
+    typeof newFileContents === "string"
+      ? newFileContents
+      : await newFileContents;
   if (targetFileName && await fileExists(targetFileName)) {
-    const oldFileContents = await fs.readFile(targetFileName).toString();
-    if (newFileContents != oldFileContents) {
-      await fs.writeFile(targetFileName, newFileContents);
+    const oldFileContents = await fs.readFile(targetFileName, "utf8");
+    if (contents != oldFileContents) {
+      await fs.writeFile(targetFileName, contents, "utf8");
       console.log("writeFile", targetFileName, "generated!");
     } else {
       console.log(
@@ -130,7 +134,7 @@ async function writeFile(jzodElement:any, targetFileName: any, jzodSchemaVariabl
       );
     }
   } else {
-    await fs.writeFile(targetFileName, newFileContents);
+    await fs.writeFile(targetFileName, contents, "utf8");
   }
   
 }
@@ -303,14 +307,34 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
     generateTypeAnotationsForSchema,
     extendedTsTypesText,
   );
-  const newFileContents = newFileContentsNotFormated;
+  let newFileContents =
+    typeof newFileContentsNotFormated === "string"
+      ? newFileContentsNotFormated
+      : await newFileContentsNotFormated;
+  // #217 Phase 12: fold deprecated aliases into the same write to avoid a read/write race
+  // that can truncate miroirFundamentalType.ts down to only the alias block.
+  const phase12AliasBlock = `
+
+// ################################################################################################
+// #217 Phase 12 — deprecated vocabulary aliases (EntityDefinition → EntityVersion)
+/** @deprecated Use EntityVersion */
+export type EntityDefinition = EntityVersion;
+/** @deprecated Use entityVersion */
+export const entityDefinition = entityVersion;
+`;
+  if (
+    targetFileName.includes("miroirFundamentalType") &&
+    !newFileContents.includes("export type EntityDefinition = EntityVersion")
+  ) {
+    newFileContents = newFileContents + phase12AliasBlock;
+  }
   console.log(
     "generateTsTypeFileFromJzodSchemaInParallel generateTypes took",
     Date.now() - generateTypesStart,
     "ms"
   );
-  console.log("generateTsTypeFileFromJzodSchemaInParallel writing file:", targetFileName, (await newFileContents).length);
-  writeFile(jzodElement, targetFileName, jzodSchemaVariableName, newFileContents);
+  console.log("generateTsTypeFileFromJzodSchemaInParallel writing file:", targetFileName, newFileContents.length);
+  await writeFile(jzodElement, targetFileName, jzodSchemaVariableName, newFileContents);
   console.log("generateTsTypeFileFromJzodSchemaInParallel file written OK:", targetFileName);
 }
 

@@ -14,7 +14,7 @@ describe('analyzeForeignKeyAttributes', () => {
     definition: Record<string, any>
   ): EntityDefinition => ({
     uuid: `${entityUuid}-def`,
-    parentName: "EntityDefinition",
+    parentName: "EntityVersion",
     parentUuid: "parent-uuid",
     conceptLevel: "Model" as any,
     name: `${name}Definition`,

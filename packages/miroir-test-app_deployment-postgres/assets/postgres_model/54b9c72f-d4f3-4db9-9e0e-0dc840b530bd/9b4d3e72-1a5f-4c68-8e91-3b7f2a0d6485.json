@@ -1,6 +1,6 @@
 {
   "uuid": "9b4d3e72-1a5f-4c68-8e91-3b7f2a0d6485",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "name": "columns",
@@ -14,7 +14,12 @@
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },
-  "idAttribute": ["table_catalog", "table_schema", "table_name", "column_name"],
+  "idAttribute": [
+    "table_catalog",
+    "table_schema",
+    "table_name",
+    "column_name"
+  ],
   "externalDataSource": {
     "schema": "information_schema"
   },

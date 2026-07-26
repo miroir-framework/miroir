@@ -111,7 +111,7 @@ export function buildModelValidationGroupsFromFilesystem(
 
   const entityEntity = miroirMetaModel.entities.find((entity) => entity.name === "Entity");
   const entityEntityDefinition = miroirMetaModel.entities.find(
-    (entity) => entity.name === "EntityDefinition",
+    (entity) => entity.name === "EntityVersion" || entity.name === "EntityDefinition",
   );
   if (!entityEntity || !entityEntityDefinition) {
     throw new Error(

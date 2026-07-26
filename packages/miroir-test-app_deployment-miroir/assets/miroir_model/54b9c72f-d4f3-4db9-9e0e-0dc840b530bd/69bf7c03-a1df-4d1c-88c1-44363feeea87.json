@@ -1,6 +1,6 @@
 {
   "uuid": "69bf7c03-a1df-4d1c-88c1-44363feeea87",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
@@ -14,11 +14,11 @@
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "name": {
@@ -27,7 +27,9 @@
           "value": {
             "id": 6,
             "defaultLabel": "Name",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -38,7 +40,9 @@
           "value": {
             "id": 7,
             "defaultLabel": "Name",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -47,7 +51,9 @@
         "tag": {
           "value": {
             "id": 8,
-            "display": { "editable": false },
+            "display": {
+              "editable": false
+            },
             "defaultLabel": "SelfApplication",
             "foreignKeyParams": {
               "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -62,7 +68,9 @@
         "tag": {
           "value": {
             "id": 9,
-            "display": { "editable": true },
+            "display": {
+              "editable": true
+            },
             "defaultLabel": "Head Version",
             "foreignKeyParams": {
               "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
@@ -78,7 +86,9 @@
           "value": {
             "id": 10,
             "defaultLabel": "Description",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       }

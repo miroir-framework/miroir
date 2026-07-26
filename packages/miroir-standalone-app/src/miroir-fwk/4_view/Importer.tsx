@@ -381,7 +381,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //         transformerType: "getFromParameters",
   //   //         referenceName: "createEntity_newEntityDefinitionUuid",
   //   //       },
-  //   //       parentName: "EntityDefinition",
+  //   //       parentName: "EntityVersion",
   //   //       parentUuid: {
   //   //         transformerType: "mustacheStringTemplate",
   //   //         definition: "{{entityEntityDefinition.uuid}}",
@@ -907,7 +907,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           transformerType: "getFromParameters",
   //           referenceName: "splitEntity_newEntityDefinitionUuid",
   //         },
-  //         parentName: "EntityDefinition",
+  //         parentName: "EntityVersion",
   //         parentUuid: {
   //           transformerType: "mustacheStringTemplate",
   //           definition: "{{entityEntityDefinition.uuid}}",

@@ -204,6 +204,8 @@ export {
   entityAttributeUntypedCore,
   EntityDefinition,
   entityDefinition,
+  EntityVersion,
+  entityVersion,
   EntityForeignKeyAttribute,
   entityForeignKeyAttribute,
   EntityInstance,

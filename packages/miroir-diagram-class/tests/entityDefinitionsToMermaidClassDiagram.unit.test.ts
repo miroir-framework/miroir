@@ -32,7 +32,7 @@ import {
 
 const countryEntityDefinition: EntityDefinition = {
   uuid: "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
-  parentName: "EntityDefinition",
+  parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   entityUuid: "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
   name: "Country",
@@ -79,7 +79,7 @@ const countryEntityDefinition: EntityDefinition = {
 
 const authorEntityDefinition: EntityDefinition = {
   uuid: "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-  parentName: "EntityDefinition",
+  parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   entityUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
   name: "Author",
@@ -150,7 +150,7 @@ const authorEntityDefinition: EntityDefinition = {
 
 const bookEntityDefinition: EntityDefinition = {
   uuid: "797dd185-0155-43fd-b23f-f6d0af8cae06",
-  parentName: "EntityDefinition",
+  parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   name: "Book",
@@ -222,7 +222,7 @@ const bookEntityDefinition: EntityDefinition = {
 
 const publisherEntityDefinition: EntityDefinition = {
   uuid: "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
-  parentName: "EntityDefinition",
+  parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   entityUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
   name: "Publisher",
@@ -555,7 +555,7 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   it("handles entity definition with empty mlSchema definition", () => {
     const emptyDef: EntityDefinition = {
       uuid: "test-uuid",
-      parentName: "EntityDefinition",
+      parentName: "EntityVersion",
       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       entityUuid: "test-entity-uuid",
       name: "EmptyEntity",

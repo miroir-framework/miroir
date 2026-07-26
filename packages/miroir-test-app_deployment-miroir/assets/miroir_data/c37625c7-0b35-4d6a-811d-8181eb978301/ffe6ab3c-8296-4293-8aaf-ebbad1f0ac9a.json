@@ -26,7 +26,10 @@
                   },
                   "parentUuid": {
                     "transformerType": "getFromParameters",
-                    "referencePath": ["entityEntity", "uuid"]
+                    "referencePath": [
+                      "entityEntity",
+                      "uuid"
+                    ]
                   },
                   "selfApplication": {
                     "transformerType": "getFromParameters",
@@ -53,14 +56,20 @@
                     "transformerType": "getFromParameters",
                     "referenceName": "newEntityDefinitionUuid"
                   },
-                  "parentName": "EntityDefinition",
+                  "parentName": "EntityVersion",
                   "parentUuid": {
                     "transformerType": "getFromParameters",
-                    "referencePath": ["entityEntityDefinition", "uuid"]
+                    "referencePath": [
+                      "entityEntityDefinition",
+                      "uuid"
+                    ]
                   },
                   "entityUuid": {
                     "transformerType": "getFromParameters",
-                    "referencePath": ["createEntity_newEntity", "uuid"]
+                    "referencePath": [
+                      "createEntity_newEntity",
+                      "uuid"
+                    ]
                   },
                   "conceptLevel": "Model",
                   "defaultInstanceDetailsReportUuid": {
@@ -326,11 +335,17 @@
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityEntityDefinition", "name"]
+                            "referencePath": [
+                              "entityEntityDefinition",
+                              "name"
+                            ]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityEntityDefinition", "uuid"]
+                            "referencePath": [
+                              "entityEntityDefinition",
+                              "uuid"
+                            ]
                           },
                           "orderBy": {
                             "attributeName": "name",
@@ -376,11 +391,17 @@
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityEntity", "name"]
+                            "referencePath": [
+                              "entityEntity",
+                              "name"
+                            ]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityEntity", "uuid"]
+                            "referencePath": [
+                              "entityEntity",
+                              "uuid"
+                            ]
                           },
                           "orderBy": {
                             "attributeName": "name",
@@ -427,11 +448,17 @@
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityReport", "name"]
+                            "referencePath": [
+                              "entityReport",
+                              "name"
+                            ]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityReport", "uuid"]
+                            "referencePath": [
+                              "entityReport",
+                              "uuid"
+                            ]
                           },
                           "orderBy": {
                             "attributeName": "name",
@@ -472,11 +499,17 @@
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityMenu", "name"]
+                            "referencePath": [
+                              "entityMenu",
+                              "name"
+                            ]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityMenu", "uuid"]
+                            "referencePath": [
+                              "entityMenu",
+                              "uuid"
+                            ]
                           }
                         }
                       },
@@ -506,7 +539,10 @@
                             "section": "data",
                             "selfApplication": {
                               "transformerType": "getFromParameters",
-                              "referencePath": ["adminConfigurationDeploymentParis", "uuid"]
+                              "referencePath": [
+                                "adminConfigurationDeploymentParis",
+                                "uuid"
+                              ]
                             },
                             "icon": "local_drink"
                           }
@@ -553,18 +589,27 @@
                         {
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityMenu", "name"]
+                            "referencePath": [
+                              "entityMenu",
+                              "name"
+                            ]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityMenu", "uuid"]
+                            "referencePath": [
+                              "entityMenu",
+                              "uuid"
+                            ]
                           },
                           "applicationSection": "model",
                           "instances": [
                             {
                               "transformerType": "getFromContext",
                               "interpolation": "runtime",
-                              "referencePath": ["menuUpdateQueryResult", "updatedMenu"]
+                              "referencePath": [
+                                "menuUpdateQueryResult",
+                                "updatedMenu"
+                              ]
                             }
                           ]
                         }
@@ -614,7 +659,10 @@
                           "parentName": "Menu",
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityMenu", "uuid"]
+                            "referencePath": [
+                              "entityMenu",
+                              "uuid"
+                            ]
                           }
                         }
                       }
@@ -634,7 +682,10 @@
               "testType": "testAssertion",
               "testLabel": "checkEntities",
               "definition": {
-                "resultAccessPath": ["newApplicationEntityList", "entities"],
+                "resultAccessPath": [
+                  "newApplicationEntityList",
+                  "entities"
+                ],
                 "ignoreAttributes": [
                   "author",
                   "conceptLevel",
@@ -649,7 +700,10 @@
                     },
                     "parentUuid": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["entityEntity", "uuid"]
+                      "referencePath": [
+                        "entityEntity",
+                        "uuid"
+                      ]
                     },
                     "selfApplication": {
                       "transformerType": "getFromParameters",
@@ -676,7 +730,10 @@
               "testType": "testAssertion",
               "testLabel": "checkEntityDefinitions",
               "definition": {
-                "resultAccessPath": ["newApplicationEntityDefinitionList", "entityDefinitions"],
+                "resultAccessPath": [
+                  "newApplicationEntityDefinitionList",
+                  "entityDefinitions"
+                ],
                 "ignoreAttributes": [
                   "author",
                   "conceptLevel",
@@ -696,14 +753,19 @@
                       "transformerType": "getFromParameters",
                       "referenceName": "newEntityDefinitionUuid"
                     },
-                    "parentName": "EntityDefinition",
+                    "parentName": "EntityVersion",
                     "parentUuid": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["entityEntityDefinition", "uuid"]
+                      "referencePath": [
+                        "entityEntityDefinition",
+                        "uuid"
+                      ]
                     },
                     "entityUuid": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["newEntityUuid"]
+                      "referencePath": [
+                        "newEntityUuid"
+                      ]
                     },
                     "conceptLevel": "Model",
                     "defaultInstanceDetailsReportUuid": {
@@ -727,8 +789,15 @@
               "testType": "testAssertion",
               "testLabel": "checkReports",
               "definition": {
-                "resultAccessPath": ["newApplicationReportList", "reports"],
-                "ignoreAttributes": ["author", "parentDefinitionVersionUuid", "type"],
+                "resultAccessPath": [
+                  "newApplicationReportList",
+                  "reports"
+                ],
+                "ignoreAttributes": [
+                  "author",
+                  "parentDefinitionVersionUuid",
+                  "type"
+                ],
                 "expectedValue": [
                   {
                     "transformerType": "getFromParameters",
@@ -750,8 +819,13 @@
               "testType": "testAssertion",
               "testLabel": "checkMenus",
               "definition": {
-                "resultAccessPath": ["newMenuList", "menuList"],
-                "ignoreAttributes": ["author"],
+                "resultAccessPath": [
+                  "newMenuList",
+                  "menuList"
+                ],
+                "ignoreAttributes": [
+                  "author"
+                ],
                 "expectedValue": [
                   {
                     "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
@@ -834,7 +908,10 @@
                               "section": "data",
                               "selfApplication": {
                                 "transformerType": "getFromParameters",
-                                "referencePath": ["adminConfigurationDeploymentParis", "uuid"]
+                                "referencePath": [
+                                  "adminConfigurationDeploymentParis",
+                                  "uuid"
+                                ]
                               },
                               "icon": "local_drink"
                             }

@@ -476,7 +476,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     );
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
       ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
-        (e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
+        (e) => ["Entity", "EntityDefinition", "EntityVersion"].indexOf(e.name) == -1
       ), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
       (dataEntityDefinitions as any).returnedDomainElement?.instances as EntityDefinition[]
     );
@@ -563,7 +563,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     }
     const dataSectionFilteredEntities: Entity[] = (
       dataSectionEntities.returnedDomainElement.instances as Entity[]
-    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityDefinition", "EntityVersion"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
     log.trace(
       this.logHeader,
       "clearDataInstances found entities to clear:",

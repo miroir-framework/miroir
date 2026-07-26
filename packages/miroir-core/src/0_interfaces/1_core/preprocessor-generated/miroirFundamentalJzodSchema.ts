@@ -8365,7 +8365,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "entityDefinition": {
+      "entityVersion": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -15622,7 +15622,7 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "entityDefinition"
+                        "relativePath": "entityVersion"
                       },
                       "optional": true
                     }
@@ -16547,7 +16547,7 @@ export const miroirFundamentalJzodSchema = {
                           },
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "entityDefinition"
+                            "relativePath": "entityVersion"
                           },
                           "optional": true
                         }
@@ -33982,7 +33982,7 @@ export const miroirFundamentalJzodSchema = {
                               },
                               "definition": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition"
+                                "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityVersion"
                               },
                               "optional": true,
                               "context": {}
@@ -35976,7 +35976,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition": {
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityVersion": {
         "type": "object",
         "extend": [
           {
@@ -39445,7 +39445,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityDefinition"
+                "relativePath": "entityVersion"
               }
             }
           },

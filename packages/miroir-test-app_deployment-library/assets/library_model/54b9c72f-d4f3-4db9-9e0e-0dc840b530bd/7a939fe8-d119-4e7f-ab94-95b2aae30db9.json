@@ -1,6 +1,6 @@
 {
   "uuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
@@ -31,25 +31,39 @@
     "definition": {
       "name": {
         "type": "string",
-        "tag": { "value": {  "id": 4, "defaultLabel": "Name" }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Name"
+          }
+        }
       },
       "country": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": { 
-          "id": 5,
-          "display": { "editable": true },
-          "defaultLabel": "Country",
-          "foreignKeyParams": {
-            "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-            "targetEntityOrderInstancesBy": "name"
+        "tag": {
+          "value": {
+            "id": 5,
+            "display": {
+              "editable": true
+            },
+            "defaultLabel": "Country",
+            "foreignKeyParams": {
+              "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+              "targetEntityOrderInstancesBy": "name"
+            }
           }
-        }}
+        }
       },
       "icon": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id": 6, "defaultLabel": "Icon" }}
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Icon"
+          }
+        }
       }
     }
   }

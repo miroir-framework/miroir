@@ -143,7 +143,10 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
       "utf8",
     );
     expect(generated).toContain("entityDefinitionUuid?: string | undefined");
-    expect(generated).toContain("entityDefinition?: EntityDefinition | undefined");
+    // #217 Phase 12: element type renamed; deprecated EntityDefinition alias still exported
+    expect(generated).toMatch(
+      /entityDefinition\?: (EntityVersion|EntityDefinition) \| undefined/,
+    );
     expect(generated).toMatch(
       /modelActionAlterEntityAttribute[\s\S]*entityDefinitionUuid:z\.string\(\)\.optional\(\)/,
     );
