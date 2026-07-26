@@ -124,4 +124,57 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
     expect(sqlMixin).toContain("applyEntityOnlyAlterAttribute");
     expect(sqlMixin).toContain("applyEntityOnlyRename");
   });
+
+  it("ModelEndpoint Action schemas mark entityDefinition / entityDefinitionUuid optional", () => {
+    const endpoint = JSON.parse(
+      readFileSync(
+        join(
+          REPO_ROOT,
+          "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json",
+        ),
+        "utf8",
+      ),
+    );
+    const generated = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts",
+      ),
+      "utf8",
+    );
+    expect(generated).toContain("entityDefinitionUuid?: string | undefined");
+    expect(generated).toContain("entityDefinition?: EntityDefinition | undefined");
+    expect(generated).toMatch(
+      /modelActionAlterEntityAttribute[\s\S]*entityDefinitionUuid:z\.string\(\)\.optional\(\)/,
+    );
+
+    const actions: any[] = [];
+    const walk = (node: any) => {
+      if (!node || typeof node !== "object") return;
+      if (node.actionParameters) actions.push(node.actionParameters);
+      if (Array.isArray(node)) node.forEach(walk);
+      else Object.values(node).forEach(walk);
+    };
+    walk(endpoint);
+    for (const name of ["alterEntityAttribute", "renameEntity", "dropEntity"]) {
+      const ap = actions.find((a) => a.actionType?.definition === name);
+      expect(ap?.payload?.definition?.entityDefinitionUuid?.optional).toBe(true);
+    }
+    const create = actions.find((a) => a.actionType?.definition === "createEntity");
+    expect(
+      create?.payload?.definition?.entities?.definition?.definition?.entityDefinition?.optional,
+    ).toBe(true);
+  });
+
+  it("Bundled store boot registers PK from Entity first", () => {
+    const bundledModel = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-store-bundled/src/4_services/BundledModelStoreSection.ts",
+      ),
+      "utf8",
+    );
+    expect(bundledModel).toContain("Entity present-model first");
+    expect(bundledModel).toContain("entity.idAttribute");
+  });
 });

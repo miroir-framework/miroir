@@ -1230,7 +1230,7 @@ export class DomainController implements DomainControllerInterface {
                     application: modelActionResetModel.payload.application,
                     entities: entityDefinition
                       ? [{ entity, entityDefinition }]
-                      : ([{ entity }] as any),
+                      : [{ entity }],
                   }
                 };
                 
@@ -1392,7 +1392,7 @@ export class DomainController implements DomainControllerInterface {
                     application: modelActionInitModel.payload.application,
                     entities: entityDefinition
                       ? [{ entity, entityDefinition }]
-                      : ([{ entity }] as any),
+                      : [{ entity }],
                   }
                 };
                 

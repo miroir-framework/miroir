@@ -267,9 +267,16 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         return Promise.resolve(ACTION_OK);
       }
 
+      const entityDefinitionUuid = update.payload.entityDefinitionUuid;
+      if (!entityDefinitionUuid) {
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          `renameEntityClean requires entityDefinitionUuid when Entity present model is incomplete (entityUuid ${update.payload.entityUuid})`
+        ));
+      }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
-        update.payload.entityDefinitionUuid
+        entityDefinitionUuid
       );
 
       if (currentEntityDefinition instanceof Action2Error) {
@@ -278,7 +285,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
         return Promise.resolve(new Action2Error(
           "FailedToDeployModule",
-          `renameEntityClean failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
+          `renameEntityClean failed for section: data, entityUuid ${entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
         ));
       }
       const previousEntityDefinition =
@@ -342,9 +349,18 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         return this.upsertInstance(entityEntity.uuid, entityOnly);
       }
 
+      const entityDefinitionUuid = update.payload.entityDefinitionUuid;
+      if (!entityDefinitionUuid) {
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeployModule",
+            `alterEntityAttribute requires entityDefinitionUuid when Entity present model is incomplete (entityUuid ${update.payload.entityUuid})`
+          )
+        );
+      }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
-        update.payload.entityDefinitionUuid
+        entityDefinitionUuid
       );
       if (currentEntityDefinition instanceof Action2Error) {
         return currentEntityDefinition
@@ -353,7 +369,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         return Promise.resolve(
           new Action2Error(
             "FailedToDeployModule",
-            `alterEntityAttribute failed for section: data, entityUuid ${update.payload.entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
+            `alterEntityAttribute failed for section: data, entityUuid ${entityDefinitionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
           )
         );
       }

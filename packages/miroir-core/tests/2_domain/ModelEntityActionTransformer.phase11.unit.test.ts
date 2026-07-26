@@ -36,16 +36,9 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
-        entities: [
-          {
-            entity: bookEntity,
-            // Runtime Entity-only create (generated schema still lists entityDefinition).
-            entityDefinition: undefined as unknown as typeof bookDefinition,
-          },
-        ],
+        entities: [{ entity: bookEntity }],
       },
     };
-    delete (action.payload.entities[0] as { entityDefinition?: unknown }).entityDefinition;
 
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
       "00000000-0000-4000-8000-000000000001",

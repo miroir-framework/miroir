@@ -611,13 +611,13 @@ function handleModelAction(
       break;
     }
     case "createEntity": {
-      // Initialize entity adapter for new entities
+      // Initialize entity adapter for new entities (#217: Entity is identity; ED optional)
       if (modelAction.payload.entities) {
         for (const entityEntry of modelAction.payload.entities) {
           initializeLocalCacheSliceState(
             deploymentUuid,
             "model",
-            entityEntry.entityDefinition.entityUuid,
+            entityEntry.entity.uuid,
             "current",
             state
           );

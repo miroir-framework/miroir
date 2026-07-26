@@ -910,7 +910,7 @@ Each slice uses Entity end-to-end and retains legacy EntityDefinition fallback o
 - Freeze Action implementation + §11.3 runtime tests deferred to **full #216 / Phase 10 code slices when resumed** — Phase 10 design gate closed by redesign; executable freeze remains #216 §8.1 implementation work (tracked on #216, not blocking Phase 11 present-model removal).
 - `assertVersioningEnabledImmutable` already enforced on LocalCache updateInstance (Phase 5); no additional bypass found that blocks Phase 11.
 
-### Phase 11 — Remove live EntityDefinition dependency — IN PROGRESS
+### Phase 11 — Remove live EntityDefinition dependency — DONE
 
 Acceptance gate:
 
@@ -927,18 +927,19 @@ Acceptance gate:
 - Full P0 + P1 suites green with Entity-only present model.
 - Dual-write may stop; historical copies still readable for versioned apps.
 
-**Realization (partial):**
+**Realization (DONE):**
 
 - Slice: Postgres `SqlGenerator` PK/schema via `resolvePresentEntityFromModel` (no live `entityDefinitions.find`).
 - Slice: `SqlDbStoreSection` / `sqlDbEntityStoreSectionMixin` Sequelize mapping from Entity present-model fields (`fromMiroirPresentModelToSequelizeEntityDefinition`); ED optional fill-in only.
-- Slice: FS / IndexedDB boot + createStorage register `idAttribute` from Entity first.
-- Slice: Model Actions Entity-first (`modelEntityActionLiveResolve`): `entityDefinitionUuid` optional; resolve live ED by `entityUuid`; Entity-only alter/rename when Entity complete (ED left historical); drop deletes Entity (+ live ED if found).
+- Slice: FS / IndexedDB / Bundled boot + createStorage register `idAttribute` from Entity first.
+- Slice: Model Actions Entity-first (`modelEntityActionLiveResolve`): `entityDefinitionUuid` optional; Entity-only alter/rename when Entity complete (ED left historical); drop deletes Entity (+ live ED if found).
 - Slice: `createEntity` Entity-only when no ED supplied and Entity complete (`planCreateEntityMutation`); store `createEntity` / `createStorageSpaceForInstancesOfEntity` take optional ED; dual-write only when ED explicitly provided (bootstrap / legacy).
 - Slice: `Deployment` / `DomainController` reset|init Entity-only when no live ED (no synthesize).
-- Slice: LocalCache (redux + zustand) registers non-UUID PK adapters from Entity only (ED load/create no longer registers).
-- Slice: store alter/rename (`applyEntityOnlyAlterAttribute` / `applyEntityOnlyRename`) Entity-only when present model complete; dual-write only for incomplete Entity (FS / IndexedDB / Mongo / Postgres).
-- Gate tests: `entityPresentModel.phase11`; `ModelEntityActionTransformer.phase11`; `modelEntityDualWrite` Phase 11 Entity-only helpers.
-- **Still open:** UI hub `presentEntityAsRedundantEntityDefinition` (allowed temporary); generated Action schemas still list `entityDefinition` / `entityDefinitionUuid` (runtime optional — schema regen deferred to avoid Phase 12 rename thrash).
+- Slice: LocalCache (redux + zustand) registers non-UUID PK adapters from Entity only.
+- Slice: store alter/rename Entity-only when present model complete (FS / IndexedDB / Mongo / Postgres).
+- Slice: ModelEndpoint Action schemas (`7947ae40-…`) mark `entityDefinition` / `entityDefinitionUuid` optional; regenerated TS/Zod types.
+- Gate tests: `entityPresentModel.phase11`; `ModelEntityActionTransformer.phase11`; `modelEntityDualWrite` Phase 11 helpers.
+- **Deferred (allowed):** UI still uses `presentEntityAsRedundantEntityDefinition` as a temporary ED-*shaped* projection from Entity for components typed as EntityDefinition — not live ED authority. Full UI type migration to Entity follows with Phase 12 rename vocabulary work.
 
 ### Phase 12 — Final task: rename EntityDefinition to EntityVersion
 

@@ -446,8 +446,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // #217 Phase 11 — entityDefinition optional for Entity-only creates (generated schema still requires it).
-            entities: entities as { entity: Entity; entityDefinition: EntityDefinition }[],
+            entities: entities,
           },
         },
         // add reports, menus, etc. from metaModel
