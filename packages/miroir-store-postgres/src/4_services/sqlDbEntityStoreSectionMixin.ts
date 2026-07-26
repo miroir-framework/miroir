@@ -23,7 +23,7 @@ import {
   persistEntityThenEntityDefinition,
 } from "miroir-core";
 import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
-import { EntityUuidIndexedSequelizeModel, fromMiroirEntityDefinitionToSequelizeEntityDefinition } from "../utils";
+import { EntityUuidIndexedSequelizeModel, fromMiroirPresentModelToSequelizeEntityDefinition } from "../utils";
 import { SqlDbStoreSection } from "./SqlDbStoreSection";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin";
 
@@ -70,12 +70,20 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       entity: Entity,
       entityDefinition: EntityDefinition
     ): EntityUuidIndexedSequelizeModel {
+      // #217 Phase 11 — Entity present-model fields preferred for Sequelize schema.
+      const schemaSource = {
+        name: entity.name,
+        mlSchema: entity.mlSchema ?? entityDefinition.mlSchema,
+        idAttribute: entity.idAttribute ?? (entityDefinition as any).idAttribute,
+        externalDataSource:
+          entity.externalDataSource ?? (entityDefinition as any).externalDataSource,
+      };
       return {
         [entity.uuid]: {
           parentName: entity.parentName,
           sequelizeModel: this.sequelize.define(
             entity.name,
-            fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
+            fromMiroirPresentModelToSequelizeEntityDefinition(schemaSource),
             {
               freezeTableName: true,
               schema: this.schema,

@@ -45,8 +45,17 @@ export class IndexedDbStoreSection
     // This is required so that getEntityUuids() / hasSubLevel() return correct results after
     // a fresh open(), enabling upsertInstance / deleteInstance guards to pass correctly.
     this.localUuidIndexedDb.registerSubLevelsWithoutClearing(entities.map(e => e.uuid));
-    // Register idAttribute for non-UUID PK entities
+    // #217 Phase 11 — register idAttribute from Entity first; ED map is legacy fill-in only.
+    for (const entity of entities) {
+      const idAttr = entity.idAttribute ?? "uuid";
+      if (idAttr !== "uuid") {
+        this.entityIdAttributes[entity.uuid] = idAttr;
+      }
+    }
     for (const ed of entityDefinitions) {
+      if (this.entityIdAttributes[ed.entityUuid] !== undefined) {
+        continue;
+      }
       const idAttr = (ed as any).idAttribute ?? "uuid";
       if (idAttr !== "uuid") {
         this.entityIdAttributes[ed.entityUuid] = idAttr;
@@ -110,8 +119,8 @@ export class IndexedDbStoreSection
         );
       }
     }
-    // Register idAttribute for non-UUID PK entities
-    const idAttr = (entityDefinition as any).idAttribute ?? "uuid";
+    // Register idAttribute for non-UUID PK entities (#217 Phase 11: Entity first)
+    const idAttr = entity.idAttribute ?? (entityDefinition as any).idAttribute ?? "uuid";
     if (idAttr !== "uuid") {
       this.entityIdAttributes[entity.uuid] = idAttr;
     }

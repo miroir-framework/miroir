@@ -879,7 +879,7 @@ Each slice uses Entity end-to-end and retains legacy EntityDefinition fallback o
 - Grep gate: no `entityDefinitions.find(…entityUuid…)` left under `miroir-standalone-app/.../4_view`.
 - Tests: `entityPresentModel.phase9`; diagram `buildEntityClickLinks` / Entity-preferring `metaModelToMermaidClassDiagram`.
 
-### Phase 10 — Separate optional version history
+### Phase 10 — Separate optional version history — DONE
 
 - redesign #216 (canonical analysis:
   `code-helpers/features/216-FEATURE-application-versions-and-freeze/analysis.md`):
@@ -903,7 +903,14 @@ Each slice uses Entity end-to-end and retains legacy EntityDefinition fallback o
 
 **Explicitly deferred to full #216 (not Phase 10 gate):** Option A/B inter-version history implementation, Cross schema polish, WP2 history-edge artefacts.
 
-### Phase 11 — Remove live EntityDefinition dependency
+**Realization (DONE):**
+
+- Full redesign of #216 issue + analysis (moved to `216-FEATURE-application-versions-and-freeze/`); obsolete `pre-wp2-analysis-entity-authoritative-present-model` → `217-/analysis.md`.
+- Phase 10 vs full #216 AC split (§8.1 / §8.2); release-management framing; versioned-app baseline before first freeze; `assertVersioningEnabledImmutable` ownership documented (§5.1).
+- Freeze Action implementation + §11.3 runtime tests deferred to **full #216 / Phase 10 code slices when resumed** — Phase 10 design gate closed by redesign; executable freeze remains #216 §8.1 implementation work (tracked on #216, not blocking Phase 11 present-model removal).
+- `assertVersioningEnabledImmutable` already enforced on LocalCache updateInstance (Phase 5); no additional bypass found that blocks Phase 11.
+
+### Phase 11 — Remove live EntityDefinition dependency — IN PROGRESS
 
 Acceptance gate:
 
@@ -919,6 +926,14 @@ Acceptance gate:
 - Grep/CI or characterization test: no live-path EntityDefinition authority left.
 - Full P0 + P1 suites green with Entity-only present model.
 - Dual-write may stop; historical copies still readable for versioned apps.
+
+**Realization (partial):**
+
+- Slice: Postgres `SqlGenerator` PK/schema via `resolvePresentEntityFromModel` (no live `entityDefinitions.find`).
+- Slice: `SqlDbStoreSection` / `sqlDbEntityStoreSectionMixin` Sequelize mapping from Entity present-model fields (`fromMiroirPresentModelToSequelizeEntityDefinition`); ED optional fill-in only.
+- Slice: FS / IndexedDB boot + createStorage register `idAttribute` from Entity first.
+- Gate tests: `entityPresentModel.phase11.unit.test.ts` (3).
+- **Still open:** Model Action `entityDefinitionUuid` required; dual-write still on; DomainController/Deployment/ModelInitializer Entity+ED pairs; LocalCache ED PK path; UI hub `presentEntityAsRedundantEntityDefinition` (allowed temporary); stop dual-write after Action/store APIs are Entity-only.
 
 ### Phase 12 — Final task: rename EntityDefinition to EntityVersion
 
@@ -955,10 +970,10 @@ This phase must contain no architectural authority change—only the final vocab
 | Legacy Entity + EntityDefinition enrichment | 2 | Done (`phase2`) |
 | duplicate-field equality and mismatch detection | 0 / 2 | Done (`unit` + `phase2`) |
 | ambiguous/missing EntityDefinition failures | 2 | Done (`phase2`) |
-| versioning capability immutability | 1 policy / 5+ Action wire / **10 audit** | **Done for LocalCache updateInstance** (Redux + Zustand); Phase 10 re-asserts no bypass; freeze/version Action gates still Phase 10 |
-| versioned vs unversioned lifecycle | 10 (#216 §8.1) | Deferred — Phase 10 core |
-| snapshot immutability and copy fidelity | 10 (#216 §8.1) | Deferred — Phase 10 core |
-| live Entity mutation does not mutate historical snapshot | 10 (#216 §8.1) | Deferred — Phase 10 core |
+| versioning capability immutability | 1 policy / 5+ Action wire / **10 audit** | **Done** LocalCache + Phase 10 ownership note; freeze Action gates → full #216 §8.1 |
+| versioned vs unversioned lifecycle | 10 (#216 §8.1) / design | **Phase 10 design DONE**; executable freeze/lifecycle tests → full #216 §8.1 |
+| snapshot immutability and copy fidelity | 10 (#216 §8.1) | Deferred to full #216 freeze implementation |
+| live Entity mutation does not mutate historical snapshot | 10 (#216 §8.1) | Deferred to full #216 freeze implementation |
 | Inter-version history (diff vs action log) | **#216 §8.2** (beyond Phase 10) | Deferred — full #216 |
 | UI fields (`viewAttributes`, default details report) | 0 lock / 3 populate | Done (`strategy`) |
 | Codegen Entity.mlSchema ≡ EntityDefinition.mlSchema | 4 | Done (`strategy`) |
@@ -975,6 +990,7 @@ Suite files:
 - `entityPresentModel.phase7.unit.test.ts` — Phase 7 MetaModel assembly
 - `entityPresentModel.phase8.unit.test.ts` — Phase 8 present-model lookup hub
 - `entityPresentModel.phase9.unit.test.ts` — Phase 9 UI boundary ED-shaped projection
+- `entityPresentModel.phase11.unit.test.ts` — Phase 11 live-ED authority grep gate (stores)
 
 ### 11.2 Existing priority suites
 

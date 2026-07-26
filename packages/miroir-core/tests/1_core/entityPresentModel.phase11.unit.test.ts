@@ -1,0 +1,45 @@
+import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
+/**
+ * #217 Phase 11 — characterization / grep gate for live EntityDefinition authority.
+ */
+
+const REPO_ROOT = join(import.meta.dirname, "../../../..");
+
+const LIVE_ED_FIND =
+  /entityDefinitions\s*\.\s*find\s*\(\s*(?:\([^)]*\)|[^=])*entityUuid/;
+
+describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
+  it("SqlGenerator does not join live schema/PK via entityDefinitions.find(entityUuid)", () => {
+    const sqlGenerator = readFileSync(
+      join(REPO_ROOT, "packages/miroir-store-postgres/src/1_core/SqlGenerator.ts"),
+      "utf8",
+    );
+    expect(sqlGenerator).not.toMatch(LIVE_ED_FIND);
+    expect(sqlGenerator).toContain("resolvePresentEntityFromModel");
+  });
+
+  it("SqlDbStoreSection boot prefers Entity present-model fields", () => {
+    const section = readFileSync(
+      join(REPO_ROOT, "packages/miroir-store-postgres/src/4_services/SqlDbStoreSection.ts"),
+      "utf8",
+    );
+    expect(section).toContain("Phase 11");
+    expect(section).toContain("fromMiroirPresentModelToSequelizeEntityDefinition");
+  });
+
+  it("filesystem / IndexedDB boot register PK from Entity first", () => {
+    const fsSection = readFileSync(
+      join(REPO_ROOT, "packages/miroir-store-filesystem/src/4_services/FileSystemStoreSection.ts"),
+      "utf8",
+    );
+    const idbSection = readFileSync(
+      join(REPO_ROOT, "packages/miroir-store-indexedDb/src/4_services/IndexedDbStoreSection.ts"),
+      "utf8",
+    );
+    expect(fsSection).toContain("entity.idAttribute");
+    expect(idbSection).toContain("entity.idAttribute");
+  });
+});
