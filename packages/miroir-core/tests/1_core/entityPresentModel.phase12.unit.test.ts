@@ -124,6 +124,36 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
     expect(src).toMatch(/\bas reportEntityDefinitionList\b/); // deprecated alias
   });
 
+  it("non-bootstrap EntityVersion instance exports use entityVersion* with deprecated entityDefinition* aliases", () => {
+    const miroir = readFileSync(DEPLOYMENT_INDEX, "utf8");
+    for (const [primary, deprecated] of [
+      ["entityVersionEntity", "entityDefinitionEntity"],
+      ["entityVersionEndpoint", "entityDefinitionEndpoint"],
+      ["entityVersionReport", "entityDefinitionReport"],
+      ["entityVersionTheme", "entityDefinitionTheme"],
+    ] as const) {
+      expect(miroir).toMatch(new RegExp(`\\bas ${primary}\\b|export \\{ ${primary} \\}`));
+      expect(miroir).toMatch(new RegExp(`@deprecated Use ${primary}`));
+      expect(miroir).toMatch(new RegExp(`\\bas ${deprecated}\\b|as ${deprecated}\\b|export \\{[^}]*${deprecated}`));
+    }
+
+    const library = readFileSync(
+      join(REPO_ROOT, "packages/miroir-test-app_deployment-library/index.ts"),
+      "utf8",
+    );
+    expect(library).toMatch(/\bas entityVersionAuthor\b/);
+    expect(library).toMatch(/@deprecated Use entityVersionAuthor/);
+    expect(library).toMatch(/\bas entityDefinitionAuthor\b/);
+
+    const admin = readFileSync(
+      join(REPO_ROOT, "packages/miroir-test-app_deployment-admin/index.ts"),
+      "utf8",
+    );
+    expect(admin).toMatch(/\bas entityVersionDeployment\b/);
+    expect(admin).toMatch(/@deprecated Use entityVersionDeployment/);
+    expect(admin).toMatch(/\bas entityDefinitionDeployment\b/);
+  });
+
   it("EntityVersion list/details reports use Entity Version display vocabulary", () => {
     const list = JSON.parse(readFileSync(REPORT_ENTITY_VERSION_LIST, "utf8"));
     expect(list.name).toBe("EntityVersionList");
@@ -223,5 +253,52 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
   it("UI hub presentEntityAsRedundantEntityDefinition remains (deferred off vocabulary slice)", () => {
     const hub = readFileSync(ENTITY_PRESENT_MODEL, "utf8");
     expect(hub).toContain("presentEntityAsRedundantEntityDefinition");
+  });
+
+  it("docs and AI prompts use EntityVersion display vocabulary", () => {
+    const coreConcepts = readFileSync(
+      join(REPO_ROOT, "docs/guides/core-concepts.md"),
+      "utf8",
+    );
+    expect(coreConcepts).toMatch(/## Entity & EntityVersion/);
+    expect(coreConcepts).toMatch(/authoritative present-model/i);
+    expect(coreConcepts).not.toMatch(/## Entity & EntityDefinition/);
+
+    const entityApi = readFileSync(
+      join(REPO_ROOT, "docs/reference/api/entity.md"),
+      "utf8",
+    );
+    expect(entityApi).toMatch(/Entity & EntityVersion API Reference/);
+    expect(entityApi).toMatch(/interface EntityVersion/);
+
+    const defining = readFileSync(
+      join(REPO_ROOT, "docs/guides/developer/defining-entities.md"),
+      "utf8",
+    );
+    expect(defining).toMatch(/\*\*EntityVersion\*\*/);
+    expect(defining).not.toMatch(/\*\*EntityDefinition\*\*/);
+
+    const agents = readFileSync(join(REPO_ROOT, "AGENTS.md"), "utf8");
+    expect(agents).toMatch(/EntityVersion/);
+    expect(agents).toMatch(/authoritative present-model/);
+
+    const promptAi = readFileSync(
+      join(REPO_ROOT, "packages/miroir-ai/src/prompts/miroirSystemPrompt.ts"),
+      "utf8",
+    );
+    const promptUi = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/miroirSystemPrompt.ts",
+      ),
+      "utf8",
+    );
+    for (const prompt of [promptAi, promptUi]) {
+      expect(prompt).toMatch(/### EntityVersion/);
+      expect(prompt).toMatch(/authoritative present-model definition/);
+      expect(prompt).toMatch(/AND the EntityVersion/);
+      expect(prompt).not.toMatch(/AND the EntityDefinition/);
+      expect(prompt).not.toMatch(/corresponding EntityDefinition that holds/);
+    }
   });
 });

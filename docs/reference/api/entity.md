@@ -1,4 +1,4 @@
-# Entity & EntityDefinition API Reference (⚠️SLOPPY⚠️)
+# Entity & EntityVersion API Reference (⚠️SLOPPY⚠️)
 
 **Status: 🚧 Sketch - To be auto-generated from Jzod schemas**
 
@@ -6,10 +6,10 @@
 
 ## Overview
 
-**Entity** and **EntityDefinition** are the bootstrapped meta-model concepts in Miroir. They define the structure of all domain models.
+**Entity** and **EntityVersion** are the bootstrapped meta-model concepts in Miroir. They define the structure of all domain models.
 
-- **Entity** - Represents a concept in your domain (e.g., "Book", "Author", "Customer")
-- **EntityDefinition** - Specifies the structure and attributes of an Entity using Jzod schemas
+- **Entity** - Represents a concept in your domain (e.g., "Book", "Author", "Customer"). Authoritative **present-model** definition (`mlSchema`, PK, view/cache fields).
+- **EntityVersion** - Versioned / historical snapshot of an Entity's definition (formerly **EntityDefinition**; TypeScript still exports a deprecated `EntityDefinition` alias).
 
 ---
 
@@ -24,11 +24,13 @@
 ```typescript
 interface Entity {
   uuid: string;                    // Unique identifier (UUID v4)
-  parentUuid: string;              // Always references Entity meta-entity
+  parentUuid: string;              // Always references Entity meta-entity (16dbfe28-…)
   name: string;                    // Human-readable name
   description?: string;            // Optional documentation
   conceptLevel?: "MetaModel" | "Model" | "Data";
   icon?: string;                   // Optional UI icon
+  mlSchema?: JzodObject;           // Present-model structure (authoritative)
+  idAttribute?: string | string[]; // Primary key attribute(s) — defaults to "uuid"
 }
 ```
 
@@ -57,7 +59,7 @@ interface Entity {
 
 ---
 
-## EntityDefinition
+## EntityVersion
 
 ### Schema Location
 
@@ -66,16 +68,17 @@ interface Entity {
 ### TypeScript Interface
 
 ```typescript
-interface EntityDefinition {
+interface EntityVersion {
+  // Deprecated alias: type EntityDefinition = EntityVersion
   uuid: string;                    // Unique identifier (UUID v4)
-  parentUuid: string;              // Always references EntityDefinition meta-entity
+  parentUuid: string;              // Always references EntityVersion meta-entity (54b9c72f-…)
   name: string;                    // Version name
   entityUuid: string;              // References the Entity being defined
   conceptLevel?: "MetaModel" | "Model" | "Data";
   description?: string;
   idAttribute?: string | string[]; // Primary key attribute(s) — defaults to "uuid"
   defaultInstanceDetailsReportUuid?: string;
-  jzodSchema: JzodObject;          // Jzod schema defining structure
+  mlSchema: JzodObject;            // Jzod / ML schema defining structure
 }
 ```
 
@@ -84,10 +87,10 @@ interface EntityDefinition {
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
 | `uuid` | string (UUID) | ✅ Yes | Unique identifier for this definition |
-| `parentUuid` | string (UUID) | ✅ Yes | References EntityDefinition meta-entity (`bdd7ad43-f0fc-4716-90c1-87454c40dd95`) |
+| `parentUuid` | string (UUID) | ✅ Yes | References EntityVersion meta-entity (`54b9c72f-d4f3-4db9-9e0e-0dc840b530bd`) |
 | `name` | string | ✅ Yes | Version name (e.g., "Book_v1", "Book_v2") |
 | `entityUuid` | string (UUID) | ✅ Yes | References the Entity this defines |
-| `jzodSchema` | JzodObject | ✅ Yes | Structure definition in Jzod format |
+| `mlSchema` | JzodObject | ✅ Yes | Structure definition in Jzod / ML format |
 | `idAttribute` | string \| string[] | No | Primary key attribute(s). Defaults to `"uuid"`. Use a string for single-attribute PK (e.g. `"code"`), or a string array for composite PK (e.g. `["region", "code"]`). |
 | `conceptLevel` | enum | No | Level in meta-model hierarchy |
 | `description` | string | No | Optional documentation |
@@ -101,7 +104,7 @@ interface EntityDefinition {
   "parentUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "name": "Book",
   "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {
@@ -136,7 +139,7 @@ interface EntityDefinition {
 
 ---
 
-## Jzod Schema in EntityDefinition
+## Jzod / ML Schema in EntityVersion
 
 The `jzodSchema` property defines the structure of entity instances. See [Jzod documentation](../../../../jzod/README.md) for complete schema syntax.
 
@@ -222,7 +225,7 @@ The `tag` property indicates this is a relationship to another entity.
 
 ## Entity Versioning
 
-EntityDefinitions enable schema evolution without breaking existing data:
+EntityVersions enable schema evolution without breaking existing data:
 
 ### Version 1
 
@@ -231,7 +234,7 @@ EntityDefinitions enable schema evolution without breaking existing data:
   "uuid": "def-uuid-v1",
   "name": "Book_v1",
   "entityUuid": "entity-uuid",
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": { "type": "string" },
@@ -248,7 +251,7 @@ EntityDefinitions enable schema evolution without breaking existing data:
   "uuid": "def-uuid-v2",
   "name": "Book_v2",
   "entityUuid": "entity-uuid",
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": { "type": "string" },

@@ -163,27 +163,27 @@ The 'report editor' is now shown on the top of the current view and the 'model' 
 
 <img src="./libraryTutorial/miroir-design_mode.png" alt="In Design Mode" width="95%"/>
 
-click on the `Library Entity Definitions` menu item.
+click on the `Library Entity Versions` menu item.
 
-### Editing the Book Entity Definition
+### Editing the Book Entity Version
 
 In the lifetime of an application, the precise meaning of an identified concept often fluctuates. For example, we oversaw the necessity of knowing the ISBN of each book, extremely useful to communicate with book sellers.
 
 Adding the ISBN will thus alter the definition of the `Book` entity, without altering the `Book` Entity itself.
 <!-- Entities are versioned, enabling controlled evolution of the data model. -->
-<!-- Example: The User EntityDefinition declares fields like `name`, `email`, `registrationDate`. -->
+<!-- Example: The User EntityVersion declares fields like `name`, `email`, `registrationDate`. -->
 
-Click on the `Book` Entity Definition:
+Click on the `Book` Entity Version:
 
-<img src="./libraryTutorial/library-entityDefinitions_select_Book.png" alt="Select Book Entity Definition" width="85%"/>
+<img src="./libraryTutorial/library-entityDefinitions_select_Book.png" alt="Select Book Entity Version" width="85%"/>
 
 This displays the definition, in which the attributes of the Entity are shown:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition.png" alt="The Book Entity Definition" width="85%"/>
+<img src="./libraryTutorial/library-model-Book_entity_definition.png" alt="The Book Entity Version" width="85%"/>
 
 Of special interest is the `mlSchema` attribute, that describes the structure of a `Book`:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema.png" alt="The Book Entity Definition Attributes" width="85%"/>
+<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema.png" alt="The Book Entity Version Attributes" width="85%"/>
 
 
 A `Book` has the following attributes:
@@ -199,11 +199,11 @@ A `Book` has the following attributes:
 
 The `name` is a simple `string`, that will be shown as `Book Title` in forms:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_name.png" alt="The Book Entity Definition Attribute: 'name'" width="85%"/>
+<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_name.png" alt="The Book Entity Version Attribute: 'name'" width="85%"/>
 
 The `author` is a `uuid`, that is a reference to an instance of the `Author` Entity, a relationship commonly called a [Foreign Key](https://en.wikipedia.org/wiki/Foreign_key) in database systems:
 
-<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_author.png" alt="The Book Entity Definition Attribute: 'author'" width="85%"/>
+<img src="./libraryTutorial/library-model-Book_entity_definition_mlSchema_author.png" alt="The Book Entity Version Attribute: 'author'" width="85%"/>
 
 The `foreignKeyParams` attribute in the `tag` informs the Miroir platform of the intended interpretation for the Foreign Key: in this case the given `uuid` shall be found as primary identifier for a `Book` instance. When selecting a book in the UI, the displayed list of books shall be sorted by the `name` attribute.
 
@@ -605,7 +605,7 @@ TO BE PROVIDED
 
 You've seen how Miroir applications work from the outside and understand the core concepts. To go deeper:
 
-- Examine the Library EntityDefinitions in `library_model/`
+- Examine the Library EntityVersions in `library_model/`
 - Study the Report definitions
 - Explore how Queries and Actions are declared
 - Learn about the Transformers that we used in the Action implementation

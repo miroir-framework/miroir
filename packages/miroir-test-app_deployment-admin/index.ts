@@ -5,11 +5,21 @@ export { default as entityDeployment } from "./assets/admin_model/16dbfe28-e1d7-
 export { default as entityViewParams } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/b9765b7c-b614-4126-a0e2-634463f99937.json" with { type: "json" };
 export { default as entityImport } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ff3d211b-7eb6-473a-afbf-503bb70a5c26.json" with { type: "json" };
 
-// Admin Model - Entity Definitions  
+// Admin Model - Entity Versions  
+export { default as entityVersionAdminApplication } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" with { type: "json" };
+/** @deprecated Use entityVersionAdminApplication */
 export { default as entityDefinitionAdminApplication } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" with { type: "json" };
+export { default as entityVersionDeployment } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" with { type: "json" };
+/** @deprecated Use entityVersionDeployment */
 export { default as entityDefinitionDeployment } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" with { type: "json" };
+export { default as entityVersionViewParams } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json" with { type: "json" };
+/** @deprecated Use entityVersionViewParams */
 export { default as entityDefinitionViewParams } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json" with { type: "json" };
+export { default as entityVersionStoreBasedConfiguration } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/53edf3b4-c8ff-4de5-9f28-2d1ecda2a02a.json" with { type: "json" };
+/** @deprecated Use entityVersionStoreBasedConfiguration */
 export { default as entityDefinitionStoreBasedConfiguration } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/53edf3b4-c8ff-4de5-9f28-2d1ecda2a02a.json" with { type: "json" };
+export { default as entityVersionImport } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9f68d5aa-8def-421b-a9bc-52ed22a63e7e.json" with { type: "json" };
+/** @deprecated Use entityVersionImport */
 export { default as entityDefinitionImport } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9f68d5aa-8def-421b-a9bc-52ed22a63e7e.json" with { type: "json" };
 
 // Admin Model - Reports

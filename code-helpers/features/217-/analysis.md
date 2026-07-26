@@ -968,8 +968,6 @@ This phase must contain no architectural authority change—only the final vocab
 - Gate: `entityPresentModel.phase12.unit.test.ts`.
 
 **Still open in Phase 12:**
-- Bulk rename remaining `entityDefinition*` export prefixes for non-bootstrap EntityVersion instances (optional; aliases already cover identity symbols).
-- Docs/prompts remaining display vocabulary.
 - Migrate UI components off ED-shaped hub (separate follow-up after vocab).
 - Full non-regression gate.
 
@@ -977,6 +975,15 @@ This phase must contain no architectural authority change—only the final vocab
 - ModelEndpoint Action payloads: `entityDefinitionUuid` → `entityVersionUuid`; createEntity `entities[].entityDefinition` → `entityVersion`.
 - Call sites, MiroirTest JSON, stores, transformers updated; store `createEntities` still uses `entityDefinition` with Action→store mapping at PersistenceStoreController / Deployment.
 - Regenerated TS/Zod; phase12 gate covers Action field names.
+
+**Done in Phase 12 (export prefix rename):**
+- Non-bootstrap EntityVersion instance exports: primary `entityVersion*` (+ `entityVersionTheme`) with deprecated `entityDefinition*` aliases across miroir / library / admin deployment packages (`index.ts` + `index.d.ts`).
+- Call sites may keep using deprecated names for one release.
+
+**Done in Phase 12 (docs & prompts):**
+- AI system prompts (`miroir-ai` + standalone duplicate): Entity present-model authority + EntityVersion dual-write vocabulary.
+- User-facing docs: core-concepts, defining-entities, entity API, api index, data-architecture, library tutorial, creating-applications, DOCUMENTATION-STRUCTURE, testing comment, AGENTS.md.
+- Left alone: `docs-OLD/`, LEGACY tutorials, feature analysis under `code-helpers/` (historical), proposals, schema path `entityDefinitionRoot`.
 
 **Test gate (§11):**
 

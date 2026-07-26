@@ -3,7 +3,7 @@
 **Audience:** application authors and tool builders who need to model domain concepts in Miroir.  
 **Related:** [Core Concepts](../core-concepts.md) · [Entity API reference](../../reference/api/entity.md) · [Library tutorial](../../tutorials/library-tutorial.md) · Issues [#172](https://github.com/miroir-framework/miroir/issues/172)–[#176](https://github.com/miroir-framework/miroir/issues/176)
 
-This guide is **use-case centric**: pick the situation that matches what you are trying to do, then follow the Entity / EntityDefinition shape that fits. It does not replace the meta-model tour in Core Concepts; it answers “which kind of Entity do I need?”
+This guide is **use-case centric**: pick the situation that matches what you are trying to do, then follow the Entity / EntityVersion shape that fits. It does not replace the meta-model tour in Core Concepts; it answers “which kind of Entity do I need?”
 
 ---
 
@@ -12,15 +12,15 @@ This guide is **use-case centric**: pick the situation that matches what you are
 | Piece | Role | Library example |
 |-------|------|-----------------|
 | **Entity** | Named concept in your domain | `Book` (`e8ba151b-…`) |
-| **EntityDefinition** | Structure of that concept (`mlSchema`, PK, cache, …) | Book definition (`797dd185-…`) |
+| **EntityVersion** | Structure of that concept (`mlSchema`, PK, cache, …) | Book definition (`797dd185-…`) |
 | **Instance** | One row / value of that concept | A specific book in `library_data/` |
 
-- Entities live under `<app>_model/` (with EntityDefinitions).
+- Entities live under `<app>_model/` (with EntityVersions).
 - Instances live under `<app>_data/` (or an **external** store — see below).
 - Most Library / Admin / Miroir meta Entities use a **UUID** primary key and a **`parentUuid`** on each instance pointing at the Entity. Other shapes exist when you integrate external systems or non-UUID identity.
 
 ```
-Entity (Book)  ←── EntityDefinition (Book mlSchema, idAttribute, …)
+Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dual-write snapshot)
       ↑
    instances (The Pragmatic Programmer, …)
 ```
@@ -47,7 +47,7 @@ Entity (Book)  ←── EntityDefinition (Book mlSchema, idAttribute, …)
 **What to define**
 
 1. An **Entity** with `conceptLevel: "Model"` (or omit; data instances are implicitly data-level).
-2. An **EntityDefinition** whose `entityUuid` points at that Entity, with an `mlSchema` for attributes and relationships.
+2. An **EntityVersion** whose `entityUuid` points at that Entity, with an `mlSchema` for attributes and relationships.
 3. Default PK: leave `idAttribute` absent → **`uuid`**.
 4. Instances carry `uuid` and usually `parentUuid` = Entity uuid.
 
@@ -63,7 +63,7 @@ Entity (Book)  ←── EntityDefinition (Book mlSchema, idAttribute, …)
 }
 ```
 
-**EntityDefinition (excerpt)** — Book `mlSchema` adds domain fields; identity / parent fields come from the shared `entityDefinitionRoot` extension:
+**EntityVersion (excerpt)** — Book `mlSchema` adds domain fields; identity / parent fields come from the shared `entityDefinitionRoot` extension (schema path name; concept is EntityVersion):
 
 ```json
 {
@@ -122,7 +122,7 @@ Entity (Book)  ←── EntityDefinition (Book mlSchema, idAttribute, …)
 **What to define**
 
 1. Entity with **`conceptLevel: "External"`**.
-2. EntityDefinition with:
+2. EntityVersion with:
    - matching `conceptLevel: "External"`,
    - **`externalDataSource`** (e.g. `{ "schema": "information_schema" }`),
    - an **`idAttribute`** that matches the physical key (often composite),
@@ -140,7 +140,7 @@ Entity (Book)  ←── EntityDefinition (Book mlSchema, idAttribute, …)
 }
 ```
 
-**EntityDefinition** — Postgres `tables` (composite PK + external source):
+**EntityVersion** — Postgres `tables` (composite PK + external source):
 
 ```json
 {
@@ -168,7 +168,7 @@ Entity (Book)  ←── EntityDefinition (Book mlSchema, idAttribute, …)
 
 ## Use case 3 — Non-UUID primary key
 
-**When:** The natural identity is not a UUID (integer `oid`, business `code`, table name, …). Default Miroir Entities keep `uuid`; override with **`idAttribute`** on the EntityDefinition ([#173](https://github.com/miroir-framework/miroir/issues/173)).
+**When:** The natural identity is not a UUID (integer `oid`, business `code`, table name, …). Default Miroir Entities keep `uuid`; override with **`idAttribute`** on the Entity / EntityVersion ([#173](https://github.com/miroir-framework/miroir/issues/173)).
 
 | `idAttribute` | Meaning |
 |---------------|---------|
@@ -190,7 +190,7 @@ Helpers live in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 
 **When:** Uniqueness spans several columns (classic SQL catalogue keys).
 
-**What to set:** `idAttribute: string[]` on the EntityDefinition.
+**What to set:** `idAttribute: string[]` on the Entity (present model) or dual-written EntityVersion.
 
 **Examples (Postgres app)**
 
@@ -233,7 +233,7 @@ Helpers live in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 
 **Target behavior**
 
-- Represent EntityDefinitions that are explicitly PK-less (absence of `idAttribute` alone is **not** enough — that still defaults to `uuid`).
+- Represent EntityVersions that are explicitly PK-less (absence of `idAttribute` alone is **not** enough — that still defaults to `uuid`).
 - On refresh, **flush** in-memory contents for that Entity so incoming rows replace the previous set (avoids duplicate ghost rows).
 - Editing PK-less instances in Miroir UI is out of scope for now.
 
@@ -260,14 +260,14 @@ Treat this as a specialized external-read pattern; prefer adding a real / compos
 | Miroir | `…/miroir_model/` | `…/miroir_data/` |
 | Postgres manager | `…/postgres_model/` | external / cache |
 
-Entity files are keyed by the **Entity** uuid under the Entity’s parent Entity folder (`16dbfe28-…` for Entity). EntityDefinition files live under the EntityDefinition Entity folder (`54b9c72f-…`) and reference `entityUuid`.
+Entity files are keyed by the **Entity** uuid under the Entity’s parent Entity folder (`16dbfe28-…` for Entity). EntityVersion files live under the EntityVersion Entity folder (`54b9c72f-…`) and reference `entityUuid`.
 
 ---
 
 ## Related reading
 
-- [Core Concepts — Entity & EntityDefinition](../core-concepts.md#entity--entitydefinition)
-- [Entity & EntityDefinition API](../../reference/api/entity.md)
+- [Core Concepts — Entity & EntityVersion](../core-concepts.md#entity--entityversion)
+- [Entity & EntityVersion API](../../reference/api/entity.md)
 - [Library tutorial — editing Book](../../tutorials/library-tutorial.md)
 - [Creating applications](creating-applications.md) (placeholder; links here)
 - Feature notes: `code-helpers/features/173-FEATURE- enable non-uuid primary keys for Entities/plan.md`, `code-helpers/features/176-FEATURE- support tables & entities with composite PK/plan.md`

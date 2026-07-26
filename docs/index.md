@@ -127,7 +127,7 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 
 ### API Reference
 - [API Overview](reference/api/) - Complete API documentation
-- [Entity & EntityDefinition](reference/api/entity.md) - Data model API
+- [Entity & EntityVersion](reference/api/entity.md) - Data model API
 - [Query API](reference/api/query.md) - Data retrieval
 - [Transformer API](reference/api/transformers.md) - Data transformation
 - [Action API](reference/api/actions.md) - Side-effects and mutations

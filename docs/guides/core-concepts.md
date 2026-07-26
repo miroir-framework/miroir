@@ -10,7 +10,7 @@ This guide introduces the fundamental concepts of the Miroir Framework. Understa
 
 1. [Overview](#overview)
 2. [Meta-Model vs Model vs Data](#meta-model-vs-model-vs-data)
-3. [Entity & EntityDefinition](#entity--entitydefinition)
+3. [Entity & EntityVersion](#entity--entityversion)
 4. [Jzod: The Meta-Language](#jzod-the-meta-language)
 5. [Query](#query)
 6. [Transformer](#transformer)
@@ -46,7 +46,7 @@ This approach enables:
 ```
 ┌─────────────────────────────────────────┐
 │          META-MODEL                     │  Defines structure of Models
-│  (Entity, EntityDefinition, Query...)   │  Bootstrap: describes itself
+│  (Entity, EntityVersion, Query...)      │  Bootstrap: describes itself
 │  Located: miroir_model/                 │
 └─────────────────────────────────────────┘
                   ↓ instances of
@@ -97,38 +97,45 @@ This approach enables:
 
 ---
 
-## Entity & EntityDefinition
+## Entity & EntityVersion
 
 ### Entity
 
 An **Entity** represents a concept in your domain model (like "Book", "Author", "Customer").
+It is the **authoritative present-model** definition: it carries `mlSchema`, primary-key
+settings (`idAttribute`), view/cache fields, and related display metadata.
 
 **Key Properties:**
 - `uuid` - Unique identifier
 - `name` - Human-readable name
 - `description` - Documentation
+- `mlSchema` - Structure definition in Jzod / ML format (present model)
 
-**File Location**: `<app>_model/<applicationUuid>/<entityUuid>.json`
+**File Location**: `<app>_model/16dbfe28-…/<entityUuid>.json` (under the Entity meta-entity folder)
 
-### EntityDefinition
+### EntityVersion
 
-An **EntityDefinition** specifies the structure and attributes of an Entity using a Jzod schema.
+An **EntityVersion** is a versioned / historical snapshot of an Entity's definition
+(formerly named **EntityDefinition** in older docs and TypeScript aliases). It is **not**
+the live present-model authority — the Entity is. Compatibility dual-write may still
+persist a matching EntityVersion copy.
 
 **Key Properties:**
-- `uuid` - Unique identifier
-- `parentUuid` - References the Entity it defines
-- `name` - Version name (e.g., "Book_1", "Book_2")
-- `entityUuid` - The Entity being defined
-- `jzodSchema` - Structure definition in Jzod format
+- `uuid` - Unique identifier for this version snapshot
+- `parentUuid` - References the EntityVersion meta-entity (`54b9c72f-…`)
+- `name` - Version name (e.g., "Book", "Book_v2")
+- `entityUuid` - The Entity this version describes
+- `mlSchema` - Structure definition in Jzod / ML format
 
-**Example: Book EntityDefinition**
+**Example: Book EntityVersion**
 ```json
 {
   "uuid": "e8ba151b-1111-4cc3-9a83-3459d309ccf5",
-  "parentUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentName": "EntityVersion",
   "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
   "name": "Book",
-  "jzodSchema": {
+  "mlSchema": {
     "type": "object",
     "definition": {
       "uuid": {
@@ -163,10 +170,10 @@ An **EntityDefinition** specifies the structure and attributes of an Entity usin
 
 ### Versioning
 
-EntityDefinitions enable schema evolution:
-- Keep old EntityDefinition for existing data
-- Create new EntityDefinition for updated schema
-- Migration transformers convert between versions
+EntityVersions enable optional schema history:
+- Keep old EntityVersion snapshots for existing data / history
+- Evolve the live Entity present model (and optionally snapshot a new EntityVersion)
+- Migration transformers convert between versions when needed
 
 ---
 
@@ -782,7 +789,7 @@ A **Deployment** is a running instance of an Application with specific configura
 Every application has three sections:
 
 1. **admin** - Miroir framework metadata (deployments, menus, etc.)
-2. **model** - Application model (entities, entity definitions, queries, reports, endpoints)
+2. **model** - Application model (entities, entity versions, queries, reports, endpoints)
 3. **data** - Application data (entity instances)
 
 ---
@@ -793,7 +800,7 @@ Every application has three sections:
 
 ```
 1. Define Entities (Model)
-   └─> Create Entity + EntityDefinition with Jzod schema
+   └─> Create Entity with present-model mlSchema (+ optional EntityVersion dual-write)
 
 2. Create Data (Instances)
    └─> Use Actions to create/update/delete instances
@@ -812,7 +819,7 @@ Every application has three sections:
 
 ### Example: Complete Book Feature (⚠️DUPLICATE OF HOME PAGE, USED JSON SCHEMA-LIKE SYNTAX ⚠️)
 
-**1. Entity Definition**
+**1. Entity + EntityVersion**
 ```json
 {
   "entity": {

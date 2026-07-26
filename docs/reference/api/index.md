@@ -10,7 +10,7 @@ This API reference is generated from Jzod schemas defined in the Miroir meta-mod
 
 The Miroir Framework API is defined through Jzod schemas and consists of several core concepts:
 
-- **[Entity & EntityDefinition](entity.md)** - Data model definitions
+- **[Entity & EntityVersion](entity.md)** - Data model definitions
 - **[Query](query.md)** - Data retrieval and extraction
 - **[Transformer](transformers.md)** - Data transformation and manipulation
 - **[Action](actions.md)** - Side-effects and mutations
@@ -26,7 +26,7 @@ The Miroir Framework API is defined through Jzod schemas and consists of several
 The following concepts describe themselves (bootstrapped):
 
 - **Entity** - UUID: `381ab1be-337f-4198-b1d3-f686867fc1dd`
-- **EntityDefinition** - UUID: `bdd7ad43-f0fc-4716-90c1-87454c40dd95`
+- **EntityVersion** - UUID: `bdd7ad43-f0fc-4716-90c1-87454c40dd95`
 
 ### Model Concepts
 
@@ -48,7 +48,7 @@ packages/miroir-core/src/assets/miroir_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530b
 ```
 
 **Entity**: `381ab1be-337f-4198-b1d3-f686867fc1dd.json`
-**EntityDefinition**: `bdd7ad43-f0fc-4716-90c1-87454c40dd95.json`
+**EntityVersion**: `bdd7ad43-f0fc-4716-90c1-87454c40dd95.json`
 **Query**: `359f1f9b-7260-4d76-a864-72c839b9711b.json`
 **Transformer**: `54a16d69-c1f0-4dd7-aba4-a2cda883586c.json`
 **Report**: `952d2c65-4da2-45c2-9394-a0920ceedfb6.json`
@@ -75,7 +75,7 @@ npm run devBuild -w miroir-core
 ## API Documentation by Category
 
 ### Data Model
-- **[Entity & EntityDefinition](entity.md)** - Define your domain model
+- **[Entity & EntityVersion](entity.md)** - Define your domain model
 
 ### Data Access
 - **[Query API](query.md)** - Retrieve and filter data
@@ -114,7 +114,7 @@ npm run devBuild -w miroir-core
 ### Creating an Entity
 
 ```typescript
-import type { Entity, EntityDefinition } from '@miroir-framework/miroir-core';
+import type { Entity, EntityVersion } from '@miroir-framework/miroir-core';
 
 const bookEntity: Entity = {
   uuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -123,7 +123,7 @@ const bookEntity: Entity = {
   description: "A book in the library"
 };
 
-const bookEntityDefinition: EntityDefinition = {
+const bookEntityVersion: EntityVersion = {
   uuid: "e8ba151b-1111-4cc3-9a83-3459d309ccf5",
   parentUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   name: "Book",
@@ -198,7 +198,7 @@ dispatch(createBookAction);
 
 Click on any topic below for complete API documentation:
 
-- **[Entity & EntityDefinition →](entity.md)**
+- **[Entity & EntityVersion →](entity.md)**
 - **[Query →](query.md)**
 - **[Transformer →](transformers.md)**
 - **[Action →](actions.md)**
