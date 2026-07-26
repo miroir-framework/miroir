@@ -7,7 +7,7 @@ GitHub issue: https://github.com/miroir-framework/miroir/issues/217
 This issue is the first prerequisite for all further work on Issue #9:
 
 1. **#217 — Entity becomes the authoritative present-model definition**
-2. #216 — effective Application Versions and freeze Action, redesigned on top of #217
+2. #216 — Application Versions from frozen model state (release-management primitive; Phase 10 closes freeze lifecycle; full #216 adds inter-version history)
 3. #9 WP2 — replayable Application Version migrations
 4. #215 — paired model/data migrations
 
@@ -881,20 +881,27 @@ Each slice uses Entity end-to-end and retains legacy EntityDefinition fallback o
 
 ### Phase 10 — Separate optional version history
 
-- redesign #216:
-  - unversioned application: no `current` Application Version is required;
-  - versioned application: freeze snapshots current Entities into immutable EntityDefinitions/EntityVersions;
+- redesign #216 (canonical analysis:
+  `code-helpers/features/216-FEATURE-application-versions-and-freeze/analysis.md`):
+  - unversioned application: no Application Version / freeze required;
+  - versioned application: user-triggered freeze snapshots current Entities into immutable historical copies (release-management primitive; full release product later);
+  - versioned-app **baseline**: between create and first freeze, Entity island only — no mandatory `current` tip; first freeze creates *V1*;
+  - inter-version history (diff vs action log) is **#216 beyond Phase 10** — not required to close this phase;
   - `ApplicationVersionCrossEntityDefinition` maps only Application Versions to historical copies;
-  - live current state is never reconstructed through that mapping.
-- enforce immutable `versioningEnabled`;
-- define initial baseline behavior for versioned applications.
+  - live current state is never reconstructed through that mapping;
+  - always-present `current` tip is **not** an acceptance criterion (optional implementation aid only if action-log accrual needs an anchor later).
+- enforce immutable `versioningEnabled` (policy + LocalCache done; audit remaining persist paths);
+- define initial baseline behavior for versioned applications (§1.1 of #216 analysis).
 
-**Test gate (§11):**
+**Test gate (§11) — Phase 10 core only:**
 
-- Contracts from §11.1 still open: versioned vs unversioned lifecycle; snapshot immutability/copy fidelity; live mutation does not mutate snapshot.
+- §11.1: versioned vs unversioned lifecycle (freeze allow/reject; baseline before first freeze).
+- Snapshot immutability / copy fidelity; live Entity mutation does not mutate historical snapshot.
 - Freeze Action: §11.3 snapshot equality (`EntityVersion == project(Entity)` at freeze).
 - Unversioned app rejects freeze/version Actions; versioned app allows them.
-- `assertVersioningEnabledImmutable` enforced on persisted updates.
+- `assertVersioningEnabledImmutable`: LocalCache already enforces; Phase 10 confirms no SelfApplication update bypass remains (ownership: #217 / LocalCache — not reimplemented in #216). See #216 analysis §5.1 / §8.1.
+
+**Explicitly deferred to full #216 (not Phase 10 gate):** Option A/B inter-version history implementation, Cross schema polish, WP2 history-edge artefacts.
 
 ### Phase 11 — Remove live EntityDefinition dependency
 
@@ -948,10 +955,11 @@ This phase must contain no architectural authority change—only the final vocab
 | Legacy Entity + EntityDefinition enrichment | 2 | Done (`phase2`) |
 | duplicate-field equality and mismatch detection | 0 / 2 | Done (`unit` + `phase2`) |
 | ambiguous/missing EntityDefinition failures | 2 | Done (`phase2`) |
-| versioning capability immutability | 1 policy / 5+ Action wire | **Done for LocalCache updateInstance** (Redux + Zustand); freeze/version Actions still Phase 10 |
-| versioned vs unversioned lifecycle | 10 (#216) | Deferred |
-| snapshot immutability and copy fidelity | 10 | Deferred |
-| live Entity mutation does not mutate historical snapshot | 10 | Deferred |
+| versioning capability immutability | 1 policy / 5+ Action wire / **10 audit** | **Done for LocalCache updateInstance** (Redux + Zustand); Phase 10 re-asserts no bypass; freeze/version Action gates still Phase 10 |
+| versioned vs unversioned lifecycle | 10 (#216 §8.1) | Deferred — Phase 10 core |
+| snapshot immutability and copy fidelity | 10 (#216 §8.1) | Deferred — Phase 10 core |
+| live Entity mutation does not mutate historical snapshot | 10 (#216 §8.1) | Deferred — Phase 10 core |
+| Inter-version history (diff vs action log) | **#216 §8.2** (beyond Phase 10) | Deferred — full #216 |
 | UI fields (`viewAttributes`, default details report) | 0 lock / 3 populate | Done (`strategy`) |
 | Codegen Entity.mlSchema ≡ EntityDefinition.mlSchema | 4 | Done (`strategy`) |
 | Dual-write `project(Entity) == project(ED copy)` | 4 / 5 / 6 mutations | **Done for ModelAction + store backends** (`modelEntityDualWrite*` + store mixins); detector available for reload |
@@ -1058,16 +1066,18 @@ Recommended action: supersede or rewrite #15 after #217. If instance-level prove
 
 ### 12.2 Issue #216
 
-#216’s existing design requires every application to have an Application Version named `current`, with mappings to EntityDefinitions.
+#216’s **original** design required every application to have an Application Version named `current`, with mappings to EntityDefinitions used as the present-model index.
 
-#217 changes that premise:
+#217 changes that premise; #216 has been **fully revised**:
 
 - present state is always the Entity island;
-- versioning may be disabled;
-- `current` Application Version can only exist for version-enabled applications, and even there it must not be the authority for present-state model reads;
-- freeze copies Entities into EntityVersions and maps the numbered Application Version to those copies.
+- versioning may be disabled (`versioningEnabled`);
+- a `current` Application Version is **not** required for present-model authority (and may be unnecessary entirely — see open tip vs action-log-anchor discussion);
+- user-triggered freeze creates Application Versions from frozen Entity state — the primitive for a later **release management** product;
+- **Phase 10** closes freeze snapshot + versioning lifecycle (§8.1 of #216 analysis);
+- **full #216** adds inter-version history (snapshot **diff** vs accrued **action log**, §8.2).
 
-#216 must be revised before implementation.
+Canonical analysis: `code-helpers/features/216-FEATURE-application-versions-and-freeze/analysis.md`.
 
 ### 12.3 Issue #9 WP2
 
