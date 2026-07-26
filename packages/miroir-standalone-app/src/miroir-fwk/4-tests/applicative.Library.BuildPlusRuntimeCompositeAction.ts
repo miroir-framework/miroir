@@ -235,7 +235,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 //       interpolation: "build",
                 //       referenceName: "newEntityDefinitionUuid",
                 //     },
-                //     parentName: "EntityDefinition",
+                //     parentName: "EntityVersion",
                 //     parentUuid: {
                 //       transformerType: "getFromParameters",
                 //       interpolation: "build",
@@ -425,7 +425,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                             interpolation: "build",
                             referenceName: "createEntity_newEntity",
                           },
-                          entityDefinition: {
+                          entityVersion: {
                             transformerType: "getFromParameters",
                             interpolation: "build",
                             referenceName: "createEntity_newEntityDefinition",
@@ -954,7 +954,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                           interpolation: "build",
                           referenceName: "newEntityDefinitionUuid",
                         },
-                        parentName: "EntityDefinition",
+                        parentName: "EntityVersion",
                         parentUuid: {
                           transformerType: "getFromParameters",
                           interpolation: "build",

@@ -126,7 +126,7 @@ docs-new/
 │   │
 │   └── api/                        # API reference (auto-generated from Jzod)
 │       ├── index.md                # API overview ⚠️⚠️⚠️
-│       ├── entity.md               # Entity & EntityDefinition ⚠️⚠️⚠️
+│       ├── entity.md               # Entity & EntityVersion ⚠️⚠️⚠️
 │       ├── query.md                # Query API ⚠️⚠️⚠️
 │       ├── transformers.md         # Transformer API ⚠️⚠️⚠️
 │       ├── actions.md              # Action API ⚠️⚠️⚠️

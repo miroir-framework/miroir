@@ -10,10 +10,12 @@ Related:
 - WP1 TDD plan: `./wp1-tdd-implementation-plan.md` (all phases ✅ DONE)
 - **First prerequisite:** Entity becomes the authoritative present model and
   version history becomes optional — https://github.com/miroir-framework/miroir/issues/217 —
-  analysis `./pre-wp2-analysis-entity-authoritative-present-model.md`
-- **Second prerequisite, to be redesigned after #217:** effective Application
-  Versions + freeze Action — https://github.com/miroir-framework/miroir/issues/216 —
-  analysis `./wp-intermediate-analysis-current-version-and-freeze.md`
+  analysis [`../217-/analysis.md`](../217-/analysis.md)
+- **Second prerequisite:** Application Versions from frozen model state (and
+  optional inter-version history) — https://github.com/miroir-framework/miroir/issues/216 —
+  analysis [`../216-FEATURE-application-versions-and-freeze/analysis.md`](../216-FEATURE-application-versions-and-freeze/analysis.md)
+  (supersedes the old always-`current` tip design in
+  `./wp-intermediate-analysis-current-version-and-freeze.md`)
 - Principles diagram: `./issue 9 WP2 principles.jpg`
 - Follow-up (out of WP2): paired **data migrations** for model Actions — https://github.com/miroir-framework/miroir/issues/215
 

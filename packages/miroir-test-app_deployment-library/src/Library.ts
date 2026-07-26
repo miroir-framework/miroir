@@ -115,7 +115,7 @@ const libraryAppReportsByEntityName = {
 //   reports: Object.values(libraryAppReportsByEntityName).flat() as Report[],
 //   storedQueries: [
 //   ],
-//   applicationVersionCrossEntityDefinition: [
+//   applicationVersionCrossEntityVersion: [
 //   ],
 //   applications: []
 // };
@@ -169,7 +169,7 @@ export const defaultLibraryAppModel: MetaModel = {
       ],
       tests: [],
       themes: [],
-      applicationVersionCrossEntityDefinition: [],
+      applicationVersionCrossEntityVersion: [],
       storedQueries: [],
       jzodSchemas: [],
       applicationVersions: [

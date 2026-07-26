@@ -425,13 +425,14 @@
                   }
                 ]
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "validations": [
                   {
                     "type": "uuid"
                   }
-                ]
+                ],
+                "optional": true
               },
               "addColumns": {
                 "type": "array",
@@ -564,16 +565,22 @@
                       "application": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": ["payload", "application"]
+                        "referencePath": [
+                          "payload",
+                          "application"
+                        ]
                       },
-                      "applicationSection": "model", 
+                      "applicationSection": "model",
                       "queryExecutionStrategy": "storage",
                       "query": {
                         "queryType": "boxedQueryWithExtractorCombinerTransformer",
                         "application": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": ["payload", "application"]
+                          "referencePath": [
+                            "payload",
+                            "application"
+                          ]
                         },
                         "extractors": {
                           "entityDefinitions": {
@@ -584,7 +591,10 @@
                             "instanceUuid": {
                               "transformerType": "getFromContext",
                               "interpolation": "runtime",
-                              "referencePath": ["payload", "sourceEntityDefinitionUuid"]
+                              "referencePath": [
+                                "payload",
+                                "sourceEntityDefinitionUuid"
+                              ]
                             }
                           }
                         }
@@ -604,16 +614,22 @@
                       "application": {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referencePath": ["payload", "application"]
+                        "referencePath": [
+                          "payload",
+                          "application"
+                        ]
                       },
-                      "applicationSection": "model", 
+                      "applicationSection": "model",
                       "queryExecutionStrategy": "storage",
                       "query": {
                         "queryType": "boxedQueryWithExtractorCombinerTransformer",
                         "application": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": ["payload", "application"]
+                          "referencePath": [
+                            "payload",
+                            "application"
+                          ]
                         },
                         "extractors": {
                           "entityDefinitions": {
@@ -624,7 +640,10 @@
                             "instanceUuid": {
                               "transformerType": "getFromContext",
                               "interpolation": "runtime",
-                              "referencePath": ["payload", "targetEntityDefinitionUuid"]
+                              "referencePath": [
+                                "payload",
+                                "targetEntityDefinitionUuid"
+                              ]
                             }
                           }
                         }
@@ -640,22 +659,35 @@
                     "application": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["payload", "application"]
+                      "referencePath": [
+                        "payload",
+                        "application"
+                      ]
                     },
                     "entityName": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["targetEntityDefinition", "entityDefinitions", "name"]
+                      "referencePath": [
+                        "targetEntityDefinition",
+                        "entityDefinitions",
+                        "name"
+                      ]
                     },
                     "entityUuid": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["payload", "targetEntityUuid"]
+                      "referencePath": [
+                        "payload",
+                        "targetEntityUuid"
+                      ]
                     },
-                    "entityDefinitionUuid": {
+                    "entityVersionUuid": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
-                      "referencePath": ["payload", "targetEntityDefinitionUuid"]
+                      "referencePath": [
+                        "payload",
+                        "targetEntityDefinitionUuid"
+                      ]
                     },
                     "addColumns": {
                       "transformerType": "mapList",
@@ -666,12 +698,18 @@
                         "entityDefinition": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": ["sourceEntityDefinition", "entityDefinitions"]
+                          "referencePath": [
+                            "sourceEntityDefinition",
+                            "entityDefinitions"
+                          ]
                         },
                         "attributeNames": {
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
-                          "referencePath": ["payload", "columns"]
+                          "referencePath": [
+                            "payload",
+                            "columns"
+                          ]
                         }
                       },
                       "referenceToOuterObject": "attribute",
@@ -682,12 +720,18 @@
                           "name": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["attribute", "0"]
+                            "referencePath": [
+                              "attribute",
+                              "0"
+                            ]
                           },
                           "definition": {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["attribute", "1"]
+                            "referencePath": [
+                              "attribute",
+                              "1"
+                            ]
                           }
                         }
                       }
@@ -754,13 +798,14 @@
                   }
                 ]
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "validations": [
                   {
                     "type": "uuid"
                   }
-                ]
+                ],
+                "optional": true
               },
               "targetValue": {
                 "type": "string"
@@ -829,7 +874,7 @@
                         "relativePath": "entity"
                       }
                     },
-                    "entityDefinition": {
+                    "entityVersion": {
                       "type": "schemaReference",
                       "tag": {
                         "value": {
@@ -838,8 +883,9 @@
                       },
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "entityDefinition"
-                      }
+                        "relativePath": "entityVersion"
+                      },
+                      "optional": true
                     }
                   }
                 }
@@ -899,13 +945,14 @@
                   }
                 }
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "tag": {
                   "value": {
                     "canBeTemplate": true
                   }
-                }
+                },
+                "optional": true
               }
             }
           }

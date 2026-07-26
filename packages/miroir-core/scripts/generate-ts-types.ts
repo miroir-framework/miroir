@@ -12,32 +12,32 @@ import {
   jzodToZodTextAndZodSchemaForTsGeneration,
 } from "@miroir-framework/jzod-ts";
 
-import { entityDefinitionAdminApplication, entityDefinitionDeployment } from "miroir-test-app_deployment-admin";
+import { entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
 
+// Leftover Bundle EntityDefinition (Entity counterpart not exported from admin package with this UUID).
 import entityDefinitionBundleV1 from "../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json";
 // import miroirTransformersJzodSchemas from "../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json";
 
 
 import {
   domainEndpointVersionV1,
-  entityDefinitionCommit,
-  entityDefinitionEndpoint,
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinitionV1,
-  entityDefinitionJzodSchemaV1,
-  entityDefinitionMenu,
-  entityDefinitionQueryVersionV1,
-  entityDefinitionReportV1,
-  entityDefinitionRunner,
-  // entityDefinitionSelfApplicationDeploymentConfiguration,
-  entityDefinitionSelfApplicationModelBranch,
-  entityDefinitionSelfApplicationV1,
-  entityDefinitionSelfApplicationVersionV1,
-  entityDefinitionTest,
-  entityDefinitionTransformerDefinition,
-  entityDefinitionMiroirTest,
-  entityDefinitionApplicationEvolutionTrace,
-  entityDefinitionApplicationEvolutionTraceEvent,
+  entityApplicationEvolutionTrace,
+  entityApplicationEvolutionTraceEvent,
+  entityCommit,
+  entityEndpointVersion,
+  entityEntity,
+  entityEntityDefinition,
+  entityJzodSchema,
+  entityMenu,
+  entityMiroirTest,
+  entityQueryVersion,
+  entityReport,
+  entityRunner,
+  entitySelfApplication,
+  entitySelfApplicationModelBranch,
+  entitySelfApplicationVersion,
+  entityTest,
+  entityTransformerDefinition,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
   localCacheEndpointVersionV1,
@@ -79,7 +79,11 @@ async function build() {
 build();
 
 // ################################################################################################
-function entityDefinitionMLSchema(e:any /*EntityDefinition*/): any /*JzodObject*/ {
+/** Resolve mlSchema from Entity (preferred) or legacy EntityDefinition (#217 Phase 4). */
+function presentModelMLSchema(e: any /*Entity | EntityDefinition*/): any /*JzodObject*/ {
+  if (!e?.mlSchema) {
+    throw new Error(`Present-model source ${e?.name ?? e?.uuid ?? "<unknown>"} has no mlSchema`);
+  }
   if (
     e.mlSchema.extend &&
     (Array.isArray(e.mlSchema.extend) ||
@@ -87,7 +91,7 @@ function entityDefinitionMLSchema(e:any /*EntityDefinition*/): any /*JzodObject*
       e.mlSchema.extend.definition.relativePath !== "entityDefinitionRoot")
   ) {
     throw new Error(
-      "Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an EntityDefinition",
+      "Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an Entity",
     );
   }
   const extendedMLSchema: any /*JzodObject*/ | undefined= e.mlSchema.extend ? entityDefinitionRoot as any /*JzodObject*/ : undefined;
@@ -98,6 +102,11 @@ function entityDefinitionMLSchema(e:any /*EntityDefinition*/): any /*JzodObject*
       ...e.mlSchema.definition,
     }
   }
+}
+
+/** @deprecated Prefer {@link presentModelMLSchema} with Entity assets. */
+function entityDefinitionMLSchema(e:any /*EntityDefinition*/): any /*JzodObject*/ {
+  return presentModelMLSchema(e);
 }
 // ################################################################################################
 async function fileExists(filePath: string): Promise<boolean> {
@@ -110,10 +119,14 @@ async function fileExists(filePath: string): Promise<boolean> {
 }
 
 async function writeFile(jzodElement:any, targetFileName: any, jzodSchemaVariableName: any, newFileContents: any) {
+  const contents =
+    typeof newFileContents === "string"
+      ? newFileContents
+      : await newFileContents;
   if (targetFileName && await fileExists(targetFileName)) {
-    const oldFileContents = await fs.readFile(targetFileName).toString();
-    if (newFileContents != oldFileContents) {
-      await fs.writeFile(targetFileName, newFileContents);
+    const oldFileContents = await fs.readFile(targetFileName, "utf8");
+    if (contents != oldFileContents) {
+      await fs.writeFile(targetFileName, contents, "utf8");
       console.log("writeFile", targetFileName, "generated!");
     } else {
       console.log(
@@ -121,7 +134,7 @@ async function writeFile(jzodElement:any, targetFileName: any, jzodSchemaVariabl
       );
     }
   } else {
-    await fs.writeFile(targetFileName, newFileContents);
+    await fs.writeFile(targetFileName, contents, "utf8");
   }
   
 }
@@ -294,14 +307,34 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
     generateTypeAnotationsForSchema,
     extendedTsTypesText,
   );
-  const newFileContents = newFileContentsNotFormated;
+  let newFileContents =
+    typeof newFileContentsNotFormated === "string"
+      ? newFileContentsNotFormated
+      : await newFileContentsNotFormated;
+  // #217 Phase 12: fold deprecated aliases into the same write to avoid a read/write race
+  // that can truncate miroirFundamentalType.ts down to only the alias block.
+  const phase12AliasBlock = `
+
+// ################################################################################################
+// #217 Phase 12 — deprecated vocabulary aliases (EntityDefinition → EntityVersion)
+/** @deprecated Use EntityVersion */
+export type EntityDefinition = EntityVersion;
+/** @deprecated Use entityVersion */
+export const entityDefinition = entityVersion;
+`;
+  if (
+    targetFileName.includes("miroirFundamentalType") &&
+    !newFileContents.includes("export type EntityDefinition = EntityVersion")
+  ) {
+    newFileContents = newFileContents + phase12AliasBlock;
+  }
   console.log(
     "generateTsTypeFileFromJzodSchemaInParallel generateTypes took",
     Date.now() - generateTypesStart,
     "ms"
   );
-  console.log("generateTsTypeFileFromJzodSchemaInParallel writing file:", targetFileName, (await newFileContents).length);
-  writeFile(jzodElement, targetFileName, jzodSchemaVariableName, newFileContents);
+  console.log("generateTsTypeFileFromJzodSchemaInParallel writing file:", targetFileName, newFileContents.length);
+  await writeFile(jzodElement, targetFileName, jzodSchemaVariableName, newFileContents);
   console.log("generateTsTypeFileFromJzodSchemaInParallel file written OK:", targetFileName);
 }
 
@@ -324,7 +357,7 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
     try {
       miroirFundamentalJzodSchema = getMiroirFundamentalJzodSchema(
         entityDefinitionBundleV1,
-        entityDefinitionCommit,
+        entityCommit,
         modelEndpointVersionV1,
         storeManagementEndpoint,
         instanceEndpointVersionV1,
@@ -337,26 +370,26 @@ async function generateSchemas(generateFundamentalJzodSchema = true) {
         jzodSchemajzodMiroirBootstrapSchema,
         transformerJzodSchema,
         [],//[transformerMenuV1],
-        entityDefinitionAdminApplication,
-        entityDefinitionSelfApplicationV1,
-        entityDefinitionSelfApplicationVersionV1,
-        entityDefinitionSelfApplicationModelBranch,
-        entityDefinitionDeployment,
-        entityDefinitionEntity,
-        entityDefinitionEntityDefinitionV1,
-        entityDefinitionJzodSchemaV1,
-        entityDefinitionMenu,
-        entityDefinitionQueryVersionV1,
-        entityDefinitionReportV1,
-        entityDefinitionRunner,
-        entityDefinitionTest,
+        entityApplicationForAdmin,
+        entitySelfApplication,
+        entitySelfApplicationVersion,
+        entitySelfApplicationModelBranch,
+        entityDeployment,
+        entityEntity,
+        entityEntityDefinition,
+        entityJzodSchema,
+        entityMenu,
+        entityQueryVersion,
+        entityReport,
+        entityRunner,
+        entityTest,
         // entityDefinitionTransformerTest,
         // entityDefinitionUnitTest,
-        entityDefinitionMiroirTest,
-        entityDefinitionTransformerDefinition,
-        entityDefinitionEndpoint,
-        entityDefinitionApplicationEvolutionTrace,
-        entityDefinitionApplicationEvolutionTraceEvent,
+        entityMiroirTest,
+        entityTransformerDefinition,
+        entityEndpointVersion,
+        entityApplicationEvolutionTrace,
+        entityApplicationEvolutionTraceEvent,
       );
       // console.log("miroir-core generateSchemas miroirFundamentalJzodSchema:", miroirFundamentalJzodSchema);
       _t_getMiroirFundamental = Date.now() - generateSchemasStartTime;

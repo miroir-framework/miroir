@@ -14,7 +14,7 @@ describe('analyzeForeignKeyAttributes', () => {
     definition: Record<string, any>
   ): EntityDefinition => ({
     uuid: `${entityUuid}-def`,
-    parentName: "EntityDefinition",
+    parentName: "EntityVersion",
     parentUuid: "parent-uuid",
     conceptLevel: "Model" as any,
     name: `${name}Definition`,
@@ -218,6 +218,45 @@ describe('analyzeForeignKeyAttributes', () => {
       expect(result).toHaveLength(2);
       expect(result.find(fk => fk.attributeName === 'authorUuid')).toBeDefined();
       expect(result.find(fk => fk.attributeName === 'publisherUuid')).toBeDefined();
+    });
+
+    it('should analyze Entity present-model carriers the same as EntityDefinitions (Phase 8)', () => {
+      const bookEntity = {
+        uuid: "book-uuid",
+        name: "Book",
+        mlSchema: bookEntityDef.mlSchema,
+      };
+      const authorEntity = {
+        uuid: "author-uuid",
+        name: "Author",
+        mlSchema: authorEntityDef.mlSchema,
+      };
+      const publisherEntity = {
+        uuid: "publisher-uuid",
+        name: "Publisher",
+        mlSchema: publisherEntityDef.mlSchema,
+      };
+      const countryEntity = {
+        uuid: "country-uuid",
+        name: "Country",
+        mlSchema: countryEntityDef.mlSchema,
+      };
+
+      const fromEntity = analyzeForeignKeyAttributes(
+        bookEntity,
+        [bookEntity, authorEntity, publisherEntity, countryEntity],
+        { includeTransitive: true },
+      );
+      const fromDefinition = analyzeForeignKeyAttributes(
+        bookEntityDef,
+        [bookEntityDef, authorEntityDef, publisherEntityDef, countryEntityDef],
+        { includeTransitive: true },
+      );
+
+      expect(fromEntity.map((fk) => fk.targetEntityUuid).sort()).toEqual(
+        fromDefinition.map((fk) => fk.targetEntityUuid).sort(),
+      );
+      expect(fromEntity.filter((fk) => fk.isDirect)).toHaveLength(2);
     });
 
     it('should handle circular foreign key references', () => {

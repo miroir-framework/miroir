@@ -45,8 +45,17 @@ export class IndexedDbStoreSection
     // This is required so that getEntityUuids() / hasSubLevel() return correct results after
     // a fresh open(), enabling upsertInstance / deleteInstance guards to pass correctly.
     this.localUuidIndexedDb.registerSubLevelsWithoutClearing(entities.map(e => e.uuid));
-    // Register idAttribute for non-UUID PK entities
+    // #217 Phase 11 — register idAttribute from Entity first; ED map is legacy fill-in only.
+    for (const entity of entities) {
+      const idAttr = entity.idAttribute ?? "uuid";
+      if (idAttr !== "uuid") {
+        this.entityIdAttributes[entity.uuid] = idAttr;
+      }
+    }
     for (const ed of entityDefinitions) {
+      if (this.entityIdAttributes[ed.entityUuid] !== undefined) {
+        continue;
+      }
       const idAttr = (ed as any).idAttribute ?? "uuid";
       if (idAttr !== "uuid") {
         this.entityIdAttributes[ed.entityUuid] = idAttr;
@@ -74,7 +83,7 @@ export class IndexedDbStoreSection
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
@@ -86,8 +95,7 @@ export class IndexedDbStoreSection
       "Entities",
       this.localUuidIndexedDb.getSubLevels()
     );
-    if (entity.uuid != entityDefinition.entityUuid) {
-      // inconsistent input, raise exception
+    if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
       log.error(
         this.logHeader,
         "createStorageSpaceForInstancesOfEntity",
@@ -110,8 +118,8 @@ export class IndexedDbStoreSection
         );
       }
     }
-    // Register idAttribute for non-UUID PK entities
-    const idAttr = (entityDefinition as any).idAttribute ?? "uuid";
+    // Register idAttribute for non-UUID PK entities (#217 Phase 11: Entity first)
+    const idAttr = entity.idAttribute ?? entityDefinition?.idAttribute ?? "uuid";
     if (idAttr !== "uuid") {
       this.entityIdAttributes[entity.uuid] = idAttr;
     }
@@ -148,7 +156,7 @@ export class IndexedDbStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.warn(
       this.logHeader,

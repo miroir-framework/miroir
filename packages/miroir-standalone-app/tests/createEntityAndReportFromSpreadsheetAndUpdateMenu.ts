@@ -53,7 +53,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                     "transformerType": "getFromParameters",
                     "referenceName": "newEntityDefinitionUuid"
                   },
-                  "parentName": "EntityDefinition",
+                  "parentName": "EntityVersion",
                   "parentUuid": {
                     "transformerType": "getFromParameters",
                     "referencePath": ["entityEntityDefinition", "uuid"]
@@ -241,7 +241,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                         "transformerType": "getFromParameters",
                         "referenceName": "createEntity_newEntity"
                       },
-                      "entityDefinition": {
+                      "entityVersion": {
                         "transformerType": "getFromParameters",
                         "referenceName": "createEntity_newEntityDefinition"
                       }
@@ -696,7 +696,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                       "transformerType": "getFromParameters",
                       "referenceName": "newEntityDefinitionUuid"
                     },
-                    "parentName": "EntityDefinition",
+                    "parentName": "EntityVersion",
                     "parentUuid": {
                       "transformerType": "getFromParameters",
                       "referencePath": ["entityEntityDefinition", "uuid"]
@@ -857,7 +857,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
 
 
 const entityDefinition = {
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "name": "Test",
   "uuid": "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",

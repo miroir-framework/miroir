@@ -4,7 +4,6 @@ import {
   ApplicationSection,
   Domain2QueryReturnType,
   Entity,
-  EntityDefinition,
   EntityInstance,
   LoggerInterface,
   MetaModel,
@@ -13,13 +12,15 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
   defaultSelfApplicationDeploymentMap,
-  entityDefinitionMLSchema,
+  entityWithResolvedMLSchema,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
   resolvePathOnObject,
+  resolvePresentEntityFromModel,
   type ApplicationDeploymentMap,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type JzodObject,
+  type ObjectInstanceReportSection,
   type ReportSection,
   type SyncQueryTemplateRunnerParams,
 } from "miroir-core";
@@ -171,10 +172,15 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       ? resolvePathOnObject(reportDefinitionFromFormik, props.reportSectionPath)
       : undefined;
 
+  // Narrow before reading definition.parentUuid / label (ReportSection definition is a union).
+  const objectInstanceReportSection: ObjectInstanceReportSection | undefined =
+    reportSectionDefinitionFromFormik?.type === "objectInstanceReportSection"
+      ? reportSectionDefinitionFromFormik
+      : undefined;
+
   // Hooks must run even when section type is wrong — throw after all hooks below.
   const unsupportedEntityInstanceSectionType =
-    reportSectionDefinitionFromFormik?.type &&
-    reportSectionDefinitionFromFormik?.type !== "objectInstanceReportSection"
+    reportSectionDefinitionFromFormik && !objectInstanceReportSection
       ? reportSectionDefinitionFromFormik.type
       : undefined;
 
@@ -227,21 +233,23 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     ]);
   
 
-  const targetEntityUuid: Uuid | undefined = reportSectionDefinitionFromFormik?.definition?.parentUuid;
+  const targetEntityUuid: Uuid | undefined =
+    objectInstanceReportSection?.definition?.parentUuid;
 
-  const currentReportTargetEntity: Entity | undefined =
-    entities?.find((e) => e?.uuid === targetEntityUuid);
-
-  const currentReportSectionTargetEntityDefinition: EntityDefinition | undefined =
-    currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection??"data"]?.entityDefinitions?.find(
-        (e) => e?.entityUuid === targetEntityUuid
+  const currentReportTargetEntity: Entity | undefined = resolvePresentEntityFromModel(
+    {
+      entities,
+      entityDefinitions:
+        currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection ?? "data"]
+          ?.entityDefinitions,
+    },
+    targetEntityUuid ?? "",
   );
-  const currentFlattenedReportSectionTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportSectionTargetEntityDefinition?{
-      ...currentReportSectionTargetEntityDefinition,
-      mlSchema: entityDefinitionMLSchema(currentReportSectionTargetEntityDefinition)
-    }:undefined
-  ;
+
+  const currentFlattenedReportSectionTargetEntityMlSchema: JzodObject | undefined =
+    currentReportTargetEntity
+      ? (entityWithResolvedMLSchema(currentReportTargetEntity).mlSchema as JzodObject)
+      : undefined;
 
   // ##############################################################################################
   // ##############################################################################################
@@ -250,8 +258,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   // CALLS reportContext.setFoldedObjectAttributeOrArrayItems
   useEffect(() => {
     log.info("ReportSectionEntityInstance: USEEFFECT setting initial folded paths");
-    const foldedStringPaths = currentReportSectionTargetEntityDefinition?.display?.foldSubLevels
-      ? Object.entries(currentReportSectionTargetEntityDefinition?.display?.foldSubLevels).filter(
+    const foldedStringPaths = currentReportTargetEntity?.display?.foldSubLevels
+      ? Object.entries(currentReportTargetEntity?.display?.foldSubLevels).filter(
           ([key, value]) => value
         )
       : [];
@@ -280,7 +288,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
     reportContext.setFoldedObjectAttributeOrArrayItems(newFoldedObjectAttributeOrArrayItems);
   }, [
-    currentReportSectionTargetEntityDefinition?.display?.foldSubLevels,
+    currentReportTargetEntity?.display?.foldSubLevels,
     reportContext.setFoldedObjectAttributeOrArrayItems,
   ]);
 
@@ -441,9 +449,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         <ThemedHeaderSection>
           <ThemedTitle>
             {props.defaultLabel ??
-              (reportSectionDefinitionFromFormik?.definition?.label
+              (objectInstanceReportSection?.definition?.label
                 ? interpolateExpression(
-                    reportSectionDefinitionFromFormik?.definition?.label,
+                    objectInstanceReportSection.definition.label,
                     { instance },
                     "report label",
                   )
@@ -482,8 +490,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   data: queryForTestParamSchema,
                   useCodeBlock: true,
                 },
-                // { label: "currentReportSectionTargetEntityDefinition", data: currentReportSectionTargetEntityDefinition },
-                { label: "currentFlattenedReportSectionTargetEntityDefinition", data: currentFlattenedReportSectionTargetEntityDefinition },
+                // { label: "currentReportTargetEntity", data: currentReportTargetEntity },
+                { label: "currentFlattenedReportSectionTargetEntityMlSchema", data: currentFlattenedReportSectionTargetEntityMlSchema },
                 { label: "formikValuePathAsString", data: formikValuePathAsString },
                 { label: "queryForTestRun", data: queryForTestRun, useCodeBlock: true },
                 // {
@@ -565,13 +573,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           </div>
         )}
 
-        {currentFlattenedReportSectionTargetEntityDefinition && props.applicationSection ? (
+        {currentFlattenedReportSectionTargetEntityMlSchema && props.applicationSection ? (
           <>
           <JsonDisplayHelper
             debug={true}
             componentName="ReportSectionEntityInstance Debug"
             elements={[
-              { label: "currentReportSectionTargetEntityDefinition", data: currentReportSectionTargetEntityDefinition },
+              { label: "currentReportTargetEntity", data: currentReportTargetEntity },
               // {
               //   label: "formValueMLSchema",
               //   data: props.formValueMLSchema,
@@ -580,7 +588,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             ]}
           />
           <TypedValueObjectEditor
-            formValueMLSchema={currentFlattenedReportSectionTargetEntityDefinition.mlSchema as JzodObject}
+            formValueMLSchema={currentFlattenedReportSectionTargetEntityMlSchema}
             formikValuePathAsString={formikValuePathAsString}
             // 
             valueObjectEditMode={props.valueObjectEditMode}
@@ -649,9 +657,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               initiallyUnfolded={false}
             />
             <ThemedPreformattedText>
-              target entity definition:{" "}
-              {currentReportSectionTargetEntityDefinition?.name ??
-                "report target entity definition not found!"}
+              target entity:{" "}
+              {currentReportTargetEntity?.name ??
+                "report target entity not found!"}
             </ThemedPreformattedText>
             <div> ######################################## </div>
             <ThemedPreformattedText>

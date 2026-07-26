@@ -1304,7 +1304,9 @@ export function getMiroirFundamentalJzodSchema(
         bundle: entityDefinitionBundleV1.mlSchema as any,
         deployment: entityDefinitionDeployment.mlSchema as any,
         entity: entityDefinitionEntity.mlSchema as any,
-        entityDefinition: entityDefinitionEntityDefinitionV1.mlSchema as any,
+        // #217 Phase 12: vocabulary EntityDefinition → EntityVersion (UUID preserved)
+        entityVersion: entityDefinitionEntityDefinitionV1.mlSchema as any, // param also exported as entityVersionEntityVersionV1
+
         testCompositeAction: (
           entityDefinitionTest.mlSchema as any
         ).definition.definition.definition.fullTestDefinition.definition.find(
@@ -3419,7 +3421,7 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
-            applicationVersionCrossEntityDefinition: {
+            applicationVersionCrossEntityVersion: {
               type: "array",
               definition: {
                 type: "object",
@@ -3449,9 +3451,10 @@ export function getMiroirFundamentalJzodSchema(
                       value: { id: 1, defaultLabel: "SelfApplication Version", editable: false },
                     },
                   },
-                  entityDefinition: {
+                  // #217 Phase 12: FK to historical EntityVersion instance
+                  entityVersion: {
                     type: "uuid",
-                    tag: { value: { id: 1, defaultLabel: "Entity Definition", editable: false } },
+                    tag: { value: { id: 1, defaultLabel: "Entity Version", editable: false } },
                   },
                 },
               },
@@ -3502,7 +3505,8 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  relativePath: "entityDefinition",
+                  // #217 Phase 12: element type renamed; MetaModel collection key kept for compat
+                  relativePath: "entityVersion",
                 },
               },
             },

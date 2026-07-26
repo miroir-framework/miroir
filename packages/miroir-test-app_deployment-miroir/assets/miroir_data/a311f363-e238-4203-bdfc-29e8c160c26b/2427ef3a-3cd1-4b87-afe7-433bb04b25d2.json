@@ -90,9 +90,9 @@
                         "conceptLevel": "Model",
                         "description": "Evolution trace WP1 test entity."
                       },
-                      "entityDefinition": {
+                      "entityVersion": {
                         "uuid": "b8d4f2a1-3c5e-4f7b-9d1f-2a4c6e8f0b3d",
-                        "parentName": "EntityDefinition",
+                        "parentName": "EntityVersion",
                         "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                         "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
                         "entityUuid": "a7c3e1f0-2b4d-4e6a-8c0e-1f3a5b7d9e2c",
@@ -125,7 +125,7 @@
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "entityUuid": "a7c3e1f0-2b4d-4e6a-8c0e-1f3a5b7d9e2c",
-                  "entityDefinitionUuid": "b8d4f2a1-3c5e-4f7b-9d1f-2a4c6e8f0b3d",
+                  "entityVersionUuid": "b8d4f2a1-3c5e-4f7b-9d1f-2a4c6e8f0b3d",
                   "entityName": "TestEntityWP1",
                   "targetValue": "TestEntityWP1Renamed"
                 }

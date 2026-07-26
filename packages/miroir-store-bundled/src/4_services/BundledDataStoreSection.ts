@@ -62,7 +62,17 @@ export class BundledDataStoreSection
     entities: Entity[],
     entityDefinitions: EntityDefinition[],
   ): Promise<Action2VoidReturnType> {
+    // #217 Phase 11 — Entity present-model first; ED idAttribute as legacy fill-in only.
+    for (const entity of entities) {
+      const idAttr = entity.idAttribute ?? "uuid";
+      if (idAttr !== "uuid") {
+        this.entityIdAttributes[entity.uuid] = idAttr;
+      }
+    }
     for (const ed of entityDefinitions) {
+      if (this.entityIdAttributes[ed.entityUuid]) {
+        continue;
+      }
       const idAttr = (ed as any).idAttribute ?? "uuid";
       if (idAttr !== "uuid") {
         this.entityIdAttributes[ed.entityUuid] = idAttr;
@@ -86,7 +96,7 @@ export class BundledDataStoreSection
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     _entity: Entity,
-    _entityDefinition: EntityDefinition,
+    _entityDefinition?: EntityDefinition,
   ): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }
@@ -99,7 +109,7 @@ export class BundledDataStoreSection
     _oldName: string,
     _newName: string,
     _entity: Entity,
-    _entityDefinition: EntityDefinition,
+    _entityDefinition?: EntityDefinition,
   ): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }

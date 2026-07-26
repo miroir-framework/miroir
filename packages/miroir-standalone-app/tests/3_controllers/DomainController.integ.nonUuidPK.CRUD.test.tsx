@@ -97,7 +97,7 @@ const entityCodeNumber: Entity = {
 
 const entityDefinitionCodeNumber: EntityDefinition = {
   uuid: entityDefinitionCodeNumberUuid,
-  parentName: "EntityDefinition",
+  parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   entityUuid: entityCodeNumberUuid,
@@ -168,7 +168,7 @@ const codeNumberTestMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applications: [],
 };
 
@@ -454,7 +454,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
           applicationVersions: [],
           reports: [],
           storedQueries: [],
-          applicationVersionCrossEntityDefinition: [],
+          applicationVersionCrossEntityVersion: [],
           applications: [],
         } as MetaModel,
         [entityPublisher.uuid],
@@ -485,7 +485,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
                     entities: [
                       {
                         entity: entityCodeNumber,
-                        entityDefinition: entityDefinitionCodeNumber,
+                        entityVersion: entityDefinitionCodeNumber,
                       },
                     ],
                   },

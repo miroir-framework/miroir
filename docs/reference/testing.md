@@ -1326,7 +1326,7 @@ Real-server profiles require a reachable `miroir-server` and the selected backen
 # After changing MiroirTest JSON assets
 npm run build -w miroir-test-app_deployment-miroir
 
-# After changing Query / Endpoint / EntityDefinition Jzod in deployment-miroir
+# After changing Query / Endpoint / EntityVersion Jzod in deployment-miroir
 # (e.g. #214 attributes on extractors or RestPersistenceAction_read)
 npm run build -w miroir-test-app_deployment-miroir
 npm run devBuild -w miroir-core   # regenerates preprocessor-generated types + package build

@@ -1,6 +1,6 @@
 {
   "uuid": "31b88b03-f301-44f9-a6bf-934ed0576ee0",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
@@ -11,26 +11,36 @@
     "cacheAllInstancesOnRefresh": true
   },
   "defaultInstanceDetailsReportUuid": "5cefd212-31bc-41bf-b346-8643f91e80aa",
-  "viewAttributes": ["name", "description", "uuid"],
+  "viewAttributes": [
+    "name",
+    "description",
+    "uuid"
+  ],
   "mlSchema": {
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "storageAccess": {
         "type": "enum",
-        "definition": ["none", "localStorage", "persistentStorage"],
+        "definition": [
+          "none",
+          "localStorage",
+          "persistentStorage"
+        ],
         "optional": true,
         "tag": {
           "value": {
             "defaultLabel": "Storage Access",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -39,7 +49,9 @@
         "optional": true,
         "tag": {
           "value": {
-            "display": { "editable": false },
+            "display": {
+              "editable": false
+            },
             "defaultLabel": "SelfApplication",
             "foreignKeyParams": {
               "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -88,9 +100,16 @@
       "definition": {
         "type": "object",
         "definition": {
-          "id": { "type": "string" },
-          "name": { "type": "string" },
-          "description": { "type": "string", "optional": true },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "optional": true
+          },
           "colors": {
             "type": "object",
             "optional": true,
@@ -101,7 +120,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Primary Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -111,7 +134,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Primary Light Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -121,7 +148,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Primary Dark Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -131,7 +162,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Secondary Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -141,7 +176,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Secondary Light Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -151,7 +190,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Secondary Dark Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -161,7 +204,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Background Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -171,7 +218,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Background Paper Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -181,7 +232,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Background Overlay Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -191,7 +246,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Surface Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -201,7 +260,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Surface Variant Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -211,7 +274,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Text Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -221,7 +288,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Secondary Text Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -231,7 +302,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Text Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -241,7 +316,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Disabled Text Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -251,7 +330,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Border Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -261,7 +344,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Border Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -271,7 +358,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Divider Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -281,7 +372,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Hover Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -291,7 +386,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Selected Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -301,7 +400,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Focused Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -311,7 +414,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Active Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -321,7 +428,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Error Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -331,7 +442,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Error Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -341,7 +456,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Error Surface Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -351,7 +470,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Warning Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -361,7 +484,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Warning Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -371,7 +498,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Success Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -381,7 +512,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Success Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -391,7 +526,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Success Surface Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -401,7 +540,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Info Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -411,7 +554,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Info Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -421,7 +568,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Accent Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -431,7 +582,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Light Accent Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -441,7 +596,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Shadow Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -451,7 +610,11 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Overlay Color",
-                    "display": { "string": { "format": "color" } }
+                    "display": {
+                      "string": {
+                        "format": "color"
+                      }
+                    }
                   }
                 }
               },
@@ -464,7 +627,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Nesting Level 0 Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -474,7 +641,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Nesting Level 1 Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -484,7 +655,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Nesting Level 2 Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   }
@@ -496,49 +671,112 @@
             "type": "object",
             "optional": true,
             "definition": {
-              "xs": { "type": "string", "optional": true },
-              "sm": { "type": "string", "optional": true },
-              "md": { "type": "string", "optional": true },
-              "lg": { "type": "string", "optional": true },
-              "xl": { "type": "string", "optional": true },
-              "xxl": { "type": "string", "optional": true }
+              "xs": {
+                "type": "string",
+                "optional": true
+              },
+              "sm": {
+                "type": "string",
+                "optional": true
+              },
+              "md": {
+                "type": "string",
+                "optional": true
+              },
+              "lg": {
+                "type": "string",
+                "optional": true
+              },
+              "xl": {
+                "type": "string",
+                "optional": true
+              },
+              "xxl": {
+                "type": "string",
+                "optional": true
+              }
             }
           },
           "typography": {
             "type": "object",
             "optional": true,
             "definition": {
-              "fontFamily": { "type": "string", "optional": true },
+              "fontFamily": {
+                "type": "string",
+                "optional": true
+              },
               "fontSize": {
                 "type": "object",
                 "optional": true,
                 "definition": {
-                  "xs": { "type": "string", "optional": true },
-                  "sm": { "type": "string", "optional": true },
-                  "md": { "type": "string", "optional": true },
-                  "lg": { "type": "string", "optional": true },
-                  "xl": { "type": "string", "optional": true },
-                  "xxl": { "type": "string", "optional": true }
+                  "xs": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "sm": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "md": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "lg": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "xl": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "xxl": {
+                    "type": "string",
+                    "optional": true
+                  }
                 }
               },
               "fontWeight": {
                 "type": "object",
                 "optional": true,
                 "definition": {
-                  "light": { "type": "number", "optional": true },
-                  "normal": { "type": "number", "optional": true },
-                  "medium": { "type": "number", "optional": true },
-                  "bold": { "type": "number", "optional": true },
-                  "extraBold": { "type": "number", "optional": true }
+                  "light": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "normal": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "medium": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "bold": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "extraBold": {
+                    "type": "number",
+                    "optional": true
+                  }
                 }
               },
               "lineHeight": {
                 "type": "object",
                 "optional": true,
                 "definition": {
-                  "tight": { "type": "number", "optional": true },
-                  "normal": { "type": "number", "optional": true },
-                  "relaxed": { "type": "number", "optional": true }
+                  "tight": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "normal": {
+                    "type": "number",
+                    "optional": true
+                  },
+                  "relaxed": {
+                    "type": "number",
+                    "optional": true
+                  }
                 }
               }
             }
@@ -547,23 +785,56 @@
             "type": "object",
             "optional": true,
             "definition": {
-              "none": { "type": "string", "optional": true },
-              "low": { "type": "string", "optional": true },
-              "medium": { "type": "string", "optional": true },
-              "high": { "type": "string", "optional": true },
-              "modal": { "type": "string", "optional": true }
+              "none": {
+                "type": "string",
+                "optional": true
+              },
+              "low": {
+                "type": "string",
+                "optional": true
+              },
+              "medium": {
+                "type": "string",
+                "optional": true
+              },
+              "high": {
+                "type": "string",
+                "optional": true
+              },
+              "modal": {
+                "type": "string",
+                "optional": true
+              }
             }
           },
           "borderRadius": {
             "type": "object",
             "optional": true,
             "definition": {
-              "none": { "type": "string", "optional": true },
-              "sm": { "type": "string", "optional": true },
-              "md": { "type": "string", "optional": true },
-              "lg": { "type": "string", "optional": true },
-              "xl": { "type": "string", "optional": true },
-              "full": { "type": "string", "optional": true }
+              "none": {
+                "type": "string",
+                "optional": true
+              },
+              "sm": {
+                "type": "string",
+                "optional": true
+              },
+              "md": {
+                "type": "string",
+                "optional": true
+              },
+              "lg": {
+                "type": "string",
+                "optional": true
+              },
+              "xl": {
+                "type": "string",
+                "optional": true
+              },
+              "full": {
+                "type": "string",
+                "optional": true
+              }
             }
           },
           "components": {
@@ -580,7 +851,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Background Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -590,7 +865,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Text Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -600,7 +879,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Border Bottom Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -610,7 +893,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Height",
-                        "display": { "string": { "format": "size" } }
+                        "display": {
+                          "string": {
+                            "format": "size"
+                          }
+                        }
                       }
                     }
                   },
@@ -620,7 +907,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "App Bar Elevation",
-                        "display": { "string": { "format": "elevation" } }
+                        "display": {
+                          "string": {
+                            "format": "elevation"
+                          }
+                        }
                       }
                     }
                   }
@@ -636,7 +927,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Background Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -646,7 +941,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Background Hover Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -656,7 +955,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Text Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -666,7 +969,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Text Color Active",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -676,7 +983,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Border Right Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -686,7 +997,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Width",
-                        "display": { "string": { "format": "size" } }
+                        "display": {
+                          "string": {
+                            "format": "size"
+                          }
+                        }
                       }
                     }
                   },
@@ -696,7 +1011,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Sidebar Item Height",
-                        "display": { "string": { "format": "size" } }
+                        "display": {
+                          "string": {
+                            "format": "size"
+                          }
+                        }
                       }
                     }
                   }
@@ -712,12 +1031,22 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Drawer Background Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
-                  "backdrop": { "type": "string", "optional": true },
-                  "elevation": { "type": "string", "optional": true }
+                  "backdrop": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "elevation": {
+                    "type": "string",
+                    "optional": true
+                  }
                 }
               },
               "input": {
@@ -730,7 +1059,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Background Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -740,7 +1073,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Background Hover Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -750,7 +1087,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Background Focused Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -760,7 +1101,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Border Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -770,7 +1115,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Border Color Hover",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -780,7 +1129,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Border Color Focused",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -790,7 +1143,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Text Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -800,12 +1157,22 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Input Placeholder Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
-                  "borderRadius": { "type": "string", "optional": true },
-                  "height": { "type": "string", "optional": true }
+                  "borderRadius": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "height": {
+                    "type": "string",
+                    "optional": true
+                  }
                 }
               },
               "button": {
@@ -822,7 +1189,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Background Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -832,7 +1203,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Background Hover Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -842,7 +1217,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Background Active Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -852,7 +1231,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Text Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -862,11 +1245,18 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Primary Button Border Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
-                      "borderRadius": { "type": "string", "optional": true }
+                      "borderRadius": {
+                        "type": "string",
+                        "optional": true
+                      }
                     }
                   },
                   "secondary": {
@@ -878,7 +1268,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Background Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -888,7 +1282,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Background Hover Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -898,7 +1296,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Background Active Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -908,7 +1310,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Text Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -918,11 +1324,18 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Secondary Button Border Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
-                      "borderRadius": { "type": "string", "optional": true }
+                      "borderRadius": {
+                        "type": "string",
+                        "optional": true
+                      }
                     }
                   },
                   "outlined": {
@@ -934,7 +1347,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Background Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -944,7 +1361,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Background Hover Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -954,7 +1375,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Background Active Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -964,7 +1389,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Text Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -974,11 +1403,17 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Outlined Button Border Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
-                      "borderRadius": { "type": "string" }
+                      "borderRadius": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
@@ -993,7 +1428,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Card Background Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1003,13 +1442,26 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Card Border Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
-                  "borderRadius": { "type": "string", "optional": true },
-                  "elevation": { "type": "string", "optional": true },
-                  "padding": { "type": "string", "optional": true }
+                  "borderRadius": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "elevation": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "padding": {
+                    "type": "string",
+                    "optional": true
+                  }
                 }
               },
               "dialog": {
@@ -1022,7 +1474,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Dialog Background Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1032,13 +1488,26 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Dialog Backdrop Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
-                  "borderRadius": { "type": "string", "optional": true },
-                  "elevation": { "type": "string", "optional": true },
-                  "padding": { "type": "string", "optional": true }
+                  "borderRadius": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "elevation": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "padding": {
+                    "type": "string",
+                    "optional": true
+                  }
                 }
               },
               "tooltip": {
@@ -1051,7 +1520,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Tooltip Background Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1061,12 +1534,20 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Tooltip Text Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
-                  "borderRadius": { "type": "string" },
-                  "fontSize": { "type": "string" }
+                  "borderRadius": {
+                    "type": "string"
+                  },
+                  "fontSize": {
+                    "type": "string"
+                  }
                 }
               },
               "icon": {
@@ -1079,7 +1560,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Icon Primary Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1089,7 +1574,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Icon Secondary Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1099,7 +1588,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Icon Disabled Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1107,9 +1600,18 @@
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "sm": { "type": "string", "optional": true },
-                      "md": { "type": "string", "optional": true },
-                      "lg": { "type": "string", "optional": true }
+                      "sm": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "md": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "lg": {
+                        "type": "string",
+                        "optional": true
+                      }
                     }
                   }
                 }
@@ -1130,7 +1632,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Primary Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1140,7 +1646,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Secondary Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1150,7 +1660,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Background Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1160,7 +1674,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Surface Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1170,7 +1688,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Border Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1180,7 +1702,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Text Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1190,7 +1716,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Secondary Text Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1200,7 +1730,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Light Text Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1210,7 +1744,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Hover Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1220,7 +1758,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Selected Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1230,7 +1772,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Filter Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1240,7 +1786,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Filter Background Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1250,7 +1800,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Error Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1260,7 +1814,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Warning Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1270,7 +1828,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Success Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1280,7 +1842,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Accent Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   },
@@ -1290,7 +1856,11 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Accent Light Color",
-                        "display": { "string": { "format": "color" } }
+                        "display": {
+                          "string": {
+                            "format": "color"
+                          }
+                        }
                       }
                     }
                   }
@@ -1300,30 +1870,66 @@
                 "type": "object",
                 "optional": true,
                 "definition": {
-                  "xs": { "type": "string", "optional": true },
-                  "sm": { "type": "string", "optional": true },
-                  "md": { "type": "string", "optional": true },
-                  "lg": { "type": "string", "optional": true },
-                  "xl": { "type": "string", "optional": true }
+                  "xs": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "sm": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "md": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "lg": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "xl": {
+                    "type": "string",
+                    "optional": true
+                  }
                 }
               },
               "typography": {
                 "type": "object",
                 "optional": true,
                 "definition": {
-                  "fontSize": { "type": "string", "optional": true },
-                  "fontFamily": { "type": "string", "optional": true },
+                  "fontSize": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "fontFamily": {
+                    "type": "string",
+                    "optional": true
+                  },
                   "fontWeight": {
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "normal": { "type": "number", "optional": true },
-                      "medium": { "type": "number", "optional": true },
-                      "bold": { "type": "number", "optional": true }
+                      "normal": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "medium": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "bold": {
+                        "type": "number",
+                        "optional": true
+                      }
                     }
                   },
-                  "headerFontSize": { "type": "string", "optional": true },
-                  "headerFontWeight": { "type": "number", "optional": true }
+                  "headerFontSize": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "headerFontWeight": {
+                    "type": "number",
+                    "optional": true
+                  }
                 }
               },
               "components": {
@@ -1334,24 +1940,48 @@
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "borderRadius": { "type": "string", "optional": true },
-                      "border": { "type": "string", "optional": true },
-                      "minHeight": { "type": "string", "optional": true },
-                      "maxHeight": { "type": "string", "optional": true },
+                      "borderRadius": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "border": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "minHeight": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "maxHeight": {
+                        "type": "string",
+                        "optional": true
+                      },
                       "backgroundColor": {
                         "type": "string",
                         "optional": true,
-
                         "tag": {
                           "value": {
                             "defaultLabel": "Table Background Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
-                      "width": { "type": "string", "optional": true },
-                      "maxWidth": { "type": "string", "optional": true },
-                      "adaptiveColumnWidths": { "type": "boolean", "optional": true }
+                      "width": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "maxWidth": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "adaptiveColumnWidths": {
+                        "type": "boolean",
+                        "optional": true
+                      }
                     }
                   },
                   "header": {
@@ -1361,47 +1991,88 @@
                       "background": {
                         "type": "string",
                         "optional": true,
-
                         "tag": {
                           "value": {
                             "defaultLabel": "Header Background Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
-                      "height": { "type": "string", "optional": true },
-                      "fontSize": { "type": "string", "optional": true },
-                      "fontWeight": { "type": "number", "optional": true },
-                      "borderBottom": { "type": "string", "optional": true },
+                      "height": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "fontSize": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "fontWeight": {
+                        "type": "number",
+                        "optional": true
+                      },
+                      "borderBottom": {
+                        "type": "string",
+                        "optional": true
+                      },
                       "textColor": {
                         "type": "string",
                         "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Header Text Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
-                      "hoverBackground": { "type": "string", "optional": true }
+                      "hoverBackground": {
+                        "type": "string",
+                        "optional": true
+                      }
                     }
                   },
                   "cell": {
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "height": { "type": "string", "optional": true },
-                      "padding": { "type": "string", "optional": true },
-                      "borderRight": { "type": "string", "optional": true },
-                      "borderBottom": { "type": "string", "optional": true },
-                      "fontSize": { "type": "string", "optional": true },
+                      "height": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "padding": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "borderRight": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "borderBottom": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "fontSize": {
+                        "type": "string",
+                        "optional": true
+                      },
                       "backgroundColor": {
                         "type": "string",
                         "optional": true,
                         "tag": {
                           "value": {
                             "defaultLabel": "Cell Background Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -1411,7 +2082,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Cell Text Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       }
@@ -1421,22 +2096,52 @@
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "hoverBackground": { "type": "string", "optional": true },
-                      "selectedBackground": { "type": "string", "optional": true },
-                      "borderBottom": { "type": "string", "optional": true },
-                      "evenBackground": { "type": "string", "optional": true },
-                      "oddBackground": { "type": "string", "optional": true }
+                      "hoverBackground": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "selectedBackground": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "borderBottom": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "evenBackground": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "oddBackground": {
+                        "type": "string",
+                        "optional": true
+                      }
                     }
                   },
                   "toolbar": {
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "background": { "type": "string", "optional": true },
-                      "padding": { "type": "string", "optional": true },
-                      "borderBottom": { "type": "string", "optional": true },
-                      "height": { "type": "string", "optional": true },
-                      "textColor": { "type": "string", "optional": true }
+                      "background": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "padding": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "borderBottom": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "height": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "textColor": {
+                        "type": "string",
+                        "optional": true
+                      }
                     }
                   },
                   "filter": {
@@ -1449,7 +2154,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Filter Icon Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -1459,7 +2168,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Active Filter Icon Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -1469,7 +2182,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Clear Button Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -1479,40 +2196,53 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Clear Button Background Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
                       "clearButtonBorder": {
                         "type": "string",
                         "optional": true,
-
                         "tag": {
                           "value": {
                             "defaultLabel": "Clear Button Border Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
                       "toolbarBackground": {
                         "type": "string",
                         "optional": true,
-
                         "tag": {
                           "value": {
                             "defaultLabel": "Toolbar Background Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
                       "inputBackground": {
                         "type": "string",
                         "optional": true,
-
                         "tag": {
                           "value": {
                             "defaultLabel": "Input Background Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       },
@@ -1522,7 +2252,11 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Input Border Color",
-                            "display": { "string": { "format": "color" } }
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            }
                           }
                         }
                       }
@@ -1532,10 +2266,22 @@
                     "type": "object",
                     "optional": true,
                     "definition": {
-                      "iconColor": { "type": "string", "optional": true },
-                      "activeIconColor": { "type": "string", "optional": true },
-                      "ascendingSymbol": { "type": "string", "optional": true },
-                      "descendingSymbol": { "type": "string", "optional": true }
+                      "iconColor": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "activeIconColor": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "ascendingSymbol": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "descendingSymbol": {
+                        "type": "string",
+                        "optional": true
+                      }
                     }
                   }
                 }
@@ -1546,11 +2292,26 @@
             "type": "object",
             "optional": true,
             "definition": {
-              "xs": { "type": "string", "optional": true },
-              "sm": { "type": "string", "optional": true },
-              "md": { "type": "string", "optional": true },
-              "lg": { "type": "string", "optional": true },
-              "xl": { "type": "string", "optional": true }
+              "xs": {
+                "type": "string",
+                "optional": true
+              },
+              "sm": {
+                "type": "string",
+                "optional": true
+              },
+              "md": {
+                "type": "string",
+                "optional": true
+              },
+              "lg": {
+                "type": "string",
+                "optional": true
+              },
+              "xl": {
+                "type": "string",
+                "optional": true
+              }
             }
           },
           "transitions": {
@@ -1560,18 +2321,39 @@
               "duration": {
                 "type": "object",
                 "definition": {
-                  "short": { "type": "string", "optional": true },
-                  "medium": { "type": "string", "optional": true },
-                  "long": { "type": "string", "optional": true }
+                  "short": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "medium": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "long": {
+                    "type": "string",
+                    "optional": true
+                  }
                 }
               },
               "easing": {
                 "type": "object",
                 "definition": {
-                  "linear": { "type": "string", "optional": true },
-                  "easeIn": { "type": "string", "optional": true },
-                  "easeOut": { "type": "string", "optional": true },
-                  "easeInOut": { "type": "string", "optional": true }
+                  "linear": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "easeIn": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "easeOut": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "easeInOut": {
+                    "type": "string",
+                    "optional": true
+                  }
                 }
               }
             }

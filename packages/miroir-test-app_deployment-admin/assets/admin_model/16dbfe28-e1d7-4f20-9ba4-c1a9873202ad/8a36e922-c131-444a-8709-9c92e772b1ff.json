@@ -6,5 +6,106 @@
   "name": "AiConfiguration",
   "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
   "conceptLevel": "Model",
-  "description": "Configuration for LLM/AI provider (provider type, model name). API keys are stored as server-side environment variables."
+  "description": "Configuration for LLM/AI provider (provider type, model name). API keys are stored as server-side environment variables.",
+  "viewAttributes": [
+    "name",
+    "providerType",
+    "model",
+    "baseUrl",
+    "uuid"
+  ],
+  "icon": "SmartToy",
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "providerType": {
+        "type": "enum",
+        "definition": [
+          "openai",
+          "anthropic",
+          "google"
+        ],
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Provider",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "model": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Model Name (e.g. gpt-4o, claude-opus-4, gemini-2.0-flash)",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "baseUrl": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Base URL (optional, for custom endpoints)",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      }
+    }
+  }
 }

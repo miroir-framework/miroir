@@ -522,7 +522,7 @@ export class DomainController implements DomainControllerInterface {
           };
 
           // Model is always loaded entirely (application concepts). Fetch model first so
-          // EntityDefinitions are available to interpret cacheAllInstancesOnRefresh for data.
+          // Entity (and legacy EntityDefinition) cache policies are available for data refresh.
           const modelFetchTargets = modelEntitiesToFetch.map((e) => ({
             section: "model" as ApplicationSection,
             entity: e,
@@ -1185,7 +1185,7 @@ export class DomainController implements DomainControllerInterface {
             // });
             
             // Combine entities with their definitions
-            const entitiesToCreate: { entity: Entity; entityDefinition: EntityDefinition }[] = [];
+            const entitiesToCreate: { entity: Entity; entityDefinition?: EntityDefinition }[] = [];
             
             // Create a map of entityDefinitions by entityUuid for quick lookup
             const entityDefinitionMap = new Map<string, EntityDefinition>();
@@ -1195,12 +1195,14 @@ export class DomainController implements DomainControllerInterface {
               }
             }
             
-            // Match entities with their definitions
+            // Match entities with their definitions (#217 Phase 11: Entity-complete needs no live ED)
             if (model.entities) {
               for (const entity of model.entities) {
                 const entityDefinition = entityDefinitionMap.get(entity.uuid);
                 if (entityDefinition) {
                   entitiesToCreate.push({ entity, entityDefinition });
+                } else if (entity.mlSchema) {
+                  entitiesToCreate.push({ entity });
                 } else {
                   log.warn(
                     "handleModelAction resetModel: no entityDefinition found for entity",
@@ -1226,7 +1228,9 @@ export class DomainController implements DomainControllerInterface {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionResetModel.payload.application,
-                    entities: [{ entity, entityDefinition }]
+                    entities: entityDefinition
+                      ? [{ entity, entityVersion: entityDefinition }]
+                      : [{ entity }],
                   }
                 };
                 
@@ -1343,7 +1347,7 @@ export class DomainController implements DomainControllerInterface {
             });
             
             // Combine entities with their definitions
-            const entitiesToCreate: { entity: Entity; entityDefinition: EntityDefinition }[] = [];
+            const entitiesToCreate: { entity: Entity; entityDefinition?: EntityDefinition }[] = [];
             
             // Create a map of entityDefinitions by entityUuid for quick lookup
             const entityDefinitionMap = new Map<string, EntityDefinition>();
@@ -1353,12 +1357,14 @@ export class DomainController implements DomainControllerInterface {
               }
             }
             
-            // Match entities with their definitions
+            // Match entities with their definitions (#217 Phase 11: Entity-complete needs no live ED)
             if (model.entities) {
               for (const entity of model.entities) {
                 const entityDefinition = entityDefinitionMap.get(entity.uuid);
                 if (entityDefinition) {
                   entitiesToCreate.push({ entity, entityDefinition });
+                } else if (entity.mlSchema) {
+                  entitiesToCreate.push({ entity });
                 } else {
                   log.warn(
                     "handleModelAction resetModel: no entityDefinition found for entity",
@@ -1384,7 +1390,9 @@ export class DomainController implements DomainControllerInterface {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionInitModel.payload.application,
-                    entities: [{ entity, entityDefinition }]
+                    entities: entityDefinition
+                      ? [{ entity, entityVersion: entityDefinition }]
+                      : [{ entity }],
                   }
                 };
                 

@@ -169,7 +169,7 @@
         "transformerParams": {},
         "expectedValue": {
           "error": "PARENT_NOT_FOUND",
-          "details": "No entity definition found for parentUuid WRONG_UUID in deployment undefined"
+          "details": "No present Entity (or EntityDefinition fallback) found for parentUuid WRONG_UUID in deployment undefined"
         }
       }
     ]

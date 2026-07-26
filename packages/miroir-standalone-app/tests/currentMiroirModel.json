@@ -12,7 +12,7 @@
       "modelCUDMigration": []
     }
   ],
-  "applicationVersionCrossEntityDefinition": [],
+  "applicationVersionCrossEntityVersion": [],
   "configuration": [
     {
       "uuid": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
@@ -71,10 +71,10 @@
       "parentName": "Entity",
       "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-      "name": "EntityDefinition",
+      "name": "EntityVersion",
       "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       "conceptLevel": "MetaModel",
-      "description": "The Metaclass for the definition of entities."
+      "description": "The Metaclass for the version (historical snapshot) of entities."
     },
     {
       "uuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
@@ -111,10 +111,10 @@
       "parentName": "Entity",
       "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-      "name": "ApplicationVersionCrossEntityDefinition",
+      "name": "ApplicationVersionCrossEntityVersion",
       "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       "conceptLevel": "Model",
-      "description": "The (many-to-many) sssociation among ApplicationVersions and EntityDefinitions."
+      "description": "The (many-to-many) sssociation among ApplicationVersions and EntityVersions."
     },
     {
       "uuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
@@ -180,14 +180,19 @@
   "entityDefinitions": [
     {
       "uuid": "0f421b2f-2fdc-47ee-8232-62121ea46350",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
       "conceptLevel": "Model",
       "name": "Menu",
       "icon": "Interests",
-      "viewAttributes": ["name", "defaultLabel", "description", "uuid"],
+      "viewAttributes": [
+        "name",
+        "defaultLabel",
+        "description",
+        "uuid"
+      ],
       "mlSchema": {
         "type": "object",
         "definition": {
@@ -423,7 +428,7 @@
     },
     {
       "uuid": "15407b85-f2c8-4a34-bfa7-89f044ba2407",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
@@ -486,7 +491,11 @@
           },
           "conceptLevel": {
             "type": "enum",
-            "definition": ["MetaModel", "Model", "Data"],
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ],
             "optional": true,
             "tag": {
               "value": {
@@ -558,7 +567,7 @@
     },
     {
       "uuid": "27046fce-742f-4cc4-bb95-76b271f490a5",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
@@ -728,7 +737,7 @@
     },
     {
       "uuid": "359f1f9b-7260-4d76-a864-72c839b9711b",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
@@ -931,17 +940,13 @@
                     }
                   },
                   "parentUuid": {
-                    "type": "schemaReference",
+                    "type": "uuid",
                     "tag": {
                       "value": {
                         "id": 4,
                         "defaultLabel": "Parent Uuid",
                         "editable": false
                       }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "transformerForBuild_InnerReference"
                     }
                   }
                 }
@@ -1037,7 +1042,10 @@
                       "direction": {
                         "type": "enum",
                         "optional": true,
-                        "definition": ["ASC", "DESC"]
+                        "definition": [
+                          "ASC",
+                          "DESC"
+                        ]
                       }
                     }
                   },
@@ -1083,7 +1091,10 @@
                       "direction": {
                         "type": "enum",
                         "optional": true,
-                        "definition": ["ASC", "DESC"]
+                        "definition": [
+                          "ASC",
+                          "DESC"
+                        ]
                       }
                     }
                   },
@@ -1127,7 +1138,10 @@
                       "direction": {
                         "type": "enum",
                         "optional": true,
-                        "definition": ["ASC", "DESC"]
+                        "definition": [
+                          "ASC",
+                          "DESC"
+                        ]
                       }
                     }
                   },
@@ -1356,58 +1370,6 @@
                   }
                 }
               },
-              "extractorOrCombinerRoot": {
-                "type": "object",
-                "definition": {
-                  "label": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 1,
-                        "defaultLabel": "Label",
-                        "editable": false
-                      }
-                    }
-                  },
-                  "applicationSection": {
-                    "type": "schemaReference",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 2,
-                        "defaultLabel": "SelfApplication Section",
-                        "editable": false
-                      }
-                    },
-                    "definition": {
-                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                      "relativePath": "applicationSection"
-                    }
-                  },
-                  "parentName": {
-                    "type": "string",
-                    "optional": true,
-                    "tag": {
-                      "value": {
-                        "id": 3,
-                        "defaultLabel": "Parent Name",
-                        "editable": false
-                      }
-                    }
-                  },
-                  "parentUuid": {
-                    "type": "uuid",
-                    "tag": {
-                      "value": {
-                        "id": 4,
-                        "defaultLabel": "Parent Uuid",
-                        "editable": false
-                      }
-                    }
-                  }
-                }
-              },
               "extractorOrCombinerContextReference": {
                 "type": "object",
                 "definition": {
@@ -1503,7 +1465,10 @@
                       "direction": {
                         "type": "enum",
                         "optional": true,
-                        "definition": ["ASC", "DESC"]
+                        "definition": [
+                          "ASC",
+                          "DESC"
+                        ]
                       }
                     }
                   },
@@ -1563,7 +1528,10 @@
                       "direction": {
                         "type": "enum",
                         "optional": true,
-                        "definition": ["ASC", "DESC"]
+                        "definition": [
+                          "ASC",
+                          "DESC"
+                        ]
                       }
                     }
                   },
@@ -1603,7 +1571,10 @@
                       "direction": {
                         "type": "enum",
                         "optional": true,
-                        "definition": ["ASC", "DESC"]
+                        "definition": [
+                          "ASC",
+                          "DESC"
+                        ]
                       }
                     }
                   },
@@ -1679,7 +1650,10 @@
                       "direction": {
                         "type": "enum",
                         "optional": true,
-                        "definition": ["ASC", "DESC"]
+                        "definition": [
+                          "ASC",
+                          "DESC"
+                        ]
                       }
                     }
                   },
@@ -1863,7 +1837,7 @@
     },
     {
       "uuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -1871,7 +1845,13 @@
       "conceptLevel": "MetaModel",
       "description": "Entities",
       "defaultInstanceDetailsReportUuid": "074d1de9-594d-42d6-8848-467baeb6f3e0",
-      "viewAttributes": ["name", "conceptLevel", "description", "selfApplication", "uuid"],
+      "viewAttributes": [
+        "name",
+        "conceptLevel",
+        "description",
+        "selfApplication",
+        "uuid"
+      ],
       "mlSchema": {
         "type": "object",
         "definition": {
@@ -1919,7 +1899,11 @@
           },
           "conceptLevel": {
             "type": "enum",
-            "definition": ["MetaModel", "Model", "Data"],
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ],
             "optional": true,
             "tag": {
               "value": {
@@ -1978,14 +1962,19 @@
     },
     {
       "uuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
       "conceptLevel": "Model",
       "name": "TransformerDefinition",
       "icon": "Interests",
-      "viewAttributes": ["name", "defaultLabel", "selfApplication", "uuid"],
+      "viewAttributes": [
+        "name",
+        "defaultLabel",
+        "selfApplication",
+        "uuid"
+      ],
       "mlSchema": {
         "type": "object",
         "definition": {
@@ -2137,7 +2126,7 @@
     },
     {
       "uuid": "69bf7c03-a1df-4d1c-88c1-44363feeea87",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
@@ -2193,7 +2182,11 @@
           },
           "conceptLevel": {
             "type": "enum",
-            "definition": ["MetaModel", "Model", "Data"],
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ],
             "optional": true,
             "tag": {
               "value": {
@@ -2263,14 +2256,19 @@
     },
     {
       "uuid": "9460420b-f176-4918-bd45-894ab195ffe9",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
       "conceptLevel": "Model",
       "name": "SelfApplication",
       "icon": "Interests",
-      "viewAttributes": ["name", "defaultLabel", "selfApplication", "uuid"],
+      "viewAttributes": [
+        "name",
+        "defaultLabel",
+        "selfApplication",
+        "uuid"
+      ],
       "mlSchema": {
         "type": "object",
         "definition": {
@@ -2352,7 +2350,7 @@
     },
     {
       "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
@@ -2360,7 +2358,13 @@
       "name": "Report",
       "icon": "Interests",
       "defaultInstanceDetailsReportUuid": "ef57aada-6b77-4384-8007-12f13eddd337",
-      "viewAttributes": ["name", "defaultLabel", "type", "selfApplication", "uuid"],
+      "viewAttributes": [
+        "name",
+        "defaultLabel",
+        "type",
+        "selfApplication",
+        "uuid"
+      ],
       "mlSchema": {
         "type": "object",
         "definition": {
@@ -2408,7 +2412,11 @@
           },
           "conceptLevel": {
             "type": "enum",
-            "definition": ["MetaModel", "Model", "Data"],
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ],
             "optional": true,
             "tag": {
               "value": {
@@ -2440,7 +2448,10 @@
           },
           "type": {
             "type": "enum",
-            "definition": ["list", "grid"],
+            "definition": [
+              "list",
+              "grid"
+            ],
             "optional": true,
             "tag": {
               "value": {
@@ -2844,7 +2855,7 @@
     },
     {
       "uuid": "b17d5e9e-12f2-4ed8-abdb-2576c01514a4",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "73bb0c69-e636-4e3b-a230-51f25469c089",
@@ -2979,7 +2990,7 @@
     },
     {
       "uuid": "bd303ae8-6bce-4b44-a63c-815b9ebf728b",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "35c5608a-7678-4f07-a4ec-76fc5bc35424",
@@ -3079,15 +3090,21 @@
     },
     {
       "uuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-      "name": "EntityDefinition",
+      "name": "EntityVersion",
       "conceptLevel": "MetaModel",
-      "description": "definition of an entity",
+      "description": "historical version (snapshot) of an entity",
       "defaultInstanceDetailsReportUuid": "acd55b04-84df-427e-b219-cf0e01a6881b",
-      "viewAttributes": ["name", "description", "entityUuid", "viewAttributes", "uuid"],
+      "viewAttributes": [
+        "name",
+        "description",
+        "entityUuid",
+        "viewAttributes",
+        "uuid"
+      ],
       "mlSchema": {
         "type": "object",
         "definition": {
@@ -3154,7 +3171,11 @@
           },
           "conceptLevel": {
             "type": "enum",
-            "definition": ["MetaModel", "Model", "Data"],
+            "definition": [
+              "MetaModel",
+              "Model",
+              "Data"
+            ],
             "optional": true,
             "tag": {
               "value": {
@@ -3230,12 +3251,12 @@
     },
     {
       "uuid": "c0b71083-8cc8-43db-bf52-572f1f03bbb5",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
       "conceptLevel": "Model",
-      "name": "ApplicationVersionCrossEntityDefinition",
+      "name": "ApplicationVersionCrossEntityVersion",
       "description": "The mapping among SelfApplication Versions and Entity Definitions",
       "icon": "Interests",
       "mlSchema": {
@@ -3357,14 +3378,19 @@
     },
     {
       "uuid": "e3c1cc69-066d-4f52-beeb-b659dc7a88b9",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
       "name": "Endpoint",
       "conceptLevel": "MetaModel",
       "description": "definition of an Endpoint",
-      "viewAttributes": ["name", "description", "transactionalEndpoint", "uuid"],
+      "viewAttributes": [
+        "name",
+        "description",
+        "transactionalEndpoint",
+        "uuid"
+      ],
       "mlSchema": {
         "type": "object",
         "definition": {
@@ -3657,7 +3683,7 @@
     },
     {
       "uuid": "f93af951-ea13-4815-a2e3-ec0cab1fadd2",
-      "parentName": "EntityDefinition",
+      "parentName": "EntityVersion",
       "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
       "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
       "entityUuid": "7990c0c9-86c3-40a1-a121-036c91b55ed7",
@@ -3888,7 +3914,10 @@
             "definition": {
               "type": {
                 "type": "enum",
-                "definition": ["min", "max"]
+                "definition": [
+                  "min",
+                  "max"
+                ]
               },
               "parameter": {
                 "type": "any"
@@ -5685,7 +5714,7 @@
           "entityDefinition": {
             "extractorOrCombinerType": "extractorByPrimaryKey",
             "applicationSection": "model",
-            "parentName": "EntityDefinition",
+            "parentName": "EntityVersion",
             "parentUuid": {
               "transformerType": "constantUuid",
               "value": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd"

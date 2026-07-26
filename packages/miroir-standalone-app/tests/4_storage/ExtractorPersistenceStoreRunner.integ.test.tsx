@@ -62,6 +62,7 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 import {
   defaultMiroirMetaModel,
+  entityApplicationEvolutionTraceEvent,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -501,9 +502,13 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         ),
       undefined, // name to give to result
       undefined,
-      [entityEndpointVersion, entityEntity, entityEntityDefinition, entityMenu].sort((a, b) =>
-        a.name.localeCompare(b.name),
-      ),
+      [
+        entityApplicationEvolutionTraceEvent,
+        entityEndpointVersion,
+        entityEntity,
+        entityEntityDefinition,
+        entityMenu,
+      ].sort((a, b) => a.name.localeCompare(b.name)),
     );
   });
 

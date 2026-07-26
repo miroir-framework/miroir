@@ -1,6 +1,6 @@
 {
   "uuid": "ad4810cf-a746-4999-9572-830d66f366f6",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "fd622624-1a7e-46fa-9964-c4ecfb543de3",
@@ -8,7 +8,13 @@
   "name": "Activity",
   "icon": "Task",
   "defaultInstanceDetailsReportUuid": "27204998-2a4c-4ae0-b867-c145df0e599b",
-  "viewAttributes": ["name", "defaultLabel", "description", "designerApplication", "uuid"],
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "description",
+    "designerApplication",
+    "uuid"
+  ],
   "mlSchema": {
     "type": "object",
     "extend": {
@@ -22,17 +28,41 @@
     "definition": {
       "name": {
         "type": "string",
-        "tag": { "value": { "id": 4, "defaultLabel": "Name", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "defaultLabel": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { "id": 5, "defaultLabel": "Default Label", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { "id": 6, "defaultLabel": "Description", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "designerApplication": {
         "type": "uuid",
@@ -40,7 +70,9 @@
           "value": {
             "id": 7,
             "defaultLabel": "Designer Application",
-            "display": { "editable": true },
+            "display": {
+              "editable": true
+            },
             "foreignKeyParams": {
               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
               "targetEntityOrderInstancesBy": "name"

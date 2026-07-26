@@ -1,6 +1,6 @@
 {
   "uuid": "daa38a5f-f1b5-4d4f-94b7-54e97fe6782e",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
@@ -20,11 +20,11 @@
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "name": {
@@ -42,7 +42,9 @@
           "value": {
             "id": 1,
             "defaultLabel": "Application",
-            "display": { "modifiable": false }
+            "display": {
+              "modifiable": false
+            }
           }
         }
       },
@@ -71,7 +73,9 @@
           "value": {
             "defaultLabel": "Definition",
             "description": "The definition of the runner, which can be either a custom runner or an action runner",
-            "display": { "displayedAttributeValueWhenFolded": "definition.runnerType.definition" }
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.runnerType.definition"
+            }
           }
         },
         "definition": [

@@ -23,7 +23,7 @@
               "transformerType": "entityDefinition_extractAttributes",
               "entityDefinition": {
                 "uuid": "8a4b9e9f-ae19-489f-977f-f3062107e066",
-                "parentName": "EntityDefinition",
+                "parentName": "EntityVersion",
                 "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                 "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
                 "name": "User",

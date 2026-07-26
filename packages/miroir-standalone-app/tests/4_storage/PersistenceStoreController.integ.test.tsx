@@ -409,8 +409,10 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
         "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
         "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+        "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
         "e4320b9e-ab45-4abe-85d8-359604b3c62f",
         "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+        "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c",
       ],
     );
   });
@@ -507,7 +509,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
         entityUuid: entityAuthor.uuid,
         entityName: entityAuthor.name,
-        entityDefinitionUuid: entityDefinitionAuthor.uuid,
+        entityVersionUuid: entityDefinitionAuthor.uuid,
         targetValue: entityAuthor.name + "ssss",
       },
     };
@@ -571,6 +573,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           [
             {
               ...entityAuthor,
+              // #217 Phase 11 — present-model rename is Entity-authoritative
               name: entityAuthor.name + "ssss",
             },
           ],
@@ -599,8 +602,8 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           undefined,
           [
             {
+              // #217 Phase 11 — live ED is historical; rename does not dual-write
               ...entityDefinitionAuthor,
-              name: entityDefinitionAuthor.name + "ssss",
             },
           ],
         ),
@@ -627,7 +630,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
         entityUuid: entityAuthor.uuid,
         // entityName: entityAuthor.name,
-        entityDefinitionUuid: entityDefinitionAuthor.uuid,
+        entityVersionUuid: entityDefinitionAuthor.uuid,
       },
     };
 
@@ -722,7 +725,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   //       application: selfApplicationLibrary.uuid,
   //       // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
   //       entityUuid: entityAuthor.uuid,
-  //       entityDefinitionUuid: entityDefinitionAuthor.uuid,
+  //       entityVersionUuid: entityDefinitionAuthor.uuid,
   //       entityName: entityAuthor.name,
   //       // entityAttributeId: 6,
   //       // entityAttributeName: "icon",

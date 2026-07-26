@@ -1,6 +1,6 @@
 {
   "uuid": "952d2c65-4da2-45c2-9394-a0920ceedfb6",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
@@ -22,11 +22,11 @@
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "name": {
@@ -35,7 +35,9 @@
           "value": {
             "id": 6,
             "defaultLabel": "Name",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -45,7 +47,9 @@
           "value": {
             "id": 7,
             "defaultLabel": "Default Label",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -60,7 +64,9 @@
           "value": {
             "id": 8,
             "defaultLabel": "Type of Report",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -70,7 +76,9 @@
         "tag": {
           "value": {
             "id": 9,
-            "display": { "editable": true },
+            "display": {
+              "editable": true
+            },
             "defaultLabel": "SelfApplication",
             "foreignKeyParams": {
               "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -199,14 +207,20 @@
                     "tag": {
                       "value": {
                         "defaultLabel": "Graph Type",
-                        "display": { "editable": true },
+                        "display": {
+                          "editable": true
+                        },
                         "initializeTo": {
                           "initializeToType": "value",
                           "value": "bar"
                         }
                       }
                     },
-                    "definition": ["bar", "line", "pie"]
+                    "definition": [
+                      "bar",
+                      "line",
+                      "pie"
+                    ]
                   },
                   "dataMapping": {
                     "type": "object",
@@ -271,11 +285,18 @@
                       "labelPresentation": {
                         "type": "enum",
                         "optional": true,
-                        "definition": ["auto", "basic", "slanted", "separate"],
+                        "definition": [
+                          "auto",
+                          "basic",
+                          "slanted",
+                          "separate"
+                        ],
                         "tag": {
                           "value": {
                             "defaultLabel": "Label Presentation Mode",
-                            "display": { "editable": true },
+                            "display": {
+                              "editable": true
+                            },
                             "initializeTo": {
                               "initializeToType": "value",
                               "value": "auto"
@@ -286,11 +307,16 @@
                       "legendPosition": {
                         "type": "enum",
                         "optional": true,
-                        "definition": ["top-left", "top-right"],
+                        "definition": [
+                          "top-left",
+                          "top-right"
+                        ],
                         "tag": {
                           "value": {
                             "defaultLabel": "Legend Position",
-                            "display": { "editable": true },
+                            "display": {
+                              "editable": true
+                            },
                             "initializeTo": {
                               "initializeToType": "value",
                               "value": "top-right"
@@ -304,7 +330,9 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Slant Angle (degrees)",
-                            "display": { "editable": true },
+                            "display": {
+                              "editable": true
+                            },
                             "initializeTo": {
                               "initializeToType": "value",
                               "value": 45
@@ -318,7 +346,9 @@
                         "tag": {
                           "value": {
                             "defaultLabel": "Font Size (px)",
-                            "display": { "editable": true },
+                            "display": {
+                              "editable": true
+                            },
                             "initializeTo": {
                               "initializeToType": "value",
                               "value": 12
@@ -429,12 +459,19 @@
                   "direction": {
                     "type": "enum",
                     "optional": true,
-                    "definition": ["TB", "BT", "LR", "RL"],
+                    "definition": [
+                      "TB",
+                      "BT",
+                      "LR",
+                      "RL"
+                    ],
                     "tag": {
                       "value": {
                         "id": 3,
                         "defaultLabel": "Diagram Direction",
-                        "display": { "editable": true },
+                        "display": {
+                          "editable": true
+                        },
                         "initializeTo": {
                           "initializeToType": "value",
                           "value": "LR"
@@ -773,7 +810,10 @@
                         }
                       }
                     },
-                    "definition": ["asc", "desc"]
+                    "definition": [
+                      "asc",
+                      "desc"
+                    ]
                   }
                 }
               }
@@ -814,7 +854,9 @@
                           "value": {
                             "id": 1,
                             "defaultLabel": "Label",
-                            "display": { "editable": true }
+                            "display": {
+                              "editable": true
+                            }
                           }
                         }
                       }
@@ -834,7 +876,9 @@
                           "value": {
                             "id": 1,
                             "defaultLabel": "Label",
-                            "display": { "editable": true }
+                            "display": {
+                              "editable": true
+                            }
                           }
                         }
                       },
@@ -888,7 +932,9 @@
                           "value": {
                             "id": 1,
                             "defaultLabel": "Label",
-                            "display": { "editable": true }
+                            "display": {
+                              "editable": true
+                            }
                           }
                         }
                       },
@@ -915,7 +961,9 @@
                           "value": {
                             "id": 1,
                             "defaultLabel": "Label",
-                            "display": { "editable": true }
+                            "display": {
+                              "editable": true
+                            }
                           }
                         }
                       },
@@ -946,7 +994,9 @@
                 "tag": {
                   "value": {
                     "defaultLabel": "Stored Query",
-                    "display": { "editable": true },
+                    "display": {
+                      "editable": true
+                    },
                     "foreignKeyParams": {
                       "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
                       "targetEntityOrderInstancesBy": "name"
@@ -983,7 +1033,9 @@
               },
               "definition": {
                 "type": "union",
-                "discriminator": ["transformerType"],
+                "discriminator": [
+                  "transformerType"
+                ],
                 "tag": {
                   "value": {
                     "defaultLabel": "Report Display Params",
@@ -1032,7 +1084,10 @@
                         "definition": [
                           {
                             "type": "enum",
-                            "definition": ["data", "model"]
+                            "definition": [
+                              "data",
+                              "model"
+                            ]
                           },
                           {
                             "type": "schemaReference",
@@ -1329,7 +1384,9 @@
           "value": {
             "id": 9,
             "defaultLabel": "Definition",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       }

@@ -50,7 +50,7 @@ const createEntityAction: ModelActionCreateEntity = {
   endpoint: MODEL_ENDPOINT,
   payload: {
     application: APP_UUID,
-    entities: [{ entity: mockEntity, entityDefinition: mockEntityDefinition }],
+    entities: [{ entity: mockEntity, entityVersion: mockEntityDefinition }],
   },
 };
 
@@ -60,7 +60,7 @@ const renameEntityAction: ModelActionRenameEntity = {
   payload: {
     application: APP_UUID,
     entityUuid: ENTITY_UUID,
-    entityDefinitionUuid: ENTITYDEF_UUID,
+    entityVersionUuid: ENTITYDEF_UUID,
     targetValue: "NewEntityName",
   },
 };
@@ -71,7 +71,7 @@ const dropEntityAction: ModelActionDropEntity = {
   payload: {
     application: APP_UUID,
     entityUuid: ENTITY_UUID,
-    entityDefinitionUuid: ENTITYDEF_UUID,
+    entityVersionUuid: ENTITYDEF_UUID,
   },
 };
 
@@ -82,7 +82,7 @@ const alterEntityAction: ModelActionAlterEntityAttribute = {
     application: APP_UUID,
     entityName: "TestEntity",
     entityUuid: ENTITY_UUID,
-    entityDefinitionUuid: ENTITYDEF_UUID,
+    entityVersionUuid: ENTITYDEF_UUID,
   },
 };
 

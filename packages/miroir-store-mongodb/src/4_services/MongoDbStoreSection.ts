@@ -66,7 +66,7 @@ export class MongoDbStoreSection
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
@@ -78,8 +78,7 @@ export class MongoDbStoreSection
       "Entities",
       this.localUuidMongoDb.getCollections()
     );
-    if (entity.uuid != entityDefinition.entityUuid) {
-      // inconsistent input, raise exception
+    if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
       log.error(
         this.logHeader,
         "createStorageSpaceForInstancesOfEntity",
@@ -138,7 +137,7 @@ export class MongoDbStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.warn(
       this.logHeader,

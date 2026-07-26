@@ -12,6 +12,7 @@ import {
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
   compareEntityPresentModelDefinitions,
+  entityHasCompletePresentModel,
   inventoryEntityEntityDefinitionJoins,
   projectEntityPresentModelDefinition,
 } from "../../src/1_core/entityPresentModel.js";
@@ -37,7 +38,7 @@ function entityDefinition(
 ): EntityDefinition {
   return {
     parentUuid: "e432ecc7-9415-4fd8-b040-c6fbaea17e9a",
-    parentName: "EntityDefinition",
+    parentName: "EntityVersion",
     ...overrides,
   };
 }
@@ -195,14 +196,16 @@ describe("characterization — default MetaModels are clean 1:1 joins", () => {
     expect(inventory.matched).toHaveLength(defaultLibraryAppModel.entities.length);
   });
 
-  it("baseline: Entity instances do not yet carry definition-bearing fields", () => {
+  it("Phase 3: Entity instances carry definition-bearing fields matching EntityDefinitions", () => {
     for (const entity of defaultLibraryAppModel.entities) {
       const entityDefinition = defaultLibraryAppModel.entityDefinitions.find(
         (definition) => definition.entityUuid === entity.uuid,
       )!;
-      const comparison = compareEntityPresentModelDefinitions(entity, entityDefinition);
-      expect(comparison.equal).toBe(false);
-      expect(comparison.differingFields).toContain("mlSchema");
+      expect(entityHasCompletePresentModel(entity)).toBe(true);
+      expect(compareEntityPresentModelDefinitions(entity, entityDefinition)).toEqual({
+        equal: true,
+        differingFields: [],
+      });
     }
   });
 });

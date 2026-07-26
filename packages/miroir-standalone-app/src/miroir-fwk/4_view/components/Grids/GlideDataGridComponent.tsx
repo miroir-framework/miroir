@@ -68,7 +68,7 @@ interface GlideDataGridComponentProps {
   columnDefs: { columnDefs: any[] };
   styles?: any;
   type: string;
-  currentEntityDefinition?: EntityDefinition;
+  currentEntityDefinition?: EntityDefinition | { uuid?: string; entityUuid?: string; mlSchema?: any; name?: string };
   // calculatedColumnWidths?: ColumnWidthSpec[];
   containerWidth?: number; // Container width from parent EntityInstanceGrid
   containerHeight?: number; // Container width from parent EntityInstanceGrid

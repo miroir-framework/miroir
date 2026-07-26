@@ -31,13 +31,14 @@ import {
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
   stripLocalCacheSegmentSuffix,
+  assertVersioningEnabledImmutable,
   type Action2VoidReturnType,
   type ApplicationDeploymentMap,
   type CacheFreshness,
   type CacheSegmentKind,
   type LocalCacheSegmentHeader,
 } from "miroir-core";
-import { entityDefinitionEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entitySelfApplication } from "miroir-test-app_deployment-miroir";
 
 import type { LocalCacheSliceState, LocalCacheSliceStateZone } from "./localCacheZustandInterface.js";
 import { currentModel } from "./Model.js";
@@ -142,26 +143,29 @@ function getIdAttributeForIndex(index: string): string | string[] {
 }
 
 /**
- * Called when loading or creating EntityDefinition instances.
- * Registers the idAttribute for the entity identified by entityDefinition.entityUuid.
- * Registers for all ApplicationSections since EntityDefinitions are stored in "model"
- * but their instances may be loaded/created/deleted under any section (e.g. "data").
+ * #217 Phase 11: register non-UUID PK from Entity present-model only.
  */
+function registerPresentModelSourceInLocalCache(
+  deploymentUuid: string,
+  source: EntityInstance
+): void {
+  const idAttribute = getEntityPrimaryKeyAttribute(source as any);
+  const targetEntityUuid = (source as any).entityUuid ?? (source as any).uuid;
+  if (idAttribute !== "uuid" && targetEntityUuid) {
+    for (const targetSection of ["model", "data"] as ApplicationSection[]) {
+      const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, targetSection, targetEntityUuid);
+      idAttributeByIndex[locationIndex] = idAttribute;
+    }
+  }
+}
+
+/** @deprecated use registerPresentModelSourceInLocalCache */
 function registerEntityDefinitionInLocalCache(
   deploymentUuid: string,
   _section: ApplicationSection,
   entityDefinition: EntityInstance
 ): void {
-  const idAttribute = getEntityPrimaryKeyAttribute(entityDefinition as any);
-  if (idAttribute !== "uuid") {
-    const entityUuid = (entityDefinition as any).entityUuid;
-    if (entityUuid) {
-      for (const targetSection of ["model", "data"] as ApplicationSection[]) {
-        const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, targetSection, entityUuid);
-        idAttributeByIndex[locationIndex] = idAttribute;
-      }
-    }
-  }
+  registerPresentModelSourceInLocalCache(deploymentUuid, entityDefinition);
 }
 
 function getInitialEntityState(): EntityState {
@@ -365,6 +369,10 @@ function handleInstanceAction(
         const idAttribute = getIdAttributeForIndex(index);
         
         initializeLocalCacheSliceState(deploymentUuid, section, resolvedParentUuid, "current", state);
+
+        if (resolvedParentUuid === entityEntity.uuid) {
+          registerPresentModelSourceInLocalCache(deploymentUuid, instance);
+        }
         
         const currentState = state.current[index] as EntityState;
         state.current[index] = addManyToEntityState(currentState, [instance], idAttribute);
@@ -402,6 +410,23 @@ function handleInstanceAction(
         const section = instanceAction.payload.applicationSection ?? "data";
         const index = getReduxDeploymentsStateIndex(deploymentUuid, section, resolvedParentUuid);
         const idAttribute = getIdAttributeForIndex(index);
+
+        if (resolvedParentUuid === entitySelfApplication.uuid && state.current[index]) {
+          const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
+          const pk = serializeCompositeKeyValue(pkAttrs, instance);
+          const existing = (state.current[index] as EntityState).entities?.[pk];
+          if (existing) {
+            try {
+              assertVersioningEnabledImmutable(existing as any, instance as any);
+            } catch (error) {
+              log.error(
+                "handleInstanceAction updateInstance rejected versioningEnabled change (#217)",
+                error,
+              );
+              return;
+            }
+          }
+        }
         
         if (state.current[index]) {
           state.current[index] = updateOneInEntityState(state.current[index] as EntityState, instance, idAttribute);
@@ -428,10 +453,10 @@ function handleLoadNewInstancesAction(
     const { kind: segment, projection } = resolveLoadCacheSegment(instanceCollection);
     const segmentHeader = buildLocalCacheSegmentHeader(segment, "fresh", projection);
     
-    // Register custom idAttribute when loading EntityDefinition instances
-    if (instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid) {
-      for (const entityDef of instanceCollection.instances ?? []) {
-        registerEntityDefinitionInLocalCache(deploymentUuid, section, entityDef);
+    // #217 Phase 11: register PK from Entity only (ED is historical).
+    if (instanceCollection.parentUuid === entityEntity.uuid) {
+      for (const entity of instanceCollection.instances ?? []) {
+        registerPresentModelSourceInLocalCache(deploymentUuid, entity);
       }
     }
     
@@ -586,13 +611,13 @@ function handleModelAction(
       break;
     }
     case "createEntity": {
-      // Initialize entity adapter for new entities
+      // Initialize entity adapter for new entities (#217: Entity is identity; ED optional)
       if (modelAction.payload.entities) {
         for (const entityEntry of modelAction.payload.entities) {
           initializeLocalCacheSliceState(
             deploymentUuid,
             "model",
-            entityEntry.entityDefinition.entityUuid,
+            entityEntry.entity.uuid,
             "current",
             state
           );

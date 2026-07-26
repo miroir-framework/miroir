@@ -21,6 +21,7 @@ import {
   buildEvolutionBaselineCreateInstanceActions,
   EVOLUTION_TRACE_ENTITY_UUID,
 } from "../2_domain/evolutionTraceBaseline.js";
+import { entityHasCompletePresentModel } from "./entityPresentModel.js";
 
 import {
   selfApplicationMiroir,
@@ -228,7 +229,8 @@ export function createDeploymentCompositeAction(
 export interface EntityDefinitionCouple {
   // entity: Entity;
   entity: Entity;
-  entityDefinition: EntityDefinition;
+  /** Optional during #217 Phase 11 — Entity-only create when present model is complete. */
+  entityDefinition?: EntityDefinition;
 }
 export type ApplicationEntitiesDefinitionAndInstances = {
   instances: EntityInstance[];
@@ -242,7 +244,7 @@ export const emptyMetaModel: MetaModel = {
   applications: [],
   entities: [],
   entityDefinitions: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applicationVersions: [],
   endpoints: [],
   jzodSchemas: [],
@@ -371,15 +373,16 @@ export function buildResetAndinitializeDeploymentActionSequence(
     const entityDefinition = filteredEntitiesMetaModel.entityDefinitions.find(
       (ed) => ed.entityUuid === entity.uuid,
     );
-    if (!entityDefinition) {
-      throw new Error(
-        `Entity definition not found for entity uuid: ${entity.uuid} (${entity.name})`,
-      );
+    // #217 Phase 11 — Entity with present-model fields does not require a live ED row.
+    if (entityDefinition) {
+      return { entity, entityDefinition };
     }
-    return {
-      entity,
-      entityDefinition,
-    };
+    if (entityHasCompletePresentModel(entity)) {
+      return { entity };
+    }
+    throw new Error(
+      `Entity definition not found for entity uuid: ${entity.uuid} (${entity.name}) and Entity has no mlSchema`,
+    );
   });
 
   log.info(
@@ -443,7 +446,12 @@ export function buildResetAndinitializeDeploymentActionSequence(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            entities: entities,
+            // #217 Phase 12: Action field is entityVersion; couple API still uses entityDefinition
+            entities: entities.map(({ entity, entityDefinition }) =>
+              entityDefinition
+                ? { entity, entityVersion: entityDefinition }
+                : { entity },
+            ),
           },
         },
         // add reports, menus, etc. from metaModel
@@ -462,7 +470,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
               ...appMetaModel.themes as EntityInstance[],
               ...appMetaModel.jzodSchemas as EntityInstance[],
               ...appMetaModel.endpoints as EntityInstance[],
-              ...appMetaModel.applicationVersionCrossEntityDefinition as EntityInstance[],
+              ...appMetaModel.applicationVersionCrossEntityVersion as EntityInstance[],
               ...appMetaModel.applicationVersions as EntityInstance[],
               ...appMetaModel.applications as EntityInstance[],
             ],

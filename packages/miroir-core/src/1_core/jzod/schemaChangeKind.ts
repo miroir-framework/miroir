@@ -1,6 +1,7 @@
 import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
 import type {
   EndpointDefinition,
+  Entity,
   EntityDefinition,
   Menu,
   MetaModel,
@@ -55,6 +56,8 @@ function buildMetaSchemaRevisionPayload(deploymentUuid: Uuid, model: MetaModel) 
   return {
     scope: "meta" as const,
     deploymentUuid,
+    // #217 Phase 7: Entity present-model fields are authoritative; ED kept for dual-write parity.
+    entities: fingerprintEntities(model.entities),
     entityDefinitions: fingerprintEntityDefinitions(model.entityDefinitions),
     reports: fingerprintReports(model.reports),
     storedQueries: fingerprintQueries(model.storedQueries),
@@ -78,12 +81,31 @@ function buildAppSchemaRevisionPayload(
     scope: "app" as const,
     deploymentUuid,
     applicationUuid,
+    entities: fingerprintEntities(model.entities),
     entityDefinitions: fingerprintEntityDefinitions(model.entityDefinitions),
     reports: fingerprintReports(model.reports),
     menus: fingerprintMenus(model.menus),
     endpoints: fingerprintEndpoints(appEndpoints),
     endpointActionTypes: extractEndpointActionTypes(appEndpoints),
   };
+}
+
+/**
+ * Present-model / schema-bearing Entity fields only (not description or other narrative).
+ */
+function fingerprintEntities(entities: Entity[] | undefined) {
+  return [...definedArray(entities)]
+    .map((entity) => ({
+      uuid: entity.uuid,
+      name: entity.name,
+      viewAttributes: entity.viewAttributes,
+      defaultInstanceDetailsReportUuid: entity.defaultInstanceDetailsReportUuid,
+      idAttribute: entity.idAttribute,
+      cache: entity.cache,
+      icon: entity.icon,
+      mlSchema: entity.mlSchema,
+    }))
+    .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }
 
 function fingerprintEntityDefinitions(entityDefinitions: EntityDefinition[] | undefined) {

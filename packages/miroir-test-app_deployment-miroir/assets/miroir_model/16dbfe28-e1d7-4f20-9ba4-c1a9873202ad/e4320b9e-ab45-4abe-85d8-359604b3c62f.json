@@ -6,5 +6,991 @@
   "name": "Query",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
-  "description": "A Query"
+  "description": "A Query",
+  "defaultInstanceDetailsReportUuid": "4bbf3894-93ea-4c7f-9d8a-827152a0118e",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "description",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Default Label"
+          }
+        }
+      },
+      "parameters": {
+        "type": "schemaReference",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "The definition of formal Parameters that need to be provided to the Query when executing it"
+          }
+        },
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "jzodObject"
+        }
+      },
+      "definition": {
+        "type": "schemaReference",
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Query Version definition"
+          }
+        },
+        "context": {
+          "queryFailed": {
+            "type": "object",
+            "definition": {
+              "queryFailure": {
+                "type": "enum",
+                "definition": [
+                  "FailedTransformer_getObjectEntries",
+                  "FailedExtractor",
+                  "QueryNotExecutable",
+                  "DomainStateNotLoaded",
+                  "IncorrectParameters",
+                  "DeploymentNotFound",
+                  "ApplicationSectionNotFound",
+                  "EntityNotFound",
+                  "InstanceNotFound",
+                  "ReferenceNotFound",
+                  "ReferenceFoundButUndefined",
+                  "ReferenceFoundButAttributeUndefinedOnFoundObject"
+                ]
+              },
+              "query": {
+                "type": "string",
+                "optional": true
+              },
+              "failureOrigin": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "failureMessage": {
+                "type": "string",
+                "optional": true
+              },
+              "queryReference": {
+                "type": "string",
+                "optional": true
+              },
+              "queryParameters": {
+                "type": "string",
+                "optional": true
+              },
+              "queryContext": {
+                "type": "string",
+                "optional": true
+              },
+              "deploymentUuid": {
+                "type": "string",
+                "optional": true
+              },
+              "errorStack": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "innerError": {
+                "type": "any",
+                "optional": true
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "entityUuid": {
+                "type": "string",
+                "optional": true
+              },
+              "instanceUuid": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          "extractorOrCombinerRoot": {
+            "type": "object",
+            "definition": {
+              "label": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Label"
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "schemaReference",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "SelfApplication Section"
+                  }
+                },
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "parentName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "canBeTemplate": true,
+                    "defaultLabel": "Parent Name"
+                  }
+                }
+              },
+              "parentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Parent Uuid",
+                    "foreignKeyParams": {
+                      "targetEntityApplicationSection": "model",
+                      "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "combinerOneToMany": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "extractorOrCombinerRoot"
+              }
+            },
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "combinerOneToMany"
+              },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "ASC",
+                      "DESC"
+                    ]
+                  }
+                }
+              },
+              "objectReference": {
+                "type": "string"
+              },
+              "objectReferenceAttribute": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "AttributeOfListObjectToCompareToReferenceUuid": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            }
+          },
+          "extractorOrCombinerContextReference": {
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "extractorOrCombinerContextReference"
+              },
+              "extractorOrCombinerContextReference": {
+                "type": "string"
+              }
+            }
+          },
+          "combinerOneToOne": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "extractorOrCombinerRoot"
+              }
+            },
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "combinerOneToOne"
+              },
+              "objectReference": {
+                "type": "string"
+              },
+              "AttributeOfObjectToCompareToReferenceUuid": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "definition": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            }
+          },
+          "extractorByPrimaryKey": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "extractorOrCombinerRoot"
+              }
+            },
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "extractorByPrimaryKey"
+              },
+              "instanceUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Instance Uuid"
+                  }
+                }
+              },
+              "foreignKeysForTransformer": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              },
+              "attributes": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                },
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Projected Attributes",
+                    "description": "Optional attribute allow-list for partial fetch (#214)"
+                  }
+                }
+              }
+            }
+          },
+          "extractorOrCombinerReturningObject": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorByPrimaryKey"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "combinerOneToOne"
+                }
+              }
+            ]
+          },
+          "extractorInstancesByEntity": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "extractorOrCombinerRoot"
+              }
+            },
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "extractorInstancesByEntity"
+              },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "ASC",
+                      "DESC"
+                    ]
+                  }
+                }
+              },
+              "filter": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "not": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "undefined": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "value": {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Value"
+                      }
+                    }
+                  },
+                  "values": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    },
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Values"
+                      }
+                    }
+                  }
+                }
+              },
+              "attributes": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                },
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Projected Attributes",
+                    "description": "Optional attribute allow-list for partial fetch (#214)"
+                  }
+                }
+              }
+            }
+          },
+          "extractorReturningObject": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorByPrimaryKey"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "combinerOneToOne"
+                }
+              }
+            ]
+          },
+          "extractor": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorByPrimaryKey"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorInstancesByEntity"
+                }
+              }
+            ]
+          },
+          "combinerManyToMany": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "relativePath": "extractorOrCombinerRoot"
+              }
+            },
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "combinerManyToMany"
+              },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "ASC",
+                      "DESC"
+                    ]
+                  }
+                }
+              },
+              "objectListReference": {
+                "type": "string"
+              },
+              "objectListReferenceAttribute": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "AttributeOfRootListObjectToCompareToListReferenceUuid": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "applyTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            }
+          },
+          "extractorOrCombinerReturningObjectList": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorInstancesByEntity"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "combinerOneToMany"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "combinerManyToMany"
+                }
+              }
+            ]
+          },
+          "combinerReturningObjectOrObjectList": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "combinerOneToOne"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "combinerOneToMany"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "combinerManyToMany"
+                }
+              }
+            ]
+          },
+          "extractorOrCombinerReturningObjectOrObjectList": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorOrCombinerReturningObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorOrCombinerReturningObjectList"
+                }
+              }
+            ]
+          },
+          "combinerByHeteronomousManyToMany": {
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "combinerByHeteronomousManyToMany"
+              },
+              "orderBy": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "attributeName": {
+                    "type": "string"
+                  },
+                  "direction": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "ASC",
+                      "DESC"
+                    ]
+                  }
+                }
+              },
+              "rootExtractorOrReference": {
+                "type": "union",
+                "discriminator": "extractorOrCombinerType",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "extractor"
+                    }
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "subQueryTemplate": {
+                "type": "object",
+                "definition": {
+                  "query": {
+                    "type": "schemaReference",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "extractorOrCombiner"
+                    }
+                  },
+                  "indexValueFromRootObject": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
+                  },
+                  "rootQueryObjectTransformer": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "extractorWrapperReturningObject": {
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "extractorWrapperReturningObject"
+              },
+              "definition": {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "relativePath": "extractorOrCombinerRecord"
+                }
+              }
+            }
+          },
+          "extractorWrapperReturningList": {
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "extractorWrapperReturningList"
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": true
+                    }
+                  },
+                  "definition": {
+                    "relativePath": "extractorOrCombiner"
+                  }
+                }
+              }
+            }
+          },
+          "extractorWrapper": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "relativePath": "extractorWrapperReturningObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "relativePath": "extractorWrapperReturningList"
+                }
+              }
+            ]
+          },
+          "extractorOrCombiner": {
+            "type": "union",
+            "discriminator": "extractorOrCombinerType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorOrCombinerReturningObject"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorOrCombinerReturningObjectList"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorOrCombinerContextReference"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorWrapper"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "combinerByHeteronomousManyToMany"
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "extractorOrCombinerType": {
+                    "type": "literal",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "display": {
+                          "editable": false
+                        },
+                        "defaultLabel": "Extractor Or Combiner Type"
+                      }
+                    },
+                    "definition": "literal"
+                  },
+                  "definition": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          },
+          "extractorOrCombinerRecord": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "relativePath": "extractorOrCombiner"
+              }
+            }
+          },
+          "queryWithExtractorCombinerTransformer": {
+            "type": "object",
+            "definition": {
+              "extractorTemplates": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "extractorOrCombinerTemplateRecord"
+                }
+              },
+              "combinerTemplates": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "extractorOrCombinerTemplateRecord"
+                }
+              },
+              "runtimeTransformers": {
+                "type": "record",
+                "optional": true,
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                }
+              }
+            }
+          },
+          "query": {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "queryWithExtractorCombinerTransformer"
+            }
+          }
+        },
+        "definition": {
+          "eager": true,
+          "relativePath": "query"
+        }
+      }
+    }
+  }
 }

@@ -26,7 +26,7 @@ import { LocalCache } from "../src/4_services/LocalCache.js";
 const libraryBooks = [book1, book2, book3, book4, book5, book6];
 
 /** Same golden as redux Phase 2 Library Books bootstrap (D15). */
-const EXPECTED_PRESENT_SNAPSHOT_BYTES = 3922;
+const EXPECTED_PRESENT_SNAPSHOT_BYTES = 3980;
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,

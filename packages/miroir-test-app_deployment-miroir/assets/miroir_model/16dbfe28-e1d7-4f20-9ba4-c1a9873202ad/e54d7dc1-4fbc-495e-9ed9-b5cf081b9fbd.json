@@ -6,5 +6,204 @@
   "name": "Runner",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
-  "description": "A Runner, view component responsible for executing Actions defined in an Endpoint"
+  "description": "A Runner, view component responsible for executing Actions defined in an Endpoint",
+  "defaultInstanceDetailsReportUuid": "032fde52-9171-4313-be77-7e06d9c35240",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "uuid"
+  ],
+  "icon": "Interests",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "application": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Application",
+            "display": {
+              "modifiable": false
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label"
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "definition": {
+        "type": "union",
+        "discriminator": "runnerType",
+        "tag": {
+          "value": {
+            "defaultLabel": "Definition",
+            "description": "The definition of the runner, which can be either a custom runner or an action runner",
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.runnerType.definition"
+            }
+          }
+        },
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "runnerType": {
+                "type": "literal",
+                "definition": "customRunner"
+              },
+              "formMLSchema": {
+                "type": "union",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "formMLSchema"
+                  }
+                },
+                "discriminator": "formMLSchemaType",
+                "definition": [
+                  {
+                    "type": "object",
+                    "definition": {
+                      "formMLSchemaType": {
+                        "type": "literal",
+                        "definition": "mlSchema"
+                      },
+                      "initialFormValues": {
+                        "type": "schemaReference",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Initial Form Values",
+                            "description": "Initial values for the form fields, required when the formMLSchemaType is 'transformer', in the case the transformer depends on the form values"
+                          }
+                        },
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      },
+                      "mlSchema": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "jzodElement"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "formMLSchemaType": {
+                        "type": "literal",
+                        "definition": "transformer"
+                      },
+                      "initialFormValues": {
+                        "type": "record",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Initial Form Values",
+                            "description": "Initial values for the form fields, required when the formMLSchemaType is 'transformer', in the case the transformer depends on the form values"
+                          }
+                        },
+                        "definition": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "coreTransformerForBuildPlusRuntime"
+                          }
+                        }
+                      },
+                      "transformer": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "mlSchemaTemplate"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "compositeActionSequence": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "compositeActionSequenceTemplate"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "runnerType": {
+                "type": "literal",
+                "definition": "actionRunner"
+              },
+              "endpoint": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": {
+                        "transformerType": "getFromParameters",
+                        "safe": true,
+                        "referencePath": [
+                          "pageParams",
+                          "application"
+                        ]
+                      },
+                      "targetEntity": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "action": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
 }

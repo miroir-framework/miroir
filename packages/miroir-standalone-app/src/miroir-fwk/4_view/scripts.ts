@@ -12,6 +12,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   type ApplicationDeploymentMap,
+  type Entity,
   type Uuid
 } from "miroir-core";
 import { packageName } from "../../constants.js";
@@ -22,6 +23,18 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
+
+/** #217 Phase 12 — Entity or EntityVersion/ED-shaped schema carrier. */
+type PresentModelSchemaCarrier = {
+  uuid?: string | undefined;
+  entityUuid?: string | undefined;
+  name?: string | undefined;
+  mlSchema?: { definition?: Record<string, any> | undefined } | undefined;
+};
+
+function carrierIdentityUuid(carrier: PresentModelSchemaCarrier): string | undefined {
+  return carrier.entityUuid ?? carrier.uuid;
+}
 
 export const splitEntity = async (p: {
   domainController: DomainControllerInterface,
@@ -48,8 +61,10 @@ export const deleteCascade = async (p: {
   deploymentUuid: string;
   applicationSection: ApplicationSection;
   // state: LocalCacheSliceState;
-  entityDefinition: EntityDefinition;
+  entityDefinition: PresentModelSchemaCarrier;
   entityDefinitions: EntityDefinition[];
+  /** #217 Phase 9/12 — prefer Entity present model for FK walk when provided. */
+  entities?: Entity[];
   entityInstances: EntityInstance[];
 }) => {
   log.info(
@@ -58,16 +73,22 @@ export const deleteCascade = async (p: {
     p.entityInstances
   );
 
+  const targetEntityUuid = carrierIdentityUuid(p.entityDefinition);
+  const schemaCarriers: PresentModelSchemaCarrier[] =
+    p.entities && p.entities.length > 0
+      ? p.entities
+      : p.entityDefinitions;
+
   // finding all entities which have an attribute pointing to the current entity
   const foreignKeysPointingToEntity = Object.fromEntries(
-    Object.entries(p.entityDefinitions)
-      .map((e: [string, EntityDefinition]) => {
-        const fkAttributes = Object.entries(e[1].mlSchema.definition).find(
-          (a) => a[1].tag?.value?.foreignKeyParams?.targetEntity == p.entityDefinition.entityUuid
+    schemaCarriers
+      .map((ed: PresentModelSchemaCarrier) => {
+        const fkAttributes = Object.entries(ed.mlSchema?.definition ?? {}).find(
+          (a) => a[1].tag?.value?.foreignKeyParams?.targetEntity == targetEntityUuid
         );
-        return [e[1].entityUuid, fkAttributes ? fkAttributes[0] : undefined];
+        return [carrierIdentityUuid(ed), fkAttributes ? fkAttributes[0] : undefined];
       })
-      .filter((e) => e[1])
+      .filter((e) => e[0] && e[1])
   );
 
   log.info(
@@ -170,10 +191,10 @@ export const deleteCascade = async (p: {
     );
     // recursive calls
     for (const entityInstance of foreignKeyObjects) {
-      const entityDefinitionTmp: [string, EntityDefinition] | undefined = Object.entries(
-        p.entityDefinitions ?? {}
-      ).find((e: [string, EntityDefinition]) => e[1].entityUuid == entityInstance.parentUuid);
-      if (!p.entityDefinitions || !entityDefinitionTmp) {
+      const entityDefinitionTmp: EntityDefinition | undefined = schemaCarriers.find(
+        (ed: EntityDefinition) => ed.entityUuid == entityInstance.parentUuid,
+      );
+      if (!entityDefinitionTmp) {
         throw new Error(
           "deleteInstanceWithCascade deleteCascade could not find definition for Entity " +
             entityInstance.parentUuid +
@@ -182,15 +203,15 @@ export const deleteCascade = async (p: {
         );
       }
 
-      const entityDefinition: EntityDefinition = entityDefinitionTmp[1];
       deleteCascade({
         domainController: p.domainController,
         application: p.application,
         applicationDeploymentMap: p.applicationDeploymentMap,
         deploymentUuid: p.deploymentUuid,
         applicationSection: p.applicationSection,
-        entityDefinition: entityDefinition,
+        entityDefinition: entityDefinitionTmp,
         entityDefinitions: p.entityDefinitions,
+        entities: p.entities,
         entityInstances: [entityInstance],
       });
     }

@@ -18,10 +18,10 @@ import type {
   ReportQueryLoadExecutor,
   ReportQueryLoadRequest,
 } from "./ReportQueryLoadService.js";
-import type { LoggerInterface } from "../../dist/index.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
+import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

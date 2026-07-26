@@ -204,6 +204,8 @@ export {
   entityAttributeUntypedCore,
   EntityDefinition,
   entityDefinition,
+  EntityVersion,
+  entityVersion,
   EntityForeignKeyAttribute,
   entityForeignKeyAttribute,
   EntityInstance,
@@ -493,7 +495,10 @@ export {
 } from "./0_interfaces/1_core/Blob.js";
 export {
   entityDefinitionMLSchema,
-  entityDefinitionWithResolvedMLSchema, InstanceDictionary,
+  entityDefinitionWithResolvedMLSchema,
+  entityMLSchema,
+  entityWithResolvedMLSchema,
+  InstanceDictionary,
   InstanceDictionaryNum,
   MetaEntity,
   MetaEntitySchema,
@@ -746,10 +751,45 @@ export {
 } from "./1_core/EntityPrimaryKey";
 export type { EntityPrimaryKeySource } from "./1_core/EntityPrimaryKey";
 export {
+  applyAlterEntityAttributePair,
+  applyEntityOnlyAlterAttribute,
+  applyEntityOnlyRename,
+  applyMlSchemaColumnChanges,
+  applyRenameEntityPair,
+  normalizeCreateEntityPair,
+} from "./1_core/modelEntityDualWrite.js";
+export type {
+  AlterEntityAttributeColumns,
+  EntityEntityDefinitionPair,
+} from "./1_core/modelEntityDualWrite.js";
+export {
+  detectEntityEntityDefinitionInconsistencies,
+  persistEntityThenEntityDefinition,
+} from "./1_core/modelEntityDualWritePersistence.js";
+export type {
+  DualWriteFailurePolicy,
+  DualWriteInconsistency,
+  DualWriteInconsistencyReport,
+  PersistEntityThenEntityDefinitionOps,
+} from "./1_core/modelEntityDualWritePersistence.js";
+export {
+  planAlterEntityAttributeMutation,
+  planCreateEntityMutation,
+  planRenameEntityMutation,
+  resolveLiveEntityDefinitionForAction,
+  resolveOrSynthesizeEntityDefinitionForCreate,
+} from "./1_core/modelEntityActionLiveResolve.js";
+export type { LiveEntityMutationPlan } from "./1_core/modelEntityActionLiveResolve.js";
+export {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   EntityPresentModelResolutionError,
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
+  alignEntityDefinitionToPresentEntity,
+  assertVersioningEnabledImmutable,
+  assembleLivePresentModelEntities,
+  resolvePresentEntityFromModel,
+  presentEntityAsRedundantEntityDefinition,
   compareEntityPresentModelDefinitions,
   entityHasCompletePresentModel,
   inventoryEntityEntityDefinitionJoins,
@@ -838,9 +878,11 @@ export {
   metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities
 } from "./1_core/Model.js";
 export {
+  resolveCachePolicyCarrierForEntity,
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
   isLazyCacheOnRefreshEntity,
+  type CachePolicyCarrier,
   type EntityFetchOnRefresh,
 } from "./1_core/cacheRefreshPolicy.js";
 export {

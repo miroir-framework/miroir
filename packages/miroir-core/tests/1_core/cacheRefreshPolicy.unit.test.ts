@@ -28,7 +28,7 @@ function entityDefinition(
     uuid: `def-${entityUuid}`,
     name: `Def-${entityUuid}`,
     entityUuid,
-    parentName: "EntityDefinition",
+    parentName: "EntityVersion",
     parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
     mlSchema: { type: "object", definition: {} },
     ...(cacheAllInstancesOnRefresh === undefined
@@ -42,8 +42,17 @@ describe("shouldCacheAllInstancesOnRefresh (1.1 default eager)", () => {
     expect(shouldCacheAllInstancesOnRefresh(undefined)).toBe(true);
   });
 
-  it("returns true when cache options are absent", () => {
-    expect(shouldCacheAllInstancesOnRefresh(entityDefinition("e1"))).toBe(true);
+  it("returns true when Entity.cache is absent (Entity-authoritative carrier)", () => {
+    expect(shouldCacheAllInstancesOnRefresh(entity("e1", "Book"))).toBe(true);
+  });
+
+  it("returns false when Entity.cache.cacheAllInstancesOnRefresh is false", () => {
+    expect(
+      shouldCacheAllInstancesOnRefresh({
+        ...entity("e1", "Blob"),
+        cache: { cacheAllInstancesOnRefresh: false },
+      }),
+    ).toBe(false);
   });
 
   it("returns true when cacheAllInstancesOnRefresh is true", () => {
@@ -127,6 +136,14 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
       { [entityBlob.uuid]: entityDefinitionBlob as EntityDefinition },
     );
 
+    expect(result).toEqual([]);
+  });
+
+  it("excludes Blob from Entity.cache without EntityDefinition map (Phase 7)", async () => {
+    const { entityBlob } = await import("miroir-test-app_deployment-miroir");
+    expect(entityBlob.cache?.cacheAllInstancesOnRefresh).toBe(false);
+
+    const result = resolveEntitiesToFetchOnRefresh([], [entityBlob as Entity]);
     expect(result).toEqual([]);
   });
 

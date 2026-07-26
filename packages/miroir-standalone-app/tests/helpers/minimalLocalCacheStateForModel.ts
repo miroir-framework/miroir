@@ -131,7 +131,7 @@ export function addEntityInstanceToLocalCacheState(
 export function mutateEntityDefinitionInLocalCacheState(
   slice: LocalCacheSliceState,
   deploymentUuid: Uuid,
-  entityDefinitionUuid: string,
+  entityVersionUuid: string,
   patch: Record<string, unknown>,
 ): LocalCacheSliceState {
   const index = getReduxDeploymentsStateIndex(
@@ -140,7 +140,7 @@ export function mutateEntityDefinitionInLocalCacheState(
     entityEntityDefinition.uuid,
   );
   const collection = slice.current[index];
-  const existing = collection?.entities?.[entityDefinitionUuid];
+  const existing = collection?.entities?.[entityVersionUuid];
   if (!existing) {
     return slice;
   }
@@ -152,7 +152,7 @@ export function mutateEntityDefinitionInLocalCacheState(
         ...collection,
         entities: {
           ...collection.entities,
-          [entityDefinitionUuid]: {
+          [entityVersionUuid]: {
             ...existing,
             ...patch,
           },

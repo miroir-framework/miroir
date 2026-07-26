@@ -20,7 +20,8 @@ import {
   type Runner,
   type SelfApplication,
   type StoredMiroirTheme,
-  type Uuid
+  type Uuid,
+  assembleLivePresentModelEntities,
 } from "miroir-core";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -119,16 +120,21 @@ export function currentModel(
       applicationVersions: (applicationVersions && applicationVersions.entities
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],
-      applicationVersionCrossEntityDefinition: [],
+      applicationVersionCrossEntityVersion: [],
       // configuration: (configuration && configuration.entities
       //   ? Object.values(configuration.entities)
       //   : []) as StoreBasedConfiguration[],
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],
-      entities: (entities && entities.entities
-        ? Object.values(entities.entities)
-        : []) as Entity[],
+      entities: assembleLivePresentModelEntities(
+        (entities && entities.entities
+          ? Object.values(entities.entities)
+          : []) as Entity[],
+        (entityDefinitions && entityDefinitions.entities
+          ? Object.values(entityDefinitions.entities)
+          : []) as EntityDefinition[],
+      ),
       entityDefinitions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
         : []) as EntityDefinition[],

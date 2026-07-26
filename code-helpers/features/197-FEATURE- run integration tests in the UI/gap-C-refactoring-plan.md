@@ -250,7 +250,7 @@ localAppPersistenceStoreController.getInstances("model", entityEntity.uuid)
 localAppPersistenceStoreController.getInstances("data", entityAuthor.uuid)
 localAppPersistenceStoreController.createEntity(entity, entityDefinition)
 localAppPersistenceStoreController.renameEntityClean(modelActionRenameEntity)
-localAppPersistenceStoreController.dropEntity(entityUuid, entityDefinitionUuid)
+localAppPersistenceStoreController.dropEntity(entityUuid, entityVersionUuid)
 // upsertInstance via chainVitestSteps where used
 ```
 

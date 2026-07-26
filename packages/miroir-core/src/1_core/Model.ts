@@ -198,7 +198,7 @@ export const emptyApplicationModel: MetaModel = {
   applicationName: "",
   applications: [],
   applicationVersions: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   endpoints: [],
   entities: [],
   entityDefinitions: [],
@@ -319,7 +319,7 @@ export async function extractApplicationModel(
       storedQueries: queries as Query[],
       jzodSchemas: jzodSchemas as MlSchema[],
       applicationVersions: applicationVersions as ApplicationVersion[],
-      applicationVersionCrossEntityDefinition: [], // These would need to be read separately if needed
+      applicationVersionCrossEntityVersion: [], // These would need to be read separately if needed
       runners: runners as Runner[], 
       tests: tests as MiroirTestDefinition[],
       themes: themes as StoredMiroirTheme[], // Themes are now included in the model extraction

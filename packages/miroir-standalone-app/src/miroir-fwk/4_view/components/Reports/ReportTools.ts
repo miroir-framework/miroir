@@ -1,9 +1,10 @@
 import {
-  entityDefinitionMLSchema,
+  entityMLSchema,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   LoggerInterface,
   MiroirLoggerFactory,
+  resolvePresentEntityFromModel,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
   type EntityDefinition,
@@ -78,13 +79,18 @@ export const reportSectionsFormSchema = (
     case "objectInstanceReportSection": {
       const entityUuid = reportSection.definition.parentUuid;
       const applicationSection = getApplicationSection(applicationUuid, entityUuid)
-      const targetEntityDefinition: EntityDefinition | undefined =
-        currentDeploymentReportsEntitiesDefinitionsMapping?.[
-          applicationSection
-        ]?.entityDefinitions?.find((e) => e?.entityUuid === entityUuid);
-      if (!targetEntityDefinition) {
+      const sectionMapping =
+        currentDeploymentReportsEntitiesDefinitionsMapping?.[applicationSection];
+      const targetPresentEntity = resolvePresentEntityFromModel(
+        {
+          entities: sectionMapping?.entities,
+          entityDefinitions: sectionMapping?.entityDefinitions,
+        },
+        entityUuid,
+      );
+      if (!targetPresentEntity) {
         throw new Error(
-          "reportSectionsFormSchema: cannot find target entity definition for " +
+          "reportSectionsFormSchema: cannot find target present Entity for " +
           " deploymentUuid " + JSON.stringify(deploymentUuid) +
            " entityUuid " +
             entityUuid +
@@ -92,9 +98,9 @@ export const reportSectionsFormSchema = (
             applicationSection
         );
       }
-      const resolvedEntityDefinitionMLSchema = entityDefinitionMLSchema(targetEntityDefinition);
+      const resolvedEntityMLSchema = entityMLSchema(targetPresentEntity);
       return {
-        [reportSectionPath.join("_")]: resolvedEntityDefinitionMLSchema
+        [reportSectionPath.join("_")]: resolvedEntityMLSchema
       };
     }
     case "objectListReportSection":

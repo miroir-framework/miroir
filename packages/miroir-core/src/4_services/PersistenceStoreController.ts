@@ -263,8 +263,15 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
               "handleAction applyModelEntityUpdates createEntity inserting",
               persistenceStoreControllerAction.payload.entities
             );
-            // await targetProxy.createEntity(update.entity, update.entityDefinition);
-            return this.createEntities(persistenceStoreControllerAction.payload.entities);
+            // #217 Phase 12: Action payload uses entityVersion; store API still entityDefinition
+            return this.createEntities(
+              persistenceStoreControllerAction.payload.entities.map((pair) => ({
+                entity: pair.entity,
+                entityDefinition:
+                  (pair as { entityVersion?: EntityDefinition }).entityVersion ??
+                  (pair as { entityDefinition?: EntityDefinition }).entityDefinition,
+              })),
+            );
             break;
           }
           default:
@@ -476,7 +483,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     );
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
       ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
-        (e) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1
+        (e) => ["Entity", "EntityDefinition", "EntityVersion"].indexOf(e.name) == -1
       ), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
       (dataEntityDefinitions as any).returnedDomainElement?.instances as EntityDefinition[]
     );
@@ -563,7 +570,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     }
     const dataSectionFilteredEntities: Entity[] = (
       dataSectionEntities.returnedDomainElement.instances as Entity[]
-    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityDefinition"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
+    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityDefinition", "EntityVersion"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
     log.trace(
       this.logHeader,
       "clearDataInstances found entities to clear:",
@@ -628,7 +635,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async createEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     const result = await this.modelStoreSection.createEntity(entity, entityDefinition);
     return Promise.resolve(result);
@@ -638,7 +645,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async createEntities(
     entities: {
       entity: Entity;
-      entityDefinition: EntityDefinition;
+      entityDefinition?: EntityDefinition;
     }[]
   ): Promise<Action2VoidReturnType> {
     const result = await this.modelStoreSection.createEntities(entities);

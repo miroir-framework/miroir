@@ -1,13 +1,20 @@
 {
   "uuid": "45491bf9-a923-4a9c-a0da-6b0c3df2f296",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c",
   "conceptLevel": "Model",
   "name": "ApplicationEvolutionTraceEvent",
   "description": "Definition of a single append-only model-evolution event.",
-  "viewAttributes": ["operationType", "applicationSection", "targetEntityUuid", "sequenceNumber", "timestamp", "uuid"],
+  "viewAttributes": [
+    "operationType",
+    "applicationSection",
+    "targetEntityUuid",
+    "sequenceNumber",
+    "timestamp",
+    "uuid"
+  ],
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },
@@ -37,7 +44,14 @@
       },
       "sequenceNumber": {
         "type": "number",
-        "tag": { "value": { "defaultLabel": "Sequence Number", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "Sequence Number",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "operationType": {
         "type": "enum",
@@ -53,17 +67,45 @@
           "deleteInstance",
           "squashedBaseline"
         ],
-        "tag": { "value": { "defaultLabel": "Operation Type", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "Operation Type",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "applicationSection": {
         "type": "enum",
-        "definition": ["model", "data"],
-        "tag": { "value": { "defaultLabel": "Application Section", "display": { "editable": false } } }
+        "definition": [
+          "model",
+          "data"
+        ],
+        "tag": {
+          "value": {
+            "defaultLabel": "Application Section",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "compactionLevel": {
         "type": "enum",
-        "definition": ["raw", "commit", "version"],
-        "tag": { "value": { "defaultLabel": "Compaction Level", "display": { "editable": false } } }
+        "definition": [
+          "raw",
+          "commit",
+          "version"
+        ],
+        "tag": {
+          "value": {
+            "defaultLabel": "Compaction Level",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "targetEntityUuid": {
         "type": "uuid",
@@ -82,7 +124,14 @@
       "targetInstanceUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": { "defaultLabel": "Target Instance", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "Target Instance",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "commitUuid": {
         "type": "uuid",
@@ -101,16 +150,37 @@
       "fromVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": { "defaultLabel": "From Version", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "From Version",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "toVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": { "defaultLabel": "To Version", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "To Version",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "timestamp": {
         "type": "string",
-        "tag": { "value": { "defaultLabel": "Timestamp", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "Timestamp",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "definitionVersionResolution": {
         "type": "enum",
@@ -118,15 +188,29 @@
         "definition": [
           "instanceParentDefinitionVersion",
           "actionPayload",
-          "applicationVersionCrossEntityDefinition",
+          "applicationVersionCrossEntityVersion",
           "unresolved"
         ],
-        "tag": { "value": { "defaultLabel": "Definition Version Resolution", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "Definition Version Resolution",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "targetDefinitionVersionUuid": {
         "type": "uuid",
         "optional": true,
-        "tag": { "value": { "defaultLabel": "Target Definition Version", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "defaultLabel": "Target Definition Version",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       }
     }
   }

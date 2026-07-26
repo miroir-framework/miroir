@@ -7,6 +7,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ResultAccessPath,
+  resolvePresentEntityFromModel,
   transformer_extended_apply_wrapper,
   transformer_resolveReference,
   type CoreTransformerForBuildPlusRuntime,
@@ -85,15 +86,13 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 // ##############################################################################################
+/** #217 Phase 11 — present-model PK from Entity (ED only via resolvePresentEntityFromModel hub). */
 function getIdAttributeForEntity(
   entityUuid: string,
   modelEnvironment?: MiroirModelEnvironment
 ): string | string[] {
-  if (!modelEnvironment?.currentModel?.entityDefinitions) return "uuid";
-  const entityDef = modelEnvironment.currentModel.entityDefinitions.find(
-    (ed: any) => ed.entityUuid === entityUuid
-  );
-  return (entityDef as any)?.idAttribute ?? "uuid";
+  const present = resolvePresentEntityFromModel(modelEnvironment?.currentModel, entityUuid);
+  return present?.idAttribute ?? "uuid";
 }
 
 // ##############################################################################################
@@ -165,16 +164,14 @@ function parseSerializedCompositePkValue(pkAttributes: string[], serializedKey: 
 }
 
 // ##############################################################################################
+/** #217 Phase 11 — present-model schema from Entity (ED only via hub). */
 function getSchemaForEntity(
   entityUuid: string,
   defaultSchema: string,
   modelEnvironment?: MiroirModelEnvironment
 ): string {
-  if (!modelEnvironment?.currentModel?.entityDefinitions) return defaultSchema;
-  const entityDef = modelEnvironment.currentModel.entityDefinitions.find(
-    (ed: any) => ed.entityUuid === entityUuid
-  );
-  return (entityDef as any)?.externalDataSource?.schema ?? defaultSchema;
+  const present = resolvePresentEntityFromModel(modelEnvironment?.currentModel, entityUuid);
+  return present?.externalDataSource?.schema ?? defaultSchema;
 }
 
 export type ITransformerHandler<T> = (

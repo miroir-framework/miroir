@@ -4,14 +4,14 @@
   "parentName": "Report",
   "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel": "Model",
-  "name": "EntityDefinitionDetails",
-  "defaultLabel": "Detailed information about an Entity Definition",
+  "name": "EntityVersionDetails",
+  "defaultLabel": "Detailed information about an Entity Version",
   "definition": {
     "extractorTemplates": {
       "entityDefinition": {
         "extractorOrCombinerType": "extractorByPrimaryKey",
         "applicationSection": "model",
-        "parentName": "EntityDefinition",
+        "parentName": "EntityVersion",
         "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
         "instanceUuid": {
           "transformerType": "getFromParameters",

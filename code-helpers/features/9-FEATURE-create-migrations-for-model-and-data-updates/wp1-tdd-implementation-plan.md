@@ -66,7 +66,7 @@ WP1 will store both target identity and definition-version identity, with explic
 
 Resolution order in WP1:
 1. Use `instance.parentDefinitionVersionUuid` when present.
-2. Else use explicit definition UUID/version carried by action payload (`entityDefinitionUuid` etc.).
+2. Else use explicit definition UUID/version carried by action payload (`entityVersionUuid` etc.).
 3. Else resolve through `ApplicationVersionCrossEntityDefinition` from current app version context.
 4. If unresolved, write trace event with `definitionVersionResolution = "unresolved"` and raise explicit warning/error per existing error-handling conventions (no silent drop).
 
@@ -372,7 +372,7 @@ Add test file: `packages/miroir-core/tests/2_domain/evolutionTrace.defversion.un
 Four focused unit tests for `resolveDefinitionVersionForTraceEvent(...)`:
 
 1. Instance carries `parentDefinitionVersionUuid` → returns `{ definitionVersionUuid: <that value>, resolution: "instanceParentDefinitionVersion" }`.
-2. Instance lacks it; action payload has `entityDefinitionUuid` → returns `{ definitionVersionUuid: <payload value>, resolution: "actionPayload" }`.
+2. Instance lacks it; action payload has `entityVersionUuid` → returns `{ definitionVersionUuid: <payload value>, resolution: "actionPayload" }`.
 3. Both absent; `ApplicationVersionCrossEntityDefinition` lookup returns a match → returns `{ definitionVersionUuid: <lookup value>, resolution: "applicationVersionCrossEntityDefinition" }`.
 4. All absent/lookup returns nothing → returns `{ definitionVersionUuid: undefined, resolution: "unresolved" }` and emits a warning (captured in test).
 

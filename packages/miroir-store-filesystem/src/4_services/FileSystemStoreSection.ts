@@ -51,8 +51,17 @@ export class FileSystemStoreSection
   // #############################################################################################
   bootFromPersistedState(entities: Entity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
-    // Register idAttribute for each entity
+    // #217 Phase 11 — register idAttribute from Entity first; ED map is legacy fill-in only.
+    for (const entity of entities) {
+      const idAttr = entity.idAttribute ?? "uuid";
+      if (idAttr !== "uuid") {
+        this.entityIdAttributes[entity.uuid] = idAttr;
+      }
+    }
     for (const ed of entityDefinitions) {
+      if (this.entityIdAttributes[ed.entityUuid] !== undefined) {
+        continue;
+      }
       const idAttr = (ed as any).idAttribute ?? "uuid";
       if (idAttr !== "uuid") {
         this.entityIdAttributes[ed.entityUuid] = idAttr;
@@ -86,7 +95,7 @@ export class FileSystemStoreSection
   // #############################################################################################
   createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", entity);
     const entityInstancesPath = path.join(this.directory, entity.uuid);
@@ -95,8 +104,8 @@ export class FileSystemStoreSection
     } else {
       log.debug(this.logHeader, "createStorageSpaceForInstancesOfEntity storage space already exists for", entity.uuid);
     }
-    // Register idAttribute for non-UUID PK entities
-    const idAttr = (entityDefinition as any).idAttribute ?? "uuid";
+    // Register idAttribute for non-UUID PK entities (#217 Phase 11: Entity first)
+    const idAttr = entity.idAttribute ?? entityDefinition?.idAttribute ?? "uuid";
     if (idAttr !== "uuid") {
       this.entityIdAttributes[entity.uuid] = idAttr;
     }
@@ -132,7 +141,7 @@ export class FileSystemStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "renameStorageSpaceForInstancesOfEntity does nothing!");
     return Promise.resolve(ACTION_OK);

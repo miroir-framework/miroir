@@ -1,5 +1,5 @@
 {
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "name": "Test",
   "uuid": "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -13,11 +13,11 @@
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "selfApplication": {
@@ -26,14 +26,16 @@
           "value": {
             "id": 9,
             "defaultLabel": "SelfApplication",
-              "description": "The SelfApplication this Test belongs to",
-              "display": { "editable": false },
-              "foreignKeyParams": {
-                "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-                "targetEntityOrderInstancesBy": "name"
-              }
+            "description": "The SelfApplication this Test belongs to",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
             }
           }
+        }
       },
       "branch": {
         "type": "uuid",
@@ -42,7 +44,9 @@
             "id": 10,
             "defaultLabel": "Branch",
             "description": "The Branch of the SelfApplication",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -53,7 +57,9 @@
           "value": {
             "id": 1,
             "defaultLabel": "Name",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -64,7 +70,9 @@
           "value": {
             "id": 1,
             "defaultLabel": "Name",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },

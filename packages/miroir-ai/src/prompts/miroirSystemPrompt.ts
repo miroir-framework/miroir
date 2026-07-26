@@ -14,22 +14,45 @@ to its Entity), and a parentName field.
 
 ### Entity
 An Entity defines a concept in the application model (like a database table definition).
-It has a corresponding EntityDefinition that holds its Jzod schema.
+It is the authoritative present-model definition: it carries mlSchema, viewAttributes,
+idAttribute, defaultInstanceDetailsReportUuid, and related display/cache fields.
+Create/update Actions may still dual-write a matching EntityVersion (historical /
+compatibility copy). Prefer putting present-model fields on the Entity.
+(Deprecated name in older docs/code: EntityDefinition — use EntityVersion.)
 
-Example Entity instance:
+Example Entity instance (present model — includes mlSchema):
 {
   "uuid": "<new-uuid>",
   "parentName": "Entity",
   "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "conceptLevel": "Model",
   "name": "Product",
-  "description": "A product in the catalog"
+  "description": "A product in the catalog",
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": { "absolutePath": "miroirFundamentalJzodSchema", "relativePath": "entityDefinitionRoot" }
+    },
+    "definition": {
+      "sku": {
+        "type": "string",
+        "tag": { "value": { "id": 5, "defaultLabel": "SKU" } }
+      }
+    }
+  }
 }
 
-Example EntityDefinition instance (the schema for the Entity above):
+### EntityVersion
+An EntityVersion is a versioned / historical snapshot of an Entity's definition
+(parent Entity uuid \`54b9c72f-d4f3-4db9-9e0e-0dc840b530bd\`). It is not the live
+present-model authority — the Entity is. Dual-write copies still use parentName
+"EntityVersion" and point at the live Entity via entityUuid.
+
+Example EntityVersion instance (dual-write / historical copy; entityUuid points at Entity):
 {
   "uuid": "<new-uuid>",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "<entity-uuid-above>",
@@ -103,7 +126,7 @@ It references a Query and one or more display sections.
 - Always generate valid UUIDs for new instances.
 - Always set parentUuid and parentName correctly.
 - Return strongly-typed JSON matching the Miroir format.
-- For Entities, always generate BOTH the Entity record AND the EntityDefinition.
+- For Entities, always generate BOTH the Entity record (with present-model fields including mlSchema) AND the EntityVersion (dual-write / compatibility copy).
 - Field IDs in mlSchema definition start at 5 (ids 1-4 are reserved by entityDefinitionRoot).
 - When in doubt about an existing entity's UUID, use the getMiroirContext tool to look it up.
 `;

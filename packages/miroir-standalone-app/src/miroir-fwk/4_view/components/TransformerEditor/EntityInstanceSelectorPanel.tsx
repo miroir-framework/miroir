@@ -11,10 +11,10 @@ import {
   getEntityInstancesIndexNonHook,
   metaMetaModelEntityUuids,
   noValue,
+  resolvePresentEntityFromModel,
   type ApplicationDeploymentMap,
   type ApplicationSection,
   type Entity,
-  type EntityDefinition,
   type JzodElement,
   type JzodObject,
   type MiroirModelEnvironment,
@@ -197,12 +197,10 @@ export function EntityInstanceSelectorPanel(props:{
     miroirMetaModel.entities,
     currentModel.entities,
   ]);
-  // Schemas for model-section entity types come from Miroir; data-section types from the app model
+  // Present-model schemas: model-section types from Miroir; data-section from the app model
   // (for Miroir those are the same MetaModel).
-  const currentReportDeploymentSectionEntityDefinitions: EntityDefinition[] =
-    applicationSection === "model"
-      ? miroirMetaModel.entityDefinitions
-      : currentModel.entityDefinitions;
+  const schemaModel =
+    applicationSection === "model" ? miroirMetaModel : currentModel;
 
   const [selectedEntityUuid, setSelectedEntityUuid] = useState<Uuid>(
     persistedState?.selectedEntityUuid || initialEntityUuid
@@ -225,21 +223,17 @@ export function EntityInstanceSelectorPanel(props:{
     setCurrentInstanceIndex(0);
   }, [selectedEntityUuid, applicationSection]);
 
-  const currentReportTargetEntity: Entity | undefined =
-    currentReportDeploymentSectionEntities?.find((e) => e?.uuid === selectedEntityUuid);
-
-  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportDeploymentSectionEntityDefinitions?.find(
-      (e) => e?.entityUuid === currentReportTargetEntity?.uuid
-    );
+  const currentReportTargetEntity: Entity | undefined = resolvePresentEntityFromModel(
+    schemaModel,
+    selectedEntityUuid,
+  );
 
   // Avoid rendering with a stale / mismatched schema while selection catches up
   const schemaMatchesSelection =
-    !!currentReportTargetEntity &&
-    !!currentReportTargetEntityDefinition &&
-    currentReportTargetEntityDefinition.entityUuid === selectedEntityUuid;
+    !!currentReportTargetEntity?.mlSchema &&
+    currentReportTargetEntity.uuid === selectedEntityUuid;
 
-  const instanceEditorKey = `instance-editor-${applicationSection}-${selectedEntityUuid}-${currentReportTargetEntityDefinition?.uuid ?? "noschema"}-${showAllInstances ? "all" : "single"}`;
+  const instanceEditorKey = `instance-editor-${applicationSection}-${selectedEntityUuid}-${currentReportTargetEntity?.uuid ?? "noschema"}-${showAllInstances ? "all" : "single"}`;
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
     useMemo(() => getMemoizedReduxDeploymentsStateSelectorMap(), []);
@@ -705,7 +699,7 @@ export function EntityInstanceSelectorPanel(props:{
                 elements={[{
                   label: `TypedValueObjectEditor showing all ${
                     entityInstances.length
-                  } instances of entity '${currentReportTargetEntityDefinition?.name || ""}`,
+                  } instances of entity '${currentReportTargetEntity?.name || ""}`,
                   data: {
                     type: "object",
                     definition: {
@@ -713,7 +707,7 @@ export function EntityInstanceSelectorPanel(props:{
                         definition: {
                           type: "array",
                           definition:
-                            currentReportTargetEntityDefinition?.mlSchema ??
+                            currentReportTargetEntity?.mlSchema ??
                             createGenericObjectSchema(),
                         },
                       },
@@ -734,7 +728,7 @@ export function EntityInstanceSelectorPanel(props:{
                     {
                       type: "array",
                       definition:
-                        currentReportTargetEntityDefinition?.mlSchema ??
+                        currentReportTargetEntity?.mlSchema ??
                         createGenericObjectSchema(),
                     }
                   } // TODO: ILL-TYPED!!
@@ -777,7 +771,7 @@ export function EntityInstanceSelectorPanel(props:{
                 // type: "object",
                 // definition: {
                 //   selectedEntityInstance:
-                    currentReportTargetEntityDefinition?.mlSchema ?? createGenericObjectSchema()
+                    currentReportTargetEntity?.mlSchema ?? createGenericObjectSchema()
                 // },
               // }
               }

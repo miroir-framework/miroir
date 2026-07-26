@@ -10,7 +10,7 @@ Learn how to create a complete Miroir application from scratch.
 
 Every Miroir application consists of:
 
-- **Model**: Entity definitions, relationships, and business rules
+- **Model**: Entity present models (and optional EntityVersions), relationships, and business rules
 - **Data**: Actual instances of your entities
 - **Queries**: Data retrieval logic
 - **Transformers**: Data manipulation logic
@@ -27,7 +27,7 @@ Every Miroir application consists of:
 
 (Content to be added)
 
-### 3. Create Entity Definitions
+### 3. Create Entity Versions
 
 (Content to be added)
 

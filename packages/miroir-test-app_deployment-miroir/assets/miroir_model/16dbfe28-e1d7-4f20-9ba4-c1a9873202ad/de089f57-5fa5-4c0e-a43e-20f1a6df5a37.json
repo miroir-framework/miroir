@@ -6,5 +6,76 @@
   "name": "ApplicationEvolutionTrace",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
-  "description": "A durable trace root for the model evolution history of a Miroir application, one per application/branch."
+  "description": "A durable trace root for the model evolution history of a Miroir application, one per application/branch.",
+  "defaultInstanceDetailsReportUuid": "c4d5e6f7-a8b9-4c01-d345-67890abcdef1",
+  "viewAttributes": [
+    "name",
+    "applicationUuid",
+    "branchName",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "applicationUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Application",
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityApplicationSection": "data",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "branchName": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Branch Name",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "timestamp": {
+        "type": "date",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Timestamp",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      }
+    }
+  }
 }

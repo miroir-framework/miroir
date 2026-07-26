@@ -1,12 +1,12 @@
 {
   "uuid": "c0b71083-8cc8-43db-bf52-572f1f03bbb5",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
   "conceptLevel": "Model",
-  "name": "ApplicationVersionCrossEntityDefinition",
-  "description": "The mapping among SelfApplication Versions and Entity Definitions",
+  "name": "ApplicationVersionCrossEntityVersion",
+  "description": "The mapping among SelfApplication Versions and Entity Versions",
   "icon": "Interests",
   "cache": {
     "cacheAllInstancesOnRefresh": true
@@ -15,32 +15,58 @@
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "name": {
         "type": "string",
-        "tag": { "value": { "id": 5, "defaultLabel": "Name", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "defaultLabel": {
         "type": "string",
-        "tag": { "value": { "id": 6, "defaultLabel": "Default Label", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { "id": 7, "defaultLabel": "Description", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "selfApplication": {
         "type": "uuid",
         "tag": {
           "value": {
             "id": 8,
-            "display": { "editable": false },
+            "display": {
+              "editable": false
+            },
             "defaultLabel": "SelfApplication",
             "description": "The SelfApplication of the Branch.",
             "foreignKeyParams": {
@@ -55,7 +81,9 @@
         "tag": {
           "value": {
             "id": 9,
-            "display": { "editable": false },
+            "display": {
+              "editable": false
+            },
             "defaultLabel": "SelfApplication Version",
             "description": "The SelfApplication Version of this mapping.",
             "foreignKeyParams": {
@@ -65,14 +93,16 @@
           }
         }
       },
-      "entity": {
+      "entityVersion": {
         "type": "uuid",
         "tag": {
           "value": {
             "id": 10,
-            "display": { "editable": false },
-            "defaultLabel": "Entity",
-            "description": "The Entity definition of this mapping.",
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Entity Version",
+            "description": "The EntityVersion of this mapping.",
             "foreignKeyParams": {
               "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
               "targetEntityOrderInstancesBy": "name"

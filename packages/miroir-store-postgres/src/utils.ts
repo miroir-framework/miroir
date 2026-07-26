@@ -1,12 +1,14 @@
 // ##############################################################################################
 
 import {
+  Entity,
   EntityDefinition,
   entityDefinitionMLSchema,
+  entityMLSchema,
   JzodElement,
   JzodObject,
   LoggerInterface,
-  MiroirLoggerFactory
+  MiroirLoggerFactory,
 } from "miroir-core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic } from "sequelize";
 
@@ -30,6 +32,34 @@ export type EntityUuidIndexedSequelizeModel = {
     sequelizeModel: ModelStatic<Model<any, any>>;
   };
 };
+
+/** #217 Phase 11 — Entity or EntityDefinition-shaped present-model schema carrier for Sequelize. */
+export type PresentModelSequelizeSource = {
+  name?: string;
+  mlSchema?: JzodObject | undefined;
+  idAttribute?: (string | string[]) | undefined;
+  externalDataSource?:
+    | {
+        schema?: string | undefined;
+        tableName?: string | undefined;
+      }
+    | undefined;
+};
+
+function resolveMlSchemaForSequelize(source: PresentModelSequelizeSource): JzodObject {
+  if (!source.mlSchema) {
+    return { type: "object", definition: {} };
+  }
+  if (!source.mlSchema.extend) {
+    return source.mlSchema;
+  }
+  // Entity and EntityDefinition both resolve via the same extend flattening helpers.
+  try {
+    return entityMLSchema(source as Entity);
+  } catch {
+    return entityDefinitionMLSchema(source as EntityDefinition);
+  }
+}
 
 // const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor } = {
 //   ARRAY: DataTypes.JSONB, // OK?
@@ -65,15 +95,14 @@ export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeCon
 };
 
 // ##############################################################################################
-export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
-  entityDefinition: EntityDefinition
+/**
+ * #217 Phase 11 — build Sequelize attributes from present-model fields (Entity preferred).
+ */
+export function fromMiroirPresentModelToSequelizeEntityDefinition(
+  source: PresentModelSequelizeSource,
 ): ModelAttributes<Model, Attributes<Model>> {
-  const mlSchema: JzodObject = entityDefinition.mlSchema
-    ? entityDefinition.mlSchema.extend
-      ? entityDefinitionMLSchema(entityDefinition as EntityDefinition)
-      : entityDefinition.mlSchema
-    : { type: "object", definition: {} };
-  const idAttribute: string | string[] = (entityDefinition as any).idAttribute ?? "uuid";
+  const mlSchema: JzodObject = resolveMlSchemaForSequelize(source);
+  const idAttribute: string | string[] = source.idAttribute ?? "uuid";
   const pkAttributes: string[] = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
   const jzodObjectAttributes = mlSchema.definition;
   const result = Object.fromEntries(
@@ -85,44 +114,35 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
             (
               [
                 "any",
-                // "bigint",
-                // "boolean",
                 "date",
-                // "never",
-                // "null",
                 "number",
                 "string",
                 "uuid",
-                // "undefined",
-                // "unknown",
-                // "void",
                 "array",
-                // "enum",
-                // "function",
-                // "lazy",
-                // "literal",
-                // "intersection",
-                // "map",
                 "object",
-                // "promise",
                 "record",
                 "schemaReference",
-                // "set",
-                // "simpleType",
-                // "tuple",
                 "union",
               ].includes(a[1].type))
               ? dataTypesMapping[a[1].type]
               : DataTypes.STRING,
-          // allowNull: a[1].type == "simpleType" ? a[1].optional : false,
           allowNull: ((a[1] as any)["optional"] || (a[1] as any)["nullable"]) ?? false,
           primaryKey: pkAttributes.includes(a[0]),
         },
       ];
     })
   );
-  // log.info("miroir-store-postgres fromMiroirEntityDefinitionToSequelizeEntityDefinition",entityDefinition.name, "mlSchema",entityDefinition.mlSchema, "result", result);
   return result;
+}
+
+/**
+ * @deprecated Prefer {@link fromMiroirPresentModelToSequelizeEntityDefinition} with Entity.
+ * Retained for EntityDefinition-shaped callers during #217 Phase 11.
+ */
+export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
+  entityDefinition: EntityDefinition
+): ModelAttributes<Model, Attributes<Model>> {
+  return fromMiroirPresentModelToSequelizeEntityDefinition(entityDefinition);
 }
 
 // ##############################################################################################
@@ -131,12 +151,10 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
  * (i.e. null means "absent", not a meaningful null value). These attributes should have their
  * null values replaced by undefined when reading from the database.
  */
-export function getOptionalNonNullableAttributes(entityDefinition: EntityDefinition): string[] {
-  const mlSchema: JzodObject = entityDefinition.mlSchema
-    ? entityDefinition.mlSchema.extend
-      ? entityDefinitionMLSchema(entityDefinition as EntityDefinition)
-      : entityDefinition.mlSchema
-    : { type: "object", definition: {} };
+export function getOptionalNonNullableAttributes(
+  source: PresentModelSequelizeSource,
+): string[] {
+  const mlSchema: JzodObject = resolveMlSchemaForSequelize(source);
   return Object.entries(mlSchema.definition)
     .filter(([, attrDef]) => {
       const attr = attrDef as JzodElement & { optional?: boolean; nullable?: boolean };

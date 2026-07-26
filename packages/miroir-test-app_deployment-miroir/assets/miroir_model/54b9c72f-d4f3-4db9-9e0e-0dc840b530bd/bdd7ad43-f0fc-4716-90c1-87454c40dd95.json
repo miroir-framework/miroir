@@ -1,12 +1,12 @@
 {
   "uuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  "name": "EntityDefinition",
+  "name": "EntityVersion",
   "conceptLevel": "MetaModel",
-  "description": "definition of an entity",
+  "description": "historical version (snapshot) of an entity",
   "defaultInstanceDetailsReportUuid": "acd55b04-84df-427e-b219-cf0e01a6881b",
   "viewAttributes": [
     "name",
@@ -22,11 +22,11 @@
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "name": {
@@ -43,7 +43,9 @@
         "tag": {
           "value": {
             "defaultLabel": "Entity Uuid of the Entity which this definition is the definition",
-            "display": { "editable": false },
+            "display": {
+              "editable": false
+            },
             "foreignKeyParams": {
               "targetEntityApplicationSection": "model",
               "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
@@ -64,7 +66,9 @@
         "tag": {
           "value": {
             "defaultLabel": "Concept Level",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -83,7 +87,9 @@
         "tag": {
           "value": {
             "defaultLabel": "Default Report used to display instances of this Entity",
-            "display": { "editable": false },
+            "display": {
+              "editable": false
+            },
             "foreignKeyParams": {
               "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
               "targetEntityApplicationSection": "model",
@@ -102,7 +108,9 @@
           "value": {
             "defaultLabel": "Attributes shown in list",
             "description": "List of attribute names to be shown when displaying lists of instances of this entity.",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -143,7 +151,7 @@
         "tag": {
           "value": {
             "defaultLabel": "Cache Options"
-          } 
+          }
         },
         "definition": {
           "cacheAllInstancesOnRefresh": {
@@ -154,7 +162,8 @@
                 "defaultLabel": "Enable Systematic Caching of All Instances",
                 "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
                 "initializeTo": {
-                  "initializeToType": "value", "value": true
+                  "initializeToType": "value",
+                  "value": true
                 }
               }
             }
@@ -171,8 +180,15 @@
           }
         },
         "definition": [
-          { "type": "string" },
-          { "type": "array", "definition": { "type": "string" } }
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            }
+          }
         ]
       },
       "externalDataSource": {

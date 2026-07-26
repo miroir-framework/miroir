@@ -37,12 +37,16 @@ import {
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
   serializeCompositeKeyValue,
+  assertVersioningEnabledImmutable,
   type ApplicationDeploymentMap,
   type CacheFreshness,
   type CacheSegmentKind,
   type LocalCacheSegmentHeader,
 } from "miroir-core";
-import { entityDefinitionEntityDefinition, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import {
+  entityEntity,
+  entitySelfApplication,
+} from "miroir-test-app_deployment-miroir";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
@@ -233,32 +237,45 @@ function getEntityIdAttribute(entityInstancesLocationIndex: string): string | st
 }
 
 // ##########################################################################################
+/**
+ * #217 Phase 11: register non-UUID PK adapters from Entity present-model only.
+ * EntityDefinition is historical and no longer registers live PK adapters.
+ */
+function registerEntityAdapterFromPresentModelSource(
+  deploymentUuid: string,
+  source: EntityInstance,
+): void {
+  const idAttribute = getEntityPrimaryKeyAttribute(source as any);
+  const targetEntityUuid =
+    (source as any).entityUuid ?? (source as any).uuid;
+  log.info(
+    "registerEntityAdapterFromPresentModelSource",
+    source,
+    "idAttribute",
+    idAttribute,
+    "targetEntityUuid",
+    targetEntityUuid,
+  );
+
+  if (idAttribute !== "uuid" && targetEntityUuid) {
+    for (const targetSection of ["model", "data"] as ApplicationSection[]) {
+      const locationIndex = getReduxDeploymentsStateIndex(
+        deploymentUuid,
+        targetSection,
+        targetEntityUuid,
+      );
+      getOrCreateEntityAdapter(locationIndex, idAttribute);
+    }
+  }
+}
+
+/** @deprecated use registerEntityAdapterFromPresentModelSource */
 function registerEntityAdapterFromDefinition(
   deploymentUuid: string,
   _section: ApplicationSection,
   entityDefinition: EntityInstance
 ): void {
-  const idAttribute = getEntityPrimaryKeyAttribute(entityDefinition as any);
-  log.info(
-    "registerEntityAdapterFromDefinition called for entityDefinition",
-    entityDefinition,
-    "_section",
-    _section,
-    "with idAttribute",
-    idAttribute
-  );
-
-  if (idAttribute !== "uuid") {
-    const entityUuid = (entityDefinition as any).entityUuid;
-    if (entityUuid) {
-      // Register for all sections: EntityDefinitions are stored in "model" but their
-      // instances may be loaded/created/deleted under any ApplicationSection (e.g. "data").
-      for (const targetSection of ["model", "data"] as ApplicationSection[]) {
-        const locationIndex = getReduxDeploymentsStateIndex(deploymentUuid, targetSection, entityUuid);
-        getOrCreateEntityAdapter(locationIndex, idAttribute);
-      }
-    }
-  }
+  registerEntityAdapterFromPresentModelSource(deploymentUuid, entityDefinition);
 }
 
 //#########################################################################################
@@ -348,11 +365,10 @@ function loadNewEntityInstancesInLocalCache(
     "instanceCollection",
     instanceCollection
   );
-  // Register custom adapters for entities with non-UUID PKs when loading EntityDefinitions
-  // if (instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid) {
-  if (instanceCollection.parentUuid === entityEntityDefinition.uuid) {
-    for (const entityDefinition of instanceCollection.instances ?? []) {
-      registerEntityAdapterFromDefinition(deploymentUuid, section, entityDefinition);
+  // #217 Phase 11: register PK from Entity only (ED is historical).
+  if (instanceCollection.parentUuid === entityEntity.uuid) {
+    for (const entity of instanceCollection.instances ?? []) {
+      registerEntityAdapterFromPresentModelSource(deploymentUuid, entity);
     }
   }
   const { kind: segment, projection } = resolveLoadCacheSegment(instanceCollection);
@@ -570,28 +586,24 @@ function handleInstanceAction(
             resolvedParentUuid
           );
 
-          if (resolvedParentUuid == entityDefinitionEntityDefinition.uuid) {
-            // When creating an EntityDefinition, register a custom adapter if it uses a non-UUID PK
-            registerEntityAdapterFromDefinition(
+          if (resolvedParentUuid === entityEntity.uuid) {
+            // Entity carrying idAttribute (present-model authority)
+            registerEntityAdapterFromPresentModelSource(deploymentUuid, instance);
+
+            if (!instanceAction.payload.applicationSection) {
+              throw new Error(
+                "createInstance action called without applicationSection in payload: " +
+                  JSON.stringify(instanceAction.payload)
+              );
+            }
+            const targetUuid = instance.uuid!;
+            initializeLocalCacheSliceStateWithEntityAdapter(
               deploymentUuid,
               instanceAction.payload.applicationSection,
-              instance
+              targetUuid,
+              "current",
+              state
             );
-
-            // instance.instances.forEach((i: EntityInstance) => {
-              if (!instanceAction.payload.applicationSection) {
-                throw new Error(
-                  "createInstance action called without applicationSection in payload: " +
-                    JSON.stringify(instanceAction.payload)
-                );
-              }
-              initializeLocalCacheSliceStateWithEntityAdapter(
-                deploymentUuid,
-                instanceAction.payload.applicationSection,
-                instance.uuid!,
-                "current",
-                state
-              );
             // });
           }
           // log.info(
@@ -699,6 +711,22 @@ function handleInstanceAction(
           const updateIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
           const updatePkAttrs = Array.isArray(updateIdAttribute) ? updateIdAttribute : [updateIdAttribute];
           const updatePkValue = serializeCompositeKeyValue(updatePkAttrs, instance);
+          if (resolvedParentUuid === entitySelfApplication.uuid) {
+            const existing =
+              state.current[instanceCollectionEntityIndex]?.entities?.[updatePkValue];
+            if (existing) {
+              try {
+                assertVersioningEnabledImmutable(existing as any, instance as any);
+              } catch (error) {
+                return new Action2Error(
+                  "FailedToHandleAction",
+                  (error as Error).message,
+                  ["handleInstanceAction", "updateInstance", "versioningEnabled"],
+                  error as any,
+                );
+              }
+            }
+          }
           sliceEntityAdapter.updateOne(state.current[instanceCollectionEntityIndex], {
             id: updatePkValue,
             changes: instance,

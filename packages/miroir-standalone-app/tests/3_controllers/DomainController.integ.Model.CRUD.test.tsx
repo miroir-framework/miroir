@@ -470,7 +470,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     application: testApplicationUuid,
                     // deploymentUuid: testApplicationDeploymentUuid,
                     entityUuid: entityPublisher.uuid,
-                    entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                    entityVersionUuid: entityDefinitionPublisher.uuid,
                   },
                 },
                 {
@@ -597,7 +597,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     entities: [
                       {
                         entity: entityAuthor as Entity,
-                        entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                        entityVersion: entityDefinitionAuthor as EntityDefinition,
                       },
                     ],
                   },
@@ -723,7 +723,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     entities: [
                       {
                         entity: entityAuthor as Entity,
-                        entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                        entityVersion: entityDefinitionAuthor as EntityDefinition,
                       },
                     ],
                   },
@@ -833,7 +833,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     application: testApplicationUuid,
                     entityName: entityPublisher.name,
                     entityUuid: entityPublisher.uuid,
-                    entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                    entityVersionUuid: entityDefinitionPublisher.uuid,
                     addColumns: [
                       {
                         name: "aNewColumnForTest",
@@ -1067,7 +1067,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     entityName: entityPublisher.name,
                     sourceEntityUuid: entityCountry.uuid,
                     targetEntityUuid: entityPublisher.uuid,
-                    // entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                    // entityVersionUuid: entityDefinitionPublisher.uuid,
                     sourceEntityDefinitionUuid: entityDefinitionCountry.uuid,
                     targetEntityDefinitionUuid: entityDefinitionPublisher.uuid,
                     columns: [
@@ -1270,7 +1270,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     entities: [
                       {
                         entity: entityAuthor as Entity,
-                        entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                        entityVersion: entityDefinitionAuthor as EntityDefinition,
                       },
                     ],
                   },
@@ -1462,7 +1462,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
                     application: testApplicationUuid,
                     // deploymentUuid: testApplicationDeploymentUuid,
                     entityUuid: entityPublisher.uuid,
-                    entityDefinitionUuid: entityDefinitionPublisher.uuid,
+                    entityVersionUuid: entityDefinitionPublisher.uuid,
                     entityName: "Publisher",
                     targetValue: "Publishers",
                   },
@@ -1589,7 +1589,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         //             application: testApplicationUuid,
         //             entityName: entityPublisher.name,
         //             entityUuid: entityPublisher.uuid,
-        //             entityDefinitionUuid: entityDefinitionPublisher.uuid,
+        //             entityVersionUuid: entityDefinitionPublisher.uuid,
         //             addColumns: [
         //               {
         //                 name: "aNewColumnForTest",

@@ -34,6 +34,7 @@ import {
   sqlStringForQuery
 } from "../1_core/SqlGenerator";
 import { packageName } from "../constants";
+import { stripNullOptionalAttributes } from "../utils";
 import { cleanLevel } from "./constants";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
@@ -235,7 +236,12 @@ export class SqlDbQueryRunner {
           })
         );
       }
-      const sqlResult = preSqlResult;
+      const sqlResult = this.stripNullOptionalAttributesOnSqlResult(
+        preSqlResult,
+        foreignKeyParams.extractor.extractors?.[endResultName] as
+          | { parentUuid?: string }
+          | undefined
+      );
 
       const result: Domain2QueryReturnType<any> = { [endResultName]: sqlResult };
       log.info("asyncExtractWithQuery returning result", JSON.stringify(result));
@@ -253,6 +259,36 @@ export class SqlDbQueryRunner {
       );
     }
   };
+
+  // ################################################################################################
+  /**
+   * Align runAsSql raw rows with getInstances: drop optional-non-nullable attrs that PG returns as NULL.
+   */
+  private stripNullOptionalAttributesOnSqlResult(
+    sqlResult: any,
+    extractor: { parentUuid?: string } | undefined
+  ): any {
+    const parentUuid = extractor?.parentUuid;
+    if (!parentUuid) {
+      return sqlResult;
+    }
+    const optionalNonNullable =
+      this.persistenceStoreController.getOptionalNonNullableAttributesForEntity?.(parentUuid);
+    if (!optionalNonNullable || optionalNonNullable.length === 0) {
+      return sqlResult;
+    }
+    if (Array.isArray(sqlResult)) {
+      return sqlResult.map((instance) =>
+        typeof instance === "object" && instance !== null
+          ? stripNullOptionalAttributes(instance as Record<string, any>, optionalNonNullable)
+          : instance
+      );
+    }
+    if (typeof sqlResult === "object" && sqlResult !== null) {
+      return stripNullOptionalAttributes(sqlResult as Record<string, any>, optionalNonNullable);
+    }
+    return sqlResult;
+  }
 
   // ################################################################################################
   /**

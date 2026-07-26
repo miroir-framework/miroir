@@ -1,6 +1,6 @@
 {
   "uuid": "01a051d8-d43c-430d-a98e-739048f54942",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "0c6fe3e0-4296-42d0-a778-31fe759a3b37",
@@ -14,28 +14,76 @@
     "definition": {
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "display": { "editable": false } }}
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "display": { "editable": false } }}
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "display": { "editable": false } }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "parentDefinitionVersionUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id": 4, "defaultLabel": "Entity Definition Version Uuid", "display": { "editable": false } }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Entity Definition Version Uuid",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id":5, "defaultLabel": "Name", "display": { "editable": true } }}
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "contents": {
-        "type": "union", 
-        "tag": { "value": {  "id":6, "defaultLabel": "Contents of the bundle", "display": { "editable": true } }},
+        "type": "union",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Contents of the bundle",
+            "display": {
+              "editable": true
+            }
+          }
+        },
         "definition": [
           {
             "type": "object",

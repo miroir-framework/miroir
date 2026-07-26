@@ -1,12 +1,10 @@
 import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
-import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
 import {
-  ApplicationSection,
   EntityDefinition,
-  EntityInstanceCollection,
   InstanceAction,
   MetaModel,
   ModelAction,
+  type Entity,
   type EntityInstance
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
@@ -15,6 +13,12 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
 import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 
+import {
+  planAlterEntityAttributeMutation,
+  planCreateEntityMutation,
+  planRenameEntityMutation,
+  resolveLiveEntityDefinitionForAction,
+} from "../1_core/modelEntityActionLiveResolve.js";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
@@ -31,11 +35,35 @@ export class ModelEntityActionTransformer{
     deploymentUuid: Uuid,
     modelAction:ModelAction,
     currentModel: MetaModel,
-  // ):InstanceAction[] {
   ):TransformerReturnType<InstanceAction[]> {
-    // log.info("modelActionToInstanceAction called ", deploymentUuid, modelAction)
     switch (modelAction.actionType) {
       case "createEntity": {
+        const objects: EntityInstance[] = [];
+        for (const pair of modelAction.payload.entities) {
+          const entity = pair.entity as Entity;
+          // #217 Phase 12: Action field entityVersion (legacy entityDefinition still accepted)
+          const entityDefinition = (
+            (pair as { entityVersion?: EntityDefinition }).entityVersion ??
+            (pair as { entityDefinition?: EntityDefinition }).entityDefinition
+          ) as EntityDefinition | undefined;
+          const plan = planCreateEntityMutation(entity, entityDefinition);
+          if (!plan) {
+            return new TransformerFailure({
+              queryFailure: "FailedTransformer",
+              failureMessage:
+                "modelActionToInstanceAction createEntity requires complete Entity.mlSchema or an entityDefinition",
+              query: { modelAction, entityUuid: entity.uuid } as any,
+            });
+          }
+          if (plan.mode === "dualWrite") {
+            objects.push(
+              plan.pair.entity as EntityInstance,
+              plan.pair.entityDefinition as EntityInstance,
+            );
+          } else {
+            objects.push(plan.entity as EntityInstance);
+          }
+        }
         return [
           {
             actionType: "createInstance",
@@ -43,25 +71,34 @@ export class ModelEntityActionTransformer{
             payload: {
               application: modelAction.payload.application,
               applicationSection: "model",
-              objects: [
-                ...modelAction.payload.entities.flatMap(
-                  a => [
-                    a.entity, a.entityDefinition
-                  ]
-                )
-              ]
+              objects,
             }
           }
         ];
-        break;
       }
       case "dropEntity": {
-        if (!modelAction.payload.entityUuid || !modelAction.payload.entityDefinitionUuid) {
+        if (!modelAction.payload.entityUuid) {
           return new TransformerFailure({
             queryFailure: "FailedTransformer",
             failureMessage:
-              "modelActionToInstanceAction dropEntity missing entityUuid or entityDefinitionUuid",
-            query: { modelAction } as any, // TODO: ill-typed
+              "modelActionToInstanceAction dropEntity missing entityUuid",
+            query: { modelAction } as any,
+          });
+        }
+        const liveEntityDefinition = resolveLiveEntityDefinitionForAction(
+          currentModel,
+          modelAction.payload.entityUuid,
+          modelAction.payload.entityVersionUuid,
+        );
+        // Drops the live Entity; deletes redundant live EntityDefinition when present.
+        // Historical EntityVersion copies (other UUIDs) are not referenced here.
+        const objects: { parentUuid: string; uuid: string }[] = [
+          { parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid },
+        ];
+        if (liveEntityDefinition) {
+          objects.push({
+            parentUuid: entityEntityDefinition.uuid,
+            uuid: liveEntityDefinition.uuid,
           });
         }
         return [
@@ -71,122 +108,86 @@ export class ModelEntityActionTransformer{
             payload: {
               application: modelAction.payload.application,
               applicationSection: "model",
-              objects: [
-                { parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid },
-                { parentUuid: entityEntityDefinition.uuid, uuid: modelAction.payload.entityDefinitionUuid },
-              ],
+              objects,
             }
           },
         ];
-        break;
       }
       case "renameEntity":
       {
-        // log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
-
-        const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.payload.entityUuid);
-        const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.payload.entityDefinitionUuid);
+        const plan = planRenameEntityMutation(
+          currentModel,
+          modelAction.payload.entityUuid,
+          modelAction.payload.targetValue,
+          modelAction.payload.entityVersionUuid,
+        );
   
         log.info(
-          "modelActionToInstanceAction available Entities",
-          JSON.stringify(
-            currentModel.entities.map((e) => e.name),
-            null,
-            2
-          ),
-          "currentEntityDefinition available EntityDefinitions",
-          JSON.stringify(
-            currentModel.entityDefinitions.map((e) => e.name),
-            null,
-            2
-          )
+          "modelActionToInstanceAction renameEntity plan",
+          plan?.mode,
+          modelAction.payload.entityUuid,
         );
-        log.info("modelActionToInstanceAction found currentEntity ", currentEntity, "currentEntityDefinition", currentEntityDefinition);
   
-        const modifiedEntity:EntityInstanceWithName = Object.assign({},currentEntity,{name:modelAction.payload.targetValue});
-        const modifiedEntityDefinition:EntityInstanceWithName = Object.assign({},currentEntityDefinition,{name:modelAction.payload.targetValue});
-        if (currentEntity && currentEntityDefinition) {
-          const objects: EntityInstance[] = [
-            modifiedEntity as EntityInstance,
-            modifiedEntityDefinition as EntityInstance,
-          ];
-          const result: InstanceAction[] = [
-            {
-              actionType: "updateInstance",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              payload: {
-                application: modelAction.payload.application,
-                applicationSection: "model",
-                objects
-              }
-            },
-          ];
-          log.info("modelActionToInstanceAction returning for ", deploymentUuid, modelAction,"result=", result)
-
-          return result;
-        } else {
+        if (!plan) {
           log.error('modelActionToInstanceAction renameEntity could not rename',modelAction);
           return [];
         }
-        break;
+        const objects: EntityInstance[] =
+          plan.mode === "dualWrite"
+            ? [plan.pair.entity as EntityInstance, plan.pair.entityDefinition as EntityInstance]
+            : [plan.entity as EntityInstance];
+        return [
+          {
+            actionType: "updateInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: {
+              application: modelAction.payload.application,
+              applicationSection: "model",
+              objects
+            }
+          },
+        ];
       }
       case "alterEntityAttribute": {
         log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
 
-        const currentEntity = currentModel.entities.find(e=>e.uuid==modelAction.payload.entityUuid);
-        const currentEntityDefinition = currentModel.entityDefinitions.find(e=>e.uuid==modelAction.payload.entityDefinitionUuid);
-        // log.info(
-        //   "modelActionToInstanceAction alterEntityAttribute found currentEntity ",
-        //   currentEntity,
-        //   "currentEntityDefinition",
-        //   currentEntityDefinition
-        // );
-        if (currentEntity && currentEntityDefinition) {
-          const localEntityJzodSchemaDefinition =
-            modelAction.payload.removeColumns != undefined && Array.isArray(modelAction.payload.removeColumns)
-              ? Object.fromEntries(
-                  Object.entries(currentEntityDefinition.mlSchema.definition).filter(
-                    (i) => modelAction.payload.removeColumns ?? ([] as string[]).includes(i[0])
-                  )
-                )
-              : currentEntityDefinition.mlSchema.definition;
-          const modifiedEntityDefinition: EntityDefinition = Object.assign({}, currentEntityDefinition, {
-            mlSchema: {
-              ...currentEntityDefinition.mlSchema,
-              definition: {
-                ...localEntityJzodSchemaDefinition,
-                ...(modelAction.payload.addColumns
-                  ? Object.fromEntries(modelAction.payload.addColumns.map((c) => [c.name, c.definition]))
-                  : {}),
-              },
-            },
-          });
-    
-          const objects: EntityInstance[] = [modifiedEntityDefinition as EntityInstance];
-          const result: InstanceAction[] = [
-            {
-              actionType: "updateInstance",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              payload: {
-                application: modelAction.payload.application,
-                applicationSection: "model",
-                objects
-              }
-            },
-          ];
-          log.info(
-            "modelActionToInstanceAction returning for ",
-            deploymentUuid,
-            modelAction,
-            "result=",
-            JSON.stringify(result, null, 2)
-          );
-
-          return result;
-        } else {
-          log.error('modelActionToInstanceAction alterEntityAttribute could not rename',modelAction);
+        const plan = planAlterEntityAttributeMutation(
+          currentModel,
+          modelAction.payload.entityUuid,
+          {
+            addColumns: modelAction.payload.addColumns,
+            removeColumns: modelAction.payload.removeColumns,
+          },
+          modelAction.payload.entityVersionUuid,
+        );
+        if (!plan) {
+          log.error('modelActionToInstanceAction alterEntityAttribute could not alter',modelAction);
           return [];
         }
+        const objects: EntityInstance[] =
+          plan.mode === "dualWrite"
+            ? [plan.pair.entity as EntityInstance, plan.pair.entityDefinition as EntityInstance]
+            : [plan.entity as EntityInstance];
+        const result: InstanceAction[] = [
+          {
+            actionType: "updateInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: {
+              application: modelAction.payload.application,
+              applicationSection: "model",
+              objects
+            }
+          },
+        ];
+        log.info(
+          "modelActionToInstanceAction returning for ",
+          deploymentUuid,
+          modelAction,
+          "result=",
+          JSON.stringify(result, null, 2)
+        );
+
+        return result;
       }
       case "initModel":
       case "remoteLocalCacheRollback":
@@ -199,9 +200,7 @@ export class ModelEntityActionTransformer{
       }
       default: {
         throw new Error("modelActionToInstanceAction could not handle action " + JSON.stringify(modelAction, undefined, 2));
-        break;
       }
     }
-    return [];
   }
 }

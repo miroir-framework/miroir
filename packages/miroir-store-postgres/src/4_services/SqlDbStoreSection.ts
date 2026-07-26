@@ -11,7 +11,7 @@ import {
 } from "miroir-core";
 import {
   EntityUuidIndexedSequelizeModel,
-  fromMiroirEntityDefinitionToSequelizeEntityDefinition,
+  fromMiroirPresentModelToSequelizeEntityDefinition,
   getOptionalNonNullableAttributes,
 } from "../utils";
 
@@ -58,6 +58,12 @@ export class SqlDbStoreSection
     return this.sqlSchemaTableAccess[entityUuid]?.idAttribute ?? "uuid";
   }
 
+  // ##############################################################################################
+  /** Optional non-nullable attrs for stripping SQL NULL → absent (forceNullOptionalAttributeToUndefined). */
+  getOptionalNonNullableAttributesForEntity(entityUuid: string): string[] | undefined {
+    return this.sqlSchemaTableAccess[entityUuid]?.optionalNonNullableAttributes;
+  }
+
   // ######################################################################################
   async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear start, entities", this.getEntityUuids());
@@ -87,22 +93,35 @@ export class SqlDbStoreSection
     this.sqlSchemaTableAccess = entities
       // .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
       .reduce((prev, curr: Entity) => {
+        // #217 Phase 11 — prefer Entity present-model fields; ED only as legacy fill-in.
         const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
-        if (entityDefinition) {
-          const part = this.getAccessToDataSectionEntity(curr, entityDefinition)
-          const result = Object.assign(prev, part);
-          log.info(
-            this.logHeader,
-            "bootFromPersistedState start sqlSchemaTableAccess init initializing entity",
-            curr.name,
-            curr.uuid,
-            "entity configuration",
-            JSON.stringify(part[curr.uuid], null, 2)
-          );
-          return result;
-        } else {
+        const presentCarrier: Entity = {
+          ...curr,
+          ...(curr.mlSchema === undefined && entityDefinition?.mlSchema !== undefined
+            ? { mlSchema: entityDefinition.mlSchema }
+            : {}),
+          ...(curr.idAttribute === undefined && (entityDefinition as any)?.idAttribute !== undefined
+            ? { idAttribute: (entityDefinition as any).idAttribute }
+            : {}),
+          ...(curr.externalDataSource === undefined &&
+          (entityDefinition as any)?.externalDataSource !== undefined
+            ? { externalDataSource: (entityDefinition as any).externalDataSource }
+            : {}),
+        };
+        if (!presentCarrier.mlSchema) {
           return prev;
         }
+        const part = this.getAccessToDataSectionEntity(presentCarrier, entityDefinition)
+        const result = Object.assign(prev, part);
+        log.info(
+          this.logHeader,
+          "bootFromPersistedState start sqlSchemaTableAccess init initializing entity",
+          curr.name,
+          curr.uuid,
+          "entity configuration",
+          JSON.stringify(part[curr.uuid], null, 2)
+        );
+        return result;
       }, {});
     // Auto-migrate: add missing columns for non-external entities (safe for schema evolution)
     // for (const [entityUuid, access] of Object.entries(this.sqlSchemaTableAccess)) {
@@ -121,19 +140,26 @@ export class SqlDbStoreSection
   // ##############################################################################################
   getAccessToDataSectionEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): EntityUuidIndexedSequelizeModel {
-    // TODO: does side effect => refactor!
-    const idAttribute: string | string[] = (entityDefinition as any).idAttribute ?? "uuid";
-    const isExternal = entity.conceptLevel === "External" || !!(entityDefinition as any).externalDataSource;
-    const effectiveSchema = isExternal && entityDefinition.externalDataSource?.schema
-      ? entityDefinition.externalDataSource.schema
+    // #217 Phase 11 — Entity is present-model authority; ED optional legacy fill-in only.
+    const schemaSource = {
+      name: entity.name,
+      mlSchema: entity.mlSchema ?? entityDefinition?.mlSchema,
+      idAttribute: entity.idAttribute ?? (entityDefinition as any)?.idAttribute,
+      externalDataSource:
+        entity.externalDataSource ?? (entityDefinition as any)?.externalDataSource,
+    };
+    const idAttribute: string | string[] = schemaSource.idAttribute ?? "uuid";
+    const isExternal = entity.conceptLevel === "External" || !!schemaSource.externalDataSource;
+    const effectiveSchema = isExternal && schemaSource.externalDataSource?.schema
+      ? schemaSource.externalDataSource.schema
       : this.schema;
-    const effectiveTableName = isExternal && entityDefinition.externalDataSource?.tableName
-      ? entityDefinition.externalDataSource.tableName
+    const effectiveTableName = isExternal && schemaSource.externalDataSource?.tableName
+      ? schemaSource.externalDataSource.tableName
       : entity.name;
     const optionalNonNullableAttributes = this.forceNullOptionalAttributeToUndefined
-      ? getOptionalNonNullableAttributes(entityDefinition)
+      ? getOptionalNonNullableAttributes(schemaSource)
       : undefined;
     const result = {
       [entity.uuid]: {
@@ -144,7 +170,7 @@ export class SqlDbStoreSection
         optionalNonNullableAttributes,
         sequelizeModel: this.sequelize.define(
           effectiveTableName,
-          fromMiroirEntityDefinitionToSequelizeEntityDefinition(entityDefinition),
+          fromMiroirPresentModelToSequelizeEntityDefinition(schemaSource),
           {
             freezeTableName: true,
             schema: effectiveSchema,
@@ -174,7 +200,7 @@ export class SqlDbStoreSection
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
       {},
@@ -197,7 +223,7 @@ export class SqlDbStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     const queryInterface = this.sequelize.getQueryInterface();
     await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);

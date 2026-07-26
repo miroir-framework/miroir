@@ -183,6 +183,22 @@ export const UNVERSIONED_APPLICATION_FIXTURE = {
   versioningEnabled: false as const,
 };
 
+/**
+ * Policy contract (#217 §11.1): `versioningEnabled` is immutable after creation.
+ * Call sites that update SelfApplication must invoke this before persisting.
+ * Runtime Action wiring is later phases; this encodes the invariant now.
+ */
+export function assertVersioningEnabledImmutable(
+  before: { versioningEnabled?: boolean | undefined },
+  after: { versioningEnabled?: boolean | undefined },
+): void {
+  if (before.versioningEnabled !== after.versioningEnabled) {
+    throw new Error(
+      `SelfApplication.versioningEnabled is immutable (was ${String(before.versioningEnabled)}, attempted ${String(after.versioningEnabled)})`,
+    );
+  }
+}
+
 export type EntityPresentModelResolutionErrorCode =
   | "ambiguous"
   | "missingDefinition"
@@ -309,7 +325,7 @@ export function resolveCurrentEntityModel(
           "inconsistent",
           entity.uuid,
           `Entity ${entity.uuid} (${entity.name}) definition fields diverge from EntityDefinition ${matching[0].uuid}: ${differingFields.join(", ")}`,
-          { differingFields, entityDefinitionUuid: matching[0].uuid },
+          { differingFields, entityVersionUuid: matching[0].uuid },
         );
       }
     }
@@ -325,4 +341,155 @@ export function resolveCurrentEntityModel(
   }
 
   return enrichEntityFromLegacyDefinition(entity, matching[0]);
+}
+
+/**
+ * Dual-write helper: copy Entity present-model definition fields onto the
+ * redundant EntityDefinition while preserving EntityDefinition identity UUIDs.
+ */
+export function alignEntityDefinitionToPresentEntity(
+  entity: Entity,
+  entityDefinition: EntityDefinition,
+): EntityDefinition {
+  const definitionProjection = projectEntityPresentModelDefinition(entity);
+  const aligned: EntityDefinition = {
+    ...entityDefinition,
+    ...definitionProjection,
+    uuid: entityDefinition.uuid,
+    entityUuid: entity.uuid,
+    name: entity.name,
+    mlSchema: entity.mlSchema ?? entityDefinition.mlSchema,
+  };
+  for (const field of ENTITY_PRESENT_MODEL_DEFINITION_FIELDS) {
+    if (
+      !Object.prototype.hasOwnProperty.call(definitionProjection, field) &&
+      field !== "mlSchema"
+    ) {
+      delete (aligned as Record<string, unknown>)[field];
+    }
+  }
+  return aligned;
+}
+
+/**
+ * #217 Phase 7 — assemble live MetaModel.entities as complete present models.
+ * Incomplete Entities are enriched from EntityDefinitions; EntityDefinitions stay
+ * loaded as compatibility/history and are not removed from MetaModel.
+ */
+export function assembleLivePresentModelEntities(
+  entities: Entity[],
+  entityDefinitions: EntityDefinition[],
+): Entity[] {
+  return entities.map((entity) => {
+    try {
+      return resolveCurrentEntityModel(entity, entityDefinitions, {
+        onInconsistency: "preferEntity",
+      });
+    } catch {
+      return entity;
+    }
+  });
+}
+
+const ENTITY_PARENT_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+
+/**
+ * #217 Phase 8 — single hub for live present-model lookup by entity UUID.
+ * Prefer MetaModel.entities (assembled); fall back through `resolveCurrentEntityModel`
+ * using EntityDefinitions only when needed. Call sites must not
+ * `entityDefinitions.find(ed => ed.entityUuid === …)` for live schema/PK.
+ */
+export function resolvePresentEntityFromModel(
+  model:
+    | {
+        entities?: Entity[] | undefined;
+        entityDefinitions?: EntityDefinition[] | undefined;
+      }
+    | null
+    | undefined,
+  entityUuid: string,
+  options?: ResolveCurrentEntityModelOptions,
+): Entity | undefined {
+  if (!model || !entityUuid) {
+    return undefined;
+  }
+  const entities = model.entities ?? [];
+  const entityDefinitions = model.entityDefinitions ?? [];
+  const entity = entities.find((candidate) => candidate.uuid === entityUuid);
+
+  if (entity) {
+    try {
+      return resolveCurrentEntityModel(entity, entityDefinitions, {
+        onInconsistency: "preferEntity",
+        ...options,
+      });
+    } catch {
+      return entityHasCompletePresentModel(entity) ? entity : undefined;
+    }
+  }
+
+  const matching = entityDefinitions.filter(
+    (entityDefinition) => entityDefinition.entityUuid === entityUuid,
+  );
+  if (matching.length !== 1) {
+    return undefined;
+  }
+  try {
+    return resolveCurrentEntityModel(
+      {
+        uuid: entityUuid,
+        name: matching[0]!.name,
+        parentName: "Entity",
+        parentUuid: ENTITY_PARENT_UUID,
+      } as Entity,
+      matching,
+      options,
+    );
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * #217 Phase 9/12 — UI/tooling boundary: project present Entity onto EntityVersion /
+ * EntityDefinition shape for legacy callers still typed that way.
+ *
+ * Prefer passing Entity (with mlSchema) directly. UI Report/grid paths no longer use this.
+ *
+ * @deprecated Prefer Entity present-model fields; keep only for non-UI dual-write / compat.
+ */
+export function presentEntityAsRedundantEntityDefinition(
+  entity: Entity,
+  entityDefinitions: EntityDefinition[] = [],
+): EntityDefinition {
+  const existing = entityDefinitions.find(
+    (entityDefinition) => entityDefinition.entityUuid === entity.uuid,
+  );
+  if (existing) {
+    return alignEntityDefinitionToPresentEntity(entity, existing);
+  }
+  if (!entity.mlSchema) {
+    throw new Error(
+      `presentEntityAsRedundantEntityDefinition: Entity ${entity.uuid} (${entity.name}) has no mlSchema`,
+    );
+  }
+  return {
+    uuid: entity.uuid,
+    parentName: "EntityVersion",
+    parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+    name: entity.name,
+    entityUuid: entity.uuid,
+    conceptLevel: "Model",
+    mlSchema: entity.mlSchema,
+    ...(entity.viewAttributes !== undefined
+      ? { viewAttributes: entity.viewAttributes }
+      : {}),
+    ...(entity.defaultInstanceDetailsReportUuid !== undefined
+      ? { defaultInstanceDetailsReportUuid: entity.defaultInstanceDetailsReportUuid }
+      : {}),
+    ...(entity.idAttribute !== undefined ? { idAttribute: entity.idAttribute } : {}),
+    ...(entity.display !== undefined ? { display: entity.display } : {}),
+    ...(entity.cache !== undefined ? { cache: entity.cache } : {}),
+    ...(entity.icon !== undefined ? { icon: entity.icon } : {}),
+  } as EntityDefinition;
 }

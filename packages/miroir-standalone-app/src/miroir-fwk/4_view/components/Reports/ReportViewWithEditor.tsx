@@ -16,9 +16,10 @@ import {
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType,
   type DomainControllerInterface,
-  type EntityDefinition,
+  type Entity,
   type InstanceAction,
   type ReportQueryLoadRequest,
+  resolvePresentEntityFromModel,
 } from "miroir-core";
 import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
@@ -32,7 +33,7 @@ import { reportSectionsFormValue } from './ReportTools.js';
 import { useEnsureReportQueryLoaded } from './useEnsureReportQueryLoaded.js';
 import { useReportQueryLoadService } from './useReportQueryLoadService.js';
 
-import { reportReportDetails } from "miroir-test-app_deployment-miroir";
+import { reportReportDetails, entityReport } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -177,11 +178,17 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   // ##############################################################################################
   // (meta-)information about the current report, to enable editing
-  const entityDefinitionReport: EntityDefinition | undefined = useMemo(() => {
+  const reportPresentEntity: Entity | undefined = useMemo(() => {
     const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[deployment_Miroir.uuid];
     if (!miroirMapping) return undefined;
-    const result =  miroirMapping["model"]?.entityDefinitions?.find((ed: any) => ed.name === "Report");
-    log.info("ReportViewWithEditor found report entity definition", { result });
+    const result = resolvePresentEntityFromModel(
+      {
+        entities: miroirMapping["model"]?.entities,
+        entityDefinitions: miroirMapping["model"]?.entityDefinitions,
+      },
+      entityReport.uuid,
+    );
+    log.info("ReportViewWithEditor found report present entity", { result });
     return result;
   }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 
@@ -426,7 +433,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                         // { label: "fetchedDataJzodSchema", data: { fetchedDataJzodSchema }, useCodeBlock: true },
                       ]}
                     />
-                    {generalEditMode && entityDefinitionReport && (
+                    {generalEditMode && reportPresentEntity && (
                       <>
                         <InlineReportEditor
                           formikValuePath={reportNamePath}

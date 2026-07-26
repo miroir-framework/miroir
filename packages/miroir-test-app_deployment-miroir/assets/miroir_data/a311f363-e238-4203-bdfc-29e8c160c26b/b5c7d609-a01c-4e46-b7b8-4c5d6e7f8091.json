@@ -47,7 +47,7 @@
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "entityUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
-                  "entityDefinitionUuid": "0057f84b-64d8-4395-8841-b264e3f9473a"
+                  "entityVersionUuid": "0057f84b-64d8-4395-8841-b264e3f9473a"
                 }
               },
               {
@@ -76,9 +76,9 @@
                         "conceptLevel": "Model",
                         "description": "Test entity whose instances do not bear a parentUuid attribute."
                       },
-                      "entityDefinition": {
+                      "entityVersion": {
                         "uuid": "0057f84b-64d8-4395-8841-b264e3f9473a",
-                        "parentName": "EntityDefinition",
+                        "parentName": "EntityVersion",
                         "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
                         "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
                         "entityUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",

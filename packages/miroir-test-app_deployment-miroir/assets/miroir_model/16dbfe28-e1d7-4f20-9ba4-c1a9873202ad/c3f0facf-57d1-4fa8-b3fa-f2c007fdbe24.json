@@ -6,5 +6,161 @@
   "name": "SelfApplicationVersion",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
-  "description": "A Version of the Self SelfApplication"
+  "description": "A Version of the Self SelfApplication",
+  "icon": "Interests",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "type": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Type of Report",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "SelfApplication",
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "branch": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 10,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Branch",
+            "description": "The Branch of this SelfApplication Version",
+            "foreignKeyParams": {
+              "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "previousVersion": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 11,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Previous SelfApplication Version",
+            "description": "Previous version of the selfApplication on this Branch.",
+            "foreignKeyParams": {
+              "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "modelStructureMigration": {
+        "type": "array",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 12,
+            "defaultLabel": "Structure Migration from Previous Version",
+            "display": {
+              "editable": true
+            }
+          }
+        },
+        "definition": {
+          "type": "record",
+          "definition": {
+            "type": "any"
+          }
+        }
+      },
+      "modelCUDMigration": {
+        "type": "array",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 13,
+            "defaultLabel": "Create-Update-Delete Migration from Previous Version",
+            "display": {
+              "editable": true
+            }
+          }
+        },
+        "definition": {
+          "type": "record",
+          "definition": {
+            "type": "any"
+          }
+        }
+      }
+    }
+  }
 }

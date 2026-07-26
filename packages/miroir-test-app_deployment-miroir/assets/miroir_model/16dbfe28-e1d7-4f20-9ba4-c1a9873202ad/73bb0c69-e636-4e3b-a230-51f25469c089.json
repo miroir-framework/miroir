@@ -1,10 +1,119 @@
 {
-  "uuid":"73bb0c69-e636-4e3b-a230-51f25469c089",
-  "parentName":"Entity",
-  "parentUuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "uuid": "73bb0c69-e636-4e3b-a230-51f25469c089",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  "name":"Commit",
+  "name": "Commit",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-  "conceptLevel":"MetaModel",
-  "description": "A concurrent versioning transaction commit."
+  "conceptLevel": "MetaModel",
+  "description": "A concurrent versioning transaction commit.",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "date": {
+        "type": "date",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Date",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "SelfApplication",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "preceding": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 8,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Previous Commit",
+            "foreignKeyParams": {
+              "targetEntity": "73bb0c69-e636-4e3b-a230-51f25469c089",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "branch": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Branch",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "author": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Author",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      }
+    }
+  }
 }

@@ -1,6 +1,6 @@
 {
   "uuid": "83872519-ce34-4a24-b1db-b7bf604ebd3a",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
@@ -16,7 +16,13 @@
         "definition": {
           "a": {
             "type": "string",
-            "tag": { "value": {  "id":1, "defaultLabel": "A", "editable": true }}
+            "tag": {
+              "value": {
+                "id": 1,
+                "defaultLabel": "A",
+                "editable": true
+              }
+            }
           },
           "b": {
             "type": "object",
@@ -28,14 +34,26 @@
                 "type": "string"
               }
             },
-            "tag": { "value": {  "id":2, "defaultLabel": "B", "editable": true }}
+            "tag": {
+              "value": {
+                "id": 2,
+                "defaultLabel": "B",
+                "editable": true
+              }
+            }
           },
           "c": {
             "type": "array",
             "definition": {
-              "type":"string"
+              "type": "string"
             },
-            "tag": { "value": {  "id":3, "defaultLabel": "C", "editable": true }}
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "C",
+                "editable": true
+              }
+            }
           },
           "d": {
             "type": "schemaReference",
@@ -44,7 +62,13 @@
               "relativePath": "jzodObject"
             },
             "optional": true,
-            "tag": { "value": {  "id": 4, "defaultLabel": "D", "editable": true }}
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "D",
+                "editable": true
+              }
+            }
           },
           "e": {
             "type": "schemaReference",
@@ -53,7 +77,13 @@
               "relativePath": "jzodReference"
             },
             "optional": true,
-            "tag": { "value": {  "id": 5, "defaultLabel": "E", "editable": true }}
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "E",
+                "editable": true
+              }
+            }
           },
           "f": {
             "type": "schemaReference",
@@ -62,28 +92,67 @@
               "relativePath": "jzodArray"
             },
             "optional": true,
-            "tag": { "value": {  "id": 6, "defaultLabel": "F", "editable": true }}
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "F",
+                "editable": true
+              }
+            }
           }
         }
       },
       "uuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":1, "defaultLabel": "Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 1,
+            "defaultLabel": "Uuid",
+            "editable": false
+          }
+        }
       },
       "parentName": {
         "type": "string",
         "optional": true,
-        "tag": { "value": {  "id":2, "defaultLabel": "Entity Name", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 2,
+            "defaultLabel": "Entity Name",
+            "editable": false
+          }
+        }
       },
       "parentUuid": {
         "type": "uuid",
-        "tag": { "value": {  "id":3, "defaultLabel": "Entity Uuid", "editable": false }}
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Entity Uuid",
+            "editable": false
+          }
+        }
       },
       "name": {
         "type": "string",
-        "tag": { "value": {  "id":4, "defaultLabel": "Name", "editable": true }}
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Name",
+            "editable": true
+          }
+        }
       },
-      "icon": { "type": "string", "tag": { "value": {  "id":5, "defaultLabel": "Icon", "editable": true }} }
+      "icon": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Icon",
+            "editable": true
+          }
+        }
+      }
     }
   }
 }

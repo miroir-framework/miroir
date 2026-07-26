@@ -1,6 +1,6 @@
 {
   "uuid": "e08fdc20-e87f-4728-8bac-2ee0e427c3ac",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "59debf06-405d-4def-a7eb-3db45360310d",
@@ -8,7 +8,18 @@
   "name": "UseCase",
   "icon": "PlaylistAddCheck",
   "defaultInstanceDetailsReportUuid": "ee31f325-3e77-46b7-a3dd-025ed33c4b0d",
-  "viewAttributes": ["name", "defaultLabel", "description", "role", "benefit", "goal", "userStory", "activity", "designerApplication", "uuid"],
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "description",
+    "role",
+    "benefit",
+    "goal",
+    "userStory",
+    "activity",
+    "designerApplication",
+    "uuid"
+  ],
   "mlSchema": {
     "type": "object",
     "extend": {
@@ -22,17 +33,41 @@
     "definition": {
       "name": {
         "type": "string",
-        "tag": { "value": { "id": 4, "defaultLabel": "Name", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "defaultLabel": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { "id": 5, "defaultLabel": "Default Label", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "description": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { "id": 6, "defaultLabel": "Description", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "activity": {
         "type": "uuid",
@@ -40,7 +75,9 @@
           "value": {
             "id": 7,
             "defaultLabel": "Activity",
-            "display": { "editable": true },
+            "display": {
+              "editable": true
+            },
             "foreignKeyParams": {
               "targetEntity": "fd622624-1a7e-46fa-9964-c4ecfb543de3",
               "targetEntityOrderInstancesBy": "name"
@@ -54,7 +91,9 @@
           "value": {
             "id": 8,
             "defaultLabel": "Designer Application",
-            "display": { "editable": true },
+            "display": {
+              "editable": true
+            },
             "foreignKeyParams": {
               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
               "targetEntityOrderInstancesBy": "name"
@@ -69,7 +108,9 @@
           "value": {
             "id": 11,
             "defaultLabel": "Role",
-            "display": { "editable": true },
+            "display": {
+              "editable": true
+            },
             "foreignKeyParams": {
               "targetEntity": "702535cd-e6fa-49d6-aa6f-b5874821e5a3",
               "targetEntityOrderInstancesBy": "name"
@@ -80,17 +121,41 @@
       "benefit": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { "id": 9, "defaultLabel": "Benefit", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Benefit",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "goal": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { "id": 10, "defaultLabel": "Goal", "display": { "editable": true } } }
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Goal",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       },
       "userStory": {
         "type": "string",
         "optional": true,
-        "tag": { "value": { "id": 12, "defaultLabel": "User Story", "display": { "editable": false } } }
+        "tag": {
+          "value": {
+            "id": 12,
+            "defaultLabel": "User Story",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       }
     }
   }

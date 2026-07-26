@@ -29,7 +29,7 @@ const libraryBooks = [book1, book2, book3, book4, book5, book6];
  * Locked after first redux green with Library Books bootstrap (Phase 2, 2026-07-21).
  * Zustand asserts the same golden (D15). Recompute if bootstrap payload changes.
  */
-const EXPECTED_PRESENT_SNAPSHOT_BYTES = 3922;
+const EXPECTED_PRESENT_SNAPSHOT_BYTES = 3980;
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,

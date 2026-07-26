@@ -8365,7 +8365,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "entityDefinition": {
+      "entityVersion": {
         "type": "object",
         "extend": {
           "type": "schemaReference",
@@ -12862,7 +12862,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "instanceParentDefinitionVersion",
               "actionPayload",
-              "applicationVersionCrossEntityDefinition",
+              "applicationVersionCrossEntityVersion",
               "unresolved"
             ],
             "tag": {
@@ -15498,13 +15498,14 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "validations": [
                   {
                     "type": "uuid"
                   }
-                ]
+                ],
+                "optional": true
               },
               "addColumns": {
                 "type": "array",
@@ -15612,7 +15613,7 @@ export const miroirFundamentalJzodSchema = {
                         "relativePath": "entity"
                       }
                     },
-                    "entityDefinition": {
+                    "entityVersion": {
                       "type": "schemaReference",
                       "tag": {
                         "value": {
@@ -15621,8 +15622,9 @@ export const miroirFundamentalJzodSchema = {
                       },
                       "definition": {
                         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "entityDefinition"
-                      }
+                        "relativePath": "entityVersion"
+                      },
+                      "optional": true
                     }
                   }
                 }
@@ -15690,13 +15692,14 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "tag": {
                   "value": {
                     "canBeTemplate": true
                   }
-                }
+                },
+                "optional": true
               }
             }
           }
@@ -15765,13 +15768,14 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "validations": [
                   {
                     "type": "uuid"
                   }
-                ]
+                ],
+                "optional": true
               },
               "targetValue": {
                 "type": "string"
@@ -16257,13 +16261,14 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "validations": [
                       {
                         "type": "uuid"
                       }
-                    ]
+                    ],
+                    "optional": true
                   },
                   "addColumns": {
                     "type": "array",
@@ -16449,13 +16454,14 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "validations": [
                       {
                         "type": "uuid"
                       }
-                    ]
+                    ],
+                    "optional": true
                   },
                   "targetValue": {
                     "type": "string"
@@ -16532,7 +16538,7 @@ export const miroirFundamentalJzodSchema = {
                             "relativePath": "entity"
                           }
                         },
-                        "entityDefinition": {
+                        "entityVersion": {
                           "type": "schemaReference",
                           "tag": {
                             "value": {
@@ -16541,8 +16547,9 @@ export const miroirFundamentalJzodSchema = {
                           },
                           "definition": {
                             "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "entityDefinition"
-                          }
+                            "relativePath": "entityVersion"
+                          },
+                          "optional": true
                         }
                       }
                     }
@@ -16610,13 +16617,14 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "tag": {
                       "value": {
                         "canBeTemplate": true
                       }
-                    }
+                    },
+                    "optional": true
                   }
                 }
               }
@@ -33553,13 +33561,14 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "validations": [
                       {
                         "type": "uuid"
                       }
-                    ]
+                    ],
+                    "optional": true
                   },
                   "addColumns": {
                     "type": "array",
@@ -33809,13 +33818,14 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "validations": [
                       {
                         "type": "uuid"
                       }
-                    ]
+                    ],
+                    "optional": true
                   },
                   "targetValue": {
                     "type": "string"
@@ -33948,7 +33958,8 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
-                        "entityDefinition": {
+                        "entityVersion": {
+                          "optional": true,
                           "type": "union",
                           "tag": {
                             "value": {
@@ -33971,8 +33982,9 @@ export const miroirFundamentalJzodSchema = {
                               },
                               "definition": {
                                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition"
+                                "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityVersion"
                               },
+                              "optional": true,
                               "context": {}
                             },
                             {
@@ -34104,7 +34116,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "union",
                     "tag": {
                       "value": {
@@ -34112,6 +34124,7 @@ export const miroirFundamentalJzodSchema = {
                         "isTemplate": true
                       }
                     },
+                    "optional": true,
                     "discriminator": [
                       "transformerType",
                       "interpolation"
@@ -34123,7 +34136,8 @@ export const miroirFundamentalJzodSchema = {
                           "value": {
                             "canBeTemplate": true
                           }
-                        }
+                        },
+                        "optional": true
                       },
                       {
                         "type": "schemaReference",
@@ -35962,7 +35976,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinition": {
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityVersion": {
         "type": "object",
         "extend": [
           {
@@ -39320,7 +39334,7 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "applicationVersionCrossEntityDefinition": {
+          "applicationVersionCrossEntityVersion": {
             "type": "array",
             "definition": {
               "type": "object",
@@ -39382,12 +39396,12 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 },
-                "entityDefinition": {
+                "entityVersion": {
                   "type": "uuid",
                   "tag": {
                     "value": {
                       "id": 1,
-                      "defaultLabel": "Entity Definition",
+                      "defaultLabel": "Entity Version",
                       "editable": false
                     }
                   }
@@ -39431,7 +39445,7 @@ export const miroirFundamentalJzodSchema = {
               "type": "schemaReference",
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                "relativePath": "entityDefinition"
+                "relativePath": "entityVersion"
               }
             }
           },

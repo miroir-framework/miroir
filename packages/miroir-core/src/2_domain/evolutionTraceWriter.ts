@@ -28,16 +28,20 @@ export type EvolutionTraceCommitContext = {
   toVersionUuid: string;
 };
 
-function entityDefinitionUuidFromModelAction(
+function entityVersionUuidFromModelAction(
   action: ModelActionReplayableAction,
 ): string | undefined {
   switch (action.actionType) {
-    case "createEntity":
-      return action.payload.entities[0]?.entityDefinition?.uuid;
+    case "createEntity": {
+      const entry = action.payload.entities[0] as
+        | { entityVersion?: { uuid?: string }; entityDefinition?: { uuid?: string } }
+        | undefined;
+      return entry?.entityVersion?.uuid ?? entry?.entityDefinition?.uuid;
+    }
     case "renameEntity":
     case "dropEntity":
     case "alterEntityAttribute":
-      return action.payload.entityDefinitionUuid;
+      return action.payload.entityVersionUuid;
   }
 }
 
@@ -109,7 +113,7 @@ export function createTraceEventFromModelAction(
   }
 
   return applyDefinitionVersionResolution(event, {
-    entityDefinitionUuidFromPayload: entityDefinitionUuidFromModelAction(action),
+    entityVersionUuidFromPayload: entityVersionUuidFromModelAction(action),
     crossEntityLookup: resolutionContext?.crossEntityLookup
       ? {
           ...resolutionContext.crossEntityLookup,

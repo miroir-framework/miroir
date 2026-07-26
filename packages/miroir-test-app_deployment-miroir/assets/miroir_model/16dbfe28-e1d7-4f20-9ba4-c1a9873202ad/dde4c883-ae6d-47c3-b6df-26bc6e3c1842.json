@@ -6,5 +6,426 @@
   "name": "Menu",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
-  "description": "Menu, allowing to display elements useful to navigate the selfApplication"
+  "description": "Menu, allowing to display elements useful to navigate the selfApplication",
+  "defaultInstanceDetailsReportUuid": "1a9155a0-7a3f-4ffe-863a-e5d2a7e3c2b5",
+  "viewAttributes": [
+    "name",
+    "defaultLabel",
+    "description",
+    "uuid"
+  ],
+  "icon": "Interests",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "definition": {
+        "type": "schemaReference",
+        "context": {
+          "miroirMenuPageLink": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Item",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label",
+                  "editable": true
+                }
+              }
+            },
+            "definition": {
+              "miroirMenuItemType": {
+                "type": "literal",
+                "definition": "miroirMenuPageLink"
+              },
+              "label": {
+                "type": "string"
+              },
+              "targetRoot": {
+                "type": "string"
+              },
+              "hidden": {
+                "type": "boolean",
+                "optional": true
+              },
+              "menuItemScope": {
+                "type": "enum",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Scope",
+                    "display": {
+                      "editable": true
+                    },
+                    "description": "What elements this menu item targets (data or model)",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "data"
+                    }
+                  }
+                },
+                "definition": [
+                  "data",
+                  "model"
+                ]
+              },
+              "section": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "icon": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirIcon"
+                }
+              }
+            }
+          },
+          "miroirMenuReportLink": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Item",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label",
+                  "editable": true
+                }
+              }
+            },
+            "definition": {
+              "miroirMenuItemType": {
+                "type": "literal",
+                "definition": "miroirMenuReportLink"
+              },
+              "label": {
+                "type": "string"
+              },
+              "hidden": {
+                "type": "boolean",
+                "optional": true
+              },
+              "menuItemScope": {
+                "type": "enum",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Scope",
+                    "display": {
+                      "editable": true
+                    },
+                    "description": "What elements this menu item targets (data or model)",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "data"
+                    }
+                  }
+                },
+                "definition": [
+                  "data",
+                  "model"
+                ]
+              },
+              "section": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "applicationSection"
+                }
+              },
+              "selfApplication": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "SelfApplication",
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "reportUuid": {
+                "type": "string",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Report",
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "instanceUuid": {
+                "type": "string",
+                "optional": true,
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Instance",
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "icon": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirIcon"
+                }
+              }
+            }
+          },
+          "miroirMenuItemDivider": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Item Divider",
+                "display": {
+                  "displayedAttributeValueWhenFolded": "label",
+                  "editable": true
+                }
+              }
+            },
+            "definition": {
+              "miroirMenuItemType": {
+                "type": "literal",
+                "definition": "miroirMenuItemDivider"
+              },
+              "label": {
+                "type": "string"
+              },
+              "selfApplication": {
+                "type": "string",
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "SelfApplication",
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "hidden": {
+                "type": "boolean",
+                "optional": true
+              },
+              "menuItemScope": {
+                "type": "enum",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Scope",
+                    "display": {
+                      "editable": true
+                    },
+                    "description": "What elements this menu item targets (data or model)",
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "data"
+                    }
+                  }
+                },
+                "definition": [
+                  "data",
+                  "model"
+                ]
+              }
+            }
+          },
+          "miroirMenuItem": {
+            "type": "union",
+            "discriminator": "miroirMenuItemType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirMenuPageLink"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirMenuReportLink"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirMenuItemDivider"
+                }
+              }
+            ]
+          },
+          "menuItemArray": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "miroirMenuItem"
+              }
+            }
+          },
+          "sectionOfMenu": {
+            "type": "object",
+            "definition": {
+              "title": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "items": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "menuItemArray"
+                }
+              }
+            }
+          },
+          "simpleMenu": {
+            "type": "object",
+            "definition": {
+              "menuType": {
+                "type": "literal",
+                "definition": "simpleMenu"
+              },
+              "definition": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "menuItemArray"
+                }
+              }
+            }
+          },
+          "complexMenu": {
+            "type": "object",
+            "definition": {
+              "menuType": {
+                "type": "literal",
+                "definition": "complexMenu"
+              },
+              "definition": {
+                "type": "array",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "sectionOfMenu"
+                  }
+                }
+              }
+            }
+          },
+          "menuDefinition": {
+            "type": "union",
+            "discriminator": "menuType",
+            "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "simpleMenu"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "complexMenu"
+                }
+              }
+            ]
+          }
+        },
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "menuDefinition"
+        }
+      }
+    }
+  }
 }

@@ -30,6 +30,7 @@ import {
   type Runner,
   type SelfApplication,
   type MiroirTestDefinition,
+  assembleLivePresentModelEntities,
 } from "miroir-core";
 import {
   entityEntity,
@@ -129,13 +130,18 @@ export function currentModel(
       applicationVersions: (applicationVersions && applicationVersions.entities
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],
-      applicationVersionCrossEntityDefinition: [],
+      applicationVersionCrossEntityVersion: [],
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],
-      entities: (entities && entities.entities
-        ? Object.values(entities.entities)
-        : []) as Entity[],
+      entities: assembleLivePresentModelEntities(
+        (entities && entities.entities
+          ? Object.values(entities.entities)
+          : []) as Entity[],
+        (entityDefinitions && entityDefinitions.entities
+          ? Object.values(entityDefinitions.entities)
+          : []) as EntityDefinition[],
+      ),
       entityDefinitions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
         : []) as EntityDefinition[],

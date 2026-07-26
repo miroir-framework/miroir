@@ -1,6 +1,6 @@
 {
   "uuid": "15407b85-f2c8-4a34-bfa7-89f044ba2407",
-  "parentName": "EntityDefinition",
+  "parentName": "EntityVersion",
   "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "entityUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
@@ -14,11 +14,11 @@
     "type": "object",
     "extend": {
       "type": "schemaReference",
-       "definition": {
+      "definition": {
         "eager": true,
         "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
         "relativePath": "entityDefinitionRoot"
-       }
+      }
     },
     "definition": {
       "name": {
@@ -27,7 +27,9 @@
           "value": {
             "id": 5,
             "defaultLabel": "Name",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -43,7 +45,9 @@
           "value": {
             "id": 6,
             "defaultLabel": "Concept Level",
-            "display": { "editable": false }
+            "display": {
+              "editable": false
+            }
           }
         }
       },
@@ -54,7 +58,9 @@
           "value": {
             "id": 7,
             "defaultLabel": "Default Label",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -65,7 +71,9 @@
           "value": {
             "id": 8,
             "defaultLabel": "Description",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       },
@@ -101,7 +109,9 @@
           "value": {
             "id": 9,
             "defaultLabel": "Definition",
-            "display": { "editable": true }
+            "display": {
+              "editable": true
+            }
           }
         }
       }

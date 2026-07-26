@@ -29,6 +29,7 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { resolvePresentEntityFromModel } from "../1_core/entityPresentModel.js";
 import {
   // getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
@@ -287,13 +288,14 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     if (!querySelectorParams.applyTransformer) {
       return referenceObject;
     }
-    const currentEntityDefnition = modelEnvironment.currentModel?.entityDefinitions.find(
-      (e) => e.entityUuid == entityUuidReference
-    )
+    const currentPresentEntity = resolvePresentEntityFromModel(
+      modelEnvironment.currentModel,
+      entityUuidReference,
+    );
 
     const foreignKeyObjects: Record<string, EntityInstance> = {};
     if (querySelectorParams.foreignKeysForTransformer) {
-      for (const attribute of Object.entries(currentEntityDefnition?.mlSchema.definition??{})) {
+      for (const attribute of Object.entries(currentPresentEntity?.mlSchema?.definition ?? {})) {
         if (attribute[0] === "uuid") continue;
         if (attribute[1]?.type !== "uuid" || !querySelectorParams.foreignKeysForTransformer?.includes(attribute[0])) continue;
         if (!attribute[1].tag?.value?.foreignKeyParams?.targetEntity) {

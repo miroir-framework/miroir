@@ -69,14 +69,14 @@ export interface StorageSpaceHandlerInterface {
 
   createStorageSpaceForInstancesOfEntity(
     entity:Entity,
-    entityDefinition: EntityDefinition,
+    entityDefinition?: EntityDefinition,
   ): Promise<Action2VoidReturnType>;
 
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition: EntityDefinition,
+    entityDefinition?: EntityDefinition,
   ): Promise<Action2VoidReturnType>;
 }
 
@@ -106,12 +106,12 @@ export interface PersistenceStoreEntitySectionAbstractInterface  extends Persist
 
   createEntity(
     entity:Entity,
-    entityDefinition: EntityDefinition,
+    entityDefinition?: EntityDefinition,
   ): Promise<Action2VoidReturnType>;
   createEntities(
     entities: {
       entity:Entity,
-      entityDefinition: EntityDefinition,
+      entityDefinition?: EntityDefinition,
     }[]
   ): Promise<Action2VoidReturnType>;
   renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType>;

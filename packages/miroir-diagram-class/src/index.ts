@@ -5,6 +5,8 @@ export {
   extractRelationships,
   buildEntityUuidToNameMap,
   buildEntityDefinitionClickLinks,
+  buildEntityClickLinks,
+  presentEntitiesAsDiagramCarriers,
   jzodTypeToUml,
   sanitiseMermaidId,
   type ClassDiagramOptions,

@@ -17,12 +17,24 @@ export { default as entityCountry } from "./assets/library_model/16dbfe28-e1d7-4
 export { default as entityUser } from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ca794e28-b2dc-45b3-8137-00151557eea8.json" with { type: "json" };
 export { default as entityLendingHistoryItem } from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e81078f3-2de7-4301-bd79-d3a156aec149.json" with { type: "json" };
 
-// Library Model - Entity Definitions
+// Library Model - Entity Versions
+export { default as entityVersionBook } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json" with { type: "json" };
+/** @deprecated Use entityVersionBook */
 export { default as entityDefinitionBook } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json" with { type: "json" };
+export { default as entityVersionPublisher } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json" with { type: "json" };
+/** @deprecated Use entityVersionPublisher */
 export { default as entityDefinitionPublisher } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json" with { type: "json" };
+export { default as entityVersionAuthor } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json" with { type: "json" };
+/** @deprecated Use entityVersionAuthor */
 export { default as entityDefinitionAuthor } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json" with { type: "json" };
+export { default as entityVersionCountry } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" with { type: "json" };
+/** @deprecated Use entityVersionCountry */
 export { default as entityDefinitionCountry } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" with { type: "json" };
+export { default as entityVersionUser } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/8a4b9e9f-ae19-489f-977f-f3062107e066.json" with { type: "json" };
+/** @deprecated Use entityVersionUser */
 export { default as entityDefinitionUser } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/8a4b9e9f-ae19-489f-977f-f3062107e066.json" with { type: "json" };
+export { default as entityVersionLendingHistoryItem } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/ce054a0c-5c45-4e2b-a1a9-07e3e5dc8505.json" with { type: "json" };
+/** @deprecated Use entityVersionLendingHistoryItem */
 export { default as entityDefinitionLendingHistoryItem } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/ce054a0c-5c45-4e2b-a1a9-07e3e5dc8505.json" with { type: "json" };
 
 // Library Model - Reports
