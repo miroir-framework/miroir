@@ -17,7 +17,6 @@ import {
   Uuid,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
-  type EntityDefinition,
   type Report,
 } from "miroir-core";
 
@@ -50,11 +49,25 @@ export interface EditorAttribute {
   value: any;
 }
 
+/**
+ * #217 Phase 12 — Entity present model or EntityVersion/ED-shaped carrier for dialogs.
+ * Identity: Entity uses `uuid`; EntityVersion uses `entityUuid`.
+ */
+export type PresentModelSchemaCarrier = {
+  uuid?: string | undefined;
+  entityUuid?: string | undefined;
+  name?: string | undefined;
+  mlSchema?: JzodObject | { definition?: Record<string, any> | undefined } | undefined;
+  defaultInstanceDetailsReportUuid?: string | undefined;
+  idAttribute?: (string | string[]) | undefined;
+  conceptLevel?: string | undefined;
+};
+
 export interface JsonObjectFormEditorCoreDialogProps {
   valueObjectEditMode: ValueObjectEditMode,
   label?: string,
   isAttributes?: boolean,
-  entityDefinition: EntityDefinition,
+  entityDefinition: PresentModelSchemaCarrier,
   entityDefinitionJzodSchema: JzodObject,
   defaultFormValuesObject: any,
   currentApplication: Uuid,
@@ -210,7 +223,7 @@ interface JsonElementEditorDialogProps {
   applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
-  entityDefinition: EntityDefinition;
+  entityDefinition: PresentModelSchemaCarrier;
   entityDefinitionJzodSchema: JzodObject;
   resolvedJzodSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
@@ -319,7 +332,9 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   ]);
 
   // Determine if this is an Endpoint entity to use full width dialog
-  const isEndpointEntity = entityDefinition.entityUuid === "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
+  const isEndpointEntity =
+    (entityDefinition.entityUuid ?? entityDefinition.uuid) ===
+    "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
 
   return (
     <ThemedDialog 

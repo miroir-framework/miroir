@@ -4,7 +4,6 @@ import {
   ApplicationSection,
   Domain2QueryReturnType,
   Entity,
-  EntityDefinition,
   EntityInstance,
   LoggerInterface,
   MetaModel,
@@ -16,7 +15,6 @@ import {
   entityWithResolvedMLSchema,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
-  presentEntityAsRedundantEntityDefinition,
   resolvePathOnObject,
   resolvePresentEntityFromModel,
   type ApplicationDeploymentMap,
@@ -248,22 +246,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     targetEntityUuid ?? "",
   );
 
-  const currentReportSectionTargetEntityDefinition: EntityDefinition | undefined =
+  const currentFlattenedReportSectionTargetEntityMlSchema: JzodObject | undefined =
     currentReportTargetEntity
-      ? presentEntityAsRedundantEntityDefinition(
-          currentReportTargetEntity,
-          currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection ?? "data"]
-            ?.entityDefinitions ?? [],
-        )
+      ? (entityWithResolvedMLSchema(currentReportTargetEntity).mlSchema as JzodObject)
       : undefined;
-  const currentFlattenedReportSectionTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportTargetEntity
-      ? {
-          ...currentReportSectionTargetEntityDefinition!,
-          mlSchema: entityWithResolvedMLSchema(currentReportTargetEntity).mlSchema!,
-        }
-      : undefined
-  ;
 
   // ##############################################################################################
   // ##############################################################################################
@@ -504,8 +490,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                   data: queryForTestParamSchema,
                   useCodeBlock: true,
                 },
-                // { label: "currentReportSectionTargetEntityDefinition", data: currentReportSectionTargetEntityDefinition },
-                { label: "currentFlattenedReportSectionTargetEntityDefinition", data: currentFlattenedReportSectionTargetEntityDefinition },
+                // { label: "currentReportTargetEntity", data: currentReportTargetEntity },
+                { label: "currentFlattenedReportSectionTargetEntityMlSchema", data: currentFlattenedReportSectionTargetEntityMlSchema },
                 { label: "formikValuePathAsString", data: formikValuePathAsString },
                 { label: "queryForTestRun", data: queryForTestRun, useCodeBlock: true },
                 // {
@@ -587,13 +573,13 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
           </div>
         )}
 
-        {currentFlattenedReportSectionTargetEntityDefinition && props.applicationSection ? (
+        {currentFlattenedReportSectionTargetEntityMlSchema && props.applicationSection ? (
           <>
           <JsonDisplayHelper
             debug={true}
             componentName="ReportSectionEntityInstance Debug"
             elements={[
-              { label: "currentReportSectionTargetEntityDefinition", data: currentReportSectionTargetEntityDefinition },
+              { label: "currentReportTargetEntity", data: currentReportTargetEntity },
               // {
               //   label: "formValueMLSchema",
               //   data: props.formValueMLSchema,
@@ -602,7 +588,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             ]}
           />
           <TypedValueObjectEditor
-            formValueMLSchema={currentFlattenedReportSectionTargetEntityDefinition.mlSchema as JzodObject}
+            formValueMLSchema={currentFlattenedReportSectionTargetEntityMlSchema}
             formikValuePathAsString={formikValuePathAsString}
             // 
             valueObjectEditMode={props.valueObjectEditMode}
@@ -671,9 +657,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               initiallyUnfolded={false}
             />
             <ThemedPreformattedText>
-              target entity definition:{" "}
-              {currentReportSectionTargetEntityDefinition?.name ??
-                "report target entity definition not found!"}
+              target entity:{" "}
+              {currentReportTargetEntity?.name ??
+                "report target entity not found!"}
             </ThemedPreformattedText>
             <div> ######################################## </div>
             <ThemedPreformattedText>

@@ -17,11 +17,9 @@ import {
   type Domain2QueryReturnType,
   type DomainControllerInterface,
   type Entity,
-  type EntityDefinition,
   type InstanceAction,
   type ReportQueryLoadRequest,
   resolvePresentEntityFromModel,
-  presentEntityAsRedundantEntityDefinition,
 } from "miroir-core";
 import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
@@ -180,23 +178,17 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
 
   // ##############################################################################################
   // (meta-)information about the current report, to enable editing
-  const entityDefinitionReport: EntityDefinition | undefined = useMemo(() => {
+  const reportPresentEntity: Entity | undefined = useMemo(() => {
     const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[deployment_Miroir.uuid];
     if (!miroirMapping) return undefined;
-    const reportEntity = resolvePresentEntityFromModel(
+    const result = resolvePresentEntityFromModel(
       {
         entities: miroirMapping["model"]?.entities,
         entityDefinitions: miroirMapping["model"]?.entityDefinitions,
       },
       entityReport.uuid,
     );
-    const result = reportEntity
-      ? presentEntityAsRedundantEntityDefinition(
-          reportEntity,
-          miroirMapping["model"]?.entityDefinitions ?? [],
-        )
-      : undefined;
-    log.info("ReportViewWithEditor found report present entity / definition", { result });
+    log.info("ReportViewWithEditor found report present entity", { result });
     return result;
   }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
 
@@ -441,7 +433,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                         // { label: "fetchedDataJzodSchema", data: { fetchedDataJzodSchema }, useCodeBlock: true },
                       ]}
                     />
-                    {generalEditMode && entityDefinitionReport && (
+                    {generalEditMode && reportPresentEntity && (
                       <>
                         <InlineReportEditor
                           formikValuePath={reportNamePath}

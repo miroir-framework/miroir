@@ -250,9 +250,28 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
     ).toBeUndefined();
   });
 
-  it("UI hub presentEntityAsRedundantEntityDefinition remains (deferred off vocabulary slice)", () => {
+  it("UI no longer calls presentEntityAsRedundantEntityDefinition (hub kept deprecated for non-UI)", () => {
     const hub = readFileSync(ENTITY_PRESENT_MODEL, "utf8");
     expect(hub).toContain("presentEntityAsRedundantEntityDefinition");
+    expect(hub).toMatch(/@deprecated/);
+
+    const uiFiles = [
+      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.tsx",
+      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx",
+      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx",
+      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/EntityInstanceSelectorPanel.tsx",
+      "packages/miroir-standalone-app/src/miroir-fwk/4_view/scripts.ts",
+    ];
+    for (const rel of uiFiles) {
+      const src = readFileSync(join(REPO_ROOT, rel), "utf8");
+      expect(src).not.toContain("presentEntityAsRedundantEntityDefinition");
+    }
+
+    const listDisplay = readFileSync(
+      join(REPO_ROOT, uiFiles[0]),
+      "utf8",
+    );
+    expect(listDisplay).toMatch(/currentEntity=\{currentReportTargetEntity\}/);
   });
 
   it("docs and AI prompts use EntityVersion display vocabulary", () => {

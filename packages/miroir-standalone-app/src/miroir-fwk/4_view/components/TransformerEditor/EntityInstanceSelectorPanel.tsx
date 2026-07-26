@@ -11,12 +11,10 @@ import {
   getEntityInstancesIndexNonHook,
   metaMetaModelEntityUuids,
   noValue,
-  presentEntityAsRedundantEntityDefinition,
   resolvePresentEntityFromModel,
   type ApplicationDeploymentMap,
   type ApplicationSection,
   type Entity,
-  type EntityDefinition,
   type JzodElement,
   type JzodObject,
   type MiroirModelEnvironment,
@@ -200,7 +198,7 @@ export function EntityInstanceSelectorPanel(props:{
     currentModel.entities,
   ]);
   // Present-model schemas: model-section types from Miroir; data-section from the app model
-  // (for Miroir those are the same MetaModel). Legacy ED only via presentEntityAsRedundant*.
+  // (for Miroir those are the same MetaModel).
   const schemaModel =
     applicationSection === "model" ? miroirMetaModel : currentModel;
 
@@ -230,18 +228,9 @@ export function EntityInstanceSelectorPanel(props:{
     selectedEntityUuid,
   );
 
-  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportTargetEntity
-      ? presentEntityAsRedundantEntityDefinition(
-          currentReportTargetEntity,
-          schemaModel.entityDefinitions ?? [],
-        )
-      : undefined;
-
   // Avoid rendering with a stale / mismatched schema while selection catches up
   const schemaMatchesSelection =
-    !!currentReportTargetEntity &&
-    !!currentReportTargetEntityDefinition &&
+    !!currentReportTargetEntity?.mlSchema &&
     currentReportTargetEntity.uuid === selectedEntityUuid;
 
   const instanceEditorKey = `instance-editor-${applicationSection}-${selectedEntityUuid}-${currentReportTargetEntity?.uuid ?? "noschema"}-${showAllInstances ? "all" : "single"}`;
@@ -710,7 +699,7 @@ export function EntityInstanceSelectorPanel(props:{
                 elements={[{
                   label: `TypedValueObjectEditor showing all ${
                     entityInstances.length
-                  } instances of entity '${currentReportTargetEntityDefinition?.name || ""}`,
+                  } instances of entity '${currentReportTargetEntity?.name || ""}`,
                   data: {
                     type: "object",
                     definition: {
@@ -718,7 +707,7 @@ export function EntityInstanceSelectorPanel(props:{
                         definition: {
                           type: "array",
                           definition:
-                            currentReportTargetEntityDefinition?.mlSchema ??
+                            currentReportTargetEntity?.mlSchema ??
                             createGenericObjectSchema(),
                         },
                       },
@@ -739,7 +728,7 @@ export function EntityInstanceSelectorPanel(props:{
                     {
                       type: "array",
                       definition:
-                        currentReportTargetEntityDefinition?.mlSchema ??
+                        currentReportTargetEntity?.mlSchema ??
                         createGenericObjectSchema(),
                     }
                   } // TODO: ILL-TYPED!!
@@ -782,7 +771,7 @@ export function EntityInstanceSelectorPanel(props:{
                 // type: "object",
                 // definition: {
                 //   selectedEntityInstance:
-                    currentReportTargetEntityDefinition?.mlSchema ?? createGenericObjectSchema()
+                    currentReportTargetEntity?.mlSchema ?? createGenericObjectSchema()
                 // },
               // }
               }

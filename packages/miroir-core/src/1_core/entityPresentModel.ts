@@ -451,9 +451,12 @@ export function resolvePresentEntityFromModel(
 }
 
 /**
- * #217 Phase 9 — UI/tooling boundary: project present Entity onto EntityDefinition shape
- * for components still typed as EntityDefinition. Prefer aligning an existing redundant ED;
- * otherwise synthesize a compatibility copy (Entity remains authoritative).
+ * #217 Phase 9/12 — UI/tooling boundary: project present Entity onto EntityVersion /
+ * EntityDefinition shape for legacy callers still typed that way.
+ *
+ * Prefer passing Entity (with mlSchema) directly. UI Report/grid paths no longer use this.
+ *
+ * @deprecated Prefer Entity present-model fields; keep only for non-UI dual-write / compat.
  */
 export function presentEntityAsRedundantEntityDefinition(
   entity: Entity,

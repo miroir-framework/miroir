@@ -11,7 +11,6 @@ import {
   InstanceAction,
   LoggerInterface,
   MiroirLoggerFactory,
-  presentEntityAsRedundantEntityDefinition,
   type ApplicationDeploymentMap,
   type Entity,
   type Uuid
@@ -24,6 +23,18 @@ let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
+
+/** #217 Phase 12 — Entity or EntityVersion/ED-shaped schema carrier. */
+type PresentModelSchemaCarrier = {
+  uuid?: string | undefined;
+  entityUuid?: string | undefined;
+  name?: string | undefined;
+  mlSchema?: { definition?: Record<string, any> | undefined } | undefined;
+};
+
+function carrierIdentityUuid(carrier: PresentModelSchemaCarrier): string | undefined {
+  return carrier.entityUuid ?? carrier.uuid;
+}
 
 export const splitEntity = async (p: {
   domainController: DomainControllerInterface,
@@ -50,9 +61,9 @@ export const deleteCascade = async (p: {
   deploymentUuid: string;
   applicationSection: ApplicationSection;
   // state: LocalCacheSliceState;
-  entityDefinition: EntityDefinition;
+  entityDefinition: PresentModelSchemaCarrier;
   entityDefinitions: EntityDefinition[];
-  /** #217 Phase 9 — prefer Entity present model for FK walk when provided. */
+  /** #217 Phase 9/12 — prefer Entity present model for FK walk when provided. */
   entities?: Entity[];
   entityInstances: EntityInstance[];
 }) => {
@@ -62,23 +73,22 @@ export const deleteCascade = async (p: {
     p.entityInstances
   );
 
-  const schemaCarriers: EntityDefinition[] =
+  const targetEntityUuid = carrierIdentityUuid(p.entityDefinition);
+  const schemaCarriers: PresentModelSchemaCarrier[] =
     p.entities && p.entities.length > 0
-      ? p.entities.map((entity) =>
-          presentEntityAsRedundantEntityDefinition(entity, p.entityDefinitions ?? []),
-        )
+      ? p.entities
       : p.entityDefinitions;
 
   // finding all entities which have an attribute pointing to the current entity
   const foreignKeysPointingToEntity = Object.fromEntries(
     schemaCarriers
-      .map((ed: EntityDefinition) => {
+      .map((ed: PresentModelSchemaCarrier) => {
         const fkAttributes = Object.entries(ed.mlSchema?.definition ?? {}).find(
-          (a) => a[1].tag?.value?.foreignKeyParams?.targetEntity == p.entityDefinition.entityUuid
+          (a) => a[1].tag?.value?.foreignKeyParams?.targetEntity == targetEntityUuid
         );
-        return [ed.entityUuid, fkAttributes ? fkAttributes[0] : undefined];
+        return [carrierIdentityUuid(ed), fkAttributes ? fkAttributes[0] : undefined];
       })
-      .filter((e) => e[1])
+      .filter((e) => e[0] && e[1])
   );
 
   log.info(

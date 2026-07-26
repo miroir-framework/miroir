@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Domain2QueryReturnType,
   DomainElementSuccess,
-  EntityDefinition,
   EntityInstance,
   EntityInstancesUuidIndex,
   JzodObject,
@@ -71,6 +70,14 @@ MiroirLoggerFactory.registerLoggerToStart(
 // export const EntityInstanceGrid = (props: TableComponentProps & { theme?: DeepPartial<TableTheme> }) => {
 export const EntityInstanceGrid = (props: TableComponentProps) => {
   log.info(":::::::::::::::::::::::::: EntityInstanceGrid refreshing with props",props);
+
+  // #217 Phase 12: prefer Entity present model; fall back to EntityDefinition-shaped carrier
+  const presentModelSource =
+    props.type === TableComponentTypeSchema.enum.EntityInstance
+      ? props.currentEntity?.mlSchema
+        ? props.currentEntity
+        : props.currentEntityDefinition
+      : undefined;
   
   // Get theme from context first, then allow prop overrides
   const contextTheme = useMiroirTableTheme();
@@ -304,13 +311,13 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
           foreignKeyObjects: props.foreignKeyObjects,
           mlSchema:
             props.type == TableComponentTypeSchema.enum.EntityInstance
-              ? props.currentEntityDefinition.mlSchema.definition
+              ? presentModelSource.mlSchema.definition
               : {},
           displayedValue: Object.fromEntries(
             Object.entries(i).map((e) => {
               const currentAttributeDefinition =
                 props.type == TableComponentTypeSchema.enum.EntityInstance
-                  ? Object.entries(props.currentEntityDefinition?.mlSchema.definition ?? {}).find((a) => a[0] == e[0])
+                  ? Object.entries(presentModelSource?.mlSchema.definition ?? {}).find((a) => a[0] == e[0])
                   : undefined;
               return [
                 e[0],
@@ -653,30 +660,31 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
       setTimeout(() => {
         // Determine which columns navigate to the current instance's detail view:
         // always "name", plus the PK attribute(s) of the entity
-        const pkAttributes = getEntityPrimaryKeyAttributes(props.currentEntityDefinition);
+        const pkAttributes = getEntityPrimaryKeyAttributes(presentModelSource ?? {});
+
         const navigableColumns = ["name", ...pkAttributes];
 
         if (navigableColumns.includes(fieldName)) {
           // display current Entity Details for Entity Instance
           const applicationSection = ["MetaModel", "model"].includes(
-            props.currentEntityDefinition.conceptLevel as any
+            presentModelSource.conceptLevel as any
           )
             ? "model"
             : context.applicationSection ?? "";
 
-          const primaryKeyValue = getInstancePrimaryKeyValue(props.currentEntityDefinition, rowData.rawValue);
+          const primaryKeyValue = getInstancePrimaryKeyValue(presentModelSource, rowData.rawValue);
           navigate(
             reportUrl(
               props.application,
               contextDeploymentUuid ?? "",
               applicationSection,
-              props.currentEntityDefinition?.defaultInstanceDetailsReportUuid ?? "",
+              presentModelSource?.defaultInstanceDetailsReportUuid ?? "",
               String(primaryKeyValue),
             )
           );
         } else {
           // Cache schema definition lookup
-          const schemaDefinition = props.currentEntityDefinition?.mlSchema.definition ?? {};
+          const schemaDefinition = presentModelSource?.mlSchema.definition ?? {};
           const columnDefinitionAttribute = schemaDefinition[fieldName];
 
           if (
@@ -717,7 +725,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
     },
     [
       props.type,
-      (props as any).currentEntityDefinition,
+      presentModelSource,
       contextDeploymentUuid,
       context.applicationSection,
       currentModel.entityDefinitions,
@@ -748,38 +756,39 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
         event,
         "props",
         props,
-        "props.currentEntityDefinition",
-        props.currentEntityDefinition
+        "presentModelSource",
+        presentModelSource
       );
 
       // Use setTimeout to defer navigation and prevent blocking the UI thread
       setTimeout(() => {
         // Determine which columns navigate to the current instance's detail view:
         // always "name", plus the PK attribute(s) of the entity
-        const pkAttributes = getEntityPrimaryKeyAttributes(props.currentEntityDefinition);
+        const pkAttributes = getEntityPrimaryKeyAttributes(presentModelSource ?? {});
+
         const navigableColumns = ["name", ...pkAttributes];
 
         if (navigableColumns.includes(fieldName)) { // columns to navigate to current instance (the row object itself)
           // display current Entity Details for Entity Instance
           const applicationSection = ["MetaModel", "model"].includes(
-            props.currentEntityDefinition.conceptLevel as any
+            presentModelSource.conceptLevel as any
           )
             ? "model"
             : context.applicationSection ?? "";
 
-          const primaryKeyValue = getInstancePrimaryKeyValue(props.currentEntityDefinition, event.data.rawValue);
+          const primaryKeyValue = getInstancePrimaryKeyValue(presentModelSource, event.data.rawValue);
           navigate(
             reportUrl(
               props.application,
               contextDeploymentUuid ?? "",
               applicationSection,
-              props.currentEntityDefinition?.defaultInstanceDetailsReportUuid ?? "",
+              presentModelSource?.defaultInstanceDetailsReportUuid ?? "",
               String(primaryKeyValue),
             )
           );
         } else { // other columns
           // Cache schema definition lookup
-          const schemaDefinition = props.currentEntityDefinition?.mlSchema.definition ?? {};
+          const schemaDefinition = presentModelSource?.mlSchema.definition ?? {};
           const columnDefinitionAttribute = schemaDefinition[fieldName];
 
           log.info("onCellClicked foreign key navigation columnDefinitionAttribute", columnDefinitionAttribute);
@@ -816,7 +825,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
     },
     [
       props.type,
-      (props as any).currentEntityDefinition,
+      presentModelSource,
       contextDeploymentUuid,
       context.applicationSection,
       currentModel.entityDefinitions,
@@ -892,8 +901,8 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 isAttributes={true}
                 label={props.currentEntity?.name ?? "No Entity Found!"}
                 defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}
-                entityDefinition={props.currentEntityDefinition}
-                entityDefinitionJzodSchema={props.currentEntityDefinition?.mlSchema as JzodObject}
+                entityDefinition={presentModelSource}
+                entityDefinitionJzodSchema={presentModelSource?.mlSchema as JzodObject}
                 foreignKeyObjects={props.foreignKeyObjects}
                 currentApplication={props.application}
                 applicationDeploymentMap={props.applicationDeploymentMap}
@@ -917,7 +926,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 currentMiroirModel={miroirMetaModel}
                 defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}
                 deleteObjectdialogFormIsOpen={deleteDialogFormIsOpen}
-                entityDefinitionJzodSchema={props.currentEntityDefinition?.mlSchema as JzodObject}
+                entityDefinitionJzodSchema={presentModelSource?.mlSchema as JzodObject}
                 foreignKeyObjects={props.foreignKeyObjects}
                 isOpen={deleteDialogFormIsOpen} // redundant with deleteObjectdialogFormIsOpen?
                 isAttributes={true}
@@ -1008,7 +1017,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 border: contextTheme.components.table.border,
               }}
               type={props.type}
-              currentEntityDefinition={props.type === 'EntityInstance' ? (props as any).currentEntityDefinition : undefined}
+              currentEntityDefinition={props.type === 'EntityInstance' ? presentModelSource : undefined}
               toolsColumnDefinition={toolsColumnDefinition}
               maxRows={props.maxRows}
               theme={contextTheme}

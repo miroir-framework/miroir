@@ -14,7 +14,6 @@ import {
   DomainControllerInterface,
   DomainElementSuccess,
   Entity,
-  EntityDefinition,
   entityMLSchema,
   EntityInstancesUuidIndex,
   ExtractorOrCombinerRecord,
@@ -33,7 +32,6 @@ import {
   ReduxDeploymentsState,
   resolvePathOnObject,
   resolvePresentEntityFromModel,
-  presentEntityAsRedundantEntityDefinition,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   SyncQueryRunnerExtractorAndParams,
@@ -339,14 +337,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           objectListReportSection.definition.parentUuid,
         )
       : undefined;
-  // EntityDefinition-shaped view of the present Entity for components still typed as ED.
-  const currentReportTargetEntityDefinition: EntityDefinition | undefined =
-    currentReportTargetEntity
-      ? presentEntityAsRedundantEntityDefinition(
-          currentReportTargetEntity,
-          entityDefinitions ?? [],
-        )
-      : undefined;
 
   // TODO: AMBIGUOUS!! APPEARS ALSO IN THE Report DEFINITION. PROVIDE A DIRECT WAY TO DETERMINE THIS?
   const currentApplicationSection = props.chosenApplicationSection??"data";
@@ -366,8 +356,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   // log.info(
   //   "ReportSectionListDisplay currentReportTargetEntity",
   //   currentReportTargetEntity,
-  //   "currentReportTargetEntityDefinition",
-  //   currentReportTargetEntityDefinition,
+  //   "currentReportTargetEntity",
+  //   currentReportTargetEntity,
   // );
 
   // ##############################################################################################
@@ -379,7 +369,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       }
 
       const foreignKeyAttributes = analyzeForeignKeyAttributes(
-        currentReportTargetEntity ?? currentReportTargetEntityDefinition,
+        currentReportTargetEntity,
         [
           ...(entities ?? []),
           ...(entityDefinitions ?? []),
@@ -392,8 +382,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     [
       currentReportTargetEntity?.mlSchema?.definition,
       currentReportTargetEntity?.uuid,
-      currentReportTargetEntityDefinition?.mlSchema.definition,
-      currentReportTargetEntityDefinition?.entityUuid,
       props.tableComponentReportType,
       entities,
       entityDefinitions,
@@ -592,9 +580,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       // log.info('onDeleteFormObject called with props',props);
       
       if (props.application) {
-          if (!currentReportTargetEntityDefinition) {
+          if (!currentReportTargetEntity) {
            throw new Error(
-             "ReportSectionListDisplay onDeleteFormObject no EntityDefinition found for object to delete! " +
+             "ReportSectionListDisplay onDeleteFormObject no Entity found for object to delete! " +
                currentReportTargetEntity?.name,
            );
           }
@@ -606,7 +594,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data" as ApplicationSection,
               deploymentUuid: props.deploymentUuid,
               domainController: domainController,
-              entityDefinition: currentReportTargetEntityDefinition,
+              entityDefinition: currentReportTargetEntity,
               entityDefinitions: currentModel.entityDefinitions,
               entities: currentModel.entities,
               entityInstances: [data],
@@ -614,7 +602,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           )
       }
     },
-    [domainController, props.application, props.chosenApplicationSection, currentReportTargetEntityDefinition, currentModel]
+    [domainController, props.application, props.chosenApplicationSection, currentReportTargetEntity, currentModel]
   )
 
   
@@ -652,20 +640,20 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       // log.info(
       //   "handleAddObjectDialogFormOpen defined with currentReportTargetEntity",
       //   currentReportTargetEntity,
-      //   "currentReportTargetEntityDefinition",
-      //   currentReportTargetEntityDefinition,
-      //   Object.keys(currentReportTargetEntityDefinition?.mlSchema?.definition ?? {}),
-      //   Object.entries(currentReportTargetEntityDefinition?.mlSchema?.definition ?? {})
+      //   "currentReportTargetEntity",
+      //   currentReportTargetEntity,
+      //   Object.keys(currentReportTargetEntity?.mlSchema?.definition ?? {}),
+      //   Object.entries(currentReportTargetEntity?.mlSchema?.definition ?? {})
       // );
       const defaultFormValuesObject =
         currentReportTargetEntity &&
-        currentReportTargetEntityDefinition &&
-        currentReportTargetEntityDefinition?.mlSchema &&
+        currentReportTargetEntity &&
+        currentReportTargetEntity?.mlSchema &&
           (context.schemasPerDeployment[props.deploymentUuid] ??
             currentMiroirModelEnvironment.miroirFundamentalJzodSchema)
           ? getDefaultValueForJzodSchemaWithResolutionNonHook(
               "build",
-              currentReportTargetEntityDefinition?.mlSchema,
+              currentReportTargetEntity?.mlSchema,
               undefined, // rootObject
               "", // rootLessListKey,
               undefined, // No need to pass currentDefaultValue here
@@ -685,8 +673,8 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       //   "handleAddObjectDialogFormOpen",
       //   "called, formObject",
       //   defaultFormValuesObject,
-      //   "currentReportTargetEntityDefinition",
-      //   currentReportTargetEntityDefinition
+      //   "currentReportTargetEntity",
+      //   currentReportTargetEntity
       // );
 
       defaultFormValuesObject.parentUuid = currentReportTargetEntity?.uuid;
@@ -700,7 +688,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       setAddObjectdialogFormIsOpen,
       setdialogOuterFormObject,
       currentReportTargetEntity,
-      currentReportTargetEntityDefinition,
     ]
   );
 
@@ -720,7 +707,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               props.deploymentUuid,
               instancesToDisplayJzodSchema ?? { type: "object", definition: {} },
               objectListReportSection,
-              currentReportTargetEntityDefinition
+              currentReportTargetEntity
             ),
           }
         : {}) as { columnDefs: AutoGeneratedColumnDef[] },
@@ -728,7 +715,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       props.deploymentUuid,
       instancesToDisplayJzodSchema,
       objectListReportSection,
-      currentReportTargetEntityDefinition,
+      currentReportTargetEntity,
     ]
   );
   return (
@@ -788,7 +775,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       />
       {objectListReportSection &&
       currentReportTargetEntity &&
-      currentReportTargetEntityDefinition ? (
+      currentReportTargetEntity ? (
         !!tableColumnDefs ? (
           <div>
             <div
@@ -796,11 +783,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
             >
               <h3 style={{ margin: 0 }}>
                 {defaultLabel??
-                  currentReportTargetEntityDefinition?.name ??
+                  currentReportTargetEntity?.name ??
                   "No Entity Found!"
                   }
                 {/* {props.defaultlabel ??
-                  currentReportTargetEntityDefinition?.name ??
+                  currentReportTargetEntity?.name ??
                   "No Entity Found!"} */}
               </h3>
               <ThemedButton
@@ -824,11 +811,11 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 valueObjectEditMode="create"
                 isOpen={addObjectdialogFormIsOpen}
                 isAttributes={true}
-                label={defaultLabel ?? currentReportTargetEntityDefinition?.name}
+                label={defaultLabel ?? currentReportTargetEntity?.name}
                 defaultFormValuesObject={dialogOuterFormObject}
-                entityDefinition={currentReportTargetEntityDefinition}
+                entityDefinition={currentReportTargetEntity}
                 entityDefinitionJzodSchema={
-                  currentReportTargetEntityDefinition?.mlSchema as JzodObject
+                  currentReportTargetEntity?.mlSchema as JzodObject
                 }
                 foreignKeyObjects={foreignKeyObjects}
                 currentApplication={props.application}
@@ -854,7 +841,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   type={props.tableComponentReportType}
                   styles={props.styles}
                   currentEntity={currentReportTargetEntity}
-                  currentEntityDefinition={currentReportTargetEntityDefinition}
                   foreignKeyObjects={foreignKeyObjects}
                   currentModel={currentModel}
                   columnDefs={tableColumnDefs}

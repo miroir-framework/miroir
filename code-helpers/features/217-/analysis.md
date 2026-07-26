@@ -968,7 +968,6 @@ This phase must contain no architectural authority change—only the final vocab
 - Gate: `entityPresentModel.phase12.unit.test.ts`.
 
 **Still open in Phase 12:**
-- Migrate UI components off ED-shaped hub (separate follow-up after vocab).
 - Full non-regression gate.
 
 **Done in Phase 12 (Action field rename):**
@@ -984,6 +983,11 @@ This phase must contain no architectural authority change—only the final vocab
 - AI system prompts (`miroir-ai` + standalone duplicate): Entity present-model authority + EntityVersion dual-write vocabulary.
 - User-facing docs: core-concepts, defining-entities, entity API, api index, data-architecture, library tutorial, creating-applications, DOCUMENTATION-STRUCTURE, testing comment, AGENTS.md.
 - Left alone: `docs-OLD/`, LEGACY tutorials, feature analysis under `code-helpers/` (historical), proposals, schema path `entityDefinitionRoot`.
+
+**Done in Phase 12 (UI off ED hub):**
+- Report/grid/dialog/selector/`deleteCascade` no longer call `presentEntityAsRedundantEntityDefinition`.
+- EntityInstanceGrid / JsonObjectEditFormDialog accept Entity present-model carriers (`uuid` / `mlSchema`).
+- Hub kept exported `@deprecated` for non-UI (`modelEntityActionLiveResolve`).
 
 **Test gate (§11):**
 
