@@ -58,6 +58,12 @@ export class SqlDbStoreSection
     return this.sqlSchemaTableAccess[entityUuid]?.idAttribute ?? "uuid";
   }
 
+  // ##############################################################################################
+  /** Optional non-nullable attrs for stripping SQL NULL → absent (forceNullOptionalAttributeToUndefined). */
+  getOptionalNonNullableAttributesForEntity(entityUuid: string): string[] | undefined {
+    return this.sqlSchemaTableAccess[entityUuid]?.optionalNonNullableAttributes;
+  }
+
   // ######################################################################################
   async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear start, entities", this.getEntityUuids());

@@ -73,6 +73,7 @@ import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { AppStackIntegrationTestSession } from '../helpers/IntegrationTestSession.js';
 
 import {
+  entityApplicationEvolutionTraceEvent,
   entityEndpointVersion,
   entityEntity,
   entityEntityDefinition,
@@ -460,9 +461,13 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       //   ),
       undefined, // name to give to result
       undefined,
-      [entityEndpointVersion, entityEntity, entityEntityDefinition, entityMenu].sort((a, b) =>
-        a.name.localeCompare(b.name)
-      )
+      [
+        entityApplicationEvolutionTraceEvent,
+        entityEndpointVersion,
+        entityEntity,
+        entityEntityDefinition,
+        entityMenu,
+      ].sort((a, b) => a.name.localeCompare(b.name))
       // [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
     );
   });

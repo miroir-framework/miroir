@@ -932,8 +932,10 @@ Acceptance gate:
 - Slice: Postgres `SqlGenerator` PK/schema via `resolvePresentEntityFromModel` (no live `entityDefinitions.find`).
 - Slice: `SqlDbStoreSection` / `sqlDbEntityStoreSectionMixin` Sequelize mapping from Entity present-model fields (`fromMiroirPresentModelToSequelizeEntityDefinition`); ED optional fill-in only.
 - Slice: FS / IndexedDB boot + createStorage register `idAttribute` from Entity first.
-- Gate tests: `entityPresentModel.phase11.unit.test.ts` (3).
-- **Still open:** Model Action `entityDefinitionUuid` required; dual-write still on; DomainController/Deployment/ModelInitializer Entity+ED pairs; LocalCache ED PK path; UI hub `presentEntityAsRedundantEntityDefinition` (allowed temporary); stop dual-write after Action/store APIs are Entity-only.
+- Slice: Model Actions Entity-first (`modelEntityActionLiveResolve`): `entityDefinitionUuid` optional; resolve live ED by `entityUuid`; Entity-only alter/rename when no live ED; drop deletes Entity (+ live ED if found).
+- Slice: `Deployment` / `DomainController` reset|init synthesize ED from Entity when complete (`resolveOrSynthesizeEntityDefinitionForCreate`) instead of skipping/throwing.
+- Gate tests: `entityPresentModel.phase11` (3); `ModelEntityActionTransformer.phase11` (4).
+- **Still open:** dual-write still runs when a live ED exists (store `createEntity` API still takes ED); LocalCache still accepts ED PK registration as fallback; UI hub `presentEntityAsRedundantEntityDefinition` (allowed temporary); generated Action schemas still list `entityDefinitionUuid` (runtime optional); stop dual-write by default.
 
 ### Phase 12 — Final task: rename EntityDefinition to EntityVersion
 

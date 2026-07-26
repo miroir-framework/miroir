@@ -21,6 +21,8 @@ import {
   buildEvolutionBaselineCreateInstanceActions,
   EVOLUTION_TRACE_ENTITY_UUID,
 } from "../2_domain/evolutionTraceBaseline.js";
+import { resolveOrSynthesizeEntityDefinitionForCreate } from "./modelEntityActionLiveResolve.js";
+import { entityHasCompletePresentModel } from "./entityPresentModel.js";
 
 import {
   selfApplicationMiroir,
@@ -371,15 +373,22 @@ export function buildResetAndinitializeDeploymentActionSequence(
     const entityDefinition = filteredEntitiesMetaModel.entityDefinitions.find(
       (ed) => ed.entityUuid === entity.uuid,
     );
-    if (!entityDefinition) {
-      throw new Error(
-        `Entity definition not found for entity uuid: ${entity.uuid} (${entity.name})`,
-      );
+    // #217 Phase 11 — Entity with present-model fields does not require a live ED row.
+    if (entityDefinition) {
+      return { entity, entityDefinition };
     }
-    return {
-      entity,
-      entityDefinition,
-    };
+    if (entityHasCompletePresentModel(entity)) {
+      return {
+        entity,
+        entityDefinition: resolveOrSynthesizeEntityDefinitionForCreate(
+          entity,
+          filteredEntitiesMetaModel.entityDefinitions,
+        ),
+      };
+    }
+    throw new Error(
+      `Entity definition not found for entity uuid: ${entity.uuid} (${entity.name}) and Entity has no mlSchema`,
+    );
   });
 
   log.info(

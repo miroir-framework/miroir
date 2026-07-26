@@ -42,4 +42,15 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
     expect(fsSection).toContain("entity.idAttribute");
     expect(idbSection).toContain("entity.idAttribute");
   });
+
+  it("ModelEntityActionTransformer dropEntity no longer requires entityDefinitionUuid in source", () => {
+    const transformer = readFileSync(
+      join(REPO_ROOT, "packages/miroir-core/src/2_domain/ModelEntityActionTransformer.ts"),
+      "utf8",
+    );
+    expect(transformer).toContain("dropEntity missing entityUuid");
+    expect(transformer).not.toContain(
+      "dropEntity missing entityUuid or entityDefinitionUuid",
+    );
+  });
 });

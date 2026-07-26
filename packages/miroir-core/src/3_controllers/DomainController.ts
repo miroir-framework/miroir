@@ -78,6 +78,7 @@ import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGu
 import {
   resolveEntitiesToFetchOnRefresh,
 } from "../1_core/cacheRefreshPolicy.js";
+import { resolveOrSynthesizeEntityDefinitionForCreate } from "../1_core/modelEntityActionLiveResolve.js";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
 import {
   defaultMiroirModelEnvironment,
@@ -1195,12 +1196,20 @@ export class DomainController implements DomainControllerInterface {
               }
             }
             
-            // Match entities with their definitions
+            // Match entities with their definitions (#217 Phase 11: Entity-complete needs no live ED)
             if (model.entities) {
               for (const entity of model.entities) {
                 const entityDefinition = entityDefinitionMap.get(entity.uuid);
                 if (entityDefinition) {
                   entitiesToCreate.push({ entity, entityDefinition });
+                } else if (entity.mlSchema) {
+                  entitiesToCreate.push({
+                    entity,
+                    entityDefinition: resolveOrSynthesizeEntityDefinitionForCreate(
+                      entity,
+                      model.entityDefinitions ?? [],
+                    ),
+                  });
                 } else {
                   log.warn(
                     "handleModelAction resetModel: no entityDefinition found for entity",
@@ -1353,12 +1362,20 @@ export class DomainController implements DomainControllerInterface {
               }
             }
             
-            // Match entities with their definitions
+            // Match entities with their definitions (#217 Phase 11: Entity-complete needs no live ED)
             if (model.entities) {
               for (const entity of model.entities) {
                 const entityDefinition = entityDefinitionMap.get(entity.uuid);
                 if (entityDefinition) {
                   entitiesToCreate.push({ entity, entityDefinition });
+                } else if (entity.mlSchema) {
+                  entitiesToCreate.push({
+                    entity,
+                    entityDefinition: resolveOrSynthesizeEntityDefinitionForCreate(
+                      entity,
+                      model.entityDefinitions ?? [],
+                    ),
+                  });
                 } else {
                   log.warn(
                     "handleModelAction resetModel: no entityDefinition found for entity",

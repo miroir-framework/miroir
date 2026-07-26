@@ -769,6 +769,13 @@ export type {
   PersistEntityThenEntityDefinitionOps,
 } from "./1_core/modelEntityDualWritePersistence.js";
 export {
+  planAlterEntityAttributeMutation,
+  planRenameEntityMutation,
+  resolveLiveEntityDefinitionForAction,
+  resolveOrSynthesizeEntityDefinitionForCreate,
+} from "./1_core/modelEntityActionLiveResolve.js";
+export type { LiveEntityMutationPlan } from "./1_core/modelEntityActionLiveResolve.js";
+export {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   EntityPresentModelResolutionError,
   UNVERSIONED_APPLICATION_FIXTURE,
