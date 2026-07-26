@@ -83,7 +83,7 @@ export class IndexedDbStoreSection
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
@@ -95,8 +95,7 @@ export class IndexedDbStoreSection
       "Entities",
       this.localUuidIndexedDb.getSubLevels()
     );
-    if (entity.uuid != entityDefinition.entityUuid) {
-      // inconsistent input, raise exception
+    if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
       log.error(
         this.logHeader,
         "createStorageSpaceForInstancesOfEntity",
@@ -120,7 +119,7 @@ export class IndexedDbStoreSection
       }
     }
     // Register idAttribute for non-UUID PK entities (#217 Phase 11: Entity first)
-    const idAttr = entity.idAttribute ?? (entityDefinition as any).idAttribute ?? "uuid";
+    const idAttr = entity.idAttribute ?? entityDefinition?.idAttribute ?? "uuid";
     if (idAttr !== "uuid") {
       this.entityIdAttributes[entity.uuid] = idAttr;
     }

@@ -628,7 +628,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async createEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     const result = await this.modelStoreSection.createEntity(entity, entityDefinition);
     return Promise.resolve(result);
@@ -638,7 +638,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async createEntities(
     entities: {
       entity: Entity;
-      entityDefinition: EntityDefinition;
+      entityDefinition?: EntityDefinition;
     }[]
   ): Promise<Action2VoidReturnType> {
     const result = await this.modelStoreSection.createEntities(entities);

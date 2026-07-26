@@ -38,7 +38,7 @@ import {
   type CacheSegmentKind,
   type LocalCacheSegmentHeader,
 } from "miroir-core";
-import { entityDefinitionEntityDefinition, entityEntity, entityEntityDefinition, entitySelfApplication } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entitySelfApplication } from "miroir-test-app_deployment-miroir";
 
 import type { LocalCacheSliceState, LocalCacheSliceStateZone } from "./localCacheZustandInterface.js";
 import { currentModel } from "./Model.js";
@@ -143,7 +143,7 @@ function getIdAttributeForIndex(index: string): string | string[] {
 }
 
 /**
- * #217 Phase 7: register non-UUID PK from Entity (preferred) or EntityDefinition fallback.
+ * #217 Phase 11: register non-UUID PK from Entity present-model only.
  */
 function registerPresentModelSourceInLocalCache(
   deploymentUuid: string,
@@ -370,10 +370,7 @@ function handleInstanceAction(
         
         initializeLocalCacheSliceState(deploymentUuid, section, resolvedParentUuid, "current", state);
 
-        if (
-          resolvedParentUuid === entityEntity.uuid ||
-          resolvedParentUuid === entityEntityDefinition.uuid
-        ) {
+        if (resolvedParentUuid === entityEntity.uuid) {
           registerPresentModelSourceInLocalCache(deploymentUuid, instance);
         }
         
@@ -456,18 +453,10 @@ function handleLoadNewInstancesAction(
     const { kind: segment, projection } = resolveLoadCacheSegment(instanceCollection);
     const segmentHeader = buildLocalCacheSegmentHeader(segment, "fresh", projection);
     
-    // #217 Phase 7: register PK from Entity; EntityDefinition remains compatibility fallback.
+    // #217 Phase 11: register PK from Entity only (ED is historical).
     if (instanceCollection.parentUuid === entityEntity.uuid) {
       for (const entity of instanceCollection.instances ?? []) {
         registerPresentModelSourceInLocalCache(deploymentUuid, entity);
-      }
-    }
-    if (
-      instanceCollection.parentUuid === entityEntityDefinition.uuid ||
-      instanceCollection.parentUuid === entityDefinitionEntityDefinition.uuid
-    ) {
-      for (const entityDef of instanceCollection.instances ?? []) {
-        registerPresentModelSourceInLocalCache(deploymentUuid, entityDef);
       }
     }
     

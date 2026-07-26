@@ -932,10 +932,12 @@ Acceptance gate:
 - Slice: Postgres `SqlGenerator` PK/schema via `resolvePresentEntityFromModel` (no live `entityDefinitions.find`).
 - Slice: `SqlDbStoreSection` / `sqlDbEntityStoreSectionMixin` Sequelize mapping from Entity present-model fields (`fromMiroirPresentModelToSequelizeEntityDefinition`); ED optional fill-in only.
 - Slice: FS / IndexedDB boot + createStorage register `idAttribute` from Entity first.
-- Slice: Model Actions Entity-first (`modelEntityActionLiveResolve`): `entityDefinitionUuid` optional; resolve live ED by `entityUuid`; Entity-only alter/rename when no live ED; drop deletes Entity (+ live ED if found).
-- Slice: `Deployment` / `DomainController` reset|init synthesize ED from Entity when complete (`resolveOrSynthesizeEntityDefinitionForCreate`) instead of skipping/throwing.
-- Gate tests: `entityPresentModel.phase11` (3); `ModelEntityActionTransformer.phase11` (4).
-- **Still open:** dual-write still runs when a live ED exists (store `createEntity` API still takes ED); LocalCache still accepts ED PK registration as fallback; UI hub `presentEntityAsRedundantEntityDefinition` (allowed temporary); generated Action schemas still list `entityDefinitionUuid` (runtime optional); stop dual-write by default.
+- Slice: Model Actions Entity-first (`modelEntityActionLiveResolve`): `entityDefinitionUuid` optional; resolve live ED by `entityUuid`; Entity-only alter/rename when Entity complete (ED left historical); drop deletes Entity (+ live ED if found).
+- Slice: `createEntity` Entity-only when no ED supplied and Entity complete (`planCreateEntityMutation`); store `createEntity` / `createStorageSpaceForInstancesOfEntity` take optional ED; dual-write only when ED explicitly provided (bootstrap / legacy).
+- Slice: `Deployment` / `DomainController` reset|init Entity-only when no live ED (no synthesize).
+- Slice: LocalCache (redux + zustand) registers non-UUID PK adapters from Entity only (ED load/create no longer registers).
+- Gate tests: `entityPresentModel.phase11`; `ModelEntityActionTransformer.phase11`.
+- **Still open:** UI hub `presentEntityAsRedundantEntityDefinition` (allowed temporary); generated Action schemas still list `entityDefinition` / `entityDefinitionUuid` (runtime optional); store alter/rename still load ED by UUID when Action reaches store layer with ED uuid in payload.
 
 ### Phase 12 — Final task: rename EntityDefinition to EntityVersion
 

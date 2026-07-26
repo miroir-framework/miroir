@@ -10,6 +10,7 @@ import type {
 import { ModelEntityActionTransformer } from "../../src/2_domain/ModelEntityActionTransformer.js";
 import {
   planAlterEntityAttributeMutation,
+  planCreateEntityMutation,
   resolveLiveEntityDefinitionForAction,
 } from "../../src/1_core/modelEntityActionLiveResolve.js";
 
@@ -29,7 +30,41 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     expect(resolved?.uuid).toBe(bookDefinition.uuid);
   });
 
-  it("alterEntityAttribute without entityDefinitionUuid dual-writes when live ED exists", () => {
+  it("createEntity without entityDefinition emits Entity-only when Entity is complete", () => {
+    const action: ModelAction = {
+      actionType: "createEntity",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: {
+        application: defaultLibraryAppModel.applicationUuid,
+        entities: [
+          {
+            entity: bookEntity,
+            // Runtime Entity-only create (generated schema still lists entityDefinition).
+            entityDefinition: undefined as unknown as typeof bookDefinition,
+          },
+        ],
+      },
+    };
+    delete (action.payload.entities[0] as { entityDefinition?: unknown }).entityDefinition;
+
+    const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
+      "00000000-0000-4000-8000-000000000001",
+      action,
+      { ...defaultLibraryAppModel, entityDefinitions: [] } as MetaModel,
+    );
+    expect(Array.isArray(instanceActions)).toBe(true);
+    if (Array.isArray(instanceActions) && instanceActions[0]?.actionType === "createInstance") {
+      expect(instanceActions[0].payload.objects).toHaveLength(1);
+      expect(instanceActions[0].payload.objects[0].uuid).toBe(bookEntity.uuid);
+    }
+  });
+
+  it("plans Entity-only create when Entity is complete and no ED is supplied", () => {
+    const plan = planCreateEntityMutation(bookEntity);
+    expect(plan?.mode).toBe("entityOnly");
+  });
+
+  it("alterEntityAttribute updates Entity only when present model is complete (ED left historical)", () => {
     const action: ModelAction = {
       actionType: "alterEntityAttribute",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -41,7 +76,6 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
         addColumns: [{ name: "isbn11", definition: { type: "string" } }],
       },
     };
-    // Omit entityDefinitionUuid at runtime (cast) to prove Action no longer requires it.
     delete (action.payload as { entityDefinitionUuid?: string }).entityDefinitionUuid;
 
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
@@ -51,21 +85,18 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     );
     expect(Array.isArray(instanceActions)).toBe(true);
     if (Array.isArray(instanceActions) && instanceActions[0]?.actionType === "updateInstance") {
-      expect(instanceActions[0].payload.objects).toHaveLength(2);
+      expect(instanceActions[0].payload.objects).toHaveLength(1);
       const entity = instanceActions[0].payload.objects[0] as Entity;
       expect(entity.mlSchema?.definition).toHaveProperty("isbn11");
     }
   });
 
-  it("plans Entity-only alter when no live EntityDefinition exists", () => {
-    const entityOnlyModel = {
-      ...defaultLibraryAppModel,
-      entities: [bookEntity],
-      entityDefinitions: [],
-    } as MetaModel;
-    const plan = planAlterEntityAttributeMutation(entityOnlyModel, bookEntity.uuid, {
-      addColumns: [{ name: "isbnOnly", definition: { type: "string" } }],
-    });
+  it("plans Entity-only alter when Entity is complete even if live ED exists", () => {
+    const plan = planAlterEntityAttributeMutation(
+      defaultLibraryAppModel as MetaModel,
+      bookEntity.uuid,
+      { addColumns: [{ name: "isbnOnly", definition: { type: "string" } }] },
+    );
     expect(plan?.mode).toBe("entityOnly");
     if (plan?.mode === "entityOnly") {
       expect(plan.entity.mlSchema?.definition).toHaveProperty("isbnOnly");

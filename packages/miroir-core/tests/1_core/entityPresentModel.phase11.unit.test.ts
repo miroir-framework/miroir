@@ -53,4 +53,54 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
       "dropEntity missing entityUuid or entityDefinitionUuid",
     );
   });
+
+  it("createEntity Action path uses planCreateEntityMutation (Entity-only when complete)", () => {
+    const transformer = readFileSync(
+      join(REPO_ROOT, "packages/miroir-core/src/2_domain/ModelEntityActionTransformer.ts"),
+      "utf8",
+    );
+    expect(transformer).toContain("planCreateEntityMutation");
+    expect(transformer).not.toContain("resolveOrSynthesizeEntityDefinitionForCreate");
+  });
+
+  it("store createEntity accepts optional EntityDefinition (filesystem + interface)", () => {
+    const iface = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerInterface.ts",
+      ),
+      "utf8",
+    );
+    const fsMixin = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-store-filesystem/src/4_services/FileSystemEntityStoreSectionMixin.ts",
+      ),
+      "utf8",
+    );
+    expect(iface).toMatch(/createEntity\(\s*entity:Entity,\s*entityDefinition\?: EntityDefinition/);
+    expect(fsMixin).toContain("Entity-only when ED omitted");
+  });
+
+  it("LocalCache registers PK adapters from Entity only (not EntityDefinition)", () => {
+    const redux = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-localcache-redux/src/4_services/localCache/LocalCacheSlice.ts",
+      ),
+      "utf8",
+    );
+    const zustand = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-localcache-zustand/src/4_services/localCache/LocalCacheSlice.ts",
+      ),
+      "utf8",
+    );
+    expect(redux).toContain("register PK from Entity only");
+    expect(zustand).toContain("register PK from Entity only");
+    expect(redux).not.toMatch(
+      /parentUuid === entityEntityDefinition\.uuid[\s\S]{0,120}registerEntityAdapterFromPresentModelSource/,
+    );
+  });
 });

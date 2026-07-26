@@ -1,4 +1,4 @@
-import { JzodElement } from "miroir-core";
+import type { JzodElement } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 /**
  * A row from information_schema.columns as returned by a postgres query or CSV export.

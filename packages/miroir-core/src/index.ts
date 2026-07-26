@@ -770,6 +770,7 @@ export type {
 } from "./1_core/modelEntityDualWritePersistence.js";
 export {
   planAlterEntityAttributeMutation,
+  planCreateEntityMutation,
   planRenameEntityMutation,
   resolveLiveEntityDefinitionForAction,
   resolveOrSynthesizeEntityDefinitionForCreate,

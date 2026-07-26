@@ -200,7 +200,7 @@ export class SqlDbStoreSection
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
       {},

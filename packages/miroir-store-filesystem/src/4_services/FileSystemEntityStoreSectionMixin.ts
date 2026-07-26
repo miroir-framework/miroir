@@ -78,9 +78,9 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
-    // #217 Phase 6: Entity then EntityDefinition; compensate on ED failure (no single artifact).
-    async createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<Action2VoidReturnType> {
-      if (entity.uuid != entityDefinition.entityUuid) {
+    // #217 Phase 6/11: Entity then optional EntityDefinition; Entity-only when ED omitted.
+    async createEntity(entity: Entity, entityDefinition?: EntityDefinition): Promise<Action2VoidReturnType> {
+      if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
         log.error(
           this.logHeader,
           "createEntity",
@@ -91,6 +91,25 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
           "createEntity failed: entity.uuid != entityDefinition.entityUuid",
         );
       }
+      if (!entityDefinition) {
+        if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
+          log.warn(
+            this.logHeader,
+            "createEntity",
+            entity.name,
+            "already existing entity",
+            entity.uuid,
+          );
+        } else {
+          await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
+        }
+        const entities = fs.readdirSync(this.directory);
+        if (!entities.includes(entity.uuid)) {
+          fs.mkdirSync(path.join(this.directory, entity.uuid));
+        }
+        return this.upsertInstance(entityEntity.uuid, entity);
+      }
+
       const pair = normalizeCreateEntityPair(entity, entityDefinition);
       if (this.dataStore.getEntityUuids().includes(pair.entity.uuid)) {
         log.warn(
@@ -132,7 +151,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     async createEntities(
       entities: {
         entity:Entity,
-        entityDefinition: EntityDefinition,
+        entityDefinition?: EntityDefinition,
       }[]
     ): Promise<Action2VoidReturnType> {
       for (const e of entities) {

@@ -33,7 +33,7 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
   }
   createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
@@ -63,10 +63,10 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
   existsEntity(entityUuid: string): boolean {
     throw new Error("Method not implemented.");
   }
-  createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<Action2VoidReturnType> {
+  createEntity(entity: Entity, entityDefinition?: EntityDefinition): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  createEntities(entities:{entity: Entity, entityDefinition: EntityDefinition}[]): Promise<Action2VoidReturnType> {
+  createEntities(entities:{entity: Entity, entityDefinition?: EntityDefinition}[]): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
   renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType> {

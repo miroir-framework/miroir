@@ -63,7 +63,7 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
     }
   });
 
-  it("alterEntityAttribute updates Entity and EntityDefinition together", () => {
+  it("alterEntityAttribute updates Entity only when present model is complete", () => {
     const action: ModelAction = {
       actionType: "alterEntityAttribute",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -83,16 +83,13 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
     expect(Array.isArray(instanceActions)).toBe(true);
     if (Array.isArray(instanceActions) && instanceActions[0].actionType === "updateInstance") {
       const objects = instanceActions[0].payload.objects;
-      expect(objects).toHaveLength(2);
+      expect(objects).toHaveLength(1);
       const entity = objects[0] as Entity;
-      const entityDefinition = objects[1] as EntityDefinition;
       expect(entity.mlSchema?.definition).toHaveProperty("isbn");
-      expect(entityDefinition.mlSchema.definition).toHaveProperty("isbn");
-      expect(compareEntityPresentModelDefinitions(entity, entityDefinition).equal).toBe(true);
     }
   });
 
-  it("renameEntity renames both Entity and EntityDefinition", () => {
+  it("renameEntity renames Entity only when present model is complete", () => {
     const action: ModelAction = {
       actionType: "renameEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -111,7 +108,7 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
     expect(Array.isArray(instanceActions)).toBe(true);
     if (Array.isArray(instanceActions) && instanceActions[0].actionType === "updateInstance") {
       const objects = instanceActions[0].payload.objects as Array<{ name: string }>;
-      expect(objects.map((object) => object.name)).toEqual(["Volume", "Volume"]);
+      expect(objects.map((object) => object.name)).toEqual(["Volume"]);
     }
   });
 

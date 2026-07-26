@@ -14,13 +14,10 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
 
 import {
-  normalizeCreateEntityPair,
-} from "../1_core/modelEntityDualWrite.js";
-import {
   planAlterEntityAttributeMutation,
+  planCreateEntityMutation,
   planRenameEntityMutation,
   resolveLiveEntityDefinitionForAction,
-  resolveOrSynthesizeEntityDefinitionForCreate,
 } from "../1_core/modelEntityActionLiveResolve.js";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -41,18 +38,28 @@ export class ModelEntityActionTransformer{
   ):TransformerReturnType<InstanceAction[]> {
     switch (modelAction.actionType) {
       case "createEntity": {
-        const normalizedPairs = modelAction.payload.entities.map((pair) => {
+        const objects: EntityInstance[] = [];
+        for (const pair of modelAction.payload.entities) {
           const entity = pair.entity as Entity;
-          const entityDefinition =
-            (pair.entityDefinition as EntityDefinition | undefined) ??
-            resolveOrSynthesizeEntityDefinitionForCreate(
-              entity,
-              currentModel.entityDefinitions ?? [],
+          const entityDefinition = pair.entityDefinition as EntityDefinition | undefined;
+          const plan = planCreateEntityMutation(entity, entityDefinition);
+          if (!plan) {
+            return new TransformerFailure({
+              queryFailure: "FailedTransformer",
+              failureMessage:
+                "modelActionToInstanceAction createEntity requires complete Entity.mlSchema or an entityDefinition",
+              query: { modelAction, entityUuid: entity.uuid } as any,
+            });
+          }
+          if (plan.mode === "dualWrite") {
+            objects.push(
+              plan.pair.entity as EntityInstance,
+              plan.pair.entityDefinition as EntityInstance,
             );
-          // #217 Phase 11 — when caller supplies Entity-only and we synthesized ED,
-          // still dual-write for store API compatibility during transition.
-          return normalizeCreateEntityPair(entity, entityDefinition);
-        });
+          } else {
+            objects.push(plan.entity as EntityInstance);
+          }
+        }
         return [
           {
             actionType: "createInstance",
@@ -60,12 +67,7 @@ export class ModelEntityActionTransformer{
             payload: {
               application: modelAction.payload.application,
               applicationSection: "model",
-              objects: [
-                ...normalizedPairs.flatMap((pair) => [
-                  pair.entity as EntityInstance,
-                  pair.entityDefinition as EntityInstance,
-                ]),
-              ],
+              objects,
             }
           }
         ];

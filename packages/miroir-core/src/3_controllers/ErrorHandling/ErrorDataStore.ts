@@ -36,7 +36,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   }
   createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityDefinition?: EntityDefinition
   ): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }

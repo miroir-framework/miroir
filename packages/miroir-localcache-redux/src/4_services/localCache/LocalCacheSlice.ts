@@ -45,7 +45,6 @@ import {
 } from "miroir-core";
 import {
   entityEntity,
-  entityEntityDefinition,
   entitySelfApplication,
 } from "miroir-test-app_deployment-miroir";
 
@@ -239,8 +238,8 @@ function getEntityIdAttribute(entityInstancesLocationIndex: string): string | st
 
 // ##########################################################################################
 /**
- * #217 Phase 7: register non-UUID PK adapters from Entity (preferred) or EntityDefinition
- * (entityUuid + idAttribute) as compatibility fallback.
+ * #217 Phase 11: register non-UUID PK adapters from Entity present-model only.
+ * EntityDefinition is historical and no longer registers live PK adapters.
  */
 function registerEntityAdapterFromPresentModelSource(
   deploymentUuid: string,
@@ -366,15 +365,10 @@ function loadNewEntityInstancesInLocalCache(
     "instanceCollection",
     instanceCollection
   );
-  // #217 Phase 7: register PK from Entity; EntityDefinition remains compatibility fallback.
+  // #217 Phase 11: register PK from Entity only (ED is historical).
   if (instanceCollection.parentUuid === entityEntity.uuid) {
     for (const entity of instanceCollection.instances ?? []) {
       registerEntityAdapterFromPresentModelSource(deploymentUuid, entity);
-    }
-  }
-  if (instanceCollection.parentUuid === entityEntityDefinition.uuid) {
-    for (const entityDefinition of instanceCollection.instances ?? []) {
-      registerEntityAdapterFromPresentModelSource(deploymentUuid, entityDefinition);
     }
   }
   const { kind: segment, projection } = resolveLoadCacheSegment(instanceCollection);
@@ -592,11 +586,8 @@ function handleInstanceAction(
             resolvedParentUuid
           );
 
-          if (
-            resolvedParentUuid === entityEntity.uuid ||
-            resolvedParentUuid === entityEntityDefinition.uuid
-          ) {
-            // Entity (preferred) or EntityDefinition (fallback) carrying idAttribute
+          if (resolvedParentUuid === entityEntity.uuid) {
+            // Entity carrying idAttribute (present-model authority)
             registerEntityAdapterFromPresentModelSource(deploymentUuid, instance);
 
             if (!instanceAction.payload.applicationSection) {

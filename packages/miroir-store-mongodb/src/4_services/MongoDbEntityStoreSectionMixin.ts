@@ -82,9 +82,9 @@ export function MongoDbEntityStoreSectionMixin<TBase extends typeof MixedMongoDb
     }
 
     // #############################################################################################
-    // #217 Phase 6: Entity then EntityDefinition; compensate on ED failure.
-    async createEntity(entity: Entity, entityDefinition: EntityDefinition): Promise<Action2VoidReturnType> {
-      if (entity.uuid != entityDefinition.entityUuid) {
+    // #217 Phase 6/11: Entity then optional EntityDefinition; Entity-only when ED omitted.
+    async createEntity(entity: Entity, entityDefinition?: EntityDefinition): Promise<Action2VoidReturnType> {
+      if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
         log.error(
           this.logHeader,
           "createEntity",
@@ -94,6 +94,20 @@ export function MongoDbEntityStoreSectionMixin<TBase extends typeof MixedMongoDb
           "FailedToCreateStore",
           "createEntity failed: entity.uuid != entityDefinition.entityUuid",
         );
+      }
+      if (!entityDefinition) {
+        if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
+          log.warn(
+            this.logHeader,
+            "createEntity",
+            entity.name,
+            "already existing collection",
+            entity.uuid,
+          );
+        } else {
+          await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
+        }
+        return this.upsertInstance(entityEntity.uuid, entity);
       }
       const pair = normalizeCreateEntityPair(entity, entityDefinition);
       if (this.dataStore.getEntityUuids().includes(pair.entity.uuid)) {
@@ -137,7 +151,7 @@ export function MongoDbEntityStoreSectionMixin<TBase extends typeof MixedMongoDb
     async createEntities(
       entities: {
         entity: Entity,
-        entityDefinition: EntityDefinition,
+        entityDefinition?: EntityDefinition,
       }[]
     ): Promise<Action2VoidReturnType> {
       for (const e of entities) {

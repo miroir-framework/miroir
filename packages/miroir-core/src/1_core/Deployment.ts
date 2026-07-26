@@ -21,7 +21,6 @@ import {
   buildEvolutionBaselineCreateInstanceActions,
   EVOLUTION_TRACE_ENTITY_UUID,
 } from "../2_domain/evolutionTraceBaseline.js";
-import { resolveOrSynthesizeEntityDefinitionForCreate } from "./modelEntityActionLiveResolve.js";
 import { entityHasCompletePresentModel } from "./entityPresentModel.js";
 
 import {
@@ -230,7 +229,8 @@ export function createDeploymentCompositeAction(
 export interface EntityDefinitionCouple {
   // entity: Entity;
   entity: Entity;
-  entityDefinition: EntityDefinition;
+  /** Optional during #217 Phase 11 — Entity-only create when present model is complete. */
+  entityDefinition?: EntityDefinition;
 }
 export type ApplicationEntitiesDefinitionAndInstances = {
   instances: EntityInstance[];
@@ -378,13 +378,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
       return { entity, entityDefinition };
     }
     if (entityHasCompletePresentModel(entity)) {
-      return {
-        entity,
-        entityDefinition: resolveOrSynthesizeEntityDefinitionForCreate(
-          entity,
-          filteredEntitiesMetaModel.entityDefinitions,
-        ),
-      };
+      return { entity };
     }
     throw new Error(
       `Entity definition not found for entity uuid: ${entity.uuid} (${entity.name}) and Entity has no mlSchema`,
@@ -452,7 +446,8 @@ export function buildResetAndinitializeDeploymentActionSequence(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            entities: entities,
+            // #217 Phase 11 — entityDefinition optional for Entity-only creates (generated schema still requires it).
+            entities: entities as { entity: Entity; entityDefinition: EntityDefinition }[],
           },
         },
         // add reports, menus, etc. from metaModel

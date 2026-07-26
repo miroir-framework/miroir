@@ -99,10 +99,10 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    // #217 Phase 6: Entity then EntityDefinition inside a Sequelize transaction when possible.
+    // #217 Phase 6/11: Entity then optional EntityDefinition; Entity-only when ED omitted.
     async createEntity(
       entity: Entity,
-      entityDefinition: EntityDefinition
+      entityDefinition?: EntityDefinition
     ): Promise<Action2VoidReturnType> {
       log.info(
         this.logHeader,
@@ -113,7 +113,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         "sqlEntities",
         this.dataStore.getEntityUuids()
       );
-      if (entity.uuid != entityDefinition.entityUuid) {
+      if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
         log.error(
           this.logHeader,
           "createEntity",
@@ -128,6 +128,36 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
             { entity, entityDefinition } // errorContext
           ),
         );
+      }
+
+      if (!entityDefinition) {
+        await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
+        if (!this.sqlSchemaTableAccess?.[entityEntity.uuid]) {
+          return Promise.resolve(
+            new Action2Error(
+              "FailedToCreateStore",
+              "createEntity failed: could not insert Entity in model schema.",
+              undefined,
+              undefined,
+              { entity },
+            ),
+          );
+        }
+        try {
+          await this.sqlSchemaTableAccess[entityEntity.uuid].sequelizeModel.upsert(entity as any);
+        } catch (error) {
+          return Promise.resolve(
+            new Action2Error(
+              "FailedToCreateStore",
+              `createEntity Entity-only write failed: ${(error as Error).message}`,
+              ["createEntity"],
+              undefined,
+              { entity, error },
+            ),
+          );
+        }
+        log.debug(this.logHeader, "createEntity", "done Entity-only for", entity.name);
+        return Promise.resolve(ACTION_OK);
       }
 
       const pair = normalizeCreateEntityPair(entity, entityDefinition);
@@ -189,7 +219,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     async createEntities(
       entities: {
         entity: Entity;
-        entityDefinition: EntityDefinition;
+        entityDefinition?: EntityDefinition;
       }[]
     ): Promise<Action2VoidReturnType> {
       for (const e of entities) {

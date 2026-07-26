@@ -78,7 +78,6 @@ import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGu
 import {
   resolveEntitiesToFetchOnRefresh,
 } from "../1_core/cacheRefreshPolicy.js";
-import { resolveOrSynthesizeEntityDefinitionForCreate } from "../1_core/modelEntityActionLiveResolve.js";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
 import {
   defaultMiroirModelEnvironment,
@@ -1186,7 +1185,7 @@ export class DomainController implements DomainControllerInterface {
             // });
             
             // Combine entities with their definitions
-            const entitiesToCreate: { entity: Entity; entityDefinition: EntityDefinition }[] = [];
+            const entitiesToCreate: { entity: Entity; entityDefinition?: EntityDefinition }[] = [];
             
             // Create a map of entityDefinitions by entityUuid for quick lookup
             const entityDefinitionMap = new Map<string, EntityDefinition>();
@@ -1203,13 +1202,7 @@ export class DomainController implements DomainControllerInterface {
                 if (entityDefinition) {
                   entitiesToCreate.push({ entity, entityDefinition });
                 } else if (entity.mlSchema) {
-                  entitiesToCreate.push({
-                    entity,
-                    entityDefinition: resolveOrSynthesizeEntityDefinitionForCreate(
-                      entity,
-                      model.entityDefinitions ?? [],
-                    ),
-                  });
+                  entitiesToCreate.push({ entity });
                 } else {
                   log.warn(
                     "handleModelAction resetModel: no entityDefinition found for entity",
@@ -1235,7 +1228,9 @@ export class DomainController implements DomainControllerInterface {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionResetModel.payload.application,
-                    entities: [{ entity, entityDefinition }]
+                    entities: entityDefinition
+                      ? [{ entity, entityDefinition }]
+                      : ([{ entity }] as any),
                   }
                 };
                 
@@ -1352,7 +1347,7 @@ export class DomainController implements DomainControllerInterface {
             });
             
             // Combine entities with their definitions
-            const entitiesToCreate: { entity: Entity; entityDefinition: EntityDefinition }[] = [];
+            const entitiesToCreate: { entity: Entity; entityDefinition?: EntityDefinition }[] = [];
             
             // Create a map of entityDefinitions by entityUuid for quick lookup
             const entityDefinitionMap = new Map<string, EntityDefinition>();
@@ -1369,13 +1364,7 @@ export class DomainController implements DomainControllerInterface {
                 if (entityDefinition) {
                   entitiesToCreate.push({ entity, entityDefinition });
                 } else if (entity.mlSchema) {
-                  entitiesToCreate.push({
-                    entity,
-                    entityDefinition: resolveOrSynthesizeEntityDefinitionForCreate(
-                      entity,
-                      model.entityDefinitions ?? [],
-                    ),
-                  });
+                  entitiesToCreate.push({ entity });
                 } else {
                   log.warn(
                     "handleModelAction resetModel: no entityDefinition found for entity",
@@ -1401,7 +1390,9 @@ export class DomainController implements DomainControllerInterface {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionInitModel.payload.application,
-                    entities: [{ entity, entityDefinition }]
+                    entities: entityDefinition
+                      ? [{ entity, entityDefinition }]
+                      : ([{ entity }] as any),
                   }
                 };
                 

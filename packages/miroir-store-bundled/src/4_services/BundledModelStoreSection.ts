@@ -90,7 +90,7 @@ export class BundledModelStoreSection
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     _entity: Entity,
-    _entityDefinition: EntityDefinition,
+    _entityDefinition?: EntityDefinition,
   ): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }
@@ -115,14 +115,14 @@ export class BundledModelStoreSection
 
   async createEntity(
     _entity: Entity,
-    _entityDefinition: EntityDefinition,
+    _entityDefinition?: EntityDefinition,
   ): Promise<Action2VoidReturnType> {
-    // #217 Phase 6: bundled is read-only — dual-write N/A (no mutation of model assets).
+    // #217 Phase 6/11: bundled is read-only — dual-write N/A (no mutation of model assets).
     return Promise.resolve(ACTION_OK);
   }
 
   async createEntities(
-    _entities: { entity: Entity; entityDefinition: EntityDefinition }[],
+    _entities: { entity: Entity; entityDefinition?: EntityDefinition }[],
   ): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }
