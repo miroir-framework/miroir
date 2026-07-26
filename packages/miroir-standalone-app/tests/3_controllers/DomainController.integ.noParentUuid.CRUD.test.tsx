@@ -152,7 +152,7 @@ const noParentUuidTestMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
 };
 
 // ##############################################################################################
@@ -433,7 +433,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
           applicationVersions: [],
           reports: [],
           storedQueries: [],
-          applicationVersionCrossEntityDefinition: [],
+          applicationVersionCrossEntityVersion: [],
           applications: [],
         } as MetaModel,
         [entityPublisher.uuid],

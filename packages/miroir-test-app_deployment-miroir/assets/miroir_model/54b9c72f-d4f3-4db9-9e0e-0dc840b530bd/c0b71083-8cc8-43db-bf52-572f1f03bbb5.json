@@ -6,7 +6,7 @@
   "entityUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
   "conceptLevel": "Model",
   "name": "ApplicationVersionCrossEntityVersion",
-  "description": "The mapping among SelfApplication Versions and Entity Definitions",
+  "description": "The mapping among SelfApplication Versions and Entity Versions",
   "icon": "Interests",
   "cache": {
     "cacheAllInstancesOnRefresh": true
@@ -93,7 +93,7 @@
           }
         }
       },
-      "entity": {
+      "entityVersion": {
         "type": "uuid",
         "tag": {
           "value": {
@@ -101,8 +101,8 @@
             "display": {
               "editable": false
             },
-            "defaultLabel": "Entity",
-            "description": "The Entity definition of this mapping.",
+            "defaultLabel": "Entity Version",
+            "description": "The EntityVersion of this mapping.",
             "foreignKeyParams": {
               "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
               "targetEntityOrderInstancesBy": "name"

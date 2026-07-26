@@ -141,7 +141,7 @@
                 ],
                 "runners": [],
                 "themes": [],
-                "applicationVersionCrossEntityDefinition": []
+                "applicationVersionCrossEntityVersion": []
               }
             },
             "transformerParams": {},
@@ -265,7 +265,7 @@
               ],
               "runners": [],
               "themes": [],
-              "applicationVersionCrossEntityDefinition": []
+              "applicationVersionCrossEntityVersion": []
             }
           }
         ]

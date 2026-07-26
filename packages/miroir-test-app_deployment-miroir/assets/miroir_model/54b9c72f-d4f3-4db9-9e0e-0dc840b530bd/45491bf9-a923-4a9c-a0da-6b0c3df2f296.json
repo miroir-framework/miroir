@@ -188,7 +188,7 @@
         "definition": [
           "instanceParentDefinitionVersion",
           "actionPayload",
-          "applicationVersionCrossEntityDefinition",
+          "applicationVersionCrossEntityVersion",
           "unresolved"
         ],
         "tag": {

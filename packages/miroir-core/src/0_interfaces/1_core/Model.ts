@@ -16,10 +16,14 @@ export interface MiroirModel {
   [parentUuid: string]: {[uuid:string]:EntityInstance}
 }
 
-export const ApplicationVersionCrossEntityDefinitionSchema = entityInstance.extend({
+// #217 Phase 12
+export const ApplicationVersionCrossEntityVersionSchema = entityInstance.extend({
   applicationVersion: z.string().uuid(),
-  entityDefinition: z.string().uuid(),
+  entityVersion: z.string().uuid(),
 });
+/** @deprecated Use ApplicationVersionCrossEntityVersionSchema */
+export const ApplicationVersionCrossEntityDefinitionSchema =
+  ApplicationVersionCrossEntityVersionSchema;
 
 export type DeploymentUuidToReportsEntitiesDefinitions = {
   model: {

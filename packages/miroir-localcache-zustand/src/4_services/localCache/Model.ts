@@ -120,7 +120,7 @@ export function currentModel(
       applicationVersions: (applicationVersions && applicationVersions.entities
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],
-      applicationVersionCrossEntityDefinition: [],
+      applicationVersionCrossEntityVersion: [],
       // configuration: (configuration && configuration.entities
       //   ? Object.values(configuration.entities)
       //   : []) as StoreBasedConfiguration[],

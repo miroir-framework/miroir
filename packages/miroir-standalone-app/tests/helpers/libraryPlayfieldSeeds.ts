@@ -172,7 +172,7 @@ export const compositePKTestMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applications: [],
   tests: [],
 };
@@ -268,7 +268,7 @@ export const codeNumberTestMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applications: [],
   tests: [],
 };
@@ -307,7 +307,7 @@ export const publisherOnlyTestMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applications: [],
   tests: [],
 };
@@ -390,7 +390,7 @@ export const noParentUuidTestMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applications: [],
   tests: [],
 };
@@ -549,7 +549,7 @@ export const publisherAndCountryTestMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applications: [],
   tests: [],
 };
@@ -646,7 +646,7 @@ export const emptyLibraryPlayfieldMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applications: [],
   tests: [],
 };

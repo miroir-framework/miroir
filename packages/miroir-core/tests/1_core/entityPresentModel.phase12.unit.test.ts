@@ -47,6 +47,32 @@ const ENTITY_PRESENT_MODEL = join(
 
 const INDEX_TS = join(REPO_ROOT, "packages/miroir-core/src/index.ts");
 
+const DEPLOYMENT_INDEX = join(
+  REPO_ROOT,
+  "packages/miroir-test-app_deployment-miroir/index.ts",
+);
+
+const REPORT_ENTITY_VERSION_LIST = join(
+  REPO_ROOT,
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+  "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "f9aff35d-8636-4519-8361-c7648e0ddc68.json",
+);
+
+const REPORT_ENTITY_VERSION_DETAILS = join(
+  REPO_ROOT,
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+  "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "acd55b04-84df-427e-b219-cf0e01a6881b.json",
+);
+
+const MENU_MIROIR = join(
+  REPO_ROOT,
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+  "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  "eaac459c-6c2b-475c-8ae4-c6c3032dae00.json",
+);
+
 describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", () => {
   it("bootstrap Entity formerly EntityDefinition is named EntityVersion (UUID preserved)", () => {
     const asset = JSON.parse(readFileSync(ENTITY_ENTITY_VERSION_ASSET, "utf8"));
@@ -72,7 +98,9 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
   it("fundamental schema builder registers entityVersion context key", () => {
     const src = readFileSync(FUNDAMENTAL_SCHEMA_BUILDER, "utf8");
     expect(src).toMatch(/\bentityVersion\s*:/);
-    expect(src).toContain("entityVersion: entityDefinitionEntityDefinitionV1.mlSchema");
+    expect(src).toMatch(
+      /entityVersion:\s*(entityVersionEntityVersionV1|entityDefinitionEntityDefinitionV1)\.mlSchema/,
+    );
   });
 
   it("generated types export EntityVersion and deprecated EntityDefinition alias", () => {
@@ -82,6 +110,72 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
     // Public surface keeps EntityDefinition as deprecated alias for one release
     expect(index).toMatch(/EntityDefinition/);
     expect(index).toMatch(/EntityVersion/);
+  });
+
+  it("deployment package exports EntityVersion symbols with deprecated EntityDefinition aliases", () => {
+    const src = readFileSync(DEPLOYMENT_INDEX, "utf8");
+    expect(src).toMatch(/\bas entityEntityVersion\b/);
+    expect(src).toMatch(/\bas entityEntityDefinition\b/); // deprecated alias
+    expect(src).toMatch(/\bas entityVersionEntityVersion\b/);
+    expect(src).toMatch(/\bas entityDefinitionEntityDefinition\b/); // deprecated alias
+    expect(src).toMatch(/\bas entityApplicationVersionCrossEntityVersion\b/);
+    expect(src).toMatch(/\bas entityApplicationVersionCrossEntityDefinition\b/); // deprecated alias
+    expect(src).toMatch(/\bas reportEntityVersionList\b/);
+    expect(src).toMatch(/\bas reportEntityDefinitionList\b/); // deprecated alias
+  });
+
+  it("EntityVersion list/details reports use Entity Version display vocabulary", () => {
+    const list = JSON.parse(readFileSync(REPORT_ENTITY_VERSION_LIST, "utf8"));
+    expect(list.name).toBe("EntityVersionList");
+    expect(list.defaultLabel).toMatch(/Entity Versions?/i);
+    expect(list.definition.extractorTemplates.entityDefinitions.parentName).toBe("EntityVersion");
+    expect(list.definition.section.definition.parentName).toBe("EntityVersion");
+    expect(list.definition.section.definition.label).toMatch(/Entity Versions?/i);
+
+    const details = JSON.parse(readFileSync(REPORT_ENTITY_VERSION_DETAILS, "utf8"));
+    expect(details.name).toBe("EntityVersionDetails");
+    expect(details.defaultLabel).toMatch(/Entity Version/i);
+  });
+
+  it("Miroir menu labels Entity Versions (not Entity Definitions)", () => {
+    const menu = JSON.parse(readFileSync(MENU_MIROIR, "utf8"));
+    const text = JSON.stringify(menu);
+    expect(text).toMatch(/Entity Versions/);
+    expect(text).not.toMatch(/Entity Definitions/);
+  });
+
+  it("MetaModel uses applicationVersionCrossEntityVersion with entityVersion FK", () => {
+    const schemaBuilder = readFileSync(FUNDAMENTAL_SCHEMA_BUILDER, "utf8");
+    expect(schemaBuilder).toMatch(/\bapplicationVersionCrossEntityVersion\s*:/);
+    expect(schemaBuilder).toMatch(
+      /applicationVersionCrossEntityVersion:[\s\S]*?\bentityVersion\s*:/,
+    );
+    // Old MetaModel collection key must not remain as the live schema key
+    expect(schemaBuilder).not.toMatch(
+      /^\s*applicationVersionCrossEntityDefinition\s*:/m,
+    );
+
+    const generated = readFileSync(FUNDAMENTAL_TYPE, "utf8");
+    expect(generated).toMatch(/applicationVersionCrossEntityVersion:/);
+    expect(generated).toMatch(
+      /applicationVersionCrossEntityVersion:[\s\S]*?entityVersion:\s*string/,
+    );
+  });
+
+  it("AVCED data instances store entityVersion (not entityDefinition) FK", () => {
+    const sample = JSON.parse(
+      readFileSync(
+        join(
+          REPO_ROOT,
+          "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+          "8bec933d-6287-4de7-8a88-5c24216de9f4",
+          "48644159-66d4-426d-b38d-d083fd455e7b.json",
+        ),
+        "utf8",
+      ),
+    );
+    expect(sample.entityVersion).toBe("bdd7ad43-f0fc-4716-90c1-87454c40dd95");
+    expect(sample.entityDefinition).toBeUndefined();
   });
 
   it("UI hub presentEntityAsRedundantEntityDefinition remains (deferred off vocabulary slice)", () => {

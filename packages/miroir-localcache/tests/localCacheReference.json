@@ -3015,49 +3015,49 @@
           "parentName": "ApplicationVersionCrossEntityVersion",
           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
           "applicationVersion": "695826c2-aefa-4f5f-a131-dee46fe21c13",
-          "entityDefinition": "381ab1be-337f-4198-b1d3-f686867fc1dd"
+          "entityVersion": "381ab1be-337f-4198-b1d3-f686867fc1dd"
         },
         "48644159-66d4-426d-b38d-d083fd455e7b": {
           "uuid": "48644159-66d4-426d-b38d-d083fd455e7b",
           "parentName": "ApplicationVersionCrossEntityVersion",
           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
           "applicationVersion": "695826c2-aefa-4f5f-a131-dee46fe21c13",
-          "entityDefinition": "bdd7ad43-f0fc-4716-90c1-87454c40dd95"
+          "entityVersion": "bdd7ad43-f0fc-4716-90c1-87454c40dd95"
         },
         "4aaba993-f0a1-4a26-b1ea-13b0ad532685": {
           "uuid": "4aaba993-f0a1-4a26-b1ea-13b0ad532685",
           "parentName": "ApplicationVersionCrossEntityVersion",
           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
           "applicationVersion": "695826c2-aefa-4f5f-a131-dee46fe21c13",
-          "entityDefinition": "69bf7c03-a1df-4d1c-88c1-44363feeea87"
+          "entityVersion": "69bf7c03-a1df-4d1c-88c1-44363feeea87"
         },
         "9086f49a-0e81-4902-81f3-560186dee334": {
           "uuid": "9086f49a-0e81-4902-81f3-560186dee334",
           "parentName": "ApplicationVersionCrossEntityVersion",
           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
           "applicationVersion": "695826c2-aefa-4f5f-a131-dee46fe21c13",
-          "entityDefinition": "27046fce-742f-4cc4-bb95-76b271f490a5"
+          "entityVersion": "27046fce-742f-4cc4-bb95-76b271f490a5"
         },
         "ba38669e-ac6f-40ea-af14-bb200db251d8": {
           "uuid": "ba38669e-ac6f-40ea-af14-bb200db251d8",
           "parentName": "ApplicationVersionCrossEntityVersion",
           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
           "applicationVersion": "695826c2-aefa-4f5f-a131-dee46fe21c13",
-          "entityDefinition": "f93af951-ea13-4815-a2e3-ec0cab1fadd2"
+          "entityVersion": "f93af951-ea13-4815-a2e3-ec0cab1fadd2"
         },
         "dc47438c-166a-4d19-aeba-ad70281afdf4": {
           "uuid": "dc47438c-166a-4d19-aeba-ad70281afdf4",
           "parentName": "ApplicationVersionCrossEntityVersion",
           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
           "applicationVersion": "695826c2-aefa-4f5f-a131-dee46fe21c13",
-          "entityDefinition": "9460420b-f176-4918-bd45-894ab195ffe9"
+          "entityVersion": "9460420b-f176-4918-bd45-894ab195ffe9"
         },
         "ede7e794-5ae7-48a8-81c9-d1f82df11829": {
           "uuid": "ede7e794-5ae7-48a8-81c9-d1f82df11829",
           "parentName": "ApplicationVersionCrossEntityVersion",
           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
           "applicationVersion": "695826c2-aefa-4f5f-a131-dee46fe21c13",
-          "entityDefinition": "952d2c65-4da2-45c2-9394-a0920ceedfb6"
+          "entityVersion": "952d2c65-4da2-45c2-9394-a0920ceedfb6"
         }
       }
     },

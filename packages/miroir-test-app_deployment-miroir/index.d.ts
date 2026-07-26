@@ -3,6 +3,8 @@
 
 export declare const entityEndpointVersion: any;
 export declare const entityEntity: any;
+export declare const entityEntityVersion: any;
+/** @deprecated Use entityEntityVersion */
 export declare const entityEntityDefinition: any;
 export declare const entityJzodSchema: any;
 export declare const entityMenu: any;
@@ -19,11 +21,15 @@ export declare const entityTransformerDefinition: any;
 export declare const entityMiroirTest: any;
 export declare const entityBlob: any;
 export declare const entityCommit: any;
+export declare const entityApplicationVersionCrossEntityVersion: any;
+/** @deprecated Use entityApplicationVersionCrossEntityVersion */
 export declare const entityApplicationVersionCrossEntityDefinition: any;
 export declare const entityApplicationEvolutionTrace: any;
 export declare const entityApplicationEvolutionTraceEvent: any;
 export declare const entityDefinitionEndpoint: any;
 export declare const entityDefinitionEntity: any;
+export declare const entityVersionEntityVersion: any;
+/** @deprecated Use entityVersionEntityVersion */
 export declare const entityDefinitionEntityDefinition: any;
 export declare const entityDefinitionMenu: any;
 export declare const entityDefinitionJzodSchema: any;
@@ -41,6 +47,8 @@ export declare const entityDefinitionTransformerDefinition: any;
 export declare const entityDefinitionCommit: any;
 export declare const entityDefinitionQueryVersionV1: any;
 export declare const entityDefinitionBlob: any;
+export declare const entityVersionApplicationVersionCrossEntityVersion: any;
+/** @deprecated Use entityVersionApplicationVersionCrossEntityVersion */
 export declare const entityDefinitionApplicationVersionCrossEntityDefinition: any;
 export declare const entityDefinitionApplicationEvolutionTrace: any;
 export declare const entityDefinitionApplicationEvolutionTraceEvent: any;
@@ -48,6 +56,8 @@ export declare const entityApplicationVersionCrossEntityDeployment: any;
 export declare const entityDefinitionApplicationVersionCrossEntityDeployment: any;
 export declare const entityDefinitionSelfApplicationV1: any;
 export declare const entityDefinitionSelfApplicationVersionV1: any;
+export declare const entityVersionEntityVersionV1: any;
+/** @deprecated Use entityVersionEntityVersionV1 */
 export declare const entityDefinitionEntityDefinitionV1: any;
 export declare const entityDefinitionJzodSchemaV1: any;
 export declare const entityDefinitionReportV1: any;
@@ -63,7 +73,11 @@ export declare const reportApplicationModelBranchList: any;
 export declare const reportApplicationVersionList: any;
 export declare const reportConfigurationList: any;
 export declare const reportEndpointVersionList: any;
+export declare const reportEntityVersionList: any;
+/** @deprecated Use reportEntityVersionList */
 export declare const reportEntityDefinitionList: any;
+export declare const reportEntityVersionDetails: any;
+/** @deprecated Use reportEntityVersionDetails */
 export declare const reportEntityDefinitionDetails: any;
 export declare const reportEntityList: any;
 export declare const reportEntityDetails: any;
@@ -212,6 +226,8 @@ export declare const runnerDropEntity: any;
 export declare const runnerCreateEntity: any;
 export declare const blobMiroirLogo: any;
 export declare const applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity: any;
+export declare const applicationVersionInitialMiroirVersionCrossEntityVersionEntityVersion: any;
+/** @deprecated Use applicationVersionInitialMiroirVersionCrossEntityVersionEntityVersion */
 export declare const applicationVersionInitialMiroirVersionCrossEntityDefinitionEntityDefinition: any;
 export declare const applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch: any;
 export declare const applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationVersion: any;

@@ -22,7 +22,7 @@
           },
           {
             "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Miroir Entity Definitions",
+            "label": "Miroir Entity Versions",
             "section": "model",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",

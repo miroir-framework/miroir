@@ -168,7 +168,7 @@ const codeNumberTestMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applications: [],
 };
 
@@ -454,7 +454,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
           applicationVersions: [],
           reports: [],
           storedQueries: [],
-          applicationVersionCrossEntityDefinition: [],
+          applicationVersionCrossEntityVersion: [],
           applications: [],
         } as MetaModel,
         [entityPublisher.uuid],

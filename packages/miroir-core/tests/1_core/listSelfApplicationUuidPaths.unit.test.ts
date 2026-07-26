@@ -153,7 +153,7 @@ describe("listSelfApplicationUuidPaths (T1)", () => {
         applicationUuid: LIBRARY_APP_UUID,
         applicationName: "Library",
         applicationVersions: [],
-        applicationVersionCrossEntityDefinition: [],
+        applicationVersionCrossEntityVersion: [],
         applications: [],
         entities: [],
         entityDefinitions: [],

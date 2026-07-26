@@ -662,10 +662,10 @@ export function getWrapperLoadingLocalCache(
           instances: defaultMiroirMetaModel.reports
         },
         // {
-        //   parentName: applicationVersionCrossEntityDefinitionSchema.name,
+        //   parentName: applicationVersionCrossEntityVersionSchema.name,
         //   parentUuid: ApplicationVersionCrossEntityDefinitionSchema.uuid,
         //   applicationSection: "model",
-        //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityDefinition
+        //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityVersion
         // },
       ],
     }
@@ -741,10 +741,10 @@ export function getWrapperLoadingLocalCache(
           ],
         },
         // {
-        //   parentName: applicationVersionCrossEntityDefinitionSchema.name,
+        //   parentName: applicationVersionCrossEntityVersionSchema.name,
         //   parentUuid: ApplicationVersionCrossEntityDefinitionSchema.uuid,
         //   applicationSection: "model",
-        //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityDefinition
+        //   instances: defaultMiroirMetaModel.applicationVersionCrossEntityVersion
         // },
         ...libraryApplicationInstances
       ],

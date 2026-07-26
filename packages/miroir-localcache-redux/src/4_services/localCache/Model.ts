@@ -130,7 +130,7 @@ export function currentModel(
       applicationVersions: (applicationVersions && applicationVersions.entities
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],
-      applicationVersionCrossEntityDefinition: [],
+      applicationVersionCrossEntityVersion: [],
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],

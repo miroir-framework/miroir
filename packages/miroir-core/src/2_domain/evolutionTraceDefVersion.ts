@@ -1,7 +1,7 @@
 export type DefinitionVersionResolutionMethod =
   | "instanceParentDefinitionVersion"
   | "actionPayload"
-  | "applicationVersionCrossEntityDefinition"
+  | "applicationVersionCrossEntityVersion"
   | "unresolved";
 
 export type ResolveDefinitionVersionResult = {
@@ -17,8 +17,11 @@ export type ResolveDefinitionVersionInput = {
     targetEntityUuid?: string;
     entries: Array<{
       applicationVersion: string;
-      entityDefinition: string;
-      /** Optional entity UUID when the caller can resolve EntityDefinition → Entity. */
+      /** #217 Phase 12 primary FK name */
+      entityVersion?: string;
+      /** @deprecated Use entityVersion */
+      entityDefinition?: string;
+      /** Optional entity UUID when the caller can resolve EntityVersion → Entity. */
       entityUuid?: string;
     }>;
   };
@@ -27,13 +30,13 @@ export type ResolveDefinitionVersionInput = {
 };
 
 /**
- * Resolves the target EntityDefinition version UUID for a trace event,
+ * Resolves the target EntityVersion UUID for a trace event,
  * with explicit resolution method for #15 compatibility.
  *
  * Precedence:
  * 1. instance.parentDefinitionVersionUuid
  * 2. action payload entityDefinitionUuid
- * 3. ApplicationVersionCrossEntityDefinition lookup
+ * 3. ApplicationVersionCrossEntityVersion lookup
  * 4. unresolved (+ warning)
  */
 export function resolveDefinitionVersionForTraceEvent(
@@ -67,19 +70,21 @@ export function resolveDefinitionVersionForTraceEvent(
       return true;
     });
     if (match) {
-      return {
-        definitionVersionUuid: match.entityDefinition,
-        resolution: "applicationVersionCrossEntityDefinition",
-      };
+      const versionUuid = match.entityVersion ?? match.entityDefinition;
+      if (versionUuid) {
+        return {
+          definitionVersionUuid: versionUuid,
+          resolution: "applicationVersionCrossEntityVersion",
+        };
+      }
     }
   }
 
   // Path 4: unresolved — explicit warning, no silent drop.
   const warn = input.warn ?? ((message: string) => console.warn(message));
   warn(
-    "resolveDefinitionVersionForTraceEvent: could not resolve targetDefinitionVersionUuid (instance, action payload, and ApplicationVersionCrossEntityDefinition lookup all empty)",
+    "resolveDefinitionVersionForTraceEvent: could not resolve targetDefinitionVersionUuid (instance, action payload, and ApplicationVersionCrossEntityVersion lookup all empty)",
   );
-
   return {
     definitionVersionUuid: undefined,
     resolution: "unresolved",

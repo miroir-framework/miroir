@@ -99,7 +99,7 @@ const adminMetaModel: MetaModel = {
   reports: [],
   runners: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   tests: [],
   themes: [],
   applications: [],

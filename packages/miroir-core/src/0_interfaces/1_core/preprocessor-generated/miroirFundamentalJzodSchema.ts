@@ -12862,7 +12862,7 @@ export const miroirFundamentalJzodSchema = {
             "definition": [
               "instanceParentDefinitionVersion",
               "actionPayload",
-              "applicationVersionCrossEntityDefinition",
+              "applicationVersionCrossEntityVersion",
               "unresolved"
             ],
             "tag": {
@@ -39334,7 +39334,7 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "applicationVersionCrossEntityDefinition": {
+          "applicationVersionCrossEntityVersion": {
             "type": "array",
             "definition": {
               "type": "object",
@@ -39396,12 +39396,12 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 },
-                "entityDefinition": {
+                "entityVersion": {
                   "type": "uuid",
                   "tag": {
                     "value": {
                       "id": 1,
-                      "defaultLabel": "Entity Definition",
+                      "defaultLabel": "Entity Version",
                       "editable": false
                     }
                   }

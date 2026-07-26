@@ -28,7 +28,7 @@ describe("resolveDefinitionVersionForTraceEvent", () => {
     });
   });
 
-  it("path 3: ApplicationVersionCrossEntityDefinition lookup → applicationVersionCrossEntityDefinition", () => {
+  it("path 3: ApplicationVersionCrossEntityVersion lookup → applicationVersionCrossEntityVersion", () => {
     const result = resolveDefinitionVersionForTraceEvent({
       crossEntityLookup: {
         currentApplicationVersionUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
@@ -36,7 +36,7 @@ describe("resolveDefinitionVersionForTraceEvent", () => {
         entries: [
           {
             applicationVersion: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-            entityDefinition: DEF_VERSION_UUID,
+            entityVersion: DEF_VERSION_UUID,
             entityUuid: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
           },
         ],
@@ -45,7 +45,26 @@ describe("resolveDefinitionVersionForTraceEvent", () => {
 
     expect(result).toEqual({
       definitionVersionUuid: DEF_VERSION_UUID,
-      resolution: "applicationVersionCrossEntityDefinition",
+      resolution: "applicationVersionCrossEntityVersion",
+    });
+  });
+
+  it("path 3b: deprecated entityDefinition FK still resolves", () => {
+    const result = resolveDefinitionVersionForTraceEvent({
+      crossEntityLookup: {
+        currentApplicationVersionUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+        entries: [
+          {
+            applicationVersion: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+            entityDefinition: DEF_VERSION_UUID,
+          },
+        ],
+      },
+    });
+
+    expect(result).toEqual({
+      definitionVersionUuid: DEF_VERSION_UUID,
+      resolution: "applicationVersionCrossEntityVersion",
     });
   });
 

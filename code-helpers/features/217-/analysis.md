@@ -941,7 +941,7 @@ Acceptance gate:
 - Gate tests: `entityPresentModel.phase11`; `ModelEntityActionTransformer.phase11`; `modelEntityDualWrite` Phase 11 helpers.
 - **Deferred (allowed):** UI still uses `presentEntityAsRedundantEntityDefinition` as a temporary ED-*shaped* projection from Entity for components typed as EntityDefinition — not live ED authority. Full UI type migration to Entity follows with Phase 12 rename vocabulary work.
 
-### Phase 12 — Final task: rename EntityDefinition to EntityVersion
+### Phase 12 — Final task: rename EntityDefinition to EntityVersion — IN PROGRESS (vocab-first slice)
 
 Only now:
 
@@ -955,6 +955,24 @@ Only now:
 - migrate persisted parent UUIDs/entity UUIDs only through an explicit data migration if identity changes; prefer retaining UUID identity and changing names where possible.
 
 This phase must contain no architectural authority change—only the final vocabulary/compatibility migration.
+
+**Vocab-first slice (done):**
+- Bootstrap Entity `54b9c72f…` renamed `EntityVersion` (UUID preserved); ED-of-ED + `parentName` updated across deployments/fixtures.
+- AVCED Entity renamed `ApplicationVersionCrossEntityVersion`.
+- Codegen context key `entityDefinition` → `entityVersion`; generated `EntityVersion` + deprecated `EntityDefinition` / `entityDefinition` aliases.
+- MetaModel collection key kept as `entityDefinitions` (elements typed `EntityVersion[]`) for one-release compat.
+- Deployment export symbols: `entityEntityVersion`, `entityVersionEntityVersion`, `entityApplicationVersionCrossEntityVersion`, `reportEntityVersionList` / `Details` (+ deprecated old names).
+- Reports/menu display vocabulary: Entity Versions (list/details + Miroir menu).
+- MetaModel `applicationVersionCrossEntityVersion` + FK `entityVersion` (data instances + Zod schema + evolutionTrace lookup).
+- UI hub `presentEntityAsRedundantEntityDefinition` retained (follow-up slice); projection `parentName` now `EntityVersion`.
+- Gate: `entityPresentModel.phase12.unit.test.ts`.
+
+**Still open in Phase 12:**
+- Rename Action/history field names (`entityDefinitionUuid` → `entityVersionUuid` where historical).
+- Bulk rename remaining `entityDefinition*` export prefixes for non-bootstrap EntityVersion instances (optional; aliases already cover identity symbols).
+- Docs/prompts remaining display vocabulary.
+- Migrate UI components off ED-shaped hub (separate follow-up after vocab).
+- Full non-regression gate.
 
 **Test gate (§11):**
 
@@ -997,6 +1015,7 @@ Suite files:
 - `entityPresentModel.phase8.unit.test.ts` — Phase 8 present-model lookup hub
 - `entityPresentModel.phase9.unit.test.ts` — Phase 9 UI boundary ED-shaped projection
 - `entityPresentModel.phase11.unit.test.ts` — Phase 11 live-ED authority grep gate (stores)
+- `entityPresentModel.phase12.unit.test.ts` — Phase 12 vocabulary rename gate
 
 ### 11.2 Existing priority suites
 

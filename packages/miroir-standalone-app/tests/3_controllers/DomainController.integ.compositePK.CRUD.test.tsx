@@ -161,7 +161,7 @@ const compositePKTestMetaModel: MetaModel = {
   applicationVersions: [],
   reports: [],
   storedQueries: [],
-  applicationVersionCrossEntityDefinition: [],
+  applicationVersionCrossEntityVersion: [],
   applications: [],
 };
 

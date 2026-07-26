@@ -4,8 +4,8 @@
   "parentName": "Report",
   "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
   "conceptLevel": "Model",
-  "name": "EntityDefinitionDetails",
-  "defaultLabel": "Detailed information about an Entity Definition",
+  "name": "EntityVersionDetails",
+  "defaultLabel": "Detailed information about an Entity Version",
   "definition": {
     "extractorTemplates": {
       "entityDefinition": {
