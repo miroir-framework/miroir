@@ -11,7 +11,7 @@ export type ResolveDefinitionVersionResult = {
 
 export type ResolveDefinitionVersionInput = {
   instance?: { parentDefinitionVersionUuid?: string };
-  entityDefinitionUuidFromPayload?: string;
+  entityVersionUuidFromPayload?: string;
   crossEntityLookup?: {
     currentApplicationVersionUuid: string;
     targetEntityUuid?: string;
@@ -35,7 +35,7 @@ export type ResolveDefinitionVersionInput = {
  *
  * Precedence:
  * 1. instance.parentDefinitionVersionUuid
- * 2. action payload entityDefinitionUuid
+ * 2. action payload entityVersionUuid
  * 3. ApplicationVersionCrossEntityVersion lookup
  * 4. unresolved (+ warning)
  */
@@ -50,7 +50,7 @@ export function resolveDefinitionVersionForTraceEvent(
     };
   }
 
-  const fromPayload = input.entityDefinitionUuidFromPayload;
+  const fromPayload = input.entityVersionUuidFromPayload;
   if (fromPayload) {
     return {
       definitionVersionUuid: fromPayload,

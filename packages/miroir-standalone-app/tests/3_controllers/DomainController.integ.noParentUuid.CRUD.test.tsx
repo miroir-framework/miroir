@@ -464,7 +464,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
                     entities: [
                       {
                         entity: entityNoParentUuid,
-                        entityDefinition: entityDefinitionNoParentUuid,
+                        entityVersion: entityDefinitionNoParentUuid,
                       },
                     ],
                   },

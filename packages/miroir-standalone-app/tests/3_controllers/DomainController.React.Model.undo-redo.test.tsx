@@ -271,7 +271,7 @@ describe.sequential(
               entities: [
                 {
                   entity: entityAuthor as Entity,
-                  entityDefinition: entityDefinitionAuthor as EntityDefinition,
+                  entityVersion: entityDefinitionAuthor as EntityDefinition,
                 },
               ],
             },
@@ -284,7 +284,7 @@ describe.sequential(
               entities: [
                 {
                   entity: entityBook as Entity,
-                  entityDefinition: entityDefinitionBook as EntityDefinition,
+                  entityVersion: entityDefinitionBook as EntityDefinition,
                 },
               ],
             },

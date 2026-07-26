@@ -15498,7 +15498,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "validations": [
                   {
@@ -15613,7 +15613,7 @@ export const miroirFundamentalJzodSchema = {
                         "relativePath": "entity"
                       }
                     },
-                    "entityDefinition": {
+                    "entityVersion": {
                       "type": "schemaReference",
                       "tag": {
                         "value": {
@@ -15692,7 +15692,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "tag": {
                   "value": {
@@ -15768,7 +15768,7 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "validations": [
                   {
@@ -16261,7 +16261,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "validations": [
                       {
@@ -16454,7 +16454,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "validations": [
                       {
@@ -16538,7 +16538,7 @@ export const miroirFundamentalJzodSchema = {
                             "relativePath": "entity"
                           }
                         },
-                        "entityDefinition": {
+                        "entityVersion": {
                           "type": "schemaReference",
                           "tag": {
                             "value": {
@@ -16617,7 +16617,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     }
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "tag": {
                       "value": {
@@ -33561,7 +33561,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "validations": [
                       {
@@ -33818,7 +33818,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "string",
                     "validations": [
                       {
@@ -33958,7 +33958,7 @@ export const miroirFundamentalJzodSchema = {
                             }
                           ]
                         },
-                        "entityDefinition": {
+                        "entityVersion": {
                           "optional": true,
                           "type": "union",
                           "tag": {
@@ -34116,7 +34116,7 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
-                  "entityDefinitionUuid": {
+                  "entityVersionUuid": {
                     "type": "union",
                     "tag": {
                       "value": {

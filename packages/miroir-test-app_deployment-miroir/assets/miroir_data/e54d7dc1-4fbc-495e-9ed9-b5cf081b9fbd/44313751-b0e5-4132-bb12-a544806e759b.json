@@ -166,7 +166,7 @@
                   "entity"
                 ]
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
                 "referencePath": [

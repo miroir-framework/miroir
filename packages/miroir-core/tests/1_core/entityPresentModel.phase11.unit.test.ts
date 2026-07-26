@@ -43,14 +43,14 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
     expect(idbSection).toContain("entity.idAttribute");
   });
 
-  it("ModelEntityActionTransformer dropEntity no longer requires entityDefinitionUuid in source", () => {
+  it("ModelEntityActionTransformer dropEntity no longer requires entityVersionUuid in source", () => {
     const transformer = readFileSync(
       join(REPO_ROOT, "packages/miroir-core/src/2_domain/ModelEntityActionTransformer.ts"),
       "utf8",
     );
     expect(transformer).toContain("dropEntity missing entityUuid");
     expect(transformer).not.toContain(
-      "dropEntity missing entityUuid or entityDefinitionUuid",
+      "dropEntity missing entityUuid or entityVersionUuid",
     );
   });
 
@@ -125,7 +125,7 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
     expect(sqlMixin).toContain("applyEntityOnlyRename");
   });
 
-  it("ModelEndpoint Action schemas mark entityDefinition / entityDefinitionUuid optional", () => {
+  it("ModelEndpoint Action schemas mark entityVersion / entityVersionUuid optional", () => {
     const endpoint = JSON.parse(
       readFileSync(
         join(
@@ -142,13 +142,10 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
       ),
       "utf8",
     );
-    expect(generated).toContain("entityDefinitionUuid?: string | undefined");
-    // #217 Phase 12: element type renamed; deprecated EntityDefinition alias still exported
+    expect(generated).toContain("entityVersionUuid?: string | undefined");
+    expect(generated).toMatch(/entityVersion\?: EntityVersion \| undefined/);
     expect(generated).toMatch(
-      /entityDefinition\?: (EntityVersion|EntityDefinition) \| undefined/,
-    );
-    expect(generated).toMatch(
-      /modelActionAlterEntityAttribute[\s\S]*entityDefinitionUuid:z\.string\(\)\.optional\(\)/,
+      /modelActionAlterEntityAttribute[\s\S]*entityVersionUuid:z\.string\(\)\.optional\(\)/,
     );
 
     const actions: any[] = [];
@@ -161,11 +158,11 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
     walk(endpoint);
     for (const name of ["alterEntityAttribute", "renameEntity", "dropEntity"]) {
       const ap = actions.find((a) => a.actionType?.definition === name);
-      expect(ap?.payload?.definition?.entityDefinitionUuid?.optional).toBe(true);
+      expect(ap?.payload?.definition?.entityVersionUuid?.optional).toBe(true);
     }
     const create = actions.find((a) => a.actionType?.definition === "createEntity");
     expect(
-      create?.payload?.definition?.entities?.definition?.definition?.entityDefinition?.optional,
+      create?.payload?.definition?.entities?.definition?.definition?.entityVersion?.optional,
     ).toBe(true);
   });
 

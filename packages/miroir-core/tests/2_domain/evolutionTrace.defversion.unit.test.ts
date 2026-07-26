@@ -16,10 +16,10 @@ describe("resolveDefinitionVersionForTraceEvent", () => {
     });
   });
 
-  it("path 2: action payload entityDefinitionUuid → actionPayload", () => {
+  it("path 2: action payload entityVersionUuid → actionPayload", () => {
     const result = resolveDefinitionVersionForTraceEvent({
       instance: {},
-      entityDefinitionUuidFromPayload: DEF_VERSION_UUID,
+      entityVersionUuidFromPayload: DEF_VERSION_UUID,
     });
 
     expect(result).toEqual({

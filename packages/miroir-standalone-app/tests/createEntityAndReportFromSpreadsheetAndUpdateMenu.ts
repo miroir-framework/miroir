@@ -241,7 +241,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                         "transformerType": "getFromParameters",
                         "referenceName": "createEntity_newEntity"
                       },
-                      "entityDefinition": {
+                      "entityVersion": {
                         "transformerType": "getFromParameters",
                         "referenceName": "createEntity_newEntityDefinition"
                       }

@@ -22,7 +22,7 @@ const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
 )!;
 
 describe("217 Phase 11 — Model Actions Entity-first", () => {
-  it("resolves live EntityDefinition by entityUuid when entityDefinitionUuid omitted", () => {
+  it("resolves live EntityDefinition by entityUuid when entityVersionUuid omitted", () => {
     const resolved = resolveLiveEntityDefinitionForAction(
       defaultLibraryAppModel as MetaModel,
       bookEntity.uuid,
@@ -65,11 +65,11 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
         application: defaultLibraryAppModel.applicationUuid,
         entityName: bookEntity.name,
         entityUuid: bookEntity.uuid,
-        entityDefinitionUuid: bookDefinition.uuid,
+        entityVersionUuid: bookDefinition.uuid,
         addColumns: [{ name: "isbn11", definition: { type: "string" } }],
       },
     };
-    delete (action.payload as { entityDefinitionUuid?: string }).entityDefinitionUuid;
+    delete (action.payload as { entityVersionUuid?: string }).entityVersionUuid;
 
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
       "00000000-0000-4000-8000-000000000001",
@@ -103,10 +103,10 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
         entityUuid: bookEntity.uuid,
-        entityDefinitionUuid: bookDefinition.uuid,
+        entityVersionUuid: bookDefinition.uuid,
       },
     };
-    delete (action.payload as { entityDefinitionUuid?: string }).entityDefinitionUuid;
+    delete (action.payload as { entityVersionUuid?: string }).entityVersionUuid;
 
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
       "00000000-0000-4000-8000-000000000001",

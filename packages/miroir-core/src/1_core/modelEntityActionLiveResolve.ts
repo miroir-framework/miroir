@@ -1,7 +1,7 @@
 /**
  * Issue #217 Phase 11 — Entity-authoritative model Action resolution.
  * Resolve live Entity / optional redundant EntityDefinition without requiring
- * Action payloads to carry entityDefinitionUuid.
+ * Action payloads to carry entityVersionUuid.
  *
  * When Entity has a complete present model, mutations are Entity-only (live ED
  * copies become historical / not updated). Dual-write remains for create when
@@ -31,10 +31,10 @@ import {
 export function resolveLiveEntityDefinitionForAction(
   currentModel: MetaModel,
   entityUuid: string,
-  entityDefinitionUuid?: string | undefined,
+  entityVersionUuid?: string | undefined,
 ): EntityDefinition | undefined {
-  if (entityDefinitionUuid) {
-    const byUuid = currentModel.entityDefinitions?.find((ed) => ed.uuid === entityDefinitionUuid);
+  if (entityVersionUuid) {
+    const byUuid = currentModel.entityDefinitions?.find((ed) => ed.uuid === entityVersionUuid);
     if (byUuid) {
       return byUuid;
     }
@@ -79,7 +79,7 @@ export function planRenameEntityMutation(
   currentModel: MetaModel,
   entityUuid: string,
   targetName: string,
-  entityDefinitionUuid?: string | undefined,
+  entityVersionUuid?: string | undefined,
 ): LiveEntityMutationPlan | undefined {
   const entity = resolvePresentEntityFromModel(currentModel, entityUuid);
   if (!entity) {
@@ -94,7 +94,7 @@ export function planRenameEntityMutation(
   const entityDefinition = resolveLiveEntityDefinitionForAction(
     currentModel,
     entityUuid,
-    entityDefinitionUuid,
+    entityVersionUuid,
   );
   if (entityDefinition) {
     return {
@@ -113,7 +113,7 @@ export function planAlterEntityAttributeMutation(
   currentModel: MetaModel,
   entityUuid: string,
   changes: AlterEntityAttributeColumns,
-  entityDefinitionUuid?: string | undefined,
+  entityVersionUuid?: string | undefined,
 ): LiveEntityMutationPlan | undefined {
   const entity = resolvePresentEntityFromModel(currentModel, entityUuid);
   if (!entity) {
@@ -131,7 +131,7 @@ export function planAlterEntityAttributeMutation(
   const entityDefinition = resolveLiveEntityDefinitionForAction(
     currentModel,
     entityUuid,
-    entityDefinitionUuid,
+    entityVersionUuid,
   );
   if (entityDefinition) {
     return {

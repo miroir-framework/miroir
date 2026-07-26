@@ -73,7 +73,7 @@ export interface MermaidClassDiagramProps {
    * Requires `classClickLinks` to be set in `options` (e.g. via
    * `buildEntityDefinitionClickLinks`).
    */
-  onClassClick?: (entityDefinitionUuid: string) => void;
+  onClassClick?: (entityVersionUuid: string) => void;
   /**
    * CSS color for relation lines (arrows / connections between classes).
    * Defaults to "#888888" in light mode, "#aaaaaa" in dark mode.

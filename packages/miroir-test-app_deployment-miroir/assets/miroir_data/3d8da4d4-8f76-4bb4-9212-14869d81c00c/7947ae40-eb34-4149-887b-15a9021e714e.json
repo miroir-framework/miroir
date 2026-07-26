@@ -425,7 +425,7 @@
                   }
                 ]
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "validations": [
                   {
@@ -681,7 +681,7 @@
                         "targetEntityUuid"
                       ]
                     },
-                    "entityDefinitionUuid": {
+                    "entityVersionUuid": {
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
@@ -798,7 +798,7 @@
                   }
                 ]
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "validations": [
                   {
@@ -874,7 +874,7 @@
                         "relativePath": "entity"
                       }
                     },
-                    "entityDefinition": {
+                    "entityVersion": {
                       "type": "schemaReference",
                       "tag": {
                         "value": {
@@ -945,7 +945,7 @@
                   }
                 }
               },
-              "entityDefinitionUuid": {
+              "entityVersionUuid": {
                 "type": "string",
                 "tag": {
                   "value": {

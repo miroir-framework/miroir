@@ -298,7 +298,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //             interpolation: "build",
   //             referencePath: [runnerName, "entity"],
   //           } as any,
-  //           entityDefinitionUuid: {
+  //           entityVersionUuid: {
   //             transformerType: "getFromContext",
   //             interpolation: "runtime",
   //             referencePath: ["entityDefinitionInfo", "entityDefinitions", "0", "uuid"],
@@ -380,7 +380,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
               entities: [
                 {
                   entity,
-                  entityDefinition,
+                  entityVersion: entityDefinition,
                 },
               ],
             } as any,

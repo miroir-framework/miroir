@@ -1148,11 +1148,11 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //           referenceName: "splittedEntityUuid",
   //         },
   //         // entityUuid: splittedEntityUuid,
-  //         entityDefinitionUuid: {
+  //         entityVersionUuid: {
   //           transformerType: "getFromParameters",
   //           referenceName: "splittedEntityDefinitionUuid",
   //         },
-  //         // entityDefinitionUuid: splittedEntityDefinitionUuid,
+  //         // entityVersionUuid: splittedEntityDefinitionUuid,
   //         addColumns: [
   //           {
   //             name: {

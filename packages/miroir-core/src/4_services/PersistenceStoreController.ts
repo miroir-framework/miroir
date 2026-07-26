@@ -263,8 +263,15 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
               "handleAction applyModelEntityUpdates createEntity inserting",
               persistenceStoreControllerAction.payload.entities
             );
-            // await targetProxy.createEntity(update.entity, update.entityDefinition);
-            return this.createEntities(persistenceStoreControllerAction.payload.entities);
+            // #217 Phase 12: Action payload uses entityVersion; store API still entityDefinition
+            return this.createEntities(
+              persistenceStoreControllerAction.payload.entities.map((pair) => ({
+                entity: pair.entity,
+                entityDefinition:
+                  (pair as { entityVersion?: EntityDefinition }).entityVersion ??
+                  (pair as { entityDefinition?: EntityDefinition }).entityDefinition,
+              })),
+            );
             break;
           }
           default:

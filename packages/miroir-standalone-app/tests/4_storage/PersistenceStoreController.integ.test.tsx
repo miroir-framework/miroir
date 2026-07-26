@@ -509,7 +509,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
         entityUuid: entityAuthor.uuid,
         entityName: entityAuthor.name,
-        entityDefinitionUuid: entityDefinitionAuthor.uuid,
+        entityVersionUuid: entityDefinitionAuthor.uuid,
         targetValue: entityAuthor.name + "ssss",
       },
     };
@@ -630,7 +630,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
         entityUuid: entityAuthor.uuid,
         // entityName: entityAuthor.name,
-        entityDefinitionUuid: entityDefinitionAuthor.uuid,
+        entityVersionUuid: entityDefinitionAuthor.uuid,
       },
     };
 
@@ -725,7 +725,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   //       application: selfApplicationLibrary.uuid,
   //       // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
   //       entityUuid: entityAuthor.uuid,
-  //       entityDefinitionUuid: entityDefinitionAuthor.uuid,
+  //       entityVersionUuid: entityDefinitionAuthor.uuid,
   //       entityName: entityAuthor.name,
   //       // entityAttributeId: 6,
   //       // entityAttributeName: "icon",

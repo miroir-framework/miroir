@@ -113,7 +113,7 @@ function useApplyEntityProposal() {
           entities: [
             {
               entity: proposal.entity as any,
-              entityDefinition: proposal.entityDefinition as any,
+              entityVersion: proposal.entityDefinition as any,
             },
           ],
         } as any,

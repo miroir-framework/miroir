@@ -36,7 +36,7 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
               name: bookEntity.name,
               parentUuid: bookEntity.parentUuid,
             } as Entity,
-            entityDefinition: bookDefinition,
+            entityVersion: bookDefinition,
           },
         ],
       },
@@ -71,7 +71,7 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
         application: defaultLibraryAppModel.applicationUuid,
         entityName: bookEntity.name,
         entityUuid: bookEntity.uuid,
-        entityDefinitionUuid: bookDefinition.uuid,
+        entityVersionUuid: bookDefinition.uuid,
         addColumns: [{ name: "isbn", definition: { type: "string" } }],
       },
     };
@@ -96,7 +96,7 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
         entityUuid: bookEntity.uuid,
-        entityDefinitionUuid: bookDefinition.uuid,
+        entityVersionUuid: bookDefinition.uuid,
         targetValue: "Volume",
       },
     };
@@ -119,7 +119,7 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
         entityUuid: bookEntity.uuid,
-        entityDefinitionUuid: bookDefinition.uuid,
+        entityVersionUuid: bookDefinition.uuid,
       },
     };
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(

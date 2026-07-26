@@ -425,7 +425,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                             interpolation: "build",
                             referenceName: "createEntity_newEntity",
                           },
-                          entityDefinition: {
+                          entityVersion: {
                             transformerType: "getFromParameters",
                             interpolation: "build",
                             referenceName: "createEntity_newEntityDefinition",

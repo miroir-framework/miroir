@@ -93,7 +93,7 @@ describe("produceEvolutionTraceEvent — section/app tracking policy", () => {
       endpoint: MODEL_ENDPOINT,
       payload: {
         application: LIBRARY_UUID,
-        entities: [{ entity: mockEntity, entityDefinition: mockEntityDefinition }],
+        entities: [{ entity: mockEntity, entityVersion: mockEntityDefinition }],
       },
     };
 

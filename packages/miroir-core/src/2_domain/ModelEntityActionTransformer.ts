@@ -41,7 +41,11 @@ export class ModelEntityActionTransformer{
         const objects: EntityInstance[] = [];
         for (const pair of modelAction.payload.entities) {
           const entity = pair.entity as Entity;
-          const entityDefinition = pair.entityDefinition as EntityDefinition | undefined;
+          // #217 Phase 12: Action field entityVersion (legacy entityDefinition still accepted)
+          const entityDefinition = (
+            (pair as { entityVersion?: EntityDefinition }).entityVersion ??
+            (pair as { entityDefinition?: EntityDefinition }).entityDefinition
+          ) as EntityDefinition | undefined;
           const plan = planCreateEntityMutation(entity, entityDefinition);
           if (!plan) {
             return new TransformerFailure({
@@ -84,7 +88,7 @@ export class ModelEntityActionTransformer{
         const liveEntityDefinition = resolveLiveEntityDefinitionForAction(
           currentModel,
           modelAction.payload.entityUuid,
-          modelAction.payload.entityDefinitionUuid,
+          modelAction.payload.entityVersionUuid,
         );
         // Drops the live Entity; deletes redundant live EntityDefinition when present.
         // Historical EntityVersion copies (other UUIDs) are not referenced here.
@@ -115,7 +119,7 @@ export class ModelEntityActionTransformer{
           currentModel,
           modelAction.payload.entityUuid,
           modelAction.payload.targetValue,
-          modelAction.payload.entityDefinitionUuid,
+          modelAction.payload.entityVersionUuid,
         );
   
         log.info(
@@ -154,7 +158,7 @@ export class ModelEntityActionTransformer{
             addColumns: modelAction.payload.addColumns,
             removeColumns: modelAction.payload.removeColumns,
           },
-          modelAction.payload.entityDefinitionUuid,
+          modelAction.payload.entityVersionUuid,
         );
         if (!plan) {
           log.error('modelActionToInstanceAction alterEntityAttribute could not alter',modelAction);

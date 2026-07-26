@@ -446,7 +446,12 @@ export function buildResetAndinitializeDeploymentActionSequence(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            entities: entities,
+            // #217 Phase 12: Action field is entityVersion; couple API still uses entityDefinition
+            entities: entities.map(({ entity, entityDefinition }) =>
+              entityDefinition
+                ? { entity, entityVersion: entityDefinition }
+                : { entity },
+            ),
           },
         },
         // add reports, menus, etc. from metaModel

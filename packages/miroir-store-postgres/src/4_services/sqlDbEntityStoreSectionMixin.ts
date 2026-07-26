@@ -330,18 +330,18 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return Promise.resolve(ACTION_OK);
       }
 
-      const entityDefinitionUuid = update.payload.entityDefinitionUuid;
-      if (!entityDefinitionUuid) {
+      const entityVersionUuid = update.payload.entityVersionUuid;
+      if (!entityVersionUuid) {
         return Promise.resolve(
           new Action2Error(
             "FailedToDeployModule",
-            `renameEntityClean requires entityDefinitionUuid when Entity present model is incomplete (entityUuid ${update.payload.entityUuid})`
+            `renameEntityClean requires entityVersionUuid when Entity present model is incomplete (entityUuid ${update.payload.entityUuid})`
           )
         );
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
-        entityDefinitionUuid
+        entityVersionUuid
       );
 
       if (currentEntityDefinition instanceof Action2Error) {
@@ -419,18 +419,18 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return this.upsertInstance(entityEntity.uuid, entityOnly);
       }
 
-      const entityDefinitionUuid = update.payload.entityDefinitionUuid;
-      if (!entityDefinitionUuid) {
+      const entityVersionUuid = update.payload.entityVersionUuid;
+      if (!entityVersionUuid) {
         return Promise.resolve(
           new Action2Error(
             "FailedToDeployModule",
-            `alterEntityAttribute requires entityDefinitionUuid when Entity present model is incomplete (entityUuid ${update.payload.entityUuid})`
+            `alterEntityAttribute requires entityVersionUuid when Entity present model is incomplete (entityUuid ${update.payload.entityUuid})`
           )
         );
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntityDefinition.uuid,
-        entityDefinitionUuid
+        entityVersionUuid
       );
       if (currentEntityDefinition instanceof Action2Error) {
         // todo: THROW???

@@ -253,7 +253,7 @@
                       "entity"
                     ]
                   },
-                  "entityDefinition": {
+                  "entityVersion": {
                     "transformerType": "getFromParameters",
                     "referencePath": [
                       "createEntity",

@@ -178,6 +178,48 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
     expect(sample.entityDefinition).toBeUndefined();
   });
 
+  it("Action payloads use entityVersionUuid / entityVersion (not entityDefinition*)", () => {
+    const endpoint = JSON.parse(
+      readFileSync(
+        join(
+          REPO_ROOT,
+          "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+          "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+          "7947ae40-eb34-4149-887b-15a9021e714e.json",
+        ),
+        "utf8",
+      ),
+    );
+    const generated = readFileSync(FUNDAMENTAL_TYPE, "utf8");
+    expect(generated).toContain("entityVersionUuid?: string | undefined");
+    expect(generated).toMatch(/entityVersion\?: EntityVersion \| undefined/);
+    expect(generated).not.toMatch(/entityDefinitionUuid\?:/);
+    expect(generated).toMatch(
+      /modelActionAlterEntityAttribute[\s\S]*entityVersionUuid:z\.string\(\)\.optional\(\)/,
+    );
+
+    const actions: any[] = [];
+    const walk = (node: any) => {
+      if (!node || typeof node !== "object") return;
+      if (node.actionParameters) actions.push(node.actionParameters);
+      if (Array.isArray(node)) node.forEach(walk);
+      else Object.values(node).forEach(walk);
+    };
+    walk(endpoint);
+    for (const name of ["alterEntityAttribute", "renameEntity", "dropEntity"]) {
+      const ap = actions.find((a) => a.actionType?.definition === name);
+      expect(ap?.payload?.definition?.entityVersionUuid?.optional).toBe(true);
+      expect(ap?.payload?.definition?.entityDefinitionUuid).toBeUndefined();
+    }
+    const create = actions.find((a) => a.actionType?.definition === "createEntity");
+    expect(
+      create?.payload?.definition?.entities?.definition?.definition?.entityVersion?.optional,
+    ).toBe(true);
+    expect(
+      create?.payload?.definition?.entities?.definition?.definition?.entityDefinition,
+    ).toBeUndefined();
+  });
+
   it("UI hub presentEntityAsRedundantEntityDefinition remains (deferred off vocabulary slice)", () => {
     const hub = readFileSync(ENTITY_PRESENT_MODEL, "utf8");
     expect(hub).toContain("presentEntityAsRedundantEntityDefinition");

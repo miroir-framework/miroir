@@ -325,7 +325,7 @@ export function resolveCurrentEntityModel(
           "inconsistent",
           entity.uuid,
           `Entity ${entity.uuid} (${entity.name}) definition fields diverge from EntityDefinition ${matching[0].uuid}: ${differingFields.join(", ")}`,
-          { differingFields, entityDefinitionUuid: matching[0].uuid },
+          { differingFields, entityVersionUuid: matching[0].uuid },
         );
       }
     }

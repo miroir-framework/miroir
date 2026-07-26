@@ -123,7 +123,7 @@ describe('resolveTestCompositeActionTemplate', () => {
                       interpolation: "build",
                       referenceName: "createEntity_newEntity",
                     },
-                    entityDefinition: {
+                    entityVersion: {
                       transformerType: "getFromParameters",
                       interpolation: "build",
                       referenceName: "newEntityDefinition",
@@ -210,7 +210,7 @@ describe('resolveTestCompositeActionTemplate', () => {
                       description: "newEntityDescription",
                       name: "newEntityName",
                     },
-                    entityDefinition: {
+                    entityVersion: {
                       name: "newEntityName",
                       uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityDefinitionUuid,
                       parentName: "EntityVersion",
@@ -332,8 +332,8 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                           interpolation: "build",
                           referenceName: "createEntity_newEntity",
                         },
-                        entityDefinition: newEntityDefinition as any,
-                        // entityDefinition: {
+                        entityVersion: newEntityDefinition as any,
+                        // entityVersion: {
                         //   transformerType: "getFromParameters",
                         //   referenceName: "newEntityDefinition",
                         // },
@@ -391,7 +391,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                           description: "newEntityDescription",
                           name: "newEntityName",
                         },
-                        entityDefinition: {
+                        entityVersion: {
                           name: "newEntityName",
                           uuid: newEntityDefinition.uuid,
                           parentName: "EntityVersion",

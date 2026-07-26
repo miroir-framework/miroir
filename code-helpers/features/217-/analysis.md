@@ -108,7 +108,7 @@ not conceal:
 - including fixture mirrors yields 53 / 53 pairs;
 - repository-wide references span 249 files mentioning `EntityDefinition`,
   105 mentioning `entityDefinitions`, 27 mentioning
-  `entityDefinitionUuid`, and no existing `EntityVersion`.
+  `entityVersionUuid`, and no existing `EntityVersion`.
 
 The difference means some assets cannot be classified reliably from
 `parentName` alone. The initial strict scan appeared to leave `MiroirTest` and
@@ -377,7 +377,7 @@ missing/true means eager; explicit false means do not preload data instances.
 Rename, alter, and drop payloads carry both:
 
 - `entityUuid`
-- `entityDefinitionUuid`
+- `entityVersionUuid`
 
 `ModelEntityActionTransformer`:
 
@@ -395,7 +395,7 @@ All persistence backends repeat versions of that logic.
 3. Rename updates Entity; redundant current EntityDefinition is dual-written.
 4. Alter-attribute updates `Entity.mlSchema`; redundant EntityDefinition is dual-written.
 5. Drop removes live Entity and its data storage; historical EntityVersions must not be deleted merely because the live Entity is dropped.
-6. Current-state Action payloads ultimately stop requiring `entityDefinitionUuid`.
+6. Current-state Action payloads ultimately stop requiring `entityVersionUuid`.
 7. Historical snapshot creation is a separate versioning operation, not an incidental side effect of normal model CRUD.
 8. Evolution tracing targets Entity identity for live changes and may separately record resulting EntityVersion identity when versioning is enabled.
 
@@ -932,12 +932,12 @@ Acceptance gate:
 - Slice: Postgres `SqlGenerator` PK/schema via `resolvePresentEntityFromModel` (no live `entityDefinitions.find`).
 - Slice: `SqlDbStoreSection` / `sqlDbEntityStoreSectionMixin` Sequelize mapping from Entity present-model fields (`fromMiroirPresentModelToSequelizeEntityDefinition`); ED optional fill-in only.
 - Slice: FS / IndexedDB / Bundled boot + createStorage register `idAttribute` from Entity first.
-- Slice: Model Actions Entity-first (`modelEntityActionLiveResolve`): `entityDefinitionUuid` optional; Entity-only alter/rename when Entity complete (ED left historical); drop deletes Entity (+ live ED if found).
+- Slice: Model Actions Entity-first (`modelEntityActionLiveResolve`): `entityVersionUuid` optional; Entity-only alter/rename when Entity complete (ED left historical); drop deletes Entity (+ live ED if found).
 - Slice: `createEntity` Entity-only when no ED supplied and Entity complete (`planCreateEntityMutation`); store `createEntity` / `createStorageSpaceForInstancesOfEntity` take optional ED; dual-write only when ED explicitly provided (bootstrap / legacy).
 - Slice: `Deployment` / `DomainController` reset|init Entity-only when no live ED (no synthesize).
 - Slice: LocalCache (redux + zustand) registers non-UUID PK adapters from Entity only.
 - Slice: store alter/rename Entity-only when present model complete (FS / IndexedDB / Mongo / Postgres).
-- Slice: ModelEndpoint Action schemas (`7947ae40-…`) mark `entityDefinition` / `entityDefinitionUuid` optional; regenerated TS/Zod types.
+- Slice: ModelEndpoint Action schemas (`7947ae40-…`) mark `entityDefinition` / `entityVersionUuid` optional; regenerated TS/Zod types.
 - Gate tests: `entityPresentModel.phase11`; `ModelEntityActionTransformer.phase11`; `modelEntityDualWrite` Phase 11 helpers.
 - **Deferred (allowed):** UI still uses `presentEntityAsRedundantEntityDefinition` as a temporary ED-*shaped* projection from Entity for components typed as EntityDefinition — not live ED authority. Full UI type migration to Entity follows with Phase 12 rename vocabulary work.
 
@@ -947,7 +947,7 @@ Only now:
 
 - rename metamodel Entity and EntityDefinition assets;
 - rename TypeScript/Jzod types and schemas;
-- rename `entityDefinitionUuid` historical fields where semantically appropriate;
+- rename `entityVersionUuid` historical fields where semantically appropriate;
 - rename `ApplicationVersionCrossEntityDefinition` to
   `ApplicationVersionCrossEntityVersion`;
 - update reports, menus, exports, folders, docs, prompts, diagrams and tests;
@@ -968,11 +968,15 @@ This phase must contain no architectural authority change—only the final vocab
 - Gate: `entityPresentModel.phase12.unit.test.ts`.
 
 **Still open in Phase 12:**
-- Rename Action/history field names (`entityDefinitionUuid` → `entityVersionUuid` where historical).
 - Bulk rename remaining `entityDefinition*` export prefixes for non-bootstrap EntityVersion instances (optional; aliases already cover identity symbols).
 - Docs/prompts remaining display vocabulary.
 - Migrate UI components off ED-shaped hub (separate follow-up after vocab).
 - Full non-regression gate.
+
+**Done in Phase 12 (Action field rename):**
+- ModelEndpoint Action payloads: `entityDefinitionUuid` → `entityVersionUuid`; createEntity `entities[].entityDefinition` → `entityVersion`.
+- Call sites, MiroirTest JSON, stores, transformers updated; store `createEntities` still uses `entityDefinition` with Action→store mapping at PersistenceStoreController / Deployment.
+- Regenerated TS/Zod; phase12 gate covers Action field names.
 
 **Test gate (§11):**
 
