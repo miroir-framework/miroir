@@ -250,10 +250,16 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
     ).toBeUndefined();
   });
 
-  it("UI no longer calls presentEntityAsRedundantEntityDefinition (hub kept deprecated for non-UI)", () => {
+  it("UI no longer calls presentEntityAsRedundantEntityDefinition (compat module #220)", () => {
+    const compat = readFileSync(
+      join(REPO_ROOT, "packages/miroir-core/src/1_core/entityDefinitionCompatibility.ts"),
+      "utf8",
+    );
+    expect(compat).toContain("presentEntityAsRedundantEntityDefinition");
+    expect(compat).toMatch(/@deprecated/);
+
     const hub = readFileSync(ENTITY_PRESENT_MODEL, "utf8");
-    expect(hub).toContain("presentEntityAsRedundantEntityDefinition");
-    expect(hub).toMatch(/@deprecated/);
+    expect(hub).not.toContain("export function presentEntityAsRedundantEntityDefinition");
 
     const uiFiles = [
       "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.tsx",

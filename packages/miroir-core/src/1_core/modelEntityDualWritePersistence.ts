@@ -2,6 +2,10 @@
  * Issue #217 Phase 6 — persistence dual-write: always Entity then EntityDefinition.
  * Non-transactional backends compensate or best-effort + consistency detector.
  * No single serialized artifact.
+ *
+ * #220 EOL: remove when no deployment ships incomplete Entities / legacy ED
+ * create payloads. Not for Application Version freeze snapshot minting (#216).
+ * Call-site allowlist: tests/1_core/220-entityDefinition-tech-debt/220.phase4.unit.test.ts
  */
 
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement.js";

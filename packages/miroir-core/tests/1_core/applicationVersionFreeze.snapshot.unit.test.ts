@@ -1,5 +1,6 @@
 /**
  * #216 Phase 1.2 — snapshotEntitiesAsHistoricalEntityVersions.
+ * #220 — results typed as EntityVersion (historical snapshots).
  */
 import { describe, expect, it } from "vitest";
 
@@ -9,7 +10,10 @@ import {
 import {
   projectEntityPresentModelDefinition,
 } from "../../src/1_core/entityPresentModel.js";
-import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type {
+  Entity,
+  EntityVersion,
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 function makeEntity(uuid: string, name: string, extra?: Partial<Entity>): Entity {
   return {
@@ -30,7 +34,9 @@ describe("216 Phase 1 — snapshotEntitiesAsHistoricalEntityVersions", () => {
 
   it("produces EntityVersion with new UUID ≠ Entity.uuid", () => {
     const entity = makeEntity("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "Book");
-    const [ev] = snapshotEntitiesAsHistoricalEntityVersions([entity], { newUuid: deterministic });
+    const [ev]: EntityVersion[] = snapshotEntitiesAsHistoricalEntityVersions([entity], {
+      newUuid: deterministic,
+    });
     expect(ev.uuid).not.toBe(entity.uuid);
   });
 

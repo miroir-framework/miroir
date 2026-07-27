@@ -1,6 +1,9 @@
 /**
  * Issue #217 Phase 5 — Entity-authoritative model mutations with dual-write.
  * Pure helpers: construct post-change Entity + redundant EntityDefinition pairs.
+ *
+ * #220 EOL: keep for incomplete-Entity enrichment / explicit ED create payloads only.
+ * Not for Application Version freeze (#216).
  */
 
 import type {

@@ -1,18 +1,14 @@
 /**
  * #216 — Application Version freeze (Entities only, linear history, Option A diff).
+ * #220 — Freeze-adjacent vocabulary uses EntityVersion only.
  */
 
 import { v4 as uuidv4 } from "uuid";
-import deepEqual from "fast-deep-equal";
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import {
-  ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
-  projectEntityPresentModelDefinition,
-} from "./entityPresentModel.js";
 
 // ---------------------------------------------------------------------------
 // Phase 0: Action type constant
@@ -59,11 +55,14 @@ export interface SnapshotOptions {
  * Each output has a **new** UUID; `entityUuid` references the live Entity.
  *
  * Throws if any Entity lacks `mlSchema` (incomplete present model).
+ *
+ * Do **not** use UUID-reuse compat helpers (e.g. presentEntityAsRedundant…) for freeze —
+ * those reuse the live Entity uuid and are unsafe for historical minting (#220 / #216).
  */
 export function snapshotEntitiesAsHistoricalEntityVersions(
   entities: Entity[],
   options?: SnapshotOptions,
-): EntityDefinition[] {
+): EntityVersion[] {
   const mintUuid = options?.newUuid ?? uuidv4;
 
   return entities.map((entity) => {
@@ -73,7 +72,7 @@ export function snapshotEntitiesAsHistoricalEntityVersions(
       );
     }
 
-    const snapshot: EntityDefinition = {
+    const snapshot: EntityVersion = {
       uuid: mintUuid(),
       parentUuid: ENTITY_VERSION_ENTITY_UUID,
       parentName: "EntityVersion",

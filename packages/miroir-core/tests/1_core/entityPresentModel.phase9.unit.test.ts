@@ -6,10 +6,8 @@ import type {
   Entity,
   EntityDefinition,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import {
-  presentEntityAsRedundantEntityDefinition,
-  resolvePresentEntityFromModel,
-} from "../../src/1_core/entityPresentModel.js";
+import { resolvePresentEntityFromModel } from "../../src/1_core/entityPresentModel.js";
+import { presentEntityAsRedundantEntityDefinition } from "../../src/1_core/entityDefinitionCompatibility.js";
 
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

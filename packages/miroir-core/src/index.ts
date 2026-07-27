@@ -762,22 +762,24 @@ export type {
   AlterEntityAttributeColumns,
   EntityEntityDefinitionPair,
 } from "./1_core/modelEntityDualWrite.js";
+// #220 compat — do not use for Application Version freeze / historical EntityVersion minting
 export {
   detectEntityEntityDefinitionInconsistencies,
   persistEntityThenEntityDefinition,
-} from "./1_core/modelEntityDualWritePersistence.js";
+  presentEntityAsRedundantEntityDefinition,
+  resolveOrSynthesizeEntityDefinitionForCreate,
+} from "./1_core/entityDefinitionCompatibility.js";
 export type {
   DualWriteFailurePolicy,
   DualWriteInconsistency,
   DualWriteInconsistencyReport,
   PersistEntityThenEntityDefinitionOps,
-} from "./1_core/modelEntityDualWritePersistence.js";
+} from "./1_core/entityDefinitionCompatibility.js";
 export {
   planAlterEntityAttributeMutation,
   planCreateEntityMutation,
   planRenameEntityMutation,
   resolveLiveEntityDefinitionForAction,
-  resolveOrSynthesizeEntityDefinitionForCreate,
 } from "./1_core/modelEntityActionLiveResolve.js";
 export type { LiveEntityMutationPlan } from "./1_core/modelEntityActionLiveResolve.js";
 export {
@@ -789,7 +791,6 @@ export {
   assertVersioningEnabledImmutable,
   assembleLivePresentModelEntities,
   resolvePresentEntityFromModel,
-  presentEntityAsRedundantEntityDefinition,
   compareEntityPresentModelDefinitions,
   entityHasCompletePresentModel,
   inventoryEntityEntityDefinitionJoins,
@@ -815,6 +816,10 @@ export type {
   FreezeApplicationVersionActionType,
   SnapshotOptions,
 } from "./1_core/applicationVersionFreeze.js";
+export {
+  getMetaModelEntityVersions,
+  withMetaModelEntityVersions,
+} from "./1_core/metaModelEntityVersions.js";
 export {
   actionsWithDeploymentInPayload, noValue
 } from "./1_core/Instance";

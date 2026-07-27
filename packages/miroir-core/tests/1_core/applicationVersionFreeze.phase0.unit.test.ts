@@ -1,5 +1,6 @@
 /**
  * #216 Phase 0 — lock freeze contracts & fixtures (characterization).
+ * #220 — UUID-reuse helper imported from entityDefinitionCompatibility (not freeze).
  *
  * Documents the Action type name, versioning fixtures, Cross schema shape,
  * and why freeze must not reuse presentEntityAsRedundantEntityDefinition UUIDs.
@@ -9,8 +10,8 @@ import { describe, expect, it } from "vitest";
 import {
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
-  presentEntityAsRedundantEntityDefinition,
 } from "../../src/1_core/entityPresentModel.js";
+import { presentEntityAsRedundantEntityDefinition } from "../../src/1_core/entityDefinitionCompatibility.js";
 import { ApplicationVersionCrossEntityVersionSchema } from "../../src/0_interfaces/1_core/Model.js";
 import { FREEZE_APPLICATION_VERSION_ACTION_TYPE } from "../../src/1_core/applicationVersionFreeze.js";
 import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";

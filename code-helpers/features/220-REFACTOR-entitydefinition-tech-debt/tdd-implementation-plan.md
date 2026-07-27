@@ -36,12 +36,12 @@ Phases **0–5** below (analysis Cases 1–4, 5a, 7).
 
 | Phase | Title | Analysis cases | Status | Tests |
 |---|---|---|---|---|
-| 0 | Characterization locks & dividing-line guards | — | ⬜ TODO | — |
-| 1 | Freeze path vocabulary (`EntityVersion` return types) | Case 1 | ⬜ TODO | — |
-| 2 | Quarantine UUID-reuse / compat helpers from freeze | Case 2 | ⬜ TODO | — |
-| 3 | Present-model Actions: Entity-only for complete Entities | Case 3 | ⬜ TODO | — |
-| 4 | Dual-write persistence shrink / quarantine | Case 4 | ⬜ TODO | — |
-| 5 | `entityVersions` preferred accessor + freeze-critical test vocabulary | Cases 5a, 7 | ⬜ TODO | — |
+| 0 | Characterization locks & dividing-line guards | — | ✅ DONE | `220-entityDefinition-tech-debt/220.phase0` |
+| 1 | Freeze path vocabulary (`EntityVersion` return types) | Case 1 | ✅ DONE | 220.phase1 + freeze snapshot |
+| 2 | Quarantine UUID-reuse / compat helpers from freeze | Case 2 | ✅ DONE | 220.phase2 + compat module |
+| 3 | Present-model Actions: Entity-only for complete Entities | Case 3 | ✅ DONE | 220.phase3 |
+| 4 | Dual-write persistence shrink / quarantine | Case 4 | ✅ DONE | 220.phase4 + EOL headers |
+| 5 | `entityVersions` preferred accessor + freeze-critical test vocabulary | Cases 5a, 7 | ✅ DONE | 220.phase5 + metaModelEntityVersions |
 | 6 | Optional rename wave (MetaModel field / stores) | Cases 5b/5c, 6 | ⬜ DEFERRED | — |
 | 7 | Optional UI / docs | Case 8 | ⬜ DEFERRED → #213 | — |
 
@@ -110,7 +110,7 @@ Encode the dividing line as failing/strict tests before refactors, so later phas
 
 ### 0.1 RED → GREEN — Freeze must not import compat UUID-reuse
 
-Test file (new or extend): `packages/miroir-core/tests/1_core/entityDefinitionDebt.phase0.unit.test.ts`
+Test file (new or extend): `packages/miroir-core/tests/1_core/220-entityDefinition-tech-debt/220.phase0.unit.test.ts`
 
 Behaviors:
 
@@ -122,7 +122,7 @@ Behaviors:
 
 #### Validation
 ```
-npm run testByFile -w miroir-core -- entityDefinitionDebt.phase0
+npm run testByFile -w miroir-core -- 220.phase0
 npm run testByFile -w miroir-core -- applicationVersionFreeze.phase0
 ```
 
@@ -168,7 +168,7 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze.gate
 
 ### 1.2 RED → GREEN — Freeze module greppable clean
 
-Extend phase0 debt test (or add `entityDefinitionDebt.phase1.unit.test.ts`):
+Extend phase0 debt test (or add `220.phase1.unit.test.ts`):
 
 - `applicationVersionFreeze.ts` text matches **zero** `\bEntityDefinition\b` (allow a single comment line pointing at the deprecated helper as anti-pattern, if needed — prefer zero).
 
@@ -187,7 +187,7 @@ Move “redundant live definition” projection and synthesize-for-create behind
 
 ### 2.1 RED → GREEN — Compat module exists; freeze still forbidden
 
-Test file: `packages/miroir-core/tests/1_core/entityDefinitionDebt.phase2.unit.test.ts`
+Test file: `packages/miroir-core/tests/1_core/220-entityDefinition-tech-debt/220.phase2.unit.test.ts`
 
 Behaviors:
 
@@ -210,7 +210,7 @@ Impl:
 
 #### Validation
 ```
-npm run testByFile -w miroir-core -- entityDefinitionDebt.phase2
+npm run testByFile -w miroir-core -- 220.phase2
 npm run testByFile -w miroir-core -- entityPresentModel.phase9
 npm run testByFile -w miroir-core -- applicationVersionFreeze.phase0
 ```
@@ -280,7 +280,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 
 ### 4.1 RED → GREEN — Call-site inventory test
 
-Test file: `packages/miroir-core/tests/1_core/entityDefinitionDebt.phase4.unit.test.ts`
+Test file: `packages/miroir-core/tests/1_core/220-entityDefinition-tech-debt/220.phase4.unit.test.ts`
 
 Approach (pick one and stick to it):
 
@@ -298,7 +298,7 @@ Approach (pick one and stick to it):
 
 #### Validation
 ```
-npm run testByFile -w miroir-core -- entityDefinitionDebt.phase4
+npm run testByFile -w miroir-core -- 220.phase4
 npm run testByFile -w miroir-core -- modelEntityDualWritePersistence
 npm run testByFile -w miroir-core -- ModelEntityActionTransformer.phase11
 ```
@@ -313,7 +313,7 @@ Freeze-adjacent and new code prefer `entityVersions` naming; critical tests stop
 
 ### 5.1 RED → GREEN — Accessor helpers
 
-Test file: `packages/miroir-core/tests/1_core/entityDefinitionDebt.phase5.unit.test.ts`
+Test file: `packages/miroir-core/tests/1_core/220-entityDefinition-tech-debt/220.phase5.unit.test.ts`
 
 Behaviors:
 
@@ -334,11 +334,11 @@ Impl: e.g. `packages/miroir-core/src/1_core/metaModelEntityVersions.ts` (or add 
 
 ### 5.3 RED → GREEN — #216 handoff smoke
 
-- One test (can live in `entityDefinitionDebt.phase5`) that: snapshot Entities → historical EntityVersions with new UUIDs; assert `getMetaModelEntityVersions`-style naming in the arrange/assert comments; assert UUID-reuse helper was not used.
+- One test (can live in `220.phase5`) that: snapshot Entities → historical EntityVersions with new UUIDs; assert `getMetaModelEntityVersions`-style naming in the arrange/assert comments; assert UUID-reuse helper was not used.
 
 #### Validation
 ```
-npm run testByFile -w miroir-core -- entityDefinitionDebt.phase5
+npm run testByFile -w miroir-core -- 220.phase5
 npm run testByFile -w miroir-core -- applicationVersionFreeze
 npm run testByFile -w miroir-core -- entityPresentModel.phase9
 npm run testByFile -w miroir-core -- entityPresentModel.phase11
@@ -383,14 +383,16 @@ Rename report diagram `entityDefinitions` field / standalone UI props only when 
 
 Mirror of issue acceptance criteria — check off when Phases 0–5 done:
 
-- [ ] Present-model resolution for ordinary complete Entities does not prefer/require a live EntityDefinition instance (Phase 3).
-- [ ] Freeze-adjacent APIs/types in `miroir-core` use `EntityVersion` where they mean snapshots (Phase 1).
-- [ ] Dual-write / UUID-reuse is quarantined; freeze must not call it for snapshot minting (Phases 2, 4).
-- [ ] UUID-reuse helpers clearly separated from historical minting; freeze tests guard the boundary (Phases 0, 2).
-- [ ] Critical tests assert Entity present-model + EntityVersion history concepts (Phase 5).
-- [ ] Targeted `testByFile` suites above green; no new present-model coupling to ApplicationVersion Cross mappings.
-- [ ] Remaining intentional `EntityDefinition` aliases/shims are greppable under compat / generated deprecated alias only.
-- [ ] #216 TDD plan can continue at Phase 2 (freeze plan builder) without another vocabulary cleanup pass.
+- [x] Present-model resolution for ordinary complete Entities does not prefer/require a live EntityDefinition instance (Phase 3).
+- [x] Freeze-adjacent APIs/types in `miroir-core` use `EntityVersion` where they mean snapshots (Phase 1).
+- [x] Dual-write / UUID-reuse is quarantined; freeze must not call it for snapshot minting (Phases 2, 4).
+- [x] UUID-reuse helpers clearly separated from historical minting; freeze tests guard the boundary (Phases 0, 2).
+- [x] Critical tests assert Entity present-model + EntityVersion history concepts (Phase 5).
+- [x] Targeted `testByFile` suites above green; no new present-model coupling to ApplicationVersion Cross mappings.
+- [x] Remaining intentional `EntityDefinition` aliases/shims are greppable under compat / generated deprecated alias only.
+- [x] #216 TDD plan can continue at Phase 2 (freeze plan builder) without another vocabulary cleanup pass.
+
+Known pre-existing (not #220): `entityPresentModel.phase3` fails on `ApplicationVersionCrossEntityVersion` Entity↔EntityVersion `mlSchema` drift in miroir deployment assets — present before this work.
 
 ---
 

@@ -7,6 +7,8 @@
  * copies become historical / not updated). Dual-write remains for create when
  * an EntityDefinition is explicitly supplied, and for alter/rename when Entity
  * is incomplete and a live ED is available for enrichment.
+ *
+ * #220 — UUID-reuse synthesize helpers live in entityDefinitionCompatibility.
  */
 
 import type {
@@ -16,7 +18,6 @@ import type {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   entityHasCompletePresentModel,
-  presentEntityAsRedundantEntityDefinition,
   resolvePresentEntityFromModel,
 } from "./entityPresentModel.js";
 import {
@@ -142,18 +143,5 @@ export function planAlterEntityAttributeMutation(
   return undefined;
 }
 
-/**
- * For bootstrap / reset paths that still call createEntity(entity, entityDefinition):
- * prefer live ED; otherwise synthesize a redundant ED-shaped copy from Entity.
- * Prefer Entity-only create via optional ED on createEntity when Entity is complete.
- */
-export function resolveOrSynthesizeEntityDefinitionForCreate(
-  entity: Entity,
-  entityDefinitions: EntityDefinition[] = [],
-): EntityDefinition {
-  const existing = entityDefinitions.find((ed) => ed.entityUuid === entity.uuid);
-  if (existing) {
-    return existing;
-  }
-  return presentEntityAsRedundantEntityDefinition(entity, entityDefinitions);
-}
+/** @deprecated Use import from entityDefinitionCompatibility (#220). */
+export { resolveOrSynthesizeEntityDefinitionForCreate } from "./entityDefinitionCompatibility.js";

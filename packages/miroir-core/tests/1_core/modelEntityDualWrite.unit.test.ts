@@ -1,3 +1,7 @@
+/**
+ * #217 Phase 5 — modelEntityDualWrite pure helpers.
+ * #220 compat suite — dual-write pair construction (not present-model authority).
+ */
 import { describe, expect, it } from "vitest";
 
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";

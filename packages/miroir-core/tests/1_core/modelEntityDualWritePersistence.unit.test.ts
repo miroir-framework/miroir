@@ -1,3 +1,7 @@
+/**
+ * #217 Phase 6 — persistEntityThenEntityDefinition.
+ * #220 compat suite — dual-write persistence (not present-model authority).
+ */
 import { describe, expect, it, vi } from "vitest";
 
 import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement.js";
