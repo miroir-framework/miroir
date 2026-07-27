@@ -62,7 +62,7 @@ Legend:
 | 2 | Introduce `MiroirRight` | ✅ DONE | `… -- miroirUserRights.219.phase2` + `… -- modelValidation` |
 | 3 | Admin list/detail reporting | ✅ DONE | `… -- miroirUserRights.219.phase3` |
 | 4 | Behavior non-change safety net | ✅ DONE | `… -- miroirUserRights.219.phase4` + DomainController.integ |
-| 5 | Multi-store / bundled load checks | ⬜ TODO | DomainController.integ + sandbox bundled test |
+| 5 | Multi-store / bundled load checks | ✅ DONE | DomainController.integ + sandbox bundled test |
 | 6 | Final acceptance gate | ⬜ TODO | full phase command set below |
 
 ---
@@ -396,11 +396,15 @@ Expect: all green; Phase 4 scan finds no enforcement symbols.
 
 ---
 
-## Phase 5 — Multi-store / bundled load checks (C6)
+## Phase 5 — Multi-store / bundled load checks (C6)  ✅ DONE
 
 ### Goal
 
 Admin assets load on filesystem integ path; bundled classification treats new entities as Admin **data** (like Application/Deployment), not mistakenly as model-only.
+
+**Landed:** `miroirUserRights.219.phase5.unit.test.ts` — asserts MiroirUser/MiroirRight entity uuids are **not** in sandbox `ADMIN_MODEL_PARENT_UUIDS_ARRAY` and seeds live under `admin_data/`. No `bundledData.ts` change required (already classified as data by exclusion).
+
+**Deferred:** indexedDb / sql DomainController.integ.Data.CRUD (filesystem path green; not re-run for this phase).
 
 ### Red
 
