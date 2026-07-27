@@ -48,7 +48,18 @@ flowchart TD
 - [x] `npm run build -w miroir-core -w miroir-store-postgres -w miroir-store-bundled` succeeds (or package-local build equivalent).
 - [x] Grep: no `createEntity(.*,.*entityVersion` in `sqlDbEntityStoreSectionMixin.ts`.
 
-**Slice 1 note:** `PersistenceStoreController.createEntity` / `createEntities` and `ModelInitializer` bootstrap callers were updated enough for `miroir-core` to compile (Entity-only). FS/IDB/Mongo mixins remain for Slice 2.
+### Realization (Slice 1)
+
+What landed:
+
+- Characterization test [`220.createEntity-entity-only.unit.test.ts`](../../../packages/miroir-core/tests/1_core/220-entityDefinition-tech-debt/220.createEntity-entity-only.unit.test.ts) asserts interface + Postgres mixin source contracts.
+- [`PersistenceStoreControllerInterface`](../../../packages/miroir-core/src/0_interfaces/4-services/PersistenceStoreControllerInterface.ts): `createEntity(entity)` / `createEntities(Entity[])`.
+- Postgres [`sqlDbEntityStoreSectionMixin`](../../../packages/miroir-store-postgres/src/4_services/sqlDbEntityStoreSectionMixin.ts): dropped dual-write create; `getAccessToModelSectionEntity(entity)` Entity-only; removed `normalizeCreateEntityPair` import (rename/alter still use `persistEntityThenEntityDefinition`).
+- Stubs: ErrorModelStore, BundledModelStoreSection.
+- [`PersistenceStoreController`](../../../packages/miroir-core/src/4_services/PersistenceStoreController.ts): store methods Entity-only; `handleAction("createEntity")` maps `payload.entities` → `pair.entity` only (Action still pairs until Slice 4).
+- [`ModelInitializer`](../../../packages/miroir-core/src/3_controllers/ModelInitializer.ts): `bootstrapCompleteEntity` via `resolveCurrentEntityModel` + aligned EV; all `createEntity` calls single-arg. `createModelStorageSpaceForInstancesOfEntity` still takes aligned EV for table schema bootstrap.
+
+Deferred to Slice 2: FS / IndexedDB / Mongo mixins and standalone-app integ callers.
 
 ---
 
@@ -65,10 +76,20 @@ Same signature change in:
 
 ### Validation (Slice 2)
 
-- [ ] All writable store mixins + PersistenceStoreController use single-arg `createEntity` / `Entity[]` batch.
-- [ ] PersistenceStoreController integ + tests-utils compile and call Entity-only create.
-- [ ] `npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ` (filesystem or sql profile) passes for createEntity cases.
-- [ ] Grep: no dual-write `normalizeCreateEntityPair` on create in FS/IDB/Mongo mixins.
+- [x] All writable store mixins + PersistenceStoreController use single-arg `createEntity` / `Entity[]` batch.
+- [x] PersistenceStoreController integ + tests-utils compile and call Entity-only create.
+- [x] `npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ` (filesystem or sql profile) passes for createEntity cases.
+- [x] Grep: no dual-write `normalizeCreateEntityPair` on create in FS/IDB/Mongo mixins.
+
+### Realization (Slice 2)
+
+What landed:
+
+- Characterization tests extended for FS / IndexedDB / Mongo Entity-only create signatures.
+- Mixins Entity-only: `FileSystemEntityStoreSectionMixin`, `IndexedDbEntityStoreSectionMixin`, `MongoDbEntityStoreSectionMixin` (no `normalizeCreateEntityPair` on create).
+- Callers: `tests-utils.tsx`, `PersistenceStoreController.integ.test.tsx` drop 2nd arg; rename setup seeds historical `EntityVersion` via `upsertInstance("model", …)` because create no longer dual-writes.
+- Residual bootstrap fix in `ModelInitializer.bootstrapCompleteEntity`: project present-model from aligned+resolved EV onto Entity instead of `resolveCurrentEntityModel` (extend-form vs flattened `mlSchema` was throwing `EntityPresentModelResolutionError` and aborting Miroir entity seeding mid-bootstrap).
+- Nonreg: `PersistenceStoreController.integ` filesystem profile — 11/11 passed.
 
 ---
 

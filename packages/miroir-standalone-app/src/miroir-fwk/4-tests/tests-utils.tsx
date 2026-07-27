@@ -223,10 +223,7 @@ async function seedEntitiesAndInstancesOnEmulatedServer(
   reportBookList: EntityInstance,
 ) {
   for (const entity of entities) {
-    await localAppPersistenceStoreController.createEntity(
-      entity.entity as Entity,
-      entity.entityVersion as EntityVersion,
-    );
+    await localAppPersistenceStoreController.createEntity(entity.entity as Entity);
   }
   await localAppPersistenceStoreController.upsertInstance("model", reportBookList as EntityInstance);
   for (const entityInstances of entities) {

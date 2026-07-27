@@ -1,6 +1,6 @@
 /**
  * #220 — createEntity Entity-only (no entityVersion param).
- * Slice 1 of createEntity-remove-entityVersion-tdd-plan.md
+ * Slice 1–2 of createEntity-remove-entityVersion-tdd-plan.md
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -39,17 +39,41 @@ describe("220 createEntity Entity-only — Slice 1 store interface + Postgres", 
       ),
       "utf8",
     );
-    // Method signature: single Entity argument
     expect(src).toMatch(
       /async createEntity\(\s*entity\s*:\s*Entity\s*\)\s*:\s*Promise<Action2VoidReturnType>/,
     );
     expect(src).not.toMatch(
       /async createEntity\(\s*entity\s*:\s*Entity\s*,\s*entityVersion\?/,
     );
-    // Dual-write create path must be gone
     expect(src).not.toMatch(/normalizeCreateEntityPair/);
     expect(src).not.toMatch(/transactional dual-write failed/);
-    // Batch takes Entity[]
+    expect(src).toMatch(
+      /async createEntities\(\s*entities\s*:\s*Entity\[\]\s*\)\s*:\s*Promise<Action2VoidReturnType>/,
+    );
+  });
+});
+
+describe("220 createEntity Entity-only — Slice 2 FS / IndexedDB / Mongo", () => {
+  const mixinPaths = [
+    "packages/miroir-store-filesystem/src/4_services/FileSystemEntityStoreSectionMixin.ts",
+    "packages/miroir-store-indexedDb/src/4_services/IndexedDbEntityStoreSectionMixin.ts",
+    "packages/miroir-store-mongodb/src/4_services/MongoDbEntityStoreSectionMixin.ts",
+  ] as const;
+
+  it.each(mixinPaths)("%s createEntity is Entity-only (no dual-write on create)", (relPath) => {
+    const src = readFileSync(join(REPO_ROOT, relPath), "utf8");
+    expect(src).toMatch(
+      /async createEntity\(\s*entity\s*:\s*Entity\s*\)\s*:\s*Promise<Action2VoidReturnType>/,
+    );
+    expect(src).not.toMatch(
+      /async createEntity\(\s*entity\s*:\s*Entity\s*,\s*entityVersion\?/,
+    );
+    const createBody = src.slice(
+      src.search(/async createEntity\(/),
+      src.search(/async createEntities\(/),
+    );
+    expect(createBody).not.toMatch(/normalizeCreateEntityPair/);
+    expect(createBody).not.toMatch(/persistEntityThenEntityDefinition/);
     expect(src).toMatch(
       /async createEntities\(\s*entities\s*:\s*Entity\[\]\s*\)\s*:\s*Promise<Action2VoidReturnType>/,
     );

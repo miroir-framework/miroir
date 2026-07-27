@@ -59,7 +59,7 @@ import {
 } from "../0_interfaces/1_core/EntityVersion";
 import {
   alignEntityDefinitionToPresentEntity,
-  resolveCurrentEntityModel,
+  projectEntityPresentModelDefinition,
 } from "../1_core/entityPresentModel.js";
 import {
   Entity,
@@ -92,14 +92,21 @@ function bootstrapEntityDefinitionAligned(
   );
 }
 
-/** #220 — complete Entity present model for Entity-only createEntity. */
+/**
+ * #220 — complete Entity present model for Entity-only createEntity.
+ * Copy present-model from the bootstrap-aligned+resolved EntityVersion onto Entity.
+ * Do not use resolveCurrentEntityModel here: resolved mlSchema (extend flattened)
+ * would look inconsistent vs Entity assets that still carry extend-form mlSchema.
+ */
 function bootstrapCompleteEntity(
   entity: Entity,
   entityVersion: EntityVersion,
 ): Entity {
-  return resolveCurrentEntityModel(entity, [
-    bootstrapEntityDefinitionAligned(entity, entityVersion),
-  ]);
+  const alignedResolved = bootstrapEntityDefinitionAligned(entity, entityVersion);
+  return {
+    ...entity,
+    ...projectEntityPresentModelDefinition(alignedResolved),
+  };
 }
 
 let log: LoggerInterface = console as any as LoggerInterface;

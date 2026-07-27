@@ -20,7 +20,6 @@ import {
   applyEntityOnlyAlterAttribute,
   applyEntityOnlyRename,
   applyRenameEntityPair,
-  normalizeCreateEntityPair,
   persistEntityThenEntityDefinition,
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
@@ -82,80 +81,26 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #############################################################################################
-    // #217 Phase 6/11: Entity then optional EntityVersion; Entity-only when ED omitted.
-    async createEntity(entity: Entity, entityVersion?: EntityVersion): Promise<Action2VoidReturnType> {
-      if (entityVersion && entity.uuid != entityVersion.entityUuid) {
-        log.error(
-          this.logHeader,
-          "createEntity",
-          "inconsistent input: given entityVersion is not related to given entity."
-        );
-        return new Action2Error(
-          "FailedToCreateStore",
-          "createEntity failed: entity.uuid != entityVersion.entityUuid",
-        );
-      }
-      if (!entityVersion) {
-        if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
-          log.warn(
-            this.logHeader,
-            "createEntity",
-            entity.name,
-            "already existing sublevel",
-            entity.uuid,
-          );
-        } else {
-          await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
-        }
-        return this.upsertInstance(entityEntity.uuid, entity);
-      }
-      const pair = normalizeCreateEntityPair(entity, entityVersion);
-      if (this.dataStore.getEntityUuids().includes(pair.entity.uuid)) {
+    // #220 — createEntity is Entity-only (complete present model on Entity required).
+    async createEntity(entity: Entity): Promise<Action2VoidReturnType> {
+      if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
         log.warn(
           this.logHeader,
           "createEntity",
-          pair.entity.name,
+          entity.name,
           "already existing sublevel",
-          pair.entity.uuid,
-          this.localUuidIndexedDb.hasSubLevel(pair.entity.uuid)
+          entity.uuid,
         );
       } else {
-        await this.dataStore.createStorageSpaceForInstancesOfEntity(
-          pair.entity,
-          pair.entityVersion,
-        );
+        await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
       }
-      if (!this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-        log.warn(
-          this.logHeader,
-          "createEntity",
-          pair.entity.name,
-          "sublevel for entityEntityDefinition does not exist",
-          entityEntityDefinition.uuid,
-        );
-      }
-      return persistEntityThenEntityDefinition(
-        pair,
-        {
-          writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
-          writeEntityDefinition: (nextEntityDefinition) =>
-            this.upsertInstance(entityEntityDefinition.uuid, nextEntityDefinition),
-          deleteEntity: (writtenEntity) =>
-            this.deleteInstance(entityEntity.uuid, writtenEntity),
-        },
-        { failurePolicy: { kind: "compensate" } },
-      );
+      return this.upsertInstance(entityEntity.uuid, entity);
     }
 
     // ##############################################################################################
-    async createEntities(
-      entities: {
-        entity:Entity,
-        entityVersion?: EntityVersion,
-      }[]
-    ): Promise<Action2VoidReturnType> {
-      for (const e of entities) {
-        const result = await this.createEntity(e.entity, e.entityVersion);
+    async createEntities(entities: Entity[]): Promise<Action2VoidReturnType> {
+      for (const entity of entities) {
+        const result = await this.createEntity(entity);
         if (result instanceof Action2Error) {
           return result;
         }

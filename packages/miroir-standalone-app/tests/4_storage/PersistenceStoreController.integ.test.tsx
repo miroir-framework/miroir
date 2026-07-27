@@ -464,10 +464,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       "setup_createEntity",
       {},
       async () =>
-        localAppPersistenceStoreController.createEntity(
-          entityAuthor as Entity,
-          entityDefinitionAuthor as EntityVersion,
-        ),
+        localAppPersistenceStoreController.createEntity(entityAuthor as Entity),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
@@ -492,13 +489,14 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
 
   // ################################################################################################
   it("rename Author Entity", async () => {
-    // setup
-    const entityCreated = await localAppPersistenceStoreController.createEntity(
-      entityAuthor as Entity,
-      entityDefinitionAuthor as EntityVersion,
-    );
-
+    // setup — #220 createEntity is Entity-only; seed historical EntityVersion separately
+    const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as Entity);
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK);
+    const entityVersionCreated = await localAppPersistenceStoreController.upsertInstance(
+      "model",
+      entityDefinitionAuthor as EntityInstance,
+    );
+    expect(entityVersionCreated, "failed to seed Author EntityVersion").toEqual(ACTION_OK);
     // test starts
     const modelActionRenameEntity: ModelActionRenameEntity = {
       // actionType: "modelAction",
@@ -613,10 +611,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   // ################################################################################################
   it("delete Author Entity", async () => {
     // setup
-    const entityCreated = await localAppPersistenceStoreController.createEntity(
-      entityAuthor as Entity,
-      entityDefinitionAuthor as EntityVersion,
-    );
+    const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as Entity);
 
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK);
 
@@ -639,7 +634,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     await chainVitestSteps(
       //   "setup_createEntity",
       //   {},
-      //   async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityVersion),
+      //   async () => localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity),
       //   undefined,
       //   undefined, // name to give to result
       //   undefined, // expected result.elementType
@@ -842,17 +837,14 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   // ################################################################################################
   it("add Author Instance", async () => {
     // setup
-    // const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity,entityDefinitionAuthor as EntityVersion)
+    // const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as MetaEntity)
     // expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK)
 
     await chainVitestSteps(
       "setup_createEntity",
       {},
       async () =>
-        localAppPersistenceStoreController.createEntity(
-          entityAuthor as Entity,
-          entityDefinitionAuthor as EntityVersion,
-        ),
+        localAppPersistenceStoreController.createEntity(entityAuthor as Entity),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
@@ -904,10 +896,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       "setup_createEntity",
       {},
       async () =>
-        localAppPersistenceStoreController.createEntity(
-          entityAuthor as Entity,
-          entityDefinitionAuthor as EntityVersion,
-        ),
+        localAppPersistenceStoreController.createEntity(entityAuthor as Entity),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
@@ -936,10 +925,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       "setup_createEntity",
       {},
       async () =>
-        localAppPersistenceStoreController.createEntity(
-          entityAuthor as Entity,
-          entityDefinitionAuthor as EntityVersion,
-        ),
+        localAppPersistenceStoreController.createEntity(entityAuthor as Entity),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
@@ -977,19 +963,13 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   // ################################################################################################
   it("delete Author Instance", async () => {
     // setup
-    const entityCreated = await localAppPersistenceStoreController.createEntity(
-      entityAuthor as Entity,
-      entityDefinitionAuthor as EntityVersion,
-    );
+    const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as Entity);
     await chainVitestSteps(
       // setup
       "setup_createEntity",
       {},
       async () =>
-        localAppPersistenceStoreController.createEntity(
-          entityAuthor as Entity,
-          entityDefinitionAuthor as EntityVersion,
-        ),
+        localAppPersistenceStoreController.createEntity(entityAuthor as Entity),
       undefined,
       undefined, // name to give to result
       undefined, // expected result.elementType
