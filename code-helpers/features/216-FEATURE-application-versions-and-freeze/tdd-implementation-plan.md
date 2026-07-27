@@ -23,7 +23,7 @@ Related:
 
 | Phase | Title | Status | Tests |
 |---|---|---|---|
-| 0 | Lock freeze contracts & fixtures | ⬜ TODO | — |
+| 0 | Lock freeze contracts & fixtures | ✅ DONE | 4/4 |
 | 1 | Versioning gate + Entity snapshot planner | ⬜ TODO | — |
 | 2 | Freeze plan builder (SAV + Cross + isolation) | ⬜ TODO | — |
 | 3 | Linear tip resolution (`previousVersion`) | ⬜ TODO | — |
@@ -91,11 +91,13 @@ Prefer pure domain tests in `miroir-core` for Phases 0–4; add persistence / Ac
 
 ---
 
-## Phase 0 — Lock freeze contracts & fixtures  ⬜ TODO
+## Phase 0 — Lock freeze contracts & fixtures  ✅ DONE
 
 ### Goal
 
 Characterize current gaps so freeze work does not regress #217 invariants, and lock naming / payload shape for the Action.
+
+**Realization:** `FREEZE_APPLICATION_VERSION_ACTION_TYPE` in `applicationVersionFreeze.ts`; characterization suite `applicationVersionFreeze.phase0.unit.test.ts` (4/4). Non-reg: `entityPresentModel.phase1` / `phase12` green.
 
 ### 0.1 RED → GREEN — Gate contract characterization
 

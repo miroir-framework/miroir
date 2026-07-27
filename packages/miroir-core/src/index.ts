@@ -807,6 +807,12 @@ export type {
   ResolveCurrentEntityModelOptions,
 } from "./1_core/entityPresentModel.js";
 export {
+  FREEZE_APPLICATION_VERSION_ACTION_TYPE,
+} from "./1_core/applicationVersionFreeze.js";
+export type {
+  FreezeApplicationVersionActionType,
+} from "./1_core/applicationVersionFreeze.js";
+export {
   actionsWithDeploymentInPayload, noValue
 } from "./1_core/Instance";
 export {
