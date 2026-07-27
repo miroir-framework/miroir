@@ -7,6 +7,7 @@ export declare const entityViewParams: any;
 export declare const entityStoreBasedConfiguration: any;
 export declare const entityImport: any;
 export declare const entityMiroirUser: any;
+export declare const entityMiroirRight: any;
 export declare const entityVersionAdminApplication: any;
 /** @deprecated Use entityVersionAdminApplication */
 export declare const entityDefinitionAdminApplication: any;
@@ -25,6 +26,9 @@ export declare const entityDefinitionImport: any;
 export declare const entityVersionMiroirUser: any;
 /** @deprecated Use entityVersionMiroirUser */
 export declare const entityDefinitionMiroirUser: any;
+export declare const entityVersionMiroirRight: any;
+/** @deprecated Use entityVersionMiroirRight */
+export declare const entityDefinitionMiroirRight: any;
 export declare const reportViewParamsDetails: any;
 export declare const reportApplicationList: any;
 export declare const reportApplicationDetails: any;
@@ -47,3 +51,5 @@ export declare const defaultAdminViewParams: any;
 export declare const adminImport: any;
 export declare const miroirUser_AliceAdmin: any;
 export declare const miroirUser_BobInactive: any;
+export declare const miroirRight_AliceLibraryAppAdmin: any;
+export declare const miroirRight_AliceLibraryDeploymentRead: any;

@@ -1,0 +1,10 @@
+{
+  "uuid": "587f92f8-7140-434b-b9ff-f7f5d2e461b2",
+  "parentName": "MiroirRight",
+  "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
+  "miroirUser": "1c39328c-7de4-44ae-bcf1-5bbc38d8e267",
+  "targetType": "deployment",
+  "targetUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "capability": "read",
+  "description": "Alice Admin — illustrative read capability on Library Deployment."
+}

@@ -57,11 +57,11 @@ Legend:
 
 | Phase | Title | Status | Primary RED / Validation command |
 |---|---|---|---|
-| 0 | Test harness and fixtures baseline | ✅ DONE | `… -- miroirUserRights.phase0` + `… -- modelValidation` |
-| 1 | Introduce `MiroirUser` | ✅ DONE | `… -- miroirUserRights.phase1` + `… -- modelValidation` |
-| 2 | Introduce `MiroirRight` | ⬜ TODO | `… -- miroirUserRights.phase2` + `… -- modelValidation` |
-| 3 | Admin list/detail reporting | ⬜ TODO | `… -- miroirUserRights.phase3` |
-| 4 | Behavior non-change safety net | ⬜ TODO | `… -- miroirUserRights.phase4` + DomainController.integ |
+| 0 | Test harness and fixtures baseline | ✅ DONE | `… -- miroirUserRights.219.phase0` + `… -- modelValidation` |
+| 1 | Introduce `MiroirUser` | ✅ DONE | `… -- miroirUserRights.219.phase1` + `… -- modelValidation` |
+| 2 | Introduce `MiroirRight` | ✅ DONE | `… -- miroirUserRights.219.phase2` + `… -- modelValidation` |
+| 3 | Admin list/detail reporting | ⬜ TODO | `… -- miroirUserRights.219.phase3` |
+| 4 | Behavior non-change safety net | ⬜ TODO | `… -- miroirUserRights.219.phase4` + DomainController.integ |
 | 5 | Multi-store / bundled load checks | ⬜ TODO | DomainController.integ + sandbox bundled test |
 | 6 | Final acceptance gate | ⬜ TODO | full phase command set below |
 
@@ -76,7 +76,7 @@ Characterize current Admin deployment: no `MiroirUser` / `MiroirRight` yet; exis
 ### Red
 
 **New test file:**  
-`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.phase0.unit.test.ts`
+`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.219.phase0.unit.test.ts`
 
 Behaviors (must fail until later phases invert them — Phase 0 itself should pass by asserting **absence**):
 
@@ -87,7 +87,7 @@ Behaviors (must fail until later phases invert them — Phase 0 itself should pa
 
 ```bash
 # RED (Phase 0 characterization — expect PASS while entities are absent)
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase0
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase0
 ```
 
 ### Green
@@ -96,7 +96,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 - No Admin asset changes.
 
 ```bash
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase0
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase0
 ```
 
 ### Refactor
@@ -113,7 +113,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 ### Validation
 
 ```bash
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase0
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase0
 npm run testByFile -w miroir-test-app_deployment-admin -- modelValidation
 ```
 
@@ -136,7 +136,7 @@ Add `MiroirUser` to Admin model + minimal seed users (analysis baseline; C6).
 ### Red
 
 **New test file:**  
-`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.phase1.unit.test.ts`
+`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.219.phase1.unit.test.ts`
 
 Behaviors (expect FAIL before assets exist):
 
@@ -150,7 +150,7 @@ Also invert Phase 0 absence assertions for `MiroirUser` (delete or rewrite Phase
 
 ```bash
 # RED — expect FAIL
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase1
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase1
 ```
 
 ### Green
@@ -163,7 +163,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 
 ```bash
 npm run build -w miroir-test-app_deployment-admin
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase1
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase1
 ```
 
 ### Refactor
@@ -181,7 +181,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 
 ```bash
 npm run build -w miroir-test-app_deployment-admin
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase1
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase1
 npm run testByFile -w miroir-test-app_deployment-admin -- modelValidation
 ```
 
@@ -189,16 +189,22 @@ Expect: Phase 1 + modelValidation green; Application/Deployment reports assets u
 
 ---
 
-## Phase 2 — Introduce `MiroirRight` model entity
+## Phase 2 — Introduce `MiroirRight` model entity  ✅ DONE
 
 ### Goal
 
 Add single `MiroirRight` entity with C2–C4 fields and seed rights for both target scopes.
 
+**Landed assets:**
+- Entity `a6136fc7-949b-4d64-9f13-dd3afce1ab3c` (`MiroirRight`)
+- EntityVersion `ce16e291-cfff-4653-a074-9517fb4f2c34`
+- Seeds: Alice → Library application (`admin`), Alice → Library deployment (`read`)
+- Exports: `entityMiroirRight`, `entityVersionMiroirRight`, `miroirRight_AliceLibraryAppAdmin`, `miroirRight_AliceLibraryDeploymentRead`
+
 ### Red
 
 **New test file:**  
-`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.phase2.unit.test.ts`
+`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.219.phase2.unit.test.ts`
 
 Behaviors (expect FAIL before assets exist):
 
@@ -214,7 +220,7 @@ Invert remaining Phase 0 absence assertions for `MiroirRight`.
 
 ```bash
 # RED — expect FAIL
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase2
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase2
 ```
 
 ### Green
@@ -225,7 +231,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 
 ```bash
 npm run build -w miroir-test-app_deployment-admin
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase2
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase2
 ```
 
 ### Refactor
@@ -243,9 +249,9 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 
 ```bash
 npm run build -w miroir-test-app_deployment-admin
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase2
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase2
 npm run testByFile -w miroir-test-app_deployment-admin -- modelValidation
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase1
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase1
 ```
 
 Expect: Phases 1–2 + modelValidation green; referential integrity assertions pass.
@@ -261,7 +267,7 @@ Expose Users and Rights via Admin list + detail reports and menu entries; generi
 ### Red
 
 **New test file:**  
-`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.phase3.unit.test.ts`
+`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.219.phase3.unit.test.ts`
 
 Behaviors (expect FAIL before report/menu assets exist):
 
@@ -280,7 +286,7 @@ Behaviors (expect FAIL before report/menu assets exist):
 
 ```bash
 # RED — expect FAIL
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase3
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase3
 ```
 
 ### Green
@@ -291,7 +297,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 
 ```bash
 npm run build -w miroir-test-app_deployment-admin
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase3
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase3
 ```
 
 ### Refactor
@@ -309,7 +315,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 
 ```bash
 npm run build -w miroir-test-app_deployment-admin
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase3
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase3
 npm run testByFile -w miroir-test-app_deployment-admin -- modelValidation
 ```
 
@@ -328,7 +334,7 @@ Prove `MiroirRight` data does not introduce allow/deny behavior.
 ### Red
 
 **New test file:**  
-`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.phase4.unit.test.ts`
+`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.219.phase4.unit.test.ts`
 
 Behaviors:
 
@@ -339,7 +345,7 @@ Behaviors:
 
 ```bash
 # RED characterization / non-reg — must stay green with rights assets loaded
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase4
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase4
 
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
@@ -352,7 +358,7 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data.CRUD
 - Fix only accidental enforcement if introduced earlier (should be none).
 
 ```bash
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase4
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase4
 ```
 
 ### Refactor
@@ -367,7 +373,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 ### Validation
 
 ```bash
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase4
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase4
 
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
@@ -411,7 +417,7 @@ npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data.CRUD
 ```
 
 If `miroir-sandbox` has no vitest script yet, place the classification test under  
-`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.phase5.unit.test.ts`  
+`packages/miroir-test-app_deployment-admin/tests/miroirUserRights.219.phase5.unit.test.ts`  
 and import the classification helper / parentUuid sets from sandbox or duplicate the Set rule under test — prefer one package that already runs vitest.
 
 ### Green
@@ -422,7 +428,7 @@ and import the classification helper / parentUuid sets from sandbox or duplicate
 
 ```bash
 npm run build -w miroir-test-app_deployment-admin
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase5
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase5
 # or:
 # npm run testByFile -w miroir-sandbox -- bundledAdminClassification.miroirUserRights
 ```
@@ -441,7 +447,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase
 ```bash
 npm run build -w miroir-test-app_deployment-admin
 npm run testByFile -w miroir-test-app_deployment-admin -- modelValidation
-npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.phase5
+npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights.219.phase5
 
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \

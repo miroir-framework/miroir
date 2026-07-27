@@ -31,7 +31,7 @@ function getMlSchemaDefinition(
 /**
  * Phase 1 — MiroirUser entity + seed users (#219).
  */
-describe("miroirUserRights.phase1 — MiroirUser model and seed data", () => {
+describe("miroirUserRights.219.phase1 — MiroirUser model and seed data", () => {
   const modelDir = getAdminModelDir();
   const dataDir = getAdminDataDir();
 

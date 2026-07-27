@@ -12,15 +12,14 @@ import {
 } from "./helpers/adminAssetInventory";
 
 /**
- * Phase 0 characterization for #219.
- * MiroirUser presence is asserted in phase1 (inverted here after Phase 1).
- * MiroirRight remains absent until Phase 2.
+ * Phase 0 characterization for #219 (updated through Phase 2).
+ * MiroirUser / MiroirRight presence asserted here after Phases 1–2.
  */
-describe("miroirUserRights.phase0 — Admin baseline catalogue", () => {
+describe("miroirUserRights.219.phase0 — Admin baseline catalogue", () => {
   const modelDir = getAdminModelDir();
   const dataDir = getAdminDataDir();
 
-  it("has MiroirUser Entity after Phase 1 (inverted from initial absence)", () => {
+  it("has MiroirUser Entity after Phase 1", () => {
     expect(findAdminEntityByName("MiroirUser", modelDir)).toBeDefined();
     expect(listAdminEntityNames(modelDir)).toContain("MiroirUser");
     const entity = findAdminEntityByName("MiroirUser", modelDir)!;
@@ -28,9 +27,12 @@ describe("miroirUserRights.phase0 — Admin baseline catalogue", () => {
     expect(listAdminDataInstanceFiles(entity.uuid as string, dataDir).length).toBeGreaterThanOrEqual(2);
   });
 
-  it("has no Entity named MiroirRight in admin_model yet (until Phase 2)", () => {
-    expect(findAdminEntityByName("MiroirRight", modelDir)).toBeUndefined();
-    expect(listAdminEntityNames(modelDir)).not.toContain("MiroirRight");
+  it("has MiroirRight Entity after Phase 2", () => {
+    expect(findAdminEntityByName("MiroirRight", modelDir)).toBeDefined();
+    expect(listAdminEntityNames(modelDir)).toContain("MiroirRight");
+    const entity = findAdminEntityByName("MiroirRight", modelDir)!;
+    expect(listAdminDataParentUuids(dataDir)).toContain(entity.uuid as string);
+    expect(listAdminDataInstanceFiles(entity.uuid as string, dataDir).length).toBeGreaterThanOrEqual(2);
   });
 
   it("still has AdminApplication and Deployment Entity definitions", () => {
