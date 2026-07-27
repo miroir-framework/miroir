@@ -61,7 +61,7 @@ Legend:
 | 1 | Introduce `MiroirUser` | ✅ DONE | `… -- miroirUserRights.219.phase1` + `… -- modelValidation` |
 | 2 | Introduce `MiroirRight` | ✅ DONE | `… -- miroirUserRights.219.phase2` + `… -- modelValidation` |
 | 3 | Admin list/detail reporting | ✅ DONE | `… -- miroirUserRights.219.phase3` |
-| 4 | Behavior non-change safety net | ⬜ TODO | `… -- miroirUserRights.219.phase4` + DomainController.integ |
+| 4 | Behavior non-change safety net | ✅ DONE | `… -- miroirUserRights.219.phase4` + DomainController.integ |
 | 5 | Multi-store / bundled load checks | ⬜ TODO | DomainController.integ + sandbox bundled test |
 | 6 | Final acceptance gate | ⬜ TODO | full phase command set below |
 
@@ -331,11 +331,13 @@ Expect: Phase 3 + modelValidation green; no new `*MiroirUser*Form*` / `*MiroirRi
 
 ---
 
-## Phase 4 — Behavior non-change safety net
+## Phase 4 — Behavior non-change safety net  ✅ DONE
 
 ### Goal
 
 Prove `MiroirRight` data does not introduce allow/deny behavior.
+
+**Landed:** `packages/miroir-test-app_deployment-admin/tests/miroirUserRights.219.phase4.unit.test.ts` (symbol scan only; no runtime authz hooks).
 
 ### Red
 
