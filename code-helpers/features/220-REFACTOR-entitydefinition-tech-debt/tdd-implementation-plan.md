@@ -60,6 +60,10 @@ Originally Phases **0–5** (analysis Cases 1–4, 5a, 7). **Phase 6** (Cases 5b
 
 ---
 
+## Related plans
+
+- [createEntity-remove-entityVersion-tdd-plan.md](./createEntity-remove-entityVersion-tdd-plan.md) — remove `entityVersion` from `createEntity` (store → Action → callers), Entity-only create.
+
 ## Target public interfaces
 
 1. **Freeze (history)** — shipped under #216 Phase 0–1 + #220 Phase 1:

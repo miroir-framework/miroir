@@ -263,14 +263,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
               "handleAction applyModelEntityUpdates createEntity inserting",
               persistenceStoreControllerAction.payload.entities
             );
-            // #217 Phase 12: Action payload uses entityVersion; store API still entityVersion
+            // #220: store createEntity is Entity-only; Action still carries optional entityVersion until Slice 4.
             return this.createEntities(
-              persistenceStoreControllerAction.payload.entities.map((pair) => ({
-                entity: pair.entity,
-                entityVersion:
-                  (pair as { entityVersion?: EntityVersion }).entityVersion ??
-                  (pair as { entityVersion?: EntityVersion }).entityVersion,
-              })),
+              persistenceStoreControllerAction.payload.entities.map((pair) => pair.entity),
             );
             break;
           }
@@ -633,21 +628,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // ##############################################################################################
-  async createEntity(
-    entity: Entity,
-    entityVersion?: EntityVersion
-  ): Promise<Action2VoidReturnType> {
-    const result = await this.modelStoreSection.createEntity(entity, entityVersion);
+  async createEntity(entity: Entity): Promise<Action2VoidReturnType> {
+    const result = await this.modelStoreSection.createEntity(entity);
     return Promise.resolve(result);
   }
 
   // ##############################################################################################
-  async createEntities(
-    entities: {
-      entity: Entity;
-      entityVersion?: EntityVersion;
-    }[]
-  ): Promise<Action2VoidReturnType> {
+  async createEntities(entities: Entity[]): Promise<Action2VoidReturnType> {
     const result = await this.modelStoreSection.createEntities(entities);
     return Promise.resolve(result);
   }

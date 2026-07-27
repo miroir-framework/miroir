@@ -63,10 +63,10 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
   existsEntity(entityUuid: string): boolean {
     throw new Error("Method not implemented.");
   }
-  createEntity(entity: Entity, entityVersion?: EntityVersion): Promise<Action2VoidReturnType> {
+  createEntity(entity: Entity): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  createEntities(entities:{entity: Entity, entityVersion?: EntityVersion}[]): Promise<Action2VoidReturnType> {
+  createEntities(entities: Entity[]): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
   renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType> {

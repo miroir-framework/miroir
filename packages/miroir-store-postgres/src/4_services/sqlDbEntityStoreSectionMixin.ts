@@ -20,8 +20,6 @@ import {
   applyEntityOnlyAlterAttribute,
   applyEntityOnlyRename,
   applyRenameEntityPair,
-  entityDefinitionWithResolvedMLSchema,
-  normalizeCreateEntityPair,
   persistEntityThenEntityDefinition,
 } from "miroir-core";
 import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
@@ -68,17 +66,13 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
 
     // ##############################################################################################
     // TODO: does side effect => refactor!
-    getAccessToModelSectionEntity(
-      entity: Entity,
-      entityVersion: EntityVersion
-    ): EntityUuidIndexedSequelizeModel {
-      // #217 Phase 11 — Entity present-model fields preferred for Sequelize schema.
+    getAccessToModelSectionEntity(entity: Entity): EntityUuidIndexedSequelizeModel {
+      // #217 / #220 — Entity present-model is authoritative for Sequelize schema.
       const schemaSource = {
         name: entity.name,
-        mlSchema: entity.mlSchema ?? entityVersion.mlSchema,
-        idAttribute: entity.idAttribute ?? (entityVersion as any).idAttribute,
-        externalDataSource:
-          entity.externalDataSource ?? (entityVersion as any).externalDataSource,
+        mlSchema: entity.mlSchema,
+        idAttribute: entity.idAttribute,
+        externalDataSource: entity.externalDataSource,
       };
       return {
         [entity.uuid]: {
@@ -101,131 +95,49 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    // #217 Phase 6/11: Entity then optional EntityVersion; Entity-only when ED omitted.
-    async createEntity(
-      entity: Entity,
-      entityVersion?: EntityVersion
-    ): Promise<Action2VoidReturnType> {
+    // #220 — createEntity is Entity-only (complete present model on Entity required).
+    async createEntity(entity: Entity): Promise<Action2VoidReturnType> {
       log.info(
         this.logHeader,
         "createEntity input: entity",
         entity,
-        "entityVersion",
-        entityVersion,
         "sqlEntities",
         this.dataStore.getEntityUuids()
       );
-      if (entityVersion && entity.uuid != entityVersion.entityUuid) {
-        log.error(
-          this.logHeader,
-          "createEntity",
-          "inconsistent input: given entityVersion is not related to given entity."
-        );
+
+      await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
+      if (!this.sqlSchemaTableAccess?.[entityEntity.uuid]) {
         return Promise.resolve(
           new Action2Error(
             "FailedToCreateStore",
-            "createEntity failed: inconsistent input, given entityVersion is not related to given entity.",
-            undefined, // errorStack
-            undefined, // innerError,
-            { entity, entityVersion } // errorContext
+            "createEntity failed: could not insert Entity in model schema.",
+            undefined,
+            undefined,
+            { entity },
           ),
         );
       }
-
-      if (!entityVersion) {
-        await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
-        if (!this.sqlSchemaTableAccess?.[entityEntity.uuid]) {
-          return Promise.resolve(
-            new Action2Error(
-              "FailedToCreateStore",
-              "createEntity failed: could not insert Entity in model schema.",
-              undefined,
-              undefined,
-              { entity },
-            ),
-          );
-        }
-        try {
-          await this.sqlSchemaTableAccess[entityEntity.uuid].sequelizeModel.upsert(entity as any);
-        } catch (error) {
-          return Promise.resolve(
-            new Action2Error(
-              "FailedToCreateStore",
-              `createEntity Entity-only write failed: ${(error as Error).message}`,
-              ["createEntity"],
-              undefined,
-              { entity, error },
-            ),
-          );
-        }
-        log.debug(this.logHeader, "createEntity", "done Entity-only for", entity.name);
-        return Promise.resolve(ACTION_OK);
-      }
-
-      const pair = normalizeCreateEntityPair(entity, entityVersion);
-      const localEntityDefinition = pair.entityVersion.mlSchema?.extend
-        ? entityDefinitionWithResolvedMLSchema(pair.entityVersion as EntityVersion)
-        : pair.entityVersion;
-      
-      await this.dataStore.createStorageSpaceForInstancesOfEntity(
-        pair.entity,
-        localEntityDefinition as EntityVersion,
-      );
-
-      if (!this.sqlSchemaTableAccess?.[entityEntity.uuid] || !this.sqlSchemaTableAccess?.[entityEntityDefinition.uuid]) {
-        log.error(
-          this.logHeader,
-          "createEntity",
-          "could not insert in model schema for entity / entityVersion",
-          pair.entity,
-          pair.entityVersion,
-        );
-        return Promise.resolve(
-          new Action2Error(
-            "FailedToCreateStore",
-            "createEntity failed: could not insert in model schema for entity or entityVersion.",
-            undefined,
-            undefined,
-            { entity: pair.entity, entityVersion: pair.entityVersion },
-          ),
-        );
-      }
-
       try {
-        await this.sequelize.transaction(async (transaction: any) => {
-          await this.sqlSchemaTableAccess![entityEntity.uuid].sequelizeModel.upsert(
-            pair.entity as any,
-            { transaction },
-          );
-          await this.sqlSchemaTableAccess![entityEntityDefinition.uuid].sequelizeModel.upsert(
-            pair.entityVersion as any,
-            { transaction },
-          );
-        });
+        await this.sqlSchemaTableAccess[entityEntity.uuid].sequelizeModel.upsert(entity as any);
       } catch (error) {
         return Promise.resolve(
           new Action2Error(
             "FailedToCreateStore",
-            `createEntity transactional dual-write failed: ${(error as Error).message}`,
-            ["createEntity", "transaction"],
+            `createEntity Entity-only write failed: ${(error as Error).message}`,
+            ["createEntity"],
             undefined,
-            { entity: pair.entity, entityVersion: pair.entityVersion, error },
+            { entity, error },
           ),
         );
       }
-      log.debug(this.logHeader, "createEntity", "done for", pair.entity.name);
+      log.debug(this.logHeader, "createEntity", "done Entity-only for", entity.name);
       return Promise.resolve(ACTION_OK);
     }
 
     // ##############################################################################################
-    async createEntities(
-      entities: {
-        entity: Entity;
-        entityVersion?: EntityVersion;
-      }[]
-    ): Promise<Action2VoidReturnType> {
-      for (const e of entities) {
-        await this.createEntity(e.entity, e.entityVersion);
+    async createEntities(entities: Entity[]): Promise<Action2VoidReturnType> {
+      for (const entity of entities) {
+        await this.createEntity(entity);
       }
       return Promise.resolve(ACTION_OK);
     }

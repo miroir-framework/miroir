@@ -104,16 +104,8 @@ export interface PersistenceStoreInstanceSectionAbstractInterface
 export interface PersistenceStoreEntitySectionAbstractInterface  extends PersistenceStoreAbstractSectionInterface {
   existsEntity(entityUuid:string):boolean;
 
-  createEntity(
-    entity:Entity,
-    entityVersion?: EntityVersion,
-  ): Promise<Action2VoidReturnType>;
-  createEntities(
-    entities: {
-      entity:Entity,
-      entityVersion?: EntityVersion,
-    }[]
-  ): Promise<Action2VoidReturnType>;
+  createEntity(entity: Entity): Promise<Action2VoidReturnType>;
+  createEntities(entities: Entity[]): Promise<Action2VoidReturnType>;
   renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType>;
   alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType>;
   dropEntity(parentUuid:string): Promise<Action2VoidReturnType>;

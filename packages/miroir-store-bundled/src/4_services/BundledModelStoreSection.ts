@@ -123,17 +123,12 @@ export class BundledModelStoreSection
     return this.dataMap.has(entityUuid);
   }
 
-  async createEntity(
-    _entity: Entity,
-    _entityDefinition?: EntityVersion,
-  ): Promise<Action2VoidReturnType> {
-    // #217 Phase 6/11: bundled is read-only — dual-write N/A (no mutation of model assets).
+  async createEntity(_entity: Entity): Promise<Action2VoidReturnType> {
+    // #220: bundled is read-only — Entity-only create API (no mutation of model assets).
     return Promise.resolve(ACTION_OK);
   }
 
-  async createEntities(
-    _entities: { entity: Entity; entityVersion?: EntityVersion }[],
-  ): Promise<Action2VoidReturnType> {
+  async createEntities(_entities: Entity[]): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }
 
