@@ -30,7 +30,7 @@ function entityDefinition(
 const bookEntityComplete = defaultLibraryAppModel.entities.find(
   (e) => e.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+const bookDefinition = defaultLibraryAppModel.entityVersions.find(
   (d) => d.entityUuid === bookEntityComplete.uuid,
 )!;
 

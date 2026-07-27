@@ -347,7 +347,7 @@ describe("RunnerTestSession (Gap E R)", () => {
       applicationUuid: selfApplicationLibrary.uuid,
       applicationName: "Library",
       entities: [{ uuid: customEntityUuid, name: "TestEntityCompositePK" }],
-      entityDefinitions: [
+      entityVersions: [
         { uuid: "fbec9082-5cdf-4877-bd78-66a434a8eebf", entityUuid: customEntityUuid },
       ],
       endpoints: [],

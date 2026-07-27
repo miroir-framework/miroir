@@ -574,7 +574,7 @@ describe("metaModelToMermaidClassDiagram", () => {
         { uuid: "d3139a6d", parentUuid: "16dbfe28", name: "Country" },
         { uuid: "d7a144ff", parentUuid: "16dbfe28", name: "Author" },
       ] as any[],
-      entityDefinitions: [countryEntityDefinition, authorEntityDefinition],
+      entityVersions: [countryEntityDefinition, authorEntityDefinition],
     };
     const diagram = metaModelToMermaidClassDiagram(metaModel);
     expect(diagram).toContain("classDiagram");
@@ -582,7 +582,7 @@ describe("metaModelToMermaidClassDiagram", () => {
     expect(diagram).toContain("class Author {");
   });
 
-  it("prefers Entity present-model mlSchema over EntityDefinitions (#217 Phase 9)", () => {
+  it("prefers Entity present-model mlSchema over EntityVersions (#217 Phase 9)", () => {
     const metaModel = {
       entities: [
         {
@@ -592,7 +592,7 @@ describe("metaModelToMermaidClassDiagram", () => {
           mlSchema: countryEntityDefinition.mlSchema,
         },
       ] as any[],
-      entityDefinitions: [],
+      entityVersions: [],
     };
     const diagram = metaModelToMermaidClassDiagram(metaModel);
     expect(diagram).toContain("class Country {");

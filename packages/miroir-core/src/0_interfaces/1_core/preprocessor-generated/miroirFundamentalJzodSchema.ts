@@ -39439,7 +39439,7 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "entityDefinitions": {
+          "entityVersions": {
             "type": "array",
             "definition": {
               "type": "schemaReference",

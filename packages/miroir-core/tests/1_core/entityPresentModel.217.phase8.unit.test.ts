@@ -11,7 +11,7 @@ import { resolvePresentEntityFromModel } from "../../src/1_core/entityPresentMod
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+const bookDefinition = defaultLibraryAppModel.entityVersions.find(
   (definition) => definition.entityUuid === bookEntity.uuid,
 )!;
 const authorEntityUuid = "d7a144ff-d1b9-4135-800c-a7cfc1f38733";
@@ -34,7 +34,7 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
     const present = resolvePresentEntityFromModel(
       {
         entities: [legacyEntity],
-        entityDefinitions: [bookDefinition],
+        entityVersions: [bookDefinition],
       },
       bookEntity.uuid,
     );
@@ -45,7 +45,7 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
     const present = resolvePresentEntityFromModel(
       {
         entities: [],
-        entityDefinitions: [bookDefinition],
+        entityVersions: [bookDefinition],
       },
       bookEntity.uuid,
     );
@@ -61,7 +61,7 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
 
   it("Library Author present model matches EntityDefinition mlSchema (equivalence)", () => {
     const present = resolvePresentEntityFromModel(defaultLibraryAppModel, authorEntityUuid);
-    const authorDefinition = defaultLibraryAppModel.entityDefinitions.find(
+    const authorDefinition = defaultLibraryAppModel.entityVersions.find(
       (definition) => definition.entityUuid === authorEntityUuid,
     ) as EntityDefinition;
     expect(present?.mlSchema).toEqual(authorDefinition.mlSchema);

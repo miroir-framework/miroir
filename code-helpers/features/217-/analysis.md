@@ -680,7 +680,7 @@ At this phase, EntityDefinition remains the fallback for fields absent on Entity
 - Added optional `SelfApplication.versioningEnabled` boolean (`9460420b-…`) with immutable-capability documentation in the field tag; absent allowed so legacy applications still parse.
 - Left EntityDefinition schema and all Entity/SelfApplication instance assets unchanged (population is Phase 3).
 - Regenerated `miroirFundamentalType.ts` / Zod schemas via `npm run generate-ts-types -w miroir-core` after rebuilding `miroir-test-app_deployment-miroir`.
-- Contract tests in `entityPresentModel.phase1.unit.test.ts`: legacy Entity/SelfApplication assets parse; enriched Entity with all definition fields parses; `versioningEnabled` true/false parses.
+- Contract tests in `entityPresentModel.217.phase1.unit.test.ts`: legacy Entity/SelfApplication assets parse; enriched Entity with all definition fields parses; `versioningEnabled` true/false parses.
 - Phase 0 characterization suite still green (baseline: live Entity instances do not yet carry definition fields).
 
 ### Phase 2 — Central Entity-first model-property resolver — DONE
@@ -709,7 +709,7 @@ Migrate common schema and PK helpers to this abstraction first. This establishes
 - Inconsistency policy: default `onInconsistency: "error"`; optional `preferEntity`. Overlap check only compares definition fields Entity already owns (fields only on EntityDefinition are not treated as divergence during transition).
 - Enrichment overlays EntityDefinition projection then Entity-owned fields (Entity wins on partial ownership).
 - Widened PK helpers to `EntityPrimaryKeySource` (`idAttribute` from Entity or EntityDefinition); added `getResolvedEntityPrimaryKeyAttribute(s)` that resolve via `resolveCurrentEntityModel` then read PK.
-- Tests: `entityPresentModel.phase2.unit.test.ts` + Phase 0 Miroir filesystem characterization updated to clean 1:1 after §14.4 misshap correction.
+- Tests: `entityPresentModel.217.phase2.unit.test.ts` + Phase 0 Miroir filesystem characterization updated to clean 1:1 after §14.4 misshap correction.
 - No production call-site migration yet beyond the PK helper surface (consumers still pass EntityDefinition directly where they already have it).
 
 ### Phase 3 — Populate assets and validate redundancy — DONE
@@ -727,7 +727,7 @@ No consumer is removed yet.
 - Copied definition-bearing fields from each matching EntityDefinition onto Entity JSON across Miroir / Admin / Library / Postgres / Designer model assets (55 Entities) plus Admin test mirrors (core, standalone-app, mcp). EntityDefinition files left unchanged.
 - Set `versioningEnabled: true` on Miroir, Admin, Library, Postgres, Designer SelfApplication instances (and Admin mirrors) per §14.2.
 - Idempotent helper: `code-helpers/features/217-/phase3-populate-entity-assets.py`.
-- Consistency suite `entityPresentModel.phase3.unit.test.ts`: filesystem + `defaultMiroirMetaModel` / `defaultLibraryAppModel` redundancy; SelfApplication `versioningEnabled`.
+- Consistency suite `entityPresentModel.217.phase3.unit.test.ts`: filesystem + `defaultMiroirMetaModel` / `defaultLibraryAppModel` redundancy; SelfApplication `versioningEnabled`.
 - Updated Phase 0/2 characterization expectations now that canonical Entities are complete (Phase 2 enrichment tests use a synthetic incomplete Entity).
 - Rebuilt deployment packages so JSON imports pick up the populated assets.
 
@@ -747,7 +747,7 @@ This is the pivotal bootstrap phase and should be kept narrow.
 - Added `alignEntityDefinitionToPresentEntity` for Entity-authoritative dual-write projection onto redundant EntityDefinitions.
 - `generate-ts-types.ts` now feeds `getMiroirFundamentalJzodSchema` from Entity assets (Miroir + Admin Application/Deployment). Leftover Bundle still uses EntityDefinition from `miroirAdmin` fixtures (no matching exported Entity UUID).
 - `ModelInitializer` routes all `createEntity` / `createModelStorageSpaceForInstancesOfEntity` calls through `bootstrapEntityDefinitionAligned(entity, entityDefinition)`.
-- Regenerated fundamental types; Phase 4 contract tests in `entityPresentModel.phase4.unit.test.ts`.
+- Regenerated fundamental types; Phase 4 contract tests in `entityPresentModel.217.phase4.unit.test.ts`.
 - §11 strategy gap-fill suite `entityPresentModel.strategy.unit.test.ts` (UI lock, dual-write equality, codegen mlSchema equivalence, versioning immutability policy, Library behavioral equivalence). Combined entityPresentModel suites: 58 green. Spot-checked §11.2 P0/P1: `cacheRefreshPolicy`, `EntityPrimaryKey`, `schemaChangeKind` green.
 
 ### Phase 5 — Model Actions become Entity-authoritative with dual-write — DONE
@@ -776,7 +776,7 @@ Legacy Action payloads remain accepted through adapters.
   - `applyAlterEntityAttributePair` / `applyRenameEntityPair` with §11.3 dual-write equality assert.
 - `ModelEntityActionTransformer` create/alter/rename dual-write Entity + redundant EntityDefinition; drop deletes live Entity + named ED UUID only (not historical versions).
 - LocalCache (Redux + Zustand) `updateInstance` rejects SelfApplication `versioningEnabled` flips via `assertVersioningEnabledImmutable`.
-- Tests: `modelEntityDualWrite.unit.test.ts` (7), `ModelEntityActionTransformer.phase5.unit.test.ts` (4). Store-side alter/rename dual-write remains Phase 6.
+- Tests: `modelEntityDualWrite.unit.test.ts` (7), `ModelEntityActionTransformer.217.phase5.unit.test.ts` (4). Store-side alter/rename dual-write remains Phase 6.
 
 ### Phase 6 — Persistence backends switch — DONE
 
@@ -829,7 +829,7 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 - LocalCache Redux + Zustand: PK adapter registration from Entity on load/create; EntityDefinition path kept as fallback; fixed wrong `entityDefinitionEntityDefinition` gate on Zustand load / Redux create.
 - `assembleLivePresentModelEntities` wired into Redux + Zustand `currentModel` (ED arrays retained).
 - `schemaChangeKind`: fingerprints Entity present-model fields alongside EntityDefinitions; Entity-only `viewAttributes` invalidates revision (description still ignored).
-- Tests: `cacheRefreshPolicy` (12), `schemaChangeKind` (13), `entityPresentModel.phase7` (2).
+- Tests: `cacheRefreshPolicy` (12), `schemaChangeKind` (13), `entityPresentModel.217.phase7` (2).
 
 ### Phase 8 — Domain selectors and transformers switch — DONE
 
@@ -850,7 +850,7 @@ Each slice must cover bootstrap, create, alter, rename, drop, UUID/non-UUID/comp
 - Wired: `DomainStateQuerySelectors` extractorByPrimaryKey FK walk; `ExtractorRunnerInMemory`; `resolveConditionalSchema` parent mlSchema; `TransformersForRuntime` FK default PK.
 - FK analyzer accepts Entity or EntityDefinition carriers (`ForeignKeySchemaCarrier`); lookup by `entityUuid ?? uuid`.
 - Grep gate: no production `entityDefinitions.find(…entityUuid…)` left in `miroir-core/src` (UI Report* joins deferred to Phase 9).
-- Tests: `entityPresentModel.phase8` (5); FK analyzer Entity≡ED equivalence case.
+- Tests: `entityPresentModel.217.phase8` (5); FK analyzer Entity≡ED equivalence case.
 
 ### Phase 9 — UI and tooling switch — DONE
 
@@ -877,7 +877,7 @@ Each slice uses Entity end-to-end and retains legacy EntityDefinition fallback o
 - Diagrams: `metaModelToMermaidClassDiagram` prefers Entity `mlSchema`; `buildEntityClickLinks` / `presentEntitiesAsDiagramCarriers`; Model diagram page navigates to `reportEntityDetails` with Entity uuid.
 - Import spreadsheet puts `mlSchema` on Entity (dual-write ED retained); AI system prompt documents Entity present-model authority.
 - Grep gate: no `entityDefinitions.find(…entityUuid…)` left under `miroir-standalone-app/.../4_view`.
-- Tests: `entityPresentModel.phase9`; diagram `buildEntityClickLinks` / Entity-preferring `metaModelToMermaidClassDiagram`.
+- Tests: `entityPresentModel.217.phase9`; diagram `buildEntityClickLinks` / Entity-preferring `metaModelToMermaidClassDiagram`.
 
 ### Phase 10 — Separate optional version history — DONE
 
@@ -938,7 +938,7 @@ Acceptance gate:
 - Slice: LocalCache (redux + zustand) registers non-UUID PK adapters from Entity only.
 - Slice: store alter/rename Entity-only when present model complete (FS / IndexedDB / Mongo / Postgres).
 - Slice: ModelEndpoint Action schemas (`7947ae40-…`) mark `entityDefinition` / `entityVersionUuid` optional; regenerated TS/Zod types.
-- Gate tests: `entityPresentModel.phase11`; `ModelEntityActionTransformer.phase11`; `modelEntityDualWrite` Phase 11 helpers.
+- Gate tests: `entityPresentModel.217.phase11`; `ModelEntityActionTransformer.217.phase11`; `modelEntityDualWrite` Phase 11 helpers.
 - **Deferred (allowed):** UI still uses `presentEntityAsRedundantEntityDefinition` as a temporary ED-*shaped* projection from Entity for components typed as EntityDefinition — not live ED authority. Full UI type migration to Entity follows with Phase 12 rename vocabulary work.
 
 ### Phase 12 — Final task: rename EntityDefinition to EntityVersion — IN PROGRESS (vocab-first slice)
@@ -965,7 +965,7 @@ This phase must contain no architectural authority change—only the final vocab
 - Reports/menu display vocabulary: Entity Versions (list/details + Miroir menu).
 - MetaModel `applicationVersionCrossEntityVersion` + FK `entityVersion` (data instances + Zod schema + evolutionTrace lookup).
 - UI hub `presentEntityAsRedundantEntityDefinition` retained (follow-up slice); projection `parentName` now `EntityVersion`.
-- Gate: `entityPresentModel.phase12.unit.test.ts`.
+- Gate: `entityPresentModel.217.phase12.unit.test.ts`.
 
 **Still open in Phase 12:**
 - Full non-regression gate.
@@ -1022,15 +1022,15 @@ This phase must contain no architectural authority change—only the final vocab
 Suite files:
 
 - `entityPresentModel.unit.test.ts` — Phase 0 characterization
-- `entityPresentModel.phase1.unit.test.ts` … `phase4.unit.test.ts`
+- `entityPresentModel.217.phase1.unit.test.ts` … `phase4.unit.test.ts`
 - `entityPresentModel.strategy.unit.test.ts` — §11 gap-fill / cross-phase contracts
-- `modelEntityDualWrite.unit.test.ts` / `ModelEntityActionTransformer.phase5.unit.test.ts` — Phase 5
+- `modelEntityDualWrite.unit.test.ts` / `ModelEntityActionTransformer.217.phase5.unit.test.ts` — Phase 5
 - `modelEntityDualWritePersistence.unit.test.ts` — Phase 6 persistence policy + detector
-- `entityPresentModel.phase7.unit.test.ts` — Phase 7 MetaModel assembly
-- `entityPresentModel.phase8.unit.test.ts` — Phase 8 present-model lookup hub
-- `entityPresentModel.phase9.unit.test.ts` — Phase 9 UI boundary ED-shaped projection
-- `entityPresentModel.phase11.unit.test.ts` — Phase 11 live-ED authority grep gate (stores)
-- `entityPresentModel.phase12.unit.test.ts` — Phase 12 vocabulary rename gate
+- `entityPresentModel.217.phase7.unit.test.ts` — Phase 7 MetaModel assembly
+- `entityPresentModel.217.phase8.unit.test.ts` — Phase 8 present-model lookup hub
+- `entityPresentModel.217.phase9.unit.test.ts` — Phase 9 UI boundary ED-shaped projection
+- `entityPresentModel.217.phase11.unit.test.ts` — Phase 11 live-ED authority grep gate (stores)
+- `entityPresentModel.217.phase12.unit.test.ts` — Phase 12 vocabulary rename gate
 
 ### 11.2 Existing priority suites
 

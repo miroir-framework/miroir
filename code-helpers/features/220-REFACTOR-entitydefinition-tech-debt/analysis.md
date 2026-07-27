@@ -189,7 +189,7 @@ Suggested implementation order. Prefer thin vertical slices over one mega-rename
 - **Target:** Return/annotate `EntityVersion[]`; comments and exports say historical EntityVersion only.
 - **Bucket:** Application Version history.
 - **Impact:** `applicationVersionFreeze.ts`, `index.ts` exports, #216 unit tests. Low behavior risk (alias is identical).
-- **Validation:** existing `applicationVersionFreeze.snapshot` / `phase0` unit tests; grep freeze module for `EntityDefinition` → expect zero (except comments pointing at deprecated helper).
+- **Validation:** existing `applicationVersionFreeze.216.snapshot` / `phase0` unit tests; grep freeze module for `EntityDefinition` → expect zero (except comments pointing at deprecated helper).
 - **AFK:** yes.
 
 ### Case 2 — Quarantine UUID-reuse helpers from freeze
@@ -198,7 +198,7 @@ Suggested implementation order. Prefer thin vertical slices over one mega-rename
 - **Target:** Move dual-write / redundant-projection symbols behind a clear compat module (e.g. `entityDefinitionCompatibility.ts`) or mark `@internal` / `@deprecated` with eslint-disable boundaries; freeze tests assert they are not imported from freeze modules. Optionally rename export to `presentEntityAsRedundantLiveEntityVersionCopy` only if that reduces confusion without a huge churn.
 - **Bucket:** Compat dual-write.
 - **Impact:** `entityPresentModel.ts`, `modelEntityActionLiveResolve.ts`, `index.ts`, phase9 tests.
-- **Validation:** `applicationVersionFreeze.phase0` (already asserts UUID reuse vs mint); ensure freeze source files do not import the helper.
+- **Validation:** `applicationVersionFreeze.216.phase0` (already asserts UUID reuse vs mint); ensure freeze source files do not import the helper.
 - **AFK:** yes.
 
 ### Case 3 — Present-model Action path: Entity-only by default
@@ -207,7 +207,7 @@ Suggested implementation order. Prefer thin vertical slices over one mega-rename
 - **Target:** Confirm DomainController / Persistence paths for create/rename/alter/drop do not *require* live ED for ordinary post-#217 apps; delete dead dual-write branches if tests prove unused; keep dual-write only for documented legacy enrichment.
 - **Bucket:** Present model + compat.
 - **Impact:** `ModelEntityActionTransformer`, PersistenceStoreController model Actions, ModelInitializer bootstrap.
-- **Validation:** `ModelEntityActionTransformer.phase11` unit tests; DomainController integ (filesystem) for create/alter Entity without ED payload; inconsistency detector tests still pass when ED present.
+- **Validation:** `ModelEntityActionTransformer.217.phase11` unit tests; DomainController integ (filesystem) for create/alter Entity without ED payload; inconsistency detector tests still pass when ED present.
 - **AFK:** mostly; HITL if bootstrap still needs dual-write for metamodel seed.
 
 ### Case 4 — Quarantine or shrink dual-write persistence
@@ -246,7 +246,7 @@ Suggested implementation order. Prefer thin vertical slices over one mega-rename
 - **Target:** Present-model tests assert on `Entity` fields; history tests use `EntityVersion` / snapshot helpers; dual-write tests stay in a named compat suite.
 - **Bucket:** Present + history.
 - **Impact:** `miroir-core/tests/1_core/*`, phase11 transformer tests, freeze tests.
-- **Validation:** `npm run testByFile -w miroir-core -- applicationVersionFreeze` / `entityPresentModel` / `ModelEntityActionTransformer.phase11`; targeted `testMiroir` if suites touch model Actions.
+- **Validation:** `npm run testByFile -w miroir-core -- applicationVersionFreeze` / `entityPresentModel` / `ModelEntityActionTransformer.217.phase11`; targeted `testMiroir` if suites touch model Actions.
 - **AFK:** yes.
 
 ### Case 8 — UI / docs / report schema field (lower priority)

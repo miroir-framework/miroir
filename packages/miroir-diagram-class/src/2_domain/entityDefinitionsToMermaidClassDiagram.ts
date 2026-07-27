@@ -418,18 +418,19 @@ export function entityDefinitionsToMermaidClassDiagram(
 
 /**
  * Convenience: generate a class diagram from a MetaModel-like structure
- * that contains both `entities` and `entityDefinitions`.
+ * that contains both `entities` and `entityVersions`.
  *
  * #217 Phase 9 — prefer Entity present model (`mlSchema` on Entity) when available;
- * fall back to EntityDefinitions for legacy/incomplete Entity rows.
+ * fall back to EntityVersions for legacy/incomplete Entity rows.
+ * #220 Phase 6 — MetaModel collection key is `entityVersions`.
  */
 export function metaModelToMermaidClassDiagram(
-  metaModel: { entities: Entity[]; entityDefinitions: EntityDefinition[] },
+  metaModel: { entities: Entity[]; entityVersions: EntityDefinition[] },
   options: ClassDiagramOptions = {},
 ): string {
   const fromEntities = presentEntitiesAsDiagramCarriers(metaModel.entities ?? []);
   if (fromEntities.length > 0) {
     return entityDefinitionsToMermaidClassDiagram(fromEntities, options);
   }
-  return entityDefinitionsToMermaidClassDiagram(metaModel.entityDefinitions, options);
+  return entityDefinitionsToMermaidClassDiagram(metaModel.entityVersions, options);
 }

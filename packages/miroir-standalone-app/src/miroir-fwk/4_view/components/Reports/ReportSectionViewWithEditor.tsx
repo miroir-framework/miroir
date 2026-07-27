@@ -115,7 +115,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
       ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
         props.applicationSection
         ]
-      : { availableReports: [], entities: [], entityDefinitions: [] };
+      : { availableReports: [], entities: [], entityVersions: [] };
   }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping, props.deploymentUuid, props.applicationSection]);
 
   const currentListReportTargetEntity: Entity | undefined =

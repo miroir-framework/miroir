@@ -22,6 +22,10 @@ import {
   EVOLUTION_TRACE_ENTITY_UUID,
 } from "../2_domain/evolutionTraceBaseline.js";
 import { entityHasCompletePresentModel } from "./entityPresentModel.js";
+import {
+  getMetaModelEntityVersions,
+  withMetaModelEntityVersions,
+} from "./metaModelEntityVersions.js";
 
 import {
   selfApplicationMiroir,
@@ -243,7 +247,7 @@ export const emptyMetaModel: MetaModel = {
   applicationName: "",
   applications: [],
   entities: [],
-  entityDefinitions: [],
+  entityVersions: [],
   applicationVersionCrossEntityVersion: [],
   applicationVersions: [],
   endpoints: [],
@@ -263,14 +267,16 @@ export function metaModelFilterEntities(
   const filteredEntities = entityUuidsToKeep ? metaModel.entities.filter((entity) =>
     entityUuidsToKeep.includes(entity.uuid)
   ) : metaModel.entities;
-  const filteredEntityDefinitions = entityUuidsToKeep ? metaModel.entityDefinitions.filter((entityDefinition) =>
-    entityUuidsToKeep.includes(entityDefinition.entityUuid)
-  ) : metaModel.entityDefinitions;
-  return {
-    ...metaModel,
-    entities: filteredEntities,
-    entityDefinitions: filteredEntityDefinitions,
-  };
+  const sourceEntityVersions = getMetaModelEntityVersions(metaModel);
+  const filteredEntityVersions = entityUuidsToKeep
+    ? sourceEntityVersions.filter((entityDefinition) =>
+        entityUuidsToKeep.includes(entityDefinition.entityUuid),
+      )
+    : sourceEntityVersions;
+  return withMetaModelEntityVersions(
+    { ...metaModel, entities: filteredEntities },
+    filteredEntityVersions,
+  );
 }
 export type ResolvableAppMetaModel = MetaModel | CoreTransformerForBuildPlusRuntime_getFromParameters;
 
@@ -362,15 +368,16 @@ export function buildResetAndinitializeDeploymentActionSequence(
     "filteredEntities to create=",
     filteredEntitiesMetaModel.entities.map((e) => ({ name: e.name, uuid: e.uuid })),
     "filteredEntityDefinitions=",
-    filteredEntitiesMetaModel.entityDefinitions.map((ed) => ({
+    getMetaModelEntityVersions(filteredEntitiesMetaModel).map((ed) => ({
       name: ed.name,
       uuid: ed.uuid,
       entityUuid: ed.entityUuid,
     })),
   );
 
+  const filteredEntityVersions = getMetaModelEntityVersions(filteredEntitiesMetaModel);
   const entities: EntityDefinitionCouple[] = filteredEntitiesMetaModel.entities.map((entity) => {
-    const entityDefinition = filteredEntitiesMetaModel.entityDefinitions.find(
+    const entityDefinition = filteredEntityVersions.find(
       (ed) => ed.entityUuid === entity.uuid,
     );
     // #217 Phase 11 — Entity with present-model fields does not require a live ED row.
@@ -395,8 +402,12 @@ export function buildResetAndinitializeDeploymentActionSequence(
     "appMetaModel",
     "entities=",
     appMetaModel.entities.map((ed) => ({ name: ed.name, uuid: ed.uuid })),
-    "entityDefinitions=",
-    appMetaModel.entityDefinitions.map((ed) => ({ name: ed.name, uuid: ed.uuid, entityUuid: ed.entityUuid })),
+    "entityVersions=",
+    getMetaModelEntityVersions(appMetaModel).map((ed) => ({
+      name: ed.name,
+      uuid: ed.uuid,
+      entityUuid: ed.entityUuid,
+    })),
     // "initApplicationParameters=",
     // initApplicationParameters,
   );

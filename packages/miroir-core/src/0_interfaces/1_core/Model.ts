@@ -30,13 +30,13 @@ export type DeploymentUuidToReportsEntitiesDefinitions = {
     availableQueries: Query[];
     availableReports: Report[];
     entities: Entity[];
-    entityDefinitions: EntityDefinition[];
+    entityVersions: EntityDefinition[];
   };
   data: {
     availableQueries: Query[];
     availableReports: Report[];
     entities: Entity[];
-    entityDefinitions: EntityDefinition[];
+    entityVersions: EntityDefinition[];
   };
 };
 export type DeploymentUuidToReportsEntitiesDefinitionsMapping = {

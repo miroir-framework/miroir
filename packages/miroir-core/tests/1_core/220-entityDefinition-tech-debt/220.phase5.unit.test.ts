@@ -18,13 +18,13 @@ import {
 import { presentEntityAsRedundantEntityDefinition } from "../../../src/1_core/entityDefinitionCompatibility.js";
 
 describe("220 Phase 5 — getMetaModelEntityVersions / withMetaModelEntityVersions", () => {
-  it("reads legacy entityDefinitions when entityVersions absent", () => {
+  it("reads MetaModel.entityVersions", () => {
     const versions = getMetaModelEntityVersions(defaultLibraryAppModel as MetaModel);
     expect(versions.length).toBeGreaterThan(0);
-    expect(versions).toBe(defaultLibraryAppModel.entityDefinitions);
+    expect(versions).toBe(defaultLibraryAppModel.entityVersions);
   });
 
-  it("prefers entityVersions when both fields exist", () => {
+  it("returns the entityVersions array from the model", () => {
     const preferred: EntityVersion[] = [
       {
         uuid: "11111111-1111-4111-8111-111111111111",
@@ -42,9 +42,9 @@ describe("220 Phase 5 — getMetaModelEntityVersions / withMetaModelEntityVersio
     expect(getMetaModelEntityVersions(model)).toBe(preferred);
   });
 
-  it("withMetaModelEntityVersions writes entityDefinitions collection", () => {
+  it("withMetaModelEntityVersions writes entityVersions collection", () => {
     const empty = withMetaModelEntityVersions(defaultLibraryAppModel as MetaModel, []);
-    expect(empty.entityDefinitions).toEqual([]);
+    expect(empty.entityVersions).toEqual([]);
     expect(getMetaModelEntityVersions(empty)).toEqual([]);
   });
 });

@@ -93,7 +93,7 @@ export function entityDefinitionsByEntityName(
   metaModel: MetaModel,
 ): Record<string, EntityDefinition> {
   return Object.fromEntries(
-    metaModel.entityDefinitions.map((entityDefinition) => [entityDefinition.name, entityDefinition]),
+    metaModel.entityVersions.map((entityDefinition) => [entityDefinition.name, entityDefinition]),
   );
 }
 

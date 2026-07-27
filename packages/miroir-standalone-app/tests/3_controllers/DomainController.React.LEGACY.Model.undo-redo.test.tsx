@@ -47,8 +47,8 @@ import {
   DisplayLoadingInfo,
   renderWithProviders,
   selfApplicationDeploymentConfigurationsTO_REMOVE,
-} from "../../src/miroir-fwk/4-tests/tests-utils";
-import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent";
+} from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { TestUtilsTableComponent } from "../utils/TestUtilsTableComponent.js";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";

@@ -163,7 +163,7 @@ export const compositePKTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [entityCompositePK],
-  entityDefinitions: [entityDefinitionCompositePK],
+  entityVersions: [entityDefinitionCompositePK],
   endpoints: [],
   jzodSchemas: [],
   menus: [],
@@ -259,7 +259,7 @@ export const codeNumberTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [entityCodeNumber],
-  entityDefinitions: [entityDefinitionCodeNumber],
+  entityVersions: [entityDefinitionCodeNumber],
   endpoints: [],
   jzodSchemas: [],
   menus: [],
@@ -298,7 +298,7 @@ export const publisherOnlyTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity],
-  entityDefinitions: [entityDefinitionPublisher as EntityDefinition],
+  entityVersions: [entityDefinitionPublisher as EntityDefinition],
   endpoints: [],
   jzodSchemas: [],
   menus: [],
@@ -378,7 +378,7 @@ export const noParentUuidTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityNoParentUuid],
-  entityDefinitions: [
+  entityVersions: [
     entityDefinitionPublisher as EntityDefinition,
     entityDefinitionNoParentUuid,
   ],
@@ -537,7 +537,7 @@ export const publisherAndCountryTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityCountry as Entity],
-  entityDefinitions: [
+  entityVersions: [
     entityDefinitionPublisher as EntityDefinition,
     entityDefinitionCountry as EntityDefinition,
   ],
@@ -637,7 +637,7 @@ export const emptyLibraryPlayfieldMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [],
-  entityDefinitions: [],
+  entityVersions: [],
   endpoints: [],
   jzodSchemas: [],
   menus: [],

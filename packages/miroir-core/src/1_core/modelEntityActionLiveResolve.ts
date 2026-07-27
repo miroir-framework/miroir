@@ -35,13 +35,13 @@ export function resolveLiveEntityDefinitionForAction(
   entityVersionUuid?: string | undefined,
 ): EntityDefinition | undefined {
   if (entityVersionUuid) {
-    const byUuid = currentModel.entityDefinitions?.find((ed) => ed.uuid === entityVersionUuid);
+    const byUuid = currentModel.entityVersions?.find((ed) => ed.uuid === entityVersionUuid);
     if (byUuid) {
       return byUuid;
     }
   }
   const matches =
-    currentModel.entityDefinitions?.filter((ed) => ed.entityUuid === entityUuid) ?? [];
+    currentModel.entityVersions?.filter((ed) => ed.entityUuid === entityUuid) ?? [];
   if (matches.length === 1) {
     return matches[0];
   }

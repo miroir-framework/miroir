@@ -126,7 +126,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           switch (query.select.extractorOrCombinerType) {
             case "extractorInstancesByEntity": {
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
-                ? ((modelEnvironment as any)?.currentModel?.entityDefinitions?.find(
+                ? ((modelEnvironment as any)?.currentModel?.entityVersions?.find(
                     (ed: any) => ed.entityUuid === query.select.parentUuid,
                   )?.externalDataSource?.schema ?? this.schema)
                 : this.schema;
@@ -168,7 +168,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             case "extractorByPrimaryKey": {
               const pkColumn = this.sqlSchemaTableAccess[query.select.parentUuid]?.idAttribute ?? "uuid";
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
-                ? ((modelEnvironment as any)?.currentModel?.entityDefinitions?.find(
+                ? ((modelEnvironment as any)?.currentModel?.entityVersions?.find(
                     (ed: any) => ed.entityUuid === query.select.parentUuid,
                   )?.externalDataSource?.schema ?? this.schema)
                 : this.schema;

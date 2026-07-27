@@ -19,15 +19,13 @@ Related:
 
 ### In scope for “reasonable” (unblock #216)
 
-Phases **0–5** below (analysis Cases 1–4, 5a, 7).
+Originally Phases **0–5** (analysis Cases 1–4, 5a, 7). **Phase 6** (Cases 5b/5c + store/localcache rename) was also completed afterward.
 
-### Explicitly deferred (post-reasonable / follow-up)
+### Remaining deferred
 
 | Analysis case | Deferred to |
 |---|---|
-| 5b / 5c — full `MetaModel.entityDefinitions` rename wave | Phase 6 (optional after #216 resume) |
-| 6 — store / localcache parameter renames | Phase 6 |
-| 8 — UI / report schema / docs | #213 or Phase 7 |
+| 8 — UI / report schema field `definition.entityDefinitions` / docs | #213 or Phase 7 |
 | 9 — evolution-trace op string rename | leave frozen (WP1) |
 
 ---
@@ -42,10 +40,10 @@ Phases **0–5** below (analysis Cases 1–4, 5a, 7).
 | 3 | Present-model Actions: Entity-only for complete Entities | Case 3 | ✅ DONE | 220.phase3 |
 | 4 | Dual-write persistence shrink / quarantine | Case 4 | ✅ DONE | 220.phase4 + EOL headers |
 | 5 | `entityVersions` preferred accessor + freeze-critical test vocabulary | Cases 5a, 7 | ✅ DONE | 220.phase5 + metaModelEntityVersions |
-| 6 | Optional rename wave (MetaModel field / stores) | Cases 5b/5c, 6 | ⬜ DEFERRED | — |
+| 6 | MetaModel / store / localcache rename wave | Cases 5b/5c, 6 | ✅ DONE | 220.phase6 |
 | 7 | Optional UI / docs | Case 8 | ⬜ DEFERRED → #213 | — |
 
-**#220 “reasonable” exit:** Phases 0–5 green + acceptance checklist in §Acceptance.
+**#220 exit:** Phases **0–6** ✅ DONE. Remaining: Phase 7 / #213 (report-diagram UI field + docs). Acceptance checklist in §Acceptance covers the original “reasonable” bar (0–5); Phase 6 exceeded it.
 
 ---
 
@@ -56,30 +54,28 @@ Phases **0–5** below (analysis Cases 1–4, 5a, 7).
 | Live redundant EntityVersion rows in assets | **Stop writing** on ordinary complete-Entity Actions (Phases 3–4). **Do not delete** persisted deployment rows in #220 unless a slice is trivially covered by existing nonreg. |
 | Same MetaModel array for live-redundant vs historical | **Keep one collection** in #220. Do not invent a second array. Freeze creates historical rows + Cross; live interpretation ignores Cross (#216). |
 | Rename `presentEntityAsRedundantEntityDefinition` | **Quarantine + deprecate first** (Phase 2). Rename only if greps remain confusing after Phase 4. |
-| `MetaModel.entityDefinitions` → `entityVersions` | **Phase 5a:** preferred helper / dual field for builders & freeze-adjacent code. Full property rename = Phase 6 (deferred). |
+| `MetaModel.entityDefinitions` → `entityVersions` | **Done in Phase 6** (schema + call sites). Phase 5a shipped accessors first. |
 | Evolution-trace `createEntityDefinition` / `updateEntityDefinition` | **Leave frozen** — no Phase owns renaming them. |
-| Deprecated TS alias `EntityDefinition = EntityVersion` | **Keep** until Phase 6 call-site wave; thin re-export OK. |
+| Deprecated TS alias `EntityDefinition = EntityVersion` | **Keep** as thin generated alias; call sites prefer `EntityVersion`. |
 
 ---
 
 ## Target public interfaces
 
-1. **Freeze (history)** — already partially shipped under #216 Phase 0–1:
-   - `snapshotEntitiesAsHistoricalEntityVersions(entities, options?): **EntityVersion[]**`  
-     (today incorrectly annotated as `EntityDefinition[]`)
+1. **Freeze (history)** — shipped under #216 Phase 0–1 + #220 Phase 1:
+   - `snapshotEntitiesAsHistoricalEntityVersions(entities, options?): EntityVersion[]`
    - Must **not** import UUID-reuse compat helpers.
-2. **Compat quarantine module** (new or relocated):
-   - e.g. `packages/miroir-core/src/1_core/entityDefinitionCompatibility.ts`
-   - Holds: `presentEntityAsRedundantEntityDefinition`, dual-write pair helpers re-exports if needed, EOL comment.
+2. **Compat quarantine module**:
+   - `packages/miroir-core/src/1_core/entityDefinitionCompatibility.ts`
+   - Holds: `presentEntityAsRedundantEntityDefinition`, dual-write re-exports, EOL comment.
    - `@deprecated` on each export; JSDoc: “not for freeze / historical minting”.
 3. **Present-model Actions**:
    - `planCreateEntityMutation` / `planRenameEntityMutation` / `planAlterEntityAttributeMutation` remain; for complete Entity → `{ mode: "entityOnly" }` without requiring live ED.
-4. **Preferred MetaModel access (Phase 5a)**:
-   - `getMetaModelEntityVersions(model: MetaModel): EntityVersion[]`  
-     reads `model.entityVersions ?? model.entityDefinitions` (or equivalent dual-read).
-   - `withMetaModelEntityVersions(model, versions): MetaModel` writer used by freeze-adjacent builders.
+4. **MetaModel EntityVersion collection (Phase 5a + 6)**:
+   - `MetaModel.entityVersions: EntityVersion[]` (canonical after Phase 6).
+   - `getMetaModelEntityVersions(model)` / `withMetaModelEntityVersions(model, versions)` — read/write `entityVersions` only.
 5. **Dual-write persistence**:
-   - `persistEntityThenEntityDefinition` stays callable from bootstrap/legacy only; not from complete-Entity Action happy path.
+   - `persistEntityThenEntityDefinition` stays callable from bootstrap/legacy / store ED payloads only; not from complete-Entity Action happy path.
 
 ---
 
@@ -102,7 +98,7 @@ Prefer pure domain tests in `miroir-core`. Avoid mocks of LocalCache / stores wh
 
 ---
 
-## Phase 0 — Characterization locks & dividing-line guards  ⬜ TODO
+## Phase 0 — Characterization locks & dividing-line guards  ✅ DONE
 
 ### Goal
 
@@ -118,17 +114,17 @@ Behaviors:
   - `presentEntityAsRedundantEntityDefinition`
   - `resolveOrSynthesizeEntityDefinitionForCreate`
   - `persistEntityThenEntityDefinition`
-- Existing `applicationVersionFreeze.phase0` UUID-reuse characterization remains green (documents the anti-pattern).
+- Existing `applicationVersionFreeze.216.phase0` UUID-reuse characterization remains green (documents the anti-pattern).
 
 #### Validation
 ```
 npm run testByFile -w miroir-core -- 220.phase0
-npm run testByFile -w miroir-core -- applicationVersionFreeze.phase0
+npm run testByFile -w miroir-core -- applicationVersionFreeze.216.phase0
 ```
 
 ### 0.2 RED → GREEN — Snapshot return type contract (characterization)
 
-Extend `applicationVersionFreeze.snapshot.unit.test.ts`:
+Extend `applicationVersionFreeze.216.snapshot.unit.test.ts`:
 
 - Assign result to a variable typed as `EntityVersion` (not `EntityDefinition`) in the test — documents Case 1 target.
 - Keep asserts: new uuid ≠ entity.uuid; `entityUuid === entity.uuid`.
@@ -138,12 +134,12 @@ If production still returns/exports under the alias only, this may already compi
 ### NON-REGRESSION
 ```
 npm run testByFile -w miroir-core -- applicationVersionFreeze
-npm run testByFile -w miroir-core -- entityPresentModel.phase12
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase12
 ```
 
 ---
 
-## Phase 1 — Freeze path vocabulary (`EntityVersion`)  ⬜ TODO  · Case 1
+## Phase 1 — Freeze path vocabulary (`EntityVersion`)  ✅ DONE  · Case 1
 
 ### Goal
 
@@ -158,12 +154,12 @@ Impl file: `packages/miroir-core/src/1_core/applicationVersionFreeze.ts`
 - Imports use `EntityVersion` from generated types; do not import `EntityDefinition` in this file.
 - Update `index.ts` export types/docs if they mention EntityDefinition for this symbol.
 
-Test: strengthen `applicationVersionFreeze.snapshot.unit.test.ts` imports to `EntityVersion`.
+Test: strengthen `applicationVersionFreeze.216.snapshot.unit.test.ts` imports to `EntityVersion`.
 
 #### Validation
 ```
-npm run testByFile -w miroir-core -- applicationVersionFreeze.snapshot
-npm run testByFile -w miroir-core -- applicationVersionFreeze.gate
+npm run testByFile -w miroir-core -- applicationVersionFreeze.216.snapshot
+npm run testByFile -w miroir-core -- applicationVersionFreeze.216.gate
 ```
 
 ### 1.2 RED → GREEN — Freeze module greppable clean
@@ -179,7 +175,7 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze
 
 ---
 
-## Phase 2 — Quarantine UUID-reuse / compat helpers  ⬜ TODO  · Case 2
+## Phase 2 — Quarantine UUID-reuse / compat helpers  ✅ DONE  · Case 2
 
 ### Goal
 
@@ -201,7 +197,7 @@ Impl:
 - Move or re-export UUID-reuse + `resolveOrSynthesizeEntityDefinitionForCreate` here with `@deprecated` + EOL note (“remove when no incomplete-Entity / legacy create payloads remain”).
 - `entityPresentModel.ts` may keep a thin deprecated re-export **or** delete and update callers to the compat module.
 - Update `modelEntityActionLiveResolve.ts` and `index.ts` accordingly.
-- Update `entityPresentModel.phase9.unit.test.ts` imports.
+- Update `entityPresentModel.217.phase9.unit.test.ts` imports.
 
 ### 2.2 RED → GREEN — Public index documents quarantine
 
@@ -211,19 +207,19 @@ Impl:
 #### Validation
 ```
 npm run testByFile -w miroir-core -- 220.phase2
-npm run testByFile -w miroir-core -- entityPresentModel.phase9
-npm run testByFile -w miroir-core -- applicationVersionFreeze.phase0
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase9
+npm run testByFile -w miroir-core -- applicationVersionFreeze.216.phase0
 ```
 
 ### NON-REGRESSION
 ```
 npm run testByFile -w miroir-core -- modelEntityDualWrite
-npm run testByFile -w miroir-core -- ModelEntityActionTransformer.phase11
+npm run testByFile -w miroir-core -- ModelEntityActionTransformer.217.phase11
 ```
 
 ---
 
-## Phase 3 — Present-model Actions: Entity-only for complete Entities  ⬜ TODO  · Case 3
+## Phase 3 — Present-model Actions: Entity-only for complete Entities  ✅ DONE  · Case 3
 
 ### Goal
 
@@ -231,7 +227,7 @@ Ordinary post-#217 apps mutate present model without requiring a live EntityDefi
 
 ### 3.1 RED → GREEN — Planner characterization (extend phase11)
 
-Test file: extend `packages/miroir-core/tests/1_core/entityPresentModel.phase11.unit.test.ts` and/or `ModelEntityActionTransformer.phase11.unit.test.ts`
+Test file: extend `packages/miroir-core/tests/1_core/entityPresentModel.217.phase11.unit.test.ts` and/or `ModelEntityActionTransformer.217.phase11.unit.test.ts`
 
 Behaviors (assert if not already):
 
@@ -255,14 +251,14 @@ Behaviors (assert if not already):
 
 #### Validation
 ```
-npm run testByFile -w miroir-core -- entityPresentModel.phase11
-npm run testByFile -w miroir-core -- ModelEntityActionTransformer.phase11
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase11
+npm run testByFile -w miroir-core -- ModelEntityActionTransformer.217.phase11
 ```
 
 ### NON-REGRESSION
 ```
 npm run testByFile -w miroir-core -- modelEntityDualWrite
-npm run testByFile -w miroir-core -- entityPresentModel.phase1
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase1
 ```
 
 Optional integ (if unit coverage gaps):
@@ -272,7 +268,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 
 ---
 
-## Phase 4 — Dual-write persistence shrink / quarantine  ⬜ TODO  · Case 4
+## Phase 4 — Dual-write persistence shrink / quarantine  ✅ DONE  · Case 4
 
 ### Goal
 
@@ -300,30 +296,24 @@ Approach (pick one and stick to it):
 ```
 npm run testByFile -w miroir-core -- 220.phase4
 npm run testByFile -w miroir-core -- modelEntityDualWritePersistence
-npm run testByFile -w miroir-core -- ModelEntityActionTransformer.phase11
+npm run testByFile -w miroir-core -- ModelEntityActionTransformer.217.phase11
 ```
 
 ---
 
-## Phase 5 — Preferred `entityVersions` access + freeze-critical test vocabulary  ⬜ TODO  · Cases 5a, 7
+## Phase 5 — Preferred `entityVersions` access + freeze-critical test vocabulary  ✅ DONE  · Cases 5a, 7
 
 ### Goal
 
-Freeze-adjacent and new code prefer `entityVersions` naming; critical tests stop teaching EntityDefinition-as-live-model. Full MetaModel property rename remains deferred (Phase 6).
+Freeze-adjacent and new code prefer `entityVersions` naming; critical tests stop teaching EntityDefinition-as-live-model. (Full MetaModel property rename followed in Phase 6.)
 
 ### 5.1 RED → GREEN — Accessor helpers
 
 Test file: `packages/miroir-core/tests/1_core/220-entityDefinition-tech-debt/220.phase5.unit.test.ts`
 
-Behaviors:
+**As shipped in Phase 5** (before Phase 6 schema rename): helpers were named `…EntityVersions` while MetaModel still used `entityDefinitions`. **After Phase 6:** helpers read/write `MetaModel.entityVersions` only.
 
-- `getMetaModelEntityVersions({ entityDefinitions: [...] })` returns that array.
-- If both `entityVersions` and `entityDefinitions` exist, prefer `entityVersions` (document conflict policy: prefer new field).
-- `withMetaModelEntityVersions` writes the preferred field used by freeze builders (implement as writing `entityDefinitions` **and** optional `entityVersions` mirror if dual-field; or only document alias until schema change — **locked default:** helper reads/writes via `entityDefinitions` today but is **named** `…EntityVersions` so call sites stop saying Definition).
-
-> Avoid generated MetaModel schema change in Phase 5 unless cheap. Prefer named helpers over Jzod field rename here.
-
-Impl: e.g. `packages/miroir-core/src/1_core/metaModelEntityVersions.ts` (or add to `Deployment.ts` / `Model.ts`).
+Impl: `packages/miroir-core/src/1_core/metaModelEntityVersions.ts`.
 
 ### 5.2 RED → GREEN — Freeze / debt tests use Entity + EntityVersion vocabulary
 
@@ -340,8 +330,8 @@ Impl: e.g. `packages/miroir-core/src/1_core/metaModelEntityVersions.ts` (or add 
 ```
 npm run testByFile -w miroir-core -- 220.phase5
 npm run testByFile -w miroir-core -- applicationVersionFreeze
-npm run testByFile -w miroir-core -- entityPresentModel.phase9
-npm run testByFile -w miroir-core -- entityPresentModel.phase11
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase9
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase11
 ```
 
 ### NON-REGRESSION
@@ -352,24 +342,29 @@ npm run testByFile -w miroir-core -- modelEntityDualWrite
 
 ---
 
-## Phase 6 — Optional rename wave (DEFERRED)  · Cases 5b/5c, 6
+## Phase 6 — MetaModel / store / localcache rename wave  ✅ DONE  · Cases 5b/5c, 6
 
-### Goal (after #216 can resume)
+### Goal
 
 Rename `MetaModel.entityDefinitions` → `entityVersions` through generated schema, stores, localcache, deployment builders. Update `bootFromPersistedState` parameter names.
 
-**Do not start until Phases 0–5 are accepted as “reasonable” and #216 is unblocked**, unless a freeze persist blocker forces 5b early (HITL).
+**Realization (2026-07-27):**
 
-Suggested sub-slices when opened:
+1. Bootstrap schema key renamed in `getMiroirFundamentalJzodSchema.ts`; `generate-ts-types` regenerated MetaModel.
+2. Core constructors (`emptyMetaModel`, `emptyApplicationModel`, Deployment filters, DomainController, PersistenceStoreController).
+3. Store `bootFromPersistedState(..., entityVersions)` across filesystem / indexedDb / postgres / mongodb / bundled + Error stores.
+4. localcache-redux / zustand MetaModel assemblers.
+5. Deployment `defaultMiroirMetaModel` / `defaultLibraryAppModel` + package rebuilds.
+6. Accessors simplified to read/write `entityVersions` only; legacy key stripped on write.
 
-1. Schema + `devBuild` types.
-2. `miroir-core` MetaModel constructors / empty model.
-3. Store mixins + PersistenceStoreController.
-4. localcache-redux / zustand selectors.
-5. Deployment package Model exports + asset loaders.
-6. Remove deprecated alias field.
+Report-diagram schema field `definition.entityDefinitions` intentionally left for Phase 7 / #213.
 
-Validation: `tsc`, store unit tests, LocalCache unit, one DomainController integ filesystem.
+Test file: `packages/miroir-core/tests/1_core/220-entityDefinition-tech-debt/220.phase6.unit.test.ts`
+
+#### Validation
+```
+npm run testByFile -w miroir-core -- 220.phase
+```
 
 ---
 
@@ -379,9 +374,9 @@ Rename report diagram `entityDefinitions` field / standalone UI props only when 
 
 ---
 
-## Acceptance checklist (#220 reasonable)
+## Acceptance checklist (#220)
 
-Mirror of issue acceptance criteria — check off when Phases 0–5 done:
+Original “reasonable” bar (Phases 0–5) — all checked. Phase 6 also done (see progress table).
 
 - [x] Present-model resolution for ordinary complete Entities does not prefer/require a live EntityDefinition instance (Phase 3).
 - [x] Freeze-adjacent APIs/types in `miroir-core` use `EntityVersion` where they mean snapshots (Phase 1).
@@ -391,8 +386,9 @@ Mirror of issue acceptance criteria — check off when Phases 0–5 done:
 - [x] Targeted `testByFile` suites above green; no new present-model coupling to ApplicationVersion Cross mappings.
 - [x] Remaining intentional `EntityDefinition` aliases/shims are greppable under compat / generated deprecated alias only.
 - [x] #216 TDD plan can continue at Phase 2 (freeze plan builder) without another vocabulary cleanup pass.
+- [x] `MetaModel.entityVersions` is the canonical collection; stores / localcache / deployment defaults updated (Phase 6).
 
-Known pre-existing (not #220): `entityPresentModel.phase3` fails on `ApplicationVersionCrossEntityVersion` Entity↔EntityVersion `mlSchema` drift in miroir deployment assets — present before this work.
+Known pre-existing (not #220): `entityPresentModel.217.phase3` fails on `ApplicationVersionCrossEntityVersion` Entity↔EntityVersion `mlSchema` drift in miroir deployment assets — present before this work.
 
 ---
 
@@ -403,9 +399,10 @@ Known pre-existing (not #220): `entityPresentModel.phase3` fails on `Application
 | PR1 | 0–1 | Types + characterization; tiny |
 | PR2 | 2 | Compat module move |
 | PR3 | 3–4 | Entity-only path + dual-write shrink |
-| PR4 | 5 | Accessors + test vocabulary; declare #220 reasonable |
+| PR4 | 5 | Accessors + test vocabulary; original “reasonable” bar |
+| PR5 | 6 | MetaModel / store / localcache `entityVersions` rename |
 
-Avoid one mega-rename PR (Phase 6).
+Phase 7 / #213 remains separate (report-diagram UI field + docs).
 
 ---
 

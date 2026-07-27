@@ -98,7 +98,7 @@ const libraryAppReportsByEntityName = {
 //   applicationUuid: selfApplicationLibrary.uuid,
 //   applicationName: selfApplicationLibrary.name,
 //   entities: libraryAppEntities.map((couple) => couple.entity),
-//   entityDefinitions: libraryAppEntities.map((couple) => couple.entityDefinition),
+//   entityVersions: libraryAppEntities.map((couple) => couple.entityDefinition),
 //   endpoints: [
 //     bookEndpoint as any as EndpointDefinition,
 //     lendingEndpoint as any as EndpointDefinition,
@@ -133,7 +133,7 @@ export const defaultLibraryAppModel: MetaModel = {
         entityPublisher as Entity,
         entityUser as Entity,
       ],
-      entityDefinitions: [
+      entityVersions: [
         entityDefinitionAuthor as EntityDefinition,
         entityDefinitionBook as EntityDefinition,
         entityDefinitionCountry as EntityDefinition,

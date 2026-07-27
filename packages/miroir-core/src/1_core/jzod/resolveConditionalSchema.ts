@@ -107,7 +107,7 @@ export function resolveConditionalSchema(
     if (ifThenElseConfig.parentUuid && typeof ifThenElseConfig.parentUuid === "object") {
       if (!modelEnvironment.currentModel || (
         (modelEnvironment.currentModel.entities?.length ?? 0) === 0 &&
-        (modelEnvironment.currentModel.entityDefinitions?.length ?? 0) === 0
+        (modelEnvironment.currentModel.entityVersions?.length ?? 0) === 0
       )) {
         return { error: 'NO_REDUX_DEPLOYMENTS_STATE' };
       }

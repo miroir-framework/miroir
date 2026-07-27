@@ -323,7 +323,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
         props.chosenApplicationSection
         ]
-      : { availableReports: [], entities: [], entityDefinitions: [] };
+      : { availableReports: [], entities: [], entityVersions: [] };
   }, [
     props.deploymentUuid,
     context.deploymentUuidToReportsEntitiesDefinitionsMapping,
@@ -595,7 +595,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               deploymentUuid: props.deploymentUuid,
               domainController: domainController,
               entityDefinition: currentReportTargetEntity,
-              entityDefinitions: currentModel.entityDefinitions,
+              entityDefinitions: currentModel.entityVersions,
               entities: currentModel.entities,
               entityInstances: [data],
             }

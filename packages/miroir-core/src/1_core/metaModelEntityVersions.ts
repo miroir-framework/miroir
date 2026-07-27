@@ -1,8 +1,7 @@
 /**
- * #220 Phase 5a — preferred MetaModel EntityVersion accessors.
+ * #220 Phase 6 — MetaModel EntityVersion collection accessors.
  *
- * Named helpers so freeze-adjacent code speaks EntityVersion without a full
- * MetaModel.entityDefinitions → entityVersions schema rename (deferred).
+ * After the schema rename, MetaModel.entityVersions is canonical.
  */
 
 import type {
@@ -10,41 +9,38 @@ import type {
   MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
-type MetaModelWithOptionalEntityVersions = MetaModel & {
-  entityVersions?: EntityVersion[] | undefined;
-};
-
 /**
- * Prefer `entityVersions` when present; otherwise fall back to legacy
- * `entityDefinitions` (typed as EntityVersion[] after #217).
+ * Return MetaModel.entityVersions (empty array when absent).
+ * Dual-reads legacy `entityDefinitions` for fixtures / seeds not yet renamed.
  */
 export function getMetaModelEntityVersions(
-  model: MetaModelWithOptionalEntityVersions | null | undefined,
+  model: MetaModel | null | undefined,
 ): EntityVersion[] {
   if (!model) {
     return [];
   }
-  if (Array.isArray(model.entityVersions)) {
+  if (model.entityVersions) {
     return model.entityVersions;
   }
-  return model.entityDefinitions ?? [];
+  const legacy = (model as MetaModel & { entityDefinitions?: EntityVersion[] })
+    .entityDefinitions;
+  return legacy ?? [];
 }
 
 /**
- * Write EntityVersion rows onto the MetaModel collection used today
- * (`entityDefinitions`). When the optional `entityVersions` field is already
- * present on the model, mirror the same array there.
+ * Write EntityVersion rows onto MetaModel.entityVersions.
+ * Drops any legacy `entityDefinitions` key if present on the input object.
  */
 export function withMetaModelEntityVersions(
-  model: MetaModelWithOptionalEntityVersions,
+  model: MetaModel,
   entityVersions: EntityVersion[],
-): MetaModelWithOptionalEntityVersions {
-  const next: MetaModelWithOptionalEntityVersions = {
-    ...model,
-    entityDefinitions: entityVersions,
+): MetaModel {
+  const { entityDefinitions: _legacy, ...rest } = model as MetaModel & {
+    entityDefinitions?: EntityVersion[];
   };
-  if ("entityVersions" in model) {
-    next.entityVersions = entityVersions;
-  }
-  return next;
+  void _legacy;
+  return {
+    ...rest,
+    entityVersions,
+  };
 }

@@ -1,12 +1,10 @@
 /**
- * @deprecated Prefer MiroirTest suites:
- * - `domain_controller_non_uuid_pk_model_crud` (create entity with number PK)
- * - `domain_controller_non_uuid_pk_data_crud` (CRUD instances with number PK)
- * via `npm run testMiroir -w miroir-standalone-app -- --suites <key> --mode integ --profile emulatedServer-sql`.
- * Canonical leaves in deployment-miroir; Library is runTarget only.
+ * @deprecated Prefer MiroirTest suite `domain_controller_no_parent_uuid_crud` via
+ * `npm run testMiroir -w miroir-standalone-app -- --suites domain_controller_no_parent_uuid_crud --mode integ --profile emulatedServer-sql`.
+ * Canonical leaves: `miroirTest_domain_controller_no_parent_uuid_crud` (deployment-miroir; Library is runTarget only).
  * Kept green until MiroirTest is accepted as sole owner — do not delete.
  */
-import { describe, expect, beforeAll, beforeEach, afterAll, afterEach, it } from "vitest";
+import { describe, expect } from "vitest";
 
 import process from "process";
 
@@ -32,7 +30,6 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
   StoreUnitConfiguration,
   TestCompositeActionParams,
@@ -72,111 +69,97 @@ import { packageName } from "../../src/constants.js";
 import { cleanLevel } from "./constants.js";
 import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 
-import {
-  defaultMiroirMetaModel,
-  entityEntity,
-  selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
+import { defaultMiroirMetaModel, entityEntity, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 // ##############################################################################################
-// Non-UUID PK test entity definition
+// Entity whose instances do NOT carry a parentUuid attribute.
+// Uses standard UUID primary key.
 // ##############################################################################################
 
-const entityCodeNumberUuid = "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f";
-const entityDefinitionCodeNumberUuid = "dceae8f8-c657-49df-9967-64ac3e52f5b4";
+const entityNoParentUuidUuid = "803b81ad-fda4-4206-8860-cc86f37c7a6e";
+const entityDefinitionNoParentUuidUuid = "0057f84b-64d8-4395-8841-b264e3f9473a";
 
-const entityCodeNumber: Entity = {
-  uuid: entityCodeNumberUuid,
+const entityNoParentUuid: Entity = {
+  uuid: entityNoParentUuidUuid,
   parentName: "Entity",
   parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
   selfApplication: selfApplicationLibrary.uuid,
-  name: "TestEntityCodeNumber",
+  name: "TestEntityNoParentUuid",
   conceptLevel: "Model",
-  description: "Test entity with a non-UUID number primary key.",
+  description: "Test entity whose instances do not bear a parentUuid attribute.",
 } as Entity;
 
-const entityDefinitionCodeNumber: EntityDefinition = {
-  uuid: entityDefinitionCodeNumberUuid,
+const entityDefinitionNoParentUuid: EntityDefinition = {
+  uuid: entityDefinitionNoParentUuidUuid,
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  entityUuid: entityCodeNumberUuid,
+  entityUuid: entityNoParentUuidUuid,
   conceptLevel: "Model",
-  name: "TestEntityCodeNumber",
-  idAttribute: "code",
+  name: "TestEntityNoParentUuid",
   mlSchema: {
     type: "object",
     definition: {
-      code: {
-        type: "number",
-        tag: { value: { id: 1, defaultLabel: "Code" } },
-      },
-      parentName: {
-        type: "string",
-        optional: true,
-        tag: { value: { id: 2, defaultLabel: "Entity Name" } },
-      },
-      parentUuid: {
+      uuid: {
         type: "uuid",
-        tag: { value: { id: 3, defaultLabel: "Entity Uuid" } },
+        tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
       },
       name: {
         type: "string",
-        tag: { value: { id: 4, defaultLabel: "Name" } },
+        tag: { value: { id: 2, defaultLabel: "Name" } },
       },
+      description: {
+        type: "string",
+        optional: true,
+        tag: { value: { id: 3, defaultLabel: "Description" } },
+      },
+      // NO parentName, NO parentUuid in schema
     },
   },
-} as any as EntityDefinition; // cast needed since idAttribute is not yet in generated EntityDefinition type
+} as EntityDefinition;
 
-// Test data instances (no uuid — PK is number field "code")
-const codeItem1: EntityInstance = {
-  code: 1,
-  parentUuid: entityCodeNumberUuid,
-  parentName: "TestEntityCodeNumber",
-  name: "first item",
+// Test data instances — NO parentUuid attribute
+const noParentItem1: EntityInstance = {
+  uuid: "4476e12d-e822-44db-bd06-aadb81b74d60",
+  name: "item one",
 } as any as EntityInstance;
 
-const codeItem2: EntityInstance = {
-  code: 2,
-  parentUuid: entityCodeNumberUuid,
-  parentName: "TestEntityCodeNumber",
-  name: "second item",
+const noParentItem2: EntityInstance = {
+  uuid: "63e87f77-30d8-4044-a8de-0e7af286060c",
+  name: "item two",
 } as any as EntityInstance;
 
-const codeItem3: EntityInstance = {
-  code: 3,
-  parentUuid: entityCodeNumberUuid,
-  parentName: "TestEntityCodeNumber",
-  name: "third item",
+const noParentItem3: EntityInstance = {
+  uuid: "ada284e0-f3bb-4da8-8041-671a8ee39b8d",
+  name: "item three",
 } as any as EntityInstance;
 
-// A minimal MetaModel for the test deployment that includes entityCodeNumber
-const codeNumberTestMetaModel: MetaModel = {
+// A minimal MetaModel for the test deployment
+const noParentUuidTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
-  entities: [entityPublisher as Entity, entityCodeNumber],
-  entityDefinitions: [
+  applications: [],
+  entities: [entityPublisher as Entity, entityNoParentUuid],
+  entityVersions: [
     entityDefinitionPublisher as EntityDefinition,
-    entityDefinitionCodeNumber,
+    entityDefinitionNoParentUuid,
   ],
   endpoints: [],
   jzodSchemas: [],
   menus: [],
   runners: [],
-  tests: [],
   themes: [],
   applicationVersions: [],
   reports: [],
   storedQueries: [],
   applicationVersionCrossEntityVersion: [],
-  applications: [],
 };
 
 // ##############################################################################################
 
 const env: any = process.env;
 
-const fileName = "DomainController.integ.nonUuidPK.CRUD.test";
+const fileName = "DomainController.integ.noParentUuid.CRUD.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
@@ -295,7 +278,7 @@ const testDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.
 let domainController: DomainControllerInterface;
 
 // ##############################################################################################
-// Shared action sequence helpers embedded in test compositeActions
+// Shared action sequence helpers
 // ##############################################################################################
 const refreshMiroirAndLibrary = [
   {
@@ -312,11 +295,11 @@ const refreshMiroirAndLibrary = [
   },
 ] as const;
 
-const queryCodeNumberInstances = {
+const queryNoParentUuidInstances = {
   actionType: "compositeRunBoxedQueryAction",
   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-  actionLabel: "queryCodeNumberInstances",
-  nameGivenToResult: "codeNumberList",
+  actionLabel: "queryNoParentUuidInstances",
+  nameGivenToResult: "noParentUuidList",
   payload: {
     actionType: "runBoxedQueryAction",
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -328,12 +311,12 @@ const queryCodeNumberInstances = {
         application: testApplicationUuid,
         pageParams: { currentDeploymentUuid: testApplicationDeploymentUuid },
         extractors: {
-          codeItems: {
+          items: {
             extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "data",
-            parentName: "TestEntityCodeNumber",
-            parentUuid: entityCodeNumberUuid,
-            orderBy: { attributeName: "code", direction: "ASC" },
+            parentName: "TestEntityNoParentUuid",
+            parentUuid: entityNoParentUuidUuid,
+            orderBy: { attributeName: "name", direction: "ASC" },
           },
         },
       },
@@ -356,7 +339,7 @@ const checkCount = (n: number) => ({
         applyTo: {
           transformerType: "getFromContext" as const,
           interpolation: "runtime" as const,
-          referencePath: ["codeNumberList", "codeItems"] as string[],
+          referencePath: ["noParentUuidList", "items"] as string[],
         },
       },
       expectedValue: { aggregate: n },
@@ -398,19 +381,17 @@ afterAll(async () => {
 
 // ##############################################################################################
 // ─── SUITE 1: Model CRUD ─────────────────────────────────────────────────────
-// Create an entity with non-UUID number PK and verify it in the model store.
-// beforeEach initialises Library with Publisher only; each test creates
-// entityCodeNumber as part of its action sequence.
+// Create the test entity and verify it appears in the model.
 // ##############################################################################################
 
 const modelTestActions: Record<string, TestCompositeActionParams> = {
-  "DomainController.integ.nonUuidPK.Model.CRUD": {
+  "DomainController.integ.noParentUuid.Model.CRUD": {
     testActionType: "testCompositeActionSuite",
-    testActionLabel: "DomainController.integ.nonUuidPK.Model.CRUD",
+    testActionLabel: "DomainController.integ.noParentUuid.Model.CRUD",
     application: testApplicationUuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
-      testLabel: "DomainController.integ.nonUuidPK.Model.CRUD",
+      testLabel: "DomainController.integ.noParentUuid.Model.CRUD",
       beforeAll: createDeploymentCompositeAction(
         "library",
         testApplicationDeploymentUuid,
@@ -418,7 +399,6 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
         adminDeployment,
         testDeploymentStorageConfiguration,
       ),
-      // beforeEach: Publisher only so we can test entity creation
       beforeEach: resetAndinitializeDeploymentCompositeAction(
         selfApplicationLibrary.uuid,
         deployment_Library_DO_NO_USE.uuid,
@@ -444,12 +424,11 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
           applicationUuid: selfApplicationLibrary.uuid,
           applicationName: selfApplicationLibrary.name,
           entities: [entityPublisher as Entity],
-          entityDefinitions: [entityDefinitionPublisher as EntityDefinition],
+          entityVersions: [entityDefinitionPublisher as EntityDefinition],
           endpoints: [],
           jzodSchemas: [],
           menus: [],
           runners: [],
-          tests: [],
           themes: [],
           applicationVersions: [],
           reports: [],
@@ -466,33 +445,33 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
         deployment_Library_DO_NO_USE.uuid,
       ),
       testCompositeActions: {
-        "Create Entity TestEntityCodeNumber and Commit": {
+        "Create Entity TestEntityNoParentUuid and Commit": {
           testType: "testCompositeAction",
-          testLabel: "Create Entity TestEntityCodeNumber and Commit",
+          testLabel: "Create Entity TestEntityNoParentUuid and Commit",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
-            actionLabel: "createCodeNumberEntityAndCommit",
+            actionLabel: "createNoParentUuidEntityAndCommit",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
               actionSequence: [
                 ...refreshMiroirAndLibrary,
                 {
                   actionType: "createEntity",
-                  actionLabel: "createEntityCodeNumber",
+                  actionLabel: "createEntityNoParentUuid",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: testApplicationUuid,
                     entities: [
                       {
-                        entity: entityCodeNumber,
-                        entityVersion: entityDefinitionCodeNumber,
+                        entity: entityNoParentUuid,
+                        entityVersion: entityDefinitionNoParentUuid,
                       },
                     ],
                   },
                 },
                 {
                   actionType: "commit",
-                  actionLabel: "commitEntityCodeNumber",
+                  actionLabel: "commitEntityNoParentUuid",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: { application: testApplicationUuid },
                 },
@@ -546,7 +525,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
                       referencePath: ["libraryEntityList", "entities"],
                     },
                   },
-                  expectedValue: { aggregate: 2 }, // Publisher + TestEntityCodeNumber
+                  expectedValue: { aggregate: 2 }, // Publisher + TestEntityNoParentUuid
                 },
               },
             },
@@ -557,7 +536,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
   },
 };
 
-describe.sequential("DomainController.integ.nonUuidPK.Model.CRUD", () => {
+describe.sequential("DomainController.integ.noParentUuid.Model.CRUD", () => {
   it.each(Object.entries(modelTestActions))(
     "test %s",
     async (currentTestSuiteName, testAction: TestCompositeActionParams) => {
@@ -577,19 +556,20 @@ describe.sequential("DomainController.integ.nonUuidPK.Model.CRUD", () => {
 });
 
 // ##############################################################################################
-// ─── SUITE 2: Data CRUD with non-UUID PK ─────────────────────────────────────
-// beforeEach sets up TestEntityCodeNumber with 3 initial instances (code: 1, 2, 3).
-// Tests CRUD on those instances.
+// ─── SUITE 2: Data CRUD with instances that have no parentUuid ────────────────
+// beforeEach sets up TestEntityNoParentUuid with 3 initial instances.
+// All CUD actions provide payload.parentUuid as the fallback.
+// Instances themselves have NO parentUuid attribute.
 // ##############################################################################################
 
 const dataTestActions: Record<string, TestCompositeActionParams> = {
-  "DomainController.integ.nonUuidPK.Data.CRUD": {
+  "DomainController.integ.noParentUuid.Data.CRUD": {
     testActionType: "testCompositeActionSuite",
-    testActionLabel: "DomainController.integ.nonUuidPK.Data.CRUD",
+    testActionLabel: "DomainController.integ.noParentUuid.Data.CRUD",
     application: testApplicationUuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
-      testLabel: "DomainController.integ.nonUuidPK.Data.CRUD",
+      testLabel: "DomainController.integ.noParentUuid.Data.CRUD",
       beforeAll: createDeploymentCompositeAction(
         "library",
         testApplicationDeploymentUuid,
@@ -609,13 +589,13 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         },
         [
           {
-            entity: entityCodeNumber,
-            entityDefinition: entityDefinitionCodeNumber,
-            instances: [codeItem1, codeItem2, codeItem3],
+            entity: entityNoParentUuid,
+            entityDefinition: entityDefinitionNoParentUuid,
+            instances: [noParentItem1, noParentItem2, noParentItem3],
           },
         ],
-        codeNumberTestMetaModel,
-        [entityCodeNumberUuid],
+        noParentUuidTestMetaModel,
+        [entityNoParentUuidUuid],
       ),
       afterEach: testUtils_resetApplicationDeployment(deployment_Library_DO_NO_USE.uuid),
       afterAll: testUtils_deleteApplicationDeployment(
@@ -625,9 +605,9 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
       ),
       testCompositeActions: {
         // ─── Read ────────────────────────────────────────────────────────────
-        "Refresh instances of TestEntityCodeNumber": {
+        "Read instances of TestEntityNoParentUuid": {
           testType: "testCompositeAction",
-          testLabel: "Refresh instances of TestEntityCodeNumber",
+          testLabel: "Read instances of TestEntityNoParentUuid",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "refreshAndQuery",
@@ -635,33 +615,19 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
             payload: {
               actionSequence: [
                 ...refreshMiroirAndLibrary,
-                queryCodeNumberInstances,
+                queryNoParentUuidInstances,
               ],
             },
           },
           testCompositeActionAssertions: [
             checkCount(3),
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkItems",
-              nameGivenToResult: "checkItems",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkItems",
-                definition: {
-                  resultAccessPath: ["codeNumberList", "codeItems"],
-                  ignoreAttributes: ["conceptLevel"],
-                  expectedValue: [codeItem1, codeItem2, codeItem3],
-                },
-              },
-            },
           ],
         },
 
-        // ─── Create ──────────────────────────────────────────────────────────
-        "Create instance in TestEntityCodeNumber": {
+        // ─── Create (no parentUuid on instance, payload.parentUuid as fallback) ───
+        "Create instance without parentUuid": {
           testType: "testCompositeAction",
-          testLabel: "Create instance in TestEntityCodeNumber",
+          testLabel: "Create instance without parentUuid",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "createAndQuery",
@@ -671,32 +637,31 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 ...refreshMiroirAndLibrary,
                 {
                   actionType: "createInstance",
-                  actionLabel: "createCodeItem4",
+                  actionLabel: "createNoParentItem4",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
                     applicationSection: "data",
+                    parentUuid: entityNoParentUuidUuid, // fallback for instances without parentUuid
                     objects: [
                       {
-                        code: 4,
-                        parentUuid: entityCodeNumberUuid,
-                        parentName: "TestEntityCodeNumber",
-                        name: "fourth item",
+                        uuid: "3864e72e-08f4-4ede-b694-ee4caafa24a9",
+                        name: "item four",
                       } as any as EntityInstance,
                     ],
                   },
                 },
-                queryCodeNumberInstances,
+                queryNoParentUuidInstances,
               ],
             },
           },
           testCompositeActionAssertions: [checkCount(4)],
         },
 
-        // ─── Update ──────────────────────────────────────────────────────────
-        "Update instance in TestEntityCodeNumber": {
+        // ─── Update (no parentUuid on instance, payload.parentUuid as fallback) ───
+        "Update instance without parentUuid": {
           testType: "testCompositeAction",
-          testLabel: "Update instance in TestEntityCodeNumber",
+          testLabel: "Update instance without parentUuid",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "updateAndQuery",
@@ -706,22 +671,21 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 ...refreshMiroirAndLibrary,
                 {
                   actionType: "updateInstance",
-                  actionLabel: "updateCodeItem1",
+                  actionLabel: "updateNoParentItem1",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
                     applicationSection: "data",
+                    parentUuid: entityNoParentUuidUuid,
                     objects: [
                       {
-                        code: 1,
-                        parentUuid: entityCodeNumberUuid,
-                        parentName: "TestEntityCodeNumber",
-                        name: "first item UPDATED",
+                        uuid: "4476e12d-e822-44db-bd06-aadb81b74d60",
+                        name: "item one UPDATED",
                       } as any as EntityInstance,
                     ],
                   },
                 },
-                queryCodeNumberInstances,
+                queryNoParentUuidInstances,
               ],
             },
           },
@@ -735,17 +699,15 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkUpdatedItem",
                 definition: {
-                  resultAccessPath: ["codeNumberList", "codeItems"],
+                  resultAccessPath: ["noParentUuidList", "items"],
                   ignoreAttributes: ["conceptLevel"],
                   expectedValue: [
                     {
-                      code: 1,
-                      parentUuid: entityCodeNumberUuid,
-                      parentName: "TestEntityCodeNumber",
-                      name: "first item UPDATED",
+                      uuid: "4476e12d-e822-44db-bd06-aadb81b74d60",
+                      name: "item one UPDATED",
                     },
-                    codeItem2,
-                    codeItem3,
+                    noParentItem3,
+                    noParentItem2,
                   ],
                 },
               },
@@ -753,10 +715,10 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
           ],
         },
 
-        // ─── Delete ──────────────────────────────────────────────────────────
-        "Delete instance from TestEntityCodeNumber": {
+        // ─── Delete (no parentUuid on instance, payload.parentUuid as fallback) ───
+        "Delete instance without parentUuid": {
           testType: "testCompositeAction",
-          testLabel: "Delete instance from TestEntityCodeNumber",
+          testLabel: "Delete instance without parentUuid",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "deleteAndQuery",
@@ -766,42 +728,70 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 ...refreshMiroirAndLibrary,
                 {
                   actionType: "deleteInstance",
-                  actionLabel: "deleteCodeItem2",
+                  actionLabel: "deleteNoParentItem2",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
                     applicationSection: "data",
-                    objects: [codeItem2],
+                    parentUuid: entityNoParentUuidUuid,
+                    objects: [noParentItem2],
                   },
                 },
-                queryCodeNumberInstances,
+                queryNoParentUuidInstances,
               ],
             },
           },
           testCompositeActionAssertions: [
             checkCount(2),
-            {
-              actionType: "compositeRunTestAssertion",
-              actionLabel: "checkRemainingItems",
-              nameGivenToResult: "checkRemainingItems",
-              testAssertion: {
-                testType: "testAssertion",
-                testLabel: "checkRemainingItems",
-                definition: {
-                  resultAccessPath: ["codeNumberList", "codeItems"],
-                  ignoreAttributes: ["conceptLevel"],
-                  expectedValue: [codeItem1, codeItem3],
-                },
-              },
-            },
           ],
+        },
+
+        // ─── Mixed: some instances WITH parentUuid, some WITHOUT ─────────
+        "Create batch with mixed parentUuid presence": {
+          testType: "testCompositeAction",
+          testLabel: "Create batch with mixed parentUuid presence",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
+            actionLabel: "mixedCreateAndQuery",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            payload: {
+              actionSequence: [
+                ...refreshMiroirAndLibrary,
+                {
+                  actionType: "createInstance",
+                  actionLabel: "createMixedBatch",
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  payload: {
+                    application: testApplicationUuid,
+                    applicationSection: "data",
+                    parentUuid: entityNoParentUuidUuid, // fallback for those without parentUuid
+                    objects: [
+                      {
+                        // Instance WITH explicit parentUuid
+                        uuid: "c0960303-1e38-4c0c-ad4c-1b0c50696d4b",
+                        parentUuid: entityNoParentUuidUuid,
+                        name: "item five with parentUuid",
+                      } as any as EntityInstance,
+                      {
+                        // Instance WITHOUT parentUuid — resolved from payload
+                        uuid: "c19217e1-18d1-406d-85c3-d21c79874854",
+                        name: "item six without parentUuid",
+                      } as any as EntityInstance,
+                    ],
+                  },
+                },
+                queryNoParentUuidInstances,
+              ],
+            },
+          },
+          testCompositeActionAssertions: [checkCount(5)], // 3 initial + 2 new
         },
       },
     },
   },
 };
 
-describe.sequential("DomainController.integ.nonUuidPK.Data.CRUD", () => {
+describe.sequential("DomainController.integ.noParentUuid.Data.CRUD", () => {
   it.each(Object.entries(dataTestActions))(
     "test %s",
     async (currentTestSuiteName, testAction: TestCompositeActionParams) => {

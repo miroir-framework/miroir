@@ -166,13 +166,13 @@ export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
         availableQueries: metaModel.storedQueries,
         availableReports: metaModel.reports.filter((r:Report) => metaModelReports.includes(r.uuid)),
         entities: metaModel.entities,
-        entityDefinitions: metaModel.entityDefinitions,
+        entityVersions: metaModel.entityVersions,
       },
       data: {
         availableQueries: metaModel.storedQueries,
         availableReports: metaModel.reports.filter((r) => !metaModelReports.includes(r.uuid)),
         entities: metaModel.entities,
-        entityDefinitions: metaModel.entityDefinitions,
+        entityVersions: metaModel.entityVersions,
       },
     };
   } else {
@@ -181,13 +181,13 @@ export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
         availableQueries: metaModel.storedQueries,
         availableReports: metaModel.reports,
         entities: metaModel.entities,
-        entityDefinitions: metaModel.entityDefinitions,
+        entityVersions: metaModel.entityVersions,
       },
       data: {
         availableQueries: metaModel.storedQueries,
         availableReports: appModel.reports,
         entities: appModel.entities,
-        entityDefinitions: appModel.entityDefinitions,
+        entityVersions: appModel.entityVersions,
       },
     };
   }
@@ -201,7 +201,7 @@ export const emptyApplicationModel: MetaModel = {
   applicationVersionCrossEntityVersion: [],
   endpoints: [],
   entities: [],
-  entityDefinitions: [],
+  entityVersions: [],
   jzodSchemas: [],
   menus: [],
   reports: [],
@@ -312,7 +312,7 @@ export async function extractApplicationModel(
       applicationName: applicationName,
       applications: applications as SelfApplication[],
       entities: entities as Entity[],
-      entityDefinitions: entityDefinitions as EntityDefinition[],
+      entityVersions: entityDefinitions as EntityDefinition[],
       endpoints: endpoints as EndpointDefinition[],
       menus: menus as Menu[],
       reports: reports as Report[],

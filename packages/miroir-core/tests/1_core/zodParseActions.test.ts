@@ -130,7 +130,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             applicationName: "",
             endpoints: [],
             entities: [],
-            entityDefinitions: [],
+            entityVersions: [],
             jzodSchemas: [],
             menus: [],
             applicationVersions: [],

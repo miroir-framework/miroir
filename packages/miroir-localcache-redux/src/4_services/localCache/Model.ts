@@ -142,7 +142,7 @@ export function currentModel(
           ? Object.values(entityDefinitions.entities)
           : []) as EntityDefinition[],
       ),
-      entityDefinitions: (entityDefinitions && entityDefinitions.entities
+      entityVersions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
         : []) as EntityDefinition[],
       jzodSchemas: (jzodSchemas && jzodSchemas.entities

@@ -70,12 +70,12 @@ export type EntityEntityDefinitionJoinInventory = {
  */
 export function inventoryEntityEntityDefinitionJoins(
   entities: Entity[],
-  entityDefinitions: EntityDefinition[],
+  entityVersions: EntityDefinition[],
 ): EntityEntityDefinitionJoinInventory {
   const entityByUuid = new Map(entities.map((entity) => [entity.uuid, entity]));
   const definitionsByEntityUuid = new Map<string, EntityDefinition[]>();
 
-  for (const entityDefinition of entityDefinitions) {
+  for (const entityDefinition of entityVersions) {
     const existing = definitionsByEntityUuid.get(entityDefinition.entityUuid);
     if (existing) {
       existing.push(entityDefinition);
@@ -103,7 +103,7 @@ export function inventoryEntityEntityDefinitionJoins(
     }
   }
 
-  const orphanEntityDefinitions = entityDefinitions
+  const orphanEntityDefinitions = entityVersions
     .filter((entityDefinition) => !entityByUuid.has(entityDefinition.entityUuid))
     .map((entityDefinition) => ({
       uuid: entityDefinition.uuid,
@@ -378,11 +378,11 @@ export function alignEntityDefinitionToPresentEntity(
  */
 export function assembleLivePresentModelEntities(
   entities: Entity[],
-  entityDefinitions: EntityDefinition[],
+  entityVersions: EntityDefinition[],
 ): Entity[] {
   return entities.map((entity) => {
     try {
-      return resolveCurrentEntityModel(entity, entityDefinitions, {
+      return resolveCurrentEntityModel(entity, entityVersions, {
         onInconsistency: "preferEntity",
       });
     } catch {
@@ -396,14 +396,14 @@ const ENTITY_PARENT_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 /**
  * #217 Phase 8 — single hub for live present-model lookup by entity UUID.
  * Prefer MetaModel.entities (assembled); fall back through `resolveCurrentEntityModel`
- * using EntityDefinitions only when needed. Call sites must not
- * `entityDefinitions.find(ed => ed.entityUuid === …)` for live schema/PK.
+ * using EntityVersions only when needed. Call sites must not
+ * `entityVersions.find(ed => ed.entityUuid === …)` for live schema/PK.
  */
 export function resolvePresentEntityFromModel(
   model:
     | {
         entities?: Entity[] | undefined;
-        entityDefinitions?: EntityDefinition[] | undefined;
+        entityVersions?: EntityDefinition[] | undefined;
       }
     | null
     | undefined,
@@ -414,12 +414,12 @@ export function resolvePresentEntityFromModel(
     return undefined;
   }
   const entities = model.entities ?? [];
-  const entityDefinitions = model.entityDefinitions ?? [];
+  const entityVersions = model.entityVersions ?? [];
   const entity = entities.find((candidate) => candidate.uuid === entityUuid);
 
   if (entity) {
     try {
-      return resolveCurrentEntityModel(entity, entityDefinitions, {
+      return resolveCurrentEntityModel(entity, entityVersions, {
         onInconsistency: "preferEntity",
         ...options,
       });
@@ -428,7 +428,7 @@ export function resolvePresentEntityFromModel(
     }
   }
 
-  const matching = entityDefinitions.filter(
+  const matching = entityVersions.filter(
     (entityDefinition) => entityDefinition.entityUuid === entityUuid,
   );
   if (matching.length !== 1) {

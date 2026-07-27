@@ -457,7 +457,7 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
         domainState[deploymentUuid]["model"]?.[entityEntityDefinition.uuid] ?? {},
       ) as EntityDefinition[];
       const currentObjectPresentEntity = resolvePresentEntityFromModel(
-        { entities: modelEntities, entityDefinitions: modelEntityDefinitions },
+        { entities: modelEntities, entityVersions: modelEntityDefinitions },
         entityUuidReference,
       );
 

@@ -96,7 +96,7 @@ describe("217 Phase 3 — Entity ↔ EntityDefinition asset redundancy", () => {
   it("defaultLibraryAppModel Entities are complete and consistent with EntityDefinitions", () => {
     assertEntityEntityDefinitionRedundancy(
       defaultLibraryAppModel.entities,
-      defaultLibraryAppModel.entityDefinitions,
+      defaultLibraryAppModel.entityVersions,
       "defaultLibraryAppModel",
     );
   });
@@ -104,7 +104,7 @@ describe("217 Phase 3 — Entity ↔ EntityDefinition asset redundancy", () => {
   it("defaultMiroirMetaModel Entities are complete and consistent with EntityDefinitions", () => {
     assertEntityEntityDefinitionRedundancy(
       defaultMiroirMetaModel.entities,
-      defaultMiroirMetaModel.entityDefinitions,
+      defaultMiroirMetaModel.entityVersions,
       "defaultMiroirMetaModel",
     );
   });

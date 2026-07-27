@@ -77,7 +77,7 @@ export class SqlDbStoreSection
   // ##############################################################################################
   async bootFromPersistedState(
     entities: Entity[],
-    entityDefinitions: EntityDefinition[]
+    entityVersions: EntityDefinition[]
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
@@ -94,7 +94,7 @@ export class SqlDbStoreSection
       // .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
       .reduce((prev, curr: Entity) => {
         // #217 Phase 11 — prefer Entity present-model fields; ED only as legacy fill-in.
-        const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
+        const entityDefinition = entityVersions.find((e) => e.entityUuid == curr.uuid);
         const presentCarrier: Entity = {
           ...curr,
           ...(curr.mlSchema === undefined && entityDefinition?.mlSchema !== undefined

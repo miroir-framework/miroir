@@ -1,10 +1,12 @@
 /**
- * @deprecated Prefer MiroirTest suite `domain_controller_composite_pk_crud` via
- * `npm run testMiroir -w miroir-standalone-app -- --suites domain_controller_composite_pk_crud --mode integ --profile emulatedServer-sql`.
- * Canonical leaves: `miroirTest_domain_controller_composite_pk_crud` (deployment-miroir; Library is runTarget only).
+ * @deprecated Prefer MiroirTest suites:
+ * - `domain_controller_non_uuid_pk_model_crud` (create entity with number PK)
+ * - `domain_controller_non_uuid_pk_data_crud` (CRUD instances with number PK)
+ * via `npm run testMiroir -w miroir-standalone-app -- --suites <key> --mode integ --profile emulatedServer-sql`.
+ * Canonical leaves in deployment-miroir; Library is runTarget only.
  * Kept green until MiroirTest is accepted as sole owner — do not delete.
  */
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, beforeAll, beforeEach, afterAll, afterEach, it } from "vitest";
 
 import process from "process";
 
@@ -30,11 +32,12 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
+  resetAndInitApplicationDeployment,
   resetAndinitializeDeploymentCompositeAction,
   StoreUnitConfiguration,
   TestCompositeActionParams,
   testUtils_deleteApplicationDeployment,
-  testUtils_resetApplicationDeployment
+  testUtils_resetApplicationDeployment,
 } from "miroir-core";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -46,112 +49,116 @@ import { miroirAppStartup } from "../../src/startup.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import {
+  runTestOrTestSuite,
+} from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
+
+import {
+  deployment_Admin,
+} from "miroir-test-app_deployment-admin";
 
 import {
   entityDefinitionPublisher,
   entityPublisher,
+  folio as publisher1,
+  penguin as publisher2,
+  springer as publisher3,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion
+  selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
 
 import { packageName } from "../../src/constants.js";
-import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.js";
-import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 import { cleanLevel } from "./constants.js";
+import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";
 
 import {
   defaultMiroirMetaModel,
-  selfApplicationMiroir
+  entityEntity,
+  selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 // ##############################################################################################
-// Composite-PK test entity definition
-// PK is ["region", "code"] — two string attributes form the composite key.
+// Non-UUID PK test entity definition
 // ##############################################################################################
 
-const entityCompositePKUuid = "44691d2c-d7c1-48e0-8363-71c51195e104";
-const entityDefinitionCompositePKUuid = "fbec9082-5cdf-4877-bd78-66a434a8eebf";
+const entityCodeNumberUuid = "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f";
+const entityDefinitionCodeNumberUuid = "dceae8f8-c657-49df-9967-64ac3e52f5b4";
 
-const entityCompositePK: Entity = {
-  uuid: entityCompositePKUuid,
+const entityCodeNumber: Entity = {
+  uuid: entityCodeNumberUuid,
   parentName: "Entity",
   parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   parentDefinitionVersionUuid: "381ab1be-337f-4198-b1d3-f686867fc1dd",
   selfApplication: selfApplicationLibrary.uuid,
-  name: "TestEntityCompositePK",
+  name: "TestEntityCodeNumber",
   conceptLevel: "Model",
-  description: "Test entity with a composite primary key [region, code].",
+  description: "Test entity with a non-UUID number primary key.",
 } as Entity;
 
-const entityDefinitionCompositePK: EntityDefinition = {
-  uuid: entityDefinitionCompositePKUuid,
+const entityDefinitionCodeNumber: EntityDefinition = {
+  uuid: entityDefinitionCodeNumberUuid,
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   parentDefinitionVersionUuid: "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-  entityUuid: entityCompositePKUuid,
+  entityUuid: entityCodeNumberUuid,
   conceptLevel: "Model",
-  name: "TestEntityCompositePK",
-  idAttribute: ["region", "code"],
+  name: "TestEntityCodeNumber",
+  idAttribute: "code",
   mlSchema: {
     type: "object",
     definition: {
-      region: {
-        type: "string",
-        tag: { value: { id: 1, defaultLabel: "Region" } },
-      },
       code: {
-        type: "string",
-        tag: { value: { id: 2, defaultLabel: "Code" } },
+        type: "number",
+        tag: { value: { id: 1, defaultLabel: "Code" } },
       },
       parentName: {
         type: "string",
         optional: true,
-        tag: { value: { id: 3, defaultLabel: "Entity Name" } },
+        tag: { value: { id: 2, defaultLabel: "Entity Name" } },
       },
       parentUuid: {
         type: "uuid",
-        tag: { value: { id: 4, defaultLabel: "Entity Uuid" } },
+        tag: { value: { id: 3, defaultLabel: "Entity Uuid" } },
       },
       name: {
         type: "string",
-        tag: { value: { id: 5, defaultLabel: "Name" } },
+        tag: { value: { id: 4, defaultLabel: "Name" } },
       },
     },
   },
-} as any as EntityDefinition;
+} as any as EntityDefinition; // cast needed since idAttribute is not yet in generated EntityDefinition type
 
-// Test data instances — PK is composite: region + code
-const compositeItem1: EntityInstance = {
-  region: "EU",
-  code: "A1",
-  parentUuid: entityCompositePKUuid,
-  parentName: "TestEntityCompositePK",
-  name: "EU-A1 item",
+// Test data instances (no uuid — PK is number field "code")
+const codeItem1: EntityInstance = {
+  code: 1,
+  parentUuid: entityCodeNumberUuid,
+  parentName: "TestEntityCodeNumber",
+  name: "first item",
 } as any as EntityInstance;
 
-const compositeItem2: EntityInstance = {
-  region: "EU",
-  code: "B2",
-  parentUuid: entityCompositePKUuid,
-  parentName: "TestEntityCompositePK",
-  name: "EU-B2 item",
+const codeItem2: EntityInstance = {
+  code: 2,
+  parentUuid: entityCodeNumberUuid,
+  parentName: "TestEntityCodeNumber",
+  name: "second item",
 } as any as EntityInstance;
 
-const compositeItem3: EntityInstance = {
-  region: "US",
-  code: "A1",
-  parentUuid: entityCompositePKUuid,
-  parentName: "TestEntityCompositePK",
-  name: "US-A1 item",
+const codeItem3: EntityInstance = {
+  code: 3,
+  parentUuid: entityCodeNumberUuid,
+  parentName: "TestEntityCodeNumber",
+  name: "third item",
 } as any as EntityInstance;
 
-// MetaModel for our test deployment
-const compositePKTestMetaModel: MetaModel = {
+// A minimal MetaModel for the test deployment that includes entityCodeNumber
+const codeNumberTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
-  entities: [entityPublisher as Entity, entityCompositePK],
-  entityDefinitions: [entityDefinitionPublisher as EntityDefinition, entityDefinitionCompositePK],
+  entities: [entityPublisher as Entity, entityCodeNumber],
+  entityVersions: [
+    entityDefinitionPublisher as EntityDefinition,
+    entityDefinitionCodeNumber,
+  ],
   endpoints: [],
   jzodSchemas: [],
   menus: [],
@@ -169,14 +176,15 @@ const compositePKTestMetaModel: MetaModel = {
 
 const env: any = process.env;
 
-const fileName = "DomainController.integ.compositePK.CRUD.test";
+const fileName = "DomainController.integ.nonUuidPK.CRUD.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
+myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 let miroirConfig: any;
 let loggerOptions: LoggerOptions;
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName),
+  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName)
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
@@ -192,15 +200,18 @@ ConfigurationService.configurationService.registerTestImplementation({ expect: e
 const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
 miroirConfig = miroirConfigParam;
 loggerOptions = logConfig;
-
+myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
+myConsoleLog("received miroirConfig.client", JSON.stringify(miroirConfig.client, null, 2));
+myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
 MiroirLoggerFactory.startRegisteredLoggers(
   miroirActivityTracker,
   miroirEventService,
   loglevelnext,
-  loggerOptions,
+  loggerOptions
 );
+myConsoleLog("started registered loggers DONE");
 
 const globalTimeOut = 30000;
 
@@ -261,13 +272,11 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
-const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
-  .emulateServer
+const miroirDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[deployment_Miroir.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Miroir.uuid];
 
-const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
-  .emulateServer
+const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
 
@@ -286,7 +295,7 @@ const testDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.
 let domainController: DomainControllerInterface;
 
 // ##############################################################################################
-// Shared action sequence helpers
+// Shared action sequence helpers embedded in test compositeActions
 // ##############################################################################################
 const refreshMiroirAndLibrary = [
   {
@@ -303,11 +312,11 @@ const refreshMiroirAndLibrary = [
   },
 ] as const;
 
-const queryCompositePKInstances = {
+const queryCodeNumberInstances = {
   actionType: "compositeRunBoxedQueryAction",
   endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-  actionLabel: "queryCompositePKInstances",
-  nameGivenToResult: "compositePKList",
+  actionLabel: "queryCodeNumberInstances",
+  nameGivenToResult: "codeNumberList",
   payload: {
     actionType: "runBoxedQueryAction",
     endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -319,12 +328,12 @@ const queryCompositePKInstances = {
         application: testApplicationUuid,
         pageParams: { currentDeploymentUuid: testApplicationDeploymentUuid },
         extractors: {
-          compositeItems: {
+          codeItems: {
             extractorOrCombinerType: "extractorInstancesByEntity",
             applicationSection: "data",
-            parentName: "TestEntityCompositePK",
-            parentUuid: entityCompositePKUuid,
-            orderBy: { attributeName: "name", direction: "ASC" },
+            parentName: "TestEntityCodeNumber",
+            parentUuid: entityCodeNumberUuid,
+            orderBy: { attributeName: "code", direction: "ASC" },
           },
         },
       },
@@ -347,7 +356,7 @@ const checkCount = (n: number) => ({
         applyTo: {
           transformerType: "getFromContext" as const,
           interpolation: "runtime" as const,
-          referencePath: ["compositePKList", "compositeItems"] as string[],
+          referencePath: ["codeNumberList", "codeItems"] as string[],
         },
       },
       expectedValue: { aggregate: n },
@@ -359,7 +368,7 @@ const checkCount = (n: number) => ({
 // beforeAll / afterAll
 // ##############################################################################################
 beforeAll(async () => {
-  myConsoleLog("@@@@@@@@@@@@@@@@@@ beforeAll");
+  myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
   const session = new DomainControllerIntegrationTestSession(
     miroirConfig,
     {
@@ -375,28 +384,212 @@ beforeAll(async () => {
   const executionEnvironment = await session.initSession();
   domainController = executionEnvironment.domainController;
   document.body.innerHTML = "";
-  myConsoleLog("@@@@@@@@@@@@@@@@@@ beforeAll DONE");
+  myConsoleLog("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
   return Promise.resolve();
 });
 
 afterAll(async () => {
-  displayTestSuiteResultsDetails(Object.keys(dataTestActions)[0], [], miroirActivityTracker);
+  displayTestSuiteResultsDetails(
+    Object.keys(modelTestActions)[0],
+    [],
+    miroirActivityTracker
+  );
 });
 
 // ##############################################################################################
-// ─── SUITE: Data CRUD with composite PK ──────────────────────────────────────
-// beforeEach sets up TestEntityCompositePK with 3 initial instances.
-// Tests CRUD on those composite-keyed instances.
+// ─── SUITE 1: Model CRUD ─────────────────────────────────────────────────────
+// Create an entity with non-UUID number PK and verify it in the model store.
+// beforeEach initialises Library with Publisher only; each test creates
+// entityCodeNumber as part of its action sequence.
 // ##############################################################################################
 
-const dataTestActions: Record<string, TestCompositeActionParams> = {
-  "DomainController.integ.compositePK.Data.CRUD": {
+const modelTestActions: Record<string, TestCompositeActionParams> = {
+  "DomainController.integ.nonUuidPK.Model.CRUD": {
     testActionType: "testCompositeActionSuite",
-    testActionLabel: "DomainController.integ.compositePK.Data.CRUD",
+    testActionLabel: "DomainController.integ.nonUuidPK.Model.CRUD",
     application: testApplicationUuid,
     testCompositeAction: {
       testType: "testCompositeActionSuite",
-      testLabel: "DomainController.integ.compositePK.Data.CRUD",
+      testLabel: "DomainController.integ.nonUuidPK.Model.CRUD",
+      beforeAll: createDeploymentCompositeAction(
+        "library",
+        testApplicationDeploymentUuid,
+        testApplicationUuid,
+        adminDeployment,
+        testDeploymentStorageConfiguration,
+      ),
+      // beforeEach: Publisher only so we can test entity creation
+      beforeEach: resetAndinitializeDeploymentCompositeAction(
+        selfApplicationLibrary.uuid,
+        deployment_Library_DO_NO_USE.uuid,
+        {
+          dataStoreType: "app",
+          metaModel: defaultMiroirMetaModel,
+          selfApplication: selfApplicationLibrary as SelfApplication,
+          applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
+          applicationVersion: selfApplicationVersionLibraryInitialVersion,
+        },
+        [
+          {
+            entity: entityPublisher as Entity,
+            entityDefinition: entityDefinitionPublisher as EntityDefinition,
+            instances: [
+              publisher1 as EntityInstance,
+              publisher2 as EntityInstance,
+              publisher3 as EntityInstance,
+            ],
+          },
+        ],
+        {
+          applicationUuid: selfApplicationLibrary.uuid,
+          applicationName: selfApplicationLibrary.name,
+          entities: [entityPublisher as Entity],
+          entityVersions: [entityDefinitionPublisher as EntityDefinition],
+          endpoints: [],
+          jzodSchemas: [],
+          menus: [],
+          runners: [],
+          tests: [],
+          themes: [],
+          applicationVersions: [],
+          reports: [],
+          storedQueries: [],
+          applicationVersionCrossEntityVersion: [],
+          applications: [],
+        } as MetaModel,
+        [entityPublisher.uuid],
+      ),
+      afterEach: testUtils_resetApplicationDeployment(deployment_Library_DO_NO_USE.uuid),
+      afterAll: testUtils_deleteApplicationDeployment(
+        miroirConfig,
+        selfApplicationLibrary.uuid,
+        deployment_Library_DO_NO_USE.uuid,
+      ),
+      testCompositeActions: {
+        "Create Entity TestEntityCodeNumber and Commit": {
+          testType: "testCompositeAction",
+          testLabel: "Create Entity TestEntityCodeNumber and Commit",
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
+            actionLabel: "createCodeNumberEntityAndCommit",
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            payload: {
+              actionSequence: [
+                ...refreshMiroirAndLibrary,
+                {
+                  actionType: "createEntity",
+                  actionLabel: "createEntityCodeNumber",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  payload: {
+                    application: testApplicationUuid,
+                    entities: [
+                      {
+                        entity: entityCodeNumber,
+                        entityVersion: entityDefinitionCodeNumber,
+                      },
+                    ],
+                  },
+                },
+                {
+                  actionType: "commit",
+                  actionLabel: "commitEntityCodeNumber",
+                  endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                  payload: { application: testApplicationUuid },
+                },
+                {
+                  actionType: "compositeRunBoxedQueryAction",
+                  endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  actionLabel: "queryEntities",
+                  nameGivenToResult: "libraryEntityList",
+                  payload: {
+                    actionType: "runBoxedQueryAction",
+                    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    payload: {
+                      application: testApplicationUuid,
+                      applicationSection: "model",
+                      query: {
+                        queryType: "boxedQueryWithExtractorCombinerTransformer",
+                        application: testApplicationUuid,
+                        pageParams: { currentDeploymentUuid: testApplicationDeploymentUuid },
+                        extractors: {
+                          entities: {
+                            extractorOrCombinerType: "extractorInstancesByEntity",
+                            applicationSection: "model",
+                            parentName: entityEntity.name,
+                            parentUuid: entityEntity.uuid,
+                            orderBy: { attributeName: "name", direction: "ASC" },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
+          testCompositeActionAssertions: [
+            {
+              actionType: "compositeRunTestAssertion",
+              actionLabel: "checkEntityCount",
+              nameGivenToResult: "checkEntityCount",
+              testAssertion: {
+                testType: "testAssertion",
+                testLabel: "checkEntityCount",
+                definition: {
+                  resultAccessPath: ["0"],
+                  resultTransformer: {
+                    transformerType: "aggregate",
+                    interpolation: "runtime",
+                    applyTo: {
+                      transformerType: "getFromContext",
+                      interpolation: "runtime",
+                      referencePath: ["libraryEntityList", "entities"],
+                    },
+                  },
+                  expectedValue: { aggregate: 2 }, // Publisher + TestEntityCodeNumber
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
+describe.sequential("DomainController.integ.nonUuidPK.Model.CRUD", () => {
+  it.each(Object.entries(modelTestActions))(
+    "test %s",
+    async (currentTestSuiteName, testAction: TestCompositeActionParams) => {
+      const testSuiteResults = await runTestOrTestSuite(
+        domainController,
+        testAction,
+        applicationDeploymentMap,
+        miroirActivityTracker,
+        {}
+      );
+      if (!testSuiteResults || testSuiteResults.status !== "ok") {
+        expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
+      }
+    },
+    globalTimeOut
+  );
+});
+
+// ##############################################################################################
+// ─── SUITE 2: Data CRUD with non-UUID PK ─────────────────────────────────────
+// beforeEach sets up TestEntityCodeNumber with 3 initial instances (code: 1, 2, 3).
+// Tests CRUD on those instances.
+// ##############################################################################################
+
+const dataTestActions: Record<string, TestCompositeActionParams> = {
+  "DomainController.integ.nonUuidPK.Data.CRUD": {
+    testActionType: "testCompositeActionSuite",
+    testActionLabel: "DomainController.integ.nonUuidPK.Data.CRUD",
+    application: testApplicationUuid,
+    testCompositeAction: {
+      testType: "testCompositeActionSuite",
+      testLabel: "DomainController.integ.nonUuidPK.Data.CRUD",
       beforeAll: createDeploymentCompositeAction(
         "library",
         testApplicationDeploymentUuid,
@@ -416,13 +609,13 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         },
         [
           {
-            entity: entityCompositePK,
-            entityDefinition: entityDefinitionCompositePK,
-            instances: [compositeItem1, compositeItem2, compositeItem3],
+            entity: entityCodeNumber,
+            entityDefinition: entityDefinitionCodeNumber,
+            instances: [codeItem1, codeItem2, codeItem3],
           },
         ],
-        compositePKTestMetaModel,
-        [entityCompositePKUuid],
+        codeNumberTestMetaModel,
+        [entityCodeNumberUuid],
       ),
       afterEach: testUtils_resetApplicationDeployment(deployment_Library_DO_NO_USE.uuid),
       afterAll: testUtils_deleteApplicationDeployment(
@@ -432,15 +625,18 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
       ),
       testCompositeActions: {
         // ─── Read ────────────────────────────────────────────────────────────
-        "Refresh instances of TestEntityCompositePK": {
+        "Refresh instances of TestEntityCodeNumber": {
           testType: "testCompositeAction",
-          testLabel: "Refresh instances of TestEntityCompositePK",
+          testLabel: "Refresh instances of TestEntityCodeNumber",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "refreshAndQuery",
             endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             payload: {
-              actionSequence: [...refreshMiroirAndLibrary, queryCompositePKInstances],
+              actionSequence: [
+                ...refreshMiroirAndLibrary,
+                queryCodeNumberInstances,
+              ],
             },
           },
           testCompositeActionAssertions: [
@@ -453,9 +649,9 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkItems",
                 definition: {
-                  resultAccessPath: ["compositePKList", "compositeItems"],
+                  resultAccessPath: ["codeNumberList", "codeItems"],
                   ignoreAttributes: ["conceptLevel"],
-                  expectedValue: [compositeItem1, compositeItem2, compositeItem3],
+                  expectedValue: [codeItem1, codeItem2, codeItem3],
                 },
               },
             },
@@ -463,9 +659,9 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         },
 
         // ─── Create ──────────────────────────────────────────────────────────
-        "Create instance in TestEntityCompositePK": {
+        "Create instance in TestEntityCodeNumber": {
           testType: "testCompositeAction",
-          testLabel: "Create instance in TestEntityCompositePK",
+          testLabel: "Create instance in TestEntityCodeNumber",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "createAndQuery",
@@ -475,23 +671,22 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 ...refreshMiroirAndLibrary,
                 {
                   actionType: "createInstance",
-                  actionLabel: "createCompositeItem4",
+                  actionLabel: "createCodeItem4",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
                     applicationSection: "data",
                     objects: [
                       {
-                        region: "US",
-                        code: "B2",
-                        parentUuid: entityCompositePKUuid,
-                        parentName: "TestEntityCompositePK",
-                        name: "US-B2 item",
+                        code: 4,
+                        parentUuid: entityCodeNumberUuid,
+                        parentName: "TestEntityCodeNumber",
+                        name: "fourth item",
                       } as any as EntityInstance,
                     ],
                   },
                 },
-                queryCompositePKInstances,
+                queryCodeNumberInstances,
               ],
             },
           },
@@ -499,9 +694,9 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         },
 
         // ─── Update ──────────────────────────────────────────────────────────
-        "Update instance in TestEntityCompositePK": {
+        "Update instance in TestEntityCodeNumber": {
           testType: "testCompositeAction",
-          testLabel: "Update instance in TestEntityCompositePK",
+          testLabel: "Update instance in TestEntityCodeNumber",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "updateAndQuery",
@@ -511,23 +706,22 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 ...refreshMiroirAndLibrary,
                 {
                   actionType: "updateInstance",
-                  actionLabel: "updateCompositeItem1",
+                  actionLabel: "updateCodeItem1",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
                     applicationSection: "data",
                     objects: [
                       {
-                        region: "EU",
-                        code: "A1",
-                        parentUuid: entityCompositePKUuid,
-                        parentName: "TestEntityCompositePK",
-                        name: "EU-A1 item UPDATED",
+                        code: 1,
+                        parentUuid: entityCodeNumberUuid,
+                        parentName: "TestEntityCodeNumber",
+                        name: "first item UPDATED",
                       } as any as EntityInstance,
                     ],
                   },
                 },
-                queryCompositePKInstances,
+                queryCodeNumberInstances,
               ],
             },
           },
@@ -541,18 +735,17 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkUpdatedItem",
                 definition: {
-                  resultAccessPath: ["compositePKList", "compositeItems"],
+                  resultAccessPath: ["codeNumberList", "codeItems"],
                   ignoreAttributes: ["conceptLevel"],
                   expectedValue: [
                     {
-                      region: "EU",
-                      code: "A1",
-                      parentUuid: entityCompositePKUuid,
-                      parentName: "TestEntityCompositePK",
-                      name: "EU-A1 item UPDATED",
+                      code: 1,
+                      parentUuid: entityCodeNumberUuid,
+                      parentName: "TestEntityCodeNumber",
+                      name: "first item UPDATED",
                     },
-                    compositeItem2,
-                    compositeItem3,
+                    codeItem2,
+                    codeItem3,
                   ],
                 },
               },
@@ -561,9 +754,9 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         },
 
         // ─── Delete ──────────────────────────────────────────────────────────
-        "Delete instance from TestEntityCompositePK": {
+        "Delete instance from TestEntityCodeNumber": {
           testType: "testCompositeAction",
-          testLabel: "Delete instance from TestEntityCompositePK",
+          testLabel: "Delete instance from TestEntityCodeNumber",
           compositeActionSequence: {
             actionType: "compositeActionSequence",
             actionLabel: "deleteAndQuery",
@@ -573,15 +766,15 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 ...refreshMiroirAndLibrary,
                 {
                   actionType: "deleteInstance",
-                  actionLabel: "deleteCompositeItem2",
+                  actionLabel: "deleteCodeItem2",
                   endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   payload: {
                     application: testApplicationUuid,
                     applicationSection: "data",
-                    objects: [compositeItem2],
+                    objects: [codeItem2],
                   },
                 },
-                queryCompositePKInstances,
+                queryCodeNumberInstances,
               ],
             },
           },
@@ -595,9 +788,9 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
                 testType: "testAssertion",
                 testLabel: "checkRemainingItems",
                 definition: {
-                  resultAccessPath: ["compositePKList", "compositeItems"],
+                  resultAccessPath: ["codeNumberList", "codeItems"],
                   ignoreAttributes: ["conceptLevel"],
-                  expectedValue: [compositeItem1, compositeItem3],
+                  expectedValue: [codeItem1, codeItem3],
                 },
               },
             },
@@ -608,7 +801,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
   },
 };
 
-describe.sequential("DomainController.integ.compositePK.Data.CRUD", () => {
+describe.sequential("DomainController.integ.nonUuidPK.Data.CRUD", () => {
   it.each(Object.entries(dataTestActions))(
     "test %s",
     async (currentTestSuiteName, testAction: TestCompositeActionParams) => {
@@ -617,12 +810,12 @@ describe.sequential("DomainController.integ.compositePK.Data.CRUD", () => {
         testAction,
         applicationDeploymentMap,
         miroirActivityTracker,
-        {},
+        {}
       );
       if (!testSuiteResults || testSuiteResults.status !== "ok") {
         expect(testSuiteResults?.status, `${currentTestSuiteName} failed!`).toBe("ok");
       }
     },
-    globalTimeOut,
+    globalTimeOut
   );
 });

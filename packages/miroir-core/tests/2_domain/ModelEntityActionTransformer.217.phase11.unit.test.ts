@@ -17,7 +17,7 @@ import {
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+const bookDefinition = defaultLibraryAppModel.entityVersions.find(
   (definition) => definition.entityUuid === bookEntity.uuid,
 )!;
 
@@ -43,7 +43,7 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
       "00000000-0000-4000-8000-000000000001",
       action,
-      { ...defaultLibraryAppModel, entityDefinitions: [] } as MetaModel,
+      { ...defaultLibraryAppModel, entityVersions: [] } as MetaModel,
     );
     expect(Array.isArray(instanceActions)).toBe(true);
     if (Array.isArray(instanceActions) && instanceActions[0]?.actionType === "createInstance") {

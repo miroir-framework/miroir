@@ -3499,13 +3499,13 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
-            entityDefinitions: {
+            entityVersions: {
               type: "array",
               definition: {
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  // #217 Phase 12: element type renamed; MetaModel collection key kept for compat
+                  // #220 Phase 6: MetaModel collection key renamed EntityDefinition(s) → entityVersions
                   relativePath: "entityVersion",
                 },
               },

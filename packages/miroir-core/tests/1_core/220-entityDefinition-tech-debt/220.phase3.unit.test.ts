@@ -1,6 +1,6 @@
 /**
  * #220 Phase 3 — present-model Actions stay Entity-only for complete Entities
- * even when MetaModel.entityDefinitions is empty.
+ * even when MetaModel.entityVersions is empty.
  */
 import { describe, expect, it } from "vitest";
 
@@ -24,7 +24,7 @@ const bookEntity = defaultLibraryAppModel.entities.find(
 function modelWithoutEntityDefinitions(): MetaModel {
   return {
     ...(defaultLibraryAppModel as MetaModel),
-    entityDefinitions: [],
+    entityVersions: [],
   };
 }
 

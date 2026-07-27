@@ -34,7 +34,7 @@ describe("schemaReloadPolicy (199 Phase 5)", () => {
     );
 
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityDefinitions = mutated.entityDefinitions.map((entityDefinition) =>
+    mutated.entityVersions = mutated.entityVersions.map((entityDefinition) =>
       entityDefinition.uuid === entityDefinitionEntity.uuid
         ? { ...entityDefinition, name: "EntityRenamed" }
         : entityDefinition,
@@ -134,7 +134,7 @@ describe("schemaReloadPolicy (199 Phase 5)", () => {
     );
 
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityDefinitions = mutated.entityDefinitions.map((entityDefinition) =>
+    mutated.entityVersions = mutated.entityVersions.map((entityDefinition) =>
       entityDefinition.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
         ? { ...entityDefinition, name: "BookRenamed" }
         : entityDefinition,
@@ -173,7 +173,7 @@ describe("schemaReloadPolicy (199 Phase 5)", () => {
     );
 
     const mutatedLibrary = cloneModel(libraryModel) as MetaModel;
-    mutatedLibrary.entityDefinitions = mutatedLibrary.entityDefinitions.map((entityDefinition) =>
+    mutatedLibrary.entityVersions = mutatedLibrary.entityVersions.map((entityDefinition) =>
       entityDefinition.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
         ? { ...entityDefinition, name: "BookRenamed" }
         : entityDefinition,
@@ -199,7 +199,7 @@ describe("schemaReloadPolicy (199 Phase 5)", () => {
   it("re-resolves with extended mode once for overlay revision bump", () => {
     const base = cloneModel(defaultLibraryAppModel) as MetaModel;
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityDefinitions = mutated.entityDefinitions.map((entityDefinition) =>
+    mutated.entityVersions = mutated.entityVersions.map((entityDefinition) =>
       entityDefinition.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
         ? { ...entityDefinition, viewAttributes: [...(entityDefinition.viewAttributes ?? []), "isbn"] }
         : entityDefinition,

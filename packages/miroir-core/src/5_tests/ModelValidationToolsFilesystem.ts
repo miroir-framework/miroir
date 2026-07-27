@@ -53,23 +53,23 @@ export function loadModelValidationInstancesFromDir(
 
 function resolveEntityDefinitionForEntity(
   entity: Entity,
-  entityDefinitions: readonly EntityDefinition[],
+  entityVersions: readonly EntityDefinition[],
 ): EntityDefinition | undefined {
-  const byUuid = entityDefinitions.filter((ed) => ed.entityUuid === entity.uuid);
+  const byUuid = entityVersions.filter((ed) => ed.entityUuid === entity.uuid);
   if (byUuid.length === 1) {
     return byUuid[0];
   }
   if (byUuid.length > 1) {
     return byUuid.find((ed) => ed.name === entity.name) ?? byUuid[0];
   }
-  return entityDefinitions.find((ed) => ed.name === entity.name);
+  return entityVersions.find((ed) => ed.name === entity.name);
 }
 
 /**
  * Build `modelTestsToRun` by scanning filesystem model/data folders.
  *
  * - One group per Miroir meta-entity that has instances under `modelPath/<entityUuid>/`
- *   (schema from `miroirMetaModel.entityDefinitions`).
+ *   (schema from `miroirMetaModel.entityVersions`).
  * - One group per application Entity declared under the Entity folder, with instances from
  *   `dataPath/<entityUuid>/` (fallback: `modelPath/<entityUuid>/`), schema from the matching
  *   EntityDefinition file in the model store.
@@ -93,7 +93,7 @@ export function buildModelValidationGroupsFromFilesystem(
     }
     const entityDefinition = resolveEntityDefinitionForEntity(
       entity,
-      miroirMetaModel.entityDefinitions,
+      miroirMetaModel.entityVersions,
     );
     if (!entityDefinition?.mlSchema) {
       continue;

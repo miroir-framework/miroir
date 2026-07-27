@@ -131,8 +131,8 @@ import {
 
 export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, string> = {
   Entity: "entities",
-  EntityDefinition: "entityDefinitions",
-  EntityVersion: "entityDefinitions",
+  EntityDefinition: "entityVersions",
+  EntityVersion: "entityVersions",
   Endpoint: "endpoints",
   JzodSchema: "jzodSchemas",
   Menu: "menus",
@@ -169,7 +169,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityApplicationEvolutionTrace as Entity,
     entityApplicationEvolutionTraceEvent as Entity,
   ],
-  entityDefinitions: [
+  entityVersions: [
     // bootstrap entities have to come first
     entityVersionEntityVersion as EntityDefinition,
     entityDefinitionEntity as EntityDefinition,

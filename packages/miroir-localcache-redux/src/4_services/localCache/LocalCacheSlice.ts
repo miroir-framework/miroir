@@ -565,19 +565,12 @@ function handleInstanceAction(
           //   JSON.stringify(state)
           // );
 
-          const result = sliceEntityAdapter.addOne(
+          // Always assign: when initializeLocalCacheSliceStateWithEntityAdapter just wrote a
+          // plain getInitialState() into the draft, addOne does not mutate in place.
+          state.current[instanceCollectionEntityIndex] = sliceEntityAdapter.addOne(
             state.current[instanceCollectionEntityIndex],
             instance
           );
-          // const result = sliceEntityAdapter.addMany(
-          //   state.current[instanceCollectionEntityIndex],
-          //   instances.instances
-          // );
-
-          // log.info(
-          //   "localCacheSliceObject handleInstanceAction createInstance result",
-          //   JSON.stringify(result, null, 2)
-          // );
 
           markSiblingPartialSegmentStale(
             state as any,
@@ -656,7 +649,7 @@ function handleInstanceAction(
             const deleteIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
             const deletePkAttrs = Array.isArray(deleteIdAttribute) ? deleteIdAttribute : [deleteIdAttribute];
             const deletePkValue = serializeCompositeKeyValue(deletePkAttrs, instance);
-            sliceEntityAdapter.removeOne(
+            state.current[instanceCollectionEntityIndex] = sliceEntityAdapter.removeOne(
               state.current[instanceCollectionEntityIndex],
               deletePkValue
             );
@@ -727,10 +720,13 @@ function handleInstanceAction(
               }
             }
           }
-          sliceEntityAdapter.updateOne(state.current[instanceCollectionEntityIndex], {
-            id: updatePkValue,
-            changes: instance,
-          });
+          state.current[instanceCollectionEntityIndex] = sliceEntityAdapter.updateOne(
+            state.current[instanceCollectionEntityIndex],
+            {
+              id: updatePkValue,
+              changes: instance,
+            }
+          );
           markSiblingPartialSegmentStale(
             state as any,
             deploymentUuid,

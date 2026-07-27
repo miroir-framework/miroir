@@ -12,7 +12,7 @@ import { presentEntityAsRedundantEntityDefinition } from "../../src/1_core/entit
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+const bookDefinition = defaultLibraryAppModel.entityVersions.find(
   (definition) => definition.entityUuid === bookEntity.uuid,
 )!;
 
@@ -21,7 +21,7 @@ describe("217 Phase 9 — UI boundary presentEntityAsRedundantEntityDefinition",
     const present = resolvePresentEntityFromModel(defaultLibraryAppModel, bookEntity.uuid)!;
     const edShaped = presentEntityAsRedundantEntityDefinition(
       present,
-      defaultLibraryAppModel.entityDefinitions,
+      defaultLibraryAppModel.entityVersions,
     );
     expect(edShaped.entityUuid).toBe(bookEntity.uuid);
     expect(edShaped.mlSchema).toEqual(present.mlSchema);

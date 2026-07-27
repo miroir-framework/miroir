@@ -58,7 +58,7 @@ function buildMetaSchemaRevisionPayload(deploymentUuid: Uuid, model: MetaModel) 
     deploymentUuid,
     // #217 Phase 7: Entity present-model fields are authoritative; ED kept for dual-write parity.
     entities: fingerprintEntities(model.entities),
-    entityDefinitions: fingerprintEntityDefinitions(model.entityDefinitions),
+    entityVersions: fingerprintEntityDefinitions(model.entityVersions),
     reports: fingerprintReports(model.reports),
     storedQueries: fingerprintQueries(model.storedQueries),
     runners: fingerprintRunners(model.runners),
@@ -82,7 +82,7 @@ function buildAppSchemaRevisionPayload(
     deploymentUuid,
     applicationUuid,
     entities: fingerprintEntities(model.entities),
-    entityDefinitions: fingerprintEntityDefinitions(model.entityDefinitions),
+    entityVersions: fingerprintEntityDefinitions(model.entityVersions),
     reports: fingerprintReports(model.reports),
     menus: fingerprintMenus(model.menus),
     endpoints: fingerprintEndpoints(appEndpoints),
@@ -108,8 +108,8 @@ function fingerprintEntities(entities: Entity[] | undefined) {
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }
 
-function fingerprintEntityDefinitions(entityDefinitions: EntityDefinition[] | undefined) {
-  return [...definedArray(entityDefinitions)]
+function fingerprintEntityDefinitions(entityVersions: EntityDefinition[] | undefined) {
+  return [...definedArray(entityVersions)]
     .map((entityDefinition) => ({
       uuid: entityDefinition.uuid,
       entityUuid: entityDefinition.entityUuid,

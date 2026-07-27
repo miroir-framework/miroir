@@ -84,7 +84,7 @@ export const reportSectionsFormSchema = (
       const targetPresentEntity = resolvePresentEntityFromModel(
         {
           entities: sectionMapping?.entities,
-          entityDefinitions: sectionMapping?.entityDefinitions,
+          entityDefinitions: sectionMapping?.entityVersions,
         },
         entityUuid,
       );

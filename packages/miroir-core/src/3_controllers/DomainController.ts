@@ -723,9 +723,10 @@ export class DomainController implements DomainControllerInterface {
         //   // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         //   runBoxedExtractorOrQueryAction
         // );
+        // Transactional / model scripts mutate the local cache until commit; defaulting to
+        // storage makes uncommitted create/undo/redo invisible to boxed queries.
         const executionStrategy =
-          // runBoxedExtractorOrQueryAction.queryExecutionStrategy ?? "localCacheOrFail";
-          runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy ?? "storage";
+          runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy ?? "localCacheOrFail";
         switch (executionStrategy) {
           case "ServerCache":
           case "localCacheOrFetch": {
@@ -1181,7 +1182,7 @@ export class DomainController implements DomainControllerInterface {
             const model = modelActionResetModel.payload.model;
             // log.info("handleModelAction resetModel creating entities from provided model", {
             //   entitiesCount: model.entities?.length || 0,
-            //   entityDefinitionsCount: model.entityDefinitions?.length || 0
+            //   entityDefinitionsCount: model.entityVersions?.length || 0
             // });
             
             // Combine entities with their definitions
@@ -1189,8 +1190,8 @@ export class DomainController implements DomainControllerInterface {
             
             // Create a map of entityDefinitions by entityUuid for quick lookup
             const entityDefinitionMap = new Map<string, EntityDefinition>();
-            if (model.entityDefinitions) {
-              for (const entityDef of model.entityDefinitions) {
+            if (model.entityVersions) {
+              for (const entityDef of model.entityVersions) {
                 entityDefinitionMap.set(entityDef.entityUuid, entityDef);
               }
             }
@@ -1343,7 +1344,7 @@ export class DomainController implements DomainControllerInterface {
             const model = modelActionInitModel.payload.model;
             log.info("handleModelAction resetModel creating entities from provided model", {
               entitiesCount: model.entities?.length || 0,
-              entityDefinitionsCount: model.entityDefinitions?.length || 0
+              entityDefinitionsCount: model.entityVersions?.length || 0
             });
             
             // Combine entities with their definitions
@@ -1351,8 +1352,8 @@ export class DomainController implements DomainControllerInterface {
             
             // Create a map of entityDefinitions by entityUuid for quick lookup
             const entityDefinitionMap = new Map<string, EntityDefinition>();
-            if (model.entityDefinitions) {
-              for (const entityDef of model.entityDefinitions) {
+            if (model.entityVersions) {
+              for (const entityDef of model.entityVersions) {
                 entityDefinitionMap.set(entityDef.entityUuid, entityDef);
               }
             }
@@ -3755,12 +3756,13 @@ export class DomainController implements DomainControllerInterface {
             ],
           },
         };
-        const result = await this.handleCompositeAction(
+        await this.handleCompositeAction(
           localCompositeAction,
           applicationDeploymentMap,
           modelEnvironment,
           localActionParams,
         );
+        break;
       }
       case "testBuildPlusRuntimeCompositeAction": {
         const localCompositeAction: CompositeActionSequenceTemplate = {
@@ -3774,12 +3776,13 @@ export class DomainController implements DomainControllerInterface {
             ] as any, // TODO: correct type
           },
         };
-        const result = await this.handleRuntimeCompositeActionDO_NOT_USE(
+        await this.handleRuntimeCompositeActionDO_NOT_USE(
           localCompositeAction,
           applicationDeploymentMap,
           modelEnvironment,
           localActionParams,
         );
+        break;
       }
     }
 

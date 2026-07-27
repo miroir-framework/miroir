@@ -11,7 +11,7 @@ import { assembleLivePresentModelEntities } from "../../src/1_core/entityPresent
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+const bookDefinition = defaultLibraryAppModel.entityVersions.find(
   (definition) => definition.entityUuid === bookEntity.uuid,
 )!;
 
@@ -19,7 +19,7 @@ describe("217 Phase 7 — assembleLivePresentModelEntities", () => {
   it("returns complete Entities as identity (present-model already on Entity)", () => {
     const assembled = assembleLivePresentModelEntities(
       defaultLibraryAppModel.entities as Entity[],
-      defaultLibraryAppModel.entityDefinitions as EntityDefinition[],
+      defaultLibraryAppModel.entityVersions as EntityDefinition[],
     );
     expect(assembled).toHaveLength(defaultLibraryAppModel.entities.length);
     const book = assembled.find((entity) => entity.uuid === bookEntity.uuid);

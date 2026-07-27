@@ -635,7 +635,7 @@ export function getWrapperLoadingLocalCache(
           parentName: entityEntityDefinition.name,
           parentUuid: entityEntityDefinition.uuid,
           applicationSection: "model",
-          instances: defaultMiroirMetaModel.entityDefinitions
+          instances: defaultMiroirMetaModel.entityVersions
         },
         {
           parentName: entityJzodSchema.name,

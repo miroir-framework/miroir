@@ -23,7 +23,7 @@ describe("217 Phase 1 — Entity schema accepts optional definition fields", () 
 
   it("parses an Entity carrying all present-model definition fields", () => {
     const base = defaultLibraryAppModel.entities[0];
-    const entityDefinition = defaultLibraryAppModel.entityDefinitions.find(
+    const entityDefinition = defaultLibraryAppModel.entityVersions.find(
       (definition) => definition.entityUuid === base.uuid,
     )!;
     const enriched: Entity = {

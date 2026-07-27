@@ -168,7 +168,7 @@ describe("characterization — default MetaModels are clean 1:1 joins", () => {
   it("defaultMiroirMetaModel has one EntityDefinition per Entity and matching names", () => {
     const inventory = inventoryEntityEntityDefinitionJoins(
       defaultMiroirMetaModel.entities,
-      defaultMiroirMetaModel.entityDefinitions,
+      defaultMiroirMetaModel.entityVersions,
     );
     expect(inventory.orphanEntities).toEqual([]);
     expect(inventory.orphanEntityDefinitions).toEqual([]);
@@ -177,7 +177,7 @@ describe("characterization — default MetaModels are clean 1:1 joins", () => {
 
     for (const match of inventory.matched) {
       const entity = defaultMiroirMetaModel.entities.find((e) => e.uuid === match.entityUuid)!;
-      const entityDefinition = defaultMiroirMetaModel.entityDefinitions.find(
+      const entityDefinition = defaultMiroirMetaModel.entityVersions.find(
         (definition) => definition.uuid === match.entityDefinitionUuids[0],
       )!;
       expect(entityDefinition.entityUuid).toBe(entity.uuid);
@@ -188,7 +188,7 @@ describe("characterization — default MetaModels are clean 1:1 joins", () => {
   it("defaultLibraryAppModel has one EntityDefinition per Entity and matching names", () => {
     const inventory = inventoryEntityEntityDefinitionJoins(
       defaultLibraryAppModel.entities,
-      defaultLibraryAppModel.entityDefinitions,
+      defaultLibraryAppModel.entityVersions,
     );
     expect(inventory.orphanEntities).toEqual([]);
     expect(inventory.orphanEntityDefinitions).toEqual([]);
@@ -198,7 +198,7 @@ describe("characterization — default MetaModels are clean 1:1 joins", () => {
 
   it("Phase 3: Entity instances carry definition-bearing fields matching EntityDefinitions", () => {
     for (const entity of defaultLibraryAppModel.entities) {
-      const entityDefinition = defaultLibraryAppModel.entityDefinitions.find(
+      const entityDefinition = defaultLibraryAppModel.entityVersions.find(
         (definition) => definition.entityUuid === entity.uuid,
       )!;
       expect(entityHasCompletePresentModel(entity)).toBe(true);

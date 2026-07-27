@@ -53,7 +53,7 @@ export interface PersistenceStoreAdminSectionInterface extends PersistenceStoreA
 export interface PersistenceStoreAbstractSectionInterface extends PersistenceStoreAbstractInterface {
   bootFromPersistedState(
     entities : Entity[],
-    entityDefinitions : EntityDefinition[],
+    entityVersions : EntityDefinition[],
   ):Promise<Action2VoidReturnType>;
   getEntityUuids():string[];
   getEntityIdAttribute(entityUuid: string): string | string[];

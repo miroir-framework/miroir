@@ -468,7 +468,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     ) {
       return new Action2Error(
         "FailedToGetInstances",
-        `bootFromPersistedState for entityDefinitions getInstances(${
+        `bootFromPersistedState for entityVersions getInstances(${
           entityEntityDefinition.uuid
         }) status: ${dataEntityDefinitions.status}. Message: ${
           dataEntityDefinitions instanceof Action2Error ? dataEntityDefinitions?.errorMessage : ""

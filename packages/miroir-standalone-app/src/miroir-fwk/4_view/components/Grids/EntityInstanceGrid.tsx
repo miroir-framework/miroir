@@ -728,7 +728,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
       presentModelSource,
       contextDeploymentUuid,
       context.applicationSection,
-      currentModel.entityDefinitions,
+      currentModel.entityVersions,
       navigate,
       agGridColumnDefs,
       tableComponentRows,
@@ -828,7 +828,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
       presentModelSource,
       contextDeploymentUuid,
       context.applicationSection,
-      currentModel.entityDefinitions,
+      currentModel.entityVersions,
       navigate,
     ]
   );

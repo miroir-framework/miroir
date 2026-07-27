@@ -130,7 +130,7 @@ export const ModelDiagramPage: React.FC<any> = () => {
         );
         const applicationName = currentModel.applicationName || "Application";
         const entities = currentModel.entities ?? [];
-        const entityDefinitions = currentModel.entityDefinitions ?? [];
+        const entityDefinitions = currentModel.entityVersions ?? [];
 
         const handleClassClick = (entityUuid: string) => {
           log.info("Class clicked", { entityUuid });

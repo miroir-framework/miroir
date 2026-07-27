@@ -45,7 +45,7 @@ describe("§11.1 / Phase 0 — UI present-model fields locked", () => {
     const book = defaultLibraryAppModel.entities.find(
       (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     )!;
-    const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+    const bookDefinition = defaultLibraryAppModel.entityVersions.find(
       (definition) => definition.entityUuid === book.uuid,
     )!;
     expect(book.viewAttributes).toEqual(bookDefinition.viewAttributes);
@@ -60,7 +60,7 @@ describe("§11.1 / Phase 0 — UI present-model fields locked", () => {
 describe("§11.3 / Phase 3–4 — migrated deployment behavioral equivalence", () => {
   it("Entity-first resolution is a no-op identity for complete Library Entities", () => {
     for (const entity of defaultLibraryAppModel.entities) {
-      const entityDefinition = defaultLibraryAppModel.entityDefinitions.find(
+      const entityDefinition = defaultLibraryAppModel.entityVersions.find(
         (definition) => definition.entityUuid === entity.uuid,
       )!;
       expect(resolveCurrentEntityModel(entity, [entityDefinition])).toBe(entity);
@@ -77,7 +77,7 @@ describe("§11.3 / Phase 3–4 — migrated deployment behavioral equivalence", 
 describe("§11.3 / Phase 4 — dual-write projection equality", () => {
   it("alignEntityDefinitionToPresentEntity satisfies project(Entity) == project(ED copy)", () => {
     for (const entity of defaultLibraryAppModel.entities) {
-      const entityDefinition = defaultLibraryAppModel.entityDefinitions.find(
+      const entityDefinition = defaultLibraryAppModel.entityVersions.find(
         (definition) => definition.entityUuid === entity.uuid,
       )!;
       const aligned = alignEntityDefinitionToPresentEntity(entity, entityDefinition);
@@ -92,7 +92,7 @@ describe("§11.3 / Phase 4 — dual-write projection equality", () => {
     const book = defaultLibraryAppModel.entities.find(
       (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     )!;
-    const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+    const bookDefinition = defaultLibraryAppModel.entityVersions.find(
       (definition) => definition.entityUuid === book.uuid,
     )!;
     const diverged: Entity = { ...book, viewAttributes: ["onlyEntity"] };
