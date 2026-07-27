@@ -24,7 +24,7 @@ Related:
 | Phase | Title | Status | Tests |
 |---|---|---|---|
 | 0 | Lock freeze contracts & fixtures | ✅ DONE | 4/4 |
-| 1 | Versioning gate + Entity snapshot planner | ⬜ TODO | — |
+| 1 | Versioning gate + Entity snapshot planner | ✅ DONE | 12/12 |
 | 2 | Freeze plan builder (SAV + Cross + isolation) | ⬜ TODO | — |
 | 3 | Linear tip resolution (`previousVersion`) | ⬜ TODO | — |
 | 4 | Entity-set diff → rough migration evaluation | ⬜ TODO | — |
@@ -127,7 +127,7 @@ npm run testByFile -w miroir-core -- entityPresentModel.phase12
 
 ---
 
-## Phase 1 — Versioning gate + Entity snapshot planner  ⬜ TODO
+## Phase 1 — Versioning gate + Entity snapshot planner  ✅ DONE
 
 ### Goal
 

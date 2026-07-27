@@ -808,9 +808,12 @@ export type {
 } from "./1_core/entityPresentModel.js";
 export {
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
+  assertApplicationVersioningEnabled,
+  snapshotEntitiesAsHistoricalEntityVersions,
 } from "./1_core/applicationVersionFreeze.js";
 export type {
   FreezeApplicationVersionActionType,
+  SnapshotOptions,
 } from "./1_core/applicationVersionFreeze.js";
 export {
   actionsWithDeploymentInPayload, noValue
