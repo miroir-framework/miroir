@@ -165,9 +165,19 @@ LocalCache redux/zustand: TypeScript fallout only once transformer is Entity-onl
 
 ### Validation (Slice 5)
 
-- [ ] `npx tsc --noEmit --skipLibCheck` clean for miroir-core + standalone-app (or build-all of touched packages).
-- [ ] Grep: no `entityVersion:` inside `actionType: "createEntity"` / `createEntity(` call sites in `packages/**/src`.
-- [ ] DomainController reset/init and Deployment emit `{ entities: Entity[] }` or equivalent flat list.
+- [x] `npx tsc --noEmit --skipLibCheck` clean for miroir-core + standalone-app (or build-all of touched packages).
+- [x] Grep: no `entityVersion:` inside `actionType: "createEntity"` / `createEntity(` call sites in `packages/**/src`.
+- [x] DomainController reset/init and Deployment emit `{ entities: Entity[] }` or equivalent flat list.
+- [x] `npm run build -w miroir-core` clean after caller updates (standalone-app still has pre-existing #217 `entityDefinitions` tsc noise unrelated to createEntity flatten).
+
+### Realization (Slice 5)
+
+What landed:
+
+- UI: AiActionsProvider / AiEntityProposalForm Entity-complete create; ImportEntityFromSpreadsheetRunner `entities: [entity]`.
+- Harness: transformerTestApplicationPlayfield, applicative.Library, createEntityAndReport… template, resolveCompositeActionTemplate tests.
+- Seeds: libraryPlayfieldSeeds synthetics carry `mlSchema` / `idAttribute` on Entity.
+- DomainController test assertions default-ignore present-model fields so skinny Entity expectations remain valid.
 
 ---
 
@@ -179,10 +189,18 @@ For each create in DomainController suites, copy present-model from former `enti
 
 ### Validation (Slice 6)
 
-- [ ] Rebuild deployment-miroir after JSON edits.
-- [ ] `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites domain_controller_model_crud --mode integ` → PASSED.
-- [ ] `… --suites domain_controller_model_undo_redo --mode integ` → PASSED.
-- [ ] Spot-check: MiroirTest create payloads have no `entityVersion` key.
+- [x] Rebuild deployment-miroir after JSON edits.
+- [x] `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites domain_controller_model_crud --mode integ` → PASSED.
+- [x] `… --suites domain_controller_model_undo_redo --mode integ` → PASSED.
+- [x] Spot-check: MiroirTest create payloads have no `entityVersion` key.
+
+### Realization (Slice 6)
+
+What landed:
+
+- Flattened MiroirTest / Runner JSON createEntity payloads via `flatten-createEntity-payloads.py` (literal pairs → complete Entity; template pairs → single `getFromParameters` entity ref).
+- Suites: `domain_controller_model_crud`, `domain_controller_model_undo_redo`, plus related createEntity MiroirTest/Runner assets (evolutionTraceWP1, non-uuid PK, no-parent, dropEntity runner, createEntity runner, spreadsheet suite).
+- Nonreg: both suites green under `emulatedServer-sql` (9/9 runner tests).
 
 ---
 

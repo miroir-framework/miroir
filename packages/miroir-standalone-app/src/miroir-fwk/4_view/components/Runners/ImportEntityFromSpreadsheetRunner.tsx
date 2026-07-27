@@ -323,7 +323,6 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   const createEntityActionTemplate = useCallback(
     (
       entity: Entity,
-      entityVersion: EntityVersion,
       instances: EntityInstance[]
     ): CompositeActionTemplate => ({
       actionType: "compositeActionSequence",
@@ -377,12 +376,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
                 interpolation: "runtime",
                 referencePath: ["deploymentInfo", "deployments", "0", "uuid"],
               } as any,
-              entities: [
-                {
-                  entity,
-                  entityVersion: entityVersion,
-                },
-              ],
+              entities: [entity],
             } as any,
           },
           {
@@ -499,37 +493,15 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
       } as any,
     };
     log.info("ImportEntityFromSpreadsheetRunner onSubmit entity", JSON.stringify(entity, null, 2));
-    const entityVersion: EntityVersion = {
-      uuid: uuidv4(),
-      parentName: "EntityVersion",
-      parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-      parentDefinitionVersionUuid: "c50240e7-c451-46c2-b60a-07b3172a5ef9",
-      name: {
-        transformerType: "mustacheStringTemplate",
-        definition: `{{${runnerName}.entityName}} Definition`,
-      } as any,
-      entityUuid: newEntityUuid,
-      mlSchema: {
-        transformerType: "spreadSheetToJzodSchema",
-        spreadsheetContents: fileData,
-      } as any,
-    };
 
-    // log.info(
-    //   "ImportEntityFromSpreadsheetRunner onSubmit entityVersion",
-    //   JSON.stringify(entityVersion, null, 2)
-    // );
+    // call createEntity action (Entity-only; #220)
     const action: CompositeActionTemplate = createEntityActionTemplate(
       entity,
-      entityVersion,
       instances,
-    )
-
-    // call createEntity action
-    log.info("ImportEntityFromSpreadsheetRunner onSubmit action create Entity", 
+    );
+    log.info(
+      "ImportEntityFromSpreadsheetRunner onSubmit action create Entity",
       JSON.stringify(action, null, 2),
-      //
-      // action
     );
     await domainController.handleCompositeActionTemplate(
       action,

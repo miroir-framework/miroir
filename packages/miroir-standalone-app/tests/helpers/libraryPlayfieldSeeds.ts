@@ -92,6 +92,34 @@ export const entityCompositePK: Entity = {
   name: "TestEntityCompositePK",
   conceptLevel: "Model",
   description: "Test entity with a composite primary key [region, code].",
+  // #220 — present-model on Entity for Entity-only create
+  idAttribute: ["region", "code"],
+  mlSchema: {
+    type: "object",
+    definition: {
+      region: {
+        type: "string",
+        tag: { value: { id: 1, defaultLabel: "Region" } },
+      },
+      code: {
+        type: "string",
+        tag: { value: { id: 2, defaultLabel: "Code" } },
+      },
+      parentName: {
+        type: "string",
+        optional: true,
+        tag: { value: { id: 3, defaultLabel: "Entity Name" } },
+      },
+      parentUuid: {
+        type: "uuid",
+        tag: { value: { id: 4, defaultLabel: "Entity Uuid" } },
+      },
+      name: {
+        type: "string",
+        tag: { value: { id: 5, defaultLabel: "Name" } },
+      },
+    },
+  },
 } as Entity;
 
 export const entityDefinitionCompositePK: EntityVersion = {
@@ -198,6 +226,30 @@ export const entityCodeNumber: Entity = {
   name: "TestEntityCodeNumber",
   conceptLevel: "Model",
   description: "Test entity with a non-UUID number primary key.",
+  // #220 — present-model on Entity for Entity-only create
+  idAttribute: "code",
+  mlSchema: {
+    type: "object",
+    definition: {
+      code: {
+        type: "number",
+        tag: { value: { id: 1, defaultLabel: "Code" } },
+      },
+      parentName: {
+        type: "string",
+        optional: true,
+        tag: { value: { id: 2, defaultLabel: "Entity Name" } },
+      },
+      parentUuid: {
+        type: "uuid",
+        tag: { value: { id: 3, defaultLabel: "Entity Uuid" } },
+      },
+      name: {
+        type: "string",
+        tag: { value: { id: 4, defaultLabel: "Name" } },
+      },
+    },
+  },
 } as Entity;
 
 export const entityDefinitionCodeNumber: EntityVersion = {
@@ -325,6 +377,25 @@ export const entityNoParentUuid: Entity = {
   name: "TestEntityNoParentUuid",
   conceptLevel: "Model",
   description: "Test entity whose instances do not bear a parentUuid attribute.",
+  // #220 — present-model on Entity for Entity-only create
+  mlSchema: {
+    type: "object",
+    definition: {
+      uuid: {
+        type: "uuid",
+        tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+      },
+      name: {
+        type: "string",
+        tag: { value: { id: 2, defaultLabel: "Name" } },
+      },
+      description: {
+        type: "string",
+        optional: true,
+        tag: { value: { id: 3, defaultLabel: "Description" } },
+      },
+    },
+  },
 } as Entity;
 
 export const entityDefinitionNoParentUuid: EntityVersion = {

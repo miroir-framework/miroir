@@ -246,20 +246,11 @@
               },
               "entities": [
                 {
-                  "entity": {
-                    "transformerType": "getFromParameters",
-                    "referencePath": [
-                      "createEntity",
-                      "entity"
-                    ]
-                  },
-                  "entityVersion": {
-                    "transformerType": "getFromParameters",
-                    "referencePath": [
-                      "createEntity",
-                      "entityDefinition"
-                    ]
-                  }
+                  "transformerType": "getFromParameters",
+                  "referencePath": [
+                    "createEntity",
+                    "entity"
+                  ]
                 }
               ]
             }

@@ -118,16 +118,9 @@ describe('resolveTestCompositeActionTemplate', () => {
                 // },
                 entities: [
                   {
-                    entity: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "createEntity_newEntity",
-                    },
-                    entityVersion: {
-                      transformerType: "getFromParameters",
-                      interpolation: "build",
-                      referenceName: "newEntityDefinition",
-                    },
+                    transformerType: "getFromParameters",
+                    interpolation: "build",
+                    referenceName: "createEntity_newEntity",
                   },
                 ],
               },
@@ -147,7 +140,15 @@ describe('resolveTestCompositeActionTemplate', () => {
       selfApplication: currentApplicationUuid,
       description: "newEntityDescription",
       name: "newEntityName",
-    };
+      // #220 — complete present model for Entity-only createEntity
+      mlSchema: {
+        type: "object",
+        definition: {
+          a: { type: "string" },
+          b: { type: "number" },
+        },
+      },
+    } as MetaEntity;
 
     const actionEffectiveParamsCreateEntity /** parsed by actionHandlerCreateEntity.interface.actionJzodObjectSchema */ =
       {
@@ -203,28 +204,16 @@ describe('resolveTestCompositeActionTemplate', () => {
                 // deploymentUuid: currentDeploymentUuid,
                 entities: [
                   {
-                    entity: {
-                      uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
-                      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                      selfApplication: currentApplicationUuid,
-                      description: "newEntityDescription",
-                      name: "newEntityName",
-                    },
-                    entityVersion: {
-                      name: "newEntityName",
-                      uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityDefinitionUuid,
-                      parentName: "EntityVersion",
-                      parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                      entityUuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
-                      conceptLevel: "Model",
-                      defaultInstanceDetailsReportUuid:
-                        actionEffectiveParamsCreateEntity.createEntity_newEntityDetailsReportUuid,
-                      mlSchema: {
-                        type: "object",
-                        definition: {
-                          a: { type: "string" },
-                          b: { type: "number" },
-                        },
+                    uuid: actionEffectiveParamsCreateEntity.createEntity_newEntityUuid,
+                    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    selfApplication: currentApplicationUuid,
+                    description: "newEntityDescription",
+                    name: "newEntityName",
+                    mlSchema: {
+                      type: "object",
+                      definition: {
+                        a: { type: "string" },
+                        b: { type: "number" },
                       },
                     },
                   },
@@ -275,6 +264,13 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
       selfApplication: currentApplicationUuid,
       description: "newEntityDescription",
       name: "newEntityName",
+      mlSchema: {
+        type: "object",
+        definition: {
+          a: { type: "string" },
+          b: { type: "number" },
+        },
+      },
     };
 
     const newEntityDefinition: EntityVersion ={
@@ -311,12 +307,6 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                 {
                   actionType: "createEntity",
                   actionLabel: "createEntity",
-                  // deploymentUuid: {
-                  //   transformerType: "getFromParameters",
-                  //   interpolation: "build",
-                  //   referenceName: "currentDeploymentUuid",
-                  // },
-                  // application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: {
@@ -326,17 +316,9 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                     } as any,
                     entities: [
                       {
-                        // entity: newEntity,
-                        entity: {
-                          transformerType: "getFromParameters",
-                          interpolation: "build",
-                          referenceName: "createEntity_newEntity",
-                        },
-                        entityVersion: newEntityDefinition as any,
-                        // entityVersion: {
-                        //   transformerType: "getFromParameters",
-                        //   referenceName: "newEntityDefinition",
-                        // },
+                        transformerType: "getFromParameters",
+                        interpolation: "build",
+                        referenceName: "createEntity_newEntity",
                       },
                     ],
                   },
@@ -384,31 +366,19 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
                     application: currentApplicationUuid,
                     entities: [
                       {
-                        entity: {
-                          uuid: newEntity.uuid,
-                          parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          selfApplication: newEntity.selfApplication,
-                          description: "newEntityDescription",
-                          name: "newEntityName",
-                        },
-                        entityVersion: {
-                          name: "newEntityName",
-                          uuid: newEntityDefinition.uuid,
-                          parentName: "EntityVersion",
-                          parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                          entityUuid: newEntity.uuid,
-                          conceptLevel: "Model",
-                          defaultInstanceDetailsReportUuid: (newEntityDefinition as any)
-                            .defaultInstanceDetailsReportUuid,
-                          mlSchema: {
-                            type: "object",
-                            definition: {
-                              a: {
-                                type: "string",
-                              },
-                              b: {
-                                type: "number",
-                              },
+                        uuid: newEntity.uuid,
+                        parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                        selfApplication: newEntity.selfApplication,
+                        description: "newEntityDescription",
+                        name: "newEntityName",
+                        mlSchema: {
+                          type: "object",
+                          definition: {
+                            a: {
+                              type: "string",
+                            },
+                            b: {
+                              type: "number",
                             },
                           },
                         },

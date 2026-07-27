@@ -74,6 +74,7 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
+import { ENTITY_PRESENT_MODEL_DEFINITION_FIELDS } from "../1_core/entityPresentModel.js";
 import { normalizeCreateEntityPair } from "../1_core/modelEntityDualWrite.js";
 import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGuard.js";
 import {
@@ -3113,38 +3114,47 @@ export class DomainController implements DomainControllerInterface {
           prePreValueToTest,
           currentAction.testAssertion.definition.resultAccessPath ?? [],
         );
+        // #220 / #217 — skinny Entity expectations ignore present-model fields now carried on Entity
+        const assertionIgnoreAttributes = [
+          ...(currentAction.testAssertion.definition.ignoreAttributes ?? []),
+          ...ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+        ];
   
         valueToTest = removeUndefinedProperties(
           unNullify(
             Array.isArray(preValueToTest)
               ? ignorePostgresExtraAttributesOnList(
                   preValueToTest,
-                  currentAction.testAssertion.definition.ignoreAttributes ?? [],
+                  assertionIgnoreAttributes,
                 )
               : ignorePostgresExtraAttributesOnObject(
                   preValueToTest,
-                  currentAction.testAssertion.definition.ignoreAttributes ?? [],
+                  assertionIgnoreAttributes,
                 ),
           ),
         );
       } else {
         valueToTest = prePreValueToTest;
       }
+      const assertionIgnoreAttributes = [
+        ...(currentAction.testAssertion.definition.ignoreAttributes ?? []),
+        ...ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+      ];
       const expectedValue = typeof currentAction.testAssertion.definition.expectedValue === "object"?
       Array.isArray(currentAction.testAssertion.definition.expectedValue)
         ? ignorePostgresExtraAttributesOnList(
             currentAction.testAssertion.definition.expectedValue,
-            currentAction.testAssertion.definition.ignoreAttributes ?? [],
+            assertionIgnoreAttributes,
           )
         : ignorePostgresExtraAttributesOnObject(
             currentAction.testAssertion.definition.expectedValue,
-            currentAction.testAssertion.definition.ignoreAttributes ?? [],
+            assertionIgnoreAttributes,
           ):currentAction.testAssertion.definition.expectedValue;
       log.info(
         "handleTestCompositeActionAssertion compositeRunTestAssertion to handle",
         JSON.stringify(currentAction.testAssertion, null, 2),
         "ignoreAttributes",
-        currentAction.testAssertion.definition.ignoreAttributes ?? [],
+        assertionIgnoreAttributes,
         "expectedValue",
         JSON.stringify(expectedValue, null, 2),
         // "preValueToTest is array",
