@@ -7,6 +7,7 @@
   "conceptLevel": "Model",
   "name": "MiroirRight",
   "icon": "Lock",
+  "defaultInstanceDetailsReportUuid": "fbe615b3-b670-40d1-ac0d-de6e0c7c847e",
   "viewAttributes": [
     "miroirUser",
     "capability",

@@ -1,0 +1,28 @@
+{
+  "uuid": "42994013-4494-4510-8531-7c811a9aa0d0",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "name": "MiroirRightList",
+  "defaultLabel": "Rights",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "miroirRights": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "MiroirRight",
+        "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c"
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "label": "Rights",
+        "parentName": "MiroirRight",
+        "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
+        "fetchedDataReference": "miroirRights",
+        "sortByAttribute": "capability"
+      }
+    }
+  }
+}

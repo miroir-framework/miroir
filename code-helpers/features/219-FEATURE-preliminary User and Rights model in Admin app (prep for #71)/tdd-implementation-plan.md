@@ -60,7 +60,7 @@ Legend:
 | 0 | Test harness and fixtures baseline | ✅ DONE | `… -- miroirUserRights.219.phase0` + `… -- modelValidation` |
 | 1 | Introduce `MiroirUser` | ✅ DONE | `… -- miroirUserRights.219.phase1` + `… -- modelValidation` |
 | 2 | Introduce `MiroirRight` | ✅ DONE | `… -- miroirUserRights.219.phase2` + `… -- modelValidation` |
-| 3 | Admin list/detail reporting | ⬜ TODO | `… -- miroirUserRights.219.phase3` |
+| 3 | Admin list/detail reporting | ✅ DONE | `… -- miroirUserRights.219.phase3` |
 | 4 | Behavior non-change safety net | ⬜ TODO | `… -- miroirUserRights.219.phase4` + DomainController.integ |
 | 5 | Multi-store / bundled load checks | ⬜ TODO | DomainController.integ + sandbox bundled test |
 | 6 | Final acceptance gate | ⬜ TODO | full phase command set below |
@@ -258,11 +258,17 @@ Expect: Phases 1–2 + modelValidation green; referential integrity assertions p
 
 ---
 
-## Phase 3 — Admin list/detail reporting (C5)
+## Phase 3 — Admin list/detail reporting (C5)  ✅ DONE
 
 ### Goal
 
 Expose Users and Rights via Admin list + detail reports and menu entries; generic editors only.
+
+**Landed assets:**
+- Reports: `MiroirUserList` / `MiroirUserDetails` / `MiroirRightList` / `MiroirRightDetails`
+- AdminMenu items: Users, Rights
+- Entity `defaultInstanceDetailsReportUuid` wired for both entities
+- Exports: `reportMiroirUserList`, `reportMiroirUserDetails`, `reportMiroirRightList`, `reportMiroirRightDetails`
 
 ### Red
 

@@ -39,6 +39,10 @@ export { default as reportDeploymentDetails } from "./assets/admin_model/3f2baa8
 export { default as reportViewParamsList } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/e4488cba-b743-4b46-80e5-18c441c9882c.json" with { type: "json" };
 export { default as reportStoreBasedConfigurationList } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f730ecf1-88b6-46ea-8147-aa24ff7cdfcf.json" with { type: "json" };
 export { default as reportApplicationListWithDeployments } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/faaf8c68-020a-48b1-b439-abc196855295.json" with { type: "json" };
+export { default as reportMiroirUserList } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c8aa168d-2835-46cc-a602-2d071fb7d263.json" with { type: "json" };
+export { default as reportMiroirUserDetails } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c9de2107-e58e-461e-b2fc-4e3a2ce7179d.json" with { type: "json" };
+export { default as reportMiroirRightList } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/42994013-4494-4510-8531-7c811a9aa0d0.json" with { type: "json" };
+export { default as reportMiroirRightDetails } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/fbe615b3-b670-40d1-ac0d-de6e0c7c847e.json" with { type: "json" };
 
 // Admin Model - Menus
 export { default as menuDefaultAdmin } from "./assets/admin_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json" with { type: "json" };

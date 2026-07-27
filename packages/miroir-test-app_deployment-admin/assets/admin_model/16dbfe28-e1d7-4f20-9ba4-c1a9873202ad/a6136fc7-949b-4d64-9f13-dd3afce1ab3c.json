@@ -7,6 +7,7 @@
   "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
   "conceptLevel": "Model",
   "description": "Declarative platform right linking a MiroirUser to an AdminApplication or Deployment target. Capability strings are provisional until #71; no runtime enforcement in #219.",
+  "defaultInstanceDetailsReportUuid": "fbe615b3-b670-40d1-ac0d-de6e0c7c847e",
   "viewAttributes": [
     "miroirUser",
     "capability",

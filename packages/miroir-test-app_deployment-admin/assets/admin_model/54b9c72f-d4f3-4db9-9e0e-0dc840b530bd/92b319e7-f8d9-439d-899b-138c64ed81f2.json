@@ -7,6 +7,7 @@
   "conceptLevel": "Model",
   "name": "MiroirUser",
   "icon": "Person",
+  "defaultInstanceDetailsReportUuid": "c9de2107-e58e-461e-b2fc-4e3a2ce7179d",
   "viewAttributes": [
     "name",
     "status",
