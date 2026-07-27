@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Growing Systems from Within — Miroir Framework Blog</title>
-  <meta name="description" content="Alan Kay said at OOPSLA'97 that we have to construct systems and soon we'll be required to grow them. Has he been proved right, or wrong?" />
+  <meta name="description" content="Alan Kay argued at OOPSLA'97 that complex systems must grow from within. Has he been proved right or wrong? Both — and agentic programming makes the case for reflective engineering more urgent than ever." />
   <script>
     (function () {
       var s = localStorage.getItem('miroir-theme')
@@ -36,6 +36,9 @@
         <span class="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-md bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300">Philosophy</span>
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-5 leading-tight">Growing Systems from Within<br /><span class="text-gray-500 dark:text-gray-500 font-bold">Alan Kay, Reflection, and Agentic Engineering</span></h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+        At OOPSLA'97, Alan Kay argued that complex systems must grow from the inside. Has he been proved right, or wrong? Well, I'll argue, both.
+      </p>
       <div class="mt-6 flex items-center gap-4 text-sm text-gray-500 dark:text-gray-500">
         <time>July 2026</time>
         <span>·</span>
@@ -49,40 +52,66 @@
     <article class="max-w-3xl mx-auto prose-blog">
 
       <figure>
-        <img data-src="blog/alan-kay-oopsla-97.png" alt="Alan Kay at OOPSLA'97" loading="lazy" />
+        <img data-src="blog/alan-kay-oopsla-97.png" alt="Alan Kay speaking at OOPSLA'97" loading="lazy" />
+        <figcaption>Alan Kay at OOPSLA'97 — &ldquo;The Computer Revolution Hasn&rsquo;t Happened Yet.&rdquo;</figcaption>
       </figure>
 
+      <h2>Kay at OOPSLA'97</h2>
+
       <p>
-        Alan Kay said, during his staple talk at OOPSLA'97: "Now we have to construct these systems and soon we'll be required to grow them" (adapted wording, see the video <a href="https://youtu.be/oKg1hTOQXoY?t=2646" target="_blank" rel="noopener">here</a>). He argued that that developping a system from outside of itself "cannot be other than a dead end for building complex systems".
+        Alan Kay said, during his staple talk at OOPSLA'97:
+      </p>
+
+      <blockquote>
+        "Now we have to construct these systems and soon we'll be required to grow them"
+        (<a href="https://youtu.be/oKg1hTOQXoY?t=2646" target="_blank" rel="noopener">adapted wording — see the talk</a>).
+      </blockquote>
+
+      <p>
+        He argued that developing a system from outside of itself <strong>"cannot be other than a dead end for building complex systems"</strong>.
       </p>
 
       <p>
-        He meant that, as systems become more complex, viewing them as external artefacts (like an engine or a building) that can be altered and which parts can be added or replaced, would lead to failure. Instead, he proposed a way where systems would be started on day 1, and grow "organically" through interactions with their environment (users or engineers) in the same way living organisms do. Software engineering in that perspective becomes shaping this growth through interactions with the system itself. As a first token for success, he argued that we should avoid to "develop outside of the language, compile and reload, even if it's fast".
+        He meant that, as systems become more complex, viewing them as external artefacts (like an engine or a building) that can be altered and whose parts can be added or replaced, would lead to failure. Instead, he proposed a way where systems would be started on day 1, and grow "organically" through interactions with their environment (users or engineers) in the same way living organisms do. Software engineering in that perspective becomes shaping this growth through interactions with the system itself. As a first token for success, he argued that we should avoid to "develop outside of the language, compile and reload, even if it's fast".
+      </p>
+
+      <hr />
+
+      <h2>Has He Been Proved Right, or Wrong?</h2>
+
+      <p>Well, I'll argue, <strong>both</strong>.</p>
+
+      <h3>Right: Reflection Became Mainstream</h3>
+
+      <p>
+        On the one side, his wishes have been made concrete, and reflective features are now part of any programming language that has significantly evolved in the last 20 to 30 years.
+        <a href="https://en.wikipedia.org/wiki/Metaprogramming" target="_blank" rel="noopener">Meta-programming</a>
+        receives some form of language support in every household programming language
+        (C++ now has a <a href="https://en.cppreference.com/w/cpp/meta/reflection" target="_blank" rel="noopener">reflective API</a>!).
+        We mostly have the possibility, whatever the language we choose, to build systems as an instance of themselves, to let them organically grow without ever stopping them down for maintenance.
+      </p>
+
+      <h3>Wrong: Almost Nobody Builds That Way</h3>
+
+      <p>
+        On the other side, almost nobody does it this way. Alan Kay's prediction has been wrong until now: we have been able to build much larger systems without letting them grow from the inside, consistently using a "lego blocks" approach over and over. Software engineers today still endure the Fix/Compile/Restart/Test/Repeat-Loop; systems under construction go memory blank on every restart. Even in interpreted languages, that bypass compilation times, there is some "restart" friction that remains. Reflective techniques are essentially employed to reach "small" local goals, not to solving system-wide engineering problems. We still face very different development / testing / production environments every day.
       </p>
 
       <p>
-        Has he been proved right, or wrong? Well, I'll argue, both.
+        The reality is, we could just do it until now without bothering, by simple inertia — it's been working somehow.
       </p>
 
-      <p>
-        On the one side, his wishes have been made concrete, and reflective features are now part of any programming language that has significantly evolved in the last 20 to 30 years. <a href="https://en.wikipedia.org/wiki/Metaprogramming" target="_blank" rel="noopener">Meta-programming</a> receives some form of language support in every household programming language (C++ now has a <a href="https://en.cppreference.com/cpp/meta/reflection" target="_blank" rel="noopener">reflective API</a>!). We mostly have the possibility, whatever the language we choose, to build systems as an instance of themselves, to let them organically grow without ever stopping them down for maintenance.
-      </p>
+      <hr />
+
+      <h2>Will Alan Kay's Prediction Stay Wrong?</h2>
 
       <p>
-        On the other side, almost nobody does it this way. Alan Kay's prediction has been wrong until now, we have been able to build much larger systems without letting them grow from the inside, consistently using a "lego blocks" approach over and over. Software engineers today still endure the Fix/Compile/Restart/Test/Repeat-Loop, systems under construction go memory blank on every restart. Even in interpreted lanaguages, that bypass compilation times, there is some "restart" friction that remains. Reflective techniques are essentially employed to reach "small" local goals, not to solving system-wide engineering problems. We still face very different development / testing / production environements every day.
+        In a way, with the advent of agentic programming, things have become worse: it is now common to hear "I have X many agents, I switch from one to another when one has finished its task". Wait times have become so bad (tens of minutes, to several hours between the prompt and the result) that engineers have to resort to extraordinary creativity to keep themselves busy (PRDs! Loops! No, wait, <em>&lt;write your favorite technique here&gt;</em>!). Coding agents act on the code as human software engineers have been doing it, from an external standpoint. They use tools, and act on the system like a surgeon on a patient. They compound the problem by making the sheer size of systems just grow faster.
       </p>
 
-      <p>
-        The reality is, we could just do it until now without bothering, by simple inertia, it's been working somehow.
-      </p>
+      <hr />
 
-      <p>
-        Will Alan Kay's prediction stay wrong, however?
-      </p>
-
-      <p>
-        In a way, with the advent of agentic programming, things have become worse: it is now common to hear "I have X many agents, I switch from one to another when one has finished its task". Wait times have become so bad (tens of minutes, to several hours between the prompt and the result) that engineers have to resort to extraordinary creativity to keep themselves busy (PRDs! Loops! No, wait, &lt;write your favorite technique here&gt;!). Coding agents act on the code as human software engineers have been doing it, from an external standpoint. They use tools, and act on the system like a surgeon on a patient. They compound the problem by making the sheer size of systems just grow faster.
-      </p>
+      <h2>Toward Reflective Agentic Engineering</h2>
 
       <p>
         My very concrete proposals for the advent of a "reflective" agentic engineering, tribute to Alan Kay's proposals:
@@ -96,8 +125,19 @@
       </ul>
 
       <p>
-        Side-note: for "client-only" use, or "production-only" deployment, access to the software agent would be disabled, or the agent itself not included in the binary.
+        <strong>Side-note:</strong> for "client-only" use, or "production-only" deployment, access to the software agent would be disabled, or the agent itself not included in the binary.
       </p>
+
+      <hr />
+
+      <div class="mt-12 p-6 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800">
+        <p class="text-sm font-semibold text-indigo-700 dark:text-indigo-300 mb-2">Ready to see it in action?</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Explore the interactive sandbox to experience Miroir's live environment first-hand — no installation required.</p>
+        <a href="../../sandbox/" class="btn-sandbox">
+          Launch Sandbox
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
+        </a>
+      </div>
 
     </article>
   </main>
