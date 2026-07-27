@@ -21,8 +21,7 @@ import {
   buildEvolutionBaselineCreateInstanceActions,
   EVOLUTION_TRACE_ENTITY_UUID,
 } from "../2_domain/evolutionTraceBaseline.js";
-import { entityHasCompletePresentModel } from "./entityPresentModel.js";
-import { normalizeCreateEntityPair } from "./modelEntityDualWrite.js";
+import { entityHasCompletePresentModel, resolveCurrentEntityModel } from "./entityPresentModel.js";
 import {
   getMetaModelEntityVersions,
   withMetaModelEntityVersions,
@@ -459,11 +458,19 @@ export function buildResetAndinitializeDeploymentActionSequence(
           payload: {
             application: applicationUuid,
             // #220 — Action payload.entities is Entity[]; enrich incomplete Entity from EV when needed
-            entities: entities.map(({ entity, entityVersion }) =>
-              entityVersion
-                ? normalizeCreateEntityPair(entity, entityVersion).entity
-                : entity,
-            ),
+            entities: entities.map(({ entity, entityVersion }) => {
+              if (entityHasCompletePresentModel(entity)) {
+                return entity;
+              }
+              if (!entityVersion) {
+                throw new Error(
+                  `Incomplete Entity ${entity.uuid} (${entity.name}) has no EntityVersion to enrich for createEntity`,
+                );
+              }
+              return resolveCurrentEntityModel(entity, [entityVersion], {
+                onInconsistency: "preferEntity",
+              });
+            }),
           },
         },
         // add reports, menus, etc. from metaModel

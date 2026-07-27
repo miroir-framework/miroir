@@ -74,8 +74,11 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
-import { ENTITY_PRESENT_MODEL_DEFINITION_FIELDS } from "../1_core/entityPresentModel.js";
-import { normalizeCreateEntityPair } from "../1_core/modelEntityDualWrite.js";
+import {
+  entityHasCompletePresentModel,
+  ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+  resolveCurrentEntityModel,
+} from "../1_core/entityPresentModel.js";
 import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGuard.js";
 import {
   resolveEntitiesToFetchOnRefresh,
@@ -1233,9 +1236,13 @@ export class DomainController implements DomainControllerInterface {
                     application: modelActionResetModel.payload.application,
                     // #220 — entities: Entity[]; enrich from EV when incomplete
                     entities: [
-                      entityVersion
-                        ? normalizeCreateEntityPair(entity, entityVersion).entity
-                        : entity,
+                      entityHasCompletePresentModel(entity)
+                        ? entity
+                        : entityVersion
+                          ? resolveCurrentEntityModel(entity, [entityVersion], {
+                              onInconsistency: "preferEntity",
+                            })
+                          : entity,
                     ],
                   }
                 };
@@ -1352,56 +1359,24 @@ export class DomainController implements DomainControllerInterface {
               entityDefinitionsCount: model.entityVersions?.length || 0
             });
             
-            // Combine entities with their definitions
-            const entitiesToCreate: { entity: Entity; entityVersion?: EntityVersion }[] = [];
-            
-            // Create a map of entityDefinitions by entityUuid for quick lookup
-            const entityDefinitionMap = new Map<string, EntityVersion>();
-            if (model.entityVersions) {
-              for (const entityDef of model.entityVersions) {
-                entityDefinitionMap.set(entityDef.entityUuid, entityDef);
-              }
-            }
-            
-            // Match entities with their definitions (#217 Phase 11: Entity-complete needs no live ED)
-            if (model.entities) {
-              for (const entity of model.entities) {
-                const entityVersion = entityDefinitionMap.get(entity.uuid);
-                if (entityVersion) {
-                  entitiesToCreate.push({ entity, entityVersion });
-                } else if (entity.mlSchema) {
-                  entitiesToCreate.push({ entity });
-                } else {
-                  log.warn(
-                    "handleModelAction resetModel: no entityVersion found for entity",
-                    entity.uuid,
-                    entity.name
-                  );
-                }
-              }
-            }
-            
-            if (entitiesToCreate.length > 0) {
+            if (model.entities && model.entities.length > 0) {
               log.info(
                 "handleModelAction resetModel creating",
-                entitiesToCreate.length,
+                model.entities.length,
                 "entities",
-                entitiesToCreate,
+                model.entities,
               );
               
               // Create entities via persistence action for each entity
-              for (const { entity, entityVersion } of entitiesToCreate) {
+              for (const entity of model.entities) {
                 const createEntityAction: ModelAction = {
                   actionType: "createEntity",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionInitModel.payload.application,
                     // #220 — entities: Entity[]; enrich from EV when incomplete
-                    entities: [
-                      entityVersion
-                        ? normalizeCreateEntityPair(entity, entityVersion).entity
-                        : entity,
-                    ],
+                    // entities: model.entities,
+                    entities: [entity],
                   }
                 };
                 

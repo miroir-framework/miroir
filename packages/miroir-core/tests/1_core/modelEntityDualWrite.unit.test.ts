@@ -8,7 +8,6 @@ import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
 import type {
   Entity,
-  EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   applyAlterEntityAttributePair,
@@ -16,7 +15,6 @@ import {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges,
   applyRenameEntityPair,
-  normalizeCreateEntityPair,
 } from "../../src/1_core/modelEntityDualWrite.js";
 import {
   compareEntityPresentModelDefinitions,
@@ -42,41 +40,7 @@ describe("217 Phase 5 — applyMlSchemaColumnChanges", () => {
   });
 });
 
-describe("217 Phase 5 — normalizeCreateEntityPair", () => {
-  it("keeps Entity authoritative and aligns EntityVersion for complete Entity", () => {
-    const pair = normalizeCreateEntityPair(bookEntity, bookDefinition);
-    expect(pair.entity).toBe(bookEntity);
-    expect(compareEntityPresentModelDefinitions(pair.entity, pair.entityVersion).equal).toBe(
-      true,
-    );
-    expect(pair.entityVersion.uuid).toBe(bookDefinition.uuid);
-  });
-
-  it("enriches legacy incomplete Entity from EntityVersion then dual-writes", () => {
-    const legacyEntity: Entity = {
-      uuid: bookEntity.uuid,
-      name: bookEntity.name,
-      parentUuid: bookEntity.parentUuid,
-      parentName: bookEntity.parentName,
-      description: bookEntity.description,
-    };
-    const pair = normalizeCreateEntityPair(legacyEntity, bookDefinition);
-    expect(pair.entity.mlSchema).toEqual(bookDefinition.mlSchema);
-    expect(compareEntityPresentModelDefinitions(pair.entity, pair.entityVersion).equal).toBe(
-      true,
-    );
-  });
-
-  it("prefers Entity definition fields over diverging EntityVersion on create", () => {
-    const entity: Entity = {
-      ...bookEntity,
-      viewAttributes: ["titleOnly"],
-    };
-    const pair = normalizeCreateEntityPair(entity, bookDefinition);
-    expect(pair.entity.viewAttributes).toEqual(["titleOnly"]);
-    expect(pair.entityVersion.viewAttributes).toEqual(["titleOnly"]);
-  });
-});
+// #220 — normalizeCreateEntityPair create dual-write tests removed (create is Entity-only).
 
 describe("217 Phase 5 — applyAlterEntityAttributePair", () => {
   it("updates Entity.mlSchema and dual-writes EntityVersion", () => {

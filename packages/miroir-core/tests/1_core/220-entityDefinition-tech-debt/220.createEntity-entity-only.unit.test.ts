@@ -3,7 +3,7 @@
  * Slices 1–3 of createEntity-remove-entityVersion-tdd-plan.md
  */
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
@@ -134,5 +134,50 @@ describe("220 createEntity Entity-only — Slice 4 Action schema", () => {
     expect(createSection).toMatch(/"relativePath": "entity"/);
     expect(createSection).not.toMatch(/"relativePath": "entityVersion"/);
     expect(createSection).not.toMatch(/"entityVersion"/);
+  });
+});
+
+describe("220 createEntity Entity-only — Slice 7 cleanup gate", () => {
+  it("normalizeCreateEntityPair is gone from modelEntityDualWrite and index exports", () => {
+    const dualWrite = readFileSync(
+      join(REPO_ROOT, "packages/miroir-core/src/1_core/modelEntityDualWrite.ts"),
+      "utf8",
+    );
+    const index = readFileSync(join(REPO_ROOT, "packages/miroir-core/src/index.ts"), "utf8");
+    expect(dualWrite).not.toMatch(/export function normalizeCreateEntityPair/);
+    expect(index).not.toMatch(/\bnormalizeCreateEntityPair\b/);
+  });
+
+  it("packages/**/src createEntity Action payloads do not couple entityVersion", () => {
+    // Scan source for createEntity action blocks that still assign entityVersion in entities
+    const packagesRoot = join(REPO_ROOT, "packages");
+    const offenders: string[] = [];
+
+    function walk(dir: string) {
+      for (const name of readdirSync(dir)) {
+        if (name === "node_modules" || name === "dist" || name === "tests") continue;
+        const full = join(dir, name);
+        const st = statSync(full);
+        if (st.isDirectory()) {
+          walk(full);
+          continue;
+        }
+        if (!/\.(ts|tsx)$/.test(name) || name.endsWith(".d.ts")) continue;
+        if (!full.replace(/\\/g, "/").includes("/src/")) continue;
+        const text = readFileSync(full, "utf8");
+        // createEntity action with entities containing entityVersion: (pair shape)
+        if (
+          /actionType:\s*["']createEntity["'][\s\S]{0,1200}?entities:\s*\[[\s\S]{0,800}?entityVersion\s*:/.test(
+            text,
+          )
+        ) {
+          offenders.push(full.replace(/\\/g, "/").replace(REPO_ROOT.replace(/\\/g, "/") + "/", ""));
+        }
+      }
+    }
+    walk(packagesRoot);
+    expect(offenders, `createEntity still couples entityVersion:\n${offenders.join("\n")}`).toEqual(
+      [],
+    );
   });
 });

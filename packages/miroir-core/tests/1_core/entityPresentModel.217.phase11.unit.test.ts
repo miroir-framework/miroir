@@ -63,7 +63,7 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
     expect(transformer).not.toContain("resolveOrSynthesizeEntityDefinitionForCreate");
   });
 
-  it("store createEntity accepts optional EntityVersion (filesystem + interface)", () => {
+  it("store createEntity is Entity-only (no EntityVersion param)", () => {
     const iface = readFileSync(
       join(
         REPO_ROOT,
@@ -78,8 +78,15 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
       ),
       "utf8",
     );
-    expect(iface).toMatch(/createEntity\(\s*entity:Entity,\s*entityVersion\?: EntityVersion/);
-    expect(fsMixin).toContain("Entity-only when ED omitted");
+    expect(iface).toMatch(
+      /createEntity\(\s*entity\s*:\s*Entity\s*\)\s*:\s*Promise<Action2VoidReturnType>/,
+    );
+    expect(iface).not.toMatch(
+      /createEntity\(\s*entity\s*:\s*Entity\s*,\s*entityVersion\?/,
+    );
+    expect(fsMixin).toMatch(
+      /async createEntity\(\s*entity\s*:\s*Entity\s*\)\s*:\s*Promise<Action2VoidReturnType>/,
+    );
   });
 
   it("LocalCache registers PK adapters from Entity only (not EntityVersion)", () => {
@@ -125,7 +132,7 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
     expect(sqlMixin).toContain("applyEntityOnlyRename");
   });
 
-  it("ModelEndpoint Action schemas mark entityVersion / entityVersionUuid optional", () => {
+  it("ModelEndpoint Action schemas: createEntity is Entity[]; alter/rename/drop keep optional entityVersionUuid", () => {
     const endpoint = JSON.parse(
       readFileSync(
         join(
@@ -143,7 +150,13 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
       "utf8",
     );
     expect(generated).toContain("entityVersionUuid?: string | undefined");
-    expect(generated).toMatch(/entityVersion\?: EntityVersion \| undefined/);
+    // #220 — createEntity payload is Entity[], not { entity, entityVersion? }
+    expect(generated).toMatch(
+      /export type ModelActionCreateEntity = \{[\s\S]*?entities: Entity\[\];/,
+    );
+    expect(generated).not.toMatch(
+      /export type ModelActionCreateEntity = \{[\s\S]*?entityVersion\?:/,
+    );
     expect(generated).toMatch(
       /modelActionAlterEntityAttribute[\s\S]*entityVersionUuid:z\.string\(\)\.optional\(\)/,
     );
@@ -160,10 +173,10 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
       const ap = actions.find((a) => a.actionType?.definition === name);
       expect(ap?.payload?.definition?.entityVersionUuid?.optional).toBe(true);
     }
-    const create = actions.find((a) => a.actionType?.definition === "createEntity");
-    expect(
-      create?.payload?.definition?.entities?.definition?.definition?.entityVersion?.optional,
-    ).toBe(true);
+    const createAp = actions.find((a) => a.actionType?.definition === "createEntity");
+    expect(createAp?.payload?.definition?.entities?.definition?.definition?.relativePath).toBe(
+      "entity",
+    );
   });
 
   it("Bundled store boot registers PK from Entity first", () => {

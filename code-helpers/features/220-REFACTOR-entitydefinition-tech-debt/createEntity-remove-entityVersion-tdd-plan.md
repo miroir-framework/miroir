@@ -213,9 +213,18 @@ What landed:
 
 ### Validation (Slice 7)
 
-- [ ] Grep gate clean for createEntity + entityVersion coupling.
-- [ ] `modelEntityDualWrite` create-only tests removed or quarantined; alter/rename dual-write tests still green.
-- [ ] Curated nonreg: model_crud + undo_redo + PersistenceStoreController.integ still PASS.
+- [x] Grep gate clean for createEntity + entityVersion coupling.
+- [x] `modelEntityDualWrite` create-only tests removed or quarantined; alter/rename dual-write tests still green.
+- [x] Curated nonreg: model_crud + undo_redo + PersistenceStoreController.integ still PASS.
+
+### Realization (Slice 7)
+
+What landed:
+
+- Removed `normalizeCreateEntityPair` (function + index export); Deployment / DomainController enrich incomplete Entities via `resolveCurrentEntityModel`.
+- Deleted create dual-write unit tests; alter/rename dual-write + Entity-only alter/rename tests remain.
+- Grep gate in `220.createEntity-entity-only` Slice 7; updated Phase 11 characterization for Entity[] createEntity.
+- Nonreg: MiroirTest model_crud + undo_redo 9/9; PersistenceStoreController.integ 11/11.
 
 ---
 

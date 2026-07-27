@@ -1,8 +1,9 @@
 /**
  * Issue #217 Phase 5 — Entity-authoritative model mutations with dual-write.
- * Pure helpers: construct post-change Entity + redundant EntityVersion pairs.
+ * Pure helpers: construct post-change Entity + redundant EntityVersion pairs
+ * for alter/rename when Entity is incomplete.
  *
- * #220 EOL: keep for incomplete-Entity enrichment / explicit ED create payloads only.
+ * #220 — create-path dual-write (`normalizeCreateEntityPair`) removed; create is Entity-only.
  * Not for Application Version freeze (#216).
  */
 
@@ -104,27 +105,6 @@ function assertDualWriteEquality(pair: EntityEntityDefinitionPair): EntityEntity
     );
   }
   return pair;
-}
-
-/**
- * Create-path adapter: Entity is authoritative when complete; legacy incomplete
- * Entity is enriched from EntityVersion, then ED is aligned from Entity.
- */
-export function normalizeCreateEntityPair(
-  entity: Entity,
-  entityVersion: EntityVersion,
-): EntityEntityDefinitionPair {
-  const authoritativeEntity = entityHasCompletePresentModel(entity)
-    ? entity
-    : resolveCurrentEntityModel(entity, [entityVersion]);
-  const alignedEntityDefinition = alignEntityDefinitionToPresentEntity(
-    authoritativeEntity,
-    entityVersion,
-  );
-  return assertDualWriteEquality({
-    entity: authoritativeEntity,
-    entityVersion: alignedEntityDefinition,
-  });
 }
 
 /**

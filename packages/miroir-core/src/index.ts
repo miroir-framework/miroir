@@ -754,7 +754,6 @@ export {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges,
   applyRenameEntityPair,
-  normalizeCreateEntityPair,
 } from "./1_core/modelEntityDualWrite.js";
 export type {
   AlterEntityAttributeColumns,
