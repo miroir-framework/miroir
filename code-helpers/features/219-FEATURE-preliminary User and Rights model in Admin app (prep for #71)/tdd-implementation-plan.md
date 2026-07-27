@@ -57,7 +57,7 @@ Legend:
 
 | Phase | Title | Status | Primary RED / Validation command |
 |---|---|---|---|
-| 0 | Test harness and fixtures baseline | ⬜ TODO | `… -- miroirUserRights.phase0` + `… -- modelValidation` |
+| 0 | Test harness and fixtures baseline | ✅ DONE | `… -- miroirUserRights.phase0` + `… -- modelValidation` |
 | 1 | Introduce `MiroirUser` | ⬜ TODO | `… -- miroirUserRights.phase1` + `… -- modelValidation` |
 | 2 | Introduce `MiroirRight` | ⬜ TODO | `… -- miroirUserRights.phase2` + `… -- modelValidation` |
 | 3 | Admin list/detail reporting | ⬜ TODO | `… -- miroirUserRights.phase3` |
@@ -67,7 +67,7 @@ Legend:
 
 ---
 
-## Phase 0 — Test harness and fixtures baseline
+## Phase 0 — Test harness and fixtures baseline  ✅ DONE
 
 ### Goal
 
