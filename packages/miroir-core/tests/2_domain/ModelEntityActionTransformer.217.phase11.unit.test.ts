@@ -36,7 +36,7 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
-        entities: [{ entity: bookEntity }],
+        entities: [bookEntity],
       },
     };
 
@@ -52,9 +52,21 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     }
   });
 
-  it("plans Entity-only create when Entity is complete and no ED is supplied", () => {
+  it("plans Entity-only create when Entity is complete", () => {
     const plan = planCreateEntityMutation(bookEntity);
     expect(plan?.mode).toBe("entityOnly");
+    if (plan?.mode === "entityOnly") {
+      expect(plan.entity.uuid).toBe(bookEntity.uuid);
+    }
+  });
+
+  it("rejects incomplete Entity create (no EntityVersion enrichment on create)", () => {
+    const incomplete = {
+      uuid: bookEntity.uuid,
+      name: bookEntity.name,
+      parentUuid: bookEntity.parentUuid,
+    } as Entity;
+    expect(planCreateEntityMutation(incomplete)).toBeUndefined();
   });
 
   it("alterEntityAttribute updates Entity only when present model is complete (ED left historical)", () => {

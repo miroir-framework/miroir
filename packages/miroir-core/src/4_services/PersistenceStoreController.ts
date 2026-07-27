@@ -263,10 +263,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
               "handleAction applyModelEntityUpdates createEntity inserting",
               persistenceStoreControllerAction.payload.entities
             );
-            // #220: store createEntity is Entity-only; Action still carries optional entityVersion until Slice 4.
-            return this.createEntities(
-              persistenceStoreControllerAction.payload.entities.map((pair) => pair.entity),
-            );
+            // #220: Action payload.entities is Entity[]
+            return this.createEntities(persistenceStoreControllerAction.payload.entities);
             break;
           }
           default:

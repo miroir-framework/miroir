@@ -50,7 +50,7 @@ const createEntityAction: ModelActionCreateEntity = {
   endpoint: MODEL_ENDPOINT,
   payload: {
     application: APP_UUID,
-    entities: [{ entity: mockEntity, entityVersion: mockEntityDefinition }],
+    entities: [mockEntity],
   },
 };
 

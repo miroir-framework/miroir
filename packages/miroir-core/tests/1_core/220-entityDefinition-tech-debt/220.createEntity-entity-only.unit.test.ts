@@ -1,6 +1,6 @@
 /**
  * #220 — createEntity Entity-only (no entityVersion param).
- * Slice 1–2 of createEntity-remove-entityVersion-tdd-plan.md
+ * Slices 1–3 of createEntity-remove-entityVersion-tdd-plan.md
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -77,5 +77,62 @@ describe("220 createEntity Entity-only — Slice 2 FS / IndexedDB / Mongo", () =
     expect(src).toMatch(
       /async createEntities\(\s*entities\s*:\s*Entity\[\]\s*\)\s*:\s*Promise<Action2VoidReturnType>/,
     );
+  });
+});
+
+describe("220 createEntity Entity-only — Slice 3 planner + transformer", () => {
+  it("planCreateEntityMutation is Entity-only (arity 1, no dual-write)", () => {
+    const src = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-core/src/1_core/modelEntityActionLiveResolve.ts",
+      ),
+      "utf8",
+    );
+    const fnStart = src.search(/export function planCreateEntityMutation\(/);
+    const nextExport = src.indexOf("\nexport function ", fnStart + 1);
+    const body = src.slice(fnStart, nextExport === -1 ? undefined : nextExport);
+    expect(body).toMatch(
+      /export function planCreateEntityMutation\(\s*entity\s*:\s*Entity\s*,?\s*\)/,
+    );
+    expect(body).not.toMatch(/entityVersion/);
+    expect(body).not.toMatch(/normalizeCreateEntityPair/);
+    expect(body).not.toMatch(/dualWrite/);
+  });
+
+  it("ModelEntityActionTransformer createEntity emits Entity-only createInstance", () => {
+    const src = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-core/src/2_domain/ModelEntityActionTransformer.ts",
+      ),
+      "utf8",
+    );
+    const caseStart = src.search(/case "createEntity":/);
+    const nextCase = src.indexOf('case "', caseStart + 1);
+    const body = src.slice(caseStart, nextCase === -1 ? undefined : nextCase);
+    expect(body).toMatch(/for \(const entity of modelAction\.payload\.entities\)/);
+    expect(body).toMatch(/planCreateEntityMutation\(entity\)/);
+    expect(body).not.toMatch(/pair\.entity/);
+    expect(body).toMatch(/complete Entity\.mlSchema/);
+  });
+});
+
+describe("220 createEntity Entity-only — Slice 4 Action schema", () => {
+  it("ModelEndpoint createEntity entities is schemaReference entity (no entityVersion pair)", () => {
+    const src = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json",
+      ),
+      "utf8",
+    );
+    const createIdx = src.indexOf('"definition": "createEntity"');
+    expect(createIdx).toBeGreaterThan(-1);
+    const dropIdx = src.indexOf('"definition": "dropEntity"', createIdx);
+    const createSection = src.slice(createIdx, dropIdx === -1 ? undefined : dropIdx);
+    expect(createSection).toMatch(/"relativePath": "entity"/);
+    expect(createSection).not.toMatch(/"relativePath": "entityVersion"/);
+    expect(createSection).not.toMatch(/"entityVersion"/);
   });
 });

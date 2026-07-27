@@ -22,6 +22,7 @@ import {
   EVOLUTION_TRACE_ENTITY_UUID,
 } from "../2_domain/evolutionTraceBaseline.js";
 import { entityHasCompletePresentModel } from "./entityPresentModel.js";
+import { normalizeCreateEntityPair } from "./modelEntityDualWrite.js";
 import {
   getMetaModelEntityVersions,
   withMetaModelEntityVersions,
@@ -457,11 +458,11 @@ export function buildResetAndinitializeDeploymentActionSequence(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // #217 Phase 12: Action field is entityVersion; couple API still uses entityVersion
+            // #220 — Action payload.entities is Entity[]; enrich incomplete Entity from EV when needed
             entities: entities.map(({ entity, entityVersion }) =>
               entityVersion
-                ? { entity, entityVersion: entityVersion }
-                : { entity },
+                ? normalizeCreateEntityPair(entity, entityVersion).entity
+                : entity,
             ),
           },
         },

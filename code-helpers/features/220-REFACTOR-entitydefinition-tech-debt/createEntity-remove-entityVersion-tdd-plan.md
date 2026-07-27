@@ -105,10 +105,18 @@ What landed:
 
 ### Validation (Slice 3)
 
-- [ ] `planCreateEntityMutation` TypeScript arity is 1; dualWrite create path gone.
-- [ ] `npm run testByFile -w miroir-core -- ModelEntityActionTransformer.217` passes.
-- [ ] Phase 5 create test no longer asserts two instances (Entity + EntityVersion).
-- [ ] LocalCache createEntity undo unit still green if still compiling against transitional Action shape.
+- [x] `planCreateEntityMutation` TypeScript arity is 1; dualWrite create path gone.
+- [x] `npm run testByFile -w miroir-core -- ModelEntityActionTransformer.217` passes.
+- [x] Phase 5 create test no longer asserts two instances (Entity + EntityVersion).
+- [x] LocalCache createEntity undo unit still green if still compiling against transitional Action shape.
+
+### Realization (Slice 3)
+
+What landed:
+
+- `planCreateEntityMutation(entity)` — Entity-only; incomplete Entity → `undefined`; no `normalizeCreateEntityPair` / dual-write on create.
+- `ModelEntityActionTransformer` createEntity: ignores legacy pair `entityVersion`, emits one `createInstance` object (the Entity); fails without complete `mlSchema`.
+- Tests: Phase 5 create → Entity-only; Phase 11 rejects incomplete create; `220.createEntity-entity-only` Slice 3 source contracts; LocalCache undo uses complete `entityAuthor`/`entityBook` without EV.
 
 ---
 
@@ -124,10 +132,21 @@ What landed:
 
 ### Validation (Slice 4)
 
-- [ ] Generated type: `payload.entities: Entity[]` (no `entityVersion` property).
-- [ ] Zod parse test: flat Entity array ok; `{ entity, entityVersion }` rejected under strict schema.
-- [ ] `npm run testByFile -w miroir-core -- zodParseActions` passes.
-- [ ] Endpoint JSON has no `entityVersion` under createEntity payload definition.
+- [x] Generated type: `payload.entities: Entity[]` (no `entityVersion` property).
+- [x] Zod parse test: flat Entity array ok; `{ entity, entityVersion }` rejected under strict schema.
+- [x] `npm run testByFile -w miroir-core -- zodParseActions` passes.
+- [x] Endpoint JSON has no `entityVersion` under createEntity payload definition.
+
+### Realization (Slice 4)
+
+What landed:
+
+- ModelEndpoint JSON `7947ae40-…`: `entities` is `array` of `schemaReference` → `entity` (pair / `entityVersion` removed).
+- Regenerated `ModelActionCreateEntity` / `modelActionCreateEntity`: `entities: Entity[]` / `z.array(entity)`.
+- Consumers updated for the new Action shape: transformer, PersistenceStoreController `handleAction`, evolutionTraceWriter, Deployment + DomainController reset/init (enrich incomplete Entity via `normalizeCreateEntityPair` when EV still available in the internal pair list).
+- Tests: zodParseActions flat + reject legacy pair; transformer/evolutionTrace/LocalCache undo fixtures; `220.createEntity-entity-only` Slice 4 endpoint contract.
+
+Remaining callers / MiroirTest JSON → Slice 5–6.
 
 ---
 

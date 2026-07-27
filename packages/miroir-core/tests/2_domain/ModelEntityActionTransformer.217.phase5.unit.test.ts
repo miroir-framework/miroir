@@ -4,12 +4,10 @@ import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
 import type {
   Entity,
-  EntityVersion,
   MetaModel,
   ModelAction,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { ModelEntityActionTransformer } from "../../src/2_domain/ModelEntityActionTransformer.js";
-import { compareEntityPresentModelDefinitions } from "../../src/1_core/entityPresentModel.js";
 
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
@@ -23,22 +21,14 @@ const currentModel = {
 } as MetaModel;
 
 describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
-  it("createEntity normalizes pairs and emits Entity + EntityVersion instances", () => {
+  // #220 — create is Entity-only (1 createInstance object); alter/rename dual-write still covered below when incomplete.
+  it("createEntity emits Entity-only createInstance when Entity has complete present model", () => {
     const action: ModelAction = {
       actionType: "createEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
-        entities: [
-          {
-            entity: {
-              uuid: bookEntity.uuid,
-              name: bookEntity.name,
-              parentUuid: bookEntity.parentUuid,
-            } as Entity,
-            entityVersion: bookDefinition,
-          },
-        ],
+        entities: [bookEntity],
       },
     };
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
@@ -52,13 +42,10 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
       expect(instanceActions[0].actionType).toBe("createInstance");
       if (instanceActions[0].actionType === "createInstance") {
         const objects = instanceActions[0].payload.objects;
-        expect(objects).toHaveLength(2);
+        expect(objects).toHaveLength(1);
         const entity = objects[0] as Entity;
-        const entityVersion = objects[1] as EntityVersion;
-        expect(entity.mlSchema).toEqual(bookDefinition.mlSchema);
-        expect(
-          compareEntityPresentModelDefinitions(entity, entityVersion).equal,
-        ).toBe(true);
+        expect(entity.uuid).toBe(bookEntity.uuid);
+        expect(entity.mlSchema).toEqual(bookEntity.mlSchema);
       }
     }
   });

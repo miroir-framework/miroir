@@ -13,8 +13,6 @@ import {
 import {
   entityAuthor,
   entityBook,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
@@ -57,8 +55,8 @@ function entityCount(localCache: LocalCache): number {
   return Object.keys(entities).length;
 }
 
-describe("LocalCache createEntity undo/redo (Entity present-model dual-write)", () => {
-  it("records createEntity on the undo stack and undoes Entity (+ optional EntityVersion)", () => {
+describe("LocalCache createEntity undo/redo (Entity-only create)", () => {
+  it("records createEntity on the undo stack and undoes Entity instances", () => {
     const localCache = new LocalCache();
     // Load Entity + EntityVersion together then rollback once — sequential
     // load/rollback pairs wipe prior deployment collections from `current`.
@@ -72,21 +70,7 @@ describe("LocalCache createEntity undo/redo (Entity present-model dual-write)", 
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
-        entities: [
-          {
-            entity: {
-              uuid: entityAuthor.uuid,
-              parentName: "Entity",
-              parentUuid: entityEntity.uuid,
-              parentDefinitionVersionUuid: entityAuthor.parentDefinitionVersionUuid,
-              selfApplication: selfApplicationLibrary.uuid,
-              name: "Author",
-              conceptLevel: "Model",
-              description: "The Author of a book.",
-            } as any,
-            entityVersion: entityDefinitionAuthor as any,
-          },
-        ],
+        entities: [entityAuthor as any],
       },
     };
     const createBook: ModelAction = {
@@ -94,21 +78,7 @@ describe("LocalCache createEntity undo/redo (Entity present-model dual-write)", 
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: selfApplicationLibrary.uuid,
-        entities: [
-          {
-            entity: {
-              uuid: entityBook.uuid,
-              parentName: "Entity",
-              parentUuid: entityEntity.uuid,
-              parentDefinitionVersionUuid: entityBook.parentDefinitionVersionUuid,
-              selfApplication: selfApplicationLibrary.uuid,
-              name: "Book",
-              conceptLevel: "Model",
-              description: "A book.",
-            } as any,
-            entityVersion: entityDefinitionBook as any,
-          },
-        ],
+        entities: [entityBook as any],
       },
     };
 

@@ -74,6 +74,7 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
+import { normalizeCreateEntityPair } from "../1_core/modelEntityDualWrite.js";
 import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGuard.js";
 import {
   resolveEntitiesToFetchOnRefresh,
@@ -1229,9 +1230,12 @@ export class DomainController implements DomainControllerInterface {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionResetModel.payload.application,
-                    entities: entityVersion
-                      ? [{ entity, entityVersion: entityVersion }]
-                      : [{ entity }],
+                    // #220 — entities: Entity[]; enrich from EV when incomplete
+                    entities: [
+                      entityVersion
+                        ? normalizeCreateEntityPair(entity, entityVersion).entity
+                        : entity,
+                    ],
                   }
                 };
                 
@@ -1391,9 +1395,12 @@ export class DomainController implements DomainControllerInterface {
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionInitModel.payload.application,
-                    entities: entityVersion
-                      ? [{ entity, entityVersion: entityVersion }]
-                      : [{ entity }],
+                    // #220 — entities: Entity[]; enrich from EV when incomplete
+                    entities: [
+                      entityVersion
+                        ? normalizeCreateEntityPair(entity, entityVersion).entity
+                        : entity,
+                    ],
                   }
                 };
                 

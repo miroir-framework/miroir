@@ -617,7 +617,7 @@ function handleModelAction(
           initializeLocalCacheSliceState(
             deploymentUuid,
             "model",
-            entityEntry.entity.uuid,
+            entityEntry.uuid,
             "current",
             state
           );

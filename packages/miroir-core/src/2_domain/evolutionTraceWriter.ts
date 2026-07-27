@@ -33,10 +33,8 @@ function entityVersionUuidFromModelAction(
 ): string | undefined {
   switch (action.actionType) {
     case "createEntity": {
-      const entry = action.payload.entities[0] as
-        | { entityVersion?: { uuid?: string } }
-        | undefined;
-      return entry?.entityVersion?.uuid;
+      // #220 — create is Entity-only; no EntityVersion uuid on the Action payload.
+      return undefined;
     }
     case "renameEntity":
     case "dropEntity":
@@ -99,7 +97,7 @@ export function createTraceEventFromModelAction(
     case "createEntity":
       event = {
         ...base,
-        targetEntityUuid: action.payload.entities[0]?.entity.uuid,
+        targetEntityUuid: action.payload.entities[0]?.uuid,
       };
       break;
     case "renameEntity":

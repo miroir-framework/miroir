@@ -4,9 +4,9 @@
  * Action payloads to carry entityVersionUuid.
  *
  * When Entity has a complete present model, mutations are Entity-only (live ED
- * copies become historical / not updated). Dual-write remains for create when
- * an EntityVersion is explicitly supplied, and for alter/rename when Entity
- * is incomplete and a live ED is available for enrichment.
+ * copies become historical / not updated). Create is always Entity-only (#220).
+ * Dual-write remains for alter/rename when Entity is incomplete and a live ED
+ * is available for enrichment.
  *
  * #220 — UUID-reuse synthesize helpers live in entityDefinitionCompatibility.
  */
@@ -24,7 +24,6 @@ import {
   applyAlterEntityAttributePair,
   applyMlSchemaColumnChanges,
   applyRenameEntityPair,
-  normalizeCreateEntityPair,
   type AlterEntityAttributeColumns,
   type EntityEntityDefinitionPair,
 } from "./modelEntityDualWrite.js";
@@ -53,19 +52,12 @@ export type LiveEntityMutationPlan =
   | { mode: "entityOnly"; entity: Entity };
 
 /**
- * Create: Entity-only when complete and no ED supplied; dual-write when ED given
- * (bootstrap / legacy payloads) or when Entity is incomplete and ED can enrich.
+ * Create: Entity-only when Entity has complete present model (`mlSchema`).
+ * #220 — no EntityVersion dual-write on create; incomplete Entity is rejected.
  */
 export function planCreateEntityMutation(
   entity: Entity,
-  entityVersion?: EntityVersion | undefined,
 ): LiveEntityMutationPlan | undefined {
-  if (entityVersion) {
-    return {
-      mode: "dualWrite",
-      pair: normalizeCreateEntityPair(entity, entityVersion),
-    };
-  }
   if (!entityHasCompletePresentModel(entity)) {
     return undefined;
   }

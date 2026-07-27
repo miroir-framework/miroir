@@ -1,6 +1,5 @@
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import {
-  EntityVersion,
   InstanceAction,
   MetaModel,
   ModelAction,
@@ -39,30 +38,17 @@ export class ModelEntityActionTransformer{
     switch (modelAction.actionType) {
       case "createEntity": {
         const objects: EntityInstance[] = [];
-        for (const pair of modelAction.payload.entities) {
-          const entity = pair.entity as Entity;
-          // #217 Phase 12: Action field entityVersion (legacy entityVersion still accepted)
-          const entityVersion = (
-            (pair as { entityVersion?: EntityVersion }).entityVersion ??
-            (pair as { entityVersion?: EntityVersion }).entityVersion
-          ) as EntityVersion | undefined;
-          const plan = planCreateEntityMutation(entity, entityVersion);
-          if (!plan) {
+        for (const entity of modelAction.payload.entities) {
+          const plan = planCreateEntityMutation(entity);
+          if (!plan || plan.mode !== "entityOnly") {
             return new TransformerFailure({
               queryFailure: "FailedTransformer",
               failureMessage:
-                "modelActionToInstanceAction createEntity requires complete Entity.mlSchema or an entityVersion",
+                "modelActionToInstanceAction createEntity requires complete Entity.mlSchema",
               query: { modelAction, entityUuid: entity.uuid } as any,
             });
           }
-          if (plan.mode === "dualWrite") {
-            objects.push(
-              plan.pair.entity as EntityInstance,
-              plan.pair.entityVersion as EntityInstance,
-            );
-          } else {
-            objects.push(plan.entity as EntityInstance);
-          }
+          objects.push(plan.entity as EntityInstance);
         }
         return [
           {
