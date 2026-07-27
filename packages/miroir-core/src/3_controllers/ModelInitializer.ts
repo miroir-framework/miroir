@@ -55,15 +55,7 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import {
-  entityDefinitionWithResolvedMLSchema
-} from "../0_interfaces/1_core/EntityVersion";
-import {
-  alignEntityDefinitionToPresentEntity,
-  projectEntityPresentModelDefinition,
-} from "../1_core/entityPresentModel.js";
-import {
   Entity,
-  EntityVersion,
   EntityInstance,
   SelfApplication
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -80,34 +72,6 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-
-// ################################################################################################
-/** Entity-authoritative EntityVersion for bootstrap storage-space / MetaModel seeding. */
-function bootstrapEntityDefinitionAligned(
-  entity: Entity,
-  entityVersion: EntityVersion,
-): EntityVersion {
-  return entityDefinitionWithResolvedMLSchema(
-    alignEntityDefinitionToPresentEntity(entity, entityVersion),
-  );
-}
-
-/**
- * #220 — complete Entity present model for Entity-only createEntity.
- * Copy present-model from the bootstrap-aligned+resolved EntityVersion onto Entity.
- * Do not use resolveCurrentEntityModel here: resolved mlSchema (extend flattened)
- * would look inconsistent vs Entity assets that still carry extend-form mlSchema.
- */
-function bootstrapCompleteEntity(
-  entity: Entity,
-  entityVersion: EntityVersion,
-): Entity {
-  const alignedResolved = bootstrapEntityDefinitionAligned(entity, entityVersion);
-  return {
-    ...entity,
-    ...projectEntityPresentModelDefinition(alignedResolved),
-  };
-}
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -143,10 +107,6 @@ export async function modelInitialize(
   if (dataStoreType == "miroir") {
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntity as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEntity as Entity,
-        entityDefinitionEntity as EntityVersion,
-      ),
     ); //entityVersion for entityEntity has not been inserted!
     if (result instanceof Action2Error) {
       return result;
@@ -155,10 +115,6 @@ export async function modelInitialize(
     // bootstrap MetaClass EntityVersion
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntityDefinition as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEntityDefinition as Entity,
-        entityDefinitionEntityDefinition as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -199,7 +155,7 @@ export async function modelInitialize(
 
     // bootstrap SelfApplication
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entitySelfApplication as Entity, entityDefinitionSelfApplication as EntityVersion),
+      entitySelfApplication as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -212,7 +168,7 @@ export async function modelInitialize(
 
     // bootstrap ApplicationModelBranch
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entitySelfApplicationModelBranch as Entity, entityDefinitionSelfApplicationModelBranch as EntityVersion),
+      entitySelfApplicationModelBranch as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -225,7 +181,7 @@ export async function modelInitialize(
 
     // bootstrap ApplicationVersion
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entitySelfApplicationVersion as Entity, entityDefinitionSelfApplicationVersion as EntityVersion),
+      entitySelfApplicationVersion as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -238,7 +194,7 @@ export async function modelInitialize(
 
     // bootstrap Endpoint version
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityEndpointVersion as Entity, entityDefinitionEndpoint as EntityVersion),
+      entityEndpointVersion as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -247,7 +203,7 @@ export async function modelInitialize(
 
     // bootstrap Menu
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityMenu as Entity, entityDefinitionMenu as EntityVersion),
+      entityMenu as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -256,7 +212,7 @@ export async function modelInitialize(
 
     // bootstrap EntityJzodSchema
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityJzodSchema as Entity, entityDefinitionJzodSchema as EntityVersion),
+      entityJzodSchema as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -265,7 +221,7 @@ export async function modelInitialize(
 
     // bootstrap EntityReport
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityReport as Entity, entityDefinitionReport as EntityVersion),
+      entityReport as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -274,7 +230,7 @@ export async function modelInitialize(
 
     // bootstrap EntityRunner
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityRunner as Entity, entityDefinitionRunner as EntityVersion),
+      entityRunner as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -283,7 +239,7 @@ export async function modelInitialize(
 
     // bootstrap EntityMiroirTest
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityMiroirTest as Entity, entityDefinitionMiroirTest as EntityVersion),
+      entityMiroirTest as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -292,7 +248,7 @@ export async function modelInitialize(
 
     // bootstrap EntityTheme
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityTheme as Entity, entityDefinitionTheme as EntityVersion),
+      entityTheme as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -301,7 +257,7 @@ export async function modelInitialize(
 
     // bootstrap EntityQuery
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityQueryVersion as Entity, entityDefinitionQuery as EntityVersion),
+      entityQueryVersion as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -310,7 +266,7 @@ export async function modelInitialize(
 
     // bootstrap EntityQueryVersion
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityQueryVersion as Entity, entityDefinitionQuery as EntityVersion),
+      entityQueryVersion as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -319,7 +275,7 @@ export async function modelInitialize(
 
     // bootstrap ApplicationEvolutionTrace (WP1)
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityApplicationEvolutionTrace as Entity, entityDefinitionApplicationEvolutionTrace as EntityVersion),
+      entityApplicationEvolutionTrace as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -332,7 +288,7 @@ export async function modelInitialize(
 
     // bootstrap ApplicationEvolutionTraceEvent (WP1)
     result = await persistenceStoreController.createEntity(
-      bootstrapCompleteEntity(entityApplicationEvolutionTraceEvent as Entity, entityDefinitionApplicationEvolutionTraceEvent as EntityVersion),
+      entityApplicationEvolutionTraceEvent as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -491,10 +447,6 @@ export async function modelInitialize(
   if (dataStoreType == "app") {
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntity as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEntity as Entity,
-        entityDefinitionEntity as EntityVersion,
-      ),
     ); //entityVersion for entityEntity has not been inserted!
     if (result instanceof Action2Error) {
       return result;
@@ -509,10 +461,6 @@ export async function modelInitialize(
     // bootstrap MetaClass EntityVersion
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntityDefinition as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEntityDefinition as Entity,
-        entityDefinitionEntityDefinition as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -526,10 +474,6 @@ export async function modelInitialize(
     // bootstrap Self SelfApplication
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplication as Entity,
-      bootstrapEntityDefinitionAligned(
-        entitySelfApplication as Entity,
-        entityDefinitionSelfApplication as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -543,10 +487,6 @@ export async function modelInitialize(
     // bootstrap Self ApplicationModelBranch
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplicationModelBranch as Entity,
-      bootstrapEntityDefinitionAligned(
-        entitySelfApplicationModelBranch as Entity,
-        entityDefinitionSelfApplicationModelBranch as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -560,10 +500,6 @@ export async function modelInitialize(
     // bootstrap Self ApplicationVersion
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplicationVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entitySelfApplicationVersion as Entity,
-        entityDefinitionSelfApplicationVersion as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -577,10 +513,6 @@ export async function modelInitialize(
     // bootstrap Self Menu
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityMenu as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityMenu as Entity,
-        entityDefinitionMenu as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -590,10 +522,6 @@ export async function modelInitialize(
     // bootstrap Endpoint
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEndpointVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEndpointVersion as Entity,
-        entityDefinitionEndpoint as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -607,10 +535,6 @@ export async function modelInitialize(
     // bootstrap MlSchema (required by loadConfigurationFromPersistenceStore metaModelEntities)
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityJzodSchema as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityJzodSchema as Entity,
-        entityDefinitionJzodSchema as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -629,10 +553,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityQueryVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityQueryVersion as Entity,
-        entityDefinitionQuery as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -646,10 +566,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityReport as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityReport as Entity,
-        entityDefinitionReport as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -667,10 +583,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityRunner as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityRunner as Entity,
-        entityDefinitionRunner as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -688,10 +600,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityMiroirTest as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityMiroirTest as Entity,
-        entityDefinitionMiroirTest as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -709,10 +617,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityTheme as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityTheme as Entity,
-        entityDefinitionTheme as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -725,20 +629,12 @@ export async function modelInitialize(
 
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityApplicationEvolutionTrace as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityApplicationEvolutionTrace as Entity,
-        entityDefinitionApplicationEvolutionTrace as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
     }
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityApplicationEvolutionTraceEvent as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityApplicationEvolutionTraceEvent as Entity,
-        entityDefinitionApplicationEvolutionTraceEvent as EntityVersion,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;

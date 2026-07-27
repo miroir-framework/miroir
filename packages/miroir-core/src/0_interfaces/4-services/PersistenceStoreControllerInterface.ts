@@ -184,7 +184,6 @@ export interface PersistenceStoreControllerInterface
 
   createModelStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityVersion: EntityVersion
   ): Promise<Action2VoidReturnType>;
 
   getModelState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!

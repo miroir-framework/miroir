@@ -88,7 +88,7 @@ What landed:
 - Characterization tests extended for FS / IndexedDB / Mongo Entity-only create signatures.
 - Mixins Entity-only: `FileSystemEntityStoreSectionMixin`, `IndexedDbEntityStoreSectionMixin`, `MongoDbEntityStoreSectionMixin` (no `normalizeCreateEntityPair` on create).
 - Callers: `tests-utils.tsx`, `PersistenceStoreController.integ.test.tsx` drop 2nd arg; rename setup seeds historical `EntityVersion` via `upsertInstance("model", …)` because create no longer dual-writes.
-- Residual bootstrap fix in `ModelInitializer.bootstrapCompleteEntity`: project present-model from aligned+resolved EV onto Entity instead of `resolveCurrentEntityModel` (extend-form vs flattened `mlSchema` was throwing `EntityPresentModelResolutionError` and aborting Miroir entity seeding mid-bootstrap).
+- Residual bootstrap note: `bootstrapCompleteEntity` must enrich from the **raw** EntityVersion via `resolveCurrentEntityModel(..., preferEntity)`. Projecting from `bootstrapEntityDefinitionAligned` (resolved/flattened `mlSchema`) rewrote persisted Entity assets away from extend-form and regressed `ExtractorPersistenceStoreRunner.integ`. Keep resolved EV only for `createModelStorageSpaceForInstancesOfEntity` DDL.
 - Nonreg: `PersistenceStoreController.integ` filesystem profile — 11/11 passed.
 
 ---

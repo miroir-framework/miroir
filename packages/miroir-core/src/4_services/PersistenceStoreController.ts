@@ -612,9 +612,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async createModelStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityVersion: EntityVersion
   ): Promise<Action2VoidReturnType> {
-    return this.modelStoreSection.createStorageSpaceForInstancesOfEntity(entity, entityVersion);
+    return this.modelStoreSection.createStorageSpaceForInstancesOfEntity(entity);
   }
 
   // ##############################################################################################
