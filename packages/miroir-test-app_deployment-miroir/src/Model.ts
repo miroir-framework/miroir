@@ -1,7 +1,7 @@
 import type {
   EndpointDefinition,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   Menu,
   MetaModel,
   MiroirTestDefinition,
@@ -131,7 +131,6 @@ import {
 
 export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, string> = {
   Entity: "entities",
-  EntityDefinition: "entityVersions",
   EntityVersion: "entityVersions",
   Endpoint: "endpoints",
   JzodSchema: "jzodSchemas",
@@ -171,22 +170,22 @@ export const defaultMiroirMetaModel: MetaModel = {
   ],
   entityVersions: [
     // bootstrap entities have to come first
-    entityVersionEntityVersion as EntityDefinition,
-    entityDefinitionEntity as EntityDefinition,
+    entityVersionEntityVersion as EntityVersion,
+    entityDefinitionEntity as EntityVersion,
     //
-    entityDefinitionEndpoint as EntityDefinition,
-    entityDefinitionJzodSchema as EntityDefinition, //
-    entityDefinitionMenu as EntityDefinition,
-    entityDefinitionQuery as EntityDefinition,
-    entityDefinitionReport as EntityDefinition,
-    entityDefinitionRunner as EntityDefinition,
-    entityDefinitionSelfApplication as EntityDefinition,
-    entityDefinitionSelfApplicationModelBranch as EntityDefinition,
-    entityDefinitionSelfApplicationVersion as EntityDefinition,
-    entityDefinitionMiroirTest as EntityDefinition,
-    entityDefinitionTheme as EntityDefinition,
-    entityDefinitionApplicationEvolutionTrace as EntityDefinition,
-    entityDefinitionApplicationEvolutionTraceEvent as EntityDefinition,
+    entityDefinitionEndpoint as EntityVersion,
+    entityDefinitionJzodSchema as EntityVersion, //
+    entityDefinitionMenu as EntityVersion,
+    entityDefinitionQuery as EntityVersion,
+    entityDefinitionReport as EntityVersion,
+    entityDefinitionRunner as EntityVersion,
+    entityDefinitionSelfApplication as EntityVersion,
+    entityDefinitionSelfApplicationModelBranch as EntityVersion,
+    entityDefinitionSelfApplicationVersion as EntityVersion,
+    entityDefinitionMiroirTest as EntityVersion,
+    entityDefinitionTheme as EntityVersion,
+    entityDefinitionApplicationEvolutionTrace as EntityVersion,
+    entityDefinitionApplicationEvolutionTraceEvent as EntityVersion,
   ],
   endpoints: [
     applicationEndpointV1 as any as EndpointDefinition,

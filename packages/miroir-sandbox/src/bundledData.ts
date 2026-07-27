@@ -6,7 +6,7 @@
  *
  * The classification of instances into model vs data sections is
  * deployment-specific:
- *   - Miroir deployment: only entity + entityDefinition instances go into model
+ *   - Miroir deployment: only entity + entityVersion instances go into model
  *     (all others live in miroir_data/ and go into data)
  *   - Admin deployment: reports, menus, selfApplication, selfApplicationVersion,
  *     selfApplicationModelBranch and storeBasedConfiguration also live in
@@ -63,13 +63,13 @@ export const demoMiroirConfig: MiroirConfigClient = {
 
 
 // ---------------------------------------------------------------------------
-// Entity & EntityDefinition parentUuids  →  go into the model section
+// Entity & EntityVersion parentUuids  →  go into the model section
 // Each deployment has its own set because admin_model/ contains many more
-// entity types than miroir_model/ (which only has entity + entityDefinition).
+// entity types than miroir_model/ (which only has entity + entityVersion).
 // ---------------------------------------------------------------------------
 
 /**
- * For the Miroir deployment: only entity + entityDefinition live in miroir_model/.
+ * For the Miroir deployment: only entity + entityVersion live in miroir_model/.
  * Everything else (reports, menus, selfApplication, etc.) is in miroir_data/.
  */
 const MIROIR_MODEL_PARENT_UUIDS = new Set([

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import type { ApplicationDeploymentMap, EndpointApplicationMap } from "../../1_core/Deployment";
-import type { Uuid } from "../1_core/EntityDefinition";
+import type { Uuid } from "../1_core/EntityVersion";
 import {
   CompositeActionSequence,
   CompositeActionTemplate,

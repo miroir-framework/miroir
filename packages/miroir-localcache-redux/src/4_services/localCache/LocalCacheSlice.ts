@@ -239,7 +239,7 @@ function getEntityIdAttribute(entityInstancesLocationIndex: string): string | st
 // ##########################################################################################
 /**
  * #217 Phase 11: register non-UUID PK adapters from Entity present-model only.
- * EntityDefinition is historical and no longer registers live PK adapters.
+ * EntityVersion is historical and no longer registers live PK adapters.
  */
 function registerEntityAdapterFromPresentModelSource(
   deploymentUuid: string,
@@ -273,9 +273,9 @@ function registerEntityAdapterFromPresentModelSource(
 function registerEntityAdapterFromDefinition(
   deploymentUuid: string,
   _section: ApplicationSection,
-  entityDefinition: EntityInstance
+  entityVersion: EntityInstance
 ): void {
-  registerEntityAdapterFromPresentModelSource(deploymentUuid, entityDefinition);
+  registerEntityAdapterFromPresentModelSource(deploymentUuid, entityVersion);
 }
 
 //#########################################################################################
@@ -793,7 +793,7 @@ function handleModelAction(
     "action",
     action, 
   );
-  // TODO: fail in case of Transactional Entity (Entity, EntityDefinition...)?
+  // TODO: fail in case of Transactional Entity (Entity, EntityVersion...)?
   // switch (action.actionType) {
   //   case "modelAction": {
   // switch (action.actionName) {

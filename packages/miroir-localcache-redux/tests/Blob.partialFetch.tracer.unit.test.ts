@@ -17,7 +17,7 @@ import {
   resolveReportQueryLoadAttributes,
   type ApplicationDeploymentMap,
   type Entity,
-  type EntityDefinition,
+  type EntityVersion,
   type EntityInstance,
   type InstanceAction,
   type ReportQueryLoadRequest,
@@ -99,7 +99,7 @@ describe("214 Phase 5 — Blob partial-fetch tracer", () => {
     const included = resolveEntitiesToFetchOnRefresh(
       [],
       [entityBlob as Entity],
-      { [BLOB]: entityDefinitionBlob as EntityDefinition }
+      { [BLOB]: entityDefinitionBlob as EntityVersion }
     );
     expect(included.map((e) => e.entity.uuid)).not.toContain(BLOB);
   });

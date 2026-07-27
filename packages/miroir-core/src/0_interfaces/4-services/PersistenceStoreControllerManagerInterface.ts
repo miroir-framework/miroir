@@ -1,4 +1,4 @@
-import { Uuid } from "../1_core/EntityDefinition";
+import { Uuid } from "../1_core/EntityVersion";
 import { StoreUnitConfiguration } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
 import { Action2ReturnType, type Action2VoidReturnType } from "../2_domain/DomainElement";

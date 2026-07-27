@@ -15,7 +15,7 @@ import {
   DomainAction,
   DomainControllerInterface,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   LocalCacheInterface,
   LoggerInterface,
   LoggerOptions,
@@ -205,7 +205,7 @@ describe.sequential(
           } = renderWithProviders(
             <TestUtilsTableComponent
               entity={entityEntity as Entity}
-              entityDefinition={entityDefinitionEntity as EntityDefinition}
+              entityVersion={entityDefinitionEntity as EntityVersion}
               DisplayLoadingInfo={displayLoadingInfo}
               application={selfApplicationLibrary.uuid}
               applicationDeploymentMap={applicationDeploymentMap}
@@ -271,7 +271,7 @@ describe.sequential(
               entities: [
                 {
                   entity: entityAuthor as Entity,
-                  entityVersion: entityDefinitionAuthor as EntityDefinition,
+                  entityVersion: entityDefinitionAuthor as EntityVersion,
                 },
               ],
             },
@@ -284,7 +284,7 @@ describe.sequential(
               entities: [
                 {
                   entity: entityBook as Entity,
-                  entityVersion: entityDefinitionBook as EntityDefinition,
+                  entityVersion: entityDefinitionBook as EntityVersion,
                 },
               ],
             },

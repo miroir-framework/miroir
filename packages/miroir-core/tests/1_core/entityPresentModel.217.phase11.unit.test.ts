@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * #217 Phase 11 — characterization / grep gate for live EntityDefinition authority.
+ * #217 Phase 11 — characterization / grep gate for live EntityVersion authority.
  */
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
@@ -11,7 +11,7 @@ const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const LIVE_ED_FIND =
   /entityDefinitions\s*\.\s*find\s*\(\s*(?:\([^)]*\)|[^=])*entityUuid/;
 
-describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
+describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
   it("SqlGenerator does not join live schema/PK via entityDefinitions.find(entityUuid)", () => {
     const sqlGenerator = readFileSync(
       join(REPO_ROOT, "packages/miroir-store-postgres/src/1_core/SqlGenerator.ts"),
@@ -63,7 +63,7 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
     expect(transformer).not.toContain("resolveOrSynthesizeEntityDefinitionForCreate");
   });
 
-  it("store createEntity accepts optional EntityDefinition (filesystem + interface)", () => {
+  it("store createEntity accepts optional EntityVersion (filesystem + interface)", () => {
     const iface = readFileSync(
       join(
         REPO_ROOT,
@@ -78,11 +78,11 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
       ),
       "utf8",
     );
-    expect(iface).toMatch(/createEntity\(\s*entity:Entity,\s*entityDefinition\?: EntityDefinition/);
+    expect(iface).toMatch(/createEntity\(\s*entity:Entity,\s*entityVersion\?: EntityVersion/);
     expect(fsMixin).toContain("Entity-only when ED omitted");
   });
 
-  it("LocalCache registers PK adapters from Entity only (not EntityDefinition)", () => {
+  it("LocalCache registers PK adapters from Entity only (not EntityVersion)", () => {
     const redux = readFileSync(
       join(
         REPO_ROOT,

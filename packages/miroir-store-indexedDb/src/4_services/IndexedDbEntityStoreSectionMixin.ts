@@ -6,7 +6,7 @@ import {
   Action2VoidReturnType,
   Domain2ElementFailed,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstanceWithName,
   LoggerInterface,
@@ -82,20 +82,20 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // #############################################################################################
-    // #217 Phase 6/11: Entity then optional EntityDefinition; Entity-only when ED omitted.
-    async createEntity(entity: Entity, entityDefinition?: EntityDefinition): Promise<Action2VoidReturnType> {
-      if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
+    // #217 Phase 6/11: Entity then optional EntityVersion; Entity-only when ED omitted.
+    async createEntity(entity: Entity, entityVersion?: EntityVersion): Promise<Action2VoidReturnType> {
+      if (entityVersion && entity.uuid != entityVersion.entityUuid) {
         log.error(
           this.logHeader,
           "createEntity",
-          "inconsistent input: given entityDefinition is not related to given entity."
+          "inconsistent input: given entityVersion is not related to given entity."
         );
         return new Action2Error(
           "FailedToCreateStore",
-          "createEntity failed: entity.uuid != entityDefinition.entityUuid",
+          "createEntity failed: entity.uuid != entityVersion.entityUuid",
         );
       }
-      if (!entityDefinition) {
+      if (!entityVersion) {
         if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
           log.warn(
             this.logHeader,
@@ -109,7 +109,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         }
         return this.upsertInstance(entityEntity.uuid, entity);
       }
-      const pair = normalizeCreateEntityPair(entity, entityDefinition);
+      const pair = normalizeCreateEntityPair(entity, entityVersion);
       if (this.dataStore.getEntityUuids().includes(pair.entity.uuid)) {
         log.warn(
           this.logHeader,
@@ -122,7 +122,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
       } else {
         await this.dataStore.createStorageSpaceForInstancesOfEntity(
           pair.entity,
-          pair.entityDefinition,
+          pair.entityVersion,
         );
       }
       if (!this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
@@ -151,11 +151,11 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     async createEntities(
       entities: {
         entity:Entity,
-        entityDefinition?: EntityDefinition,
+        entityVersion?: EntityVersion,
       }[]
     ): Promise<Action2VoidReturnType> {
       for (const e of entities) {
-        const result = await this.createEntity(e.entity, e.entityDefinition);
+        const result = await this.createEntity(e.entity, e.entityVersion);
         if (result instanceof Action2Error) {
           return result;
         }
@@ -221,7 +221,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         ));
       }
       const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+        currentEntityDefinition.returnedDomainElement as EntityVersion;
       const pair = applyRenameEntityPair(
         previousEntity,
         previousEntityDefinition,
@@ -247,7 +247,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         (previousEntity as EntityInstanceWithName).name,
         update.payload.targetValue,
         pair.entity,
-        pair.entityDefinition
+        pair.entityVersion
       );
       return Promise.resolve(ACTION_OK);
     }
@@ -302,7 +302,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         ));
       }
       const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+        currentEntityDefinition.returnedDomainElement as EntityVersion;
       const pair = applyAlterEntityAttributePair(
         previousEntity,
         previousEntityDefinition,
@@ -358,10 +358,10 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
           entityDefinitions
         );
 
-        for (const entityDefinition of entityDefinitions.returnedDomainElement.instances.filter(
-          (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid
+        for (const entityVersion of entityDefinitions.returnedDomainElement.instances.filter(
+          (i: EntityInstance) => (i as EntityVersion).entityUuid == entityUuid
         )) {
-          await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
+          await this.deleteInstance(entityEntityDefinition.uuid, entityVersion);
           // TODO: check for failures!
         }
       } else {

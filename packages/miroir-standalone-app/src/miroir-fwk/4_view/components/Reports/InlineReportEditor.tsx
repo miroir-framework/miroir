@@ -4,7 +4,7 @@ import React from 'react';
 import {
   ApplicationSection,
   defaultReport,
-  EntityDefinition,
+  EntityVersion,
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,

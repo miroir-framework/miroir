@@ -223,7 +223,7 @@ export async function seedTransformerTestApplicationData(
         transactional: false,
         entities: INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES.flatMap((entry) => ({
           entity: entry.entity as Entity,
-          entityVersion: entry.entityDefinition,
+          entityVersion: entry.entityVersion,
         })),
       },
     },

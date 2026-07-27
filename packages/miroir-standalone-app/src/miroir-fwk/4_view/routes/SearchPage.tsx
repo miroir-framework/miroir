@@ -49,7 +49,7 @@ export function SearchPage() {
   const deploymentUuid: Uuid = deployment_Library_DO_NO_USE.uuid;
   
   // Initialize with a default entity (Entity entity itself)
-  // const initialEntityUuid: Uuid = "381ab1be-337f-4198-b1d3-f686867fc1dd"; // Entity entityDefinition UUID
+  // const initialEntityUuid: Uuid = "381ab1be-337f-4198-b1d3-f686867fc1dd"; // Entity entityVersion UUID
   const initialEntityUuid: Uuid = entityBook.uuid;
 
   const persistedApplicationUuid = useMemo(() => {

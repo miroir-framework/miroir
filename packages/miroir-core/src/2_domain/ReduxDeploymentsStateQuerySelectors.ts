@@ -31,7 +31,7 @@ import {
   isLazyCacheOnRefreshEntity,
   type CachePolicyCarrier,
 } from "../1_core/cacheRefreshPolicy.js";
-import type { Entity, EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { Entity, EntityVersion } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   applyExtractorTransformerInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
@@ -320,7 +320,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
 // ################################################################################################
 /**
  * Looks up cache policy for an entityUuid from model section of the local cache.
- * #217 Phase 7: prefer Entity.cache; fall back to EntityDefinition.
+ * #217 Phase 7: prefer Entity.cache; fall back to EntityVersion.
  */
 function getCachePolicyCarrierFromReduxDeploymentsState(
   deploymentEntityState: ReduxDeploymentsState,
@@ -347,7 +347,7 @@ function getCachePolicyCarrierFromReduxDeploymentsState(
   if (!definitions) {
     return entity;
   }
-  for (const def of Object.values(definitions) as EntityDefinition[]) {
+  for (const def of Object.values(definitions) as EntityVersion[]) {
     if (def?.entityUuid === entityUuid) {
       return def;
     }

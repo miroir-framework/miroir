@@ -1,7 +1,7 @@
 import type {
   ApplicationSection,
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export type EntityFetchOnRefresh = {
@@ -11,14 +11,14 @@ export type EntityFetchOnRefresh = {
 
 /**
  * Anything that may carry cache refresh policy (#217 Phase 7: Entity-authoritative;
- * EntityDefinition remains a compatibility fallback).
+ * EntityVersion remains a compatibility fallback).
  */
 export type CachePolicyCarrier =
   | { cache?: { cacheAllInstancesOnRefresh?: boolean | undefined } | undefined }
   | undefined;
 
 /**
- * Interprets cache.cacheAllInstancesOnRefresh on Entity (preferred) or EntityDefinition.
+ * Interprets cache.cacheAllInstancesOnRefresh on Entity (preferred) or EntityVersion.
  * Absent carrier or absent/true flag ⇒ eager (load all instances on refresh).
  * Explicit false ⇒ load none of that entity's instances on refresh.
  */
@@ -36,11 +36,11 @@ export function isLazyCacheOnRefreshEntity(
 }
 
 /**
- * Prefer Entity.cache; fall back to EntityDefinition map for incomplete/legacy Entities.
+ * Prefer Entity.cache; fall back to EntityVersion map for incomplete/legacy Entities.
  */
 export function resolveCachePolicyCarrierForEntity(
   entity: Entity,
-  entityDefinitionsByEntityUuid?: Record<string, EntityDefinition> | undefined,
+  entityDefinitionsByEntityUuid?: Record<string, EntityVersion> | undefined,
 ): CachePolicyCarrier {
   if (entity.cache !== undefined) {
     return entity;
@@ -53,12 +53,12 @@ export function resolveCachePolicyCarrierForEntity(
  * - Model entities are always included (application concepts must be fully available).
  * - Data entities are included only when shouldCacheAllInstancesOnRefresh is true.
  *
- * #217 Phase 7: reads Entity.cache first; optional EntityDefinition map is legacy fallback.
+ * #217 Phase 7: reads Entity.cache first; optional EntityVersion map is legacy fallback.
  */
 export function resolveEntitiesToFetchOnRefresh(
   modelEntities: Entity[],
   dataEntities: Entity[],
-  entityDefinitionsByEntityUuid: Record<string, EntityDefinition> = {},
+  entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {},
 ): EntityFetchOnRefresh[] {
   const modelFetches: EntityFetchOnRefresh[] = modelEntities.map((entity) => ({
     section: "model" as ApplicationSection,

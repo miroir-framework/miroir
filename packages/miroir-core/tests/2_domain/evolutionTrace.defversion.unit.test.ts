@@ -49,14 +49,14 @@ describe("resolveDefinitionVersionForTraceEvent", () => {
     });
   });
 
-  it("path 3b: deprecated entityDefinition FK still resolves", () => {
+  it("path 3b: deprecated entityVersion FK still resolves", () => {
     const result = resolveDefinitionVersionForTraceEvent({
       crossEntityLookup: {
         currentApplicationVersionUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
         entries: [
           {
             applicationVersion: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-            entityDefinition: DEF_VERSION_UUID,
+            entityVersion: DEF_VERSION_UUID,
           },
         ],
       },

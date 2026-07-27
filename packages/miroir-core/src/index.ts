@@ -202,8 +202,6 @@ export {
   entityAttributeType,
   EntityAttributeUntypedCore,
   entityAttributeUntypedCore,
-  EntityDefinition,
-  entityDefinition,
   EntityVersion,
   entityVersion,
   EntityForeignKeyAttribute,
@@ -504,7 +502,7 @@ export {
   MetaEntitySchema,
   Uuid,
   UuidSchema
-} from "./0_interfaces/1_core/EntityDefinition.js";
+} from "./0_interfaces/1_core/EntityVersion.js";
 export { HttpMethod, HttpMethodsArray, HttpMethodsObject } from "./0_interfaces/1_core/Http.js";
 export {
   ApplicationSectionOpposite,

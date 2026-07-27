@@ -4,7 +4,7 @@ import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   MetaModel,
   ModelAction,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -23,7 +23,7 @@ const currentModel = {
 } as MetaModel;
 
 describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
-  it("createEntity normalizes pairs and emits Entity + EntityDefinition instances", () => {
+  it("createEntity normalizes pairs and emits Entity + EntityVersion instances", () => {
     const action: ModelAction = {
       actionType: "createEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -54,10 +54,10 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
         const objects = instanceActions[0].payload.objects;
         expect(objects).toHaveLength(2);
         const entity = objects[0] as Entity;
-        const entityDefinition = objects[1] as EntityDefinition;
+        const entityVersion = objects[1] as EntityVersion;
         expect(entity.mlSchema).toEqual(bookDefinition.mlSchema);
         expect(
-          compareEntityPresentModelDefinitions(entity, entityDefinition).equal,
+          compareEntityPresentModelDefinitions(entity, entityVersion).equal,
         ).toBe(true);
       }
     }
@@ -112,7 +112,7 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
     }
   });
 
-  it("dropEntity deletes only the live Entity and named EntityDefinition UUIDs", () => {
+  it("dropEntity deletes only the live Entity and named EntityVersion UUIDs", () => {
     const action: ModelAction = {
       actionType: "dropEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",

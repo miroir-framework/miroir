@@ -58,19 +58,19 @@ describe("computeSchemaRevision — app overlay changes (3.2)", () => {
     const rev1 = computeSchemaRevision(libraryDeploymentUuid, base, libraryApplicationUuid);
 
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityVersions = mutated.entityVersions.map((entityDefinition) =>
-      entityDefinition.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
+    mutated.entityVersions = mutated.entityVersions.map((entityVersion) =>
+      entityVersion.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
         ? {
-            ...entityDefinition,
-            viewAttributes: [...(entityDefinition.viewAttributes ?? []), "isbn"],
+            ...entityVersion,
+            viewAttributes: [...(entityVersion.viewAttributes ?? []), "isbn"],
           }
-        : entityDefinition,
+        : entityVersion,
     );
 
     expect(computeSchemaRevision(libraryDeploymentUuid, mutated, libraryApplicationUuid)).not.toBe(rev1);
   });
 
-  it("revision changes when Entity present-model fields change without EntityDefinition edit (Phase 7)", () => {
+  it("revision changes when Entity present-model fields change without EntityVersion edit (Phase 7)", () => {
     const base = cloneModel(defaultLibraryAppModel) as MetaModel;
     const rev1 = computeSchemaRevision(libraryDeploymentUuid, base, libraryApplicationUuid);
 
@@ -156,10 +156,10 @@ describe("computeSchemaRevision — app overlay changes (3.2)", () => {
     const prev = computeSchemaRevision(libraryDeploymentUuid, base, libraryApplicationUuid);
 
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityVersions = mutated.entityVersions.map((entityDefinition) =>
-      entityDefinition.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
-        ? { ...entityDefinition, name: "BookRenamed" }
-        : entityDefinition,
+    mutated.entityVersions = mutated.entityVersions.map((entityVersion) =>
+      entityVersion.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
+        ? { ...entityVersion, name: "BookRenamed" }
+        : entityVersion,
     );
     const next = computeSchemaRevision(libraryDeploymentUuid, mutated, libraryApplicationUuid);
 
@@ -188,18 +188,18 @@ describe("computeSchemaRevision — partial models (DomainController / localcach
 describe("computeSchemaRevision — meta full carry-on changes (3.3)", () => {
   const metaApplicationUuid = selfApplicationMiroir.uuid;
 
-  it("revision changes when Miroir Entity entityDefinition changes", () => {
+  it("revision changes when Miroir Entity entityVersion changes", () => {
     const base = cloneModel(defaultMiroirMetaModel) as MetaModel;
     const rev1 = computeSchemaRevision(deployment_Miroir.uuid, base, metaApplicationUuid);
 
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityVersions = mutated.entityVersions.map((entityDefinition) =>
-      entityDefinition.uuid === entityDefinitionEntity.uuid
+    mutated.entityVersions = mutated.entityVersions.map((entityVersion) =>
+      entityVersion.uuid === entityDefinitionEntity.uuid
         ? {
-            ...entityDefinition,
-            viewAttributes: [...(entityDefinition.viewAttributes ?? []), "newMetaField"],
+            ...entityVersion,
+            viewAttributes: [...(entityVersion.viewAttributes ?? []), "newMetaField"],
           }
-        : entityDefinition,
+        : entityVersion,
     );
 
     expect(computeSchemaRevision(deployment_Miroir.uuid, mutated, metaApplicationUuid)).not.toBe(rev1);
@@ -266,10 +266,10 @@ describe("computeSchemaRevision — meta full carry-on changes (3.3)", () => {
     const prev = computeSchemaRevision(deployment_Miroir.uuid, base, metaApplicationUuid);
 
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityVersions = mutated.entityVersions.map((entityDefinition) =>
-      entityDefinition.uuid === entityDefinitionEntity.uuid
-        ? { ...entityDefinition, name: "EntityRenamed" }
-        : entityDefinition,
+    mutated.entityVersions = mutated.entityVersions.map((entityVersion) =>
+      entityVersion.uuid === entityDefinitionEntity.uuid
+        ? { ...entityVersion, name: "EntityRenamed" }
+        : entityVersion,
     );
     const next = computeSchemaRevision(deployment_Miroir.uuid, mutated, metaApplicationUuid);
 

@@ -1,6 +1,6 @@
 import {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstanceCollection,
   RunBoxedQueryAction,
@@ -28,7 +28,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   close(): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  bootFromPersistedState(entities: Entity[], entityVersions: EntityDefinition[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[], entityVersions: EntityVersion[]): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
   clear(): Promise<Action2VoidReturnType> {
@@ -36,7 +36,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
   }
   createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
@@ -47,7 +47,7 @@ export class ErrorDataStore implements PersistenceStoreDataSectionInterface {
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }

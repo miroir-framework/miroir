@@ -15,7 +15,7 @@ import {
   displayTestSuiteResultsDetails,
   DomainControllerInterface,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   JzodElement,
   LoggerInterface,
@@ -310,7 +310,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         [
           {
             entity: entityPublisher as Entity,
-            entityDefinition: entityDefinitionPublisher as EntityDefinition,
+            entityVersion: entityDefinitionPublisher as EntityVersion,
             instances: [
               publisher1 as EntityInstance,
               publisher2 as EntityInstance,
@@ -319,7 +319,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
           },
           {
             entity: entityCountry as Entity,
-            entityDefinition: entityDefinitionCountry as EntityDefinition,
+            entityVersion: entityDefinitionCountry as EntityVersion,
             instances: [
               Country1 as EntityInstance,
               Country2 as EntityInstance,
@@ -592,7 +592,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         //             entities: [
         //               {
         //                 entity: entityAuthor as Entity,
-        //                 entityVersion: entityDefinitionAuthor as EntityDefinition,
+        //                 entityVersion: entityDefinitionAuthor as EntityVersion,
         //               },
         //             ],
         //           },
@@ -718,7 +718,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         //             entities: [
         //               {
         //                 entity: entityAuthor as Entity,
-        //                 entityVersion: entityDefinitionAuthor as EntityDefinition,
+        //                 entityVersion: entityDefinitionAuthor as EntityVersion,
         //               },
         //             ],
         //           },
@@ -1265,7 +1265,7 @@ const testActions: Record<string, TestCompositeActionParams> = {
         //             entities: [
         //               {
         //                 entity: entityAuthor as Entity,
-        //                 entityVersion: entityDefinitionAuthor as EntityDefinition,
+        //                 entityVersion: entityDefinitionAuthor as EntityVersion,
         //               },
         //             ],
         //           },

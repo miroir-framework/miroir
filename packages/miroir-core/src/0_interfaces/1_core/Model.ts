@@ -3,7 +3,7 @@ import { z } from "zod";
 import { EntityInstanceWithName } from "../../0_interfaces/1_core/Instance";
 
 
-import { Entity, EntityDefinition, EntityInstance, Report, entityInstance, type ApplicationSection, type Query } from "./preprocessor-generated/miroirFundamentalType";
+import { Entity, EntityVersion, EntityInstance, Report, entityInstance, type ApplicationSection, type Query } from "./preprocessor-generated/miroirFundamentalType";
 
 export interface MiroirModelDefinition extends EntityInstanceWithName {
 
@@ -30,13 +30,13 @@ export type DeploymentUuidToReportsEntitiesDefinitions = {
     availableQueries: Query[];
     availableReports: Report[];
     entities: Entity[];
-    entityVersions: EntityDefinition[];
+    entityVersions: EntityVersion[];
   };
   data: {
     availableQueries: Query[];
     availableReports: Report[];
     entities: Entity[];
-    entityVersions: EntityDefinition[];
+    entityVersions: EntityVersion[];
   };
 };
 export type DeploymentUuidToReportsEntitiesDefinitionsMapping = {

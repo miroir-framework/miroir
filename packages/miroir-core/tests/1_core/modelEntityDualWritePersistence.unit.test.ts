@@ -8,7 +8,7 @@ import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { ACTION_OK } from "../../src/1_core/constants.js";
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 import {
@@ -25,30 +25,30 @@ const bookDefinition = defaultLibraryAppModel.entityVersions.find(
 )!;
 
 describe("217 Phase 6 — persistEntityThenEntityDefinition", () => {
-  it("writes Entity then EntityDefinition in order", async () => {
+  it("writes Entity then EntityVersion in order", async () => {
     const order: string[] = [];
     const result = await persistEntityThenEntityDefinition(
-      { entity: bookEntity, entityDefinition: bookDefinition },
+      { entity: bookEntity, entityVersion: bookDefinition },
       {
         writeEntity: async () => {
           order.push("entity");
           return ACTION_OK;
         },
         writeEntityDefinition: async () => {
-          order.push("entityDefinition");
+          order.push("entityVersion");
           return ACTION_OK;
         },
       },
       { failurePolicy: { kind: "compensate" } },
     );
     expect(result).toEqual(ACTION_OK);
-    expect(order).toEqual(["entity", "entityDefinition"]);
+    expect(order).toEqual(["entity", "entityVersion"]);
   });
 
-  it("does not write EntityDefinition when Entity write fails", async () => {
+  it("does not write EntityVersion when Entity write fails", async () => {
     const writeEntityDefinition = vi.fn(async () => ACTION_OK);
     const result = await persistEntityThenEntityDefinition(
-      { entity: bookEntity, entityDefinition: bookDefinition },
+      { entity: bookEntity, entityVersion: bookDefinition },
       {
         writeEntity: async () =>
           new Action2Error("FailedToHandleAction", "entity write failed"),
@@ -60,10 +60,10 @@ describe("217 Phase 6 — persistEntityThenEntityDefinition", () => {
     expect(writeEntityDefinition).not.toHaveBeenCalled();
   });
 
-  it("compensate create: deletes Entity when EntityDefinition write fails", async () => {
+  it("compensate create: deletes Entity when EntityVersion write fails", async () => {
     const deleted: string[] = [];
     const result = await persistEntityThenEntityDefinition(
-      { entity: bookEntity, entityDefinition: bookDefinition },
+      { entity: bookEntity, entityVersion: bookDefinition },
       {
         writeEntity: async () => ACTION_OK,
         writeEntityDefinition: async () =>
@@ -79,11 +79,11 @@ describe("217 Phase 6 — persistEntityThenEntityDefinition", () => {
     expect(deleted).toEqual([bookEntity.uuid]);
   });
 
-  it("compensate update: restores previous Entity when EntityDefinition write fails", async () => {
+  it("compensate update: restores previous Entity when EntityVersion write fails", async () => {
     const restored: Entity[] = [];
     const previousEntity = { ...bookEntity, name: "BookBefore" };
     const result = await persistEntityThenEntityDefinition(
-      { entity: bookEntity, entityDefinition: bookDefinition },
+      { entity: bookEntity, entityVersion: bookDefinition },
       {
         writeEntity: async () => ACTION_OK,
         writeEntityDefinition: async () =>
@@ -103,7 +103,7 @@ describe("217 Phase 6 — persistEntityThenEntityDefinition", () => {
     const reports: unknown[] = [];
     const deleted: string[] = [];
     const result = await persistEntityThenEntityDefinition(
-      { entity: bookEntity, entityDefinition: bookDefinition },
+      { entity: bookEntity, entityVersion: bookDefinition },
       {
         writeEntity: async () => ACTION_OK,
         writeEntityDefinition: async () =>
@@ -131,7 +131,7 @@ describe("217 Phase 6 — detectEntityEntityDefinitionInconsistencies", () => {
     expect(
       detectEntityEntityDefinitionInconsistencies(
         defaultLibraryAppModel.entities as Entity[],
-        defaultLibraryAppModel.entityVersions as EntityDefinition[],
+        defaultLibraryAppModel.entityVersions as EntityVersion[],
       ),
     ).toEqual([]);
   });

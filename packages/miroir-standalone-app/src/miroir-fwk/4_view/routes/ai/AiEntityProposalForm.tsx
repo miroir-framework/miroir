@@ -1,7 +1,7 @@
 /**
  * AiEntityProposalForm
  *
- * Displays an AI-generated Entity + EntityDefinition proposal for user review.
+ * Displays an AI-generated Entity + EntityVersion proposal for user review.
  * The user may edit fields, then Accept (apply via DomainController) or Reject.
  */
 import React, { useState } from "react";
@@ -29,7 +29,7 @@ export interface EntityProposal {
     description?: string;
     [key: string]: unknown;
   };
-  entityDefinition: {
+  entityVersion: {
     uuid: string;
     parentName: string;
     parentUuid: string;
@@ -72,7 +72,7 @@ export function AiEntityProposalForm({
     "parentDefinitionVersionUuid",
   ]);
   const jzodDef =
-    (proposal.entityDefinition.jzodSchema as any)?.definition ?? {};
+    (proposal.entityVersion.jzodSchema as any)?.definition ?? {};
   const customAttributeNames = Object.keys(jzodDef).filter(
     (k) => !systemFields.has(k) && k !== "name",
   );
@@ -85,8 +85,8 @@ export function AiEntityProposalForm({
         name: entityName,
         description: entityDescription || undefined,
       },
-      entityDefinition: {
-        ...proposal.entityDefinition,
+      entityVersion: {
+        ...proposal.entityVersion,
         name: `${entityName}Definition`,
       },
     };

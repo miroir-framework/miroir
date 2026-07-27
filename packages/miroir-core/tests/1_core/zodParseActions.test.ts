@@ -11,7 +11,7 @@ import {
   domainAction,
   DomainAction,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   extractorOrCombinerTemplate,
   ExtractorOrCombinerTemplate,
@@ -33,7 +33,7 @@ import { InitApplicationParameters } from "../../src/0_interfaces/4-services/Per
 import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandler";
 
 // import { extractorOrCombinerTemplate, StoreUnitConfiguration } from '../../dist';
-import { Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
+import { Uuid } from '../../src/0_interfaces/1_core/EntityVersion.js';
 import { getBasicApplicationConfiguration } from '../../src/2_domain/Deployment.js';
 
 const testApplicationName = "testApplication"
@@ -217,7 +217,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
         entities: [
           {
             entity: entityEntity as Entity,
-            entityVersion: entityDefinitionEntity as EntityDefinition,
+            entityVersion: entityDefinitionEntity as EntityVersion,
           },
         ],
       },

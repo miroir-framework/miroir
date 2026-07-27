@@ -6,12 +6,12 @@ import {
   TestCompositeActionSuite,
   TestCompositeActionTemplate,
   TestCompositeActionTemplateSuite,
-  type EntityDefinition
+  type EntityVersion
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 import { entityEntity, entityReport, entityEntityDefinition, entityMenu } from "miroir-test-app_deployment-miroir";
 
-import { MetaEntity, type Uuid } from "../../src/0_interfaces/1_core/EntityDefinition";
+import { MetaEntity, type Uuid } from "../../src/0_interfaces/1_core/EntityVersion";
 import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateSuite } from "../../src/2_domain/TestSuiteTemplate";
 import { defaultMiroirModelEnvironment } from '../../src/1_core/Model';
 // import { act } from 'react';
@@ -277,7 +277,7 @@ describe('resolveTestCompositeActionTemplateSuite', () => {
       name: "newEntityName",
     };
 
-    const newEntityDefinition: EntityDefinition ={
+    const newEntityDefinition: EntityVersion ={
       name: "newEntityName",
       uuid: uuidv4(),
       parentName: "EntityVersion",

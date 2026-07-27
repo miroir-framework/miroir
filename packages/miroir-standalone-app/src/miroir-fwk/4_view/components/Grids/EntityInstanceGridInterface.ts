@@ -4,7 +4,7 @@ import {
   // selfApplicationDeploymentConfigurationsTO_REMOVEchema,
   domainElementObject,
   entity,
-  entityDefinition,
+  entityVersion,
   entityInstance,
   entityInstancesUuidIndex,
   jzodElement,
@@ -41,9 +41,9 @@ export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSc
   type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
   // displayedDeploymentDefinition: selfApplicationDeploymentConfigurationsTO_REMOVEchema,
   // displayedDeploymentDefinition: deployment,
-  // #217 Phase 12: Entity present model preferred; EntityDefinition optional fallback
+  // #217 Phase 12: Entity present model preferred; EntityVersion optional fallback
   currentEntity: entity.optional(),
-  currentEntityDefinition: entityDefinition.optional(),
+  currentEntityDefinition: entityVersion.optional(),
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
   onRowDelete: z.function().args(z.any()).returns(z.void()).optional(),
 });

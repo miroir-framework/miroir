@@ -1304,7 +1304,7 @@ export function getMiroirFundamentalJzodSchema(
         bundle: entityDefinitionBundleV1.mlSchema as any,
         deployment: entityDefinitionDeployment.mlSchema as any,
         entity: entityDefinitionEntity.mlSchema as any,
-        // #217 Phase 12: vocabulary EntityDefinition → EntityVersion (UUID preserved)
+        // #217 Phase 12: vocabulary EntityVersion → EntityVersion (UUID preserved)
         entityVersion: entityDefinitionEntityDefinitionV1.mlSchema as any, // param also exported as entityVersionEntityVersionV1
 
         testCompositeAction: (
@@ -3505,7 +3505,7 @@ export function getMiroirFundamentalJzodSchema(
                 type: "schemaReference",
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
-                  // #220 Phase 6: MetaModel collection key renamed EntityDefinition(s) → entityVersions
+                  // #220 Phase 6: MetaModel collection key renamed EntityVersion(s) → entityVersions
                   relativePath: "entityVersion",
                 },
               },

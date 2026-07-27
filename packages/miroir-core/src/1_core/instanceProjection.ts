@@ -4,7 +4,7 @@
  * Identity fields (PK + structural) are always retained when projecting.
  */
 
-import type { EntityDefinition } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { EntityVersion } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getEntityPrimaryKeyAttributes } from "./EntityPrimaryKey.js";
 
 /** Always kept alongside the entity primary key when projecting. */
@@ -26,14 +26,14 @@ export type InstanceProjectionAttributes = readonly string[];
 
 /**
  * Identity keys to retain under projection.
- * Uses EntityDefinition.idAttribute when provided; otherwise defaults to `uuid`
+ * Uses EntityVersion.idAttribute when provided; otherwise defaults to `uuid`
  * (see AGENTS.md Primary Key Support).
  */
 export function resolveProjectionIdentityFields(
-  entityDefinition?: { idAttribute?: string | string[] } | null
+  entityVersion?: { idAttribute?: string | string[] } | null
 ): string[] {
-  const pkAttributes = entityDefinition
-    ? getEntityPrimaryKeyAttributes(entityDefinition as EntityDefinition)
+  const pkAttributes = entityVersion
+    ? getEntityPrimaryKeyAttributes(entityVersion as EntityVersion)
     : ["uuid"];
   return [...new Set<string>([...pkAttributes, ...INSTANCE_PROJECTION_STRUCTURAL_FIELDS])];
 }

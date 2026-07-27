@@ -1,11 +1,11 @@
 /**
  * Issue #217 Phase 11 — Entity-authoritative model Action resolution.
- * Resolve live Entity / optional redundant EntityDefinition without requiring
+ * Resolve live Entity / optional redundant EntityVersion without requiring
  * Action payloads to carry entityVersionUuid.
  *
  * When Entity has a complete present model, mutations are Entity-only (live ED
  * copies become historical / not updated). Dual-write remains for create when
- * an EntityDefinition is explicitly supplied, and for alter/rename when Entity
+ * an EntityVersion is explicitly supplied, and for alter/rename when Entity
  * is incomplete and a live ED is available for enrichment.
  *
  * #220 — UUID-reuse synthesize helpers live in entityDefinitionCompatibility.
@@ -13,7 +13,7 @@
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
@@ -33,7 +33,7 @@ export function resolveLiveEntityDefinitionForAction(
   currentModel: MetaModel,
   entityUuid: string,
   entityVersionUuid?: string | undefined,
-): EntityDefinition | undefined {
+): EntityVersion | undefined {
   if (entityVersionUuid) {
     const byUuid = currentModel.entityVersions?.find((ed) => ed.uuid === entityVersionUuid);
     if (byUuid) {
@@ -58,12 +58,12 @@ export type LiveEntityMutationPlan =
  */
 export function planCreateEntityMutation(
   entity: Entity,
-  entityDefinition?: EntityDefinition | undefined,
+  entityVersion?: EntityVersion | undefined,
 ): LiveEntityMutationPlan | undefined {
-  if (entityDefinition) {
+  if (entityVersion) {
     return {
       mode: "dualWrite",
-      pair: normalizeCreateEntityPair(entity, entityDefinition),
+      pair: normalizeCreateEntityPair(entity, entityVersion),
     };
   }
   if (!entityHasCompletePresentModel(entity)) {
@@ -92,15 +92,15 @@ export function planRenameEntityMutation(
       entity: { ...entity, name: targetName },
     };
   }
-  const entityDefinition = resolveLiveEntityDefinitionForAction(
+  const entityVersion = resolveLiveEntityDefinitionForAction(
     currentModel,
     entityUuid,
     entityVersionUuid,
   );
-  if (entityDefinition) {
+  if (entityVersion) {
     return {
       mode: "dualWrite",
-      pair: applyRenameEntityPair(entity, entityDefinition, targetName),
+      pair: applyRenameEntityPair(entity, entityVersion, targetName),
     };
   }
   return undefined;
@@ -129,15 +129,15 @@ export function planAlterEntityAttributeMutation(
       },
     };
   }
-  const entityDefinition = resolveLiveEntityDefinitionForAction(
+  const entityVersion = resolveLiveEntityDefinitionForAction(
     currentModel,
     entityUuid,
     entityVersionUuid,
   );
-  if (entityDefinition) {
+  if (entityVersion) {
     return {
       mode: "dualWrite",
-      pair: applyAlterEntityAttributePair(entity, entityDefinition, changes),
+      pair: applyAlterEntityAttributePair(entity, entityVersion, changes),
     };
   }
   return undefined;

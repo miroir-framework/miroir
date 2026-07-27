@@ -49,12 +49,12 @@ export const defaultReport: Report = {
 // }
 // function ReportgetDataInstancesToDispay (
 //     report:Report,
-//     miroirEntities:EntityDefinition[],
+//     miroirEntities:EntityVersion[],
 //     miroirReports:Report[],
 //     miroirBooks:Instance[],
 //   ):any[] {
 //     let result:any[];
-//     const currentMiroirEntity: EntityDefinition = miroirEntities?.find(e=>e?.name === report?.definition?.parentName)
+//     const currentMiroirEntity: EntityVersion = miroirEntities?.find(e=>e?.name === report?.definition?.parentName)
 
 //     switch (currentMiroirEntity?.name) {
 //       case "Entity":

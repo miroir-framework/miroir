@@ -9,7 +9,7 @@
  * rendering modes can evolve independently.
  */
 
-import type { EntityDefinition } from "miroir-core";
+import type { EntityVersion } from "miroir-core";
 import { sanitiseMermaidId } from "./entityDefinitionsToMermaidClassDiagram.js";
 
 // ############################################################################
@@ -70,7 +70,7 @@ const INFRASTRUCTURE_ATTRIBUTES = new Set([
  * @returns A Mermaid erDiagram string ready for rendering.
  */
 export function entityDefinitionsToMermaidErDiagram(
-  entityDefinitions: EntityDefinition[],
+  entityDefinitions: EntityVersion[],
   options: ErDiagramOptions = {},
 ): string {
   const showInfra = options.showInfrastructureAttributes ?? false;

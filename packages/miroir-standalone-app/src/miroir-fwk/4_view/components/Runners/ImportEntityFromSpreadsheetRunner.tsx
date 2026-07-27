@@ -6,7 +6,7 @@ import type {
   CompositeActionTemplate,
   DomainControllerInterface,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   LoggerInterface,
   MiroirModelEnvironment,
@@ -323,7 +323,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   const createEntityActionTemplate = useCallback(
     (
       entity: Entity,
-      entityDefinition: EntityDefinition,
+      entityVersion: EntityVersion,
       instances: EntityInstance[]
     ): CompositeActionTemplate => ({
       actionType: "compositeActionSequence",
@@ -380,7 +380,7 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
               entities: [
                 {
                   entity,
-                  entityVersion: entityDefinition,
+                  entityVersion: entityVersion,
                 },
               ],
             } as any,
@@ -492,14 +492,14 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
         transformerType: "getFromParameters",
         referencePath: [runnerName, "entityName"],
       } as any,
-      // #217 Phase 9 — Entity is present-model authority; dual-write still copies to EntityDefinition
+      // #217 Phase 9 — Entity is present-model authority; dual-write still copies to EntityVersion
       mlSchema: {
         transformerType: "spreadSheetToJzodSchema",
         spreadsheetContents: fileData,
       } as any,
     };
     log.info("ImportEntityFromSpreadsheetRunner onSubmit entity", JSON.stringify(entity, null, 2));
-    const entityDefinition: EntityDefinition = {
+    const entityVersion: EntityVersion = {
       uuid: uuidv4(),
       parentName: "EntityVersion",
       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -516,12 +516,12 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
     };
 
     // log.info(
-    //   "ImportEntityFromSpreadsheetRunner onSubmit entityDefinition",
-    //   JSON.stringify(entityDefinition, null, 2)
+    //   "ImportEntityFromSpreadsheetRunner onSubmit entityVersion",
+    //   JSON.stringify(entityVersion, null, 2)
     // );
     const action: CompositeActionTemplate = createEntityActionTemplate(
       entity,
-      entityDefinition,
+      entityVersion,
       instances,
     )
 

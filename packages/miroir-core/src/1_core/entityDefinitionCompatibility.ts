@@ -1,5 +1,5 @@
 /**
- * #220 — EntityDefinition / redundant live EntityVersion compatibility shims.
+ * #220 — EntityVersion / redundant live EntityVersion compatibility shims.
  *
  * Quarantine for dual-write / UUID-reuse helpers from #217. Do **not** use for
  * Application Version freeze or historical EntityVersion minting (#216):
@@ -10,7 +10,7 @@
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { alignEntityDefinitionToPresentEntity } from "./entityPresentModel.js";
 
@@ -20,10 +20,10 @@ import { alignEntityDefinitionToPresentEntity } from "./entityPresentModel.js";
  */
 export function presentEntityAsRedundantEntityDefinition(
   entity: Entity,
-  entityDefinitions: EntityDefinition[] = [],
-): EntityDefinition {
+  entityDefinitions: EntityVersion[] = [],
+): EntityVersion {
   const existing = entityDefinitions.find(
-    (entityDefinition) => entityDefinition.entityUuid === entity.uuid,
+    (entityVersion) => entityVersion.entityUuid === entity.uuid,
   );
   if (existing) {
     return alignEntityDefinitionToPresentEntity(entity, existing);
@@ -51,7 +51,7 @@ export function presentEntityAsRedundantEntityDefinition(
     ...(entity.display !== undefined ? { display: entity.display } : {}),
     ...(entity.cache !== undefined ? { cache: entity.cache } : {}),
     ...(entity.icon !== undefined ? { icon: entity.icon } : {}),
-  } as EntityDefinition;
+  } as EntityVersion;
 }
 
 /**
@@ -60,8 +60,8 @@ export function presentEntityAsRedundantEntityDefinition(
  */
 export function resolveOrSynthesizeEntityDefinitionForCreate(
   entity: Entity,
-  entityDefinitions: EntityDefinition[] = [],
-): EntityDefinition {
+  entityDefinitions: EntityVersion[] = [],
+): EntityVersion {
   const existing = entityDefinitions.find((ed) => ed.entityUuid === entity.uuid);
   if (existing) {
     return existing;

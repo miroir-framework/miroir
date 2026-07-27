@@ -113,7 +113,7 @@ function useApplyEntityProposal() {
           entities: [
             {
               entity: proposal.entity as any,
-              entityVersion: proposal.entityDefinition as any,
+              entityVersion: proposal.entityVersion as any,
             },
           ],
         } as any,
@@ -172,7 +172,7 @@ function AiActionsProviderInner(): React.JSX.Element {
   useCopilotAction({
     name: "generateMiroirEntity",
     description:
-      "Generate a new Miroir Entity and its EntityDefinition based on a description. " +
+      "Generate a new Miroir Entity and its EntityVersion based on a description. " +
       "Present the proposal to the user for review before applying.",
     parameters: [
       { name: "entityName", type: "string", description: "Entity name", required: true },
@@ -239,7 +239,7 @@ function AiActionsProviderInner(): React.JSX.Element {
           name: entityName,
           description: description ?? "",
         },
-        entityDefinition: {
+        entityVersion: {
           uuid: entityDefUuid,
           parentName: "EntityVersion",
           parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",

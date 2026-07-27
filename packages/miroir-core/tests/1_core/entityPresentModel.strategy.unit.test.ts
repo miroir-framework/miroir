@@ -25,7 +25,7 @@ import {
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   SelfApplication,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
@@ -60,15 +60,15 @@ describe("§11.1 / Phase 0 — UI present-model fields locked", () => {
 describe("§11.3 / Phase 3–4 — migrated deployment behavioral equivalence", () => {
   it("Entity-first resolution is a no-op identity for complete Library Entities", () => {
     for (const entity of defaultLibraryAppModel.entities) {
-      const entityDefinition = defaultLibraryAppModel.entityVersions.find(
+      const entityVersion = defaultLibraryAppModel.entityVersions.find(
         (definition) => definition.entityUuid === entity.uuid,
       )!;
-      expect(resolveCurrentEntityModel(entity, [entityDefinition])).toBe(entity);
+      expect(resolveCurrentEntityModel(entity, [entityVersion])).toBe(entity);
       expect(getEntityPrimaryKeyAttribute(entity)).toEqual(
-        getEntityPrimaryKeyAttribute(entityDefinition),
+        getEntityPrimaryKeyAttribute(entityVersion),
       );
       expect(shouldCacheAllInstancesOnRefresh(entity)).toBe(
-        shouldCacheAllInstancesOnRefresh(entityDefinition),
+        shouldCacheAllInstancesOnRefresh(entityVersion),
       );
     }
   });
@@ -77,10 +77,10 @@ describe("§11.3 / Phase 3–4 — migrated deployment behavioral equivalence", 
 describe("§11.3 / Phase 4 — dual-write projection equality", () => {
   it("alignEntityDefinitionToPresentEntity satisfies project(Entity) == project(ED copy)", () => {
     for (const entity of defaultLibraryAppModel.entities) {
-      const entityDefinition = defaultLibraryAppModel.entityVersions.find(
+      const entityVersion = defaultLibraryAppModel.entityVersions.find(
         (definition) => definition.entityUuid === entity.uuid,
       )!;
-      const aligned = alignEntityDefinitionToPresentEntity(entity, entityDefinition);
+      const aligned = alignEntityDefinitionToPresentEntity(entity, entityVersion);
       expect(compareEntityPresentModelDefinitions(entity, aligned)).toEqual({
         equal: true,
         differingFields: [],
@@ -104,43 +104,43 @@ describe("§11.3 / Phase 4 — dual-write projection equality", () => {
   });
 });
 
-describe("§11.1 / Phase 4 — codegen source Entity.mlSchema ≡ EntityDefinition.mlSchema", () => {
-  const pairs: Array<{ label: string; entity: Entity; entityDefinition: EntityDefinition }> = [
+describe("§11.1 / Phase 4 — codegen source Entity.mlSchema ≡ EntityVersion.mlSchema", () => {
+  const pairs: Array<{ label: string; entity: Entity; entityVersion: EntityVersion }> = [
     {
       label: "Entity",
       entity: entityEntity as Entity,
-      entityDefinition: entityDefinitionEntity as EntityDefinition,
+      entityVersion: entityDefinitionEntity as EntityVersion,
     },
     {
-      label: "EntityDefinition",
+      label: "EntityVersion",
       entity: entityEntityDefinition as Entity,
-      entityDefinition: entityDefinitionEntityDefinition as EntityDefinition,
+      entityVersion: entityDefinitionEntityDefinition as EntityVersion,
     },
     {
       label: "SelfApplication",
       entity: entitySelfApplication as Entity,
-      entityDefinition: entityDefinitionSelfApplication as EntityDefinition,
+      entityVersion: entityDefinitionSelfApplication as EntityVersion,
     },
     {
       label: "Menu",
       entity: entityMenu as Entity,
-      entityDefinition: entityDefinitionMenu as EntityDefinition,
+      entityVersion: entityDefinitionMenu as EntityVersion,
     },
     {
       label: "AdminApplication",
       entity: entityApplicationForAdmin as Entity,
-      entityDefinition: entityDefinitionAdminApplication as EntityDefinition,
+      entityVersion: entityDefinitionAdminApplication as EntityVersion,
     },
     {
       label: "Deployment",
       entity: entityDeployment as Entity,
-      entityDefinition: entityDefinitionDeployment as EntityDefinition,
+      entityVersion: entityDefinitionDeployment as EntityVersion,
     },
   ];
 
   for (const pair of pairs) {
-    it(`${pair.label} Entity.mlSchema equals EntityDefinition.mlSchema`, () => {
-      expect(pair.entity.mlSchema).toEqual(pair.entityDefinition.mlSchema);
+    it(`${pair.label} Entity.mlSchema equals EntityVersion.mlSchema`, () => {
+      expect(pair.entity.mlSchema).toEqual(pair.entityVersion.mlSchema);
     });
   }
 });

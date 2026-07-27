@@ -64,28 +64,28 @@ describe("generateMiroirEntity tool", () => {
     expect(result.entity.conceptLevel).toBe("Model");
   });
 
-  it("returns an entityDefinition with correct parentUuid, parentName, and entityUuid", async () => {
+  it("returns an entityVersion with correct parentUuid, parentName, and entityUuid", async () => {
     const result = await callHandler({
       entityName: "Product",
       description: "A product",
       attributes: [],
       deploymentUuid: TEST_DEPLOYMENT_UUID,
     });
-    expect(result.entityDefinition.parentName).toBe("EntityDefinition");
-    expect(result.entityDefinition.parentUuid).toBe(ENTITY_DEF_PARENT_UUID);
-    expect(result.entityDefinition.entityUuid).toBe(result.entity.uuid);
-    expect(UUID_REGEX.test(result.entityDefinition.entityUuid)).toBe(true);
+    expect(result.entityVersion.parentName).toBe("EntityVersion");
+    expect(result.entityVersion.parentUuid).toBe(ENTITY_DEF_PARENT_UUID);
+    expect(result.entityVersion.entityUuid).toBe(result.entity.uuid);
+    expect(UUID_REGEX.test(result.entityVersion.entityUuid)).toBe(true);
   });
 
-  it("generates distinct UUIDs for entity and entityDefinition", async () => {
+  it("generates distinct UUIDs for entity and entityVersion", async () => {
     const result = await callHandler({
       entityName: "Order",
       attributes: [],
       deploymentUuid: TEST_DEPLOYMENT_UUID,
     });
     expect(UUID_REGEX.test(result.entity.uuid)).toBe(true);
-    expect(UUID_REGEX.test(result.entityDefinition.uuid)).toBe(true);
-    expect(result.entity.uuid).not.toBe(result.entityDefinition.uuid);
+    expect(UUID_REGEX.test(result.entityVersion.uuid)).toBe(true);
+    expect(result.entity.uuid).not.toBe(result.entityVersion.uuid);
   });
 
   it("always includes a 'name' field in mlSchema (field id=5)", async () => {
@@ -94,7 +94,7 @@ describe("generateMiroirEntity tool", () => {
       attributes: [],
       deploymentUuid: TEST_DEPLOYMENT_UUID,
     });
-    const schemaDef = result.entityDefinition.mlSchema.definition;
+    const schemaDef = result.entityVersion.mlSchema.definition;
     expect(schemaDef).toHaveProperty("name");
     expect(schemaDef.name.tag.value.id).toBe(5);
   });
@@ -108,7 +108,7 @@ describe("generateMiroirEntity tool", () => {
       ],
       deploymentUuid: TEST_DEPLOYMENT_UUID,
     });
-    const schemaDef = result.entityDefinition.mlSchema.definition;
+    const schemaDef = result.entityVersion.mlSchema.definition;
     expect(schemaDef).toHaveProperty("title");
     expect(schemaDef).toHaveProperty("year");
     expect(schemaDef.title.tag.value.id).toBe(6);
@@ -125,7 +125,7 @@ describe("generateMiroirEntity tool", () => {
       ],
       deploymentUuid: TEST_DEPLOYMENT_UUID,
     });
-    const schemaDef = result.entityDefinition.mlSchema.definition;
+    const schemaDef = result.entityVersion.mlSchema.definition;
     expect(schemaDef.status.type).toBe("enum");
     expect(schemaDef.status.definition).toEqual(["active", "inactive"]);
   });
@@ -136,7 +136,7 @@ describe("generateMiroirEntity tool", () => {
       attributes: [],
       deploymentUuid: TEST_DEPLOYMENT_UUID,
     });
-    const extend = result.entityDefinition.mlSchema.extend;
+    const extend = result.entityVersion.mlSchema.extend;
     expect(extend.type).toBe("schemaReference");
     expect(extend.definition.absolutePath).toBe("fe9b7d99-f216-44de-bb6e-60e1a1ebb739");
     expect(extend.definition.relativePath).toBe("entityDefinitionRoot");

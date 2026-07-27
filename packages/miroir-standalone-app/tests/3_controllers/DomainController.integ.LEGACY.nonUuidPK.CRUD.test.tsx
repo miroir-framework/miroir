@@ -14,7 +14,7 @@ import type {
   ApplicationDeploymentMap,
   Deployment,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   MetaModel,
   SelfApplication,
@@ -95,7 +95,7 @@ const entityCodeNumber: Entity = {
   description: "Test entity with a non-UUID number primary key.",
 } as Entity;
 
-const entityDefinitionCodeNumber: EntityDefinition = {
+const entityDefinitionCodeNumber: EntityVersion = {
   uuid: entityDefinitionCodeNumberUuid,
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -126,7 +126,7 @@ const entityDefinitionCodeNumber: EntityDefinition = {
       },
     },
   },
-} as any as EntityDefinition; // cast needed since idAttribute is not yet in generated EntityDefinition type
+} as any as EntityVersion; // cast needed since idAttribute is not yet in generated EntityVersion type
 
 // Test data instances (no uuid — PK is number field "code")
 const codeItem1: EntityInstance = {
@@ -156,7 +156,7 @@ const codeNumberTestMetaModel: MetaModel = {
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityCodeNumber],
   entityVersions: [
-    entityDefinitionPublisher as EntityDefinition,
+    entityDefinitionPublisher as EntityVersion,
     entityDefinitionCodeNumber,
   ],
   endpoints: [],
@@ -432,7 +432,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
         [
           {
             entity: entityPublisher as Entity,
-            entityDefinition: entityDefinitionPublisher as EntityDefinition,
+            entityVersion: entityDefinitionPublisher as EntityVersion,
             instances: [
               publisher1 as EntityInstance,
               publisher2 as EntityInstance,
@@ -444,7 +444,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
           applicationUuid: selfApplicationLibrary.uuid,
           applicationName: selfApplicationLibrary.name,
           entities: [entityPublisher as Entity],
-          entityVersions: [entityDefinitionPublisher as EntityDefinition],
+          entityVersions: [entityDefinitionPublisher as EntityVersion],
           endpoints: [],
           jzodSchemas: [],
           menus: [],
@@ -610,7 +610,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         [
           {
             entity: entityCodeNumber,
-            entityDefinition: entityDefinitionCodeNumber,
+            entityVersion: entityDefinitionCodeNumber,
             instances: [codeItem1, codeItem2, codeItem3],
           },
         ],

@@ -19,8 +19,8 @@ export type ResolveDefinitionVersionInput = {
       applicationVersion: string;
       /** #217 Phase 12 primary FK name */
       entityVersion?: string;
-      /** @deprecated Use entityVersion */
-      entityDefinition?: string;
+      // /** @deprecated Use entityVersion */
+      // entityVersion?: string;
       /** Optional entity UUID when the caller can resolve EntityVersion → Entity. */
       entityUuid?: string;
     }>;
@@ -70,7 +70,7 @@ export function resolveDefinitionVersionForTraceEvent(
       return true;
     });
     if (match) {
-      const versionUuid = match.entityVersion ?? match.entityDefinition;
+      const versionUuid = match.entityVersion ?? match.entityVersion;
       if (versionUuid) {
         return {
           definitionVersionUuid: versionUuid,

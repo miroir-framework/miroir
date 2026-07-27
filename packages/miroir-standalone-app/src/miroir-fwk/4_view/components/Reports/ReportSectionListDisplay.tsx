@@ -594,7 +594,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               applicationSection: props.chosenApplicationSection?props.chosenApplicationSection:"data" as ApplicationSection,
               deploymentUuid: props.deploymentUuid,
               domainController: domainController,
-              entityDefinition: currentReportTargetEntity,
+              entityVersion: currentReportTargetEntity,
               entityDefinitions: currentModel.entityVersions,
               entities: currentModel.entities,
               entityInstances: [data],
@@ -813,7 +813,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 isAttributes={true}
                 label={defaultLabel ?? currentReportTargetEntity?.name}
                 defaultFormValuesObject={dialogOuterFormObject}
-                entityDefinition={currentReportTargetEntity}
+                entityVersion={currentReportTargetEntity}
                 entityDefinitionJzodSchema={
                   currentReportTargetEntity?.mlSchema as JzodObject
                 }

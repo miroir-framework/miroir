@@ -2,7 +2,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import {
   ApplicationSection,
   ApplicationVersion,
-  EntityDefinition,
+  EntityVersion,
   EntityInstancesUuidIndex,
   LoggerInterface,
   Menu,
@@ -447,7 +447,7 @@ export const selectModelForDeploymentFromReduxState: () => (
         applicationVersionCrossEntityVersion: [],
         // configuration: (configurations ? Object.values(configurations) : []) as StoreBasedConfiguration[],
         entities: (entities ? Object.values(entities) : []) as Entity[],
-        entityVersions: (entityVersions ? Object.values(entityVersions) : []) as EntityDefinition[],
+        entityVersions: (entityVersions ? Object.values(entityVersions) : []) as EntityVersion[],
         endpoints: (endpoints ? Object.values(endpoints) : []) as EndpointDefinition[],
         jzodSchemas: (jzodSchemas ? Object.values(jzodSchemas) : []) as MlSchema[],
         menus: (menus ? Object.values(menus) : []) as Menu[],

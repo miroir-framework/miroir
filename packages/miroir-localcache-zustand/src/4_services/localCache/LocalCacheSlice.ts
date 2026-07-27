@@ -163,9 +163,9 @@ function registerPresentModelSourceInLocalCache(
 function registerEntityDefinitionInLocalCache(
   deploymentUuid: string,
   _section: ApplicationSection,
-  entityDefinition: EntityInstance
+  entityVersion: EntityInstance
 ): void {
-  registerPresentModelSourceInLocalCache(deploymentUuid, entityDefinition);
+  registerPresentModelSourceInLocalCache(deploymentUuid, entityVersion);
 }
 
 function getInitialEntityState(): EntityState {

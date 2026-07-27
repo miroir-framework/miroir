@@ -1,8 +1,8 @@
-import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../../0_interfaces/1_core/EntityVersion";
 import type {
   EndpointDefinition,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   Menu,
   MetaModel,
   MlSchema,
@@ -108,15 +108,15 @@ function fingerprintEntities(entities: Entity[] | undefined) {
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }
 
-function fingerprintEntityDefinitions(entityVersions: EntityDefinition[] | undefined) {
+function fingerprintEntityDefinitions(entityVersions: EntityVersion[] | undefined) {
   return [...definedArray(entityVersions)]
-    .map((entityDefinition) => ({
-      uuid: entityDefinition.uuid,
-      entityUuid: entityDefinition.entityUuid,
-      name: entityDefinition.name,
-      viewAttributes: entityDefinition.viewAttributes,
-      defaultInstanceDetailsReportUuid: entityDefinition.defaultInstanceDetailsReportUuid,
-      mlSchema: entityDefinition.mlSchema,
+    .map((entityVersion) => ({
+      uuid: entityVersion.uuid,
+      entityUuid: entityVersion.entityUuid,
+      name: entityVersion.name,
+      viewAttributes: entityVersion.viewAttributes,
+      defaultInstanceDetailsReportUuid: entityVersion.defaultInstanceDetailsReportUuid,
+      mlSchema: entityVersion.mlSchema,
     }))
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }

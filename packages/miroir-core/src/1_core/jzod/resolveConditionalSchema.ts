@@ -1,7 +1,7 @@
 
-import { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
+import { Uuid } from '../../0_interfaces/1_core/EntityVersion';
 import {
-  EntityDefinition,
+  EntityVersion,
   JzodElement,
   type TransformerForBuildPlusRuntime_resolveConditionalSchema
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -192,7 +192,7 @@ export function resolveConditionalSchema(
       if (!parentPresentEntity?.mlSchema) {
         return {
           error: 'PARENT_NOT_FOUND',
-          details: `No present Entity (or EntityDefinition fallback) found for parentUuid ${parentUuidStr} in deployment ${modelEnvironment.deploymentUuid}`
+          details: `No present Entity (or EntityVersion fallback) found for parentUuid ${parentUuidStr} in deployment ${modelEnvironment.deploymentUuid}`
         };
       }
       effectiveSchema = parentPresentEntity.mlSchema;

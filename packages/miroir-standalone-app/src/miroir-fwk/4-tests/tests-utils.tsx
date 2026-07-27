@@ -9,7 +9,7 @@ import {
   DeploymentConfiguration,
   DomainControllerInterface,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   LocalCacheInterface,
   LoggerInterface,
@@ -219,13 +219,13 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ################################################################################################
 async function seedEntitiesAndInstancesOnEmulatedServer(
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-  entities: { entity: Entity; entityDefinition: EntityDefinition; instances: EntityInstance[] }[],
+  entities: { entity: Entity; entityVersion: EntityVersion; instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
 ) {
   for (const entity of entities) {
     await localAppPersistenceStoreController.createEntity(
       entity.entity as Entity,
-      entity.entityDefinition as EntityDefinition,
+      entity.entityVersion as EntityVersion,
     );
   }
   await localAppPersistenceStoreController.upsertInstance("model", reportBookList as EntityInstance);
@@ -244,7 +244,7 @@ export async function addEntitiesAndInstances(
   miroirConfig: MiroirConfigClient,
   deployment_Library_DO_NO_USE: EntityInstance,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  entities: { entity: Entity; entityDefinition: EntityDefinition; instances: EntityInstance[] }[],
+  entities: { entity: Entity; entityVersion: EntityVersion; instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
   act?: unknown,
 ) {

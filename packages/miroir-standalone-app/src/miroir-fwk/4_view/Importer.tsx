@@ -548,7 +548,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //             transformerType: "getFromParameters",
   //   //             referenceName: "createEntity_newEntity",
   //   //           },
-  //   //           entityDefinition: {
+  //   //           entityVersion: {
   //   //             transformerType: "getFromParameters",
   //   //             referenceName: "newEntityDefinition",
   //   //           },
@@ -1122,7 +1122,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //               transformerType: "getFromParameters",
   //               referenceName: "splitEntity_newEntity",
   //             },
-  //             entityDefinition: {
+  //             entityVersion: {
   //               transformerType: "getFromParameters",
   //               referenceName: "splitEntity_newEntityDefinition",
   //             },

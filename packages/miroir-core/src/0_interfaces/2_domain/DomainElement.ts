@@ -8,7 +8,7 @@ import {
   QueryFailed,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { Step } from "../../2_domain/Transformers";
-import type { Uuid } from "../1_core/EntityDefinition";
+import type { Uuid } from "../1_core/EntityVersion";
 
 export type TransformerFailureType =
   | "FailedTransformer_mustache"

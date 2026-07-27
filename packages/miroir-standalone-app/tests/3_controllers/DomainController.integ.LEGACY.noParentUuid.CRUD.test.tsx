@@ -12,7 +12,7 @@ import type {
   ApplicationDeploymentMap,
   Deployment,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   MetaModel,
   SelfApplication,
@@ -89,7 +89,7 @@ const entityNoParentUuid: Entity = {
   description: "Test entity whose instances do not bear a parentUuid attribute.",
 } as Entity;
 
-const entityDefinitionNoParentUuid: EntityDefinition = {
+const entityDefinitionNoParentUuid: EntityVersion = {
   uuid: entityDefinitionNoParentUuidUuid,
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -116,7 +116,7 @@ const entityDefinitionNoParentUuid: EntityDefinition = {
       // NO parentName, NO parentUuid in schema
     },
   },
-} as EntityDefinition;
+} as EntityVersion;
 
 // Test data instances — NO parentUuid attribute
 const noParentItem1: EntityInstance = {
@@ -141,7 +141,7 @@ const noParentUuidTestMetaModel: MetaModel = {
   applications: [],
   entities: [entityPublisher as Entity, entityNoParentUuid],
   entityVersions: [
-    entityDefinitionPublisher as EntityDefinition,
+    entityDefinitionPublisher as EntityVersion,
     entityDefinitionNoParentUuid,
   ],
   endpoints: [],
@@ -412,7 +412,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
         [
           {
             entity: entityPublisher as Entity,
-            entityDefinition: entityDefinitionPublisher as EntityDefinition,
+            entityVersion: entityDefinitionPublisher as EntityVersion,
             instances: [
               publisher1 as EntityInstance,
               publisher2 as EntityInstance,
@@ -424,7 +424,7 @@ const modelTestActions: Record<string, TestCompositeActionParams> = {
           applicationUuid: selfApplicationLibrary.uuid,
           applicationName: selfApplicationLibrary.name,
           entities: [entityPublisher as Entity],
-          entityVersions: [entityDefinitionPublisher as EntityDefinition],
+          entityVersions: [entityDefinitionPublisher as EntityVersion],
           endpoints: [],
           jzodSchemas: [],
           menus: [],
@@ -590,7 +590,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         [
           {
             entity: entityNoParentUuid,
-            entityDefinition: entityDefinitionNoParentUuid,
+            entityVersion: entityDefinitionNoParentUuid,
             instances: [noParentItem1, noParentItem2, noParentItem3],
           },
         ],

@@ -9,7 +9,7 @@ import {
   Action2VoidReturnType,
   Domain2ElementFailed,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstanceWithName,
   LoggerInterface,
@@ -80,20 +80,20 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
-    // #217 Phase 6/11: Entity then optional EntityDefinition; Entity-only when ED omitted.
-    async createEntity(entity: Entity, entityDefinition?: EntityDefinition): Promise<Action2VoidReturnType> {
-      if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
+    // #217 Phase 6/11: Entity then optional EntityVersion; Entity-only when ED omitted.
+    async createEntity(entity: Entity, entityVersion?: EntityVersion): Promise<Action2VoidReturnType> {
+      if (entityVersion && entity.uuid != entityVersion.entityUuid) {
         log.error(
           this.logHeader,
           "createEntity",
-          "inconsistent input: given entityDefinition is not related to given entity."
+          "inconsistent input: given entityVersion is not related to given entity."
         );
         return new Action2Error(
           "FailedToCreateStore",
-          "createEntity failed: entity.uuid != entityDefinition.entityUuid",
+          "createEntity failed: entity.uuid != entityVersion.entityUuid",
         );
       }
-      if (!entityDefinition) {
+      if (!entityVersion) {
         if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
           log.warn(
             this.logHeader,
@@ -112,7 +112,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         return this.upsertInstance(entityEntity.uuid, entity);
       }
 
-      const pair = normalizeCreateEntityPair(entity, entityDefinition);
+      const pair = normalizeCreateEntityPair(entity, entityVersion);
       if (this.dataStore.getEntityUuids().includes(pair.entity.uuid)) {
         log.warn(
           this.logHeader,
@@ -126,7 +126,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
       } else {
         await this.dataStore.createStorageSpaceForInstancesOfEntity(
           pair.entity,
-          pair.entityDefinition,
+          pair.entityVersion,
         );
       }
 
@@ -153,11 +153,11 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     async createEntities(
       entities: {
         entity:Entity,
-        entityDefinition?: EntityDefinition,
+        entityVersion?: EntityVersion,
       }[]
     ): Promise<Action2VoidReturnType> {
       for (const e of entities) {
-        const result = await this.createEntity(e.entity, e.entityDefinition);
+        const result = await this.createEntity(e.entity, e.entityVersion);
         if (result instanceof Action2Error) {
           return result;
         }
@@ -210,10 +210,10 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
           ));
         }
 
-        for (const entityDefinition of entityDefinitions.returnedDomainElement.instances.filter(
-          (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid
+        for (const entityVersion of entityDefinitions.returnedDomainElement.instances.filter(
+          (i: EntityInstance) => (i as EntityVersion).entityUuid == entityUuid
         )) {
-          await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
+          await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityVersion);
         }
       } else {
         log.warn(
@@ -289,7 +289,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         ));
       }
       const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+        currentEntityDefinition.returnedDomainElement as EntityVersion;
       const pair = applyRenameEntityPair(
         previousEntity,
         previousEntityDefinition,
@@ -315,7 +315,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         (previousEntity as EntityInstanceWithName).name,
         update.payload.targetValue,
         pair.entity,
-        pair.entityDefinition
+        pair.entityVersion
       );
       return Promise.resolve(ACTION_OK);
     }
@@ -374,7 +374,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         );
       }
       const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+        currentEntityDefinition.returnedDomainElement as EntityVersion;
       const pair = applyAlterEntityAttributePair(
         previousEntity,
         previousEntityDefinition,

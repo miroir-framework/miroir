@@ -138,13 +138,13 @@ console.log("lendDocumentTool lendDocumentActionCopilotKitParameters:", JSON.str
 
 // // ──────────────────────────────────────────────────────────────────────────────
 // // Tool: generateMiroirEntity
-// // Returns both the Entity record and its EntityDefinition.
+// // Returns both the Entity record and its EntityVersion.
 // // ──────────────────────────────────────────────────────────────────────────────
 // export const generateMiroirEntityTool: MiroirAction = {
 //   name: "generateMiroirEntity",
 //   description:
-//     "Generate a new Miroir Entity (concept/table definition) with its EntityDefinition schema. " +
-//     "Returns both the Entity record and the EntityDefinition JSON ready to be applied.",
+//     "Generate a new Miroir Entity (concept/table definition) with its EntityVersion schema. " +
+//     "Returns both the Entity record and the EntityVersion JSON ready to be applied.",
 //   parameters: [
 //     {
 //       name: "entityName",
@@ -234,7 +234,7 @@ console.log("lendDocumentTool lendDocumentActionCopilotKitParameters:", JSON.str
 //       schemaDefinition[attr.name] = fieldDef;
 //     }
 
-//     const entityDefinition = {
+//     const entityVersion = {
 //       uuid: entityDefUuid,
 //       parentName: "EntityVersion",
 //       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -258,7 +258,7 @@ console.log("lendDocumentTool lendDocumentActionCopilotKitParameters:", JSON.str
 
 //     return {
 //       entity,
-//       entityDefinition,
+//       entityVersion,
 //       deploymentUuid,
 //       summary: `Created Entity '${entityName}' with ${Object.keys(schemaDefinition).length} field(s).`,
 //     };

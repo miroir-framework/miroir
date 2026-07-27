@@ -18,7 +18,7 @@ import {
 } from "../../src/1_core/entityPresentModel.js";
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -32,10 +32,10 @@ function entity(overrides: Partial<Entity> & Pick<Entity, "uuid" | "name">): Ent
   };
 }
 
-function entityDefinition(
-  overrides: Partial<EntityDefinition> &
-    Pick<EntityDefinition, "uuid" | "name" | "entityUuid" | "mlSchema">,
-): EntityDefinition {
+function entityVersion(
+  overrides: Partial<EntityVersion> &
+    Pick<EntityVersion, "uuid" | "name" | "entityUuid" | "mlSchema">,
+): EntityVersion {
   return {
     parentUuid: "e432ecc7-9415-4fd8-b040-c6fbaea17e9a",
     parentName: "EntityVersion",
@@ -51,25 +51,25 @@ describe("inventoryEntityEntityDefinitionJoins", () => {
       entity({ uuid: "e-multi", name: "Multi" }),
     ];
     const entityDefinitions = [
-      entityDefinition({
+      entityVersion({
         uuid: "d-matched",
         name: "Matched",
         entityUuid: "e-matched",
         mlSchema: { type: "object", definition: {} },
       }),
-      entityDefinition({
+      entityVersion({
         uuid: "d-orphan",
         name: "OrphanDef",
         entityUuid: "e-missing",
         mlSchema: { type: "object", definition: {} },
       }),
-      entityDefinition({
+      entityVersion({
         uuid: "d-multi-a",
         name: "MultiA",
         entityUuid: "e-multi",
         mlSchema: { type: "object", definition: {} },
       }),
-      entityDefinition({
+      entityVersion({
         uuid: "d-multi-b",
         name: "MultiB",
         entityUuid: "e-multi",
@@ -108,7 +108,7 @@ describe("projectEntityPresentModelDefinition / compareEntityPresentModelDefinit
       "mlSchema",
     ]);
 
-    const definition = entityDefinition({
+    const definition = entityVersion({
       uuid: "d1",
       name: "Book",
       entityUuid: "e1",
@@ -165,7 +165,7 @@ describe("projectEntityPresentModelDefinition / compareEntityPresentModelDefinit
 });
 
 describe("characterization — default MetaModels are clean 1:1 joins", () => {
-  it("defaultMiroirMetaModel has one EntityDefinition per Entity and matching names", () => {
+  it("defaultMiroirMetaModel has one EntityVersion per Entity and matching names", () => {
     const inventory = inventoryEntityEntityDefinitionJoins(
       defaultMiroirMetaModel.entities,
       defaultMiroirMetaModel.entityVersions,
@@ -177,15 +177,15 @@ describe("characterization — default MetaModels are clean 1:1 joins", () => {
 
     for (const match of inventory.matched) {
       const entity = defaultMiroirMetaModel.entities.find((e) => e.uuid === match.entityUuid)!;
-      const entityDefinition = defaultMiroirMetaModel.entityVersions.find(
+      const entityVersion = defaultMiroirMetaModel.entityVersions.find(
         (definition) => definition.uuid === match.entityDefinitionUuids[0],
       )!;
-      expect(entityDefinition.entityUuid).toBe(entity.uuid);
-      expect(entityDefinition.name).toBe(entity.name);
+      expect(entityVersion.entityUuid).toBe(entity.uuid);
+      expect(entityVersion.name).toBe(entity.name);
     }
   });
 
-  it("defaultLibraryAppModel has one EntityDefinition per Entity and matching names", () => {
+  it("defaultLibraryAppModel has one EntityVersion per Entity and matching names", () => {
     const inventory = inventoryEntityEntityDefinitionJoins(
       defaultLibraryAppModel.entities,
       defaultLibraryAppModel.entityVersions,
@@ -198,11 +198,11 @@ describe("characterization — default MetaModels are clean 1:1 joins", () => {
 
   it("Phase 3: Entity instances carry definition-bearing fields matching EntityDefinitions", () => {
     for (const entity of defaultLibraryAppModel.entities) {
-      const entityDefinition = defaultLibraryAppModel.entityVersions.find(
+      const entityVersion = defaultLibraryAppModel.entityVersions.find(
         (definition) => definition.entityUuid === entity.uuid,
       )!;
       expect(entityHasCompletePresentModel(entity)).toBe(true);
-      expect(compareEntityPresentModelDefinitions(entity, entityDefinition)).toEqual({
+      expect(compareEntityPresentModelDefinitions(entity, entityVersion)).toEqual({
         equal: true,
         differingFields: [],
       });
@@ -210,9 +210,9 @@ describe("characterization — default MetaModels are clean 1:1 joins", () => {
   });
 });
 
-describe("characterization — PK/cache still resolve from EntityDefinition", () => {
-  it("locks current PK authority on EntityDefinition.idAttribute", () => {
-    const withComposite = entityDefinition({
+describe("characterization — PK/cache still resolve from EntityVersion", () => {
+  it("locks current PK authority on EntityVersion.idAttribute", () => {
+    const withComposite = entityVersion({
       uuid: "d-pk",
       name: "Pk",
       entityUuid: "e-pk",
@@ -222,7 +222,7 @@ describe("characterization — PK/cache still resolve from EntityDefinition", ()
     expect(getEntityPrimaryKeyAttribute(withComposite)).toEqual(["region", "code"]);
     expect(
       getEntityPrimaryKeyAttribute(
-        entityDefinition({
+        entityVersion({
           uuid: "d-default",
           name: "Default",
           entityUuid: "e-default",
@@ -232,10 +232,10 @@ describe("characterization — PK/cache still resolve from EntityDefinition", ()
     ).toBe("uuid");
   });
 
-  it("locks current cache-refresh authority on EntityDefinition.cache", () => {
+  it("locks current cache-refresh authority on EntityVersion.cache", () => {
     expect(
       shouldCacheAllInstancesOnRefresh(
-        entityDefinition({
+        entityVersion({
           uuid: "d-lazy",
           name: "Lazy",
           entityUuid: "e-lazy",
@@ -246,7 +246,7 @@ describe("characterization — PK/cache still resolve from EntityDefinition", ()
     ).toBe(false);
     expect(
       shouldCacheAllInstancesOnRefresh(
-        entityDefinition({
+        entityVersion({
           uuid: "d-eager",
           name: "Eager",
           entityUuid: "e-eager",
@@ -282,7 +282,7 @@ function loadJsonInstancesFromCollection(
 
 function loadDeploymentEntityJoinInputs(modelRootRelativePath: string): {
   entities: Entity[];
-  entityDefinitions: EntityDefinition[];
+  entityDefinitions: EntityVersion[];
 } {
   return {
     entities: loadJsonInstancesFromCollection(
@@ -292,12 +292,12 @@ function loadDeploymentEntityJoinInputs(modelRootRelativePath: string): {
     entityDefinitions: loadJsonInstancesFromCollection(
       modelRootRelativePath,
       ENTITY_DEFINITION_COLLECTION_UUID,
-    ) as EntityDefinition[],
+    ) as EntityVersion[],
   };
 }
 
 describe("characterization — filesystem deployment asset joins", () => {
-  it("Miroir model assets are a clean 1:1 Entity ↔ EntityDefinition join", () => {
+  it("Miroir model assets are a clean 1:1 Entity ↔ EntityVersion join", () => {
     const { entities, entityDefinitions } = loadDeploymentEntityJoinInputs(
       "packages/miroir-test-app_deployment-miroir/assets/miroir_model",
     );
@@ -311,7 +311,7 @@ describe("characterization — filesystem deployment asset joins", () => {
     expect(inventory.matched).toHaveLength(entities.length);
   });
 
-  it("Library model assets are a clean 1:1 Entity ↔ EntityDefinition join", () => {
+  it("Library model assets are a clean 1:1 Entity ↔ EntityVersion join", () => {
     const { entities, entityDefinitions } = loadDeploymentEntityJoinInputs(
       "packages/miroir-test-app_deployment-library/assets/library_model",
     );
@@ -324,7 +324,7 @@ describe("characterization — filesystem deployment asset joins", () => {
     expect(entities.length).toBe(entityDefinitions.length);
   });
 
-  it("Admin model assets are a clean 1:1 Entity ↔ EntityDefinition join", () => {
+  it("Admin model assets are a clean 1:1 Entity ↔ EntityVersion join", () => {
     const { entities, entityDefinitions } = loadDeploymentEntityJoinInputs(
       "packages/miroir-test-app_deployment-admin/assets/admin_model",
     );

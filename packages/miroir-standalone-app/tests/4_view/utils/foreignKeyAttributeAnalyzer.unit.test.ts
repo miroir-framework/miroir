@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { EntityDefinition } from 'miroir-core';
+import { EntityVersion } from 'miroir-core';
 import { 
   analyzeForeignKeyAttributes, 
   convertToLegacyFormat,
@@ -12,7 +12,7 @@ describe('analyzeForeignKeyAttributes', () => {
     entityUuid: string, 
     name: string, 
     definition: Record<string, any>
-  ): EntityDefinition => ({
+  ): EntityVersion => ({
     uuid: `${entityUuid}-def`,
     parentName: "EntityVersion",
     parentUuid: "parent-uuid",

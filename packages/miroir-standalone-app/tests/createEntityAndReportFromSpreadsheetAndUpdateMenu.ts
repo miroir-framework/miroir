@@ -856,7 +856,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
 }
 
 
-const entityDefinition = {
+const entityVersion = {
   "parentName": "EntityVersion",
   "name": "Test",
   "uuid": "d2842a84-3e66-43ee-ac58-7e13b95b01e8",

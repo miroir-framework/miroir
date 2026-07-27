@@ -13,7 +13,7 @@ import {
 import { Action2ReturnType } from "../2_domain/DomainElement";
 import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
-import type { Uuid } from "../1_core/EntityDefinition";
+import type { Uuid } from "../1_core/EntityVersion";
 import type { LocalCacheMonitorSnapshot } from "../../2_domain/localCacheMemoryMeasure.js";
 
 // ################################################################################################

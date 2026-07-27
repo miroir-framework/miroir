@@ -1,7 +1,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
+import { Uuid } from '../0_interfaces/1_core/EntityVersion.js';
 import {
   DomainControllerInterface,
   DomainState,
@@ -45,7 +45,7 @@ import {
   Deployment,
   DomainAction,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   InstanceAction,
   MetaModel,
@@ -522,14 +522,14 @@ export class DomainController implements DomainControllerInterface {
           };
 
           // Model is always loaded entirely (application concepts). Fetch model first so
-          // Entity (and legacy EntityDefinition) cache policies are available for data refresh.
+          // Entity (and legacy EntityVersion) cache policies are available for data refresh.
           const modelFetchTargets = modelEntitiesToFetch.map((e) => ({
             section: "model" as ApplicationSection,
             entity: e,
           }));
           const modelInstances = await Promise.all(modelFetchTargets.map(fetchEntityInstances));
 
-          const entityDefinitionsByEntityUuid: Record<string, EntityDefinition> = {};
+          const entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {};
           const entityDefinitionFetchIndex = modelEntitiesToFetch.findIndex(
             (e) => e.uuid === entityEntityDefinition.uuid,
           );
@@ -540,7 +540,7 @@ export class DomainController implements DomainControllerInterface {
               entityDefinitionCollection &&
               Array.isArray(entityDefinitionCollection.instances)
             ) {
-              for (const def of entityDefinitionCollection.instances as EntityDefinition[]) {
+              for (const def of entityDefinitionCollection.instances as EntityVersion[]) {
                 if (def?.entityUuid) {
                   entityDefinitionsByEntityUuid[def.entityUuid] = def;
                 }
@@ -1186,10 +1186,10 @@ export class DomainController implements DomainControllerInterface {
             // });
             
             // Combine entities with their definitions
-            const entitiesToCreate: { entity: Entity; entityDefinition?: EntityDefinition }[] = [];
+            const entitiesToCreate: { entity: Entity; entityVersion?: EntityVersion }[] = [];
             
             // Create a map of entityDefinitions by entityUuid for quick lookup
-            const entityDefinitionMap = new Map<string, EntityDefinition>();
+            const entityDefinitionMap = new Map<string, EntityVersion>();
             if (model.entityVersions) {
               for (const entityDef of model.entityVersions) {
                 entityDefinitionMap.set(entityDef.entityUuid, entityDef);
@@ -1199,14 +1199,14 @@ export class DomainController implements DomainControllerInterface {
             // Match entities with their definitions (#217 Phase 11: Entity-complete needs no live ED)
             if (model.entities) {
               for (const entity of model.entities) {
-                const entityDefinition = entityDefinitionMap.get(entity.uuid);
-                if (entityDefinition) {
-                  entitiesToCreate.push({ entity, entityDefinition });
+                const entityVersion = entityDefinitionMap.get(entity.uuid);
+                if (entityVersion) {
+                  entitiesToCreate.push({ entity, entityVersion });
                 } else if (entity.mlSchema) {
                   entitiesToCreate.push({ entity });
                 } else {
                   log.warn(
-                    "handleModelAction resetModel: no entityDefinition found for entity",
+                    "handleModelAction resetModel: no entityVersion found for entity",
                     entity.uuid,
                     entity.name
                   );
@@ -1223,14 +1223,14 @@ export class DomainController implements DomainControllerInterface {
               // );
               
               // Create entities via persistence action for each entity
-              for (const { entity, entityDefinition } of entitiesToCreate) {
+              for (const { entity, entityVersion } of entitiesToCreate) {
                 const createEntityAction: ModelAction = {
                   actionType: "createEntity",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionResetModel.payload.application,
-                    entities: entityDefinition
-                      ? [{ entity, entityVersion: entityDefinition }]
+                    entities: entityVersion
+                      ? [{ entity, entityVersion: entityVersion }]
                       : [{ entity }],
                   }
                 };
@@ -1348,10 +1348,10 @@ export class DomainController implements DomainControllerInterface {
             });
             
             // Combine entities with their definitions
-            const entitiesToCreate: { entity: Entity; entityDefinition?: EntityDefinition }[] = [];
+            const entitiesToCreate: { entity: Entity; entityVersion?: EntityVersion }[] = [];
             
             // Create a map of entityDefinitions by entityUuid for quick lookup
-            const entityDefinitionMap = new Map<string, EntityDefinition>();
+            const entityDefinitionMap = new Map<string, EntityVersion>();
             if (model.entityVersions) {
               for (const entityDef of model.entityVersions) {
                 entityDefinitionMap.set(entityDef.entityUuid, entityDef);
@@ -1361,14 +1361,14 @@ export class DomainController implements DomainControllerInterface {
             // Match entities with their definitions (#217 Phase 11: Entity-complete needs no live ED)
             if (model.entities) {
               for (const entity of model.entities) {
-                const entityDefinition = entityDefinitionMap.get(entity.uuid);
-                if (entityDefinition) {
-                  entitiesToCreate.push({ entity, entityDefinition });
+                const entityVersion = entityDefinitionMap.get(entity.uuid);
+                if (entityVersion) {
+                  entitiesToCreate.push({ entity, entityVersion });
                 } else if (entity.mlSchema) {
                   entitiesToCreate.push({ entity });
                 } else {
                   log.warn(
-                    "handleModelAction resetModel: no entityDefinition found for entity",
+                    "handleModelAction resetModel: no entityVersion found for entity",
                     entity.uuid,
                     entity.name
                   );
@@ -1385,14 +1385,14 @@ export class DomainController implements DomainControllerInterface {
               );
               
               // Create entities via persistence action for each entity
-              for (const { entity, entityDefinition } of entitiesToCreate) {
+              for (const { entity, entityVersion } of entitiesToCreate) {
                 const createEntityAction: ModelAction = {
                   actionType: "createEntity",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionInitModel.payload.application,
-                    entities: entityDefinition
-                      ? [{ entity, entityVersion: entityDefinition }]
+                    entities: entityVersion
+                      ? [{ entity, entityVersion: entityVersion }]
                       : [{ entity }],
                   }
                 };

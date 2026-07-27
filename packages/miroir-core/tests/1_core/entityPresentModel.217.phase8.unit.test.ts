@@ -4,7 +4,7 @@ import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { resolvePresentEntityFromModel } from "../../src/1_core/entityPresentModel.js";
 
@@ -24,7 +24,7 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
     expect(present?.viewAttributes).toEqual(bookEntity.viewAttributes);
   });
 
-  it("enriches incomplete Entity via EntityDefinition fallback hub", () => {
+  it("enriches incomplete Entity via EntityVersion fallback hub", () => {
     const legacyEntity: Entity = {
       uuid: bookEntity.uuid,
       name: bookEntity.name,
@@ -41,7 +41,7 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
     expect(present?.mlSchema).toEqual(bookDefinition.mlSchema);
   });
 
-  it("synthesizes present model from EntityDefinition alone when Entity missing", () => {
+  it("synthesizes present model from EntityVersion alone when Entity missing", () => {
     const present = resolvePresentEntityFromModel(
       {
         entities: [],
@@ -59,11 +59,11 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
     ).toBeUndefined();
   });
 
-  it("Library Author present model matches EntityDefinition mlSchema (equivalence)", () => {
+  it("Library Author present model matches EntityVersion mlSchema (equivalence)", () => {
     const present = resolvePresentEntityFromModel(defaultLibraryAppModel, authorEntityUuid);
     const authorDefinition = defaultLibraryAppModel.entityVersions.find(
       (definition) => definition.entityUuid === authorEntityUuid,
-    ) as EntityDefinition;
+    ) as EntityVersion;
     expect(present?.mlSchema).toEqual(authorDefinition.mlSchema);
   });
 });

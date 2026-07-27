@@ -22,7 +22,7 @@ const bookDefinition = defaultLibraryAppModel.entityVersions.find(
 )!;
 
 describe("217 Phase 11 — Model Actions Entity-first", () => {
-  it("resolves live EntityDefinition by entityUuid when entityVersionUuid omitted", () => {
+  it("resolves live EntityVersion by entityUuid when entityVersionUuid omitted", () => {
     const resolved = resolveLiveEntityDefinitionForAction(
       defaultLibraryAppModel as MetaModel,
       bookEntity.uuid,
@@ -30,7 +30,7 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     expect(resolved?.uuid).toBe(bookDefinition.uuid);
   });
 
-  it("createEntity without entityDefinition emits Entity-only when Entity is complete", () => {
+  it("createEntity without entityVersion emits Entity-only when Entity is complete", () => {
     const action: ModelAction = {
       actionType: "createEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",

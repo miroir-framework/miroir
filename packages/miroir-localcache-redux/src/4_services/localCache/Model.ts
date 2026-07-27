@@ -17,7 +17,7 @@ import {
   type ApplicationVersion,
   type StoreBasedConfiguration,
   type Entity,
-  type EntityDefinition,
+  type EntityVersion,
   type MlSchema,
   type Menu,
   type Report,
@@ -140,11 +140,11 @@ export function currentModel(
           : []) as Entity[],
         (entityDefinitions && entityDefinitions.entities
           ? Object.values(entityDefinitions.entities)
-          : []) as EntityDefinition[],
+          : []) as EntityVersion[],
       ),
       entityVersions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
-        : []) as EntityDefinition[],
+        : []) as EntityVersion[],
       jzodSchemas: (jzodSchemas && jzodSchemas.entities
         ? Object.values(jzodSchemas.entities)
         : []) as MlSchema[],

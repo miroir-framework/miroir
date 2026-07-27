@@ -6,7 +6,7 @@ import {
   Action2VoidReturnType,
   Domain2ElementFailed,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstanceWithName,
   LoggerInterface,
@@ -70,15 +70,15 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     // TODO: does side effect => refactor!
     getAccessToModelSectionEntity(
       entity: Entity,
-      entityDefinition: EntityDefinition
+      entityVersion: EntityVersion
     ): EntityUuidIndexedSequelizeModel {
       // #217 Phase 11 — Entity present-model fields preferred for Sequelize schema.
       const schemaSource = {
         name: entity.name,
-        mlSchema: entity.mlSchema ?? entityDefinition.mlSchema,
-        idAttribute: entity.idAttribute ?? (entityDefinition as any).idAttribute,
+        mlSchema: entity.mlSchema ?? entityVersion.mlSchema,
+        idAttribute: entity.idAttribute ?? (entityVersion as any).idAttribute,
         externalDataSource:
-          entity.externalDataSource ?? (entityDefinition as any).externalDataSource,
+          entity.externalDataSource ?? (entityVersion as any).externalDataSource,
       };
       return {
         [entity.uuid]: {
@@ -101,38 +101,38 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    // #217 Phase 6/11: Entity then optional EntityDefinition; Entity-only when ED omitted.
+    // #217 Phase 6/11: Entity then optional EntityVersion; Entity-only when ED omitted.
     async createEntity(
       entity: Entity,
-      entityDefinition?: EntityDefinition
+      entityVersion?: EntityVersion
     ): Promise<Action2VoidReturnType> {
       log.info(
         this.logHeader,
         "createEntity input: entity",
         entity,
-        "entityDefinition",
-        entityDefinition,
+        "entityVersion",
+        entityVersion,
         "sqlEntities",
         this.dataStore.getEntityUuids()
       );
-      if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
+      if (entityVersion && entity.uuid != entityVersion.entityUuid) {
         log.error(
           this.logHeader,
           "createEntity",
-          "inconsistent input: given entityDefinition is not related to given entity."
+          "inconsistent input: given entityVersion is not related to given entity."
         );
         return Promise.resolve(
           new Action2Error(
             "FailedToCreateStore",
-            "createEntity failed: inconsistent input, given entityDefinition is not related to given entity.",
+            "createEntity failed: inconsistent input, given entityVersion is not related to given entity.",
             undefined, // errorStack
             undefined, // innerError,
-            { entity, entityDefinition } // errorContext
+            { entity, entityVersion } // errorContext
           ),
         );
       }
 
-      if (!entityDefinition) {
+      if (!entityVersion) {
         await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
         if (!this.sqlSchemaTableAccess?.[entityEntity.uuid]) {
           return Promise.resolve(
@@ -162,31 +162,31 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return Promise.resolve(ACTION_OK);
       }
 
-      const pair = normalizeCreateEntityPair(entity, entityDefinition);
-      const localEntityDefinition = pair.entityDefinition.mlSchema?.extend
-        ? entityDefinitionWithResolvedMLSchema(pair.entityDefinition as EntityDefinition)
-        : pair.entityDefinition;
+      const pair = normalizeCreateEntityPair(entity, entityVersion);
+      const localEntityDefinition = pair.entityVersion.mlSchema?.extend
+        ? entityDefinitionWithResolvedMLSchema(pair.entityVersion as EntityVersion)
+        : pair.entityVersion;
       
       await this.dataStore.createStorageSpaceForInstancesOfEntity(
         pair.entity,
-        localEntityDefinition as EntityDefinition,
+        localEntityDefinition as EntityVersion,
       );
 
       if (!this.sqlSchemaTableAccess?.[entityEntity.uuid] || !this.sqlSchemaTableAccess?.[entityEntityDefinition.uuid]) {
         log.error(
           this.logHeader,
           "createEntity",
-          "could not insert in model schema for entity / entityDefinition",
+          "could not insert in model schema for entity / entityVersion",
           pair.entity,
-          pair.entityDefinition,
+          pair.entityVersion,
         );
         return Promise.resolve(
           new Action2Error(
             "FailedToCreateStore",
-            "createEntity failed: could not insert in model schema for entity or entityDefinition.",
+            "createEntity failed: could not insert in model schema for entity or entityVersion.",
             undefined,
             undefined,
-            { entity: pair.entity, entityDefinition: pair.entityDefinition },
+            { entity: pair.entity, entityVersion: pair.entityVersion },
           ),
         );
       }
@@ -198,7 +198,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
             { transaction },
           );
           await this.sqlSchemaTableAccess![entityEntityDefinition.uuid].sequelizeModel.upsert(
-            pair.entityDefinition as any,
+            pair.entityVersion as any,
             { transaction },
           );
         });
@@ -209,7 +209,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
             `createEntity transactional dual-write failed: ${(error as Error).message}`,
             ["createEntity", "transaction"],
             undefined,
-            { entity: pair.entity, entityDefinition: pair.entityDefinition, error },
+            { entity: pair.entity, entityVersion: pair.entityVersion, error },
           ),
         );
       }
@@ -221,11 +221,11 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     async createEntities(
       entities: {
         entity: Entity;
-        entityDefinition?: EntityDefinition;
+        entityVersion?: EntityVersion;
       }[]
     ): Promise<Action2VoidReturnType> {
       for (const e of entities) {
-        await this.createEntity(e.entity, e.entityDefinition);
+        await this.createEntity(e.entity, e.entityVersion);
       }
       return Promise.resolve(ACTION_OK);
     }
@@ -273,10 +273,10 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
             );
           }
 
-          for (const entityDefinition of entityDefinitions.returnedDomainElement.instances.filter(
-            (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid
+          for (const entityVersion of entityDefinitions.returnedDomainElement.instances.filter(
+            (i: EntityInstance) => (i as EntityVersion).entityUuid == entityUuid
           )) {
-            await this.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
+            await this.deleteInstance(entityEntityDefinition.uuid, entityVersion);
           }
 
           await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
@@ -356,7 +356,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         );
       }
       const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+        currentEntityDefinition.returnedDomainElement as EntityVersion;
       const pair = applyRenameEntityPair(
         previousEntity,
         previousEntityDefinition,
@@ -382,7 +382,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         (previousEntity as EntityInstanceWithName).name,
         update.payload.targetValue,
         pair.entity,
-        pair.entityDefinition
+        pair.entityVersion
       );
       return Promise.resolve(ACTION_OK);
     }
@@ -445,7 +445,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         );
       }
       const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+        currentEntityDefinition.returnedDomainElement as EntityVersion;
       const pair = applyAlterEntityAttributePair(
         previousEntity,
         previousEntityDefinition,
@@ -481,7 +481,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         "addColumns",
         JSON.stringify(update.payload.addColumns, null, 2),
         "modifiedEntityDefinition",
-        JSON.stringify(pair.entityDefinition, null, 2)
+        JSON.stringify(pair.entityVersion, null, 2)
       );
 
       // TODO: relies on implementation, IT SHOULD NOT! does side effect, to worsen the insult
@@ -489,7 +489,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         ...(this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess,
         ...(this.dataStore as any as SqlDbStoreSection).getAccessToDataSectionEntity(
           pair.entity,
-          pair.entityDefinition
+          pair.entityVersion
         ),
       };
       log.info(

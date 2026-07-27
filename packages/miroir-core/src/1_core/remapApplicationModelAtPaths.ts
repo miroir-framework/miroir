@@ -5,7 +5,7 @@
  */
 
 import type { MetaModel } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion.js";
 import {
   formatRelativePath,
   listSelfApplicationUuidPaths,

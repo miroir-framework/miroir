@@ -4,7 +4,7 @@ import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { assembleLivePresentModelEntities } from "../../src/1_core/entityPresentModel.js";
 
@@ -19,7 +19,7 @@ describe("217 Phase 7 — assembleLivePresentModelEntities", () => {
   it("returns complete Entities as identity (present-model already on Entity)", () => {
     const assembled = assembleLivePresentModelEntities(
       defaultLibraryAppModel.entities as Entity[],
-      defaultLibraryAppModel.entityVersions as EntityDefinition[],
+      defaultLibraryAppModel.entityVersions as EntityVersion[],
     );
     expect(assembled).toHaveLength(defaultLibraryAppModel.entities.length);
     const book = assembled.find((entity) => entity.uuid === bookEntity.uuid);
@@ -27,7 +27,7 @@ describe("217 Phase 7 — assembleLivePresentModelEntities", () => {
     expect(book?.viewAttributes).toEqual(bookEntity.viewAttributes);
   });
 
-  it("enriches incomplete legacy Entity from EntityDefinition", () => {
+  it("enriches incomplete legacy Entity from EntityVersion", () => {
     const legacyEntity: Entity = {
       uuid: bookEntity.uuid,
       name: bookEntity.name,

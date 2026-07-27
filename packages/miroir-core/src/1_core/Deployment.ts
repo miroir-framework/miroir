@@ -1,4 +1,4 @@
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type {
   AdminApplication,
   CompositeActionSequence,
@@ -6,7 +6,7 @@ import type {
   CoreTransformerForBuildPlusRuntime_getFromParameters,
   Deployment,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   MetaModel,
   MiroirConfigClient,
@@ -234,7 +234,7 @@ export interface EntityDefinitionCouple {
   // entity: Entity;
   entity: Entity;
   /** Optional during #217 Phase 11 — Entity-only create when present model is complete. */
-  entityDefinition?: EntityDefinition;
+  entityVersion?: EntityVersion;
 }
 export type ApplicationEntitiesDefinitionAndInstances = {
   instances: EntityInstance[];
@@ -269,8 +269,8 @@ export function metaModelFilterEntities(
   ) : metaModel.entities;
   const sourceEntityVersions = getMetaModelEntityVersions(metaModel);
   const filteredEntityVersions = entityUuidsToKeep
-    ? sourceEntityVersions.filter((entityDefinition) =>
-        entityUuidsToKeep.includes(entityDefinition.entityUuid),
+    ? sourceEntityVersions.filter((entityVersion) =>
+        entityUuidsToKeep.includes(entityVersion.entityUuid),
       )
     : sourceEntityVersions;
   return withMetaModelEntityVersions(
@@ -377,12 +377,12 @@ export function buildResetAndinitializeDeploymentActionSequence(
 
   const filteredEntityVersions = getMetaModelEntityVersions(filteredEntitiesMetaModel);
   const entities: EntityDefinitionCouple[] = filteredEntitiesMetaModel.entities.map((entity) => {
-    const entityDefinition = filteredEntityVersions.find(
+    const entityVersion = filteredEntityVersions.find(
       (ed) => ed.entityUuid === entity.uuid,
     );
     // #217 Phase 11 — Entity with present-model fields does not require a live ED row.
-    if (entityDefinition) {
-      return { entity, entityDefinition };
+    if (entityVersion) {
+      return { entity, entityVersion };
     }
     if (entityHasCompletePresentModel(entity)) {
       return { entity };
@@ -457,10 +457,10 @@ export function buildResetAndinitializeDeploymentActionSequence(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // #217 Phase 12: Action field is entityVersion; couple API still uses entityDefinition
-            entities: entities.map(({ entity, entityDefinition }) =>
-              entityDefinition
-                ? { entity, entityVersion: entityDefinition }
+            // #217 Phase 12: Action field is entityVersion; couple API still uses entityVersion
+            entities: entities.map(({ entity, entityVersion }) =>
+              entityVersion
+                ? { entity, entityVersion: entityVersion }
                 : { entity },
             ),
           },

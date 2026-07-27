@@ -34,9 +34,9 @@ function entityVersionUuidFromModelAction(
   switch (action.actionType) {
     case "createEntity": {
       const entry = action.payload.entities[0] as
-        | { entityVersion?: { uuid?: string }; entityDefinition?: { uuid?: string } }
+        | { entityVersion?: { uuid?: string } }
         | undefined;
-      return entry?.entityVersion?.uuid ?? entry?.entityDefinition?.uuid;
+      return entry?.entityVersion?.uuid;
     }
     case "renameEntity":
     case "dropEntity":

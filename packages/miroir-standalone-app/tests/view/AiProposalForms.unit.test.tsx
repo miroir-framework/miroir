@@ -31,7 +31,7 @@ const sampleEntityProposal = {
     name: "Product",
     description: "A sellable product",
   },
-  entityDefinition: {
+  entityVersion: {
     uuid: "aaaaaaaa-0001-0000-0000-000000000002",
     parentName: "EntityVersion",
     parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -119,10 +119,10 @@ describe("AiEntityProposalForm", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: /accept/i }));
     expect(onAccept).toHaveBeenCalledTimes(1);
-    // The accepted value should contain the entity and entityDefinition
+    // The accepted value should contain the entity and entityVersion
     const accepted = onAccept.mock.calls[0][0];
     expect(accepted).toHaveProperty("entity");
-    expect(accepted).toHaveProperty("entityDefinition");
+    expect(accepted).toHaveProperty("entityVersion");
     expect(accepted.entity.name).toBe("Product");
   });
 

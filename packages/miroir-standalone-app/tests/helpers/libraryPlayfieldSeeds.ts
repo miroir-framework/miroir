@@ -1,7 +1,7 @@
 import type {
   ApplicationEntitiesAndInstances,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   InitApplicationParameters,
   MetaModel,
@@ -94,7 +94,7 @@ export const entityCompositePK: Entity = {
   description: "Test entity with a composite primary key [region, code].",
 } as Entity;
 
-export const entityDefinitionCompositePK: EntityDefinition = {
+export const entityDefinitionCompositePK: EntityVersion = {
   uuid: ENTITY_DEFINITION_COMPOSITE_PK_UUID,
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -129,7 +129,7 @@ export const entityDefinitionCompositePK: EntityDefinition = {
       },
     },
   },
-} as any as EntityDefinition;
+} as any as EntityVersion;
 
 export const compositeItem1: EntityInstance = {
   region: "EU",
@@ -180,7 +180,7 @@ export const compositePKTestMetaModel: MetaModel = {
 export const libraryEntitiesAndInstancesCompositePK: ApplicationEntitiesAndInstances = [
   {
     entity: entityCompositePK,
-    entityDefinition: entityDefinitionCompositePK,
+    entityVersion: entityDefinitionCompositePK,
     instances: [compositeItem1, compositeItem2, compositeItem3],
   },
 ];
@@ -200,7 +200,7 @@ export const entityCodeNumber: Entity = {
   description: "Test entity with a non-UUID number primary key.",
 } as Entity;
 
-export const entityDefinitionCodeNumber: EntityDefinition = {
+export const entityDefinitionCodeNumber: EntityVersion = {
   uuid: ENTITY_DEFINITION_CODE_NUMBER_UUID,
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -231,7 +231,7 @@ export const entityDefinitionCodeNumber: EntityDefinition = {
       },
     },
   },
-} as any as EntityDefinition;
+} as any as EntityVersion;
 
 export const codeItem1: EntityInstance = {
   code: 1,
@@ -276,7 +276,7 @@ export const codeNumberTestMetaModel: MetaModel = {
 export const libraryEntitiesAndInstancesCodeNumber: ApplicationEntitiesAndInstances = [
   {
     entity: entityCodeNumber,
-    entityDefinition: entityDefinitionCodeNumber,
+    entityVersion: entityDefinitionCodeNumber,
     instances: [codeItem1, codeItem2, codeItem3],
   },
 ];
@@ -285,7 +285,7 @@ export const libraryEntitiesAndInstancesCodeNumber: ApplicationEntitiesAndInstan
 export const libraryEntitiesAndInstancesPublisherOnly: ApplicationEntitiesAndInstances = [
   {
     entity: entityPublisher as Entity,
-    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -298,7 +298,7 @@ export const publisherOnlyTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity],
-  entityVersions: [entityDefinitionPublisher as EntityDefinition],
+  entityVersions: [entityDefinitionPublisher as EntityVersion],
   endpoints: [],
   jzodSchemas: [],
   menus: [],
@@ -327,7 +327,7 @@ export const entityNoParentUuid: Entity = {
   description: "Test entity whose instances do not bear a parentUuid attribute.",
 } as Entity;
 
-export const entityDefinitionNoParentUuid: EntityDefinition = {
+export const entityDefinitionNoParentUuid: EntityVersion = {
   uuid: ENTITY_DEFINITION_NO_PARENT_UUID_UUID,
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -353,7 +353,7 @@ export const entityDefinitionNoParentUuid: EntityDefinition = {
       },
     },
   },
-} as EntityDefinition;
+} as EntityVersion;
 
 export const noParentItem1: EntityInstance = {
   uuid: "4476e12d-e822-44db-bd06-aadb81b74d60",
@@ -379,7 +379,7 @@ export const noParentUuidTestMetaModel: MetaModel = {
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityNoParentUuid],
   entityVersions: [
-    entityDefinitionPublisher as EntityDefinition,
+    entityDefinitionPublisher as EntityVersion,
     entityDefinitionNoParentUuid,
   ],
   endpoints: [],
@@ -398,7 +398,7 @@ export const noParentUuidTestMetaModel: MetaModel = {
 export const libraryEntitiesAndInstancesNoParentUuid: ApplicationEntitiesAndInstances = [
   {
     entity: entityPublisher as Entity,
-    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -407,7 +407,7 @@ export const libraryEntitiesAndInstancesNoParentUuid: ApplicationEntitiesAndInst
   },
   {
     entity: entityNoParentUuid,
-    entityDefinition: entityDefinitionNoParentUuid,
+    entityVersion: entityDefinitionNoParentUuid,
     instances: [noParentItem1, noParentItem2, noParentItem3],
   },
 ];
@@ -424,12 +424,12 @@ export const libraryPlayfieldSeedInitParams: InitApplicationParameters = {
 export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as Entity,
-    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityDefinition: entityDefinitionBook as EntityDefinition,
+    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
@@ -441,7 +441,7 @@ export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   },
   {
     entity: entityPublisher as Entity,
-    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -454,12 +454,12 @@ export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
 export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as Entity,
-    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityDefinition: entityDefinitionBook as EntityDefinition,
+    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
@@ -470,7 +470,7 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
   },
   {
     entity: entityPublisher as Entity,
-    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -509,7 +509,7 @@ export function isDomainControllerDataCrudSuite(suiteKey: string): boolean {
 export const libraryEntitiesAndInstancesPublisherAndCountry: ApplicationEntitiesAndInstances = [
   {
     entity: entityPublisher as Entity,
-    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -518,7 +518,7 @@ export const libraryEntitiesAndInstancesPublisherAndCountry: ApplicationEntities
   },
   {
     entity: entityCountry as Entity,
-    entityDefinition: entityDefinitionCountry as EntityDefinition,
+    entityVersion: entityDefinitionCountry as EntityVersion,
     instances: [
       Country1 as EntityInstance,
       Country2 as EntityInstance,
@@ -538,8 +538,8 @@ export const publisherAndCountryTestMetaModel: MetaModel = {
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityCountry as Entity],
   entityVersions: [
-    entityDefinitionPublisher as EntityDefinition,
-    entityDefinitionCountry as EntityDefinition,
+    entityDefinitionPublisher as EntityVersion,
+    entityDefinitionCountry as EntityVersion,
   ],
   endpoints: [],
   jzodSchemas: [],

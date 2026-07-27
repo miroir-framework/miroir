@@ -8,12 +8,12 @@ import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   entityMLSchema,
   entityWithResolvedMLSchema,
-} from "../../src/0_interfaces/1_core/EntityDefinition.js";
+} from "../../src/0_interfaces/1_core/EntityVersion.js";
 import { alignEntityDefinitionToPresentEntity } from "../../src/1_core/entityPresentModel.js";
 
 describe("217 Phase 4 — entityMLSchema / entityWithResolvedMLSchema", () => {
@@ -48,7 +48,7 @@ describe("217 Phase 4 — entityMLSchema / entityWithResolvedMLSchema", () => {
 });
 
 describe("217 Phase 4 — alignEntityDefinitionToPresentEntity", () => {
-  it("projects Entity definition fields onto the redundant EntityDefinition", () => {
+  it("projects Entity definition fields onto the redundant EntityVersion", () => {
     const book = defaultLibraryAppModel.entities.find(
       (e) => e.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     )!;
@@ -66,16 +66,16 @@ describe("217 Phase 4 — alignEntityDefinitionToPresentEntity", () => {
     );
   });
 
-  it("uses Entity-authoritative fields when they diverge from EntityDefinition", () => {
+  it("uses Entity-authoritative fields when they diverge from EntityVersion", () => {
     const entity = {
       ...(entityEntity as Entity),
       viewAttributes: ["onlyOnEntity"],
     };
     const aligned = alignEntityDefinitionToPresentEntity(
       entity,
-      entityDefinitionEntity as EntityDefinition,
+      entityDefinitionEntity as EntityVersion,
     );
     expect(aligned.viewAttributes).toEqual(["onlyOnEntity"]);
-    expect(aligned.uuid).toBe((entityDefinitionEntity as EntityDefinition).uuid);
+    expect(aligned.uuid).toBe((entityDefinitionEntity as EntityVersion).uuid);
   });
 });

@@ -1,12 +1,12 @@
 // import { diff } from "util";
 // import * as Diff from "diff";
 import { diffString, diff } from 'json-diff';
-import type { EntityDefinition, ModelAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { EntityVersion, ModelAction } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { cleanLevel } from "./../constants";
-import type { Uuid } from '../../0_interfaces/1_core/EntityDefinition';
+import type { Uuid } from '../../0_interfaces/1_core/EntityVersion';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -24,8 +24,8 @@ MiroirLoggerFactory.registerLoggerToStart(
  */
 export function getModelUpdate(
   application: Uuid,
-  entityDefinitionBefore: EntityDefinition,
-  entityDefinitionAfter: EntityDefinition
+  entityDefinitionBefore: EntityVersion,
+  entityDefinitionAfter: EntityVersion
 ): ModelAction | null {
   if (entityDefinitionBefore.uuid !== entityDefinitionAfter.uuid) {
     throw new Error("EntityDefinitions must have the same UUID to compute a ModelUpdate.");

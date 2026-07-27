@@ -71,7 +71,7 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const EntityInstanceGrid = (props: TableComponentProps) => {
   log.info(":::::::::::::::::::::::::: EntityInstanceGrid refreshing with props",props);
 
-  // #217 Phase 12: prefer Entity present model; fall back to EntityDefinition-shaped carrier
+  // #217 Phase 12: prefer Entity present model; fall back to EntityVersion-shaped carrier
   const presentModelSource =
     props.type === TableComponentTypeSchema.enum.EntityInstance
       ? props.currentEntity?.mlSchema
@@ -901,7 +901,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 isAttributes={true}
                 label={props.currentEntity?.name ?? "No Entity Found!"}
                 defaultFormValuesObject={dialogFormObject ?? props.defaultFormValuesObject}
-                entityDefinition={presentModelSource}
+                entityVersion={presentModelSource}
                 entityDefinitionJzodSchema={presentModelSource?.mlSchema as JzodObject}
                 foreignKeyObjects={props.foreignKeyObjects}
                 currentApplication={props.application}

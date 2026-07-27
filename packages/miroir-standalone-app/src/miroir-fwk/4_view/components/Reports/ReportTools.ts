@@ -7,7 +7,7 @@ import {
   resolvePresentEntityFromModel,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
-  type EntityDefinition,
+  type EntityVersion,
   type JzodElement,
   type JzodObject,
   type MetaModel,
