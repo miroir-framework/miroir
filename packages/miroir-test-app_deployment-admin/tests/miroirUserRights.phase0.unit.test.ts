@@ -6,38 +6,31 @@ import {
   findAdminEntityByName,
   getAdminDataDir,
   getAdminModelDir,
+  listAdminDataInstanceFiles,
   listAdminDataParentUuids,
   listAdminEntityNames,
 } from "./helpers/adminAssetInventory";
 
 /**
- * Phase 0 characterization for #219: Admin does not yet define MiroirUser / MiroirRight.
- * Later phases invert the absence assertions; do not leave contradictory Phase 0 cases after Phase 1–2.
+ * Phase 0 characterization for #219.
+ * MiroirUser presence is asserted in phase1 (inverted here after Phase 1).
+ * MiroirRight remains absent until Phase 2.
  */
-describe("miroirUserRights.phase0 — Admin baseline (no MiroirUser / MiroirRight yet)", () => {
+describe("miroirUserRights.phase0 — Admin baseline catalogue", () => {
   const modelDir = getAdminModelDir();
   const dataDir = getAdminDataDir();
 
-  it("has no Entity named MiroirUser in admin_model", () => {
-    expect(findAdminEntityByName("MiroirUser", modelDir)).toBeUndefined();
-    expect(listAdminEntityNames(modelDir)).not.toContain("MiroirUser");
+  it("has MiroirUser Entity after Phase 1 (inverted from initial absence)", () => {
+    expect(findAdminEntityByName("MiroirUser", modelDir)).toBeDefined();
+    expect(listAdminEntityNames(modelDir)).toContain("MiroirUser");
+    const entity = findAdminEntityByName("MiroirUser", modelDir)!;
+    expect(listAdminDataParentUuids(dataDir)).toContain(entity.uuid as string);
+    expect(listAdminDataInstanceFiles(entity.uuid as string, dataDir).length).toBeGreaterThanOrEqual(2);
   });
 
-  it("has no Entity named MiroirRight in admin_model", () => {
+  it("has no Entity named MiroirRight in admin_model yet (until Phase 2)", () => {
     expect(findAdminEntityByName("MiroirRight", modelDir)).toBeUndefined();
     expect(listAdminEntityNames(modelDir)).not.toContain("MiroirRight");
-  });
-
-  it("has no admin_data parent folders for MiroirUser / MiroirRight entities", () => {
-    const dataParents = listAdminDataParentUuids(dataDir);
-    for (const name of ["MiroirUser", "MiroirRight"] as const) {
-      const entity = findAdminEntityByName(name, modelDir);
-      expect(entity, `${name} must not exist as Entity before Phase 1–2`).toBeUndefined();
-    }
-    // Defense in depth: even if an entity uuid leaked without a named Entity row,
-    // Phase 0 documents that no data folders are keyed by unknown future entity uuids
-    // via the named-entity path above. Catalogue smoke covers known parents separately.
-    expect(dataParents.length).toBeGreaterThan(0);
   });
 
   it("still has AdminApplication and Deployment Entity definitions", () => {

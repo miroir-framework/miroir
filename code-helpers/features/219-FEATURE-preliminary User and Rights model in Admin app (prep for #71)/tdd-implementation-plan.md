@@ -58,7 +58,7 @@ Legend:
 | Phase | Title | Status | Primary RED / Validation command |
 |---|---|---|---|
 | 0 | Test harness and fixtures baseline | ✅ DONE | `… -- miroirUserRights.phase0` + `… -- modelValidation` |
-| 1 | Introduce `MiroirUser` | ⬜ TODO | `… -- miroirUserRights.phase1` + `… -- modelValidation` |
+| 1 | Introduce `MiroirUser` | ✅ DONE | `… -- miroirUserRights.phase1` + `… -- modelValidation` |
 | 2 | Introduce `MiroirRight` | ⬜ TODO | `… -- miroirUserRights.phase2` + `… -- modelValidation` |
 | 3 | Admin list/detail reporting | ⬜ TODO | `… -- miroirUserRights.phase3` |
 | 4 | Behavior non-change safety net | ⬜ TODO | `… -- miroirUserRights.phase4` + DomainController.integ |
@@ -121,11 +121,17 @@ Expect: both green; `git status` shows no new admin model/data entity assets fro
 
 ---
 
-## Phase 1 — Introduce `MiroirUser` model entity
+## Phase 1 — Introduce `MiroirUser` model entity  ✅ DONE
 
 ### Goal
 
 Add `MiroirUser` to Admin model + minimal seed users (analysis baseline; C6).
+
+**Landed assets:**
+- Entity `d20d09e5-0685-4fc7-b9bd-fcfa3845127a` (`MiroirUser`)
+- EntityVersion `92b319e7-f8d9-439d-899b-138c64ed81f2`
+- Seeds: Alice Admin (`active`), Bob Inactive (`inactive`)
+- Exports: `entityMiroirUser`, `entityVersionMiroirUser`, `miroirUser_AliceAdmin`, `miroirUser_BobInactive`
 
 ### Red
 

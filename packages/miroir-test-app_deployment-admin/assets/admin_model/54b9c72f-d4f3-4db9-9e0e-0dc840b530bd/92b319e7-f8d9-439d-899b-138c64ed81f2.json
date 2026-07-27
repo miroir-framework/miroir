@@ -1,0 +1,67 @@
+{
+  "uuid": "92b319e7-f8d9-439d-899b-138c64ed81f2",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "d20d09e5-0685-4fc7-b9bd-fcfa3845127a",
+  "conceptLevel": "Model",
+  "name": "MiroirUser",
+  "icon": "Person",
+  "viewAttributes": [
+    "name",
+    "status",
+    "description",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "status": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Status",
+            "description": "Illustrative free-string status (e.g. active / inactive). Taxonomy deferred to #71.",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

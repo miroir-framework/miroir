@@ -4,6 +4,7 @@ export { default as entityApplicationForAdmin } from "./assets/admin_model/16dbf
 export { default as entityDeployment } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/7959d814-400c-4e80-988f-a00fe582ab98.json" with { type: "json" };
 export { default as entityViewParams } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/b9765b7c-b614-4126-a0e2-634463f99937.json" with { type: "json" };
 export { default as entityImport } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ff3d211b-7eb6-473a-afbf-503bb70a5c26.json" with { type: "json" };
+export { default as entityMiroirUser } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d20d09e5-0685-4fc7-b9bd-fcfa3845127a.json" with { type: "json" };
 
 // Admin Model - Entity Versions  
 export { default as entityVersionAdminApplication } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" with { type: "json" };
@@ -21,6 +22,9 @@ export { default as entityDefinitionStoreBasedConfiguration } from "./assets/adm
 export { default as entityVersionImport } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9f68d5aa-8def-421b-a9bc-52ed22a63e7e.json" with { type: "json" };
 /** @deprecated Use entityVersionImport */
 export { default as entityDefinitionImport } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9f68d5aa-8def-421b-a9bc-52ed22a63e7e.json" with { type: "json" };
+export { default as entityVersionMiroirUser } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/92b319e7-f8d9-439d-899b-138c64ed81f2.json" with { type: "json" };
+/** @deprecated Use entityVersionMiroirUser */
+export { default as entityDefinitionMiroirUser } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/92b319e7-f8d9-439d-899b-138c64ed81f2.json" with { type: "json" };
 
 // Admin Model - Reports
 export { default as reportViewParamsDetails } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/57b3d7ef-8c12-4891-893e-35bab00b2037.json" with { type: "json" };
@@ -64,3 +68,7 @@ export { default as defaultAdminViewParams } from "./assets/admin_data/b9765b7c-
 
 // Admin Data - Imports
 export { default as adminImport } from "./assets/admin_data/ff3d211b-7eb6-473a-afbf-503bb70a5c26/ae552546-915e-410c-995b-b2451354d771.json" with { type: "json" };
+
+// Admin Data - MiroirUser
+export { default as miroirUser_AliceAdmin } from "./assets/admin_data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/1c39328c-7de4-44ae-bcf1-5bbc38d8e267.json" with { type: "json" };
+export { default as miroirUser_BobInactive } from "./assets/admin_data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/95fa298f-79f8-428c-8980-3443d486c1d8.json" with { type: "json" };
