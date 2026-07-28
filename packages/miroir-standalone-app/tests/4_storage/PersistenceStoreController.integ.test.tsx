@@ -507,7 +507,6 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
         // deploymentUuid:deployment_Library_DO_NO_USE.uuid,
         entityUuid: entityAuthor.uuid,
         entityName: entityAuthor.name,
-        entityVersionUuid: entityDefinitionAuthor.uuid,
         targetValue: entityAuthor.name + "ssss",
       },
     };

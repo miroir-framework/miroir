@@ -1809,7 +1809,6 @@
                 "payload": {
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-                  "entityVersionUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
                   "entityName": "Publisher",
                   "targetValue": "Publishers"
                 }

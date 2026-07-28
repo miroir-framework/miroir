@@ -798,15 +798,6 @@
                   }
                 ]
               },
-              "entityVersionUuid": {
-                "type": "string",
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "optional": true
-              },
               "targetValue": {
                 "type": "string"
               }

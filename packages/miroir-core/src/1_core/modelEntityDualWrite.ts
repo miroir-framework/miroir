@@ -79,15 +79,13 @@ export function applyEntityOnlyAlterAttribute(
 }
 
 /**
- * #217 Phase 11 — Entity-only rename when present model is complete (store layer).
+ * #220 — Entity-only rename (store / planner). Always renames the live Entity;
+ * never touches EntityVersion.
  */
 export function applyEntityOnlyRename(
   entity: Entity,
   targetName: string,
-): Entity | undefined {
-  if (!entityHasCompletePresentModel(entity)) {
-    return undefined;
-  }
+): Entity {
   return {
     ...entity,
     name: targetName,

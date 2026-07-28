@@ -145,10 +145,9 @@ export class SqlDbStoreSection
     // #217 Phase 11 — Entity is present-model authority; ED optional legacy fill-in only.
     const schemaSource = {
       name: entity.name,
-      mlSchema: entity.mlSchema ?? entityVersion?.mlSchema,
-      idAttribute: entity.idAttribute ?? (entityVersion as any)?.idAttribute,
-      externalDataSource:
-        entity.externalDataSource ?? (entityVersion as any)?.externalDataSource,
+      mlSchema: entity.mlSchema,
+      idAttribute: entity.idAttribute,
+      externalDataSource: entity.externalDataSource,
     };
     const idAttribute: string | string[] = schemaSource.idAttribute ?? "uuid";
     const isExternal = entity.conceptLevel === "External" || !!schemaSource.externalDataSource;

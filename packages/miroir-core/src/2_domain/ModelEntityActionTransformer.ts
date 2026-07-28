@@ -91,7 +91,6 @@ export class ModelEntityActionTransformer{
           currentModel,
           modelAction.payload.entityUuid,
           modelAction.payload.targetValue,
-          modelAction.payload.entityVersionUuid,
         );
   
         log.info(
@@ -100,14 +99,12 @@ export class ModelEntityActionTransformer{
           modelAction.payload.entityUuid,
         );
   
-        if (!plan) {
+        if (!plan || plan.mode !== "entityOnly") {
           log.error('modelActionToInstanceAction renameEntity could not rename',modelAction);
           return [];
         }
-        const objects: EntityInstance[] =
-          plan.mode === "dualWrite"
-            ? [plan.pair.entity as EntityInstance, plan.pair.entityVersion as EntityInstance]
-            : [plan.entity as EntityInstance];
+        // #220 — Entity-only rename
+        const objects: EntityInstance[] = [plan.entity as EntityInstance];
         return [
           {
             actionType: "updateInstance",

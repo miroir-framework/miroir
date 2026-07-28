@@ -3,10 +3,8 @@
  * Resolve live Entity / optional redundant EntityVersion without requiring
  * Action payloads to carry entityVersionUuid.
  *
- * When Entity has a complete present model, mutations are Entity-only (live ED
- * copies become historical / not updated). Create is always Entity-only (#220).
- * Dual-write remains for alter/rename when Entity is incomplete and a live ED
- * is available for enrichment.
+ * Create / drop / rename are always Entity-only (#220). Dual-write remains for
+ * alter when Entity is incomplete and a live ED is available for enrichment.
  *
  * #220 — UUID-reuse synthesize helpers live in entityDefinitionCompatibility.
  */
@@ -23,7 +21,6 @@ import {
 import {
   applyAlterEntityAttributePair,
   applyMlSchemaColumnChanges,
-  applyRenameEntityPair,
   type AlterEntityAttributeColumns,
   type EntityEntityDefinitionPair,
 } from "./modelEntityDualWrite.js";
@@ -68,34 +65,22 @@ export function planCreateEntityMutation(
  * Rename: Entity-only when present model is complete; dual-write only to enrich
  * incomplete Entity from a live redundant ED.
  */
+/**
+ * #220 — rename is always Entity-only (never dual-write EntityVersion).
+ */
 export function planRenameEntityMutation(
   currentModel: MetaModel,
   entityUuid: string,
   targetName: string,
-  entityVersionUuid?: string | undefined,
 ): LiveEntityMutationPlan | undefined {
   const entity = resolvePresentEntityFromModel(currentModel, entityUuid);
   if (!entity) {
     return undefined;
   }
-  if (entityHasCompletePresentModel(entity)) {
-    return {
-      mode: "entityOnly",
-      entity: { ...entity, name: targetName },
-    };
-  }
-  const entityVersion = resolveLiveEntityDefinitionForAction(
-    currentModel,
-    entityUuid,
-    entityVersionUuid,
-  );
-  if (entityVersion) {
-    return {
-      mode: "dualWrite",
-      pair: applyRenameEntityPair(entity, entityVersion, targetName),
-    };
-  }
-  return undefined;
+  return {
+    mode: "entityOnly",
+    entity: { ...entity, name: targetName },
+  };
 }
 
 /**

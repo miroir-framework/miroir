@@ -33,11 +33,11 @@ function entityVersionUuidFromModelAction(
 ): string | undefined {
   switch (action.actionType) {
     case "createEntity":
-    case "dropEntity": {
-      // #220 — create/drop are Entity-only; no EntityVersion uuid on the Action payload.
+    case "dropEntity":
+    case "renameEntity": {
+      // #220 — create/drop/rename are Entity-only; no EntityVersion uuid on the Action payload.
       return undefined;
     }
-    case "renameEntity":
     case "alterEntityAttribute":
       return action.payload.entityVersionUuid;
   }

@@ -60,8 +60,7 @@ const renameEntityAction: ModelActionRenameEntity = {
   payload: {
     application: APP_UUID,
     entityUuid: ENTITY_UUID,
-    entityVersionUuid: ENTITYDEF_UUID,
-    targetValue: "NewEntityName",
+        targetValue: "NewEntityName",
   },
 };
 

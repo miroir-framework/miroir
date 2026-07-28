@@ -176,93 +176,33 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // #########################################################################################
-    // #217 Phase 11: Entity-only rename when present model is complete; dual-write only for incomplete Entity.
+    // #220 — Entity-only rename; never dual-write EntityVersion.
     async renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType> {
-      // TODO: identical to IndexedDbModelStoreSection implementation!
       log.info(this.logHeader, "renameEntityClean", update);
       const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
         entityEntity.uuid,
         update.payload.entityUuid
       );
       if (currentEntity instanceof Action2Error) {
-        return currentEntity;
+        return currentEntity
       }
       if (currentEntity.returnedDomainElement instanceof Domain2ElementFailed) {
-        return Promise.resolve(
-          new Action2Error(
-            "FailedToDeployModule",
-            currentEntity.returnedDomainElement.failureMessage
-          )
-        );
+        return Promise.resolve(new Action2Error(
+          "FailedToDeployModule",
+          `renameEntityClean failed for section: data, entityUuid ${update.payload.entityUuid}, error: ${currentEntity.returnedDomainElement.queryFailure}, ${currentEntity.returnedDomainElement.failureMessage}`
+        ));
       }
       const previousEntity = currentEntity.returnedDomainElement as Entity;
+      // #220 — Entity-only rename; do not dual-write EntityVersion.
       const entityOnly = applyEntityOnlyRename(previousEntity, update.payload.targetValue);
-      if (entityOnly) {
-        const upsertResult = await this.upsertInstance(entityEntity.uuid, entityOnly);
-        if (upsertResult instanceof Action2Error) {
-          return upsertResult;
-        }
-        await this.dataStore.renameStorageSpaceForInstancesOfEntity(
-          (previousEntity as EntityInstanceWithName).name,
-          update.payload.targetValue,
-          entityOnly,
-        );
-        return Promise.resolve(ACTION_OK);
+      const upsertResult = await this.upsertInstance(entityEntity.uuid, entityOnly);
+      if (upsertResult instanceof Action2Error) {
+        return upsertResult;
       }
-
-      const entityVersionUuid = update.payload.entityVersionUuid;
-      if (!entityVersionUuid) {
-        return Promise.resolve(
-          new Action2Error(
-            "FailedToDeployModule",
-            `renameEntityClean requires entityVersionUuid when Entity present model is incomplete (entityUuid ${update.payload.entityUuid})`
-          )
-        );
-      }
-      const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
-        entityEntity.uuid,
-        entityVersionUuid
-      );
-
-      if (currentEntityDefinition instanceof Action2Error) {
-        return currentEntityDefinition;
-      }
-      if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return Promise.resolve(
-          new Action2Error(
-            "FailedToDeployModule",
-            currentEntityDefinition.returnedDomainElement.failureMessage
-          )
-        );
-      }
-      const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityVersion;
-      const pair = applyRenameEntityPair(
-        previousEntity,
-        previousEntityDefinition,
-        update.payload.targetValue,
-      );
-
-      const persistResult = await persistEntityThenEntityDefinition(
-        pair,
-        {
-          writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
-          writeEntityDefinition: (nextEntityDefinition) =>
-            this.upsertInstance(entityEntity.uuid, nextEntityDefinition),
-          restoreEntity: (entityToRestore) =>
-            this.upsertInstance(entityEntity.uuid, entityToRestore),
-        },
-        { failurePolicy: { kind: "compensate" }, previousEntity },
-      );
-      if (persistResult instanceof Action2Error) {
-        return persistResult;
-      }
-
       await this.dataStore.renameStorageSpaceForInstancesOfEntity(
         (previousEntity as EntityInstanceWithName).name,
         update.payload.targetValue,
-        pair.entity,
-        pair.entityVersion
+        entityOnly,
       );
       return Promise.resolve(ACTION_OK);
     }

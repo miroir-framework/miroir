@@ -236,7 +236,7 @@ describe("217 Phase 12 — EntityVersion → EntityVersion vocabulary gate", () 
       else Object.values(node).forEach(walk);
     };
     walk(endpoint);
-    for (const name of ["alterEntityAttribute", "renameEntity"]) {
+    for (const name of ["alterEntityAttribute"]) {
       const ap = actions.find((a) => a.actionType?.definition === name);
       expect(ap?.payload?.definition?.entityVersionUuid?.optional).toBe(true);
       expect(ap?.payload?.definition?.entityDefinitionUuid).toBeUndefined();
@@ -244,6 +244,9 @@ describe("217 Phase 12 — EntityVersion → EntityVersion vocabulary gate", () 
     const dropAp = actions.find((a) => a.actionType?.definition === "dropEntity");
     expect(dropAp?.payload?.definition?.entityVersionUuid).toBeUndefined();
     expect(dropAp?.payload?.definition?.entityDefinitionUuid).toBeUndefined();
+    const renameAp = actions.find((a) => a.actionType?.definition === "renameEntity");
+    expect(renameAp?.payload?.definition?.entityVersionUuid).toBeUndefined();
+    expect(renameAp?.payload?.definition?.entityDefinitionUuid).toBeUndefined();
     const create = actions.find((a) => a.actionType?.definition === "createEntity");
     expect(
       create?.payload?.definition?.entities?.definition?.definition?.entityVersion?.optional,

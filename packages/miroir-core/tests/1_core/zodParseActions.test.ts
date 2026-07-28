@@ -200,7 +200,6 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        entityVersionUuid: "00000000-0000-0000-0000-000000000001",
         entityName: "newEntity",
         entityUuid: "00000000-0000-0000-0000-000000000002",
         targetValue: "renamedEntity",

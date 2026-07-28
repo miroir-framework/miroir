@@ -76,14 +76,13 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
     }
   });
 
-  it("renameEntity renames Entity only when present model is complete", () => {
+  it("renameEntity renames Entity only (no EntityVersion)", () => {
     const action: ModelAction = {
       actionType: "renameEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
         entityUuid: bookEntity.uuid,
-        entityVersionUuid: bookDefinition.uuid,
         targetValue: "Volume",
       },
     };
