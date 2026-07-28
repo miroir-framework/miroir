@@ -24,16 +24,42 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-/** #217 Phase 12 — Entity or EntityVersion/ED-shaped schema carrier. */
-type PresentModelSchemaCarrier = {
+/** Live present-model or legacy EntityVersion-shaped schema carrier for cascade walks. */
+export type PresentModelSchemaCarrier = {
   uuid?: string | undefined;
   entityUuid?: string | undefined;
   name?: string | undefined;
   mlSchema?: { definition?: Record<string, any> | undefined } | undefined;
 };
 
-function carrierIdentityUuid(carrier: PresentModelSchemaCarrier): string | undefined {
+/** Entity identity: Entity uses `uuid`; EntityVersion uses `entityUuid`. */
+export function carrierIdentityUuid(carrier: PresentModelSchemaCarrier): string | undefined {
   return carrier.entityUuid ?? carrier.uuid;
+}
+
+// export function findPresentModelSchemaCarrierByEntityUuid(
+//   carriers: Entity[],
+//   entityUuid: string,
+// ): PresentModelSchemaCarrier | undefined {
+//   return carriers.find((carrier) => carrierIdentityUuid(carrier) === entityUuid);
+// }
+
+/** Map of referencing-entity-uuid → FK attribute name pointing at targetEntityUuid. */
+export function reverseForeignKeysPointingToEntity(
+  schemaCarriers: Entity[],
+  targetEntityUuid: string,
+): Record<string, string> {
+  return Object.fromEntries(
+    schemaCarriers
+      .map((ed: Entity) => {
+        const fkAttributes = Object.entries(ed.mlSchema?.definition ?? {}).find(
+          (a) => a[1].tag?.value?.foreignKeyParams?.targetEntity == targetEntityUuid
+        );
+        // return [carrierIdentityUuid(ed), fkAttributes ? fkAttributes[0] : undefined];
+        return [ed.uuid, fkAttributes ? fkAttributes[0] : undefined];
+      })
+      .filter((e) => e[0] && e[1])
+  ) as Record<string, string>;
 }
 
 export const splitEntity = async (p: {
@@ -48,7 +74,6 @@ export const splitEntity = async (p: {
   log.info(
     "++++++++++++++++++++++++++++ splitEntity entity",
     p.entityVersion.name,
-    // p.entityInstances
   );
 
 }
@@ -60,35 +85,32 @@ export const deleteCascade = async (p: {
   application: Uuid;
   deploymentUuid: string;
   applicationSection: ApplicationSection;
-  // state: LocalCacheSliceState;
-  entityVersion: PresentModelSchemaCarrier;
-  entityDefinitions: EntityVersion[];
-  /** #217 Phase 9/12 — prefer Entity present model for FK walk when provided. */
-  entities?: Entity[];
+  entity: Entity;
+  /** Preferred present-model list for schema / reverse-FK walk. */
+  entities: Entity[];
+  /**
+   * @deprecated #221 — legacy EntityVersion list; used only when `entities` is empty.
+   * Remove in Slice 4 once callers always pass Entity-complete models.
+   */
+  entityDefinitions?: EntityVersion[];
   entityInstances: EntityInstance[];
 }) => {
   log.info(
     "++++++++++++++++++++++++++++ deleteInstanceWithCascade deleteCascade deleting instances of entity",
-    p.entityVersion.name,
+    p.entity.name,
     p.entityInstances
   );
 
-  const targetEntityUuid = carrierIdentityUuid(p.entityVersion);
-  const schemaCarriers: PresentModelSchemaCarrier[] =
-    p.entities && p.entities.length > 0
-      ? p.entities
-      : p.entityDefinitions;
+  const targetEntityUuid = carrierIdentityUuid(p.entity);
+  const schemaCarriers: Entity[] = p.entities;
+  // const schemaCarriers: PresentModelSchemaCarrier[] =
+  //   p.entities && p.entities.length > 0
+  //     ? p.entities
+  //     : (p.entityDefinitions ?? []);
 
-  // finding all entities which have an attribute pointing to the current entity
-  const foreignKeysPointingToEntity = Object.fromEntries(
-    schemaCarriers
-      .map((ed: PresentModelSchemaCarrier) => {
-        const fkAttributes = Object.entries(ed.mlSchema?.definition ?? {}).find(
-          (a) => a[1].tag?.value?.foreignKeyParams?.targetEntity == targetEntityUuid
-        );
-        return [carrierIdentityUuid(ed), fkAttributes ? fkAttributes[0] : undefined];
-      })
-      .filter((e) => e[0] && e[1])
+  const foreignKeysPointingToEntity = reverseForeignKeysPointingToEntity(
+    schemaCarriers,
+    targetEntityUuid ?? "",
   );
 
   log.info(
@@ -96,7 +118,6 @@ export const deleteCascade = async (p: {
     foreignKeysPointingToEntity
   );
 
-  // // delete current list of objects (on a relational database, this would require suspending foreign key constraints for the involved relations)
   const deleteCurrentEntityInstancesAction: InstanceAction = {
     actionType: "deleteInstance",
     endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -127,14 +148,13 @@ export const deleteCascade = async (p: {
     const foreignKeyObjectsFetchQuery: BoxedQueryTemplateWithExtractorCombinerTransformer = {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       application: p.application,
-      // deploymentUuid: p.deploymentUuid,
       pageParams,
       queryParams: {},
       contextResults: {},
       extractorTemplates: Object.fromEntries(
         Object.keys(foreignKeysPointingToEntity).map((entityUuid) => [
           entityUuid,
-          { // TODO: FILTER ON FK TO ONLY THE ONES POINTING TO THE DELETED INSTANCES
+          {
             extractorOrCombinerType: "extractorInstancesByEntity",
             application: p.application,
             applicationSection: p.applicationSection,
@@ -170,7 +190,6 @@ export const deleteCascade = async (p: {
     log.info(
       "deleteInstanceWithCascade deleteCascade found foreignKeyUnfilteredObjects",
       foreignKeyUnfilteredObjects
-      // JSON.stringify(foreignKeyUnfilteredObjects)
     );
 
     const foreignKeyObjects: EntityInstance[] = (
@@ -187,19 +206,15 @@ export const deleteCascade = async (p: {
     log.info(
       "deleteInstanceWithCascade deleteCascade found foreign key objects pointing to objects to delete",
       foreignKeyObjects
-      // JSON.stringify(foreignKeyObjects)
     );
-    // recursive calls
     for (const entityInstance of foreignKeyObjects) {
-      const entityDefinitionTmp: EntityVersion | undefined = schemaCarriers.find(
-        (ed: EntityVersion) => ed.entityUuid == entityInstance.parentUuid,
-      );
-      if (!entityDefinitionTmp) {
+      const entityCarrier = schemaCarriers.find((e) => e.uuid === entityInstance.parentUuid);
+      if (!entityCarrier) {
         throw new Error(
-          "deleteInstanceWithCascade deleteCascade could not find definition for Entity " +
+          "deleteInstanceWithCascade deleteCascade could not find present model for Entity " +
             entityInstance.parentUuid +
-            " entity definition: " +
-            JSON.stringify(p.entityDefinitions)
+            " entities: " +
+            JSON.stringify(p.entities)
         );
       }
 
@@ -209,13 +224,11 @@ export const deleteCascade = async (p: {
         applicationDeploymentMap: p.applicationDeploymentMap,
         deploymentUuid: p.deploymentUuid,
         applicationSection: p.applicationSection,
-        entityVersion: entityDefinitionTmp,
+        entity: entityCarrier,
         entityDefinitions: p.entityDefinitions,
         entities: p.entities,
         entityInstances: [entityInstance],
       });
     }
   }
-
-  // log.info("deleteInstanceWithCascade deleteCascade foreign key objects to delete", JSON.stringify(foreignKeyObjects));
 };

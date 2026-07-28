@@ -130,7 +130,6 @@ export const ModelDiagramPage: React.FC<any> = () => {
         );
         const applicationName = currentModel.applicationName || "Application";
         const entities = currentModel.entities ?? [];
-        const entityDefinitions = currentModel.entityVersions ?? [];
 
         const handleClassClick = (entityUuid: string) => {
           log.info("Class clicked", { entityUuid });
@@ -192,15 +191,13 @@ export const ModelDiagramPage: React.FC<any> = () => {
               >
                 UML class diagram showing entities, their attributes, and foreign-key relationships
                 for the current application model.
-                {(entities.length > 0 ? entities.length : entityDefinitions.length) > 0 &&
-                  ` (${entities.length > 0 ? entities.length : entityDefinitions.length} entities)`}
+                {entities.length > 0 && ` (${entities.length} entities)`}
               </Typography>
 
               <ModelDiagramReportSectionView
                 entities={entities}
-                entityDefinitions={entityDefinitions}
                 title={`${applicationName} Model`}
-                direction={(entities.length > 0 ? entities.length : entityDefinitions.length) > 10 ? "TB" : "LR"}
+                direction={entities.length > 10 ? "TB" : "LR"}
                 onClassClick={handleClassClick}
                 height="calc(100vh - 220px)"
               />

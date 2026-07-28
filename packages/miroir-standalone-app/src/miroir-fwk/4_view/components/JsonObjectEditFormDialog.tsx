@@ -51,26 +51,15 @@ export interface EditorAttribute {
 }
 
 /**
- * #217 Phase 12 — Entity present model or EntityVersion/ED-shaped carrier for dialogs.
- * Identity: Entity uses `uuid`; EntityVersion uses `entityUuid`.
+ * Dialog present-model input is live Entity (+ separate mlSchema prop).
  */
 export type PresentModelSchemaCarrier = Entity & {entityUuid?: string | undefined}
-// export type PresentModelSchemaCarrier = {
-//   uuid?: string | undefined;
-//   entityUuid?: string | undefined;
-//   name?: string | undefined;
-//   mlSchema?: JzodObject | { definition?: Record<string, any> | undefined } | undefined;
-//   defaultInstanceDetailsReportUuid?: string | undefined;
-//   idAttribute?: (string | string[]) | undefined;
-//   conceptLevel?: string | undefined;
-// };
 
 export interface JsonObjectFormEditorCoreDialogProps {
   valueObjectEditMode: ValueObjectEditMode,
   label?: string,
   isAttributes?: boolean,
   entity: Entity,
-  // entityVersion: PresentModelSchemaCarrier,
   mlSchema: JzodObject,
   defaultFormValuesObject: any,
   currentApplication: Uuid,
@@ -227,7 +216,6 @@ interface JsonElementEditorDialogProps {
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
   entity: Entity;
-  // entityVersion: PresentModelSchemaCarrier;
   mlSchema: JzodObject;
   resolvedJzodSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
@@ -258,7 +246,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   currentDeploymentUuid,
   currentApplicationSection,
   entity,
-  // entityVersion,
   mlSchema,
   resolvedJzodSchema,
   foreignKeyObjects,
@@ -296,17 +283,6 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
     currentDeploymentReportsEntitiesDefinitionsMapping,
     currentApplicationSection,
   ]);
-  // const defaultDetailsReport: Report | undefined = useMemo(() => {
-  //   return entityVersion.defaultInstanceDetailsReportUuid
-  //     ? currentDeploymentReportsEntitiesDefinitionsMapping?.[currentApplicationSection??"data"]?.availableReports?.find(
-  //         (r) => r.uuid === entityVersion.defaultInstanceDetailsReportUuid
-  //       )
-  //     : undefined;
-  // }, [
-  //   entityVersion,
-  //   currentDeploymentReportsEntitiesDefinitionsMapping,
-  //   currentApplicationSection,
-  // ]);
   const formik = useFormikContext<any>()
   // ##############################################################################################
   useEffect(() => {
@@ -598,7 +574,6 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
           entity={props.entity}
-          // entityVersion={props.entityVersion}
           mlSchema={mlSchema}
           resolvedJzodSchema={resolvedJzodSchema}
           foreignKeyObjects={foreignKeyObjects}

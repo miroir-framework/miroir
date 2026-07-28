@@ -1018,7 +1018,6 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 border: contextTheme.components.table.border,
               }}
               type={props.type}
-              currentEntityDefinition={props.type === 'EntityInstance' ? presentModelSource ?? {} as Entity : undefined}
               toolsColumnDefinition={toolsColumnDefinition}
               maxRows={props.maxRows}
               theme={contextTheme}

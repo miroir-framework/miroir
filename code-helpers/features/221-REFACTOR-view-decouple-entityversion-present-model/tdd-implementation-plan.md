@@ -19,7 +19,7 @@ Related:
 |-------|----------------|------|--------|
 | 1 | **C** — Fix resolve / mapping keys | Migrate | ✅ DONE |
 | 2 | **A** — Rename only | Migrate | ✅ DONE |
-| 3 | **B** — Parents pass `Entity` | Migrate | ⬜ |
+| 3 | **B** — Parents pass `Entity` | Migrate | ✅ DONE |
 | 4 | **D** — Remove dual-read fallbacks | Migrate | ⬜ |
 | 5 | **E** — Legitimate EntityVersion | Characterization lock (no migrate) | ⬜ |
 | 6 | **F** — Out of tree / non-goals | Characterization lock (no migrate) | ⬜ |
@@ -207,13 +207,23 @@ Collapse APIs that still declare `entityVersion` while parents pass a live Entit
 
 ### Validation (Slice 3)
 
-- [ ] deleteCascade Entity-`uuid` test green.
-- [ ] Dialog call sites in Report list + grid pass `entity`.
-- [ ] Diagram unit tests still green with Entity carriers:
+- [x] deleteCascade Entity-`uuid` test green.
+- [x] Dialog call sites in Report list + grid pass `entity`.
+- [x] Diagram unit tests still green with Entity carriers:
   ```
-  npm run testByFile -w miroir-diagram-class -- entityDefinitionsToMermaid
+  npm test -w miroir-diagram-class -- entityDefinitionsToMermaid
   ```
 - [ ] Typecheck; optional `ReportPage.integ` smoke if dialog mount path covered
+
+### Realization (Slice 3)
+
+- Test: `packages/miroir-standalone-app/tests/4_view/221-view-decouple-entityversion/221.phase3.entityParents.unit.test.ts`
+- Exported `carrierIdentityUuid`, `findPresentModelSchemaCarrierByEntityUuid`, `reverseForeignKeysPointingToEntity`
+- `deleteCascade` param `entityVersion` → `entity`; recursive find uses Entity `uuid`
+- Dialog / list / grid already on `entity=`; cleaned leftover `entityVersion` comments
+- Removed unused Glide `currentEntityDefinition` prop
+- `ModelDiagramPage` Entity-only (no MetaModel `entityVersions` fallback prop)
+- Left for Slice 4: `entityDefinitions` optional on deleteCascade; grid/FK dual-read; diagram report-section `entityDefinitions` transformer field
 
 ### NON-REGRESSION
 
