@@ -283,32 +283,6 @@ const ProgressiveAttribute: FC<{
     );
   }
 
-  // if (!atttributeKeyMap) {
-  //   return (
-  //     <div key={attributeListKey}>
-  //       <ThemedLoadingCard
-  //         message={`Loading ${attribute[0]}... (no key map)`}
-  //       />
-  //       <JsonDisplayHelper debug={true}
-  //         componentName={`ProgressiveAttribute rootLessListKey=${attributeRootLessListKey}`}
-  //         elements={[{
-  //           label: `ProgressiveAttribute: rootLessListKey=${attributeRootLessListKey} insideAny=${insideAny}`,
-  //           data: {
-  //             rootLessListKey: attributeRootLessListKey,
-  //             currentValue,
-  //             // isRecordType,
-  //             typeCheckKeyMap,
-  //             currentKeyMap,
-  //             atttributeKeyMap 
-  //           },
-  //           copyButton: true,
-  //           useCodeBlock: true,
-  //         }]}
-  //       />
-  //     </div>
-  //   );
-  // }
-
   // Determine if this is a record type where attribute names should be editable
   const isRecordType =
     insideAny || // only records exist when inside an `any` element: the precise structure is unknown, one may freely adde / remove attributes
@@ -333,7 +307,7 @@ const ProgressiveAttribute: FC<{
       key={attributeRootLessListKey + ".label"}
       data-testid="miroirDisplayedValue"
     >
-      {currentAttributeDefinition?.tag?.value?.defaultLabel || attribute[0]}
+      {atttributeKeyMap?.rawSchema?.tag?.value?.defaultLabel || currentAttributeDefinition?.tag?.value?.defaultLabel || attribute[0]}
     </ThemedAttributeLabel>
   );
 
