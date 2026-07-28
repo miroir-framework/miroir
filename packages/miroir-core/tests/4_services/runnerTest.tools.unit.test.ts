@@ -172,6 +172,13 @@ describe("runnerTest tools", () => {
         (action) => action.payload?.application === ephemeralApplicationUuid,
       ),
     ).toBe(true);
+    const createEntitiesAction = expandedBeforeEach.payload.actionSequence.find(
+      (action) =>
+        action.actionLabel === "resetAndinitializeDeploymentCompositeAction_createEntities",
+    );
+    expect(createEntitiesAction?.payload?.entities).toEqual(
+      remappedLibraryModel.entities,
+    );
   });
 
   it.each([

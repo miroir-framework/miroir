@@ -115,23 +115,16 @@ export class SqlDbStoreSection
   getAccessToDataSectionEntity(
     entity: Entity,
   ): EntityUuidIndexedSequelizeModel {
-    // #217 Phase 11 — Entity is present-model authority; ED optional legacy fill-in only.
-    const schemaSource = {
-      name: entity.name,
-      mlSchema: entity.mlSchema,
-      idAttribute: entity.idAttribute,
-      externalDataSource: entity.externalDataSource,
-    };
-    const idAttribute: string | string[] = schemaSource.idAttribute ?? "uuid";
-    const isExternal = entity.conceptLevel === "External" || !!schemaSource.externalDataSource;
-    const effectiveSchema = isExternal && schemaSource.externalDataSource?.schema
-      ? schemaSource.externalDataSource.schema
+    const idAttribute: string | string[] = entity.idAttribute ?? "uuid";
+    const isExternal = entity.conceptLevel === "External" || !!entity.externalDataSource;
+    const effectiveSchema = isExternal && entity.externalDataSource?.schema
+      ? entity.externalDataSource.schema
       : this.schema;
-    const effectiveTableName = isExternal && schemaSource.externalDataSource?.tableName
-      ? schemaSource.externalDataSource.tableName
+    const effectiveTableName = isExternal && entity.externalDataSource?.tableName
+      ? entity.externalDataSource.tableName
       : entity.name;
     const optionalNonNullableAttributes = this.forceNullOptionalAttributeToUndefined
-      ? getOptionalNonNullableAttributes(schemaSource)
+      ? getOptionalNonNullableAttributes(entity)
       : undefined;
     const result = {
       [entity.uuid]: {
@@ -142,7 +135,7 @@ export class SqlDbStoreSection
         optionalNonNullableAttributes,
         sequelizeModel: this.sequelize.define(
           effectiveTableName,
-          fromMiroirPresentModelToSequelizeEntityDefinition(schemaSource),
+          fromMiroirPresentModelToSequelizeEntityDefinition(entity),
           {
             freezeTableName: true,
             schema: effectiveSchema,

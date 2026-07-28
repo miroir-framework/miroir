@@ -760,12 +760,9 @@ export {
 } from "./1_core/modelEntityDualWrite.js";
 export type {
   AlterEntityAttributeColumns,
-  EntityEntityDefinitionPair,
 } from "./1_core/modelEntityDualWrite.js";
-// #220 compat — do not use for Application Version freeze / historical EntityVersion minting
 export {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
-  EntityPresentModelResolutionError,
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
   assertVersioningEnabledImmutable,
@@ -778,8 +775,6 @@ export type {
   EntityPresentModelDefinitionComparison,
   EntityPresentModelDefinitionField,
   EntityPresentModelDefinitionProjection,
-  EntityPresentModelResolutionErrorCode,
-  ResolveCurrentEntityModelOptions,
 } from "./1_core/entityPresentModel.js";
 export {
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,

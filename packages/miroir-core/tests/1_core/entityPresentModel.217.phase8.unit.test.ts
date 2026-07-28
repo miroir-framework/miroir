@@ -2,55 +2,16 @@ import { describe, expect, it } from "vitest";
 
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
-import type {
-  Entity,
-  EntityVersion,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { resolvePresentEntityFromModel } from "../../src/1_core/entityPresentModel.js";
 
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityVersions.find(
-  (definition) => definition.entityUuid === bookEntity.uuid,
-)!;
-const authorEntityUuid = "d7a144ff-d1b9-4135-800c-a7cfc1f38733";
 
 describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
-  it("returns assembled Entity present model from MetaModel.entities", () => {
+  it("returns the Entity present model from MetaModel.entities", () => {
     const present = resolvePresentEntityFromModel(defaultLibraryAppModel, bookEntity.uuid);
-    expect(present?.uuid).toBe(bookEntity.uuid);
-    expect(present?.mlSchema).toEqual(bookEntity.mlSchema);
-    expect(present?.viewAttributes).toEqual(bookEntity.viewAttributes);
-  });
-
-  it("enriches incomplete Entity via EntityVersion fallback hub", () => {
-    const legacyEntity: Entity = {
-      uuid: bookEntity.uuid,
-      name: bookEntity.name,
-      parentUuid: bookEntity.parentUuid,
-      parentName: bookEntity.parentName,
-    };
-    const present = resolvePresentEntityFromModel(
-      {
-        entities: [legacyEntity],
-        entityVersions: [bookDefinition],
-      },
-      bookEntity.uuid,
-    );
-    expect(present?.mlSchema).toEqual(bookDefinition.mlSchema);
-  });
-
-  it("synthesizes present model from EntityVersion alone when Entity missing", () => {
-    const present = resolvePresentEntityFromModel(
-      {
-        entities: [],
-        entityVersions: [bookDefinition],
-      },
-      bookEntity.uuid,
-    );
-    expect(present?.mlSchema).toEqual(bookDefinition.mlSchema);
-    expect(present?.uuid).toBe(bookEntity.uuid);
+    expect(present).toBe(bookEntity);
   });
 
   it("returns undefined when entityUuid is unknown", () => {
@@ -59,11 +20,4 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
     ).toBeUndefined();
   });
 
-  it("Library Author present model matches EntityVersion mlSchema (equivalence)", () => {
-    const present = resolvePresentEntityFromModel(defaultLibraryAppModel, authorEntityUuid);
-    const authorDefinition = defaultLibraryAppModel.entityVersions.find(
-      (definition) => definition.entityUuid === authorEntityUuid,
-    ) as EntityVersion;
-    expect(present?.mlSchema).toEqual(authorDefinition.mlSchema);
-  });
 });

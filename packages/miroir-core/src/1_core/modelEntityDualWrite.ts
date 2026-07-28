@@ -1,23 +1,10 @@
-/**
- * Issue #217 Phase 5 — Entity-authoritative model mutations with dual-write.
- * Pure helpers: construct post-change Entity + redundant EntityVersion pairs
- * for alter/rename when Entity is incomplete.
- *
- * #220 — create-path dual-write (`normalizeCreateEntityPair`) removed; create is Entity-only.
- * Not for Application Version freeze (#216).
- */
+/** Entity present-model mutation helpers. */
 
 import type {
   Entity,
-  EntityVersion,
   JzodElement,
   JzodObject,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-
-export type EntityEntityDefinitionPair = {
-  entity: Entity;
-  entityVersion: EntityVersion;
-};
 
 export type AlterEntityAttributeColumns = {
   addColumns?: { name: string; definition: JzodElement }[] | undefined;

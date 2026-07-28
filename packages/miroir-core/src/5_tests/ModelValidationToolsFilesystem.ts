@@ -8,7 +8,6 @@ import { join } from "node:path";
 
 import type {
   Entity,
-  EntityVersion,
   JzodElement,
   MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -51,28 +50,13 @@ export function loadModelValidationInstancesFromDir(
   return result;
 }
 
-function resolveEntityDefinitionForEntity(
-  entity: Entity,
-  entityVersions: readonly EntityVersion[],
-): EntityVersion | undefined {
-  const byUuid = entityVersions.filter((ed) => ed.entityUuid === entity.uuid);
-  if (byUuid.length === 1) {
-    return byUuid[0];
-  }
-  if (byUuid.length > 1) {
-    return byUuid.find((ed) => ed.name === entity.name) ?? byUuid[0];
-  }
-  return entityVersions.find((ed) => ed.name === entity.name);
-}
-
 /**
  * Build `modelTestsToRun` by scanning filesystem model/data folders.
  *
  * - One group per Miroir meta-entity that has instances under `modelPath/<entityUuid>/`
- *   (schema from `miroirMetaModel.entityVersions`).
+ *   (schema from the corresponding Entity).
  * - One group per application Entity declared under the Entity folder, with instances from
- *   `dataPath/<entityUuid>/` (fallback: `modelPath/<entityUuid>/`), schema from the matching
- *   EntityVersion file in the model store.
+ *   `dataPath/<entityUuid>/` (fallback: `modelPath/<entityUuid>/`), schema from that Entity.
  */
 export function buildModelValidationGroupsFromFilesystem(
   params: BuildModelValidationGroupsFromFilesystemParams,
@@ -91,11 +75,7 @@ export function buildModelValidationGroupsFromFilesystem(
     if (excluded.has(entity.name)) {
       continue;
     }
-    const entityVersion = resolveEntityDefinitionForEntity(
-      entity,
-      miroirMetaModel.entityVersions,
-    );
-    if (!entityVersion?.mlSchema) {
+    if (!entity.mlSchema) {
       continue;
     }
     const instances = loadModelValidationInstancesFromDir(join(modelPath, entity.uuid));
@@ -104,18 +84,15 @@ export function buildModelValidationGroupsFromFilesystem(
     }
     groups.push({
       groupName: entity.name,
-      jzodSchema: entityVersion.mlSchema as unknown as JzodElement,
+      jzodSchema: entity.mlSchema as unknown as JzodElement,
       instances,
     });
   }
 
   const entityEntity = miroirMetaModel.entities.find((entity) => entity.name === "Entity");
-  const entityEntityDefinition = miroirMetaModel.entities.find(
-    (entity) => entity.name === "EntityVersion" || entity.name === "EntityVersion",
-  );
-  if (!entityEntity || !entityEntityDefinition) {
+  if (!entityEntity) {
     throw new Error(
-      "buildModelValidationGroupsFromFilesystem: miroirMetaModel must include Entity and EntityVersion",
+      "buildModelValidationGroupsFromFilesystem: miroirMetaModel must include Entity",
     );
   }
 
@@ -123,23 +100,11 @@ export function buildModelValidationGroupsFromFilesystem(
     loadModelValidationInstancesFromDir(join(modelPath, entityEntity.uuid)),
   ).map((module) => module.default as Entity);
 
-  const appEntityDefinitions = Object.values(
-    loadModelValidationInstancesFromDir(join(modelPath, entityEntityDefinition.uuid)),
-  ).map((module) => module.default as EntityVersion);
-
-  const appEntityDefinitionsByEntityUuid = Object.fromEntries(
-    appEntityDefinitions.map((entityVersion) => [
-      entityVersion.entityUuid,
-      entityVersion,
-    ]),
-  );
-
   for (const appEntity of appEntities) {
     if (excluded.has(appEntity.name)) {
       continue;
     }
-    const entityVersion = appEntityDefinitionsByEntityUuid[appEntity.uuid];
-    if (!entityVersion?.mlSchema) {
+    if (!appEntity.mlSchema) {
       continue;
     }
     let instances = loadModelValidationInstancesFromDir(join(dataPath, appEntity.uuid));
@@ -151,7 +116,7 @@ export function buildModelValidationGroupsFromFilesystem(
     }
     groups.push({
       groupName: appEntity.name,
-      jzodSchema: entityVersion.mlSchema as unknown as JzodElement,
+      jzodSchema: appEntity.mlSchema as unknown as JzodElement,
       instances,
     });
   }

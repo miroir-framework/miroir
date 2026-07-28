@@ -62,19 +62,12 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     // ##############################################################################################
     // TODO: does side effect => refactor!
     getAccessToModelSectionEntity(entity: Entity): EntityUuidIndexedSequelizeModel {
-      // #217 / #220 — Entity present-model is authoritative for Sequelize schema.
-      const schemaSource = {
-        name: entity.name,
-        mlSchema: entity.mlSchema,
-        idAttribute: entity.idAttribute,
-        externalDataSource: entity.externalDataSource,
-      };
       return {
         [entity.uuid]: {
           parentName: entity.parentName,
           sequelizeModel: this.sequelize.define(
             entity.name,
-            fromMiroirPresentModelToSequelizeEntityDefinition(schemaSource),
+            fromMiroirPresentModelToSequelizeEntityDefinition(entity),
             {
               freezeTableName: true,
               schema: this.schema,

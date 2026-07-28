@@ -2,8 +2,6 @@
 
 import {
   Entity,
-  EntityVersion,
-  entityDefinitionMLSchema,
   entityMLSchema,
   JzodElement,
   JzodObject,
@@ -33,32 +31,11 @@ export type EntityUuidIndexedSequelizeModel = {
   };
 };
 
-/** #217 Phase 11 — Entity or EntityVersion-shaped present-model schema carrier for Sequelize. */
-export type PresentModelSequelizeSource = {
-  name?: string;
-  mlSchema?: JzodObject | undefined;
-  idAttribute?: (string | string[]) | undefined;
-  externalDataSource?:
-    | {
-        schema?: string | undefined;
-        tableName?: string | undefined;
-      }
-    | undefined;
-};
-
-function resolveMlSchemaForSequelize(source: PresentModelSequelizeSource): JzodObject {
-  if (!source.mlSchema) {
+function resolveMlSchemaForSequelize(entity: Entity): JzodObject {
+  if (!entity.mlSchema) {
     return { type: "object", definition: {} };
   }
-  if (!source.mlSchema.extend) {
-    return source.mlSchema;
-  }
-  // Entity and EntityVersion both resolve via the same extend flattening helpers.
-  try {
-    return entityMLSchema(source as Entity);
-  } catch {
-    return entityDefinitionMLSchema(source as EntityVersion);
-  }
+  return entityMLSchema(entity);
 }
 
 // const dataTypesMapping: { [type in EntityAttributeType]: DataTypes.AbstractDataTypeConstructor } = {
@@ -96,13 +73,13 @@ export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeCon
 
 // ##############################################################################################
 /**
- * #217 Phase 11 — build Sequelize attributes from present-model fields (Entity preferred).
+ * Build Sequelize attributes from Entity present-model fields.
  */
 export function fromMiroirPresentModelToSequelizeEntityDefinition(
-  source: PresentModelSequelizeSource,
+  entity: Entity,
 ): ModelAttributes<Model, Attributes<Model>> {
-  const mlSchema: JzodObject = resolveMlSchemaForSequelize(source);
-  const idAttribute: string | string[] = source.idAttribute ?? "uuid";
+  const mlSchema = resolveMlSchemaForSequelize(entity);
+  const idAttribute: string | string[] = entity.idAttribute ?? "uuid";
   const pkAttributes: string[] = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
   const jzodObjectAttributes = mlSchema.definition;
   const result = Object.fromEntries(
@@ -135,16 +112,6 @@ export function fromMiroirPresentModelToSequelizeEntityDefinition(
   return result;
 }
 
-/**
- * @deprecated Prefer {@link fromMiroirPresentModelToSequelizeEntityDefinition} with Entity.
- * Retained for EntityVersion-shaped callers during #217 Phase 11.
- */
-export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
-  entityVersion: EntityVersion
-): ModelAttributes<Model, Attributes<Model>> {
-  return fromMiroirPresentModelToSequelizeEntityDefinition(entityVersion);
-}
-
 // ##############################################################################################
 /**
  * Returns the list of attribute names that are optional (allowNull in DB) but NOT nullable
@@ -152,9 +119,9 @@ export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
  * null values replaced by undefined when reading from the database.
  */
 export function getOptionalNonNullableAttributes(
-  source: PresentModelSequelizeSource,
+  entity: Entity,
 ): string[] {
-  const mlSchema: JzodObject = resolveMlSchemaForSequelize(source);
+  const mlSchema = resolveMlSchemaForSequelize(entity);
   return Object.entries(mlSchema.definition)
     .filter(([, attrDef]) => {
       const attr = attrDef as JzodElement & { optional?: boolean; nullable?: boolean };

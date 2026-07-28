@@ -14,6 +14,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
+  resolvePresentEntityFromModel,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   type ApplicationDeploymentMap,
@@ -126,8 +127,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           switch (query.select.extractorOrCombinerType) {
             case "extractorInstancesByEntity": {
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
-                ? ((modelEnvironment as any)?.currentModel?.entityVersions?.find(
-                    (ed: any) => ed.entityUuid === query.select.parentUuid,
+                ? (resolvePresentEntityFromModel(
+                    modelEnvironment.currentModel,
+                    query.select.parentUuid,
                   )?.externalDataSource?.schema ?? this.schema)
                 : this.schema;
               return (
@@ -168,8 +170,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             case "extractorByPrimaryKey": {
               const pkColumn = this.sqlSchemaTableAccess[query.select.parentUuid]?.idAttribute ?? "uuid";
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
-                ? ((modelEnvironment as any)?.currentModel?.entityVersions?.find(
-                    (ed: any) => ed.entityUuid === query.select.parentUuid,
+                ? (resolvePresentEntityFromModel(
+                    modelEnvironment.currentModel,
+                    query.select.parentUuid,
                   )?.externalDataSource?.schema ?? this.schema)
                 : this.schema;
               return `SELECT * FROM "${entitySchema}"."${query.select.parentName}" WHERE "${pkColumn}" = '${query.select.instanceUuid}'`;

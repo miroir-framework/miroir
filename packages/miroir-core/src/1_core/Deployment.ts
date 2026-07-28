@@ -7,7 +7,6 @@ import type {
   Deployment,
   Entity,
   EntityInstance,
-  EntityVersion,
   MetaModel,
   MiroirConfigClient,
   StoreUnitConfiguration,
@@ -21,11 +20,6 @@ import {
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { entityHasCompletePresentModel, resolveCurrentEntityModel } from "./entityPresentModel.js";
-import {
-  getMetaModelEntityVersions,
-  withMetaModelEntityVersions,
-} from "./metaModelEntityVersions.js";
 
 import {
   adminApplication_Admin,
@@ -230,15 +224,12 @@ export function createDeploymentCompositeAction(
 }
 
 // ################################################################################################
-export interface EntityDefinitionCouple {
-  // entity: Entity;
+export interface EntityAndInstances {
   entity: Entity;
-  /** Optional during #217 Phase 11 — Entity-only create when present model is complete. */
-  entityVersion?: EntityVersion;
 }
 export type ApplicationEntitiesDefinitionAndInstances = {
   instances: EntityInstance[];
-} & EntityDefinitionCouple;
+} & EntityAndInstances;
 
 export type ApplicationEntitiesAndInstances = ApplicationEntitiesDefinitionAndInstances[];
 
@@ -258,25 +249,6 @@ export const emptyMetaModel: MetaModel = {
   runners: [],
   tests: [],
   themes: [],
-}
-// ################################################################################################
-export function metaModelFilterEntities(
-  metaModel: MetaModel,
-  entityUuidsToKeep?: Uuid[]
-): MetaModel {
-  const filteredEntities = entityUuidsToKeep ? metaModel.entities.filter((entity) =>
-    entityUuidsToKeep.includes(entity.uuid)
-  ) : metaModel.entities;
-  const sourceEntityVersions = getMetaModelEntityVersions(metaModel);
-  const filteredEntityVersions = entityUuidsToKeep
-    ? sourceEntityVersions.filter((entityVersion) =>
-        entityUuidsToKeep.includes(entityVersion.entityUuid),
-      )
-    : sourceEntityVersions;
-  return withMetaModelEntityVersions(
-    { ...metaModel, entities: filteredEntities },
-    filteredEntityVersions,
-  );
 }
 export type ResolvableAppMetaModel = MetaModel | CoreTransformerForBuildPlusRuntime_getFromParameters;
 
@@ -358,8 +330,9 @@ export function buildResetAndinitializeDeploymentActionSequence(
   appMetaModel: MetaModel,
   filterEntities?: Uuid[],
 ): CompositeActionSequence {
-  // const filteredEntitiesMetaModel = metaModelFilterEntities(appMetaModel, filterEntities);
-  const entities = appMetaModel.entities.filter((e) => filterEntities?.includes(e.uuid));
+  const entities = filterEntities
+    ? appMetaModel.entities.filter((entity) => filterEntities.includes(entity.uuid))
+    : appMetaModel.entities;
 
   log.info(
     "resetAndinitializeDeploymentCompositeAction for application=",
@@ -424,8 +397,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // #220 — Action payload.entities is Entity[]; enrich incomplete Entity from EV when needed
-            entities: entities
+            entities,
           },
         },
         // add reports, menus, etc. from metaModel
