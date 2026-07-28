@@ -98,55 +98,6 @@
       "payload": {
         "actionSequence": [
           {
-            "actionType": "compositeRunBoxedQueryAction",
-            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-            "actionLabel": "getEntityDefinitionForEntity",
-            "nameGivenToResult": "entityDefinitionInfo",
-            "payload": {
-              "actionType": "runBoxedQueryAction",
-              "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-              "payload": {
-                "application": {
-                  "transformerType": "getFromParameters",
-                  "referencePath": [
-                    "dropEntity",
-                    "application"
-                  ]
-                },
-                "applicationSection": "model",
-                "query": {
-                  "queryType": "boxedQueryWithExtractorCombinerTransformer",
-                  "application": {
-                    "transformerType": "getFromParameters",
-                    "referencePath": [
-                      "dropEntity",
-                      "application"
-                    ]
-                  },
-                  "pageParams": {},
-                  "queryParams": {},
-                  "contextResults": {},
-                  "extractors": {
-                    "entityDefinitions": {
-                      "label": "entityDefinitions of the deployment",
-                      "extractorOrCombinerType": "extractorInstancesByEntity",
-                      "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                      "parentName": "EntityVersion",
-                      "applicationSection": "model",
-                      "filter": {
-                        "attributeName": "entityUuid",
-                        "value": {
-                          "transformerType": "mustacheStringTemplate",
-                          "definition": "{{dropEntity.entity}}"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          {
             "actionType": "dropEntity",
             "actionLabel": "dropEntity",
             "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -164,16 +115,6 @@
                 "referencePath": [
                   "dropEntity",
                   "entity"
-                ]
-              },
-              "entityVersionUuid": {
-                "transformerType": "getFromContext",
-                "interpolation": "runtime",
-                "referencePath": [
-                  "entityDefinitionInfo",
-                  "entityDefinitions",
-                  "0",
-                  "uuid"
                 ]
               }
             }

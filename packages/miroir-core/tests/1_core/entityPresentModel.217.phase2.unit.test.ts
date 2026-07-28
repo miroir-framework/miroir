@@ -13,7 +13,7 @@ import {
 } from "../../src/1_core/entityPresentModel.js";
 import {
   getEntityPrimaryKeyAttribute,
-  getResolvedEntityPrimaryKeyAttribute,
+  // getResolvedEntityPrimaryKeyAttribute,
 } from "../../src/1_core/EntityPrimaryKey.js";
 
 function entityVersion(
@@ -140,15 +140,15 @@ describe("PK helpers — Entity-first via resolver", () => {
     expect(getEntityPrimaryKeyAttribute({})).toBe("uuid");
   });
 
-  it("resolves PK through present-model enrichment for legacy Entities", () => {
-    const withNonUuidPk = entityVersion({
-      ...bookDefinition,
-      idAttribute: "isbn",
-    });
-    expect(
-      getResolvedEntityPrimaryKeyAttribute(bookEntityLegacyIncomplete, [withNonUuidPk]),
-    ).toBe("isbn");
-  });
+  // it("resolves PK through present-model enrichment for legacy Entities", () => {
+  //   const withNonUuidPk = entityVersion({
+  //     ...bookDefinition,
+  //     idAttribute: "isbn",
+  //   });
+  //   expect(
+  //     getResolvedEntityPrimaryKeyAttribute(bookEntityLegacyIncomplete, [withNonUuidPk]),
+  //   ).toBe("isbn");
+  // });
 
   it("resolves PK from a complete Entity without needing EntityVersion fields beyond join", () => {
     const complete: Entity = {

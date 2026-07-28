@@ -151,7 +151,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         ));
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
-        entityEntityDefinition.uuid,
+        entityEntity.uuid,
         entityVersionUuid
       );
 
@@ -178,7 +178,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         {
           writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
           writeEntityDefinition: (nextEntityDefinition) =>
-            this.upsertInstance(entityEntityDefinition.uuid, nextEntityDefinition),
+            this.upsertInstance(entityEntity.uuid, nextEntityDefinition),
           restoreEntity: (entityToRestore) =>
             this.upsertInstance(entityEntity.uuid, entityToRestore),
         },
@@ -234,7 +234,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         ));
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
-        entityEntityDefinition.uuid,
+        entityEntity.uuid,
         entityVersionUuid
       );
       if (currentEntityDefinition instanceof Action2Error) {
@@ -264,7 +264,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         {
           writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
           writeEntityDefinition: (nextEntityDefinition) =>
-            this.upsertInstance(entityEntityDefinition.uuid, nextEntityDefinition),
+            this.upsertInstance(entityEntity.uuid, nextEntityDefinition),
           restoreEntity: (entityToRestore) =>
             this.upsertInstance(entityEntity.uuid, entityToRestore),
         },
@@ -273,48 +273,13 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
     
     // #############################################################################################
+    // #220 — Entity-only drop: remove Entity + storage space; do not touch EntityVersions.
     async dropEntity(entityUuid: string): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "dropEntity entity", entityEntity.uuid);
       if (this.dataStore.getEntityUuids().includes(entityUuid)) {
         await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
       } else {
         log.warn(this.logHeader, "dropEntity entity not found:", entityUuid);
-      }
-
-      if (this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)) {
-        const entityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.getInstances(entityEntityDefinition.uuid);
-        if (entityDefinitions instanceof Action2Error) {
-          return Promise.resolve(new Action2Error(
-            "FailedToDeleteStore",
-            `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorType}, ${entityDefinitions.errorMessage}`
-          ));
-        }
-        if (entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
-          return Promise.resolve(new Action2Error(
-            "FailedToDeleteStore",
-            `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.queryFailure}, ${entityDefinitions.returnedDomainElement.failureMessage}`
-          ));
-        }
-        log.debug(
-          this.logHeader,
-          "dropEntity entity",
-          entityEntity.uuid,
-          "found definitions to delete:",
-          entityDefinitions
-        );
-
-        for (const entityVersion of entityDefinitions.returnedDomainElement.instances.filter(
-          (i: EntityInstance) => (i as EntityVersion).entityUuid == entityUuid
-        )) {
-          await this.deleteInstance(entityEntityDefinition.uuid, entityVersion);
-          // TODO: check for failures!
-        }
-      } else {
-        log.warn(
-          "PersistenceStoreController dropEntity sublevel for entityEntityDefinition does not exist",
-          entityEntityDefinition.uuid,
-          this.localUuidIndexedDb.hasSubLevel(entityEntityDefinition.uuid)
-        );
       }
 
       if (this.localUuidIndexedDb.hasSubLevel(entityEntity.uuid)) {

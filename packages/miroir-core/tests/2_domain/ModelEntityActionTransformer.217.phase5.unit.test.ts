@@ -99,14 +99,13 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
     }
   });
 
-  it("dropEntity deletes only the live Entity and named EntityVersion UUIDs", () => {
+  it("dropEntity deletes only the live Entity (no EntityVersion)", () => {
     const action: ModelAction = {
       actionType: "dropEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
         entityUuid: bookEntity.uuid,
-        entityVersionUuid: bookDefinition.uuid,
       },
     };
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
@@ -118,7 +117,6 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
     if (Array.isArray(instanceActions) && instanceActions[0].actionType === "deleteInstance") {
       expect(instanceActions[0].payload.objects).toEqual([
         { parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", uuid: bookEntity.uuid },
-        { parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd", uuid: bookDefinition.uuid },
       ]);
     }
   });

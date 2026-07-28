@@ -44,29 +44,29 @@ export function entityHasCompositePrimaryKey(source: EntityPrimaryKeySource): bo
   return Array.isArray(source.idAttribute);
 }
 
-/**
- * Entity-first PK resolution: enrich legacy Entity via {@link resolveCurrentEntityModel},
- * then read `idAttribute`.
- */
-export function getResolvedEntityPrimaryKeyAttribute(
-  entity: Entity,
-  legacyEntityDefinitions: EntityVersion[],
-  options?: ResolveCurrentEntityModelOptions,
-): string | string[] {
-  return getEntityPrimaryKeyAttribute(
-    resolveCurrentEntityModel(entity, legacyEntityDefinitions, options),
-  );
-}
+// /**
+//  * Entity-first PK resolution: enrich legacy Entity via {@link resolveCurrentEntityModel},
+//  * then read `idAttribute`.
+//  */
+// export function getResolvedEntityPrimaryKeyAttribute(
+//   entity: Entity,
+//   legacyEntityDefinitions: EntityVersion[],
+//   options?: ResolveCurrentEntityModelOptions,
+// ): string | string[] {
+//   return getEntityPrimaryKeyAttribute(
+//     resolveCurrentEntityModel(entity, legacyEntityDefinitions, options),
+//   );
+// }
 
-export function getResolvedEntityPrimaryKeyAttributes(
-  entity: Entity,
-  legacyEntityDefinitions: EntityVersion[],
-  options?: ResolveCurrentEntityModelOptions,
-): string[] {
-  return getEntityPrimaryKeyAttributes(
-    resolveCurrentEntityModel(entity, legacyEntityDefinitions, options),
-  );
-}
+// export function getResolvedEntityPrimaryKeyAttributes(
+//   entity: Entity,
+//   legacyEntityDefinitions: EntityVersion[],
+//   options?: ResolveCurrentEntityModelOptions,
+// ): string[] {
+//   return getEntityPrimaryKeyAttributes(
+//     resolveCurrentEntityModel(entity, legacyEntityDefinitions, options),
+//   );
+// }
 
 // ##############################################################################################
 /**

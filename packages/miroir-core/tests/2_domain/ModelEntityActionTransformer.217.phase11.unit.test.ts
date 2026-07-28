@@ -108,17 +108,15 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     }
   });
 
-  it("dropEntity requires only entityUuid and deletes live ED when present", () => {
+  it("dropEntity requires only entityUuid and does not delete EntityVersion", () => {
     const action: ModelAction = {
       actionType: "dropEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
         entityUuid: bookEntity.uuid,
-        entityVersionUuid: bookDefinition.uuid,
       },
     };
-    delete (action.payload as { entityVersionUuid?: string }).entityVersionUuid;
 
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
       "00000000-0000-4000-8000-000000000001",
@@ -127,9 +125,9 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     );
     expect(Array.isArray(instanceActions)).toBe(true);
     if (Array.isArray(instanceActions) && instanceActions[0]?.actionType === "deleteInstance") {
-      expect(instanceActions[0].payload.objects).toHaveLength(2);
-      expect(instanceActions[0].payload.objects[0].uuid).toBe(bookEntity.uuid);
-      expect(instanceActions[0].payload.objects[1].uuid).toBe(bookDefinition.uuid);
+      expect(instanceActions[0].payload.objects).toEqual([
+        { parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", uuid: bookEntity.uuid },
+      ]);
     }
   });
 });

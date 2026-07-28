@@ -132,7 +132,7 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
     expect(sqlMixin).toContain("applyEntityOnlyRename");
   });
 
-  it("ModelEndpoint Action schemas: createEntity is Entity[]; alter/rename/drop keep optional entityVersionUuid", () => {
+  it("ModelEndpoint Action schemas: createEntity/dropEntity Entity-only; alter/rename keep optional entityVersionUuid", () => {
     const endpoint = JSON.parse(
       readFileSync(
         join(
@@ -169,10 +169,12 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
       else Object.values(node).forEach(walk);
     };
     walk(endpoint);
-    for (const name of ["alterEntityAttribute", "renameEntity", "dropEntity"]) {
+    for (const name of ["alterEntityAttribute", "renameEntity"]) {
       const ap = actions.find((a) => a.actionType?.definition === name);
       expect(ap?.payload?.definition?.entityVersionUuid?.optional).toBe(true);
     }
+    const dropAp = actions.find((a) => a.actionType?.definition === "dropEntity");
+    expect(dropAp?.payload?.definition?.entityVersionUuid).toBeUndefined();
     const createAp = actions.find((a) => a.actionType?.definition === "createEntity");
     expect(createAp?.payload?.definition?.entities?.definition?.definition?.relativePath).toBe(
       "entity",

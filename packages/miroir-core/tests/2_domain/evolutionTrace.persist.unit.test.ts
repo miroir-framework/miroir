@@ -71,7 +71,6 @@ const dropEntityAction: ModelActionDropEntity = {
   payload: {
     application: APP_UUID,
     entityUuid: ENTITY_UUID,
-    entityVersionUuid: ENTITYDEF_UUID,
   },
 };
 

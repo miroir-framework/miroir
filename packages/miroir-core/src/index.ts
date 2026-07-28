@@ -740,8 +740,6 @@ export {
   getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
   getInstancePrimaryKeyValue,
-  getResolvedEntityPrimaryKeyAttribute,
-  getResolvedEntityPrimaryKeyAttributes,
   instanceMatchesForeignKey,
   parseCompositeKeyValue,
   resolveInstanceParentUuid,

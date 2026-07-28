@@ -32,12 +32,12 @@ function entityVersionUuidFromModelAction(
   action: ModelActionReplayableAction,
 ): string | undefined {
   switch (action.actionType) {
-    case "createEntity": {
-      // #220 — create is Entity-only; no EntityVersion uuid on the Action payload.
+    case "createEntity":
+    case "dropEntity": {
+      // #220 — create/drop are Entity-only; no EntityVersion uuid on the Action payload.
       return undefined;
     }
     case "renameEntity":
-    case "dropEntity":
     case "alterEntityAttribute":
       return action.payload.entityVersionUuid;
   }

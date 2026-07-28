@@ -926,15 +926,6 @@
                     "canBeTemplate": true
                   }
                 }
-              },
-              "entityVersionUuid": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true
-                  }
-                },
-                "optional": true
               }
             }
           }

@@ -143,9 +143,10 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
+    // #220 — Entity-only drop: remove Entity + storage space; do not touch EntityVersions.
     async dropEntity(entityUuid: string): Promise<Action2VoidReturnType> {
       log.info("dropEntity entityUuid", entityUuid);
-      if ([entityEntity.uuid, entityEntityDefinition.uuid].includes(entityUuid)) {
+      if ([entityEntity.uuid, entityEntity.uuid].includes(entityUuid)) {
         // TODO: UGLY!!!!!!! DOES IT EVEN WORK????
         if (this.sqlSchemaTableAccess && this.sqlSchemaTableAccess[entityUuid]) {
           const model = this.sqlSchemaTableAccess[entityUuid];
@@ -158,39 +159,6 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       } else {
         if (this.dataStore.getEntityUuids().includes(entityUuid)) {
           await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
-          //remove all entity definitions for the dropped entity
-          const entityDefinitions: Action2EntityInstanceCollectionOrFailure =
-            await this.getInstances(entityEntityDefinition.uuid);
-
-          log.trace(
-            "dropEntity entityUuid",
-            entityUuid,
-            "found Entity Definitions:",
-            entityDefinitions
-          );
-          if (entityDefinitions instanceof Action2Error) {
-            return Promise.resolve(
-              new Action2Error(
-                "FailedToDeleteStore",
-                `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorMessage}`
-              )
-            );
-          }
-          if (entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
-            return Promise.resolve(
-              new Action2Error(
-                "FailedToDeleteStore",
-                `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.queryFailure}, ${entityDefinitions.returnedDomainElement.failureMessage}`
-              )
-            );
-          }
-
-          for (const entityVersion of entityDefinitions.returnedDomainElement.instances.filter(
-            (i: EntityInstance) => (i as EntityVersion).entityUuid == entityUuid
-          )) {
-            await this.deleteInstance(entityEntityDefinition.uuid, entityVersion);
-          }
-
           await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
         } else {
           log.warn("dropEntity entityUuid", entityUuid, "NOT FOUND.");
@@ -252,7 +220,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         );
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
-        entityEntityDefinition.uuid,
+        entityEntity.uuid,
         entityVersionUuid
       );
 
@@ -280,7 +248,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         {
           writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
           writeEntityDefinition: (nextEntityDefinition) =>
-            this.upsertInstance(entityEntityDefinition.uuid, nextEntityDefinition),
+            this.upsertInstance(entityEntity.uuid, nextEntityDefinition),
           restoreEntity: (entityToRestore) =>
             this.upsertInstance(entityEntity.uuid, entityToRestore),
         },
@@ -341,7 +309,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         );
       }
       const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
-        entityEntityDefinition.uuid,
+        entityEntity.uuid,
         entityVersionUuid
       );
       if (currentEntityDefinition instanceof Action2Error) {
@@ -377,7 +345,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         {
           writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
           writeEntityDefinition: (nextEntityDefinition) =>
-            this.upsertInstance(entityEntityDefinition.uuid, nextEntityDefinition),
+            this.upsertInstance(entityEntity.uuid, nextEntityDefinition),
           restoreEntity: (entityToRestore) =>
             this.upsertInstance(entityEntity.uuid, entityToRestore),
         },

@@ -10,13 +10,12 @@ import { TransformerFailure, type TransformerReturnType } from "../0_interfaces/
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
-import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-test-app_deployment-miroir";
 
 import {
   planAlterEntityAttributeMutation,
   planCreateEntityMutation,
   planRenameEntityMutation,
-  resolveLiveEntityDefinitionForAction,
 } from "../1_core/modelEntityActionLiveResolve.js";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -71,22 +70,7 @@ export class ModelEntityActionTransformer{
             query: { modelAction } as any,
           });
         }
-        const liveEntityDefinition = resolveLiveEntityDefinitionForAction(
-          currentModel,
-          modelAction.payload.entityUuid,
-          modelAction.payload.entityVersionUuid,
-        );
-        // Drops the live Entity; deletes redundant live EntityVersion when present.
-        // Historical EntityVersion copies (other UUIDs) are not referenced here.
-        const objects: { parentUuid: string; uuid: string }[] = [
-          { parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid },
-        ];
-        if (liveEntityDefinition) {
-          objects.push({
-            parentUuid: entityEntityDefinition.uuid,
-            uuid: liveEntityDefinition.uuid,
-          });
-        }
+        // #220 — Entity-only drop; do not delete EntityVersion instances.
         return [
           {
             actionType: "deleteInstance",
@@ -94,7 +78,9 @@ export class ModelEntityActionTransformer{
             payload: {
               application: modelAction.payload.application,
               applicationSection: "model",
-              objects,
+              objects: [
+                { parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid },
+              ],
             }
           },
         ];

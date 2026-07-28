@@ -111,59 +111,21 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
+    // #220 — Entity-only drop: remove Entity + storage space; do not touch EntityVersions.
     async dropEntity(entityUuid: string): Promise<Action2VoidReturnType> {
-      // TODO: implementation ~ indexedDb case. share it?
-      // if (this.dataStore.getEntityUuids().includes(entityUuid)) {
       if (this.getEntityUuids().includes(entityUuid)) {
-        // this.localUuidIndexedDb.removeSubLevels([entityUuid]);
         await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
       } else {
         log.warn(this.logHeader, "dropEntity entity not found:", entityUuid);
       }
 
-      // TODO: does the following code work at all?
-      if (this.getEntityUuids().includes(entityEntityDefinition.uuid)) {
+      if (this.getEntityUuids().includes(entityEntity.uuid)) {
         await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
       } else {
         log.warn(
           this.logHeader,
           "dropEntity sublevel for entityEntity does not exist",
           entityEntity.uuid,
-          "existing entities",
-          this.getEntityUuids()
-        );
-      }
-
-      // this repeats exactly the previous code block, BUG??
-      if (this.getEntityUuids().includes(entityEntityDefinition.uuid)) {
-        await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
-
-        // const entityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.dataStore.getInstances(
-        const entityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.getInstances(
-          entityEntityDefinition.uuid
-        );
-        if (entityDefinitions instanceof Action2Error) {
-          return Promise.resolve(new Action2Error(
-            "FailedToDeleteStore",
-            `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.errorMessage}`
-          ));
-        }
-        if (entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
-          return Promise.resolve(new Action2Error(
-            "FailedToDeleteStore",
-            `dropEntity failed for section: data, entityUuid ${entityUuid}, error: ${entityDefinitions.returnedDomainElement.queryFailure}, ${entityDefinitions.returnedDomainElement.failureMessage}`
-          ));
-        }
-
-        for (const entityVersion of entityDefinitions.returnedDomainElement.instances.filter(
-          (i: EntityInstance) => (i as EntityVersion).entityUuid == entityUuid
-        )) {
-          await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityVersion);
-        }
-      } else {
-        log.warn(
-          "PersistenceStoreController dropEntity entity entityEntityDefinition does not exist",
-          entityEntityDefinition.uuid,
           "existing entities",
           this.getEntityUuids()
         );

@@ -15673,15 +15673,6 @@ export const miroirFundamentalJzodSchema = {
                     "canBeTemplate": true
                   }
                 }
-              },
-              "entityVersionUuid": {
-                "type": "string",
-                "tag": {
-                  "value": {
-                    "canBeTemplate": true
-                  }
-                },
-                "optional": true
               }
             }
           }
@@ -16580,15 +16571,6 @@ export const miroirFundamentalJzodSchema = {
                         "canBeTemplate": true
                       }
                     }
-                  },
-                  "entityVersionUuid": {
-                    "type": "string",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": true
-                      }
-                    },
-                    "optional": true
                   }
                 }
               }
@@ -34027,38 +34009,6 @@ export const miroirFundamentalJzodSchema = {
                             "canBeTemplate": true
                           }
                         }
-                      },
-                      {
-                        "type": "schemaReference",
-                        "definition": {
-                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                          "relativePath": "coreTransformerForBuildPlusRuntime"
-                        }
-                      }
-                    ]
-                  },
-                  "entityVersionUuid": {
-                    "type": "union",
-                    "tag": {
-                      "value": {
-                        "canBeTemplate": true,
-                        "isTemplate": true
-                      }
-                    },
-                    "optional": true,
-                    "discriminator": [
-                      "transformerType",
-                      "interpolation"
-                    ],
-                    "definition": [
-                      {
-                        "type": "string",
-                        "tag": {
-                          "value": {
-                            "canBeTemplate": true
-                          }
-                        },
-                        "optional": true
                       },
                       {
                         "type": "schemaReference",

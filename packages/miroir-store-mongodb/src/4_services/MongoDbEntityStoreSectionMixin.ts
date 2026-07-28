@@ -272,29 +272,13 @@ export function MongoDbEntityStoreSectionMixin<TBase extends typeof MixedMongoDb
     }
 
     // #########################################################################################
+    // #220 — Entity-only drop: remove Entity + storage space; do not touch EntityVersions.
     async dropEntity(entityUuid: string): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "dropEntity", entityUuid);
 
       const entity: Action2EntityInstanceReturnType = await this.getInstance(entityEntity.uuid, entityUuid);
       if (entity instanceof Action2Error) {
         return entity;
-      }
-
-      // Delete redundant EntityVersion(s) first, then live Entity (same as FS/IDB).
-      if (this.localUuidMongoDb.hasCollection(entityEntityDefinition.uuid)) {
-        const entityDefinitions: Action2EntityInstanceCollectionOrFailure = await this.getInstances(
-          entityEntityDefinition.uuid,
-        );
-        if (entityDefinitions instanceof Action2Error) {
-          return entityDefinitions;
-        }
-        if (!(entityDefinitions.returnedDomainElement instanceof Domain2ElementFailed)) {
-          for (const entityVersion of entityDefinitions.returnedDomainElement.instances.filter(
-            (i: EntityInstance) => (i as EntityVersion).entityUuid == entityUuid,
-          )) {
-            await this.deleteInstance(entityEntityDefinition.uuid, entityVersion);
-          }
-        }
       }
 
       await this.deleteInstance(entityEntity.uuid, { uuid: entityUuid } as EntityInstance);
