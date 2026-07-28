@@ -58,7 +58,6 @@ describe("217 Phase 5 — ModelEntityActionTransformer dual-write", () => {
         application: defaultLibraryAppModel.applicationUuid,
         entityName: bookEntity.name,
         entityUuid: bookEntity.uuid,
-        entityVersionUuid: bookDefinition.uuid,
         addColumns: [{ name: "isbn", definition: { type: "string" } }],
       },
     };

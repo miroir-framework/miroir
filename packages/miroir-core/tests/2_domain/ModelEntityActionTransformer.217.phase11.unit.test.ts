@@ -69,7 +69,7 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     expect(planCreateEntityMutation(incomplete)).toBeUndefined();
   });
 
-  it("alterEntityAttribute updates Entity only when present model is complete (ED left historical)", () => {
+  it("alterEntityAttribute updates Entity only when present model is complete (no EntityVersion)", () => {
     const action: ModelAction = {
       actionType: "alterEntityAttribute",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
@@ -77,11 +77,9 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
         application: defaultLibraryAppModel.applicationUuid,
         entityName: bookEntity.name,
         entityUuid: bookEntity.uuid,
-        entityVersionUuid: bookDefinition.uuid,
         addColumns: [{ name: "isbn11", definition: { type: "string" } }],
       },
     };
-    delete (action.payload as { entityVersionUuid?: string }).entityVersionUuid;
 
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
       "00000000-0000-4000-8000-000000000001",

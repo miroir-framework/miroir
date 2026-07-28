@@ -6,7 +6,6 @@ import {
   Action2VoidReturnType,
   Domain2ElementFailed,
   Entity,
-  EntityVersion,
   EntityInstance,
   EntityInstanceWithName,
   LoggerInterface,
@@ -16,15 +15,12 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
-  applyAlterEntityAttributePair,
   applyEntityOnlyAlterAttribute,
   applyEntityOnlyRename,
-  applyRenameEntityPair,
-  persistEntityThenEntityDefinition,
 } from "miroir-core";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
-import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-test-app_deployment-miroir";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -141,7 +137,7 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
     }
 
     // ############################################################################################
-    // #217 Phase 11: Entity-only alter when present model is complete; dual-write only for incomplete Entity.
+    // #220 — Entity-only alter; never dual-write EntityVersion.
     async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "alterEntityAttribute", update);
       const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
@@ -164,55 +160,16 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         addColumns: update.payload.addColumns,
         removeColumns: update.payload.removeColumns,
       });
-      if (entityOnly) {
-        log.info("alterEntityAttribute Entity-only", entityOnly.uuid);
-        return this.upsertInstance(entityEntity.uuid, entityOnly);
+      if (!entityOnly) {
+        return Promise.resolve(
+          new Action2Error(
+            "FailedToDeployModule",
+            `alterEntityAttribute requires complete Entity.mlSchema (entityUuid ${update.payload.entityUuid})`
+          )
+        );
       }
-
-      const entityVersionUuid = update.payload.entityVersionUuid;
-      if (!entityVersionUuid) {
-        return Promise.resolve(new Action2Error(
-          "FailedToDeployModule",
-          `alterEntityAttribute requires entityVersionUuid when Entity present model is incomplete (entityUuid ${update.payload.entityUuid})`
-        ));
-      }
-      const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
-        entityEntity.uuid,
-        entityVersionUuid
-      );
-      if (currentEntityDefinition instanceof Action2Error) {
-        return currentEntityDefinition
-      }
-      if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return Promise.resolve(new Action2Error(
-          "FailedToDeployModule",
-          `alterEntityAttribute failed for section: data, entityUuid ${entityVersionUuid}, error: ${currentEntityDefinition.returnedDomainElement.queryFailure}, ${currentEntityDefinition.returnedDomainElement.failureMessage}`
-        ));
-      }
-      const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityVersion;
-      const pair = applyAlterEntityAttributePair(
-        previousEntity,
-        previousEntityDefinition,
-        {
-          addColumns: update.payload.addColumns,
-          removeColumns: update.payload.removeColumns,
-        },
-      );
-
-      log.info("alterEntityAttribute dual-write pair", JSON.stringify(pair, undefined, 2));
-
-      return persistEntityThenEntityDefinition(
-        pair,
-        {
-          writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
-          writeEntityDefinition: (nextEntityDefinition) =>
-            this.upsertInstance(entityEntity.uuid, nextEntityDefinition),
-          restoreEntity: (entityToRestore) =>
-            this.upsertInstance(entityEntity.uuid, entityToRestore),
-        },
-        { failurePolicy: { kind: "compensate" }, previousEntity },
-      );
+      log.info("alterEntityAttribute Entity-only", entityOnly.uuid);
+      return this.upsertInstance(entityEntity.uuid, entityOnly);
     }
     
     // #############################################################################################

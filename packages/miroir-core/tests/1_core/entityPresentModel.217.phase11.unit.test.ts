@@ -132,7 +132,7 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
     expect(sqlMixin).toContain("applyEntityOnlyRename");
   });
 
-  it("ModelEndpoint Action schemas: create/drop/rename Entity-only; alter keeps optional entityVersionUuid", () => {
+  it("ModelEndpoint Action schemas: create/drop/rename/alter Entity-only (no entityVersionUuid)", () => {
     const endpoint = JSON.parse(
       readFileSync(
         join(
@@ -149,7 +149,6 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
       ),
       "utf8",
     );
-    expect(generated).toContain("entityVersionUuid?: string | undefined");
     // #220 — createEntity payload is Entity[], not { entity, entityVersion? }
     expect(generated).toMatch(
       /export type ModelActionCreateEntity = \{[\s\S]*?entities: Entity\[\];/,
@@ -157,8 +156,8 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
     expect(generated).not.toMatch(
       /export type ModelActionCreateEntity = \{[\s\S]*?entityVersion\?:/,
     );
-    expect(generated).toMatch(
-      /modelActionAlterEntityAttribute[\s\S]*entityVersionUuid:z\.string\(\)\.optional\(\)/,
+    expect(generated).not.toMatch(
+      /modelActionAlterEntityAttribute[\s\S]*entityVersionUuid/,
     );
 
     const actions: any[] = [];
@@ -169,14 +168,10 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
       else Object.values(node).forEach(walk);
     };
     walk(endpoint);
-    for (const name of ["alterEntityAttribute"]) {
+    for (const name of ["alterEntityAttribute", "dropEntity", "renameEntity"]) {
       const ap = actions.find((a) => a.actionType?.definition === name);
-      expect(ap?.payload?.definition?.entityVersionUuid?.optional).toBe(true);
+      expect(ap?.payload?.definition?.entityVersionUuid).toBeUndefined();
     }
-    const dropAp = actions.find((a) => a.actionType?.definition === "dropEntity");
-    expect(dropAp?.payload?.definition?.entityVersionUuid).toBeUndefined();
-    const renameAp = actions.find((a) => a.actionType?.definition === "renameEntity");
-    expect(renameAp?.payload?.definition?.entityVersionUuid).toBeUndefined();
     const createAp = actions.find((a) => a.actionType?.definition === "createEntity");
     expect(createAp?.payload?.definition?.entities?.definition?.definition?.relativePath).toBe(
       "entity",

@@ -127,16 +127,12 @@ export class ModelEntityActionTransformer{
             addColumns: modelAction.payload.addColumns,
             removeColumns: modelAction.payload.removeColumns,
           },
-          modelAction.payload.entityVersionUuid,
         );
-        if (!plan) {
+        if (!plan || plan.mode !== "entityOnly") {
           log.error('modelActionToInstanceAction alterEntityAttribute could not alter',modelAction);
           return [];
         }
-        const objects: EntityInstance[] =
-          plan.mode === "dualWrite"
-            ? [plan.pair.entity as EntityInstance, plan.pair.entityVersion as EntityInstance]
-            : [plan.entity as EntityInstance];
+        const objects: EntityInstance[] = [plan.entity as EntityInstance];
         const result: InstanceAction[] = [
           {
             actionType: "updateInstance",

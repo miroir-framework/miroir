@@ -6,7 +6,6 @@ import {
   Action2VoidReturnType,
   Domain2ElementFailed,
   Entity,
-  EntityVersion,
   EntityInstance,
   EntityInstanceWithName,
   LoggerInterface,
@@ -16,13 +15,10 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
-  applyAlterEntityAttributePair,
   applyEntityOnlyAlterAttribute,
   applyEntityOnlyRename,
-  applyRenameEntityPair,
-  persistEntityThenEntityDefinition,
 } from "miroir-core";
-import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-test-app_deployment-miroir";
 import { EntityUuidIndexedSequelizeModel, fromMiroirPresentModelToSequelizeEntityDefinition } from "../utils";
 import { SqlDbStoreSection } from "./SqlDbStoreSection";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin";
@@ -208,7 +204,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ############################################################################################
-    // #217 Phase 11: Entity-only alter when present model is complete; dual-write only for incomplete Entity.
+    // #220 — Entity-only alter; never dual-write EntityVersion.
     async alterEntityAttribute(
       update: ModelActionAlterEntityAttribute
     ): Promise<Action2VoidReturnType> {
@@ -230,69 +226,22 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         );
       }
       const previousEntity = currentEntity.returnedDomainElement as Entity;
-      const entityOnly = applyEntityOnlyAlterAttribute(previousEntity, {
+      const alteredEntity = applyEntityOnlyAlterAttribute(previousEntity, {
         addColumns: update.payload.addColumns,
         removeColumns: update.payload.removeColumns,
       });
-      if (entityOnly) {
-        log.info("alterEntityAttribute Entity-only", entityOnly.uuid);
-        return this.upsertInstance(entityEntity.uuid, entityOnly);
-      }
-
-      const entityVersionUuid = update.payload.entityVersionUuid;
-      if (!entityVersionUuid) {
+      if (!alteredEntity) {
         return Promise.resolve(
           new Action2Error(
             "FailedToDeployModule",
-            `alterEntityAttribute requires entityVersionUuid when Entity present model is incomplete (entityUuid ${update.payload.entityUuid})`
+            `alterEntityAttribute requires complete Entity.mlSchema (entityUuid ${update.payload.entityUuid})`
           )
         );
       }
-      const currentEntityDefinition: Action2EntityInstanceReturnType = await this.getInstance(
-        entityEntity.uuid,
-        entityVersionUuid
-      );
-      if (currentEntityDefinition instanceof Action2Error) {
-        // todo: THROW???
-        return currentEntityDefinition;
-      }
-      if (currentEntityDefinition.returnedDomainElement instanceof Domain2ElementFailed) {
-        return Promise.resolve(
-          new Action2Error(
-            "FailedToDeployModule",
-            currentEntityDefinition.returnedDomainElement.failureMessage
-          )
-        );
-      }
-      const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityVersion;
-      const pair = applyAlterEntityAttributePair(
-        previousEntity,
-        previousEntityDefinition,
-        {
-          addColumns: update.payload.addColumns,
-          removeColumns: update.payload.removeColumns,
-        },
-      );
-
-      log.info(
-        "alterEntityAttribute dual-write pair",
-        JSON.stringify(pair, undefined, 2)
-      );
-
-      const persistResult = await persistEntityThenEntityDefinition(
-        pair,
-        {
-          writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
-          writeEntityDefinition: (nextEntityDefinition) =>
-            this.upsertInstance(entityEntity.uuid, nextEntityDefinition),
-          restoreEntity: (entityToRestore) =>
-            this.upsertInstance(entityEntity.uuid, entityToRestore),
-        },
-        { failurePolicy: { kind: "compensate" }, previousEntity },
-      );
-      if (persistResult instanceof Action2Error) {
-        return persistResult;
+      log.info("alterEntityAttribute Entity-only", alteredEntity.uuid);
+      const upsertResult = await this.upsertInstance(entityEntity.uuid, alteredEntity);
+      if (upsertResult instanceof Action2Error) {
+        return upsertResult;
       }
 
       log.info(
@@ -300,17 +249,14 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         update.payload.entityName,
         "addColumns",
         JSON.stringify(update.payload.addColumns, null, 2),
-        "modifiedEntityDefinition",
-        JSON.stringify(pair.entityVersion, null, 2)
+        "modifiedEntity",
+        JSON.stringify(alteredEntity, null, 2)
       );
 
       // TODO: relies on implementation, IT SHOULD NOT! does side effect, to worsen the insult
       (this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess = {
         ...(this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess,
-        ...(this.dataStore as any as SqlDbStoreSection).getAccessToDataSectionEntity(
-          pair.entity,
-          pair.entityVersion
-        ),
+        ...(this.dataStore as any as SqlDbStoreSection).getAccessToDataSectionEntity(alteredEntity),
       };
       log.info(
         "alterEntityAttribute added columns",
@@ -319,7 +265,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       );
 
       await (this.dataStore as any as SqlDbStoreSection).sqlSchemaTableAccess[
-        pair.entity.uuid!
+        alteredEntity.uuid!
       ].sequelizeModel.sync({ alter: true }); // TODO: replace sync!
 
       return Promise.resolve(ACTION_OK);

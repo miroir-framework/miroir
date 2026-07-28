@@ -465,7 +465,6 @@
 //         //             application: testApplicationUuid,
 //         //             // deploymentUuid: testApplicationDeploymentUuid,
 //         //             entityUuid: entityPublisher.uuid,
-//         //             entityVersionUuid: entityDefinitionPublisher.uuid,
 //         //           },
 //         //         },
 //         //         {
@@ -828,7 +827,6 @@
 //         //             application: testApplicationUuid,
 //         //             entityName: entityPublisher.name,
 //         //             entityUuid: entityPublisher.uuid,
-//         //             entityVersionUuid: entityDefinitionPublisher.uuid,
 //         //             addColumns: [
 //         //               {
 //         //                 name: "aNewColumnForTest",
@@ -1450,7 +1448,6 @@
 //         //             application: testApplicationUuid,
 //         //             // deploymentUuid: testApplicationDeploymentUuid,
 //         //             entityUuid: entityPublisher.uuid,
-//         //             entityVersionUuid: entityDefinitionPublisher.uuid,
 //         //             entityName: "Publisher",
 //         //             targetValue: "Publishers",
 //         //           },
@@ -1577,7 +1574,6 @@
 //         // //             application: testApplicationUuid,
 //         // //             entityName: entityPublisher.name,
 //         // //             entityUuid: entityPublisher.uuid,
-//         // //             entityVersionUuid: entityDefinitionPublisher.uuid,
 //         // //             addColumns: [
 //         // //               {
 //         // //                 name: "aNewColumnForTest",

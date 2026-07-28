@@ -15498,15 +15498,6 @@ export const miroirFundamentalJzodSchema = {
                   }
                 ]
               },
-              "entityVersionUuid": {
-                "type": "string",
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "optional": true
-              },
               "addColumns": {
                 "type": "array",
                 "optional": true,
@@ -16224,15 +16215,6 @@ export const miroirFundamentalJzodSchema = {
                         "type": "uuid"
                       }
                     ]
-                  },
-                  "entityVersionUuid": {
-                    "type": "string",
-                    "validations": [
-                      {
-                        "type": "uuid"
-                      }
-                    ],
-                    "optional": true
                   },
                   "addColumns": {
                     "type": "array",
@@ -33482,15 +33464,6 @@ export const miroirFundamentalJzodSchema = {
                         "type": "uuid"
                       }
                     ]
-                  },
-                  "entityVersionUuid": {
-                    "type": "string",
-                    "validations": [
-                      {
-                        "type": "uuid"
-                      }
-                    ],
-                    "optional": true
                   },
                   "addColumns": {
                     "type": "array",

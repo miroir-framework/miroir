@@ -87,7 +87,6 @@ export function getModelUpdate(
       // deploymentUuid: entityDefinitionBefore.parentUuid,
       entityName: entityDefinitionBefore.name,
       entityUuid: entityDefinitionBefore.entityUuid,
-      entityVersionUuid: entityDefinitionBefore.uuid,
       addColumns: addColumns.length > 0 ? addColumns : undefined,
       removeColumns: removeColumns.length > 0 ? removeColumns : undefined,
     },

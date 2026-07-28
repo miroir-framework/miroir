@@ -1,10 +1,8 @@
 /**
  * Issue #217 Phase 11 — Entity-authoritative model Action resolution.
- * Resolve live Entity / optional redundant EntityVersion without requiring
- * Action payloads to carry entityVersionUuid.
+ * Resolve live Entity without requiring Action payloads to carry entityVersionUuid.
  *
- * Create / drop / rename are always Entity-only (#220). Dual-write remains for
- * alter when Entity is incomplete and a live ED is available for enrichment.
+ * Create / drop / rename / alter are always Entity-only (#220).
  *
  * #220 — UUID-reuse synthesize helpers live in entityDefinitionCompatibility.
  */
@@ -19,7 +17,6 @@ import {
   resolvePresentEntityFromModel,
 } from "./entityPresentModel.js";
 import {
-  applyAlterEntityAttributePair,
   applyMlSchemaColumnChanges,
   type AlterEntityAttributeColumns,
   type EntityEntityDefinitionPair,
@@ -62,10 +59,6 @@ export function planCreateEntityMutation(
 }
 
 /**
- * Rename: Entity-only when present model is complete; dual-write only to enrich
- * incomplete Entity from a live redundant ED.
- */
-/**
  * #220 — rename is always Entity-only (never dual-write EntityVersion).
  */
 export function planRenameEntityMutation(
@@ -84,40 +77,25 @@ export function planRenameEntityMutation(
 }
 
 /**
- * Alter attributes: Entity-only when present model is complete; dual-write only
- * when Entity is incomplete and a live ED can enrich.
+ * #220 — alter attributes is always Entity-only (never dual-write EntityVersion).
+ * Requires complete Entity.mlSchema.
  */
 export function planAlterEntityAttributeMutation(
   currentModel: MetaModel,
   entityUuid: string,
   changes: AlterEntityAttributeColumns,
-  entityVersionUuid?: string | undefined,
 ): LiveEntityMutationPlan | undefined {
   const entity = resolvePresentEntityFromModel(currentModel, entityUuid);
-  if (!entity) {
+  if (!entity?.mlSchema || !entityHasCompletePresentModel(entity)) {
     return undefined;
   }
-  if (entityHasCompletePresentModel(entity) && entity.mlSchema) {
-    return {
-      mode: "entityOnly",
-      entity: {
-        ...entity,
-        mlSchema: applyMlSchemaColumnChanges(entity.mlSchema, changes),
-      },
-    };
-  }
-  const entityVersion = resolveLiveEntityDefinitionForAction(
-    currentModel,
-    entityUuid,
-    entityVersionUuid,
-  );
-  if (entityVersion) {
-    return {
-      mode: "dualWrite",
-      pair: applyAlterEntityAttributePair(entity, entityVersion, changes),
-    };
-  }
-  return undefined;
+  return {
+    mode: "entityOnly",
+    entity: {
+      ...entity,
+      mlSchema: applyMlSchemaColumnChanges(entity.mlSchema, changes),
+    },
+  };
 }
 
 /** @deprecated Use import from entityDefinitionCompatibility (#220). */

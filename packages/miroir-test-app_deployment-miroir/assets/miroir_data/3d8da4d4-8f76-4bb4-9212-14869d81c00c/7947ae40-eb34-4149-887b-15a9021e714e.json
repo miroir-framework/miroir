@@ -425,15 +425,6 @@
                   }
                 ]
               },
-              "entityVersionUuid": {
-                "type": "string",
-                "validations": [
-                  {
-                    "type": "uuid"
-                  }
-                ],
-                "optional": true
-              },
               "addColumns": {
                 "type": "array",
                 "optional": true,

@@ -208,7 +208,7 @@ describe("217 Phase 12 — EntityVersion → EntityVersion vocabulary gate", () 
     expect(sample.entityVersion).toBeUndefined();
   });
 
-  it("Action payloads use entityVersionUuid / entityVersion (not entityVersion*)", () => {
+  it("Action payloads: create/drop/rename/alter Entity-only (no entityVersionUuid on model Actions)", () => {
     const endpoint = JSON.parse(
       readFileSync(
         join(
@@ -221,11 +221,9 @@ describe("217 Phase 12 — EntityVersion → EntityVersion vocabulary gate", () 
       ),
     );
     const generated = readFileSync(FUNDAMENTAL_TYPE, "utf8");
-    expect(generated).toContain("entityVersionUuid?: string | undefined");
-    expect(generated).toMatch(/entityVersion\?: EntityVersion \| undefined/);
     expect(generated).not.toMatch(/entityDefinitionUuid\?:/);
-    expect(generated).toMatch(
-      /modelActionAlterEntityAttribute[\s\S]*entityVersionUuid:z\.string\(\)\.optional\(\)/,
+    expect(generated).not.toMatch(
+      /modelActionAlterEntityAttribute[\s\S]*entityVersionUuid/,
     );
 
     const actions: any[] = [];
@@ -236,24 +234,13 @@ describe("217 Phase 12 — EntityVersion → EntityVersion vocabulary gate", () 
       else Object.values(node).forEach(walk);
     };
     walk(endpoint);
-    for (const name of ["alterEntityAttribute"]) {
+    for (const name of ["alterEntityAttribute", "dropEntity", "renameEntity"]) {
       const ap = actions.find((a) => a.actionType?.definition === name);
-      expect(ap?.payload?.definition?.entityVersionUuid?.optional).toBe(true);
+      expect(ap?.payload?.definition?.entityVersionUuid).toBeUndefined();
       expect(ap?.payload?.definition?.entityDefinitionUuid).toBeUndefined();
     }
-    const dropAp = actions.find((a) => a.actionType?.definition === "dropEntity");
-    expect(dropAp?.payload?.definition?.entityVersionUuid).toBeUndefined();
-    expect(dropAp?.payload?.definition?.entityDefinitionUuid).toBeUndefined();
-    const renameAp = actions.find((a) => a.actionType?.definition === "renameEntity");
-    expect(renameAp?.payload?.definition?.entityVersionUuid).toBeUndefined();
-    expect(renameAp?.payload?.definition?.entityDefinitionUuid).toBeUndefined();
     const create = actions.find((a) => a.actionType?.definition === "createEntity");
-    expect(
-      create?.payload?.definition?.entities?.definition?.definition?.entityVersion?.optional,
-    ).toBe(true);
-    expect(
-      create?.payload?.definition?.entities?.definition?.definition?.entityVersion,
-    ).toBeUndefined();
+    expect(create?.payload?.definition?.entities).toBeTruthy();
   });
 
   it("UI no longer calls presentEntityAsRedundantEntityDefinition (compat module #220)", () => {

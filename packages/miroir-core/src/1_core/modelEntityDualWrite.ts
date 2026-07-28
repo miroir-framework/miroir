@@ -62,8 +62,8 @@ export function applyMlSchemaColumnChanges(
 }
 
 /**
- * #217 Phase 11 — Entity-only alter when present model is complete (store layer).
- * Returns undefined when Entity is incomplete (caller may dual-write via ED).
+ * #220 — Entity-only alter when present model is complete (store / planner).
+ * Returns undefined when Entity is incomplete (caller must fail — no EV dual-write).
  */
 export function applyEntityOnlyAlterAttribute(
   entity: Entity,

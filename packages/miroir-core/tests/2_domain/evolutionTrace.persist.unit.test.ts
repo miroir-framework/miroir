@@ -80,7 +80,6 @@ const alterEntityAction: ModelActionAlterEntityAttribute = {
     application: APP_UUID,
     entityName: "TestEntity",
     entityUuid: ENTITY_UUID,
-    entityVersionUuid: ENTITYDEF_UUID,
   },
 };
 
