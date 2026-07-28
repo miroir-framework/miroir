@@ -536,12 +536,6 @@
               },
               "targetEntityUuid": {
                 "type": "uuid"
-              },
-              "sourceEntityDefinitionUuid": {
-                "type": "uuid"
-              },
-              "targetEntityDefinitionUuid": {
-                "type": "uuid"
               }
             }
           }
@@ -556,8 +550,8 @@
                 {
                   "actionType": "compositeRunBoxedQueryAction",
                   "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  "actionLabel": "sourceEntityDefinitionLookup",
-                  "nameGivenToResult": "sourceEntityDefinition",
+                  "actionLabel": "sourceEntityLookup",
+                  "nameGivenToResult": "sourceEntity",
                   "payload": {
                     "actionType": "runBoxedQueryAction",
                     "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -583,17 +577,17 @@
                           ]
                         },
                         "extractors": {
-                          "entityDefinitions": {
+                          "entities": {
                             "extractorOrCombinerType": "extractorByPrimaryKey",
                             "applicationSection": "model",
-                            "parentName": "EntittyDefinition",
-                            "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                            "parentName": "Entity",
+                            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                             "instanceUuid": {
                               "transformerType": "getFromContext",
                               "interpolation": "runtime",
                               "referencePath": [
                                 "payload",
-                                "sourceEntityDefinitionUuid"
+                                "sourceEntityUuid"
                               ]
                             }
                           }
@@ -605,8 +599,8 @@
                 {
                   "actionType": "compositeRunBoxedQueryAction",
                   "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                  "actionLabel": "targetEntityDefinitionLookup",
-                  "nameGivenToResult": "targetEntityDefinition",
+                  "actionLabel": "targetEntityLookup",
+                  "nameGivenToResult": "targetEntity",
                   "payload": {
                     "actionType": "runBoxedQueryAction",
                     "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -632,17 +626,17 @@
                           ]
                         },
                         "extractors": {
-                          "entityDefinitions": {
+                          "entities": {
                             "extractorOrCombinerType": "extractorByPrimaryKey",
                             "applicationSection": "model",
-                            "parentName": "EntittyDefinition",
-                            "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                            "parentName": "Entity",
+                            "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                             "instanceUuid": {
                               "transformerType": "getFromContext",
                               "interpolation": "runtime",
                               "referencePath": [
                                 "payload",
-                                "targetEntityDefinitionUuid"
+                                "targetEntityUuid"
                               ]
                             }
                           }
@@ -668,8 +662,8 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "targetEntityDefinition",
-                        "entityDefinitions",
+                        "targetEntity",
+                        "entities",
                         "name"
                       ]
                     },
@@ -679,14 +673,6 @@
                       "referencePath": [
                         "payload",
                         "targetEntityUuid"
-                      ]
-                    },
-                    "entityVersionUuid": {
-                      "transformerType": "getFromContext",
-                      "interpolation": "runtime",
-                      "referencePath": [
-                        "payload",
-                        "targetEntityDefinitionUuid"
                       ]
                     },
                     "addColumns": {
@@ -699,8 +685,8 @@
                           "transformerType": "getFromContext",
                           "interpolation": "runtime",
                           "referencePath": [
-                            "sourceEntityDefinition",
-                            "entityDefinitions"
+                            "sourceEntity",
+                            "entities"
                           ]
                         },
                         "attributeNames": {

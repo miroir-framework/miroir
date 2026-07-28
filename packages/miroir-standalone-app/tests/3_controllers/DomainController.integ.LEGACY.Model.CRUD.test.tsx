@@ -1062,15 +1062,8 @@
 //         //             entityName: entityPublisher.name,
 //         //             sourceEntityUuid: entityCountry.uuid,
 //         //             targetEntityUuid: entityPublisher.uuid,
-//         //             // entityVersionUuid: entityDefinitionPublisher.uuid,
-//         //             sourceEntityDefinitionUuid: entityDefinitionCountry.uuid,
-//         //             targetEntityDefinitionUuid: entityDefinitionPublisher.uuid,
 //         //             columns: [
 //         //               "iso3166-1Alpha-2",
-//         //               // {
-//         //               //   name: "aNewColumnForTest",
-//         //               //   definition: columnForTestDefinition,
-//         //               // },
 //         //             ],
 //         //           },
 //         //         } as any,

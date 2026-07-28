@@ -16344,12 +16344,6 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "targetEntityUuid": {
                     "type": "uuid"
-                  },
-                  "sourceEntityDefinitionUuid": {
-                    "type": "uuid"
-                  },
-                  "targetEntityDefinitionUuid": {
-                    "type": "uuid"
                   }
                 }
               }
@@ -33639,12 +33633,6 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true
                   },
                   "targetEntityUuid": {
-                    "type": "uuid"
-                  },
-                  "sourceEntityDefinitionUuid": {
-                    "type": "uuid"
-                  },
-                  "targetEntityDefinitionUuid": {
                     "type": "uuid"
                   }
                 }
