@@ -59,7 +59,7 @@ import {
   useReduxDeploymentsStateQuerySelectorForCleanedResult,
 } from "../../ReduxHooks.js";
 import { cleanLevel } from "../../constants.js";
-import { getMDataGridColumnDefinitionsFromEntityDefinition } from "../../getColumnDefinitionsFromEntityAttributes.js";
+import { getMDataGridColumnDefinitionsFromEntity } from "../../getColumnDefinitionsFromEntityAttributes.js";
 import { deleteCascade } from "../../scripts.js";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
@@ -330,13 +330,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     props.chosenApplicationSection,
   ]);
     
-  const currentReportTargetEntity: Entity | undefined =
-    objectListReportSection
-      ? resolvePresentEntityFromModel(
-          { entities, entityVersions },
-          objectListReportSection.definition.parentUuid,
-        )
-      : undefined;
+  const currentReportTargetEntity: Entity | undefined = entities.find((e) => e.uuid === objectListReportSection?.definition.parentUuid);
+    // objectListReportSection
+    //   ? resolvePresentEntityFromModel(
+    //       { entities, entityVersions },
+    //       objectListReportSection.definition.parentUuid,
+    //     )
+    //   : undefined;
 
   // TODO: AMBIGUOUS!! APPEARS ALSO IN THE Report DEFINITION. PROVIDE A DIRECT WAY TO DETERMINE THIS?
   const currentApplicationSection = props.chosenApplicationSection??"data";
@@ -583,7 +583,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           if (!currentReportTargetEntity) {
            throw new Error(
              "ReportSectionListDisplay onDeleteFormObject no Entity found for object to delete! " +
-               currentReportTargetEntity?.name,
+               data,
            );
           }
 
@@ -703,7 +703,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     () =>
       (objectListReportSection
         ? {
-            columnDefs: getMDataGridColumnDefinitionsFromEntityDefinition(
+            columnDefs: getMDataGridColumnDefinitionsFromEntity(
               props.deploymentUuid,
               instancesToDisplayJzodSchema ?? { type: "object", definition: {} },
               objectListReportSection,
@@ -813,8 +813,9 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                 isAttributes={true}
                 label={defaultLabel ?? currentReportTargetEntity?.name}
                 defaultFormValuesObject={dialogOuterFormObject}
-                entityVersion={currentReportTargetEntity}
-                entityDefinitionJzodSchema={
+                // entityVersion={currentReportTargetEntity}
+                entity={currentReportTargetEntity ?? {} as Entity}
+                mlSchema={
                   currentReportTargetEntity?.mlSchema as JzodObject
                 }
                 foreignKeyObjects={foreignKeyObjects}

@@ -42,7 +42,7 @@ export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSc
   // displayedDeploymentDefinition: selfApplicationDeploymentConfigurationsTO_REMOVEchema,
   // displayedDeploymentDefinition: deployment,
   // #217 Phase 12: Entity present model preferred; EntityVersion optional fallback
-  currentEntity: entity.optional(),
+  currentEntity: entity.nullable(),
   currentEntityDefinition: entityVersion.optional(),
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
   onRowDelete: z.function().args(z.any()).returns(z.void()).optional(),

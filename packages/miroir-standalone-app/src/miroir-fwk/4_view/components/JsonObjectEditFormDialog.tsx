@@ -70,8 +70,8 @@ export interface JsonObjectFormEditorCoreDialogProps {
   label?: string,
   isAttributes?: boolean,
   entity: Entity,
-  entityVersion: PresentModelSchemaCarrier,
-  entityDefinitionJzodSchema: JzodObject,
+  // entityVersion: PresentModelSchemaCarrier,
+  mlSchema: JzodObject,
   defaultFormValuesObject: any,
   currentApplication: Uuid,
   applicationDeploymentMap: ApplicationDeploymentMap,
@@ -228,7 +228,7 @@ interface JsonElementEditorDialogProps {
   currentApplicationSection?: ApplicationSection;
   entity: Entity;
   // entityVersion: PresentModelSchemaCarrier;
-  entityDefinitionJzodSchema: JzodObject;
+  mlSchema: JzodObject;
   resolvedJzodSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
   currentAppModel: MetaModel;
@@ -259,7 +259,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   currentApplicationSection,
   entity,
   // entityVersion,
-  entityDefinitionJzodSchema,
+  mlSchema,
   resolvedJzodSchema,
   foreignKeyObjects,
   currentAppModel,
@@ -386,7 +386,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
                 rootLessListKey: "ROOT",
                 currentValue: formState,
                 formikValues: formik.values,
-                rawJzodSchema: entityDefinitionJzodSchema,
+                rawJzodSchema: mlSchema,
               }}
             />
           )}
@@ -425,7 +425,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   const {
     label,
     isAttributes,
-    entityDefinitionJzodSchema,
+    mlSchema,
     defaultFormValuesObject,
     currentDeploymentUuid,
     currentApplicationSection,
@@ -446,8 +446,8 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   //   count,
   //   "defaultFormValuesObject",
   //   defaultFormValuesObject,
-  //   "entityDefinitionJzodSchema",
-  //   entityDefinitionJzodSchema
+  //   "mlSchema",
+  //   mlSchema
   // );
   // const context = useMiroirContextService();
   const miroirFundamentalJzodSchema = useMiroirFundamentalJzodSchemaForDeployment(
@@ -463,7 +463,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   const resolvedJzodSchema = useMemo(() => {
     if (
       miroirFundamentalJzodSchema &&
-      entityDefinitionJzodSchema &&
+      mlSchema &&
       defaultFormValuesObject &&
       dialogOuterFormObject &&
       currentAppModel
@@ -473,7 +473,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     return undefined;
   }, [
     miroirFundamentalJzodSchema,
-    entityDefinitionJzodSchema,
+    mlSchema,
     defaultFormValuesObject,
     dialogOuterFormObject,
     currentAppModel,
@@ -483,7 +483,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
     log.error(
       "JsonObjectEditFormDialog prerequisites not met",
       // "defaultFormValuesObject", defaultFormValuesObject,
-      "entityDefinitionJzodSchema", entityDefinitionJzodSchema,
+      "mlSchema", mlSchema,
       "dialogOuterFormObject", dialogOuterFormObject
     );
     return (
@@ -491,7 +491,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
         Prerequisites not met for JsonObjectEditFormDialog:
         <ul>
           <li>miroirFundamentalJzodSchema: {miroirFundamentalJzodSchema ? "✓" : "✗"}</li>
-          <li>entityDefinitionJzodSchema: {entityDefinitionJzodSchema ? "✓" : "✗"}</li>
+          <li>mlSchema: {mlSchema ? "✓" : "✗"}</li>
           <li>defaultFormValuesObject: {defaultFormValuesObject ? "✓" : "✗"}</li>
           <li>dialogOuterFormObject: {dialogOuterFormObject ? "✓" : "✗"}</li>
           <li>currentAppModel: {currentAppModel ? "✓" : "✗"}</li>
@@ -599,7 +599,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           currentApplicationSection={currentApplicationSection}
           entity={props.entity}
           // entityVersion={props.entityVersion}
-          entityDefinitionJzodSchema={entityDefinitionJzodSchema}
+          mlSchema={mlSchema}
           resolvedJzodSchema={resolvedJzodSchema}
           foreignKeyObjects={foreignKeyObjects}
           currentAppModel={currentAppModel}

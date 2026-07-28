@@ -120,7 +120,7 @@ describe('analyzeForeignKeyAttributes', () => {
       expect(result.find(fk => fk.attributeName === 'publisherUuid')).toBeDefined();
       
       // Should have transitive foreign key for country
-      const countryFK = result.find(fk => fk.attributeName === '__fk_aggregatery-uuid');
+      const countryFK = result.find(fk => fk.attributeName === '__fk_country-uuid');
       expect(countryFK).toBeDefined();
       expect(countryFK?.isDirect).toBe(false);
       expect(countryFK?.targetEntityUuid).toBe('country-uuid');

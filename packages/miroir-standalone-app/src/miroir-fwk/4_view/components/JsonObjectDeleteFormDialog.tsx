@@ -54,7 +54,7 @@ export interface JsonObjectDeleteFormCoreDialogProps {
   label?: string,
   defaultFormValuesObject: any,
   deleteObjectdialogFormIsOpen: boolean,
-  entityDefinitionJzodSchema: JzodObject,
+  mlSchema: JzodObject,
   isAttributes?: boolean,
   currentApplication: Uuid,
   currentApplicationDeploymentMap: ApplicationDeploymentMap,
@@ -106,8 +106,8 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
   //   count,
   //   "defaultFormValuesObject",
   //   props.defaultFormValuesObject,
-  //   "entityDefinitionJzodSchema",
-  //   props.entityDefinitionJzodSchema
+  //   "mlSchema",
+  //   props.mlSchema
   // );
   const context = useMiroirContextService();
 
@@ -128,11 +128,11 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
   const resolvedJzodSchema = useMemo(
     () =>
       currentModelEnvironment.miroirFundamentalJzodSchema &&
-      props.entityDefinitionJzodSchema &&
+      props.mlSchema &&
       props.defaultFormValuesObject &&
       props.currentAppModel
         ? jzodTypeCheck(
-            props.entityDefinitionJzodSchema,
+            props.mlSchema,
             props.defaultFormValuesObject,
             [], // currentValuePath
             [], // currentTypePath
@@ -146,7 +146,7 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
   //   "JsonObjectDeleteFormDialog called jzodTypeCheck for valueObject",
   //   props.defaultFormValuesObject,
   //   "mlSchema",
-  //   props.entityDefinitionJzodSchema,
+  //   props.mlSchema,
   //   " resolvedJzodSchema",
   //   resolvedJzodSchema
   // );

@@ -37,7 +37,7 @@ export const EntityInstanceCellRenderer =  memo((props: ICellRendererParams<Tabl
       "attribute", attributeName,
       "entity uuid", entityUuid,
       "available foreign key entities", Object.keys(props.data?.foreignKeyObjects??{}),
-      "entity definition", props.colDef?.cellRendererParams.entityVersion,
+      "entity", props.colDef?.cellRendererParams.entity,
       "deploymentUuid", props.data?.deploymentUuid
     );
     return <span>Foreign key entity not found</span>;

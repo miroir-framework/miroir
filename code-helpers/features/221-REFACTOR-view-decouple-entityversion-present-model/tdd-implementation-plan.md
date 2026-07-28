@@ -18,7 +18,7 @@ Related:
 | Slice | Analysis group | Kind | Status |
 |-------|----------------|------|--------|
 | 1 | **C** — Fix resolve / mapping keys | Migrate | ✅ DONE |
-| 2 | **A** — Rename only | Migrate | ⬜ |
+| 2 | **A** — Rename only | Migrate | ✅ DONE |
 | 3 | **B** — Parents pass `Entity` | Migrate | ⬜ |
 | 4 | **D** — Remove dual-read fallbacks | Migrate | ⬜ |
 | 5 | **E** — Legitimate EntityVersion | Characterization lock (no migrate) | ⬜ |
@@ -157,10 +157,20 @@ Keep deprecated aliases **only** if needed for one commit compile; delete within
 
 ### Validation (Slice 2)
 
-- [ ] Column helper test red→green under new name.
-- [ ] Grep `4_view`: no `entityDefinitionJzodSchema`; no `getMDataGridColumnDefinitionsFromEntityDefinition`.
-- [ ] `npm run testByFile -w miroir-standalone-app -- 221.phase2` (and adaptiveColumnWidths / existing column tests if they import the helper)
-- [ ] Typecheck passes
+- [x] Column helper test red→green under new name.
+- [x] Grep `4_view`: no `entityDefinitionJzodSchema`; no `getMDataGridColumnDefinitionsFromEntityDefinition`.
+- [x] `npm run testByFile -w miroir-standalone-app -- 221.phase2` (and adaptiveColumnWidths / existing column tests if they import the helper)
+- [ ] `npx tsc --noEmit --skipLibCheck` on touched packages
+
+### Realization (Slice 2)
+
+- Test: `packages/miroir-standalone-app/tests/4_view/221-view-decouple-entityversion/221.phase2.rename.unit.test.ts`
+- Renamed `getMDataGridColumnDefinitionsFromEntityDefinition` → `getMDataGridColumnDefinitionsFromEntity`; param `entityVersion` → `entity`
+- Dialogs: `entityDefinitionJzodSchema` → `mlSchema` (edit + delete) + call sites
+- Cell params: `entityVersion` → `entity` (`ValueObjectGridInterface`, column helper, cell renderer log)
+- Dropped unused `EntityVersion` imports (`InlineReportEditor`, `ReportTools`)
+- Incidental: fixed pre-existing typo `__fk_aggregatery-uuid` → `__fk_country-uuid` in FK analyzer unit test
+- Left for Slice 3: dialog/grid `entityVersion={Entity}` prop plumbing, `deleteCascade` param names
 
 ### NON-REGRESSION
 
