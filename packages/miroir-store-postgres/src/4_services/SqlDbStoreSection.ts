@@ -220,7 +220,6 @@ export class SqlDbStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     const queryInterface = this.sequelize.getQueryInterface();
     await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);

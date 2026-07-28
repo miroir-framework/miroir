@@ -112,7 +112,6 @@ export class BundledModelStoreSection
     _oldName: string,
     _newName: string,
     _entity: Entity,
-    _entityDefinition?: EntityVersion,
   ): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }

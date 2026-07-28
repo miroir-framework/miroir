@@ -124,7 +124,6 @@ export class MongoDbStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.warn(
       this.logHeader,

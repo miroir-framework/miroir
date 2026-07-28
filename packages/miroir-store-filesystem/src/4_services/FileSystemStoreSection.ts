@@ -140,7 +140,6 @@ export class FileSystemStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "renameStorageSpaceForInstancesOfEntity does nothing!");
     return Promise.resolve(ACTION_OK);

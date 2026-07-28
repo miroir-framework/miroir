@@ -43,7 +43,6 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
     oldName: string,
     newName: string,
     entity: Entity,
-    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
