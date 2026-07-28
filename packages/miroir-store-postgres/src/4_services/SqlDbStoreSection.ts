@@ -111,7 +111,7 @@ export class SqlDbStoreSection
         if (!presentCarrier.mlSchema) {
           return prev;
         }
-        const part = this.getAccessToDataSectionEntity(presentCarrier, entityVersion)
+        const part = this.getAccessToDataSectionEntity(presentCarrier)
         const result = Object.assign(prev, part);
         log.info(
           this.logHeader,
@@ -140,7 +140,6 @@ export class SqlDbStoreSection
   // ##############################################################################################
   getAccessToDataSectionEntity(
     entity: Entity,
-    entityVersion?: EntityVersion
   ): EntityUuidIndexedSequelizeModel {
     // #217 Phase 11 — Entity is present-model authority; ED optional legacy fill-in only.
     const schemaSource = {
@@ -199,12 +198,11 @@ export class SqlDbStoreSection
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
       {},
       this.sqlSchemaTableAccess,
-      this.getAccessToDataSectionEntity(entity, entityVersion)
+      this.getAccessToDataSectionEntity(entity)
     );
     if (this.sqlSchemaTableAccess[entity.uuid]?.isExternal) {
       log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", "skipping table creation for external entity", entity.name);
@@ -235,7 +233,6 @@ export class SqlDbStoreSection
       this.getAccessToDataSectionEntity(
         // TODO: decouple from ModelUpdateConverter implementation
         entity,
-        entityVersion
       )
     );
     return Promise.resolve(ACTION_OK);

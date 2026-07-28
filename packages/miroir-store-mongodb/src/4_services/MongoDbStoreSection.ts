@@ -66,43 +66,30 @@ export class MongoDbStoreSection
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
       "input: entity",
       entity,
-      "entityVersion",
-      entityVersion,
       "Entities",
       this.localUuidMongoDb.getCollections()
     );
-    if (entityVersion && entity.uuid != entityVersion.entityUuid) {
-      log.error(
+    if (!this.localUuidMongoDb.hasCollection(entity.uuid)) {
+      this.localUuidMongoDb.addCollections([entity.uuid]);
+    } else {
+      // Clear existing collection
+      if (this.localUuidMongoDb.db) {
+        await this.localUuidMongoDb.db.collection(entity.uuid).deleteMany({});
+      }
+      log.debug(
         this.logHeader,
         "createStorageSpaceForInstancesOfEntity",
-        "inconsistent input: given entityVersion is not related to given entity."
+        "input: entity",
+        entity,
+        "already has entity. Existing entities:",
+        this.localUuidMongoDb.getCollections()
       );
-    } else {
-      if (!this.localUuidMongoDb.hasCollection(entity.uuid)) {
-        this.localUuidMongoDb.addCollections([entity.uuid]);
-      } else {
-        // Clear existing collection
-        if (this.localUuidMongoDb.db) {
-          await this.localUuidMongoDb.db.collection(entity.uuid).deleteMany({});
-        }
-        log.debug(
-          this.logHeader,
-          "createStorageSpaceForInstancesOfEntity",
-          "input: entity",
-          entity,
-          "entityVersion",
-          entityVersion,
-          "already has entity. Existing entities:",
-          this.localUuidMongoDb.getCollections()
-        );
-      }
     }
     return Promise.resolve(ACTION_OK);
   }

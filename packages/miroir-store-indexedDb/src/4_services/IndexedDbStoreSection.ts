@@ -83,43 +83,30 @@ export class IndexedDbStoreSection
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
       "input: entity",
       entity,
-      "entityVersion",
-      entityVersion,
       "Entities",
       this.localUuidIndexedDb.getSubLevels()
     );
-    if (entityVersion && entity.uuid != entityVersion.entityUuid) {
-      log.error(
+    if (!this.localUuidIndexedDb.hasSubLevel(entity.uuid)) {
+      this.localUuidIndexedDb.addSubLevels([entity.uuid]);
+    } else {
+      this.localUuidIndexedDb.db?.sublevel(entity.uuid).clear();
+      log.debug(
         this.logHeader,
         "createStorageSpaceForInstancesOfEntity",
-        "inconsistent input: given entityVersion is not related to given entity."
+        "input: entity",
+        entity,
+        "already has entity. Existing entities:",
+        this.localUuidIndexedDb.getSubLevels()
       );
-    } else {
-      if (!this.localUuidIndexedDb.hasSubLevel(entity.uuid)) {
-        this.localUuidIndexedDb.addSubLevels([entity.uuid]);
-      } else {
-        this.localUuidIndexedDb.db?.sublevel(entity.uuid).clear();
-        log.debug(
-          this.logHeader,
-          "createStorageSpaceForInstancesOfEntity",
-          "input: entity",
-          entity,
-          "entityVersion",
-          entityVersion,
-          "already has entity. Existing entities:",
-          this.localUuidIndexedDb.getSubLevels()
-        );
-      }
     }
-    // Register idAttribute for non-UUID PK entities (#217 Phase 11: Entity first)
-    const idAttr = entity.idAttribute ?? entityVersion?.idAttribute ?? "uuid";
+    // Register idAttribute for non-UUID PK entities (#220 — Entity-only)
+    const idAttr = entity.idAttribute ?? "uuid";
     if (idAttr !== "uuid") {
       this.entityIdAttributes[entity.uuid] = idAttr;
     }

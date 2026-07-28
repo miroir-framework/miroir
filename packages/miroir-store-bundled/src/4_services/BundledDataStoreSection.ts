@@ -96,7 +96,6 @@ export class BundledDataStoreSection
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     _entity: Entity,
-    _entityDefinition?: EntityVersion,
   ): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }

@@ -69,7 +69,6 @@ export interface StorageSpaceHandlerInterface {
 
   createStorageSpaceForInstancesOfEntity(
     entity:Entity,
-    entityVersion?: EntityVersion,
   ): Promise<Action2VoidReturnType>;
 
   renameStorageSpaceForInstancesOfEntity(

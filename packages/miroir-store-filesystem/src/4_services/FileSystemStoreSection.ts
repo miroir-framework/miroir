@@ -95,7 +95,6 @@ export class FileSystemStoreSection
   // #############################################################################################
   createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", entity);
     const entityInstancesPath = path.join(this.directory, entity.uuid);
@@ -104,8 +103,8 @@ export class FileSystemStoreSection
     } else {
       log.debug(this.logHeader, "createStorageSpaceForInstancesOfEntity storage space already exists for", entity.uuid);
     }
-    // Register idAttribute for non-UUID PK entities (#217 Phase 11: Entity first)
-    const idAttr = entity.idAttribute ?? entityVersion?.idAttribute ?? "uuid";
+    // Register idAttribute for non-UUID PK entities (#220 — Entity-only)
+    const idAttr = entity.idAttribute ?? "uuid";
     if (idAttr !== "uuid") {
       this.entityIdAttributes[entity.uuid] = idAttr;
     }

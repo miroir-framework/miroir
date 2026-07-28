@@ -529,6 +529,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   // ##############################################################################################
+  // TODO: detect & return error, add test for this!
   async clearDataInstances(): Promise<Action2VoidReturnType> {
     log.debug(this.logHeader, "clearDataInstances", this.getEntityUuids());
     const dataSectionEntities: Action2EntityInstanceCollectionOrFailure = await this.getInstances(
@@ -547,20 +548,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities}`
       );
     }
-    const dataSectionEntityDefinitions: Action2EntityInstanceCollectionOrFailure =
-      await this.getInstances("model", entityEntityDefinition.uuid);
-    if (dataSectionEntityDefinitions instanceof Action2Error) {
-      return new Action2Error(
-        "FailedToGetInstances",
-        `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions}`
-      );
-    }
-    if (dataSectionEntityDefinitions.returnedDomainElement instanceof Domain2ElementFailed) {
-      return new Action2Error(
-        "FailedToGetInstances",
-        `clearDataInstances failed for dataSectionEntityDefinitions section: model, entityUuid ${entityEntityDefinition.uuid}, error: ${dataSectionEntityDefinitions}`
-      );
-    }
     const dataSectionFilteredEntities: Entity[] = (
       dataSectionEntities.returnedDomainElement.instances as Entity[]
     ).filter((e: EntityInstanceWithName) => ["Entity", "EntityVersion", "EntityVersion"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
@@ -572,19 +559,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     await this.dataStoreSection.clear();
 
     for (const entity of dataSectionFilteredEntities) {
-      const entityVersion: EntityVersion | undefined =
-        dataSectionEntityDefinitions.returnedDomainElement.instances.find(
-          (d: EntityInstance) => (d as EntityVersion).entityUuid == entity.uuid
-        ) as EntityVersion;
-      if (entityVersion) {
-        await this.createDataStorageSpaceForInstancesOfEntity(entity, entityVersion);
-      } else {
-        log.error(
-          this.logHeader,
-          "clearDataInstances could not find entity definition for Entity",
-          entity
-        );
-      }
+      // #220 — Entity-only storage space; present model lives on Entity.
+      await this.createDataStorageSpaceForInstancesOfEntity(entity);
     }
     return Promise.resolve(ACTION_OK);
   }
@@ -619,9 +595,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async createDataStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityVersion: EntityVersion
   ): Promise<Action2VoidReturnType> {
-    return this.dataStoreSection.createStorageSpaceForInstancesOfEntity(entity, entityVersion);
+    return this.dataStoreSection.createStorageSpaceForInstancesOfEntity(entity);
   }
 
   // ##############################################################################################

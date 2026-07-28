@@ -130,7 +130,6 @@ async function copyBundledToIndexedDb(
     // PersistenceStoreControllerInterface so we access it via any-cast.
     await (idb as any).createDataStorageSpaceForInstancesOfEntity(
       { uuid: parentUuid } as Entity,
-      { uuid: parentUuid, entityUuid: parentUuid } as unknown as EntityVersion,
     );
 
     const result = await bundled.getInstances("data", parentUuid);
