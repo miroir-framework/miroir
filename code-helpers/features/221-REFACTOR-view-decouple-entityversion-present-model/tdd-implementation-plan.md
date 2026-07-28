@@ -21,8 +21,8 @@ Related:
 | 2 | **A** — Rename only | Migrate | ✅ DONE |
 | 3 | **B** — Parents pass `Entity` | Migrate | ✅ DONE |
 | 4 | **D** — Remove dual-read fallbacks | Migrate | ✅ DONE |
-| 5 | **E** — Legitimate EntityVersion | Characterization lock (no migrate) | ⬜ |
-| 6 | **F** — Out of tree / non-goals | Characterization lock (no migrate) | ⬜ |
+| 5 | **E** — Legitimate EntityVersion | Characterization lock (no migrate) | ✅ DONE |
+| 6 | **F** — Out of tree / non-goals | Characterization lock (no migrate) | ✅ DONE |
 
 Slices **5–6** are intentional non-migrations: they lock what #221 must **not** change and what is already clean.
 
@@ -303,9 +303,15 @@ New `packages/miroir-standalone-app/tests/4_view/221.phase5.entityVersion-histor
 
 ### Validation (Slice 5)
 
-- [ ] Lock test green.
-- [ ] No production edits under `applicationVersionFreeze` / Cross for this slice.
+- [x] Lock test green.
+- [x] No production edits under `applicationVersionFreeze` / Cross for this slice.
 - [ ] `npm run testByFile -w miroir-core -- applicationVersionFreeze` still green if invoked
+
+### Realization (Slice 5)
+
+- Test: `packages/miroir-standalone-app/tests/4_view/221-view-decouple-entityversion/221.phase5.entityVersion-history-lock.unit.test.ts`
+- Snapshot uuid≠Entity contract + Report/dialog freeze/Cross import ban
+- No production code changes
 
 ---
 
@@ -329,19 +335,25 @@ Optional: assert `ReportPage.tsx` still only mounts `ReportDisplay` (no Entity/E
 
 ### Validation (Slice 6)
 
-- [ ] Source lock test green.
+- [x] Source lock test green.
 - [ ] `npm run testByFile -w miroir-standalone-app -- JzodElementEditor`
-- [ ] No drive-by renames outside Report/dialog/grid/FK/diagram/deleteCascade surface
+- [x] No drive-by renames outside Report/dialog/grid/FK/diagram/deleteCascade surface
+
+### Realization (Slice 6)
+
+- Test: `packages/miroir-standalone-app/tests/4_view/221-view-decouple-entityversion/221.phase6.jzodElementEditor-no-entityVersion.unit.test.ts`
+- Locks ValueObjectEditor file list + ReportPage mount
+- No production code changes
 
 ---
 
 ## Exit criteria (#221)
 
-- [ ] Slices **1–4** merged: live Report/grid/dialog path Entity-only for present-model fields.
-- [ ] Slices **5–6** lock tests merged: history and JzodElementEditor boundaries held.
+- [x] Slices **1–4** merged: live Report/grid/dialog path Entity-only for present-model fields.
+- [x] Slices **5–6** lock tests merged: history and JzodElementEditor boundaries held.
 - [ ] Analysis §5 acceptance checklist satisfied.
 - [ ] Issue #221 acceptance criteria checked off.
-- [ ] No new live-schema resolution via ApplicationVersion Cross mappings.
+- [x] No new live-schema resolution via ApplicationVersion Cross mappings.
 
 ---
 
