@@ -61,7 +61,7 @@ export const ReportDisplay: React.FC<{
   const currentModel: MetaModel = useCurrentModel(application, currentApplicationDeploymentMap);
 
 
-  const { availableReports, entities, entityDefinitions } = useMemo(() => {
+  const { availableReports, entities, entityVersions } = useMemo(() => {
     const result = pageParams.applicationSection &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentApplicationDeploymentMap[application]]

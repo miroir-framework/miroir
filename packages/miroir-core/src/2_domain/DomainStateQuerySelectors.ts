@@ -453,15 +453,8 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       const modelEntities = Object.values(
         domainState[deploymentUuid]["model"]?.[entityEntity.uuid] ?? {},
       ) as Entity[];
-      const modelEntityDefinitions = Object.values(
-        domainState[deploymentUuid]["model"]?.[entityEntityDefinition.uuid] ?? {},
-      ) as EntityVersion[];
-      const currentObjectPresentEntity = resolvePresentEntityFromModel(
-        { entities: modelEntities, entityVersions: modelEntityDefinitions },
-        entityUuidReference,
-      );
+      const currentObjectPresentEntity = modelEntities.find((e) => e.uuid === entityUuidReference);
 
-      // const entityVersion = Object.keys(domainState[deploymentUuid]["model"]);
       // log.info("selectEntityInstanceFromObjectQueryAndDomainState entityVersion", JSON.stringify(currentObjectEntityDefinition, null, 2));
       if (!currentObjectPresentEntity?.mlSchema?.definition) {
         return new Domain2ElementFailed({

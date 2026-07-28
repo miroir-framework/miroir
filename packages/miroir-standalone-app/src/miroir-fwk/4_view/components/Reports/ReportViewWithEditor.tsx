@@ -184,7 +184,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     const result = resolvePresentEntityFromModel(
       {
         entities: miroirMapping["model"]?.entities,
-        entityDefinitions: miroirMapping["model"]?.entityVersions,
+        entityVersions: miroirMapping["model"]?.entityVersions,
       },
       entityReport.uuid,
     );

@@ -63,6 +63,7 @@ const genType = { // <X> -> X[]
  * META-APPLICATION AND OTHER APPLICATIONS, AND THIS CONCERNS MAINLY THE META-APPLICATION ITSELF)
  * */
 // FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES
+// TODO: move entityEntityDefinition fo data section of miroir application
 export const metaMetaModelEntities: Entity[] = [
   entityEntity as Entity,
   entityEntityDefinition as Entity,

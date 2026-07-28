@@ -316,7 +316,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       )
   );
 
-  const { availableReports, entities, entityDefinitions } = useMemo(() => {
+  const { availableReports, entities, entityVersions } = useMemo(() => {
     return props.deploymentUuid &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
@@ -333,7 +333,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   const currentReportTargetEntity: Entity | undefined =
     objectListReportSection
       ? resolvePresentEntityFromModel(
-          { entities, entityDefinitions },
+          { entities, entityVersions },
           objectListReportSection.definition.parentUuid,
         )
       : undefined;
@@ -372,7 +372,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         currentReportTargetEntity,
         [
           ...(entities ?? []),
-          ...(entityDefinitions ?? []),
+          ...(entityVersions ?? []),
         ],
         { includeTransitive: true, maxDepth: 5 }
       );
@@ -384,7 +384,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       currentReportTargetEntity?.uuid,
       props.tableComponentReportType,
       entities,
-      entityDefinitions,
+      entityVersions,
     ]
   );
 

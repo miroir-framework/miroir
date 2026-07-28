@@ -218,7 +218,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentDeploymentReportsEntitiesDefinitionsMapping =
     context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
 
-  const { availableReports, entities, entityDefinitions } = useMemo(() => {
+  const { availableReports, entities, entityVersions } = useMemo(() => {
       return props.deploymentUuid &&
         context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
         context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
@@ -632,8 +632,8 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             />
             <ThemedOnScreenHelper label={`entities`} data={entities} initiallyUnfolded={false} />
             <ThemedOnScreenHelper
-              label={`entityDefinitions`}
-              data={entityDefinitions}
+              label={`entityVersions`}
+              data={entityVersions}
               initiallyUnfolded={false}
             />
             <ThemedOnScreenHelper label={`targetEntityUuid`} data={targetEntityUuid} />

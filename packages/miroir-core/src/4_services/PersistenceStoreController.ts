@@ -411,7 +411,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     selfApplication: SelfApplication,
     selfApplicationModelBranch: EntityInstance,
     selfApplicationVersion: EntityInstance,
-    // metaModel?: MetaModel,
   ): Promise<Action2ReturnType> {
     return modelInitialize(
       this,
@@ -419,14 +418,12 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       selfApplication,
       selfApplicationModelBranch,
       selfApplicationVersion,
-      // metaModel,
     );
   }
 
   // #############################################################################################
   async bootFromPersistedState(
     metaModelEntities: Entity[],
-    // metaModelEntityDefinitions: EntityVersion[]
   ): Promise<Action2VoidReturnType> {
     const modelBootFromPersistedState: Action2ReturnType =
       await this.modelStoreSection.bootFromPersistedState(
@@ -441,8 +438,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     }
     const dataEntities: Action2EntityInstanceCollectionOrFailure =
       await this.modelStoreSection.getInstances(entityEntity.uuid);
-      // const dataEntityDefinitions: Action2EntityInstanceCollectionOrFailure =
-      //   await this.modelStoreSection.getInstances(entityEntityDefinition.uuid);
 
     if (
       dataEntities instanceof Action2Error ||
@@ -455,19 +450,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         }. Message: ${dataEntities instanceof Action2Error ? dataEntities?.errorMessage : ""}`
       );
     }
-    // if (
-    //   dataEntityDefinitions instanceof Action2Error ||
-    //   dataEntityDefinitions.returnedDomainElement instanceof Domain2ElementFailed
-    // ) {
-    //   return new Action2Error(
-    //     "FailedToGetInstances",
-    //     `bootFromPersistedState for entityVersions getInstances(${
-    //       entityEntityDefinition.uuid
-    //     }) status: ${dataEntityDefinitions.status}. Message: ${
-    //       dataEntityDefinitions instanceof Action2Error ? dataEntityDefinitions?.errorMessage : ""
-    //     }`
-    //   );
-    // }
 
     log.info(
       this.logHeader,
@@ -476,9 +458,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     );
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
       ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
-        (e) => ["Entity", "EntityVersion", "EntityVersion"].indexOf(e.name) == -1
+        (e) => ["Entity", "EntityVersion"].indexOf(e.name) == -1
       ), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
-      // (dataEntityDefinitions as any).returnedDomainElement?.instances as EntityVersion[]
     );
     if (
       dataBootFromPersistedState instanceof Action2Error ||
@@ -550,7 +531,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     }
     const dataSectionFilteredEntities: Entity[] = (
       dataSectionEntities.returnedDomainElement.instances as Entity[]
-    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityVersion", "EntityVersion"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
+    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityVersion"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
     log.trace(
       this.logHeader,
       "clearDataInstances found entities to clear:",

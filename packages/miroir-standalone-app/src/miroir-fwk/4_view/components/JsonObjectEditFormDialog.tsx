@@ -17,6 +17,7 @@ import {
   Uuid,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
+  type Entity,
   type Report,
 } from "miroir-core";
 
@@ -35,7 +36,7 @@ import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.j
 import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
 import { ThemedDialog, ThemedDialogTitle } from "./Themes/index.js";
 
-import { entityDefinitionReport } from "miroir-test-app_deployment-miroir";
+import { entityDefinitionReport, entityEndpointVersion } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectEditFormDialog"), "UI"
@@ -53,20 +54,22 @@ export interface EditorAttribute {
  * #217 Phase 12 — Entity present model or EntityVersion/ED-shaped carrier for dialogs.
  * Identity: Entity uses `uuid`; EntityVersion uses `entityUuid`.
  */
-export type PresentModelSchemaCarrier = {
-  uuid?: string | undefined;
-  entityUuid?: string | undefined;
-  name?: string | undefined;
-  mlSchema?: JzodObject | { definition?: Record<string, any> | undefined } | undefined;
-  defaultInstanceDetailsReportUuid?: string | undefined;
-  idAttribute?: (string | string[]) | undefined;
-  conceptLevel?: string | undefined;
-};
+export type PresentModelSchemaCarrier = Entity & {entityUuid?: string | undefined}
+// export type PresentModelSchemaCarrier = {
+//   uuid?: string | undefined;
+//   entityUuid?: string | undefined;
+//   name?: string | undefined;
+//   mlSchema?: JzodObject | { definition?: Record<string, any> | undefined } | undefined;
+//   defaultInstanceDetailsReportUuid?: string | undefined;
+//   idAttribute?: (string | string[]) | undefined;
+//   conceptLevel?: string | undefined;
+// };
 
 export interface JsonObjectFormEditorCoreDialogProps {
   valueObjectEditMode: ValueObjectEditMode,
   label?: string,
   isAttributes?: boolean,
+  entity: Entity,
   entityVersion: PresentModelSchemaCarrier,
   entityDefinitionJzodSchema: JzodObject,
   defaultFormValuesObject: any,
@@ -223,7 +226,8 @@ interface JsonElementEditorDialogProps {
   applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
-  entityVersion: PresentModelSchemaCarrier;
+  entity: Entity;
+  // entityVersion: PresentModelSchemaCarrier;
   entityDefinitionJzodSchema: JzodObject;
   resolvedJzodSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
@@ -253,7 +257,8 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   currentApplication,
   currentDeploymentUuid,
   currentApplicationSection,
-  entityVersion,
+  entity,
+  // entityVersion,
   entityDefinitionJzodSchema,
   resolvedJzodSchema,
   foreignKeyObjects,
@@ -281,16 +286,27 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   const currentModel: MetaModel = currentAppModel;
 
   const defaultDetailsReport: Report | undefined = useMemo(() => {
-    return entityVersion.defaultInstanceDetailsReportUuid
+    return entity.defaultInstanceDetailsReportUuid
       ? currentDeploymentReportsEntitiesDefinitionsMapping?.[currentApplicationSection??"data"]?.availableReports?.find(
-          (r) => r.uuid === entityVersion.defaultInstanceDetailsReportUuid
+          (r) => r.uuid === entity.defaultInstanceDetailsReportUuid
         )
       : undefined;
   }, [
-    entityVersion,
+    entity,
     currentDeploymentReportsEntitiesDefinitionsMapping,
     currentApplicationSection,
   ]);
+  // const defaultDetailsReport: Report | undefined = useMemo(() => {
+  //   return entityVersion.defaultInstanceDetailsReportUuid
+  //     ? currentDeploymentReportsEntitiesDefinitionsMapping?.[currentApplicationSection??"data"]?.availableReports?.find(
+  //         (r) => r.uuid === entityVersion.defaultInstanceDetailsReportUuid
+  //       )
+  //     : undefined;
+  // }, [
+  //   entityVersion,
+  //   currentDeploymentReportsEntitiesDefinitionsMapping,
+  //   currentApplicationSection,
+  // ]);
   const formik = useFormikContext<any>()
   // ##############################################################################################
   useEffect(() => {
@@ -332,9 +348,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   ]);
 
   // Determine if this is an Endpoint entity to use full width dialog
-  const isEndpointEntity =
-    (entityVersion.entityUuid ?? entityVersion.uuid) ===
-    "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
+  const isEndpointEntity = entity.uuid === entityEndpointVersion.uuid; //"3d8da4d4-8f76-4bb4-9212-14869d81c00c";
 
   return (
     <ThemedDialog 
@@ -435,7 +449,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
   //   "entityDefinitionJzodSchema",
   //   entityDefinitionJzodSchema
   // );
-  const context = useMiroirContextService();
+  // const context = useMiroirContextService();
   const miroirFundamentalJzodSchema = useMiroirFundamentalJzodSchemaForDeployment(
     currentDeploymentUuid,
   );
@@ -583,7 +597,8 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           applicationDeploymentMap={props.applicationDeploymentMap}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
-          entityVersion={props.entityVersion}
+          entity={props.entity}
+          // entityVersion={props.entityVersion}
           entityDefinitionJzodSchema={entityDefinitionJzodSchema}
           resolvedJzodSchema={resolvedJzodSchema}
           foreignKeyObjects={foreignKeyObjects}

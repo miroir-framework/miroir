@@ -108,7 +108,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath ?? 'root'}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
-  const { availableReports, entities, entityDefinitions } = useMemo(() => {
+  const { availableReports, entities, entityVersions } = useMemo(() => {
     return props.deploymentUuid &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
       context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
