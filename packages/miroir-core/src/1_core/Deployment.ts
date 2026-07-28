@@ -6,21 +6,21 @@ import type {
   CoreTransformerForBuildPlusRuntime_getFromParameters,
   Deployment,
   Entity,
-  EntityVersion,
   EntityInstance,
+  EntityVersion,
   MetaModel,
   MiroirConfigClient,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { InitApplicationParameters } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
-import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
-import { packageName } from "../constants";
-import { cleanLevel } from "./constants";
 import {
   buildEvolutionBaselineCreateInstanceActions,
   EVOLUTION_TRACE_ENTITY_UUID,
 } from "../2_domain/evolutionTraceBaseline.js";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 import { entityHasCompletePresentModel, resolveCurrentEntityModel } from "./entityPresentModel.js";
 import {
   getMetaModelEntityVersions,
@@ -28,34 +28,34 @@ import {
 } from "./metaModelEntityVersions.js";
 
 import {
-  selfApplicationMiroir,
-  applicationEndpointV1,
-  instanceEndpointV1,
-  modelEndpointV1,
-  domainEndpointVersionV1,
-  testEndpointVersionV1,
-  storeManagementEndpoint,
-  undoRedoEndpointVersionV1,
-  localCacheEndpointVersionV1,
-  queryEndpointVersionV1,
-  persistenceEndpointVersionV1,
-  menuEndpointV1,
-} from "miroir-test-app_deployment-miroir";
-import {
-  deployment_Miroir,
+  adminApplication_Admin,
+  adminApplication_Miroir,
   adminSelfApplication,
   deployment_Admin,
+  deployment_Miroir,
   entityApplicationForAdmin,
-  entityDeployment,
-  adminApplication_Admin,
-  adminApplication_Miroir
+  entityDeployment
 } from "miroir-test-app_deployment-admin";
+import {
+  applicationEndpointV1,
+  domainEndpointVersionV1,
+  instanceEndpointV1,
+  localCacheEndpointVersionV1,
+  menuEndpointV1,
+  modelEndpointV1,
+  persistenceEndpointVersionV1,
+  queryEndpointVersionV1,
+  selfApplicationMiroir,
+  storeManagementEndpoint,
+  testEndpointVersionV1,
+  undoRedoEndpointVersionV1,
+} from "miroir-test-app_deployment-miroir";
 // import {
 //   lendingEndpoint,
 //   selfApplicationLibrary
 // } from "miroir-test-app_deployment-library";
-import { noValue } from "./Instance";
 import { LIBRARY_TMP } from "../0_interfaces/1_core/LIBRARY_TMP";
+import { noValue } from "./Instance";
 
 export const defaultDeployments: Deployment[] = [
   deployment_Miroir as Deployment,
@@ -358,7 +358,8 @@ export function buildResetAndinitializeDeploymentActionSequence(
   appMetaModel: MetaModel,
   filterEntities?: Uuid[],
 ): CompositeActionSequence {
-  const filteredEntitiesMetaModel = metaModelFilterEntities(appMetaModel, filterEntities);
+  // const filteredEntitiesMetaModel = metaModelFilterEntities(appMetaModel, filterEntities);
+  const entities = appMetaModel.entities.filter((e) => filterEntities?.includes(e.uuid));
 
   log.info(
     "resetAndinitializeDeploymentCompositeAction for application=",
@@ -366,31 +367,8 @@ export function buildResetAndinitializeDeploymentActionSequence(
     "deploymentUuid=",
     deploymentUuid,
     "filteredEntities to create=",
-    filteredEntitiesMetaModel.entities.map((e) => ({ name: e.name, uuid: e.uuid })),
-    "filteredEntityDefinitions=",
-    getMetaModelEntityVersions(filteredEntitiesMetaModel).map((ed) => ({
-      name: ed.name,
-      uuid: ed.uuid,
-      entityUuid: ed.entityUuid,
-    })),
+    entities.map((e) => ({ name: e.name, uuid: e.uuid })),
   );
-
-  const filteredEntityVersions = getMetaModelEntityVersions(filteredEntitiesMetaModel);
-  const entities: EntityDefinitionCouple[] = filteredEntitiesMetaModel.entities.map((entity) => {
-    const entityVersion = filteredEntityVersions.find(
-      (ed) => ed.entityUuid === entity.uuid,
-    );
-    // #217 Phase 11 — Entity with present-model fields does not require a live ED row.
-    if (entityVersion) {
-      return { entity, entityVersion };
-    }
-    if (entityHasCompletePresentModel(entity)) {
-      return { entity };
-    }
-    throw new Error(
-      `Entity definition not found for entity uuid: ${entity.uuid} (${entity.name}) and Entity has no mlSchema`,
-    );
-  });
 
   log.info(
     "resetAndinitializeDeploymentCompositeAction for application=",
@@ -398,18 +376,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
     "deploymentUuid=",
     deploymentUuid,
     "entities to create=",
-    entities.map((e) => ({ name: e.entity.name, uuid: e.entity.uuid })),
-    "appMetaModel",
-    "entities=",
-    appMetaModel.entities.map((ed) => ({ name: ed.name, uuid: ed.uuid })),
-    "entityVersions=",
-    getMetaModelEntityVersions(appMetaModel).map((ed) => ({
-      name: ed.name,
-      uuid: ed.uuid,
-      entityUuid: ed.entityUuid,
-    })),
-    // "initApplicationParameters=",
-    // initApplicationParameters,
+    entities.map((e) => ({ name: e.name, uuid: e.uuid })),
   );
   return {
     actionType: "compositeActionSequence",
@@ -458,19 +425,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
           payload: {
             application: applicationUuid,
             // #220 — Action payload.entities is Entity[]; enrich incomplete Entity from EV when needed
-            entities: entities.map(({ entity, entityVersion }) => {
-              if (entityHasCompletePresentModel(entity)) {
-                return entity;
-              }
-              if (!entityVersion) {
-                throw new Error(
-                  `Incomplete Entity ${entity.uuid} (${entity.name}) has no EntityVersion to enrich for createEntity`,
-                );
-              }
-              return resolveCurrentEntityModel(entity, [entityVersion], {
-                onInconsistency: "preferEntity",
-              });
-            }),
+            entities: entities
           },
         },
         // add reports, menus, etc. from metaModel
@@ -516,7 +471,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
         })),
         // Squashed evolution baseline when ApplicationEvolutionTrace is part of this init.
         // Trace instances are stored in that application's model section.
-        ...(entities.some((e) => e.entity.uuid === EVOLUTION_TRACE_ENTITY_UUID)
+        ...(entities.some((e) => e.uuid === EVOLUTION_TRACE_ENTITY_UUID)
           ? buildEvolutionBaselineCreateInstanceActions(applicationUuid)
           : []),
       ],

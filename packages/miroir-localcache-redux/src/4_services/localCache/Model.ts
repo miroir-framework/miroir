@@ -8,41 +8,35 @@
  * @returns 
  */
 
-import { entityDefinitionTheme, entityMiroirTest, entityTest } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
-  type MetaModel,
-  getReduxDeploymentsStateIndex,
+  type ApplicationDeploymentMap,
   // entityStoredMiroirTheme,
   type ApplicationVersion,
-  type StoreBasedConfiguration,
   type Entity,
   type EntityVersion,
-  type MlSchema,
   type Menu,
-  type Report,
-  type Query,
+  type MetaModel,
   type MiroirModelEnvironment,
-  getMiroirFundamentalSchemaForDeployment,
-  type Uuid,
-  type ApplicationDeploymentMap,
-  type StoredMiroirTheme,
+  type MiroirTestDefinition,
+  type MlSchema,
+  type Query,
+  type Report,
   type Runner,
   type SelfApplication,
-  type MiroirTestDefinition,
-  assembleLivePresentModelEntities,
+  type StoredMiroirTheme,
+  type Uuid,
+  getMiroirFundamentalSchemaForDeployment,
+  getReduxDeploymentsStateIndex
 } from "miroir-core";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
-  entityEntity,
+  defaultMiroirMetaModel, entityDefinitionTheme, entityEndpointVersion, entityEntity,
   entityEntityDefinition,
   entityJzodSchema,
-  entityMenu,
-  entityQueryVersion,
+  entityMenu, entityMiroirTest, entityQueryVersion,
   entityReport,
   entityRunner,
-  entitySelfApplicationVersion,
-  entityEndpointVersion,
-  defaultMiroirMetaModel,
+  entitySelfApplicationVersion
 } from "miroir-test-app_deployment-miroir";
 import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 
@@ -134,14 +128,10 @@ export function currentModel(
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],
-      entities: assembleLivePresentModelEntities(
+      entities: 
         (entities && entities.entities
           ? Object.values(entities.entities)
           : []) as Entity[],
-        (entityDefinitions && entityDefinitions.entities
-          ? Object.values(entityDefinitions.entities)
-          : []) as EntityVersion[],
-      ),
       entityVersions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
         : []) as EntityVersion[],

@@ -15,7 +15,6 @@ import {
   getMetaModelEntityVersions,
   withMetaModelEntityVersions,
 } from "../../../src/1_core/metaModelEntityVersions.js";
-import { presentEntityAsRedundantEntityDefinition } from "../../../src/1_core/entityDefinitionCompatibility.js";
 
 describe("220 Phase 5 — getMetaModelEntityVersions / withMetaModelEntityVersions", () => {
   it("reads MetaModel.entityVersions", () => {
@@ -61,11 +60,9 @@ describe("220 Phase 5 — #216 handoff: snapshot ≠ UUID-reuse", () => {
     const [historical]: EntityVersion[] = snapshotEntitiesAsHistoricalEntityVersions([entity], {
       newUuid: () => "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
     });
-    const reused = presentEntityAsRedundantEntityDefinition(entity, []);
 
     expect(historical.uuid).toBe("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb");
     expect(historical.uuid).not.toBe(entity.uuid);
-    expect(reused.uuid).toBe(entity.uuid);
     expect(historical.parentName).toBe("EntityVersion");
   });
 });

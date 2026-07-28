@@ -13,12 +13,6 @@ import type {
   JzodElement,
   JzodObject,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import {
-  alignEntityDefinitionToPresentEntity,
-  compareEntityPresentModelDefinitions,
-  entityHasCompletePresentModel,
-  resolveCurrentEntityModel,
-} from "./entityPresentModel.js";
 
 export type EntityEntityDefinitionPair = {
   entity: Entity;
@@ -62,23 +56,6 @@ export function applyMlSchemaColumnChanges(
 }
 
 /**
- * #220 — Entity-only alter when present model is complete (store / planner).
- * Returns undefined when Entity is incomplete (caller must fail — no EV dual-write).
- */
-export function applyEntityOnlyAlterAttribute(
-  entity: Entity,
-  changes: AlterEntityAttributeColumns,
-): Entity | undefined {
-  if (!entityHasCompletePresentModel(entity) || !entity.mlSchema) {
-    return undefined;
-  }
-  return {
-    ...entity,
-    mlSchema: applyMlSchemaColumnChanges(entity.mlSchema, changes),
-  };
-}
-
-/**
  * #220 — Entity-only rename (store / planner). Always renames the live Entity;
  * never touches EntityVersion.
  */
@@ -90,72 +67,4 @@ export function applyEntityOnlyRename(
     ...entity,
     name: targetName,
   };
-}
-
-function assertDualWriteEquality(pair: EntityEntityDefinitionPair): EntityEntityDefinitionPair {
-  const comparison = compareEntityPresentModelDefinitions(
-    pair.entity,
-    pair.entityVersion,
-  );
-  if (!comparison.equal) {
-    throw new Error(
-      `Entity/EntityVersion dual-write divergence for ${pair.entity.uuid} (${pair.entity.name}): ${comparison.differingFields.join(", ")}`,
-    );
-  }
-  return pair;
-}
-
-/**
- * Alter-attribute: mutate Entity.mlSchema, dual-write redundant EntityVersion.
- */
-export function applyAlterEntityAttributePair(
-  entity: Entity,
-  entityVersion: EntityVersion,
-  changes: AlterEntityAttributeColumns,
-): EntityEntityDefinitionPair {
-  const resolvedEntity = resolveCurrentEntityModel(entity, [entityVersion], {
-    onInconsistency: "preferEntity",
-  });
-  if (!resolvedEntity.mlSchema) {
-    throw new Error(
-      `applyAlterEntityAttributePair: Entity ${entity.uuid} has no mlSchema after resolution`,
-    );
-  }
-  const nextEntity: Entity = {
-    ...resolvedEntity,
-    mlSchema: applyMlSchemaColumnChanges(resolvedEntity.mlSchema, changes),
-  };
-  const nextEntityDefinition = alignEntityDefinitionToPresentEntity(
-    nextEntity,
-    entityVersion,
-  );
-  return assertDualWriteEquality({
-    entity: nextEntity,
-    entityVersion: nextEntityDefinition,
-  });
-}
-
-/**
- * Rename: update both Entity and redundant EntityVersion names; keep definition fields aligned.
- */
-export function applyRenameEntityPair(
-  entity: Entity,
-  entityVersion: EntityVersion,
-  targetName: string,
-): EntityEntityDefinitionPair {
-  const resolvedEntity = resolveCurrentEntityModel(entity, [entityVersion], {
-    onInconsistency: "preferEntity",
-  });
-  const renamedEntity: Entity = {
-    ...resolvedEntity,
-    name: targetName,
-  };
-  const renamedEntityDefinition = alignEntityDefinitionToPresentEntity(renamedEntity, {
-    ...entityVersion,
-    name: targetName,
-  });
-  return assertDualWriteEquality({
-    entity: renamedEntity,
-    entityVersion: renamedEntityDefinition,
-  });
 }

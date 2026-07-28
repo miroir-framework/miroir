@@ -33,11 +33,6 @@ import {
 
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
-  buildEvolutionTracePersistenceActions,
-  collectEvolutionTraceStateFromDomainState,
-} from "../2_domain/evolutionTraceRuntime.js";
-import type { EvolutionTraceableAction } from "../2_domain/evolutionTraceWriter.js";
-import {
   ApplicationSection,
   ApplicationVersion,
   CompositeActionSequence,
@@ -45,8 +40,8 @@ import {
   Deployment,
   DomainAction,
   Entity,
-  EntityVersion,
   EntityInstance,
+  EntityVersion,
   InstanceAction,
   MetaModel,
   ModelAction,
@@ -73,23 +68,26 @@ import {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
-import { ACTION_OK } from "../1_core/constants";
-import {
-  entityHasCompletePresentModel,
-  ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
-  resolveCurrentEntityModel,
-} from "../1_core/entityPresentModel.js";
-import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGuard.js";
 import {
   resolveEntitiesToFetchOnRefresh,
 } from "../1_core/cacheRefreshPolicy.js";
+import { ACTION_OK } from "../1_core/constants";
+import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
+import {
+  ENTITY_PRESENT_MODEL_DEFINITION_FIELDS
+} from "../1_core/entityPresentModel.js";
 import {
   defaultMiroirModelEnvironment,
   metaModelEntities,
   miroirModelEntities,
 } from "../1_core/Model";
-import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
+import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGuard.js";
+import {
+  buildEvolutionTracePersistenceActions,
+  collectEvolutionTraceStateFromDomainState,
+} from "../2_domain/evolutionTraceRuntime.js";
+import type { EvolutionTraceableAction } from "../2_domain/evolutionTraceWriter.js";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
@@ -1235,15 +1233,7 @@ export class DomainController implements DomainControllerInterface {
                   payload: {
                     application: modelActionResetModel.payload.application,
                     // #220 — entities: Entity[]; enrich from EV when incomplete
-                    entities: [
-                      entityHasCompletePresentModel(entity)
-                        ? entity
-                        : entityVersion
-                          ? resolveCurrentEntityModel(entity, [entityVersion], {
-                              onInconsistency: "preferEntity",
-                            })
-                          : entity,
-                    ],
+                    entities:[entity],
                   }
                 };
                 

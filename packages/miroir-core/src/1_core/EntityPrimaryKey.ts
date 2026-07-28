@@ -1,9 +1,5 @@
-import type { Entity, EntityVersion, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
-import {
-  resolveCurrentEntityModel,
-  type ResolveCurrentEntityModelOptions,
-} from "./entityPresentModel.js";
 
 // Composite key separator. Individual values are escaped so this separator is unambiguous.
 const COMPOSITE_KEY_SEPARATOR = "|";

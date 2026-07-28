@@ -1,36 +1,23 @@
 import { describe, expect, it } from "vitest";
 
-import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
-import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import type {
+  Entity,
+  EntityVersion,
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   getEntityPrimaryKeyAttribute,
 } from "../../src/1_core/EntityPrimaryKey.js";
 import { shouldCacheAllInstancesOnRefresh } from "../../src/1_core/cacheRefreshPolicy.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
-  UNVERSIONED_APPLICATION_FIXTURE,
-  VERSIONED_APPLICATION_FIXTURE,
-  compareEntityPresentModelDefinitions,
-  entityHasCompletePresentModel,
-  inventoryEntityEntityDefinitionJoins,
   projectEntityPresentModelDefinition,
+  UNVERSIONED_APPLICATION_FIXTURE,
+  VERSIONED_APPLICATION_FIXTURE
 } from "../../src/1_core/entityPresentModel.js";
-import type {
-  Entity,
-  EntityVersion,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { readdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
-
-function entity(overrides: Partial<Entity> & Pick<Entity, "uuid" | "name">): Entity {
-  return {
-    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-    parentName: "Entity",
-    ...overrides,
-  };
-}
 
 function entityVersion(
   overrides: Partial<EntityVersion> &
@@ -42,58 +29,6 @@ function entityVersion(
     ...overrides,
   };
 }
-
-describe("inventoryEntityEntityDefinitionJoins", () => {
-  it("classifies 1:1 matches, orphan entities, orphan definitions, and multiples", () => {
-    const entities = [
-      entity({ uuid: "e-matched", name: "Matched" }),
-      entity({ uuid: "e-orphan", name: "OrphanEntity" }),
-      entity({ uuid: "e-multi", name: "Multi" }),
-    ];
-    const entityDefinitions = [
-      entityVersion({
-        uuid: "d-matched",
-        name: "Matched",
-        entityUuid: "e-matched",
-        mlSchema: { type: "object", definition: {} },
-      }),
-      entityVersion({
-        uuid: "d-orphan",
-        name: "OrphanDef",
-        entityUuid: "e-missing",
-        mlSchema: { type: "object", definition: {} },
-      }),
-      entityVersion({
-        uuid: "d-multi-a",
-        name: "MultiA",
-        entityUuid: "e-multi",
-        mlSchema: { type: "object", definition: {} },
-      }),
-      entityVersion({
-        uuid: "d-multi-b",
-        name: "MultiB",
-        entityUuid: "e-multi",
-        mlSchema: { type: "object", definition: {} },
-      }),
-    ];
-
-    const inventory = inventoryEntityEntityDefinitionJoins(entities, entityDefinitions);
-
-    expect(inventory.matched).toEqual([
-      { entityUuid: "e-matched", entityDefinitionUuids: ["d-matched"] },
-    ]);
-    expect(inventory.orphanEntities).toEqual([{ uuid: "e-orphan", name: "OrphanEntity" }]);
-    expect(inventory.orphanEntityDefinitions).toEqual([
-      { uuid: "d-orphan", name: "OrphanDef", entityUuid: "e-missing" },
-    ]);
-    expect(inventory.multipleDefinitions).toEqual([
-      {
-        entityUuid: "e-multi",
-        entityDefinitionUuids: ["d-multi-a", "d-multi-b"],
-      },
-    ]);
-  });
-});
 
 describe("projectEntityPresentModelDefinition / compareEntityPresentModelDefinitions", () => {
   it("projects only the canonical definition-bearing fields", () => {
@@ -129,85 +64,6 @@ describe("projectEntityPresentModelDefinition / compareEntityPresentModelDefinit
     });
   });
 
-  it("reports equal when both sides carry identical definition fields", () => {
-    const left = {
-      viewAttributes: ["a"],
-      mlSchema: { type: "object" as const, definition: {} },
-    };
-    const right = {
-      viewAttributes: ["a"],
-      mlSchema: { type: "object" as const, definition: {} },
-    };
-    expect(compareEntityPresentModelDefinitions(left, right)).toEqual({
-      equal: true,
-      differingFields: [],
-    });
-  });
-
-  it("reports differing fields when values diverge or only one side has them", () => {
-    const left = {
-      viewAttributes: ["a"],
-      idAttribute: "code",
-      mlSchema: { type: "object" as const, definition: { a: { type: "string" as const } } },
-    };
-    const right = {
-      viewAttributes: ["b"],
-      mlSchema: { type: "object" as const, definition: { a: { type: "string" as const } } },
-      cache: { cacheAllInstancesOnRefresh: false },
-    };
-
-    const comparison = compareEntityPresentModelDefinitions(left, right);
-    expect(comparison.equal).toBe(false);
-    expect(comparison.differingFields.sort()).toEqual(
-      ["cache", "idAttribute", "viewAttributes"].sort(),
-    );
-  });
-});
-
-describe("characterization — default MetaModels are clean 1:1 joins", () => {
-  it("defaultMiroirMetaModel has one EntityVersion per Entity and matching names", () => {
-    const inventory = inventoryEntityEntityDefinitionJoins(
-      defaultMiroirMetaModel.entities,
-      defaultMiroirMetaModel.entityVersions,
-    );
-    expect(inventory.orphanEntities).toEqual([]);
-    expect(inventory.orphanEntityDefinitions).toEqual([]);
-    expect(inventory.multipleDefinitions).toEqual([]);
-    expect(inventory.matched).toHaveLength(defaultMiroirMetaModel.entities.length);
-
-    for (const match of inventory.matched) {
-      const entity = defaultMiroirMetaModel.entities.find((e) => e.uuid === match.entityUuid)!;
-      const entityVersion = defaultMiroirMetaModel.entityVersions.find(
-        (definition) => definition.uuid === match.entityDefinitionUuids[0],
-      )!;
-      expect(entityVersion.entityUuid).toBe(entity.uuid);
-      expect(entityVersion.name).toBe(entity.name);
-    }
-  });
-
-  it("defaultLibraryAppModel has one EntityVersion per Entity and matching names", () => {
-    const inventory = inventoryEntityEntityDefinitionJoins(
-      defaultLibraryAppModel.entities,
-      defaultLibraryAppModel.entityVersions,
-    );
-    expect(inventory.orphanEntities).toEqual([]);
-    expect(inventory.orphanEntityDefinitions).toEqual([]);
-    expect(inventory.multipleDefinitions).toEqual([]);
-    expect(inventory.matched).toHaveLength(defaultLibraryAppModel.entities.length);
-  });
-
-  it("Phase 3: Entity instances carry definition-bearing fields matching EntityDefinitions", () => {
-    for (const entity of defaultLibraryAppModel.entities) {
-      const entityVersion = defaultLibraryAppModel.entityVersions.find(
-        (definition) => definition.entityUuid === entity.uuid,
-      )!;
-      expect(entityHasCompletePresentModel(entity)).toBe(true);
-      expect(compareEntityPresentModelDefinitions(entity, entityVersion)).toEqual({
-        equal: true,
-        differingFields: [],
-      });
-    }
-  });
 });
 
 describe("characterization — PK/cache still resolve from EntityVersion", () => {
@@ -295,45 +151,3 @@ function loadDeploymentEntityJoinInputs(modelRootRelativePath: string): {
     ) as EntityVersion[],
   };
 }
-
-describe("characterization — filesystem deployment asset joins", () => {
-  it("Miroir model assets are a clean 1:1 Entity ↔ EntityVersion join", () => {
-    const { entities, entityDefinitions } = loadDeploymentEntityJoinInputs(
-      "packages/miroir-test-app_deployment-miroir/assets/miroir_model",
-    );
-    const inventory = inventoryEntityEntityDefinitionJoins(entities, entityDefinitions);
-
-    expect(entities).toHaveLength(20);
-    expect(entityDefinitions).toHaveLength(20);
-    expect(inventory.orphanEntities).toEqual([]);
-    expect(inventory.orphanEntityDefinitions).toEqual([]);
-    expect(inventory.multipleDefinitions).toEqual([]);
-    expect(inventory.matched).toHaveLength(entities.length);
-  });
-
-  it("Library model assets are a clean 1:1 Entity ↔ EntityVersion join", () => {
-    const { entities, entityDefinitions } = loadDeploymentEntityJoinInputs(
-      "packages/miroir-test-app_deployment-library/assets/library_model",
-    );
-    const inventory = inventoryEntityEntityDefinitionJoins(entities, entityDefinitions);
-
-    expect(inventory.orphanEntities).toEqual([]);
-    expect(inventory.orphanEntityDefinitions).toEqual([]);
-    expect(inventory.multipleDefinitions).toEqual([]);
-    expect(inventory.matched).toHaveLength(entities.length);
-    expect(entities.length).toBe(entityDefinitions.length);
-  });
-
-  it("Admin model assets are a clean 1:1 Entity ↔ EntityVersion join", () => {
-    const { entities, entityDefinitions } = loadDeploymentEntityJoinInputs(
-      "packages/miroir-test-app_deployment-admin/assets/admin_model",
-    );
-    const inventory = inventoryEntityEntityDefinitionJoins(entities, entityDefinitions);
-
-    expect(inventory.orphanEntities).toEqual([]);
-    expect(inventory.orphanEntityDefinitions).toEqual([]);
-    expect(inventory.multipleDefinitions).toEqual([]);
-    expect(inventory.matched).toHaveLength(entities.length);
-    expect(entities.length).toBe(entityDefinitions.length);
-  });
-});

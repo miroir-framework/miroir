@@ -57,23 +57,3 @@ describe("216 Phase 0 — freeze contracts", () => {
     ).toThrow();
   });
 });
-
-describe("216 Phase 0 — snapshot UUID misuse guard", () => {
-  it("presentEntityAsRedundantEntityDefinition reuses live Entity uuid (unsafe for freeze)", () => {
-    const entity: Entity = {
-      uuid: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
-      name: "FreezeGuardEntity",
-      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-      parentName: "Entity",
-      mlSchema: { type: "object", definition: { title: { type: "string" } } },
-    };
-
-    const projected = presentEntityAsRedundantEntityDefinition(entity, []);
-
-    // Characterization: synthesizes with uuid === Entity.uuid.
-    // Freeze (Phase 1+) must mint a *new* EntityVersion uuid instead.
-    expect(projected.uuid).toBe(entity.uuid);
-    expect(projected.entityUuid).toBe(entity.uuid);
-    expect(projected.parentName).toBe("EntityVersion");
-  });
-});

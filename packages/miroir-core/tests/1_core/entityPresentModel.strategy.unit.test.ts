@@ -6,20 +6,20 @@ import { describe, expect, it } from "vitest";
 
 import {
   entityApplicationForAdmin,
-  entityDeployment,
   entityDefinitionAdminApplication,
   entityDefinitionDeployment,
+  entityDeployment,
 } from "miroir-test-app_deployment-admin";
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 import {
-  entityEntity,
-  entityEntityDefinition,
   entityDefinitionEntity,
   entityDefinitionEntityDefinition,
-  entityMenu,
   entityDefinitionMenu,
-  entitySelfApplication,
   entityDefinitionSelfApplication,
+  entityEntity,
+  entityEntityDefinition,
+  entityMenu,
+  entitySelfApplication,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
@@ -29,16 +29,10 @@ import type {
   SelfApplication,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
-  alignEntityDefinitionToPresentEntity,
   assertVersioningEnabledImmutable,
-  compareEntityPresentModelDefinitions,
-  projectEntityPresentModelDefinition,
-  resolveCurrentEntityModel,
   UNVERSIONED_APPLICATION_FIXTURE,
-  VERSIONED_APPLICATION_FIXTURE,
+  VERSIONED_APPLICATION_FIXTURE
 } from "../../src/1_core/entityPresentModel.js";
-import { getEntityPrimaryKeyAttribute } from "../../src/1_core/EntityPrimaryKey.js";
-import { shouldCacheAllInstancesOnRefresh } from "../../src/1_core/cacheRefreshPolicy.js";
 
 describe("§11.1 / Phase 0 — UI present-model fields locked", () => {
   it("Library Book exposes viewAttributes and defaultInstanceDetailsReportUuid on Entity", () => {
@@ -54,53 +48,6 @@ describe("§11.1 / Phase 0 — UI present-model fields locked", () => {
       bookDefinition.defaultInstanceDetailsReportUuid,
     );
     expect(book.defaultInstanceDetailsReportUuid).toBeTruthy();
-  });
-});
-
-describe("§11.3 / Phase 3–4 — migrated deployment behavioral equivalence", () => {
-  it("Entity-first resolution is a no-op identity for complete Library Entities", () => {
-    for (const entity of defaultLibraryAppModel.entities) {
-      const entityVersion = defaultLibraryAppModel.entityVersions.find(
-        (definition) => definition.entityUuid === entity.uuid,
-      )!;
-      expect(resolveCurrentEntityModel(entity, [entityVersion])).toBe(entity);
-      expect(getEntityPrimaryKeyAttribute(entity)).toEqual(
-        getEntityPrimaryKeyAttribute(entityVersion),
-      );
-      expect(shouldCacheAllInstancesOnRefresh(entity)).toBe(
-        shouldCacheAllInstancesOnRefresh(entityVersion),
-      );
-    }
-  });
-});
-
-describe("§11.3 / Phase 4 — dual-write projection equality", () => {
-  it("alignEntityDefinitionToPresentEntity satisfies project(Entity) == project(ED copy)", () => {
-    for (const entity of defaultLibraryAppModel.entities) {
-      const entityVersion = defaultLibraryAppModel.entityVersions.find(
-        (definition) => definition.entityUuid === entity.uuid,
-      )!;
-      const aligned = alignEntityDefinitionToPresentEntity(entity, entityVersion);
-      expect(compareEntityPresentModelDefinitions(entity, aligned)).toEqual({
-        equal: true,
-        differingFields: [],
-      });
-    }
-  });
-
-  it("keeps Entity authoritative when Entity diverges before align", () => {
-    const book = defaultLibraryAppModel.entities.find(
-      (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-    )!;
-    const bookDefinition = defaultLibraryAppModel.entityVersions.find(
-      (definition) => definition.entityUuid === book.uuid,
-    )!;
-    const diverged: Entity = { ...book, viewAttributes: ["onlyEntity"] };
-    const aligned = alignEntityDefinitionToPresentEntity(diverged, bookDefinition);
-    expect(projectEntityPresentModelDefinition(aligned).viewAttributes).toEqual([
-      "onlyEntity",
-    ]);
-    expect(compareEntityPresentModelDefinitions(diverged, aligned).equal).toBe(true);
   });
 });
 

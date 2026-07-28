@@ -1,6 +1,5 @@
 import {
   ACTION_OK,
-  Action2EntityInstanceCollectionOrFailure,
   Action2EntityInstanceReturnType,
   Action2Error,
   Action2VoidReturnType,
@@ -15,12 +14,12 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
-  applyEntityOnlyAlterAttribute,
   applyEntityOnlyRename,
+  applyMlSchemaColumnChanges
 } from "miroir-core";
+import { entityEntity } from "miroir-test-app_deployment-miroir";
 import { IndexedDbInstanceStoreSectionMixin, MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 import { IndexedDbStoreSection } from "./IndexedDbStoreSection.js";
-import { entityEntity } from "miroir-test-app_deployment-miroir";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -156,10 +155,15 @@ export function IndexedDbEntityStoreSectionMixin<TBase extends typeof MixedIndex
         );
       }
       const previousEntity = currentEntity.returnedDomainElement as Entity;
-      const entityOnly = applyEntityOnlyAlterAttribute(previousEntity, {
-        addColumns: update.payload.addColumns,
-        removeColumns: update.payload.removeColumns,
-      });
+      const entityOnly = {
+        ...previousEntity,
+        mlSchema: applyMlSchemaColumnChanges(previousEntity.mlSchema, 
+          {
+              addColumns: update.payload.addColumns,
+              removeColumns: update.payload.removeColumns,
+          }
+        )
+      }
       if (!entityOnly) {
         return Promise.resolve(
           new Action2Error(

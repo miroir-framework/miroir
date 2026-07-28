@@ -343,55 +343,6 @@ export function resolveCurrentEntityModel(
   return enrichEntityFromLegacyDefinition(entity, matching[0]);
 }
 
-/**
- * Dual-write helper: copy Entity present-model definition fields onto the
- * redundant EntityVersion while preserving EntityVersion identity UUIDs.
- */
-export function alignEntityDefinitionToPresentEntity(
-  entity: Entity,
-  entityVersion: EntityVersion,
-): EntityVersion {
-  const definitionProjection = projectEntityPresentModelDefinition(entity);
-  const aligned: EntityVersion = {
-    ...entityVersion,
-    ...definitionProjection,
-    uuid: entityVersion.uuid,
-    entityUuid: entity.uuid,
-    name: entity.name,
-    mlSchema: entity.mlSchema ?? entityVersion.mlSchema,
-  };
-  for (const field of ENTITY_PRESENT_MODEL_DEFINITION_FIELDS) {
-    if (
-      !Object.prototype.hasOwnProperty.call(definitionProjection, field) &&
-      field !== "mlSchema"
-    ) {
-      delete (aligned as Record<string, unknown>)[field];
-    }
-  }
-  return aligned;
-}
-
-/**
- * #217 Phase 7 — assemble live MetaModel.entities as complete present models.
- * Incomplete Entities are enriched from EntityDefinitions; EntityDefinitions stay
- * loaded as compatibility/history and are not removed from MetaModel.
- */
-export function assembleLivePresentModelEntities(
-  entities: Entity[],
-  entityVersions: EntityVersion[],
-): Entity[] {
-  return entities.map((entity) => {
-    try {
-      return resolveCurrentEntityModel(entity, entityVersions, {
-        onInconsistency: "preferEntity",
-      });
-    } catch {
-      return entity;
-    }
-  });
-}
-
-const ENTITY_PARENT_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 
 /**
  * #217 Phase 8 — single hub for live present-model lookup by entity UUID.

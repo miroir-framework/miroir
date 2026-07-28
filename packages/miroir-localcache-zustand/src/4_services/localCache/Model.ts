@@ -20,8 +20,7 @@ import {
   type Runner,
   type SelfApplication,
   type StoredMiroirTheme,
-  type Uuid,
-  assembleLivePresentModelEntities,
+  type Uuid
 } from "miroir-core";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
@@ -127,15 +126,11 @@ export function currentModel(
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],
-      entities: assembleLivePresentModelEntities(
+      entities: 
         (entities && entities.entities
           ? Object.values(entities.entities)
           : []) as Entity[],
-        (entityDefinitions && entityDefinitions.entities
-          ? Object.values(entityDefinitions.entities)
-          : []) as EntityVersion[],
-      ),
-      entityDefinitions: (entityDefinitions && entityDefinitions.entities
+      entityVersions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
         : []) as EntityVersion[],
       jzodSchemas: (jzodSchemas && jzodSchemas.entities

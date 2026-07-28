@@ -1,6 +1,5 @@
 import {
   ACTION_OK,
-  Action2EntityInstanceCollectionOrFailure,
   Action2EntityInstanceReturnType,
   Action2Error,
   Action2VoidReturnType,
@@ -15,8 +14,8 @@ import {
   PersistenceStoreDataSectionInterface,
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
-  applyEntityOnlyAlterAttribute,
   applyEntityOnlyRename,
+  applyMlSchemaColumnChanges
 } from "miroir-core";
 import { entityEntity } from "miroir-test-app_deployment-miroir";
 import { EntityUuidIndexedSequelizeModel, fromMiroirPresentModelToSequelizeEntityDefinition } from "../utils";
@@ -226,10 +225,15 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         );
       }
       const previousEntity = currentEntity.returnedDomainElement as Entity;
-      const alteredEntity = applyEntityOnlyAlterAttribute(previousEntity, {
-        addColumns: update.payload.addColumns,
-        removeColumns: update.payload.removeColumns,
-      });
+      const alteredEntity = {
+        ...previousEntity,
+        mlSchema: applyMlSchemaColumnChanges(previousEntity.mlSchema, 
+          {
+              addColumns: update.payload.addColumns,
+              removeColumns: update.payload.removeColumns,
+          }
+        )
+      }
       if (!alteredEntity) {
         return Promise.resolve(
           new Action2Error(

@@ -1,20 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  entityEntity,
-  entityDefinitionEntity,
+  entityEntity
 } from "miroir-test-app_deployment-miroir";
-import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
-import type {
-  Entity,
-  EntityVersion,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   entityMLSchema,
   entityWithResolvedMLSchema,
 } from "../../src/0_interfaces/1_core/EntityVersion.js";
-import { alignEntityDefinitionToPresentEntity } from "../../src/1_core/entityPresentModel.js";
+import type {
+  Entity
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 describe("217 Phase 4 — entityMLSchema / entityWithResolvedMLSchema", () => {
   it("resolves Entity.mlSchema extending entityDefinitionRoot", () => {
@@ -47,35 +43,3 @@ describe("217 Phase 4 — entityMLSchema / entityWithResolvedMLSchema", () => {
   });
 });
 
-describe("217 Phase 4 — alignEntityDefinitionToPresentEntity", () => {
-  it("projects Entity definition fields onto the redundant EntityVersion", () => {
-    const book = defaultLibraryAppModel.entities.find(
-      (e) => e.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-    )!;
-    const bookDefinition = defaultLibraryAppModel.entityVersions.find(
-      (d) => d.entityUuid === book.uuid,
-    )!;
-    const aligned = alignEntityDefinitionToPresentEntity(book, bookDefinition);
-    expect(aligned.uuid).toBe(bookDefinition.uuid);
-    expect(aligned.entityUuid).toBe(book.uuid);
-    expect(aligned.mlSchema).toEqual(book.mlSchema);
-    expect(aligned.viewAttributes).toEqual(book.viewAttributes);
-    expect(aligned.cache).toEqual(book.cache);
-    expect(aligned.defaultInstanceDetailsReportUuid).toBe(
-      book.defaultInstanceDetailsReportUuid,
-    );
-  });
-
-  it("uses Entity-authoritative fields when they diverge from EntityVersion", () => {
-    const entity = {
-      ...(entityEntity as Entity),
-      viewAttributes: ["onlyOnEntity"],
-    };
-    const aligned = alignEntityDefinitionToPresentEntity(
-      entity,
-      entityDefinitionEntity as EntityVersion,
-    );
-    expect(aligned.viewAttributes).toEqual(["onlyOnEntity"]);
-    expect(aligned.uuid).toBe((entityDefinitionEntity as EntityVersion).uuid);
-  });
-});

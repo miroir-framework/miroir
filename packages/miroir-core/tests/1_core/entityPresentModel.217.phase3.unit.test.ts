@@ -6,6 +6,9 @@ import {
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import type {
   Entity,
   EntityVersion,
@@ -13,13 +16,8 @@ import type {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   compareEntityPresentModelDefinitions,
-  entityHasCompletePresentModel,
-  inventoryEntityEntityDefinitionJoins,
-  resolveCurrentEntityModel,
+  inventoryEntityEntityDefinitionJoins
 } from "../../src/1_core/entityPresentModel.js";
-import { readdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 
 const ENTITY_COLLECTION_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 const ENTITY_DEFINITION_COLLECTION_UUID = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
@@ -53,62 +51,6 @@ function loadJsonInstancesFromCollection(
       JSON.parse(readFileSync(join(collectionDir, name), "utf8")) as Record<string, unknown>,
     );
 }
-
-function assertEntityEntityDefinitionRedundancy(
-  entities: Entity[],
-  entityDefinitions: EntityVersion[],
-  label: string,
-) {
-  const inventory = inventoryEntityEntityDefinitionJoins(entities, entityDefinitions);
-  expect(inventory.orphanEntities, label).toEqual([]);
-  expect(inventory.orphanEntityDefinitions, label).toEqual([]);
-  expect(inventory.multipleDefinitions, label).toEqual([]);
-
-  for (const match of inventory.matched) {
-    const entity = entities.find((candidate) => candidate.uuid === match.entityUuid)!;
-    const entityVersion = entityDefinitions.find(
-      (definition) => definition.uuid === match.entityDefinitionUuids[0],
-    )!;
-    expect(entityHasCompletePresentModel(entity), `${label}:${entity.name}`).toBe(true);
-    expect(
-      compareEntityPresentModelDefinitions(entity, entityVersion),
-      `${label}:${entity.name}`,
-    ).toEqual({ equal: true, differingFields: [] });
-    expect(resolveCurrentEntityModel(entity, [entityVersion])).toBe(entity);
-  }
-}
-
-describe("217 Phase 3 — Entity ↔ EntityVersion asset redundancy", () => {
-  for (const modelRoot of CANONICAL_MODEL_ROOTS) {
-    it(`${modelRoot} Entities carry definition fields equal to their EntityVersion`, () => {
-      const entities = loadJsonInstancesFromCollection(
-        modelRoot,
-        ENTITY_COLLECTION_UUID,
-      ) as Entity[];
-      const entityDefinitions = loadJsonInstancesFromCollection(
-        modelRoot,
-        ENTITY_DEFINITION_COLLECTION_UUID,
-      ) as EntityVersion[];
-      assertEntityEntityDefinitionRedundancy(entities, entityDefinitions, modelRoot);
-    });
-  }
-
-  it("defaultLibraryAppModel Entities are complete and consistent with EntityDefinitions", () => {
-    assertEntityEntityDefinitionRedundancy(
-      defaultLibraryAppModel.entities,
-      defaultLibraryAppModel.entityVersions,
-      "defaultLibraryAppModel",
-    );
-  });
-
-  it("defaultMiroirMetaModel Entities are complete and consistent with EntityDefinitions", () => {
-    assertEntityEntityDefinitionRedundancy(
-      defaultMiroirMetaModel.entities,
-      defaultMiroirMetaModel.entityVersions,
-      "defaultMiroirMetaModel",
-    );
-  });
-});
 
 describe("217 Phase 3 — versioningEnabled on canonical applications", () => {
   for (const relativePath of CANONICAL_SELF_APPLICATION_PATHS) {

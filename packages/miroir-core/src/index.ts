@@ -722,10 +722,18 @@ export {
   // createApplicationCompositeAction,
   createDeploymentCompositeAction,
   type CreateDeploymentCompositeActionOptions,
-  defaultAdminApplicationDeploymentMapNOTGOOD, defaultDeployments,
-  defaultDeploymentUuids, defaultEndpointApplicationMap,
-  defaultSelfApplicationDeploymentMap, dropApplicationAndDeploymentCompositeAction, emptyMetaModel, EndpointApplicationMap, extendMiroirConfigWithExtraDeploymentConfiguration, metaModelFilterEntities, resetAndinitializeDeploymentCompositeAction, testUtils_deleteApplicationDeployment,
-  testUtils_resetApplicationDeployment
+  defaultAdminApplicationDeploymentMapNOTGOOD,
+  defaultDeployments,
+  defaultDeploymentUuids,
+  defaultEndpointApplicationMap,
+  defaultSelfApplicationDeploymentMap,
+  dropApplicationAndDeploymentCompositeAction,
+  emptyMetaModel,
+  EndpointApplicationMap,
+  extendMiroirConfigWithExtraDeploymentConfiguration,
+  resetAndinitializeDeploymentCompositeAction,
+  testUtils_deleteApplicationDeployment,
+  testUtils_resetApplicationDeployment,
 } from "./1_core/Deployment";
 export { DomainInstanceUuidIndexToArray } from "./1_core/DomainState.js";
 export {
@@ -747,11 +755,8 @@ export {
 } from "./1_core/EntityPrimaryKey";
 export type { EntityPrimaryKeySource } from "./1_core/EntityPrimaryKey";
 export {
-  applyAlterEntityAttributePair,
-  applyEntityOnlyAlterAttribute,
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges,
-  applyRenameEntityPair,
 } from "./1_core/modelEntityDualWrite.js";
 export type {
   AlterEntityAttributeColumns,
@@ -759,31 +764,13 @@ export type {
 } from "./1_core/modelEntityDualWrite.js";
 // #220 compat — do not use for Application Version freeze / historical EntityVersion minting
 export {
-  detectEntityEntityDefinitionInconsistencies,
-  persistEntityThenEntityDefinition,
-  presentEntityAsRedundantEntityDefinition,
-} from "./1_core/entityDefinitionCompatibility.js";
-export type {
-  DualWriteFailurePolicy,
-  DualWriteInconsistency,
-  DualWriteInconsistencyReport,
-  PersistEntityThenEntityDefinitionOps,
-} from "./1_core/entityDefinitionCompatibility.js";
-export {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   EntityPresentModelResolutionError,
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
-  alignEntityDefinitionToPresentEntity,
   assertVersioningEnabledImmutable,
-  assembleLivePresentModelEntities,
   resolvePresentEntityFromModel,
-  compareEntityPresentModelDefinitions,
-  entityHasCompletePresentModel,
-  inventoryEntityEntityDefinitionJoins,
-  overlappingPresentModelDifferences,
   projectEntityPresentModelDefinition,
-  resolveCurrentEntityModel,
 } from "./1_core/entityPresentModel.js";
 export type {
   EntityEntityDefinitionJoinInventory,

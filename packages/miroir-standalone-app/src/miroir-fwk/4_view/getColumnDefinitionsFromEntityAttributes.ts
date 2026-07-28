@@ -25,22 +25,6 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "getColumnDefinitionsFromEntityAttributes"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-/** Live present-model carrier for column defs (Entity, or a thin pick used in tests). */
-// export type PresentEntityColumnCarrier =
-//   | Entity
-//   | {
-//       viewAttributes?: string[] | undefined;
-//       uuid?: string | undefined;
-//       entityUuid?: string | undefined;
-//       name?: string | undefined;
-//     };
-
-// function presentEntityIdentityUuid(entity: PresentEntityColumnCarrier | undefined): string {
-//   if (!entity) return "";
-//   // EntityVersion-shaped carriers still expose entityUuid; Entity uses uuid.
-//   return (entity as { entityUuid?: string }).entityUuid ?? entity.uuid ?? "";
-// }
-
 // ################################################################################################
 export function getMDataGridColumnDefinition(
   deploymentUuid: string, // prop drilling
