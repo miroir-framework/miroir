@@ -22,13 +22,6 @@ const bookDefinition = defaultLibraryAppModel.entityVersions.find(
 )!;
 
 describe("217 Phase 11 — Model Actions Entity-first", () => {
-  it("resolves live EntityVersion by entityUuid when entityVersionUuid omitted", () => {
-    const resolved = resolveLiveEntityDefinitionForAction(
-      defaultLibraryAppModel as MetaModel,
-      bookEntity.uuid,
-    );
-    expect(resolved?.uuid).toBe(bookDefinition.uuid);
-  });
 
   it("createEntity without entityVersion emits Entity-only when Entity is complete", () => {
     const action: ModelAction = {
@@ -52,22 +45,6 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     }
   });
 
-  it("plans Entity-only create when Entity is complete", () => {
-    const plan = planCreateEntityMutation(bookEntity);
-    expect(plan?.mode).toBe("entityOnly");
-    if (plan?.mode === "entityOnly") {
-      expect(plan.entity.uuid).toBe(bookEntity.uuid);
-    }
-  });
-
-  it("rejects incomplete Entity create (no EntityVersion enrichment on create)", () => {
-    const incomplete = {
-      uuid: bookEntity.uuid,
-      name: bookEntity.name,
-      parentUuid: bookEntity.parentUuid,
-    } as Entity;
-    expect(planCreateEntityMutation(incomplete)).toBeUndefined();
-  });
 
   it("alterEntityAttribute updates Entity only when present model is complete (no EntityVersion)", () => {
     const action: ModelAction = {
@@ -91,18 +68,6 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
       expect(instanceActions[0].payload.objects).toHaveLength(1);
       const entity = instanceActions[0].payload.objects[0] as Entity;
       expect(entity.mlSchema?.definition).toHaveProperty("isbn11");
-    }
-  });
-
-  it("plans Entity-only alter when Entity is complete even if live ED exists", () => {
-    const plan = planAlterEntityAttributeMutation(
-      defaultLibraryAppModel as MetaModel,
-      bookEntity.uuid,
-      { addColumns: [{ name: "isbnOnly", definition: { type: "string" } }] },
-    );
-    expect(plan?.mode).toBe("entityOnly");
-    if (plan?.mode === "entityOnly") {
-      expect(plan.entity.mlSchema?.definition).toHaveProperty("isbnOnly");
     }
   });
 

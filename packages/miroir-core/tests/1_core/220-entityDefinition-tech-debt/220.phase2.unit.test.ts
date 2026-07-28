@@ -8,7 +8,6 @@ import { join } from "node:path";
 import type { Entity } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   presentEntityAsRedundantEntityDefinition,
-  resolveOrSynthesizeEntityDefinitionForCreate,
 } from "../../../src/1_core/entityDefinitionCompatibility.js";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
@@ -32,7 +31,6 @@ describe("220 Phase 2 — compat module quarantine", () => {
     };
     const projected = presentEntityAsRedundantEntityDefinition(entity, []);
     expect(projected.uuid).toBe(entity.uuid);
-    expect(resolveOrSynthesizeEntityDefinitionForCreate(entity, []).uuid).toBe(entity.uuid);
   });
 
   it("compat module documents freeze ban and EOL", () => {

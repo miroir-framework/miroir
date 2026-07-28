@@ -19,7 +19,6 @@ const FREEZE_MODULE = join(
 
 const FORBIDDEN_IN_FREEZE = [
   "presentEntityAsRedundantEntityDefinition",
-  "resolveOrSynthesizeEntityDefinitionForCreate",
   "persistEntityThenEntityDefinition",
 ] as const;
 

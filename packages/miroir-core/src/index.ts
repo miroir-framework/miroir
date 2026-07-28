@@ -762,7 +762,6 @@ export {
   detectEntityEntityDefinitionInconsistencies,
   persistEntityThenEntityDefinition,
   presentEntityAsRedundantEntityDefinition,
-  resolveOrSynthesizeEntityDefinitionForCreate,
 } from "./1_core/entityDefinitionCompatibility.js";
 export type {
   DualWriteFailurePolicy,
@@ -770,13 +769,6 @@ export type {
   DualWriteInconsistencyReport,
   PersistEntityThenEntityDefinitionOps,
 } from "./1_core/entityDefinitionCompatibility.js";
-export {
-  planAlterEntityAttributeMutation,
-  planCreateEntityMutation,
-  planRenameEntityMutation,
-  resolveLiveEntityDefinitionForAction,
-} from "./1_core/modelEntityActionLiveResolve.js";
-export type { LiveEntityMutationPlan } from "./1_core/modelEntityActionLiveResolve.js";
 export {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   EntityPresentModelResolutionError,

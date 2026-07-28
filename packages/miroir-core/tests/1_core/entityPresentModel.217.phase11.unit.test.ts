@@ -54,15 +54,6 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
     );
   });
 
-  it("createEntity Action path uses planCreateEntityMutation (Entity-only when complete)", () => {
-    const transformer = readFileSync(
-      join(REPO_ROOT, "packages/miroir-core/src/2_domain/ModelEntityActionTransformer.ts"),
-      "utf8",
-    );
-    expect(transformer).toContain("planCreateEntityMutation");
-    expect(transformer).not.toContain("resolveOrSynthesizeEntityDefinitionForCreate");
-  });
-
   it("store createEntity is Entity-only (no EntityVersion param)", () => {
     const iface = readFileSync(
       join(

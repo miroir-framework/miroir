@@ -12,13 +12,9 @@ import type {
   ModelAction,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { ModelEntityActionTransformer } from "../../../src/2_domain/ModelEntityActionTransformer.js";
-import {
-  planAlterEntityAttributeMutation,
-  planRenameEntityMutation,
-} from "../../../src/1_core/modelEntityActionLiveResolve.js";
 
 const bookEntity = defaultLibraryAppModel.entities.find(
-  (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  (entity: Entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
 
 function modelWithoutEntityDefinitions(): MetaModel {
@@ -29,30 +25,6 @@ function modelWithoutEntityDefinitions(): MetaModel {
 }
 
 describe("220 Phase 3 — Entity-only Actions without live EntityDefinitions", () => {
-  it("plans Entity-only rename when Entity is complete and entityDefinitions is empty", () => {
-    const plan = planRenameEntityMutation(
-      modelWithoutEntityDefinitions(),
-      bookEntity.uuid,
-      "BookRenamed",
-    );
-    expect(plan?.mode).toBe("entityOnly");
-    if (plan?.mode === "entityOnly") {
-      expect(plan.entity.name).toBe("BookRenamed");
-    }
-  });
-
-  it("plans Entity-only alter when Entity is complete and entityDefinitions is empty", () => {
-    const plan = planAlterEntityAttributeMutation(
-      modelWithoutEntityDefinitions(),
-      bookEntity.uuid,
-      { addColumns: [{ name: "isbn220", definition: { type: "string" } }] },
-    );
-    expect(plan?.mode).toBe("entityOnly");
-    if (plan?.mode === "entityOnly") {
-      expect(plan.entity.mlSchema?.definition).toHaveProperty("isbn220");
-    }
-  });
-
   it("renameEntity transformer emits Entity-only updateInstance without ED rows", () => {
     const action: ModelAction = {
       actionType: "renameEntity",

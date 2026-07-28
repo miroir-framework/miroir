@@ -12,15 +12,10 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
 import { entityEntity } from "miroir-test-app_deployment-miroir";
 
-import {
-  planAlterEntityAttributeMutation,
-  planCreateEntityMutation,
-  planRenameEntityMutation,
-} from "../1_core/modelEntityActionLiveResolve.js";
-import { packageName } from "../constants";
-import { cleanLevel } from "./constants";
 import { resolvePresentEntityFromModel } from "../1_core/entityPresentModel";
 import { applyMlSchemaColumnChanges } from "../1_core/modelEntityDualWrite";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -38,19 +33,6 @@ export class ModelEntityActionTransformer{
   ):TransformerReturnType<InstanceAction[]> {
     switch (modelAction.actionType) {
       case "createEntity": {
-        const objects: EntityInstance[] = [];
-        for (const entity of modelAction.payload.entities) {
-          const plan = planCreateEntityMutation(entity);
-          if (!plan || plan.mode !== "entityOnly") {
-            return new TransformerFailure({
-              queryFailure: "FailedTransformer",
-              failureMessage:
-                "modelActionToInstanceAction createEntity requires complete Entity.mlSchema",
-              query: { modelAction, entityUuid: entity.uuid } as any,
-            });
-          }
-          objects.push(plan.entity as EntityInstance);
-        }
         return [
           {
             actionType: "createInstance",
@@ -58,7 +40,7 @@ export class ModelEntityActionTransformer{
             payload: {
               application: modelAction.payload.application,
               applicationSection: "model",
-              objects,
+              objects: modelAction.payload.entities as EntityInstance[],
             }
           }
         ];
@@ -89,11 +71,6 @@ export class ModelEntityActionTransformer{
       }
       case "renameEntity":
       {
-        // const plan = planRenameEntityMutation(
-        //   currentModel,
-        //   modelAction.payload.entityUuid,
-        //   modelAction.payload.targetValue,
-        // );
         const entityToRename: Entity | undefined = resolvePresentEntityFromModel(currentModel, modelAction.payload.entityUuid);
   
         if (!entityToRename) {

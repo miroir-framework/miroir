@@ -54,20 +54,6 @@ export function presentEntityAsRedundantEntityDefinition(
   } as EntityVersion;
 }
 
-/**
- * @deprecated Bootstrap / legacy create paths only. Prefer Entity-only create when
- * Entity is complete. Not for freeze snapshot minting (#220 / #216).
- */
-export function resolveOrSynthesizeEntityDefinitionForCreate(
-  entity: Entity,
-  entityDefinitions: EntityVersion[] = [],
-): EntityVersion {
-  const existing = entityDefinitions.find((ed) => ed.entityUuid === entity.uuid);
-  if (existing) {
-    return existing;
-  }
-  return presentEntityAsRedundantEntityDefinition(entity, entityDefinitions);
-}
 
 /** Re-export dual-write persistence for a single compat import surface (#220). */
 export {
