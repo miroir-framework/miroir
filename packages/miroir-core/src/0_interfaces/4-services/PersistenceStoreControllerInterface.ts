@@ -203,15 +203,12 @@ export interface PersistenceStoreControllerInterface
     section: ApplicationSection,
     parentUuid: string,
     attributes?: string[],
-    /** When set, PK attributes from this EntityVersion are retained under projection. */
-    entityVersion?: EntityVersion
   ): Promise<Action2EntityInstanceCollectionOrFailure>;
   getInstance(
     section: ApplicationSection,
     parentUuid: string,
     uuid: Uuid,
     attributes?: string[],
-    entityVersion?: EntityVersion
   ): Promise<Action2EntityInstanceReturnType>;
   upsertInstance(
     section: ApplicationSection,

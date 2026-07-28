@@ -657,7 +657,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     entityUuid: string,
     instancePrimaryKey: Uuid,
     attributes?: string[],
-    entityVersion?: EntityVersion
   ): Promise<Action2EntityInstanceReturnType> {
     log.info(this.logHeader, "getInstance", "section", section, "entity", entityUuid, "instancePrimaryKey", instancePrimaryKey);
 
@@ -688,7 +687,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       result.returnedDomainElement &&
       typeof result.returnedDomainElement === "object"
     ) {
-      const identityFields = resolveProjectionIdentityFields(entityVersion);
+      // #220 — PK identity from Entity (via registered idAttribute), not EntityVersion.
+      // TODO: enable caching of the current model entities to drastically reduce the lookup time! (use local cache?)
+      const identityFields = resolveProjectionIdentityFields({
+        idAttribute: this.getEntityIdAttribute(entityUuid),
+      });
       return {
         ...result,
         returnedDomainElement: projectEntityInstance(
@@ -706,7 +709,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     section: ApplicationSection,
     entityUuid: string,
     attributes?: string[],
-    entityVersion?: EntityVersion
   ): Promise<Action2EntityInstanceCollectionOrFailure> {
     // TODO: fix applicationSection!!!
     
@@ -742,7 +744,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
     if (attributes && attributes.length > 0) {
       const collection = instances.returnedDomainElement;
-      const identityFields = resolveProjectionIdentityFields(entityVersion);
+      // #220 — PK identity from Entity (via registered idAttribute), not EntityVersion.
+      const identityFields = resolveProjectionIdentityFields({
+        idAttribute: this.getEntityIdAttribute(entityUuid),
+      });
       return {
         ...instances,
         returnedDomainElement: {

@@ -26,14 +26,14 @@ export type InstanceProjectionAttributes = readonly string[];
 
 /**
  * Identity keys to retain under projection.
- * Uses EntityVersion.idAttribute when provided; otherwise defaults to `uuid`
+ * Uses `idAttribute` when provided (Entity present model); otherwise defaults to `uuid`
  * (see AGENTS.md Primary Key Support).
  */
 export function resolveProjectionIdentityFields(
-  entityVersion?: { idAttribute?: string | string[] } | null
+  entityOrVersion?: { idAttribute?: string | string[] } | null
 ): string[] {
-  const pkAttributes = entityVersion
-    ? getEntityPrimaryKeyAttributes(entityVersion as EntityVersion)
+  const pkAttributes = entityOrVersion
+    ? getEntityPrimaryKeyAttributes(entityOrVersion as EntityVersion)
     : ["uuid"];
   return [...new Set<string>([...pkAttributes, ...INSTANCE_PROJECTION_STRUCTURAL_FIELDS])];
 }

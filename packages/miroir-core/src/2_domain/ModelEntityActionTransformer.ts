@@ -3,7 +3,6 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
-  type Entity,
   type EntityInstance
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";

@@ -6,6 +6,7 @@ describe("214 Phase 1 — PersistenceStoreController projection", () => {
   function makeController(instances: Record<string, unknown>[]) {
     const dataStoreSection = {
       getStoreName: () => "test-data",
+      getEntityIdAttribute: () => "uuid",
       getInstances: vi.fn(async () => ({
         status: "ok",
         returnedDomainElement: {
