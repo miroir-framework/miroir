@@ -36,27 +36,7 @@
               "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
               "name": "Author",
               "conceptLevel": "Model",
-              "description": "The Author of a book."
-            },
-            "entityDefinition": {
-              "uuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-              "parentName": "EntityVersion",
-              "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-              "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-              "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-              "conceptLevel": "Model",
-              "name": "Author",
-              "description": "author",
-              "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
-              "cache": {
-                "cacheAllInstancesOnRefresh": true
-              },
-              "viewAttributes": [
-                "name",
-                "country",
-                "icon",
-                "uuid"
-              ],
+              "description": "The Author of a book.",
               "mlSchema": {
                 "type": "object",
                 "extend": {
@@ -142,7 +122,17 @@
                     }
                   }
                 }
-              }
+              },
+              "viewAttributes": [
+                "name",
+                "country",
+                "icon",
+                "uuid"
+              ],
+              "cache": {
+                "cacheAllInstancesOnRefresh": true
+              },
+              "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902"
             }
           },
           "dropEntity": {
@@ -582,7 +572,7 @@
                 },
                 {
                   "actionType": "updateInstance",
-                  "actionLabel": "updateEntityDefinitionWithDetailsReportUuid",
+                  "actionLabel": "updateEntityWithDetailsReportUuid",
                   "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   "payload": {
                     "application": {
@@ -615,7 +605,7 @@
                             "transformerType": "getFromParameters",
                             "referencePath": [
                               "createEntity",
-                              "entityDefinition"
+                              "entity"
                             ]
                           },
                           "definition": {

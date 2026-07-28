@@ -1,7 +1,6 @@
 import {
   ACTION_OK,
   Action2VoidReturnType,
-  EntityVersion,
   LoggerInterface,
   Entity,
   MiroirLoggerFactory,
@@ -78,7 +77,6 @@ export class SqlDbStoreSection
   // TODO: detect & return error, add test for this!
   async bootFromPersistedState(
     entities: Entity[],
-    // entityVersions: EntityVersion[]
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
@@ -92,24 +90,9 @@ export class SqlDbStoreSection
     //   JSON.stringify(wrongDefinitions, null, 2)
     // );
     this.sqlSchemaTableAccess = entities
-      // .filter(e=>['Entity','EntityVersion'].indexOf(e.name)==-1)
       .reduce((prev, curr: Entity) => {
         // #217 Phase 11 — prefer Entity present-model fields; ED only as legacy fill-in.
-      // const entityVersion = entityVersions.find((e) => e.entityUuid == curr.uuid);
         const presentCarrier: Entity = curr
-      //   const presentCarrier: Entity = {
-      //     ...curr,
-      //     ...(curr.mlSchema === undefined && entityVersion?.mlSchema !== undefined
-      //       ? { mlSchema: entityVersion.mlSchema }
-      //       : {}),
-      //     ...(curr.idAttribute === undefined && (entityVersion as any)?.idAttribute !== undefined
-      //       ? { idAttribute: (entityVersion as any).idAttribute }
-      //       : {}),
-      //     ...(curr.externalDataSource === undefined &&
-      //     (entityVersion as any)?.externalDataSource !== undefined
-      //       ? { externalDataSource: (entityVersion as any).externalDataSource }
-      //       : {}),
-      //   };
         if (!presentCarrier.mlSchema) {
           return prev;
         }
@@ -125,17 +108,6 @@ export class SqlDbStoreSection
         );
         return result;
       }, {});
-    // Auto-migrate: add missing columns for non-external entities (safe for schema evolution)
-    // for (const [entityUuid, access] of Object.entries(this.sqlSchemaTableAccess)) {
-    //   if (!access.isExternal) {
-    //     try {
-    //       await access.sequelizeModel.sync({ alter: true });
-    //       log.info(this.logHeader, "bootFromPersistedState sync alter succeeded for entity", entityUuid);
-    //     } catch (e) {
-    //       log.warn(this.logHeader, "bootFromPersistedState sync alter failed for entity", entityUuid, "error:", e);
-    //     }
-    //   }
-    // }
     return Promise.resolve(ACTION_OK);
   }
 
