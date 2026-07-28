@@ -32,13 +32,13 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export interface ModelDiagramReportSectionViewProps {
   /**
-   * Present-model Entities (#217 Phase 9). When provided with mlSchema, preferred over
-   * `entityDefinitions` for diagram generation and click navigation.
+   * Present-model Entities (#217 / #221). Preferred source for diagram generation.
    */
   entities?: Entity[];
   /**
-   * Legacy / report-transformer EntityVersion carriers (or Entity-projected ED shape).
-   * Used when `entities` is absent or incomplete.
+   * @deprecated #221 Slice 4 — EOL dual-read for report-transformer output shaped like EntityVersion.
+   * Prefer `entities`. Remove when modelDiagramReportSection.definition.entityDefinitions
+   * metamodel field is migrated (#220 Case 8 / #213).
    */
   entityDefinitions?: any[];
   /** Optional section label (displayed as a heading above the diagram). */

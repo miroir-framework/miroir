@@ -24,26 +24,6 @@ MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts"), "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-/** Live present-model or legacy EntityVersion-shaped schema carrier for cascade walks. */
-export type PresentModelSchemaCarrier = {
-  uuid?: string | undefined;
-  entityUuid?: string | undefined;
-  name?: string | undefined;
-  mlSchema?: { definition?: Record<string, any> | undefined } | undefined;
-};
-
-/** Entity identity: Entity uses `uuid`; EntityVersion uses `entityUuid`. */
-export function carrierIdentityUuid(carrier: PresentModelSchemaCarrier): string | undefined {
-  return carrier.entityUuid ?? carrier.uuid;
-}
-
-// export function findPresentModelSchemaCarrierByEntityUuid(
-//   carriers: Entity[],
-//   entityUuid: string,
-// ): PresentModelSchemaCarrier | undefined {
-//   return carriers.find((carrier) => carrierIdentityUuid(carrier) === entityUuid);
-// }
-
 /** Map of referencing-entity-uuid → FK attribute name pointing at targetEntityUuid. */
 export function reverseForeignKeysPointingToEntity(
   schemaCarriers: Entity[],
@@ -55,7 +35,6 @@ export function reverseForeignKeysPointingToEntity(
         const fkAttributes = Object.entries(ed.mlSchema?.definition ?? {}).find(
           (a) => a[1].tag?.value?.foreignKeyParams?.targetEntity == targetEntityUuid
         );
-        // return [carrierIdentityUuid(ed), fkAttributes ? fkAttributes[0] : undefined];
         return [ed.uuid, fkAttributes ? fkAttributes[0] : undefined];
       })
       .filter((e) => e[0] && e[1])
@@ -86,13 +65,8 @@ export const deleteCascade = async (p: {
   deploymentUuid: string;
   applicationSection: ApplicationSection;
   entity: Entity;
-  /** Preferred present-model list for schema / reverse-FK walk. */
+  /** Present-model Entities for schema / reverse-FK walk (#221 — no EntityVersion dual-read). */
   entities: Entity[];
-  /**
-   * @deprecated #221 — legacy EntityVersion list; used only when `entities` is empty.
-   * Remove in Slice 4 once callers always pass Entity-complete models.
-   */
-  entityDefinitions?: EntityVersion[];
   entityInstances: EntityInstance[];
 }) => {
   log.info(
@@ -101,16 +75,12 @@ export const deleteCascade = async (p: {
     p.entityInstances
   );
 
-  const targetEntityUuid = carrierIdentityUuid(p.entity);
+  const targetEntityUuid = p.entity.uuid;
   const schemaCarriers: Entity[] = p.entities;
-  // const schemaCarriers: PresentModelSchemaCarrier[] =
-  //   p.entities && p.entities.length > 0
-  //     ? p.entities
-  //     : (p.entityDefinitions ?? []);
 
   const foreignKeysPointingToEntity = reverseForeignKeysPointingToEntity(
     schemaCarriers,
-    targetEntityUuid ?? "",
+    targetEntityUuid,
   );
 
   log.info(
@@ -225,7 +195,6 @@ export const deleteCascade = async (p: {
         deploymentUuid: p.deploymentUuid,
         applicationSection: p.applicationSection,
         entity: entityCarrier,
-        entityDefinitions: p.entityDefinitions,
         entities: p.entities,
         entityInstances: [entityInstance],
       });

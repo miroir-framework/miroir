@@ -72,13 +72,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 export const EntityInstanceGrid = (props: TableComponentProps) => {
   log.info(":::::::::::::::::::::::::: EntityInstanceGrid refreshing with props",props);
 
-  // #217 Phase 12: prefer Entity present model; fall back to EntityVersion-shaped carrier
-  const presentModelSource: Entity | null | undefined = props.type === TableComponentTypeSchema.enum.EntityInstance ? props.currentEntity : undefined;
-    // props.type === TableComponentTypeSchema.enum.EntityInstance
-    //   ? props.currentEntity?.mlSchema
-    //     ? props.currentEntity
-    //     : props.currentEntityDefinition
-    //   : undefined;
+  // #221 Slice 4 — Entity present model only (no EntityVersion dual-read)
+  const presentModelSource: Entity | null | undefined =
+    props.type === TableComponentTypeSchema.enum.EntityInstance ? props.currentEntity : undefined;
   
   // Get theme from context first, then allow prop overrides
   const contextTheme = useMiroirTableTheme();

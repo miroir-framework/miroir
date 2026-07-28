@@ -4,7 +4,6 @@ import {
   // selfApplicationDeploymentConfigurationsTO_REMOVEchema,
   domainElementObject,
   entity,
-  entityVersion,
   entityInstance,
   entityInstancesUuidIndex,
   jzodElement,
@@ -39,11 +38,8 @@ export const tableComponentCorePropsSchema = z.object({
 
 export const tableComponentEntityInstancePropsSchema = tableComponentCorePropsSchema.extend({
   type: z.literal(TableComponentTypeSchema.enum.EntityInstance),
-  // displayedDeploymentDefinition: selfApplicationDeploymentConfigurationsTO_REMOVEchema,
-  // displayedDeploymentDefinition: deployment,
-  // #217 Phase 12: Entity present model preferred; EntityVersion optional fallback
+  // #221 Slice 4 — Entity present model required (no EntityVersion dual-read)
   currentEntity: entity.nullable(),
-  currentEntityDefinition: entityVersion.optional(),
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
   onRowDelete: z.function().args(z.any()).returns(z.void()).optional(),
 });

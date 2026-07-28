@@ -368,10 +368,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
 
       const foreignKeyAttributes = analyzeForeignKeyAttributes(
         currentReportTargetEntity,
-        [
-          ...(entities ?? []),
-          ...(entityVersions ?? []),
-        ],
+        entities ?? [],
         { includeTransitive: true, maxDepth: 5 }
       );
 
@@ -382,7 +379,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       currentReportTargetEntity?.uuid,
       props.tableComponentReportType,
       entities,
-      entityVersions,
     ]
   );
 
@@ -593,7 +589,6 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               deploymentUuid: props.deploymentUuid,
               domainController: domainController,
               entity: currentReportTargetEntity,
-              entityDefinitions: currentModel.entityVersions,
               entities: currentModel.entities,
               entityInstances: [data],
             }

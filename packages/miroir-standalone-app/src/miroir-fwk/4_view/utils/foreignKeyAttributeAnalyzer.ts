@@ -1,4 +1,4 @@
-import type { JzodElement } from "miroir-core";
+import type { Entity, JzodElement } from "miroir-core";
 
 /**
  * Result of foreign key attribute analysis, containing both direct and transitive foreign key references
@@ -25,35 +25,28 @@ export interface AnalyzeForeignKeyAttributesOptions {
 }
 
 /**
- * #217 Phase 8: any carrier with mlSchema — Entity (preferred) or EntityVersion.
+ * #221 Slice 4 — live FK walk uses Entity present model only (`uuid` identity + `mlSchema`).
  */
-export type ForeignKeySchemaCarrier = {
-  uuid?: string | undefined;
-  entityUuid?: string | undefined;
-  mlSchema?: { definition?: Record<string, any> | undefined } | undefined;
+export type ForeignKeySchemaCarrier = Pick<Entity, "uuid" | "mlSchema"> & {
+  name?: string | undefined;
 };
 
-function carrierEntityUuid(carrier: ForeignKeySchemaCarrier): string | undefined {
-  // EntityVersion links via entityUuid; Entity identity is uuid.
-  return carrier.entityUuid ?? carrier.uuid;
-}
-
 /**
- * Analyzes an entity present model / definition to find all foreign key attributes,
+ * Analyzes an Entity present model to find all foreign key attributes,
  * including transitive ones.
  *
- * @param mainEntityDefinition - Primary Entity or EntityVersion to analyze
- * @param allEntityDefinitions - Available Entity and/or EntityVersion carriers for lookup
+ * @param mainEntity - Primary Entity to analyze
+ * @param allEntities - Available Entities for lookup
  * @param options - Configuration options for the analysis
  */
 export function analyzeForeignKeyAttributes(
-  mainEntityDefinition: ForeignKeySchemaCarrier | undefined,
-  allEntityDefinitions: ForeignKeySchemaCarrier[],
+  mainEntity: ForeignKeySchemaCarrier | undefined,
+  allEntities: ForeignKeySchemaCarrier[],
   options: AnalyzeForeignKeyAttributesOptions = {},
 ): ForeignKeyAttributeDefinition[] {
   const { includeTransitive = true, maxDepth = 5 } = options;
 
-  if (!mainEntityDefinition?.mlSchema?.definition) {
+  if (!mainEntity?.mlSchema?.definition) {
     return [];
   }
 
@@ -61,7 +54,7 @@ export function analyzeForeignKeyAttributes(
   const allForeignKeyEntities = new Set<string>();
   const processedEntities = new Set<string>();
 
-  Object.entries(mainEntityDefinition.mlSchema.definition).forEach(([attributeName, schema]: [string, any]) => {
+  Object.entries(mainEntity.mlSchema.definition).forEach(([attributeName, schema]: [string, any]) => {
     if (schema.tag?.value?.foreignKeyParams?.targetEntity) {
       result.push({
         attributeName,
@@ -83,11 +76,9 @@ export function analyzeForeignKeyAttributes(
     }
     processedEntities.add(entityUuid);
 
-    const entityDef = allEntityDefinitions.find(
-      (carrier) => carrierEntityUuid(carrier) === entityUuid,
-    );
-    if (entityDef?.mlSchema?.definition) {
-      Object.entries(entityDef.mlSchema.definition).forEach(([nestedAttributeName, schema]: [string, any]) => {
+    const entity = allEntities.find((carrier) => carrier.uuid === entityUuid);
+    if (entity?.mlSchema?.definition) {
+      Object.entries(entity.mlSchema.definition).forEach(([nestedAttributeName, schema]: [string, any]) => {
         if (
           schema.tag?.value?.foreignKeyParams?.targetEntity &&
           !allForeignKeyEntities.has(schema.tag.value.foreignKeyParams?.targetEntity)

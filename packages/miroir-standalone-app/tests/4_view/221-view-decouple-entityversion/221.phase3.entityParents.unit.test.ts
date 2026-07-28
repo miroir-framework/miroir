@@ -6,8 +6,6 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import {
-  carrierIdentityUuid,
-  findPresentModelSchemaCarrierByEntityUuid,
   reverseForeignKeysPointingToEntity,
 } from "../../../src/miroir-fwk/4_view/scripts.js";
 
@@ -41,18 +39,9 @@ const bookEntity = {
 };
 
 describe("221 Phase 3 — Entity parents + deleteCascade identity", () => {
-  it("finds Entity carriers by uuid (no entityUuid) for cascade recursion", () => {
-    const found = findPresentModelSchemaCarrierByEntityUuid(
-      [authorEntity, bookEntity],
-      "book-uuid",
-    );
-    expect(found?.name).toBe("Book");
-    expect(carrierIdentityUuid(authorEntity)).toBe("author-uuid");
-  });
-
   it("discovers reverse FKs from Entity-only schema carriers", () => {
     const pointing = reverseForeignKeysPointingToEntity(
-      [authorEntity, bookEntity],
+      [authorEntity, bookEntity] as any,
       "author-uuid",
     );
     expect(pointing).toEqual({ "book-uuid": "authorUuid" });
@@ -64,7 +53,6 @@ describe("221 Phase 3 — Entity parents + deleteCascade identity", () => {
       "utf8",
     );
     expect(source).toMatch(/entity:\s*Entity/);
-    // Strip line comments, then forbid entityVersion as a live prop declaration/pass
     const withoutLineComments = source.replace(/^\s*\/\/.*$/gm, "");
     expect(withoutLineComments).not.toMatch(/\bentityVersion\s*[:=]/);
   });
@@ -87,10 +75,7 @@ describe("221 Phase 3 — Entity parents + deleteCascade identity", () => {
     expect(grid).toMatch(/<JsonObjectEditFormDialog[\s\S]*?\bentity=\{/);
     expect(grid).not.toMatch(/entityVersion=\{/);
 
-    expect(scripts).toMatch(/export const deleteCascade[\s\S]*?\bentity:\s*PresentModelSchemaCarrier/);
-    expect(scripts).not.toMatch(
-      /export const deleteCascade[\s\S]*?\bentityVersion:\s*PresentModelSchemaCarrier/,
-    );
+    expect(scripts).toMatch(/export const deleteCascade[\s\S]*?\bentity:\s*Entity\b/);
     expect(scripts).toMatch(/findPresentModelSchemaCarrierByEntityUuid/);
   });
 

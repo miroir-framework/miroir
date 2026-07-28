@@ -20,7 +20,7 @@ Related:
 | 1 | **C** — Fix resolve / mapping keys | Migrate | ✅ DONE |
 | 2 | **A** — Rename only | Migrate | ✅ DONE |
 | 3 | **B** — Parents pass `Entity` | Migrate | ✅ DONE |
-| 4 | **D** — Remove dual-read fallbacks | Migrate | ⬜ |
+| 4 | **D** — Remove dual-read fallbacks | Migrate | ✅ DONE |
 | 5 | **E** — Legitimate EntityVersion | Characterization lock (no migrate) | ⬜ |
 | 6 | **F** — Out of tree / non-goals | Characterization lock (no migrate) | ⬜ |
 
@@ -259,11 +259,22 @@ After Slices 1–3, delete `Entity ?? EntityVersion` live paths in the Report/gr
 
 ### Validation (Slice 4)
 
-- [ ] Grep `EntityInstanceGrid.tsx`: no `currentEntityDefinition` / EV fallback.
-- [ ] FK analyzer tests green on Entity fixtures.
-- [ ] `npm run testByFile -w miroir-standalone-app -- foreignKeyAttributeAnalyzer`
+- [x] Grep `EntityInstanceGrid.tsx`: no `currentEntityDefinition` / EV fallback.
+- [x] FK analyzer tests green on Entity fixtures.
+- [x] `npm run testByFile -w miroir-standalone-app -- foreignKeyAttributeAnalyzer`
 - [ ] `npm run testByFile -w miroir-standalone-app -- ReportPage.integ` (or narrower grid/dialog test if integ too heavy)
 - [ ] Typecheck
+
+### Realization (Slice 4)
+
+- Test: `packages/miroir-standalone-app/tests/4_view/221-view-decouple-entityversion/221.phase4.noDualRead.unit.test.ts`
+- `deleteCascade` / helpers: Entity-only (`entities: Entity[]`, uuid identity); dropped `entityDefinitions`
+- `EntityInstanceGridInterface`: removed `currentEntityDefinition`
+- `foreignKeyAttributeAnalyzer`: Entity uuid + mlSchema only; unit fixtures migrated to Entity
+- `ReportSectionListDisplay`: FK walk + deleteCascade use `entities` only
+- `ModelDiagramReportSectionView.entityDefinitions`: marked `@deprecated` EOL (transformer metamodel field)
+- AI dual-read left as optional follow-up
+- Updated Slice 3 source contract for `entity: Entity` signature
 
 ### NON-REGRESSION
 
