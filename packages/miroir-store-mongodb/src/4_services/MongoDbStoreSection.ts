@@ -42,7 +42,7 @@ export class MongoDbStoreSection
   }
 
   // ##################################################################################################
-  bootFromPersistedState(entities: Entity[], entityVersions: EntityVersion[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
     return Promise.resolve(ACTION_OK);
   }

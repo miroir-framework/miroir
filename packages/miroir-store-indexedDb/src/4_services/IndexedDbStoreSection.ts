@@ -39,7 +39,7 @@ export class IndexedDbStoreSection
   }
 
   // ##################################################################################################
-  bootFromPersistedState(entities: Entity[], entityVersions: EntityVersion[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState registering", entities.length, "entity sublevels without clearing");
     // Register all known entity UUIDs in the subLevels Map without clearing their data.
     // This is required so that getEntityUuids() / hasSubLevel() return correct results after
@@ -52,15 +52,15 @@ export class IndexedDbStoreSection
         this.entityIdAttributes[entity.uuid] = idAttr;
       }
     }
-    for (const ed of entityVersions) {
-      if (this.entityIdAttributes[ed.entityUuid] !== undefined) {
-        continue;
-      }
-      const idAttr = (ed as any).idAttribute ?? "uuid";
-      if (idAttr !== "uuid") {
-        this.entityIdAttributes[ed.entityUuid] = idAttr;
-      }
-    }
+    // for (const ed of entityVersions) {
+    //   if (this.entityIdAttributes[ed.entityUuid] !== undefined) {
+    //     continue;
+    //   }
+    //   const idAttr = (ed as any).idAttribute ?? "uuid";
+    //   if (idAttr !== "uuid") {
+    //     this.entityIdAttributes[ed.entityUuid] = idAttr;
+    //   }
+    // }
     return Promise.resolve(ACTION_OK);
   }
 

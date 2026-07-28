@@ -49,7 +49,7 @@ export class FileSystemStoreSection
   }
 
   // #############################################################################################
-  bootFromPersistedState(entities: Entity[], entityVersions: EntityVersion[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
     // #217 Phase 11 — register idAttribute from Entity first; ED map is legacy fill-in only.
     for (const entity of entities) {
@@ -58,15 +58,15 @@ export class FileSystemStoreSection
         this.entityIdAttributes[entity.uuid] = idAttr;
       }
     }
-    for (const ed of entityVersions) {
-      if (this.entityIdAttributes[ed.entityUuid] !== undefined) {
-        continue;
-      }
-      const idAttr = (ed as any).idAttribute ?? "uuid";
-      if (idAttr !== "uuid") {
-        this.entityIdAttributes[ed.entityUuid] = idAttr;
-      }
-    }
+    // for (const ed of entityVersions) {
+    //   if (this.entityIdAttributes[ed.entityUuid] !== undefined) {
+    //     continue;
+    //   }
+    //   const idAttr = (ed as any).idAttribute ?? "uuid";
+    //   if (idAttr !== "uuid") {
+    //     this.entityIdAttributes[ed.entityUuid] = idAttr;
+    //   }
+    // }
     return Promise.resolve(ACTION_OK);
   }
 

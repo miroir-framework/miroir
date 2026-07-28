@@ -426,12 +426,12 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #############################################################################################
   async bootFromPersistedState(
     metaModelEntities: Entity[],
-    metaModelEntityDefinitions: EntityVersion[]
+    // metaModelEntityDefinitions: EntityVersion[]
   ): Promise<Action2VoidReturnType> {
     const modelBootFromPersistedState: Action2ReturnType =
       await this.modelStoreSection.bootFromPersistedState(
         metaModelEntities,
-        metaModelEntityDefinitions
+        // metaModelEntityDefinitions
       );
     if (modelBootFromPersistedState instanceof Action2Error) {
       return new Action2Error(
@@ -441,8 +441,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     }
     const dataEntities: Action2EntityInstanceCollectionOrFailure =
       await this.modelStoreSection.getInstances(entityEntity.uuid);
-    const dataEntityDefinitions: Action2EntityInstanceCollectionOrFailure =
-      await this.modelStoreSection.getInstances(entityEntityDefinition.uuid);
+      // const dataEntityDefinitions: Action2EntityInstanceCollectionOrFailure =
+      //   await this.modelStoreSection.getInstances(entityEntityDefinition.uuid);
 
     if (
       dataEntities instanceof Action2Error ||
@@ -455,19 +455,19 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         }. Message: ${dataEntities instanceof Action2Error ? dataEntities?.errorMessage : ""}`
       );
     }
-    if (
-      dataEntityDefinitions instanceof Action2Error ||
-      dataEntityDefinitions.returnedDomainElement instanceof Domain2ElementFailed
-    ) {
-      return new Action2Error(
-        "FailedToGetInstances",
-        `bootFromPersistedState for entityVersions getInstances(${
-          entityEntityDefinition.uuid
-        }) status: ${dataEntityDefinitions.status}. Message: ${
-          dataEntityDefinitions instanceof Action2Error ? dataEntityDefinitions?.errorMessage : ""
-        }`
-      );
-    }
+    // if (
+    //   dataEntityDefinitions instanceof Action2Error ||
+    //   dataEntityDefinitions.returnedDomainElement instanceof Domain2ElementFailed
+    // ) {
+    //   return new Action2Error(
+    //     "FailedToGetInstances",
+    //     `bootFromPersistedState for entityVersions getInstances(${
+    //       entityEntityDefinition.uuid
+    //     }) status: ${dataEntityDefinitions.status}. Message: ${
+    //       dataEntityDefinitions instanceof Action2Error ? dataEntityDefinitions?.errorMessage : ""
+    //     }`
+    //   );
+    // }
 
     log.info(
       this.logHeader,
@@ -478,7 +478,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
         (e) => ["Entity", "EntityVersion", "EntityVersion"].indexOf(e.name) == -1
       ), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
-      (dataEntityDefinitions as any).returnedDomainElement?.instances as EntityVersion[]
+      // (dataEntityDefinitions as any).returnedDomainElement?.instances as EntityVersion[]
     );
     if (
       dataBootFromPersistedState instanceof Action2Error ||

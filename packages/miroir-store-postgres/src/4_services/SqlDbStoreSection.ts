@@ -75,9 +75,10 @@ export class SqlDbStoreSection
   }
 
   // ##############################################################################################
+  // TODO: detect & return error, add test for this!
   async bootFromPersistedState(
     entities: Entity[],
-    entityVersions: EntityVersion[]
+    // entityVersions: EntityVersion[]
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
@@ -94,20 +95,21 @@ export class SqlDbStoreSection
       // .filter(e=>['Entity','EntityVersion'].indexOf(e.name)==-1)
       .reduce((prev, curr: Entity) => {
         // #217 Phase 11 — prefer Entity present-model fields; ED only as legacy fill-in.
-        const entityVersion = entityVersions.find((e) => e.entityUuid == curr.uuid);
-        const presentCarrier: Entity = {
-          ...curr,
-          ...(curr.mlSchema === undefined && entityVersion?.mlSchema !== undefined
-            ? { mlSchema: entityVersion.mlSchema }
-            : {}),
-          ...(curr.idAttribute === undefined && (entityVersion as any)?.idAttribute !== undefined
-            ? { idAttribute: (entityVersion as any).idAttribute }
-            : {}),
-          ...(curr.externalDataSource === undefined &&
-          (entityVersion as any)?.externalDataSource !== undefined
-            ? { externalDataSource: (entityVersion as any).externalDataSource }
-            : {}),
-        };
+      // const entityVersion = entityVersions.find((e) => e.entityUuid == curr.uuid);
+        const presentCarrier: Entity = curr
+      //   const presentCarrier: Entity = {
+      //     ...curr,
+      //     ...(curr.mlSchema === undefined && entityVersion?.mlSchema !== undefined
+      //       ? { mlSchema: entityVersion.mlSchema }
+      //       : {}),
+      //     ...(curr.idAttribute === undefined && (entityVersion as any)?.idAttribute !== undefined
+      //       ? { idAttribute: (entityVersion as any).idAttribute }
+      //       : {}),
+      //     ...(curr.externalDataSource === undefined &&
+      //     (entityVersion as any)?.externalDataSource !== undefined
+      //       ? { externalDataSource: (entityVersion as any).externalDataSource }
+      //       : {}),
+      //   };
         if (!presentCarrier.mlSchema) {
           return prev;
         }

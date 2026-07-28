@@ -64,7 +64,7 @@ export class BundledModelStoreSection
   // ##############################################################################################
   async bootFromPersistedState(
     entities: Entity[],
-    entityVersions: EntityVersion[],
+    // entityVersions: EntityVersion[],
   ): Promise<Action2VoidReturnType> {
     // #217 Phase 11 — Entity present-model first; ED idAttribute as legacy fill-in only.
     for (const entity of entities) {
@@ -73,15 +73,15 @@ export class BundledModelStoreSection
         this.entityIdAttributes[entity.uuid] = idAttr;
       }
     }
-    for (const ed of entityVersions) {
-      if (this.entityIdAttributes[ed.entityUuid]) {
-        continue;
-      }
-      const idAttr = (ed as any).idAttribute ?? "uuid";
-      if (idAttr !== "uuid") {
-        this.entityIdAttributes[ed.entityUuid] = idAttr;
-      }
-    }
+    // for (const ed of entityVersions) {
+    //   if (this.entityIdAttributes[ed.entityUuid]) {
+    //     continue;
+    //   }
+    //   const idAttr = (ed as any).idAttribute ?? "uuid";
+    //   if (idAttr !== "uuid") {
+    //     this.entityIdAttributes[ed.entityUuid] = idAttr;
+    //   }
+    // }
     return Promise.resolve(ACTION_OK);
   }
 

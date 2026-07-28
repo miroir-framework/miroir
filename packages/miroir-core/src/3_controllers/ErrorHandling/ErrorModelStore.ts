@@ -28,7 +28,7 @@ export class ErrorModelStore implements PersistenceStoreModelSectionInterface {
   close(): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
-  bootFromPersistedState(entities: Entity[], entityVersions: EntityVersion[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[]): Promise<Action2VoidReturnType> {
     throw new Error("Method not implemented.");
   }
   createStorageSpaceForInstancesOfEntity(
