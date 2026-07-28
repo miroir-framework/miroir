@@ -257,8 +257,7 @@
             "defaultLabel": "ML Schema",
             "id": 18
           }
-        },
-        "optional": true
+        }
       }
     }
   }

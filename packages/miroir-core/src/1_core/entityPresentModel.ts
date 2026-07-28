@@ -403,50 +403,22 @@ export function resolvePresentEntityFromModel(
   model:
     | {
         entities?: Entity[] | undefined;
-        entityVersions?: EntityVersion[] | undefined;
       }
     | null
     | undefined,
   entityUuid: string,
-  options?: ResolveCurrentEntityModelOptions,
 ): Entity | undefined {
   if (!model || !entityUuid) {
     return undefined;
   }
   const entities = model.entities ?? [];
-  const entityVersions = model.entityVersions ?? [];
   const entity = entities.find((candidate) => candidate.uuid === entityUuid);
 
-  if (entity) {
-    try {
-      return resolveCurrentEntityModel(entity, entityVersions, {
-        onInconsistency: "preferEntity",
-        ...options,
-      });
-    } catch {
-      return entityHasCompletePresentModel(entity) ? entity : undefined;
-    }
-  }
-
-  const matching = entityVersions.filter(
-    (entityVersion) => entityVersion.entityUuid === entityUuid,
-  );
-  if (matching.length !== 1) {
-    return undefined;
-  }
-  try {
-    return resolveCurrentEntityModel(
-      {
-        uuid: entityUuid,
-        name: matching[0]!.name,
-        parentName: "Entity",
-        parentUuid: ENTITY_PARENT_UUID,
-      } as Entity,
-      matching,
-      options,
-    );
-  } catch {
-    return undefined;
+  // return entity;
+  if (!entity && entities && entities.length > 0) {
+    throw new Error(`resolvePresentEntityFromModel: Entity ${entityUuid} not found in model`);
+  } else {
+    return entity;
   }
 }
 

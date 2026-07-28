@@ -3,6 +3,7 @@ import {
   InstanceAction,
   MetaModel,
   ModelAction,
+  type Entity,
   type EntityInstance
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
@@ -18,6 +19,8 @@ import {
 } from "../1_core/modelEntityActionLiveResolve.js";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import { resolvePresentEntityFromModel } from "../1_core/entityPresentModel";
+import { applyMlSchemaColumnChanges } from "../1_core/modelEntityDualWrite";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -86,24 +89,24 @@ export class ModelEntityActionTransformer{
       }
       case "renameEntity":
       {
-        const plan = planRenameEntityMutation(
-          currentModel,
-          modelAction.payload.entityUuid,
-          modelAction.payload.targetValue,
-        );
+        // const plan = planRenameEntityMutation(
+        //   currentModel,
+        //   modelAction.payload.entityUuid,
+        //   modelAction.payload.targetValue,
+        // );
+        const entityToRename: Entity | undefined = resolvePresentEntityFromModel(currentModel, modelAction.payload.entityUuid);
   
-        log.info(
-          "modelActionToInstanceAction renameEntity plan",
-          plan?.mode,
-          modelAction.payload.entityUuid,
-        );
-  
-        if (!plan || plan.mode !== "entityOnly") {
-          log.error('modelActionToInstanceAction renameEntity could not rename',modelAction);
-          return [];
+        if (!entityToRename) {
+          throw new Error(`modelActionToInstanceAction renameEntity could not rename entity ${modelAction.payload.entityUuid} not found in model`);
         }
+  
         // #220 — Entity-only rename
-        const objects: EntityInstance[] = [plan.entity as EntityInstance];
+        const objects: Entity[] = [
+          {
+            ...entityToRename,
+            name: modelAction.payload.targetValue,
+          },
+        ];
         return [
           {
             actionType: "updateInstance",
@@ -119,19 +122,20 @@ export class ModelEntityActionTransformer{
       case "alterEntityAttribute": {
         log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
 
-        const plan = planAlterEntityAttributeMutation(
-          currentModel,
-          modelAction.payload.entityUuid,
-          {
-            addColumns: modelAction.payload.addColumns,
-            removeColumns: modelAction.payload.removeColumns,
-          },
-        );
-        if (!plan || plan.mode !== "entityOnly") {
-          log.error('modelActionToInstanceAction alterEntityAttribute could not alter',modelAction);
-          return [];
+        const entityToAlter: Entity | undefined = resolvePresentEntityFromModel(currentModel, modelAction.payload.entityUuid);
+        if (!entityToAlter) {
+          throw new Error(`modelActionToInstanceAction alterEntityAttribute could not alter entity ${modelAction.payload.entityUuid} not found in model`);
         }
-        const objects: EntityInstance[] = [plan.entity as EntityInstance];
+        const objects: Entity[] = [
+          {
+            ...entityToAlter,
+            mlSchema: applyMlSchemaColumnChanges(
+              entityToAlter.mlSchema, {
+              addColumns: modelAction.payload.addColumns,
+              removeColumns: modelAction.payload.removeColumns,
+            }),
+          },
+        ];
         const result: InstanceAction[] = [
           {
             actionType: "updateInstance",

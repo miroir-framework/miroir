@@ -7618,6 +7618,12 @@ export const miroirFundamentalJzodSchema = {
           "homePageUrl": {
             "type": "union",
             "optional": true,
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Home Page Url"
+              }
+            },
             "definition": [
               {
                 "type": "string"
@@ -7636,7 +7642,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 8,
+                "id": 9,
                 "defaultLabel": "Versioning Enabled",
                 "description": "Immutable creation-time capability: when true, the application may keep Application Version / Entity Version history. Selected at application creation and must not change afterward. Absent on legacy assets until migration populates an explicit value.",
                 "display": {
@@ -8360,8 +8366,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "ML Schema",
                 "id": 18
               }
-            },
-            "optional": true
+            }
           }
         }
       },
@@ -35353,6 +35358,13 @@ export const miroirFundamentalJzodSchema = {
           "homePageUrl": {
             "type": "union",
             "optional": true,
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Home Page Url",
+                "isTemplate": true
+              }
+            },
             "definition": [
               {
                 "type": "string"
@@ -35371,7 +35383,7 @@ export const miroirFundamentalJzodSchema = {
             "optional": true,
             "tag": {
               "value": {
-                "id": 8,
+                "id": 9,
                 "defaultLabel": "Versioning Enabled",
                 "description": "Immutable creation-time capability: when true, the application may keep Application Version / Entity Version history. Selected at application creation and must not change afterward. Absent on legacy assets until migration populates an explicit value.",
                 "display": {
@@ -35776,8 +35788,7 @@ export const miroirFundamentalJzodSchema = {
                 "id": 18,
                 "isTemplate": true
               }
-            },
-            "optional": true
+            }
           }
         }
       },
