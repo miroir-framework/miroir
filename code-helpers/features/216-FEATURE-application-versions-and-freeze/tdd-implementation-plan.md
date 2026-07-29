@@ -17,7 +17,7 @@ Related:
 - Prerequisites (realized): [#217](../217-FEATURE-%20Make%20Entity%20the%20authoritative%20present-model%20definition/analysis.md), [#220](../220-REFACTOR-entitydefinition-tech-debt/), [#221](../221-REFACTOR-view-decouple-entityversion-present-model/), [#222](../222-REFACTOR-entityversion-to-miroir-data/)
 - WP2 consumer: [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md)
 
-**Resume note (2026-07-30):** Phases 0–1 code + tests retargeted to `1_core/versioning/`; UUID-reuse characterization replaced by “compat module deleted” + #222 section matrix. Continue at **Phase 2**.
+**Resume note (2026-07-30):** Phases 0–1 code + tests retargeted to `1_core/versioning/`; UUID-reuse characterization replaced by “compat module deleted” + #222 section matrix. **Phase 2 DONE** — continue at **Phase 3** (linear tip / `previousVersion`).
 
 ---
 
@@ -27,7 +27,7 @@ Related:
 |---|---|---|---|
 | 0 | Lock freeze contracts & fixtures | ✅ DONE | 5/5 (retargeted post-#220/#222) |
 | 1 | Versioning gate + Entity snapshot planner | ✅ DONE | 11/11 (retargeted) |
-| 2 | Freeze plan builder (SAV + Cross + isolation) | ⬜ TODO | — |
+| 2 | Freeze plan builder (SAV + Cross + isolation) | ✅ DONE | 5/5 |
 | 3 | Linear tip resolution (`previousVersion`) | ⬜ TODO | — |
 | 4 | Entity-set diff → rough migration evaluation | ⬜ TODO | — |
 | 5 | Wire `freezeApplicationVersion` Action | ⬜ TODO | — |
@@ -186,11 +186,13 @@ npm run testByFile -w miroir-core -- entityPresentModel
 
 ---
 
-## Phase 2 — Freeze plan builder (SAV + Cross + isolation)  ⬜ TODO
+## Phase 2 — Freeze plan builder (SAV + Cross + isolation)  ✅ DONE
 
 ### Goal
 
 Pure `buildFreezeApplicationVersionPlan` assembles first-freeze plan without persistence.
+
+**Realization:** `buildFreezeApplicationVersionPlan` + `planFreezeApplicationVersion` in `versioning/applicationVersionFreeze.ts`; suite `applicationVersionFreeze.plan.unit.test.ts` (5/5). Throws on duplicate label (same app+branch); Action entry calls versioning gate. Plan includes `entityVersionApplicationSection` via #222 helper.
 
 ### 2.1 RED → GREEN — First freeze plan
 

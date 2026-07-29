@@ -773,11 +773,17 @@ export type {
 export {
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
   assertApplicationVersioningEnabled,
+  buildFreezeApplicationVersionPlan,
+  planFreezeApplicationVersion,
   resolveFreezeEntityVersionApplicationSection,
   snapshotEntitiesAsHistoricalEntityVersions,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
+  ApplicationVersionCrossEntityVersionRow,
+  BuildFreezeApplicationVersionPlanInput,
   FreezeApplicationVersionActionType,
+  FreezeApplicationVersionPlan,
+  PlanFreezeApplicationVersionInput,
   SnapshotOptions,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export {
