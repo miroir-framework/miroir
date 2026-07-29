@@ -2493,6 +2493,13 @@ export function getMiroirFundamentalJzodSchema(
             (a: any) => a.actionParameters.actionType.definition == "renameEntity",
           )?.actionParameters,
         },
+        modelActionFreezeApplicationVersion: {
+          type: "object",
+          tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
+          definition: modelEndpointVersionV1.definition.actions.find(
+            (a: any) => a.actionParameters.actionType.definition == "freezeApplicationVersion",
+          )?.actionParameters,
+        },
         modelAction: {
           type: "union",
           discriminator: "actionType",

@@ -422,3 +422,106 @@ export function planFreezeApplicationVersion(
   assertApplicationVersioningEnabled(input.selfApplication);
   return buildFreezeApplicationVersionPlan(input);
 }
+
+// ---------------------------------------------------------------------------
+// Phase 5: Action payload → plan from MetaModel (persistence = Phase 6)
+// ---------------------------------------------------------------------------
+
+/** Payload shape for Model Endpoint `freezeApplicationVersion`. */
+export type FreezeApplicationVersionActionPayload = {
+  application: string;
+  versionName: string;
+  description?: string;
+  branch?: string;
+};
+
+/** MetaModel fields needed to plan a freeze without LocalCache. */
+export type FreezeMetaModelSlice = {
+  applications: Array<{ uuid: string; versioningEnabled?: boolean | undefined }>;
+  entities: Entity[];
+  applicationVersions: ApplicationVersion[];
+  entityVersions: EntityVersion[];
+  applicationVersionCrossEntityVersion: Array<{
+    applicationVersion: string;
+    entityVersion: string;
+  }>;
+};
+
+/**
+ * Resolve SelfApplication + Entities + tip context from MetaModel, then plan.
+ * DomainController calls this for `freezeApplicationVersion`; Phase 6 persists the plan.
+ */
+export function planFreezeApplicationVersionFromMetaModel(
+  payload: FreezeApplicationVersionActionPayload,
+  metaModel: FreezeMetaModelSlice,
+  options?: SnapshotOptions,
+): FreezeApplicationVersionPlan {
+  const selfApplication = metaModel.applications.find((a) => a.uuid === payload.application);
+  if (!selfApplication) {
+    throw new Error(
+      `freezeApplicationVersion: SelfApplication ${payload.application} not found in current model`,
+    );
+  }
+
+  const freezeProducedVersionUuids = metaModel.applicationVersions
+    .filter(
+      (sav) =>
+        sav.selfApplication === payload.application &&
+        metaModel.applicationVersionCrossEntityVersion.some(
+          (c) => c.applicationVersion === sav.uuid,
+        ),
+    )
+    .map((sav) => sav.uuid);
+
+  let branchUuid = payload.branch;
+  if (!branchUuid) {
+    const freezeSet = new Set(freezeProducedVersionUuids);
+    const freezeSavs = metaModel.applicationVersions.filter((sav) => freezeSet.has(sav.uuid));
+    const referenced = new Set(
+      freezeSavs
+        .map((s) => s.previousVersion)
+        .filter((u): u is string => typeof u === "string" && u.length > 0),
+    );
+    const heads = freezeSavs.filter((s) => !referenced.has(s.uuid));
+    if (heads.length === 1) {
+      branchUuid = heads[0].branch;
+    } else if (heads.length === 0) {
+      throw new Error(
+        "freezeApplicationVersion requires payload.branch on first freeze (no previous freeze tip)",
+      );
+    } else {
+      throw new Error(
+        "freezeApplicationVersion requires payload.branch when multiple freeze tips exist",
+      );
+    }
+  }
+
+  const tip = resolvePreviousApplicationVersion(metaModel.applicationVersions, {
+    selfApplicationUuid: payload.application,
+    branchUuid,
+    freezeProducedVersionUuids,
+  });
+
+  let previousEntityVersions: EntityVersion[] | undefined;
+  if (tip) {
+    const evUuids = new Set(
+      metaModel.applicationVersionCrossEntityVersion
+        .filter((c) => c.applicationVersion === tip.uuid)
+        .map((c) => c.entityVersion),
+    );
+    previousEntityVersions = metaModel.entityVersions.filter((ev) => evUuids.has(ev.uuid));
+  }
+
+  return planFreezeApplicationVersion({
+    selfApplication,
+    selfApplicationUuid: payload.application,
+    branchUuid,
+    versionName: payload.versionName,
+    description: payload.description,
+    entities: metaModel.entities,
+    existingApplicationVersions: metaModel.applicationVersions,
+    freezeProducedVersionUuids,
+    previousEntityVersions,
+    newUuid: options?.newUuid,
+  });
+}

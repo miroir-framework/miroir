@@ -17,7 +17,7 @@ Related:
 - Prerequisites (realized): [#217](../217-FEATURE-%20Make%20Entity%20the%20authoritative%20present-model%20definition/analysis.md), [#220](../220-REFACTOR-entitydefinition-tech-debt/), [#221](../221-REFACTOR-view-decouple-entityversion-present-model/), [#222](../222-REFACTOR-entityversion-to-miroir-data/)
 - WP2 consumer: [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md)
 
-**Resume note (2026-07-30):** Phases 0–3 DONE. **Phase 4 DONE** — `diffEntityVersionSnapshots` + `modelCUDMigration` on second freeze. Continue at **Phase 5** (wire `freezeApplicationVersion` Action).
+**Resume note (2026-07-30):** Phases 0–4 DONE. **Phase 5 DONE** — `freezeApplicationVersion` on Model Endpoint + DomainController plan/gate (persist = Phase 6). Continue at **Phase 6** (filesystem integ persistence).
 
 ---
 
@@ -30,7 +30,7 @@ Related:
 | 2 | Freeze plan builder (SAV + Cross + isolation) | ✅ DONE | 5/5 |
 | 3 | Linear tip resolution (`previousVersion`) | ✅ DONE | 8/8 |
 | 4 | Entity-set diff → rough migration evaluation | ✅ DONE | 11/11 |
-| 5 | Wire `freezeApplicationVersion` Action | ⬜ TODO | — |
+| 5 | Wire `freezeApplicationVersion` Action | ✅ DONE | 10/10 |
 | 6 | Persist freeze (filesystem integ) | ⬜ TODO | — |
 | 7 | Commit / `"Initial"` hygiene | ⬜ TODO | — |
 | 8 | End-to-end tracer bullet + WP2 handoff note | ⬜ TODO | — |
@@ -264,31 +264,23 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze.diff
 
 ---
 
-## Phase 5 — Wire `freezeApplicationVersion` Action  ⬜ TODO
+## Phase 5 — Wire `freezeApplicationVersion` Action  ✅ DONE
 
 ### Goal
 
 Schema + DomainController dispatch: Action accepted for versioned apps, rejected for unversioned; returns plan result without requiring full multi-store integ yet (handler may call pure planner and a persistence port stubbed only if unavoidable — prefer real LocalCache path in Phase 6).
 
-### 5.1 RED → GREEN — Model Endpoint Action schema
+### Delivered
 
-- Add `freezeApplicationVersion` to Model Endpoint Action union (asset under `7947ae40-…` / related Action type definitions).
-- Regenerate types: `npm run devBuild -w miroir-core` (after deployment package build if needed).
-- Unit test: Zod parse of valid / invalid payloads.
-
-Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.actionSchema.unit.test.ts`
-
-### 5.2 RED → GREEN — Handler gate
-
-Test (core or standalone unit with DomainController test harness used elsewhere):
-
-- Unversioned SelfApplication → ActionError
-- Versioned + valid name → success path invokes planner (assert via persisted instances in Phase 6 if handler is persistence-coupled)
+- Model Endpoint asset (`7947ae40-…`): `freezeApplicationVersion` with payload `{ application, versionName, description?, branch? }`
+- Named Zod/TS: `modelActionFreezeApplicationVersion` / `ModelActionFreezeApplicationVersion` (via `devBuild`)
+- `planFreezeApplicationVersionFromMetaModel` — Action entry from MetaModel (gate + tip + diff inputs)
+- `DomainController.handleModelAction` case plans only (throws → `Action2Error`); **persistence deferred to Phase 6**
+- Tests: `applicationVersionFreeze.actionSchema.unit.test.ts` (10/10)
 
 #### Validation
 ```
 npm run testByFile -w miroir-core -- applicationVersionFreeze.actionSchema
-# plus handler test pattern chosen in GREEN
 ```
 
 ---

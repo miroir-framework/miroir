@@ -78,6 +78,9 @@ import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS
 } from "../1_core/versioning/applicationVersioning.js";
 import {
+  planFreezeApplicationVersionFromMetaModel,
+} from "../1_core/versioning/applicationVersionFreeze.js";
+import {
   defaultMiroirModelEnvironment,
   getApplicationSection,
   metaModelEntities,
@@ -1747,6 +1750,18 @@ export class DomainController implements DomainControllerInterface {
           // );
           break;
         }
+        case "freezeApplicationVersion": {
+          // Phase 5: gate + plan only. Phase 6 persists SAV / EntityVersions / Cross.
+          const metaModel = currentModelEnvironment.currentModel;
+          const payload = modelAction.payload as {
+            application: string;
+            versionName: string;
+            description?: string;
+            branch?: string;
+          };
+          planFreezeApplicationVersionFromMetaModel(payload, metaModel);
+          break;
+        }
         default: {
           log.warn("DomainController handleModelAction cannot handle action name for", modelAction);
           break;
@@ -2169,7 +2184,8 @@ export class DomainController implements DomainControllerInterface {
         case "alterEntityAttribute":
         case "renameEntity":
         case "createEntity":
-        case "dropEntity": {
+        case "dropEntity":
+        case "freezeApplicationVersion": {
           if (!currentModel) {
             // throw new Error(
             //   "DomainController handleAction for modelAction needs a currentModel argument"
@@ -2526,6 +2542,7 @@ export class DomainController implements DomainControllerInterface {
           case "renameEntity":
           case "createEntity":
           case "dropEntity":
+          case "freezeApplicationVersion":
           case "transactionalInstanceAction":
           // case "storeManagementAction":
           case "storeManagementAction_createStore":
@@ -3611,6 +3628,7 @@ export class DomainController implements DomainControllerInterface {
         case "renameEntity":
         case "createEntity":
         case "dropEntity":
+        case "freezeApplicationVersion":
         //
         case "transactionalInstanceAction":
         case "compositeActionSequence":

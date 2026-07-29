@@ -776,6 +776,7 @@ export {
   buildFreezeApplicationVersionPlan,
   diffEntityVersionSnapshots,
   planFreezeApplicationVersion,
+  planFreezeApplicationVersionFromMetaModel,
   resolveFreezeEntityVersionApplicationSection,
   resolvePreviousApplicationVersion,
   snapshotEntitiesAsHistoricalEntityVersions,
@@ -783,8 +784,10 @@ export {
 export type {
   ApplicationVersionCrossEntityVersionRow,
   BuildFreezeApplicationVersionPlanInput,
+  FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
   FreezeApplicationVersionPlan,
+  FreezeMetaModelSlice,
   ModelCudMigrationCandidate,
   PlanFreezeApplicationVersionInput,
   ResolvePreviousApplicationVersionOptions,
