@@ -776,6 +776,7 @@ export {
   buildFreezeApplicationVersionPlan,
   planFreezeApplicationVersion,
   resolveFreezeEntityVersionApplicationSection,
+  resolvePreviousApplicationVersion,
   snapshotEntitiesAsHistoricalEntityVersions,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
@@ -784,6 +785,7 @@ export type {
   FreezeApplicationVersionActionType,
   FreezeApplicationVersionPlan,
   PlanFreezeApplicationVersionInput,
+  ResolvePreviousApplicationVersionOptions,
   SnapshotOptions,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export {

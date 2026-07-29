@@ -17,7 +17,7 @@ Related:
 - Prerequisites (realized): [#217](../217-FEATURE-%20Make%20Entity%20the%20authoritative%20present-model%20definition/analysis.md), [#220](../220-REFACTOR-entitydefinition-tech-debt/), [#221](../221-REFACTOR-view-decouple-entityversion-present-model/), [#222](../222-REFACTOR-entityversion-to-miroir-data/)
 - WP2 consumer: [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md)
 
-**Resume note (2026-07-30):** Phases 0–1 code + tests retargeted to `1_core/versioning/`; UUID-reuse characterization replaced by “compat module deleted” + #222 section matrix. **Phase 2 DONE** — continue at **Phase 3** (linear tip / `previousVersion`).
+**Resume note (2026-07-30):** Phases 0–2 DONE. **Phase 3 DONE** — `resolvePreviousApplicationVersion` + auto `previousVersion` on second freeze. Continue at **Phase 4** (Entity-set diff → `modelCUDMigration`).
 
 ---
 
@@ -28,7 +28,7 @@ Related:
 | 0 | Lock freeze contracts & fixtures | ✅ DONE | 5/5 (retargeted post-#220/#222) |
 | 1 | Versioning gate + Entity snapshot planner | ✅ DONE | 11/11 (retargeted) |
 | 2 | Freeze plan builder (SAV + Cross + isolation) | ✅ DONE | 5/5 |
-| 3 | Linear tip resolution (`previousVersion`) | ⬜ TODO | — |
+| 3 | Linear tip resolution (`previousVersion`) | ✅ DONE | 8/8 |
 | 4 | Entity-set diff → rough migration evaluation | ⬜ TODO | — |
 | 5 | Wire `freezeApplicationVersion` Action | ⬜ TODO | — |
 | 6 | Persist freeze (filesystem integ) | ⬜ TODO | — |
@@ -223,30 +223,17 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze.plan
 
 ---
 
-## Phase 3 — Linear tip resolution (`previousVersion`)  ⬜ TODO
+## Phase 3 — Linear tip resolution (`previousVersion`)  ✅ DONE
 
 ### Goal
 
 Resolve previous freeze tip; second freeze links `previousVersion`.
 
-### 3.1 RED → GREEN — Tip resolution
+### Delivered
 
-Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.tip.unit.test.ts`
-
-| Scenario | Expected tip |
-|---|---|
-| No SAVs for app | `undefined` |
-| Only fixture `"Initial"` (not freeze-marked) | `undefined` under locked policy (ignore placeholders) **or** if unmarked, ignore by heuristic: treat as non-tip unless `previousVersion` chain from a freeze exists — **v1: ignore all SAVs that lack Cross rows covering Entities** |
-| One freeze-produced SAV (has Cross set) | that SAV |
-| Chain A←B | tip = B |
-
-Practical v1 heuristic (document in code): tip = SAV for app+branch that is not referenced as `previousVersion` by any other SAV (**chain head**). If multiple heads, prefer the one with Cross rows; if still ambiguous, error. Fixture `"Initial"` with empty migrations and partial Cross may still be a head — **override:** tip resolution prefers SAVs created by freeze Action once a `freezeProvenance` marker exists; until then, Phase 7 hygiene stops commit placeholders and tests use **empty SAV lists** or explicitly freeze-built fixtures.
-
-**Phase 3 test strategy:** use only in-memory SAVs produced by the plan builder (no real `"Initial"` assets) to lock linear linking; fixture policy covered in Phase 7.
-
-### 3.2 RED → GREEN — Second freeze plan links previous
-
-Given previous plan’s SAV as existing version + Cross/EntityVersions, new plan sets `previousVersion === previous.uuid`.
+- `resolvePreviousApplicationVersion` — chain head for app+branch; `freezeProducedVersionUuids` excludes placeholders (`"Initial"`); throws on multiple heads.
+- `buildFreezeApplicationVersionPlan` auto-fills `previousVersion` from tip when `previousVersionUuid` omitted; explicit uuid wins.
+- Tests: `applicationVersionFreeze.tip.unit.test.ts` (8/8). Fixture `"Initial"` policy deferred to Phase 7.
 
 #### Validation
 ```

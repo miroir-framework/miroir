@@ -145,13 +145,89 @@ export type BuildFreezeApplicationVersionPlanInput = {
   branchUuid: string;
   versionName: string;
   entities: Entity[];
-  /** Existing SAVs for this app+branch — used for duplicate label detection. */
+  /** Existing SAVs for this app+branch — used for duplicate label detection and tip resolution. */
   existingApplicationVersions?: ApplicationVersion[];
-  /** Set on second+ freeze (Phase 3); omit for first freeze. */
+  /**
+   * Explicit previous SAV uuid. When omitted, auto-resolves via
+   * {@link resolvePreviousApplicationVersion} using `freezeProducedVersionUuids`.
+   */
   previousVersionUuid?: string;
+  /**
+   * SAV uuids known to be freeze-produced (have Entity-covering Cross).
+   * Used when auto-resolving `previousVersion` (Phase 3).
+   */
+  freezeProducedVersionUuids?: ReadonlySet<string> | readonly string[];
   description?: string;
   newUuid?: () => string;
 };
+
+// ---------------------------------------------------------------------------
+// Phase 3: Linear tip resolution (`previousVersion`)
+// ---------------------------------------------------------------------------
+
+export type ResolvePreviousApplicationVersionOptions = {
+  selfApplicationUuid: string;
+  branchUuid: string;
+  /**
+   * SAV uuids produced by freeze (have Entity-covering Cross rows).
+   * When provided, only those SAVs are eligible as tip — commit placeholders
+   * like `"Initial"` are ignored. When omitted, all SAVs for app+branch are
+   * eligible (useful once Phase 7 hygiene removes placeholders).
+   */
+  freezeProducedVersionUuids?: ReadonlySet<string> | readonly string[];
+};
+
+/**
+ * Resolve the linear tip (chain head) for an application+branch.
+ *
+ * Tip = SAV for app+branch that is not referenced as `previousVersion` by any
+ * other eligible SAV. When `freezeProducedVersionUuids` is provided, only those
+ * SAVs are considered (v1: ignore fixture/commit placeholders until Phase 7).
+ * Throws if multiple chain heads remain among freeze-produced SAVs.
+ */
+export function resolvePreviousApplicationVersion(
+  versions: ApplicationVersion[],
+  options: ResolvePreviousApplicationVersionOptions,
+): ApplicationVersion | undefined {
+  const freezeSet =
+    options.freezeProducedVersionUuids === undefined
+      ? undefined
+      : options.freezeProducedVersionUuids instanceof Set
+        ? options.freezeProducedVersionUuids
+        : new Set(options.freezeProducedVersionUuids);
+
+  // Explicit empty freeze set → no tip (placeholders ignored).
+  if (freezeSet !== undefined && freezeSet.size === 0) {
+    return undefined;
+  }
+
+  const scoped = versions.filter(
+    (sav) =>
+      sav.selfApplication === options.selfApplicationUuid &&
+      sav.branch === options.branchUuid &&
+      (freezeSet === undefined || freezeSet.has(sav.uuid)),
+  );
+  if (scoped.length === 0) {
+    return undefined;
+  }
+
+  const referencedAsPrevious = new Set(
+    scoped
+      .map((sav) => sav.previousVersion)
+      .filter((uuid): uuid is string => typeof uuid === "string" && uuid.length > 0),
+  );
+  const heads = scoped.filter((sav) => !referencedAsPrevious.has(sav.uuid));
+
+  if (heads.length === 0) {
+    return undefined;
+  }
+  if (heads.length === 1) {
+    return heads[0];
+  }
+  throw new Error(
+    `Multiple Application Version chain heads for application ${options.selfApplicationUuid} branch ${options.branchUuid}: ${heads.map((h) => h.name).join(", ")}`,
+  );
+}
 
 /**
  * Pure plan for a freeze: new SAV + historical EntityVersions + Cross rows.
@@ -174,6 +250,15 @@ export function buildFreezeApplicationVersionPlan(
     );
   }
 
+  const previousVersionUuid =
+    input.previousVersionUuid !== undefined
+      ? input.previousVersionUuid
+      : resolvePreviousApplicationVersion(existing, {
+          selfApplicationUuid: input.selfApplicationUuid,
+          branchUuid: input.branchUuid,
+          freezeProducedVersionUuids: input.freezeProducedVersionUuids,
+        })?.uuid;
+
   const selfApplicationVersionUuid = mintUuid();
   const entityVersions = snapshotEntitiesAsHistoricalEntityVersions(input.entities, {
     newUuid: mintUuid,
@@ -189,9 +274,7 @@ export function buildFreezeApplicationVersionPlan(
     modelStructureMigration: [],
     modelCUDMigration: [],
     ...(input.description !== undefined ? { description: input.description } : {}),
-    ...(input.previousVersionUuid !== undefined
-      ? { previousVersion: input.previousVersionUuid }
-      : {}),
+    ...(previousVersionUuid !== undefined ? { previousVersion: previousVersionUuid } : {}),
   };
 
   const crossEntityVersions: ApplicationVersionCrossEntityVersionRow[] = entityVersions.map(
