@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 import { miroirTestSuite } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import {
   isRunnerTestRunTargetUuid,
-  resolveRunnerTestRunTarget,
-  type RunnerTestRunTarget,
-} from "../../src/5_tests/RunnerTestRunTarget";
+  getTestbedUuidsForTestSuite,
+  type TestbedUuids,
+} from "../../src/5_tests/TestbedUuids";
 
 const PINNED_APPLICATION_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const PINNED_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
@@ -20,11 +20,11 @@ function sequentialUuidFactory(): () => string {
   };
 }
 
-describe("resolveRunnerTestRunTarget (R6-B)", () => {
+describe("getTestbedUuidsForTestSuite (R6-B)", () => {
   it("generates uuid v4 run target when suite has no runTarget and no override", () => {
     const generateUuid = sequentialUuidFactory();
 
-    const resolved = resolveRunnerTestRunTarget({
+    const resolved = getTestbedUuidsForTestSuite({
       suite: { miroirTestLabel: "runner.library" },
       generateUuid,
     });
@@ -39,7 +39,7 @@ describe("resolveRunnerTestRunTarget (R6-B)", () => {
   it("uses suite runTarget when all fields are pinned", () => {
     const generateUuid = sequentialUuidFactory();
 
-    const resolved = resolveRunnerTestRunTarget({
+    const resolved = getTestbedUuidsForTestSuite({
       suite: {
         miroirTestLabel: "runner.library",
         runTarget: {
@@ -55,11 +55,11 @@ describe("resolveRunnerTestRunTarget (R6-B)", () => {
       applicationUuid: PINNED_APPLICATION_UUID,
       applicationName: "Library",
       deploymentUuid: PINNED_DEPLOYMENT_UUID,
-    } satisfies RunnerTestRunTarget);
+    } satisfies TestbedUuids);
   });
 
   it("caller override wins over suite runTarget", () => {
-    const resolved = resolveRunnerTestRunTarget({
+    const resolved = getTestbedUuidsForTestSuite({
       suite: {
         miroirTestLabel: "runner.library",
         runTarget: {
@@ -83,7 +83,7 @@ describe("resolveRunnerTestRunTarget (R6-B)", () => {
   });
 
   it("caller override alone supplies run target without suite pins", () => {
-    const resolved = resolveRunnerTestRunTarget({
+    const resolved = getTestbedUuidsForTestSuite({
       suite: { miroirTestLabel: "runner.library" },
       callerOverride: {
         applicationUuid: OVERRIDE_APPLICATION_UUID,

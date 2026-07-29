@@ -18,7 +18,7 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
       "utf8",
     );
     expect(sqlGenerator).not.toMatch(LIVE_ED_FIND);
-    expect(sqlGenerator).toContain("resolvePresentEntityFromModel");
+    expect(sqlGenerator).toContain("findEntityFromUuid");
   });
 
   it("SqlDbStoreSection boot prefers Entity present-model fields", () => {

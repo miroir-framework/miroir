@@ -4,7 +4,7 @@ import {
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   LoggerInterface,
   MiroirLoggerFactory,
-  resolvePresentEntityFromModel,
+  findEntityFromUuid,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
   type JzodElement,
@@ -80,7 +80,7 @@ export const reportSectionsFormSchema = (
       const applicationSection = getApplicationSection(applicationUuid, entityUuid)
       const sectionMapping =
         currentDeploymentReportsEntitiesDefinitionsMapping?.[applicationSection];
-      const targetPresentEntity = resolvePresentEntityFromModel(
+      const targetPresentEntity = findEntityFromUuid(
         {
           entities: sectionMapping?.entities,
           entityVersions: sectionMapping?.entityVersions,

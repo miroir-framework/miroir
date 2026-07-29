@@ -18,7 +18,7 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  resolveRunnerTestRunTarget,
+  getTestbedUuidsForTestSuite,
   testBuildPlusRuntimeCompositeActionSuiteForRunner,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
@@ -95,7 +95,7 @@ myConsoleLog("started registered loggers DONE");
 // ################################################################################################
 const globalTimeOut = 30000;
 
-const runTarget = resolveRunnerTestRunTarget({
+const runTarget = getTestbedUuidsForTestSuite({
   suite: { miroirTestLabel: pageLabel },
   defaultApplicationName: "testApplication_CreateEntity",
 });

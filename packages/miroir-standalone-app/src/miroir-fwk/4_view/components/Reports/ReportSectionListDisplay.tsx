@@ -330,7 +330,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     
   const currentReportTargetEntity: Entity | undefined = entities.find((e) => e.uuid === objectListReportSection?.definition.parentUuid);
     // objectListReportSection
-    //   ? resolvePresentEntityFromModel(
+    //   ? findEntityFromUuid(
     //       { entities, entityVersions },
     //       objectListReportSection.definition.parentUuid,
     //     )

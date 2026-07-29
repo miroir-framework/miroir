@@ -12,7 +12,7 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
 import { entityEntity } from "miroir-test-app_deployment-miroir";
 
-import { resolvePresentEntityFromModel } from "../1_core/entityPresentModel";
+import { findEntityFromUuid } from "../1_core/versioning/applicationVersioning";
 import { applyMlSchemaColumnChanges } from "../1_core/modelEntityDualWrite";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -71,7 +71,7 @@ export class ModelEntityActionTransformer{
       }
       case "renameEntity":
       {
-        const entityToRename: Entity | undefined = resolvePresentEntityFromModel(currentModel, modelAction.payload.entityUuid);
+        const entityToRename: Entity | undefined = findEntityFromUuid(currentModel, modelAction.payload.entityUuid);
   
         if (!entityToRename) {
           throw new Error(`modelActionToInstanceAction renameEntity could not rename entity ${modelAction.payload.entityUuid} not found in model`);
@@ -99,7 +99,7 @@ export class ModelEntityActionTransformer{
       case "alterEntityAttribute": {
         log.info("modelActionToInstanceAction currentModel ", JSON.stringify(currentModel));
 
-        const entityToAlter: Entity | undefined = resolvePresentEntityFromModel(currentModel, modelAction.payload.entityUuid);
+        const entityToAlter: Entity | undefined = findEntityFromUuid(currentModel, modelAction.payload.entityUuid);
         if (!entityToAlter) {
           throw new Error(`modelActionToInstanceAction alterEntityAttribute could not alter entity ${modelAction.payload.entityUuid} not found in model`);
         }

@@ -16,7 +16,7 @@ import {
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
   resolvePathOnObject,
-  resolvePresentEntityFromModel,
+  findEntityFromUuid,
   type ApplicationDeploymentMap,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type JzodObject,
@@ -236,7 +236,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const targetEntityUuid: Uuid | undefined =
     objectInstanceReportSection?.definition?.parentUuid;
 
-  const currentReportTargetEntity: Entity | undefined = resolvePresentEntityFromModel(
+  const currentReportTargetEntity: Entity | undefined = findEntityFromUuid(
     {
       entities,
       entityVersions:

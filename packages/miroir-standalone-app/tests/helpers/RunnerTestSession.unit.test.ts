@@ -6,7 +6,7 @@ import {
   MiroirActivityTracker,
   MiroirEventService,
   remapLibraryAppModelForRunTarget,
-  resolveRunnerTestRunTarget,
+  getTestbedUuidsForTestSuite,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type MetaModel,
@@ -67,7 +67,7 @@ function runnerLibrarySuite(): MiroirTestSuite {
 }
 
 function runnerLibraryRunTarget() {
-  return resolveRunnerTestRunTarget({ suite: runnerLibrarySuite() });
+  return getTestbedUuidsForTestSuite({ suite: runnerLibrarySuite() });
 }
 
 function baseMiroirConfig(runTarget = runnerLibraryRunTarget()): MiroirConfigClient {
@@ -133,7 +133,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     const suite = runnerLibrarySuite();
     const ephemeralApplicationUuid = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
     const ephemeralDeploymentUuid = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
-    const runTarget = resolveRunnerTestRunTarget({
+    const runTarget = getTestbedUuidsForTestSuite({
       suite: { miroirTestLabel: suite.miroirTestLabel },
       generateUuid: (() => {
         let index = 0;

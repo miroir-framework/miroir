@@ -5,13 +5,13 @@ import type {
   MiroirTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-export type RunnerTestRunTarget = {
+export type TestbedUuids = {
   applicationUuid: string;
   applicationName: string;
   deploymentUuid: string;
 };
 
-export type RunnerTestRunTargetOverride = Partial<RunnerTestRunTarget>;
+export type RunnerTestRunTargetOverride = Partial<TestbedUuids>;
 
 export type ResolveRunnerTestRunTargetParams = {
   suite: Pick<MiroirTestSuite, "runTarget" | "miroirTestLabel">;
@@ -27,15 +27,15 @@ export function isRunnerTestRunTargetUuid(value: string): boolean {
   return UUID_V4_PATTERN.test(value);
 }
 
-export function resolveRunnerTestRunTarget({
+export function getTestbedUuidsForTestSuite({
   suite,
   callerOverride,
   defaultApplicationName = "Library",
   generateUuid = uuidv4,
-}: ResolveRunnerTestRunTargetParams): RunnerTestRunTarget {
+}: ResolveRunnerTestRunTargetParams): TestbedUuids {
   const fromSuite = suite.runTarget;
 
-  const resolved: RunnerTestRunTarget = {
+  const resolved: TestbedUuids = {
     applicationUuid: fromSuite?.applicationUuid ?? generateUuid(),
     applicationName: fromSuite?.applicationName ?? defaultApplicationName,
     deploymentUuid: fromSuite?.deploymentUuid ?? generateUuid(),
@@ -54,7 +54,7 @@ export function resolveRunnerTestRunTarget({
 
 export function buildRunnerTestSessionParamBank(
   suiteTestParams: Record<string, unknown> | undefined,
-  runTarget: RunnerTestRunTarget,
+  runTarget: TestbedUuids,
   additionalSeed: Record<string, unknown> = {},
 ): Record<string, unknown> {
   return {

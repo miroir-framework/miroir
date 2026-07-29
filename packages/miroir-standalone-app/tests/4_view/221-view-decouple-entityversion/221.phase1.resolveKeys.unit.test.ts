@@ -1,6 +1,6 @@
 /**
  * #221 Slice 1 / Group C — Report subtree must pass `entityVersions`
- * into resolvePresentEntityFromModel (not `entityDefinitions`).
+ * into findEntityFromUuid (not `entityDefinitions`).
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -9,7 +9,7 @@ import { join } from "node:path";
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
 const VIEW_ROOT = join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4_view");
 
-/** Wrong-key shapes observed in Report resolvePresentEntityFromModel call sites. */
+/** Wrong-key shapes observed in Report findEntityFromUuid call sites. */
 const FORBIDDEN_RESOLVE_KEY_PATTERNS: { file: string; pattern: RegExp; label: string }[] = [
   {
     file: "components/Reports/ReportViewWithEditor.tsx",
@@ -23,8 +23,8 @@ const FORBIDDEN_RESOLVE_KEY_PATTERNS: { file: string; pattern: RegExp; label: st
   },
   {
     file: "components/Reports/ReportSectionListDisplay.tsx",
-    pattern: /resolvePresentEntityFromModel\(\s*\{\s*entities,\s*entityDefinitions\s*\}/,
-    label: "resolvePresentEntityFromModel({ entities, entityDefinitions })",
+    pattern: /findEntityFromUuid\(\s*\{\s*entities,\s*entityDefinitions\s*\}/,
+    label: "findEntityFromUuid({ entities, entityDefinitions })",
   },
 ];
 
@@ -37,7 +37,7 @@ const MAPPING_DESTRUCTURE_FILES = [
 ] as const;
 
 describe("221 Phase 1 — Report subtree resolve keys", () => {
-  it("resolvePresentEntityFromModel call sites do not pass entityDefinitions key", () => {
+  it("findEntityFromUuid call sites do not pass entityDefinitions key", () => {
     for (const { file, pattern, label } of FORBIDDEN_RESOLVE_KEY_PATTERNS) {
       const source = readFileSync(join(VIEW_ROOT, file), "utf8");
       expect(source, `${file} must not use ${label}`).not.toMatch(pattern);

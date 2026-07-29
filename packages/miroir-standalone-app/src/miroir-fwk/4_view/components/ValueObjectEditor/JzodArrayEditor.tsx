@@ -12,7 +12,7 @@ import {
   ReduxDeploymentsState,
   resolveJzodSchemaReferenceInContext,
   resolvePathOnObject,
-  resolvePresentEntityFromModel,
+  findEntityFromUuid,
   SyncBoxedExtractorOrQueryRunnerMap,
   type JzodPlainAttribute,
   type JzodReference,
@@ -516,7 +516,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
               JSON.stringify(currentDeploymentUuid, null, 2)
           );
         }
-        const newItemEntity = resolvePresentEntityFromModel(
+        const newItemEntity = findEntityFromUuid(
           currentMiroirModelEnvironment.currentModel,
           newItemEntityUuid,
         );

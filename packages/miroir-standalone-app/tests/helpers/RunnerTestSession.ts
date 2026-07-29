@@ -17,7 +17,7 @@ import {
   type MiroirTestExecutionEnvironment,
   type Runner,
   type RunnerTestContext,
-  type RunnerTestRunTarget,
+  type TestbedUuids,
   type RunnerTestSessionInterface,
   type StoreUnitConfiguration,
 } from "miroir-core";
@@ -49,7 +49,7 @@ export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
   miroirActivityTracker: MiroirActivityTracker;
   miroirEventService: MiroirEventService;
   pageLabel?: string;
-  runTarget: RunnerTestRunTarget;
+  runTarget: TestbedUuids;
   suiteTestParams?: Record<string, unknown>;
   runnerRegistry: Record<string, Runner>;
   /**
@@ -106,7 +106,7 @@ export function resolveRuntimeFetch(explicit?: typeof fetch): typeof fetch {
 // ################################################################################################
 export function getTestSessionConfig(
   miroirConfig: MiroirConfigClient,
-  runTarget: RunnerTestRunTarget,
+  runTarget: TestbedUuids,
 ): RunnerTestSessionConfig {
   const {
     applicationDeploymentMap,
@@ -150,7 +150,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
   constructor(private readonly options: RunnerTestSessionOptions) {}
 
-  private resolveLibraryModelForRunTarget(runTarget: RunnerTestRunTarget): MetaModel {
+  private resolveLibraryModelForRunTarget(runTarget: TestbedUuids): MetaModel {
     return remapLibraryAppModelForRunTarget(
       defaultLibraryAppModel as MetaModel,
       selfApplicationLibrary.uuid as string,

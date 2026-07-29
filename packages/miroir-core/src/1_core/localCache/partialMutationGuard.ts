@@ -6,10 +6,10 @@
 import type {
   ApplicationSection,
   InstanceAction,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { Action2Error } from "../0_interfaces/2_domain/DomainElement.js";
-import { getReduxDeploymentsStateIndex } from "../2_domain/ReduxDeploymentsState.js";
-import type { LocalCacheSegmentHeader } from "./localCacheSegment.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { Action2Error } from "../../0_interfaces/2_domain/DomainElement.js";
+import { getReduxDeploymentsStateIndex } from "../../2_domain/ReduxDeploymentsState.js";
+import type { LocalCacheSegmentHeader } from "../localCacheSegment.js";
 
 /** Soft tag on an instance or InstanceAction.payload identifying a partial-sourced edit. */
 export const MIROIR_CACHE_SEGMENT_MARKER = "miroirCacheSegment" as const;

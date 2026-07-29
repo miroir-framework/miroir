@@ -70,19 +70,19 @@ import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer"
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
   resolveEntitiesToFetchOnRefresh,
-} from "../1_core/cacheRefreshPolicy.js";
+} from "../1_core/localCache/cacheRefreshPolicy.js";
 import { ACTION_OK } from "../1_core/constants";
 import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS
-} from "../1_core/entityPresentModel.js";
+} from "../1_core/versioning/applicationVersioning.js";
 import {
   defaultMiroirModelEnvironment,
   metaModelEntities,
   miroirModelEntities,
 } from "../1_core/Model";
-import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGuard.js";
+import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partialMutationGuard.js";
 import {
   buildEvolutionTracePersistenceActions,
   collectEvolutionTraceStateFromDomainState,

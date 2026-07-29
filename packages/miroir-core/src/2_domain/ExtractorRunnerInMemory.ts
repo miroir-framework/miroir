@@ -29,7 +29,7 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { resolvePresentEntityFromModel } from "../1_core/entityPresentModel.js";
+import { findEntityFromUuid } from "../1_core/versioning/applicationVersioning.js";
 import {
   // getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
@@ -288,7 +288,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
     if (!querySelectorParams.applyTransformer) {
       return referenceObject;
     }
-    const currentPresentEntity = resolvePresentEntityFromModel(
+    const currentPresentEntity = findEntityFromUuid(
       modelEnvironment.currentModel,
       entityUuidReference,
     );

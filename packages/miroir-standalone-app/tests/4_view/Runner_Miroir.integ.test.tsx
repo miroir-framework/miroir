@@ -10,7 +10,7 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  resolveRunnerTestRunTarget,
+  getTestbedUuidsForTestSuite,
   testBuildPlusRuntimeCompositeActionSuiteForRunner,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
@@ -88,7 +88,7 @@ const globalTimeOut = 30000;
 const testMenuUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
 
 const runnerLibrarySuite = miroirTest_runner_library.definition as MiroirTestSuite;
-const runnerTestRunTarget = resolveRunnerTestRunTarget({ suite: runnerLibrarySuite });
+const runnerTestRunTarget = getTestbedUuidsForTestSuite({ suite: runnerLibrarySuite });
 
 const runnerTestSession = new RunnerTestSession({
   miroirConfig,

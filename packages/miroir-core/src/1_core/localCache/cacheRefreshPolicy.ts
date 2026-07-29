@@ -2,7 +2,7 @@ import type {
   ApplicationSection,
   Entity,
   EntityVersion,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export type EntityFetchOnRefresh = {
   section: ApplicationSection;

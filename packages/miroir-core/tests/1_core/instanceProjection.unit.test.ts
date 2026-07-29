@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   parseAttributesProjectionParam,
   projectEntityInstance,
-  projectEntityInstances,
+  projectEntityInstancesOnAttributes,
   resolveProjectionIdentityFields,
 } from "../../src/1_core/instanceProjection.js";
 
@@ -57,7 +57,7 @@ describe("instanceProjection", () => {
 
   it("projects each instance in a collection", () => {
     const other = { ...full, uuid: "33333333-3333-3333-3333-333333333333", name: "other" };
-    const result = projectEntityInstances([full, other], ["name"]);
+    const result = projectEntityInstancesOnAttributes([full, other], ["name"]);
     expect(result).toHaveLength(2);
     expect(result[0]).not.toHaveProperty("contents");
     expect(result[1].name).toBe("other");

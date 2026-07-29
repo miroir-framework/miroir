@@ -17,7 +17,7 @@ import {
   remapLibraryAppModelForRunTarget,
   remapSelfApplicationUuidModel,
 } from "../../src/1_core/remapApplicationModelAtPaths";
-import type { RunnerTestRunTarget } from "../../src/5_tests/RunnerTestRunTarget";
+import type { TestbedUuids } from "../../src/5_tests/TestbedUuids";
 
 const LIBRARY_APP_UUID = selfApplicationLibrary.uuid as string;
 const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
@@ -322,14 +322,14 @@ describe("remapApplicationModelAtPaths (T2)", () => {
   });
 
   describe("remapLibraryAppModelForRunTarget (B6-d2 wire-up helper)", () => {
-    const ephemeralTarget: RunnerTestRunTarget = {
+    const ephemeralTarget: TestbedUuids = {
       applicationUuid: NEW_APP_UUID,
       applicationName: "Library",
       deploymentUuid: NEW_DEPLOYMENT_UUID,
     };
 
     it("no-ops when runTarget uses the canonical Library application uuid", () => {
-      const canonicalTarget: RunnerTestRunTarget = {
+      const canonicalTarget: TestbedUuids = {
         applicationUuid: LIBRARY_APP_UUID,
         applicationName: "Library",
         deploymentUuid: LIBRARY_DEPLOYMENT_UUID,

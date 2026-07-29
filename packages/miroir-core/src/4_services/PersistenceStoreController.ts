@@ -2,10 +2,8 @@ import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import {
   ApplicationSection,
   Entity,
-  EntityVersion,
   EntityInstance,
   EntityInstanceCollection,
-  MetaModel,
   ModelActionAlterEntityAttribute,
   ModelActionInitModel,
   ModelActionInitModelParams,
@@ -26,17 +24,19 @@ import {
   StoreSectionFactoryRegister,
 } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 // import { applyModelEntityUpdate } from "../3_controllers/ActionRunner";
-import { modelInitialize } from "../3_controllers/ModelInitializer";
-import { packageName } from "../constants";
 import {
   projectEntityInstance,
-  projectEntityInstances,
+  projectEntityInstancesOnAttributes,
   resolveProjectionIdentityFields,
 } from "../1_core/instanceProjection.js";
-import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
+import { modelInitialize } from "../3_controllers/ModelInitializer";
+import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 
+import { entityEntity } from "miroir-test-app_deployment-miroir";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
   Action2EntityInstanceCollectionOrFailure,
   Action2EntityInstanceReturnType,
@@ -46,10 +46,8 @@ import {
   Domain2ElementFailed
 } from "../0_interfaces/2_domain/DomainElement";
 import { ACTION_OK } from "../1_core/constants";
-import { resolveInstanceParentUuid } from "../1_core/EntityPrimaryKey";
-import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { resolveInstanceParentUuid } from "../1_core/EntityPrimaryKey";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -733,7 +731,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         ...instances,
         returnedDomainElement: {
           ...collection,
-          instances: projectEntityInstances(
+          instances: projectEntityInstancesOnAttributes(
             (collection.instances ?? []) as Record<string, unknown>[],
             attributes,
             identityFields

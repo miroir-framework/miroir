@@ -8,8 +8,8 @@
  * joker segment `"*"` for compact, remap-friendly patterns.
  */
 
-import type { MetaModel } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import type { Uuid } from "../0_interfaces/1_core/EntityVersion.js";
+import type { MetaModel } from "../../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { Uuid } from "../../../0_interfaces/1_core/EntityVersion.js";
 
 /** Joker segment — matches any array index at that position (for T2 remap). */
 export const RELATIVE_PATH_JOKER = "*" as const;

@@ -11,7 +11,7 @@ import {
   getEntityInstancesIndexNonHook,
   metaMetaModelEntityUuids,
   noValue,
-  resolvePresentEntityFromModel,
+  findEntityFromUuid,
   type ApplicationDeploymentMap,
   type ApplicationSection,
   type Entity,
@@ -223,7 +223,7 @@ export function EntityInstanceSelectorPanel(props:{
     setCurrentInstanceIndex(0);
   }, [selectedEntityUuid, applicationSection]);
 
-  const currentReportTargetEntity: Entity | undefined = resolvePresentEntityFromModel(
+  const currentReportTargetEntity: Entity | undefined = findEntityFromUuid(
     schemaModel,
     selectedEntityUuid,
   );

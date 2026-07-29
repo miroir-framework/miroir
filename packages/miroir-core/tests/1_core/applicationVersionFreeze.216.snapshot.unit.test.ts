@@ -53,18 +53,6 @@ describe("216 Phase 1 — snapshotEntitiesAsHistoricalEntityVersions", () => {
     expect(ev.parentName).toBe("EntityVersion");
   });
 
-  it("§11.3: projectEntityPresentModelDefinition(ev) == projectEntityPresentModelDefinition(entity)", () => {
-    const entity = makeEntity("dddddddd-dddd-4ddd-8ddd-dddddddddddd", "Publisher", {
-      viewAttributes: ["title", "author"],
-      cache: { cacheAllInstancesOnRefresh: true },
-      idAttribute: "code",
-    });
-    const [ev] = snapshotEntitiesAsHistoricalEntityVersions([entity], { newUuid: deterministic });
-    expect(projectEntityPresentModelDefinition(ev)).toEqual(
-      projectEntityPresentModelDefinition(entity),
-    );
-  });
-
   it("copies name from Entity", () => {
     const entity = makeEntity("eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee", "LendingItem");
     const [ev] = snapshotEntitiesAsHistoricalEntityVersions([entity], { newUuid: deterministic });

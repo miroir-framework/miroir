@@ -1,7 +1,7 @@
 import {
   defaultMetaModelEnvironment,
   inferIntegrationSessionKind,
-  resolveRunnerTestRunTarget,
+  getTestbedUuidsForTestSuite,
   runMiroirTests,
   runMiroirTestSuiteInProcess,
   type InProcessExpectFn,
@@ -10,7 +10,7 @@ import {
   type MiroirConfigClient,
   type MiroirTestIntegrationOrchestrator,
   type MiroirTestSuite,
-  type RunnerTestRunTarget,
+  type TestbedUuids,
   type TestSuiteResult,
 } from "miroir-core";
 
@@ -76,14 +76,14 @@ export function resolveUiIntegrationTestRunTarget(
   runTargetMode: UiIntegrationTestRunTargetMode,
   suite: MiroirTestSuite,
   defaultApplicationName?: string,
-): RunnerTestRunTarget {
+): TestbedUuids {
   if (runTargetMode === "ephemeral") {
-    return resolveRunnerTestRunTarget({
+    return getTestbedUuidsForTestSuite({
       suite: { miroirTestLabel: suite.miroirTestLabel },
       ...(defaultApplicationName ? { defaultApplicationName } : {}),
     });
   }
-  return resolveRunnerTestRunTarget({
+  return getTestbedUuidsForTestSuite({
     suite,
     ...(defaultApplicationName ? { defaultApplicationName } : {}),
   });
@@ -139,7 +139,7 @@ export function isUiIntegrationSuiteRunSuccessful(
 function buildInspectorSnapshot(
   request: UiIntegrationTestRunRequest,
   sessionKind: IntegrationTestSessionKind,
-  runTarget: RunnerTestRunTarget,
+  runTarget: TestbedUuids,
 ): UiIntegrationTestRunInspectorSnapshot {
   const hostMode = request.hostMode ?? "isolated";
   return {
@@ -179,7 +179,7 @@ async function runRunnerIntegrationSuite(
   request: UiIntegrationTestRunRequest,
   environment: UiIntegrationTestLauncherEnvironment,
   runnerEntry: UiIntegrationRunnerSuiteEntry,
-  runTarget: RunnerTestRunTarget,
+  runTarget: TestbedUuids,
   hostMode: NonNullable<UiIntegrationTestRunRequest["hostMode"]>,
 ): Promise<UiIntegrationTestRunResult> {
   const { miroirConfig, logConfig } = await environment.loadConfigForProfile(request.profileName);

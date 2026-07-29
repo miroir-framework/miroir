@@ -38,14 +38,26 @@ export function resolveProjectionIdentityFields(
   return [...new Set<string>([...pkAttributes, ...INSTANCE_PROJECTION_STRUCTURAL_FIELDS])];
 }
 
-function buildKeepSet(
+/**
+ * Builds a set of attributes to keep.
+ * @param attributes - The attributes to project.
+ * @param identityFields - The identity fields to project.
+ * @returns The set of attributes to project.
+ */
+function buildProjectedSet(
   attributes: InstanceProjectionAttributes,
   identityFields: readonly string[]
 ): Set<string> {
   return new Set<string>([...identityFields, ...attributes]);
 }
 
-/** Returns a shallow copy with only allow-listed + identity keys. */
+/** 
+ * "projects" a single entity instance by selecting a subset of attributes.
+ * @param instance - The entity instance to project.
+ * @param attributes - The attributes to project.
+ * @param identityFields - The identity fields to project.
+ * @returns The projected entity instance.
+ */
 export function projectEntityInstance<T extends Record<string, unknown>>(
   instance: T,
   attributes: InstanceProjectionAttributes | undefined | null,
@@ -55,7 +67,7 @@ export function projectEntityInstance<T extends Record<string, unknown>>(
     return instance;
   }
   const identity = identityFields ?? resolveProjectionIdentityFields(null);
-  const keep = buildKeepSet(attributes, identity);
+  const keep = buildProjectedSet(attributes, identity);
   const projected: Record<string, unknown> = {};
   for (const key of Object.keys(instance)) {
     if (keep.has(key)) {
@@ -65,7 +77,15 @@ export function projectEntityInstance<T extends Record<string, unknown>>(
   return projected as T;
 }
 
-export function projectEntityInstances<T extends Record<string, unknown>>(
+/**
+ * "projects" a collection of entity instances by applying the same "projection" to each.
+ * "projection" is the process of selecting a subset of attributes from an entity instance.
+ * @param instances - The collection of entity instances to project.
+ * @param attributes - The attributes to project.
+ * @param identityFields - The identity fields to project.
+ * @returns The projected collection of entity instances.
+ */
+export function projectEntityInstancesOnAttributes<T extends Record<string, unknown>>(
   instances: T[],
   attributes: InstanceProjectionAttributes | undefined | null,
   identityFields?: readonly string[] | null
@@ -79,9 +99,14 @@ export function projectEntityInstances<T extends Record<string, unknown>>(
   );
 }
 
-/** Normalize query/body attributes param into a string array. */
+/** 
+ * Parses a comma-separated string or array of attributes into an array of attributes.
+ * The input comes from the `attributes` query parameter of the REST API.
+ * @param raw - The comma-separated string or array of attributes to parse.
+ * @returns The array of attributes, or undefined if the input is undefined or null.
+ */
 export function parseAttributesProjectionParam(
-  raw: unknown
+  raw: any // eslint-disable-line @typescript-eslint/no-explicit-any
 ): string[] | undefined {
   if (raw === undefined || raw === null) {
     return undefined;

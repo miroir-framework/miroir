@@ -9,7 +9,7 @@ import {
   MiroirLoggerFactory,
   miroirCoreStartup,
   runMiroirTests,
-  resolveRunnerTestRunTarget,
+  getTestbedUuidsForTestSuite,
   type LoggerInterface,
   type LoggerOptions,
   type MiroirTestSuite,
@@ -84,7 +84,7 @@ if (config.filter?.testList) {
 }
 
 function sessionOptionsForSuite(suiteKey: string, suite: MiroirTestSuite) {
-  const runTarget = resolveRunnerTestRunTarget({
+  const runTarget = getTestbedUuidsForTestSuite({
     suite,
     defaultApplicationName: isMiroirEntityRunnerSuite(suiteKey)
       ? "testApplication_CreateEntity"

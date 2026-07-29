@@ -20,7 +20,7 @@ import {
   mergeRunnerTestParamBank,
   resolveRunnerTestLeaf,
 } from "../../src/5_tests/RunnerTestTools";
-import { resolveRunnerTestRunTarget } from "../../src/5_tests/RunnerTestRunTarget";
+import { getTestbedUuidsForTestSuite } from "../../src/5_tests/TestbedUuids";
 import { remapLibraryAppModelForRunTarget } from "../../src/1_core/remapApplicationModelAtPaths";
 import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment";
 
@@ -40,7 +40,7 @@ function runnerLibraryLeaf(index: number): MiroirTestForRunner {
 
 function runnerLibrarySessionContext() {
   const suite = runnerLibrarySuite();
-  const runTarget = resolveRunnerTestRunTarget({ suite });
+  const runTarget = getTestbedUuidsForTestSuite({ suite });
   const sessionTestParams = buildRunnerTestSessionParamBank(suite.testParams, runTarget, {
     defaultLibraryAppModel,
   });
@@ -134,7 +134,7 @@ describe("runnerTest tools", () => {
     const suite = runnerLibrarySuite();
     const ephemeralApplicationUuid = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
     const ephemeralDeploymentUuid = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
-    const runTarget = resolveRunnerTestRunTarget({
+    const runTarget = getTestbedUuidsForTestSuite({
       suite: { miroirTestLabel: suite.miroirTestLabel },
       generateUuid: (() => {
         let index = 0;
@@ -255,7 +255,7 @@ describe("runnerTest tools", () => {
     const suite = (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     const leaf = suite.miroirTests[0] as MiroirTestForRunner;
-    const runTarget = resolveRunnerTestRunTarget({
+    const runTarget = getTestbedUuidsForTestSuite({
       suite,
       defaultApplicationName: "testApplication_CreateEntity",
     });
@@ -308,7 +308,7 @@ describe("runnerTest tools", () => {
     const suite = (miroirTest_runner_drop_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
     const leaf = suite.miroirTests[0] as MiroirTestForRunner;
-    const runTarget = resolveRunnerTestRunTarget({
+    const runTarget = getTestbedUuidsForTestSuite({
       suite,
       defaultApplicationName: "testApplication_CreateEntity",
     });

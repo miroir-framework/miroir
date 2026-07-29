@@ -19,7 +19,7 @@ import {
   type Entity,
   type InstanceAction,
   type ReportQueryLoadRequest,
-  resolvePresentEntityFromModel,
+  findEntityFromUuid,
 } from "miroir-core";
 import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
@@ -181,7 +181,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   const reportPresentEntity: Entity | undefined = useMemo(() => {
     const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[deployment_Miroir.uuid];
     if (!miroirMapping) return undefined;
-    const result = resolvePresentEntityFromModel(
+    const result = findEntityFromUuid(
       {
         entities: miroirMapping["model"]?.entities,
         entityVersions: miroirMapping["model"]?.entityVersions,

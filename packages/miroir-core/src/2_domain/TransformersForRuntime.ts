@@ -82,14 +82,14 @@ import {
   resolveConditionalSchemaTransformer,
 } from "../1_core/jzod/resolveConditionalSchema";
 import { handleTransformer_menu_AddItem } from "../1_core/Menu";
-import { ansiColumnsToJzodSchema } from "../1_core/ansiColumnsToJzodSchema";
+import { ansiColumnsToJzodSchema } from "../1_core/postgres/ansiColumnsToJzodSchema";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { resolvePathOnObject, safeResolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { getEntityInstancesIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
 import { getInstancePrimaryKeyValue } from "../1_core/EntityPrimaryKey";
-import { resolvePresentEntityFromModel } from "../1_core/entityPresentModel.js";
+import { findEntityFromUuid } from "../1_core/versioning/applicationVersioning.js";
 // import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,
@@ -453,7 +453,7 @@ export function getDefaultValueForJzodSchemaWithResolution(
         );
 
         const firstInstance = Object.values(foreignKeyObjects)[0];
-        const targetPresentEntity = resolvePresentEntityFromModel(
+        const targetPresentEntity = findEntityFromUuid(
           miroirEnvironment.currentModel,
           effectiveSchema.tag.value.foreignKeyParams.targetEntity,
         );

@@ -14,7 +14,7 @@ import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
 import { RelativePath, resolveRelativePath } from '../../tools';
 import { cleanLevel } from "../constants";
-import { resolvePresentEntityFromModel } from "../entityPresentModel.js";
+import { findEntityFromUuid } from "../versioning/applicationVersioning.js";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =
@@ -181,7 +181,7 @@ export function resolveConditionalSchema(
       }
 
       // log.info("resolveConditionalSchema found parentUuid", parentUuid, "parentUuidStr", parentUuidStr);
-      const parentPresentEntity = resolvePresentEntityFromModel(
+      const parentPresentEntity = findEntityFromUuid(
         modelEnvironment.currentModel,
         parentUuidStr,
       );

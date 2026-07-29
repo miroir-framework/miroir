@@ -26,7 +26,7 @@ import {
   defaultViewParamsFromAdminStorageFetchQueryParams,
   getEntityPrimaryKeyAttributes,
   getInstancePrimaryKeyValue,
-  resolvePresentEntityFromModel,
+  findEntityFromUuid,
   type Entity,
 } from "miroir-core";
 
@@ -693,7 +693,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             const columnDef = props.columnDefs.columnDefs.find((cd: any) => cd.field === fieldName);
             const targetEntityUuid = columnDef?.cellRenderer?.entityUuid;
             
-            const targetPresentEntity = resolvePresentEntityFromModel(
+            const targetPresentEntity = findEntityFromUuid(
               currentModel,
               targetEntityUuid,
             );
@@ -794,7 +794,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             (columnDefinitionAttribute as any).type === "uuid" &&
             (columnDefinitionAttribute as any).tag?.value?.foreignKeyParams?.targetEntity
           ) {
-            const targetPresentEntity = resolvePresentEntityFromModel(
+            const targetPresentEntity = findEntityFromUuid(
               currentModel,
               event.colDef.cellRendererParams.entityUuid,
             );

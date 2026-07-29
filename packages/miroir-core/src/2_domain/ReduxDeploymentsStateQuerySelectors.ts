@@ -30,7 +30,7 @@ import {
 import {
   isLazyCacheOnRefreshEntity,
   type CachePolicyCarrier,
-} from "../1_core/cacheRefreshPolicy.js";
+} from "../1_core/localCache/cacheRefreshPolicy.js";
 import type { Entity, EntityVersion } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   applyExtractorTransformerInMemory,

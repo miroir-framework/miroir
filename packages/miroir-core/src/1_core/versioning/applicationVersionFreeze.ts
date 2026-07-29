@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import type {
   Entity,
   EntityVersion,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 // ---------------------------------------------------------------------------
 // Phase 0: Action type constant

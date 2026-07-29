@@ -766,25 +766,20 @@ export {
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
   assertVersioningEnabledImmutable,
-  resolvePresentEntityFromModel,
-  projectEntityPresentModelDefinition,
-} from "./1_core/entityPresentModel.js";
+  findEntityFromUuid,
+} from "./1_core/versioning/applicationVersioning.js";
 export type {
-  EntityEntityDefinitionJoinInventory,
-  EntityEntityDefinitionJoinMatch,
-  EntityPresentModelDefinitionComparison,
   EntityPresentModelDefinitionField,
-  EntityPresentModelDefinitionProjection,
-} from "./1_core/entityPresentModel.js";
+} from "./1_core/versioning/applicationVersioning.js";
 export {
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
   assertApplicationVersioningEnabled,
   snapshotEntitiesAsHistoricalEntityVersions,
-} from "./1_core/applicationVersionFreeze.js";
+} from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
   FreezeApplicationVersionActionType,
   SnapshotOptions,
-} from "./1_core/applicationVersionFreeze.js";
+} from "./1_core/versioning/applicationVersionFreeze.js";
 export {
   getMetaModelEntityVersions,
   withMetaModelEntityVersions,
@@ -867,13 +862,13 @@ export {
   isLazyCacheOnRefreshEntity,
   type CachePolicyCarrier,
   type EntityFetchOnRefresh,
-} from "./1_core/cacheRefreshPolicy.js";
+} from "./1_core/localCache/cacheRefreshPolicy.js";
 export {
   INSTANCE_PROJECTION_IDENTITY_FIELDS,
   INSTANCE_PROJECTION_STRUCTURAL_FIELDS,
   parseAttributesProjectionParam,
   projectEntityInstance,
-  projectEntityInstances,
+  projectEntityInstancesOnAttributes,
   resolveProjectionIdentityFields,
 } from "./1_core/instanceProjection.js";
 export type { InstanceProjectionAttributes } from "./1_core/instanceProjection.js";
@@ -900,7 +895,7 @@ export {
   isPartialMutationInstanceAction,
   markSiblingPartialSegmentStale,
   rejectPartialMutationInstanceAction,
-} from "./1_core/partialMutationGuard.js";
+} from "./1_core/localCache/partialMutationGuard.js";
 export {
   formatRelativePath,
   formatRelativePaths,
@@ -908,7 +903,7 @@ export {
   RELATIVE_PATH_JOKER,
   type ListSelfApplicationUuidPathsOptions,
   type RelativePath as SelfApplicationRelativePath,
-} from "./1_core/listSelfApplicationUuidPaths.js";
+} from "./1_core/model/cloneApplication/listSelfApplicationUuidPaths.js";
 export {
   remapApplicationModelAtPaths,
   RemapApplicationModelAtPathsError,
@@ -917,7 +912,7 @@ export {
   type RemapApplicationModelAtPathsOptions,
   type RemapApplicationModelParams,
   type RemapSelfApplicationUuidModelOptions,
-} from "./1_core/remapApplicationModelAtPaths.js";
+} from "./1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
 export { defaultReport } from "./1_core/Report.js";
 export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
 export {
@@ -1283,13 +1278,13 @@ export {
 } from "./5_tests/resolveRunnerFromRegistry.js";
 export {
   isRunnerTestRunTargetUuid,
-  resolveRunnerTestRunTarget,
+  getTestbedUuidsForTestSuite,
   buildRunnerTestSessionParamBank,
   mergeRunnerTestParamBank,
   type ResolveRunnerTestRunTargetParams,
-  type RunnerTestRunTarget,
+  type TestbedUuids,
   type RunnerTestRunTargetOverride,
-} from "./5_tests/RunnerTestRunTarget.js";
+} from "./5_tests/TestbedUuids.js";
 export {
   effectiveMiroirTransformerSkip,
   miroirTransformerAssertionName,

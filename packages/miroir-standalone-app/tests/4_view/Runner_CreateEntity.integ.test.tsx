@@ -18,7 +18,7 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  resolveRunnerTestRunTarget,
+  getTestbedUuidsForTestSuite,
   testBuildPlusRuntimeCompositeActionSuiteForRunner,
   type ApplicationDeploymentMap,
   type CompositeAction,
@@ -101,7 +101,7 @@ const globalTimeOut = 30000;
 // Fixed UUID for the test menu used in the withReports test
 const testMenuUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
 
-const runTarget = resolveRunnerTestRunTarget({
+const runTarget = getTestbedUuidsForTestSuite({
   suite: { miroirTestLabel: pageLabel },
   defaultApplicationName: "testApplication_CreateEntity",
 });

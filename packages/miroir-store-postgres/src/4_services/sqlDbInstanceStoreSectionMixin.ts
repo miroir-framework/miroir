@@ -14,7 +14,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
-  resolvePresentEntityFromModel,
+  findEntityFromUuid,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   type ApplicationDeploymentMap,
@@ -127,7 +127,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           switch (query.select.extractorOrCombinerType) {
             case "extractorInstancesByEntity": {
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
-                ? (resolvePresentEntityFromModel(
+                ? (findEntityFromUuid(
                     modelEnvironment.currentModel,
                     query.select.parentUuid,
                   )?.externalDataSource?.schema ?? this.schema)
@@ -170,7 +170,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             case "extractorByPrimaryKey": {
               const pkColumn = this.sqlSchemaTableAccess[query.select.parentUuid]?.idAttribute ?? "uuid";
               const entitySchema = this.sqlSchemaTableAccess?.[query.select.parentUuid]?.isExternal
-                ? (resolvePresentEntityFromModel(
+                ? (findEntityFromUuid(
                     modelEnvironment.currentModel,
                     query.select.parentUuid,
                   )?.externalDataSource?.schema ?? this.schema)

@@ -3,7 +3,7 @@ import type {
   IntegrationTestSessionKind,
   MiroirTestRunFilter,
   MiroirTestSuite,
-  RunnerTestRunTarget,
+  TestbedUuids,
   TestSuiteResult,
 } from "miroir-core";
 
@@ -23,7 +23,7 @@ export type UiIntegrationTestRunRequest = {
 export type UiIntegrationTestRunInspectorSnapshot = {
   profileName: string;
   sessionKind: IntegrationTestSessionKind;
-  runTarget: RunnerTestRunTarget;
+  runTarget: TestbedUuids;
   runTargetMode: UiIntegrationTestRunTargetMode;
   hostMode: IntegrationTestHostMode;
   paramBankKeys: string[];
@@ -33,7 +33,7 @@ export type UiIntegrationTestRunInspectorSnapshot = {
 export type UiIntegrationTestRunResult = {
   suiteKey: string;
   sessionKind: IntegrationTestSessionKind;
-  runTarget: RunnerTestRunTarget;
+  runTarget: TestbedUuids;
   runTargetMode: UiIntegrationTestRunTargetMode;
   profileName: string;
   hostMode: IntegrationTestHostMode;

@@ -30,42 +30,6 @@ function entityVersion(
   };
 }
 
-describe("projectEntityPresentModelDefinition / compareEntityPresentModelDefinitions", () => {
-  it("projects only the canonical definition-bearing fields", () => {
-    expect(ENTITY_PRESENT_MODEL_DEFINITION_FIELDS).toEqual([
-      "defaultInstanceDetailsReportUuid",
-      "viewAttributes",
-      "icon",
-      "display",
-      "cache",
-      "idAttribute",
-      "externalDataSource",
-      "mlSchema",
-    ]);
-
-    const definition = entityVersion({
-      uuid: "d1",
-      name: "Book",
-      entityUuid: "e1",
-      description: "ignored identity field",
-      viewAttributes: ["title", "author"],
-      idAttribute: "isbn",
-      cache: { cacheAllInstancesOnRefresh: false },
-      defaultInstanceDetailsReportUuid: "r1",
-      mlSchema: { type: "object", definition: { title: { type: "string" } } },
-    });
-
-    expect(projectEntityPresentModelDefinition(definition)).toEqual({
-      defaultInstanceDetailsReportUuid: "r1",
-      viewAttributes: ["title", "author"],
-      cache: { cacheAllInstancesOnRefresh: false },
-      idAttribute: "isbn",
-      mlSchema: { type: "object", definition: { title: { type: "string" } } },
-    });
-  });
-
-});
-
 describe("characterization — PK/cache still resolve from EntityVersion", () => {
   it("locks current PK authority on EntityVersion.idAttribute", () => {
     const withComposite = entityVersion({

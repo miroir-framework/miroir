@@ -15,7 +15,7 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { runCompositeActionTestParams } from "./CompositeActionTestTools.js";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
-import type { RunnerTestRunTarget } from "./RunnerTestRunTarget.js";
+import type { TestbedUuids } from "./TestbedUuids.js";
 
 export type ResolveActionTestLeafParams = {
   leaf: MiroirTestForAction;
@@ -46,7 +46,7 @@ function deepReplaceUuidStrings<T>(value: T, replacements: Record<string, string
  */
 export function remapActionTestLeafForRunTarget(
   leaf: MiroirTestForAction,
-  runTarget: RunnerTestRunTarget,
+  runTarget: TestbedUuids,
   canonicalApplicationUuid: Uuid = LIBRARY_TMP.selfApplicationLibraryUuid,
   canonicalDeploymentUuid: Uuid = LIBRARY_TMP.deployment_Library_DO_NO_USE.uuid,
 ): MiroirTestForAction {
@@ -145,7 +145,7 @@ export async function runMiroirActionTest(
     );
   }
 
-  const runTarget: RunnerTestRunTarget = compositeContext?.runTarget ?? {
+  const runTarget: TestbedUuids = compositeContext?.runTarget ?? {
     applicationUuid,
     applicationName: "Library",
     deploymentUuid:

@@ -7,7 +7,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   ResultAccessPath,
-  resolvePresentEntityFromModel,
+  findEntityFromUuid,
   transformer_extended_apply_wrapper,
   transformer_resolveReference,
   type CoreTransformerForBuildPlusRuntime,
@@ -86,12 +86,12 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 // ##############################################################################################
-/** #217 Phase 11 — present-model PK from Entity (ED only via resolvePresentEntityFromModel hub). */
+/** #217 Phase 11 — present-model PK from Entity (ED only via findEntityFromUuid hub). */
 function getIdAttributeForEntity(
   entityUuid: string,
   modelEnvironment?: MiroirModelEnvironment
 ): string | string[] {
-  const present = resolvePresentEntityFromModel(modelEnvironment?.currentModel, entityUuid);
+  const present = findEntityFromUuid(modelEnvironment?.currentModel, entityUuid);
   return present?.idAttribute ?? "uuid";
 }
 
@@ -170,7 +170,7 @@ function getSchemaForEntity(
   defaultSchema: string,
   modelEnvironment?: MiroirModelEnvironment
 ): string {
-  const present = resolvePresentEntityFromModel(modelEnvironment?.currentModel, entityUuid);
+  const present = findEntityFromUuid(modelEnvironment?.currentModel, entityUuid);
   return present?.externalDataSource?.schema ?? defaultSchema;
 }
 

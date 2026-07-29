@@ -35,7 +35,7 @@ import { localizeJzodSchemaReferenceContext } from "../1_core/jzod/JzodUnfoldSch
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { mergeIfUnique, pushIfUnique } from "../1_core/tools";
 import { getModelUpdate } from "../1_core/model/ModelUpdate";
-import { ansiColumnsToJzodSchema } from "../1_core/ansiColumnsToJzodSchema";
+import { ansiColumnsToJzodSchema } from "../1_core/postgres/ansiColumnsToJzodSchema";
 import {
   domainStateToReduxDeploymentsState,
   resolvePathOnObject,

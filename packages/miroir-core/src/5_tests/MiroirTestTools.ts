@@ -33,7 +33,7 @@ import { runMiroirTestSuiteWalk } from "./miroirTestSuiteWalk.js";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import type { RunnerTestRunTarget } from "./RunnerTestRunTarget.js";
+import type { TestbedUuids } from "./TestbedUuids.js";
 
 /** @deprecated Use MiroirTestLeaf — actionTest is now in the fundamental union. */
 export type MiroirTestLeafExecutable = MiroirTestLeaf;
@@ -46,7 +46,7 @@ export type CompositeActionTestContext = {
   pageLabel: string;
   adminDeployment: Deployment;
   testDeploymentStorageConfiguration: StoreUnitConfiguration;
-  runTarget: RunnerTestRunTarget;
+  runTarget: TestbedUuids;
   testParams: Record<string, unknown>;
   runtimeContext: Record<string, unknown>;
 };
