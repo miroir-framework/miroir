@@ -6,11 +6,16 @@ GitHub issue: https://github.com/miroir-framework/miroir/issues/216
 
 ## Status and sequencing
 
-**Prerequisite #217 is realized** (Entity = authoritative present model; `EntityDefinition` renamed `EntityVersion`; `versioningEnabled`; Cross renamed to `ApplicationVersionCrossEntityVersion`). Executable freeze was **never shipped** in #217 — Phase 10 only closed the *design* gate and deferred implementation here.
+**Prerequisites realized** (resume #216 on this stack):
+
+1. **#217** ✅ — Entity = authoritative present model; `EntityDefinition` → `EntityVersion` vocabulary; `versioningEnabled`; Cross renamed to `ApplicationVersionCrossEntityVersion`. Executable freeze was **never shipped** in #217 — Phase 10 only closed the *design* gate and deferred implementation here.
+2. **#220** ✅ — Freeze-path EntityDefinition tech debt reduced; dual-write / UUID-reuse helpers **removed**; `MetaModel.entityVersions` canonical.
+3. **#221** ✅ — Live ReportPage / editor tree resolves present-model fields from **Entity** (not EntityVersion). Historical EV reserved for freeze / history UI.
+4. **#222** ✅ — EntityVersion left Miroir MetaModel bootstrap; Miroir EV instances live under **data**; Library/Admin EV stay in **model**; section helpers for freeze persist exist.
 
 This issue sits between WP1 and WP2 of #9:
 
-1. **#217** ✅ — Entity authoritative present model; optional versioning capability; EntityVersion vocabulary
+1. **#217–#222** ✅ — present-model island + vocabulary + view decoupling + Miroir EV section placement
 2. **#216 (this issue)** — user-triggered freeze → immutable Application Version (Entities only) + linear inter-version **diff** edges
 3. **#9 WP2** — apply / replay migrations between frozen versions (consumes freeze + diff artefacts)
 4. **#215** — paired data migrations (later)
@@ -18,12 +23,15 @@ This issue sits between WP1 and WP2 of #9:
 Related:
 
 - Parent / motivation: https://github.com/miroir-framework/miroir/issues/9
-- #217 analysis: [`../217-/analysis.md`](../217-/analysis.md)
+- #217 analysis: [`../217-FEATURE- Make Entity the authoritative present-model definition/analysis.md`](../217-FEATURE-%20Make%20Entity%20the%20authoritative%20present-model%20definition/analysis.md)
+- #220: [`../220-REFACTOR-entitydefinition-tech-debt/`](../220-REFACTOR-entitydefinition-tech-debt/)
+- #221: [`../221-REFACTOR-view-decouple-entityversion-present-model/`](../221-REFACTOR-view-decouple-entityversion-present-model/)
+- #222: [`../222-REFACTOR-entityversion-to-miroir-data/`](../222-REFACTOR-entityversion-to-miroir-data/)
 - WP1 (evolution trace): [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp1-analysis-model-evolution-trace.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp1-analysis-model-evolution-trace.md)
 - WP2 (replayable migrations): [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md)
 - Stub at old path: [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp-intermediate-analysis-current-version-and-freeze.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp-intermediate-analysis-current-version-and-freeze.md)
 
-**Document history:** moved from the WP intermediate stub and revised after #217. Further revised after #217 realization (2026-07): Option A (diff) chosen as baseline; Entities-only freeze scope; linear history; Phase 10 vs “full #216” split dissolved — #216 owns all freeze work. ADR sections retained so rejected / deferred alternatives stay discoverable.
+**Document history:** moved from the WP intermediate stub and revised after #217. Further revised after #217 realization (2026-07): Option A (diff) chosen as baseline; Entities-only freeze scope; linear history; Phase 10 vs “full #216” split dissolved — #216 owns all freeze work. **Revised 2026-07-30** after #220 / #221 / #222 realization (section matrix, removed UUID-reuse helpers, `entityVersions` collection). ADR sections retained so rejected / deferred alternatives stay discoverable.
 
 ### Broader product frame: release management
 
@@ -289,51 +297,72 @@ Between create (`versioningEnabled: true`) and first successful freeze:
 
 ---
 
-## 2. What #217 already delivered (available now)
+## 2. What prerequisites already delivered (available now)
 
 Facts from the realized codebase — reuse these; do not re-implement.
 
 | Capability | Where / status |
 |---|---|
-| Entity carries full present-model definition (`mlSchema`, `viewAttributes`, `cache`, `idAttribute`, `display`, `icon`, `externalDataSource`, …) | Assets + generated types; Phases 1–11 |
-| Live model assembly / Actions / stores / UI use Entity, not historical copies | Phase 11 (+ Phase 12 UI off ED hub) |
-| `EntityDefinition` → `EntityVersion` vocabulary (Entity `54b9c72f-…`, exports, Cross rename) | Phase 12 vocab-first (compat aliases retained) |
-| `ApplicationVersionCrossEntityVersion` with FK field **`entityVersion`** (schema + Zod + assets) | Phase 12; Zod: `ApplicationVersionCrossEntityVersionSchema` |
-| `SelfApplication.versioningEnabled` on canonical apps (`true`) | Phase 1/3 |
-| `assertVersioningEnabledImmutable` on LocalCache `updateInstance` (Redux + Zustand) | Phase 5 |
-| Projection / compare helpers: `projectEntityPresentModelDefinition`, `compareEntityPresentModelDefinitions`, `entityHasCompletePresentModel` | `entityPresentModel.ts` |
-| ED-/EntityVersion-shaped projection from Entity (compat): `presentEntityAsRedundantEntityDefinition` | **Reuse pattern for field copy only** — must **not** reuse live Entity UUID as historical UUID |
+| Entity carries full present-model definition (`mlSchema`, `viewAttributes`, `cache`, `idAttribute`, `display`, `icon`, `externalDataSource`, …) | #217 assets + generated types |
+| Live model assembly / Actions / stores / UI use Entity, not historical copies | #217 Phase 11–12; #221 live Report/editor tree |
+| `EntityDefinition` → `EntityVersion` vocabulary (Entity `54b9c72f-…`, exports, Cross rename) | #217 Phase 12 (deprecated TS aliases may remain) |
+| `MetaModel.entityVersions` (not `entityDefinitions`) | #220 Phase 6 |
+| Dual-write / UUID-reuse helpers (`presentEntityAsRedundantEntityDefinition`, compat module) | **Removed** in #220 — do **not** reintroduce |
+| `ApplicationVersionCrossEntityVersion` with FK field **`entityVersion`** | #217 Phase 12; Zod: `ApplicationVersionCrossEntityVersionSchema` |
+| `SelfApplication.versioningEnabled` on canonical apps (`true`) | #217 |
+| `assertVersioningEnabledImmutable` on LocalCache `updateInstance` | #217 / `versioning/applicationVersioning.ts` |
+| Projection field list + versioning fixtures | `versioning/applicationVersioning.ts` (`ENTITY_PRESENT_MODEL_DEFINITION_FIELDS`, fixtures) |
+| Freeze scaffolding (Phases 0–1): Action type constant, `assertApplicationVersioningEnabled`, `snapshotEntitiesAsHistoricalEntityVersions` (new UUIDs + deep copy) | `versioning/applicationVersionFreeze.ts` |
+| Section-aware EV write helper | `resolveFreezeEntityVersionApplicationSection` / `getEntityVersionWriteSection` (#222) — **Miroir → `data`**, **Library → `model`** |
+| Miroir EV instances under `miroir_data/54b9c72f-…`; MetaModel bootstrap Entity-only | #222 |
 | WP1 evolution trace (observational; **no** resolved Action payloads) | Done; useful for audit, not for #216 Option A edges |
 | `SelfApplicationVersion` type fields `previousVersion`, `modelStructureMigration`, `modelCUDMigration` | Schema exists; **unused / empty** in freeze path today |
-| §11.3 equality contract documented | `EntityVersion at freeze == project(Entity at freeze)` — **tests not implemented** |
+| §11.3 equality contract documented | Snapshot helpers exist; full freeze Action integ equality still #216 Phases 2–6 |
+
+### 2.1 Persist section matrix (required for freeze writes)
+
+| Application | Entity (live) | EntityVersion (incl. freeze snapshots) | Cross / SAV (typical) |
+|---|---|---|---|
+| **Miroir** | **model** | **data** | **data** |
+| **Library / Admin** | **model** | **model** | Cross often **data**; SAV **model** |
+
+Freeze persist **must** use `resolveFreezeEntityVersionApplicationSection(applicationUuid)` — never hard-code `"model"` for Miroir EV. Pre-existing Miroir data EV rows (#222 relocate ≠ purge) are documentation-class; freeze snapshots get **new** UUIDs and are linked only via Cross.
 
 ---
 
-## 3. Gap analysis: available (#217) vs needed (#216)
+## 3. Gap analysis: available (prerequisites + Phases 0–1) vs needed (#216)
 
-### 3.1 Must build in #216
+### 3.1 Must build in #216 (remaining)
 
 | Gap | Why it matters |
 |---|---|
-| **Freeze Action / Endpoint** | No `freezeApplicationVersion` (or equivalent) exists. User cannot publish a version. |
-| **`assertApplicationVersioningEnabled` gate** | Freeze must reject unversioned apps; LocalCache only locks flag flips, not freeze entry. |
-| **Snapshot planner (Entities only)** | Allocate new EntityVersion UUIDs; deep-copy definition-bearing + identity fields from each live Entity; create Cross rows `applicationVersion → entityVersion`. |
-| **§11.3 equality + live isolation tests** | Prove snapshot == Entity projection at freeze; mutating live Entity afterward must not mutate historical copies. |
+| **Freeze Action / Endpoint** | No wired `freezeApplicationVersion` Action yet. User cannot publish a version. |
+| **Freeze plan builder** | Assemble SAV + EntityVersions + Cross (+ first-freeze empty diff) without persistence; duplicate-label detection. |
+| **§11.3 equality + live isolation tests on full freeze path** | Prove snapshot == Entity projection at freeze; mutating live Entity afterward must not mutate historical copies (integ). |
 | **Linear `previousVersion` linking** | Resolve tip of chain (last freeze for app+branch); set `previousVersion` on new SAV; first freeze has none / null. |
-| **Persist Application Version + EntityVersions + Cross in one freeze transaction** | Today commit builds a placeholder SAV and **does not reliably persist** it; Cross sets are incomplete fixture `"Initial"` rows only. |
-| **Entity-only structural / semantic diff** (*Vn−1* ↔ *Vn*) | Produce rough migration evaluation from consecutive EntityVersion sets (create/drop/rename Entity; attribute add/remove/update; mlSchema delta). Store on SAV (`modelStructureMigration` / `modelCUDMigration` or successor artefact). |
+| **Persist Application Version + EntityVersions + Cross in one freeze transaction** | Section-aware: Miroir EV → **data**, Library EV → **model** via `resolveFreezeEntityVersionApplicationSection`. Commit’s placeholder SAV is not freeze. |
+| **Entity-only structural / semantic diff** (*Vn−1* ↔ *Vn*) | Produce rough migration evaluation from consecutive EntityVersion sets. Store on SAV (`modelCUDMigration` or successor). |
 | **Decouple / stop treating `commit` as freeze** | Commit’s placeholder SAV + TODO UUIDs must not remain the versioning mechanism; freeze is explicit. |
 | **Fixture policy for `"Initial"` / placeholder SAV rows** | Document migrate-or-ignore; first real freeze may treat them as *V0* predecessor or skip and start *V1* fresh (decide in implementation slice). |
+
+### 3.1b Already built (do not re-implement)
+
+| Item | Status |
+|---|---|
+| `assertApplicationVersioningEnabled` | ✅ `versioning/applicationVersionFreeze.ts` |
+| `snapshotEntitiesAsHistoricalEntityVersions` (new UUIDs + deep copy) | ✅ same module |
+| `resolveFreezeEntityVersionApplicationSection` | ✅ #222 / same module |
+| `FREEZE_APPLICATION_VERSION_ACTION_TYPE` constant | ✅ Phase 0 |
 
 ### 3.2 Available but insufficient / easy to misuse
 
 | Item | Caveat |
 |---|---|
-| `presentEntityAsRedundantEntityDefinition` | When no legacy ED exists, synthesizes with **`uuid: entity.uuid`** — wrong for freeze. Freeze must mint **new** EntityVersion UUIDs and deep-copy. |
+| ~~`presentEntityAsRedundantEntityDefinition`~~ | **Removed in #220.** Do not reintroduce UUID-reuse projections for freeze. Use `snapshotEntitiesAsHistoricalEntityVersions` only. |
 | `schemaChangeKind` / `computeSchemaRevision` | Fingerprints whole MetaModel revisions for reload policy — **not** an Entity-pair migration diff. Do not pretend it is Option A. |
 | WP1 `ApplicationEvolutionTraceEvent` | No resolved Action payloads → cannot drive Option B; optional audit side-channel only for #216. |
 | Existing Cross / `"Initial"` SAV rows | Partial; not produced by freeze; must not be treated as complete Entity-island snapshots. |
-| Dual-write-era live EntityVersion rows (if any remain for compat) | Freeze snapshots **must not** reuse those UUIDs as “history”. |
+| Leftover Miroir **data** EntityVersion rows (#222 relocate ≠ purge) | Documentation-class / redundant live copies — freeze snapshots **must not** reuse those UUIDs; link history only via new UUIDs + Cross. |
 
 ### 3.3 Explicitly out of #216 (gaps deferred)
 
@@ -422,7 +451,7 @@ Store the ordered candidate list on the new Application Version (reuse `modelStr
 2. `ApplicationVersionCrossEntityVersion` maps Application Versions → **historical** EntityVersions only; never used to assemble live present model.
 3. Live mutation after freeze must not mutate historical copies.
 4. `versioningEnabled` is immutable; freeze/version Actions reject unversioned applications.
-5. Any remaining dual-write / compat EntityVersion rows are **not** freeze snapshots.
+5. Leftover documentation-class EntityVersion rows (Miroir data after #222) are **not** freeze snapshots — freeze always mints **new** UUIDs.
 
 ### 5.1 `assertVersioningEnabledImmutable` ownership
 

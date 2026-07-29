@@ -1,15 +1,13 @@
 /**
  * #216 Phase 1.2 — snapshotEntitiesAsHistoricalEntityVersions.
  * #220 — results typed as EntityVersion (historical snapshots).
+ * #222 — module under versioning/; persist section is app-specific (tested in phase0).
  */
 import { describe, expect, it } from "vitest";
 
 import {
   snapshotEntitiesAsHistoricalEntityVersions,
-} from "../../src/1_core/applicationVersionFreeze.js";
-import {
-  projectEntityPresentModelDefinition,
-} from "../../src/1_core/entityPresentModel.js";
+} from "../../src/1_core/versioning/applicationVersionFreeze.js";
 import type {
   Entity,
   EntityVersion,

@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { assertApplicationVersioningEnabled } from "../../src/1_core/applicationVersionFreeze.js";
+import { assertApplicationVersioningEnabled } from "../../src/1_core/versioning/applicationVersionFreeze.js";
 
 describe("216 Phase 1 — assertApplicationVersioningEnabled", () => {
   it("does not throw for versioningEnabled: true", () => {

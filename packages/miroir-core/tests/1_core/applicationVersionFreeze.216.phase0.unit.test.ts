@@ -1,20 +1,30 @@
 /**
  * #216 Phase 0 — lock freeze contracts & fixtures (characterization).
- * #220 — UUID-reuse helper imported from entityDefinitionCompatibility (not freeze).
+ * #220 — UUID-reuse helper removed; freeze must mint new UUIDs only.
+ * #222 — freeze module lives under versioning/; Miroir EV section is data.
  *
  * Documents the Action type name, versioning fixtures, Cross schema shape,
- * and why freeze must not reuse presentEntityAsRedundantEntityDefinition UUIDs.
+ * and that freeze must not reintroduce UUID-reuse / dual-write helpers.
  */
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
-} from "../../src/1_core/entityPresentModel.js";
-import { presentEntityAsRedundantEntityDefinition } from "../../src/1_core/entityDefinitionCompatibility.js";
+} from "../../src/1_core/versioning/applicationVersioning.js";
 import { ApplicationVersionCrossEntityVersionSchema } from "../../src/0_interfaces/1_core/Model.js";
-import { FREEZE_APPLICATION_VERSION_ACTION_TYPE } from "../../src/1_core/applicationVersionFreeze.js";
-import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import {
+  FREEZE_APPLICATION_VERSION_ACTION_TYPE,
+  resolveFreezeEntityVersionApplicationSection,
+} from "../../src/1_core/versioning/applicationVersionFreeze.js";
+import {
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
+import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+
+const REPO_ROOT = join(import.meta.dirname, "../../../..");
 
 describe("216 Phase 0 — freeze contracts", () => {
   it("locks versioned / unversioned SelfApplication fixtures", () => {
@@ -55,5 +65,22 @@ describe("216 Phase 0 — freeze contracts", () => {
         // applicationVersion missing
       }),
     ).toThrow();
+  });
+
+  it("#220 UUID-reuse compat module is deleted (do not reintroduce for freeze)", () => {
+    expect(
+      existsSync(
+        join(REPO_ROOT, "packages/miroir-core/src/1_core/entityDefinitionCompatibility.ts"),
+      ),
+    ).toBe(false);
+  });
+
+  it("#222 freeze EV write section: Miroir data, Library model", () => {
+    expect(resolveFreezeEntityVersionApplicationSection(selfApplicationMiroir.uuid as string)).toBe(
+      "data",
+    );
+    expect(resolveFreezeEntityVersionApplicationSection(selfApplicationLibrary.uuid as string)).toBe(
+      "model",
+    );
   });
 });

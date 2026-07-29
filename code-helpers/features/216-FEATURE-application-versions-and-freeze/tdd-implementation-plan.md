@@ -14,8 +14,10 @@ Related:
 
 - Issue: https://github.com/miroir-framework/miroir/issues/216
 - Analysis / ADR: `./analysis.md`
-- Prerequisite #217: [`../217-/analysis.md`](../217-/analysis.md)
+- Prerequisites (realized): [#217](../217-FEATURE-%20Make%20Entity%20the%20authoritative%20present-model%20definition/analysis.md), [#220](../220-REFACTOR-entitydefinition-tech-debt/), [#221](../221-REFACTOR-view-decouple-entityversion-present-model/), [#222](../222-REFACTOR-entityversion-to-miroir-data/)
 - WP2 consumer: [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md)
+
+**Resume note (2026-07-30):** Phases 0–1 code + tests retargeted to `1_core/versioning/`; UUID-reuse characterization replaced by “compat module deleted” + #222 section matrix. Continue at **Phase 2**.
 
 ---
 
@@ -23,8 +25,8 @@ Related:
 
 | Phase | Title | Status | Tests |
 |---|---|---|---|
-| 0 | Lock freeze contracts & fixtures | ✅ DONE | 4/4 |
-| 1 | Versioning gate + Entity snapshot planner | ✅ DONE | 12/12 |
+| 0 | Lock freeze contracts & fixtures | ✅ DONE | 5/5 (retargeted post-#220/#222) |
+| 1 | Versioning gate + Entity snapshot planner | ✅ DONE | 11/11 (retargeted) |
 | 2 | Freeze plan builder (SAV + Cross + isolation) | ⬜ TODO | — |
 | 3 | Linear tip resolution (`previousVersion`) | ⬜ TODO | — |
 | 4 | Entity-set diff → rough migration evaluation | ⬜ TODO | — |
@@ -56,18 +58,23 @@ ADR revisit: if WP2 needs Action-tape fidelity, reopen **D2** (Option B) — do 
    - `assertApplicationVersioningEnabled(selfApplication): void` — throws when `versioningEnabled !== true`
 2. **Snapshot (Entities only)**
    - `snapshotEntitiesAsHistoricalEntityVersions(entities, { newUuid }): EntityVersion[]` — new UUIDs, deep-copied definition-bearing + identity fields; `entityUuid` → live Entity uuid
-   - Equality helper reused: `compareEntityPresentModelDefinitions` / `projectEntityPresentModelDefinition`
-3. **Freeze plan (pure)**
+   - Field list: `ENTITY_PRESENT_MODEL_DEFINITION_FIELDS` in `versioning/applicationVersioning.ts`
+3. **Section (persist)**
+   - `resolveFreezeEntityVersionApplicationSection(applicationUuid)` → Miroir `"data"`, Library `"model"` (#222)
+   - Prefer this / `getEntityVersionWriteSection` over hard-coded `"model"`
+4. **Freeze plan (pure)** — Phase 2+
    - `buildFreezeApplicationVersionPlan(input): FreezeApplicationVersionPlan`
    - Plan contains: new `SelfApplicationVersion`, `EntityVersion[]`, `ApplicationVersionCrossEntityVersion[]`, optional `modelCUDMigration` candidates, `previousVersion` link
-4. **Tip resolution**
+5. **Tip resolution** — Phase 3
    - `resolvePreviousApplicationVersion(versions, { selfApplication, branch }): ApplicationVersion | undefined`
-5. **Diff (Option A)**
+6. **Diff (Option A)** — Phase 4
    - `diffEntityVersionSnapshots(previous, next): ModelCudMigrationCandidate[]`
-6. **Action**
+7. **Action** — Phase 5
    - `freezeApplicationVersion` ModelAction payload: `{ application, versionName, description?, branch? }`
-7. **Handler**
-   - DomainController (or dedicated runner) materializes plan and persists instances; rejects unversioned / duplicate label
+8. **Handler** — Phases 5–6
+   - DomainController (or dedicated runner) materializes plan and persists instances **with section-aware EV writes**; rejects unversioned / duplicate label
+
+Impl home: `packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts` (+ `applicationVersioning.ts` for fixtures / immutability).
 
 ---
 
@@ -97,7 +104,7 @@ Prefer pure domain tests in `miroir-core` for Phases 0–4; add persistence / Ac
 
 Characterize current gaps so freeze work does not regress #217 invariants, and lock naming / payload shape for the Action.
 
-**Realization:** `FREEZE_APPLICATION_VERSION_ACTION_TYPE` in `applicationVersionFreeze.ts`; characterization suite `applicationVersionFreeze.216.phase0.unit.test.ts` (4/4). Non-reg: `entityPresentModel.217.phase1` / `phase12` green.
+**Realization:** `FREEZE_APPLICATION_VERSION_ACTION_TYPE` + section helper in `versioning/applicationVersionFreeze.ts`; suite `applicationVersionFreeze.216.phase0.unit.test.ts` (5/5 after #220/#222 retarget). Non-reg: `220.phase0` / `222.phase4` as needed.
 
 ### 0.1 RED → GREEN — Gate contract characterization
 
@@ -115,14 +122,19 @@ Behaviors:
 npm run testByFile -w miroir-core -- applicationVersionFreeze.216.phase0
 ```
 
-### 0.2 RED → GREEN — Snapshot UUID misuse guard (characterization)
+### 0.2 RED → GREEN — UUID-reuse anti-pattern (post-#220)
 
-Assert that `presentEntityAsRedundantEntityDefinition(entity)` uses `entity.uuid` as instance uuid (known anti-pattern for freeze) — documents why freeze must mint new UUIDs.
+Assert that `entityDefinitionCompatibility.ts` / `presentEntityAsRedundantEntityDefinition` are **absent** (do not reintroduce). Freeze must mint new UUIDs via `snapshotEntitiesAsHistoricalEntityVersions` only.
+
+### 0.3 RED → GREEN — #222 section matrix for freeze writes
+
+- `resolveFreezeEntityVersionApplicationSection(Miroir) === "data"`
+- `resolveFreezeEntityVersionApplicationSection(Library) === "model"`
 
 ### NON-REGRESSION
 ```
-npm run testByFile -w miroir-core -- entityPresentModel.217.phase1
-npm run testByFile -w miroir-core -- entityPresentModel.217.phase12
+npm run testByFile -w miroir-core -- applicationVersionFreeze.216
+npm run testByFile -w miroir-core -- 220.phase0
 ```
 
 ---
@@ -143,7 +155,7 @@ Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.216.gate.
 | `{ versioningEnabled: false }` | throw |
 | `{ }` / `undefined` flag | throw (treat as not enabled) |
 
-Impl: `packages/miroir-core/src/1_core/applicationVersionFreeze.ts` (or sibling under `1_core/`).
+Impl: `packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts`.
 
 ### 1.2 RED → GREEN — `snapshotEntitiesAsHistoricalEntityVersions`
 
@@ -325,9 +337,11 @@ Config: filesystem emulated server (same pattern as DomainController.integ).
 
 Behaviors:
 
-- After freeze: reload model/data → SAV present; Cross count = Entity count; each EntityVersion §11.3-equal to Entity at freeze
+- After freeze: reload → SAV present; Cross count = Entity count; each EntityVersion §11.3-equal to Entity at freeze
+- **Section matrix:** Miroir historical EV instances under **data**; Library under **model** (`resolveFreezeEntityVersionApplicationSection`)
 - Live `alterEntityAttribute` / Entity field update after freeze → historical EntityVersion unchanged
 - Unversioned deployment (fixture or toggled only if test can create unversioned app) rejects freeze
+- Pre-existing Miroir documentation-class EV rows (if present) are not mutated / not reused as freeze snapshot UUIDs
 
 ### 6.2 RED → GREEN — Second freeze
 
@@ -426,7 +440,8 @@ npx tsc --noEmit --skipLibCheck
 
 | Concern | Suggested path |
 |---|---|
-| Gate + snapshot + plan + tip + diff | `packages/miroir-core/src/1_core/applicationVersionFreeze.ts` (split if file grows) |
+| Gate + snapshot + plan + tip + diff + section helper | `packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts` (split if file grows) |
+| Fixtures / immutability | `packages/miroir-core/src/1_core/versioning/applicationVersioning.ts` |
 | Unit tests | `packages/miroir-core/tests/1_core/applicationVersionFreeze.*.unit.test.ts` |
 | Action schema | Model Endpoint assets + regenerated `miroirFundamentalType.ts` |
 | Handler | `DomainController` model Action switch (or extracted runner called from it) |
