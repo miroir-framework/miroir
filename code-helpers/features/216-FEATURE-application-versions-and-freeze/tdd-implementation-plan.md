@@ -17,7 +17,7 @@ Related:
 - Prerequisites (realized): [#217](../217-FEATURE-%20Make%20Entity%20the%20authoritative%20present-model%20definition/analysis.md), [#220](../220-REFACTOR-entitydefinition-tech-debt/), [#221](../221-REFACTOR-view-decouple-entityversion-present-model/), [#222](../222-REFACTOR-entityversion-to-miroir-data/)
 - WP2 consumer: [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md)
 
-**Resume note (2026-07-30):** Phases 0–2 DONE. **Phase 3 DONE** — `resolvePreviousApplicationVersion` + auto `previousVersion` on second freeze. Continue at **Phase 4** (Entity-set diff → `modelCUDMigration`).
+**Resume note (2026-07-30):** Phases 0–3 DONE. **Phase 4 DONE** — `diffEntityVersionSnapshots` + `modelCUDMigration` on second freeze. Continue at **Phase 5** (wire `freezeApplicationVersion` Action).
 
 ---
 
@@ -29,7 +29,7 @@ Related:
 | 1 | Versioning gate + Entity snapshot planner | ✅ DONE | 11/11 (retargeted) |
 | 2 | Freeze plan builder (SAV + Cross + isolation) | ✅ DONE | 5/5 |
 | 3 | Linear tip resolution (`previousVersion`) | ✅ DONE | 8/8 |
-| 4 | Entity-set diff → rough migration evaluation | ⬜ TODO | — |
+| 4 | Entity-set diff → rough migration evaluation | ✅ DONE | 11/11 |
 | 5 | Wire `freezeApplicationVersion` Action | ⬜ TODO | — |
 | 6 | Persist freeze (filesystem integ) | ⬜ TODO | — |
 | 7 | Commit / `"Initial"` hygiene | ⬜ TODO | — |
@@ -242,45 +242,25 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze.tip
 
 ---
 
-## Phase 4 — Entity-set diff → rough migration evaluation  ⬜ TODO
+## Phase 4 — Entity-set diff → rough migration evaluation  ✅ DONE
 
 ### Goal
 
 Option A: diff previous vs next EntityVersion sets → `modelCUDMigration` candidates.
 
-### 4.1 RED → GREEN — Diff delta classes
+### Delivered
 
-Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.diff.unit.test.ts`
-
-| Case | Expected candidates (rough) |
-|---|---|
-| Identical projections | `[]` |
-| New Entity in next only | `createEntity` (or equivalent tag) |
-| Entity only in previous | `dropEntity` |
-| Same `entityUuid`, name changed | `renameEntity` |
-| Same `entityUuid`, mlSchema / definition field changed | `alterEntityAttribute` (or `schemaUpdate`) with enough detail to see changed fields |
-
-Candidate shape (v1, stored as plain records in `modelCUDMigration`):
-
-```ts
-{
-  kind: "createEntity" | "dropEntity" | "renameEntity" | "alterEntityAttribute",
-  entityUuid: string,
-  // kind-specific: name, targetName, differingFields?, ...
-}
-```
-
-### 4.2 RED → GREEN — Plan attaches diff on second freeze
-
-`buildFreezeApplicationVersionPlan` with `previousSnapshot` fills `sav.modelCUDMigration` from diff; first freeze leaves `[]`.
+- `diffEntityVersionSnapshots(previous, next)` → `ModelCudMigrationCandidate[]`
+  - `createEntity` / `dropEntity` / `renameEntity` / `alterEntityAttribute` (definition fields via `ENTITY_PRESENT_MODEL_DEFINITION_FIELDS`)
+  - Stable order: creates → drops → shared (rename then alter), each group by `entityUuid`
+- `buildFreezeApplicationVersionPlan` with `previousEntityVersions` fills `sav.modelCUDMigration`; first freeze stays `[]`
+- Tests: `applicationVersionFreeze.diff.unit.test.ts` (11/11)
+- Does **not** touch `schemaChangeKind`
 
 #### Validation
 ```
 npm run testByFile -w miroir-core -- applicationVersionFreeze.diff
 ```
-
-### NON-REGRESSION
-Do **not** change `schemaChangeKind` behavior; freeze diff is a separate module.
 
 ---
 

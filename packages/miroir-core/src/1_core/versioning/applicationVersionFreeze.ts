@@ -12,6 +12,10 @@ import type {
   EntityVersion,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { getEntityVersionWriteSection } from "../Model.js";
+import {
+  ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+  type EntityPresentModelDefinitionField,
+} from "./applicationVersioning.js";
 
 // ---------------------------------------------------------------------------
 // Phase 0: Action type constant
@@ -157,9 +161,112 @@ export type BuildFreezeApplicationVersionPlanInput = {
    * Used when auto-resolving `previousVersion` (Phase 3).
    */
   freezeProducedVersionUuids?: ReadonlySet<string> | readonly string[];
+  /**
+   * Previous freeze EntityVersion snapshots (Option A diff → `modelCUDMigration`).
+   * Omit on first freeze.
+   */
+  previousEntityVersions?: EntityVersion[];
   description?: string;
   newUuid?: () => string;
 };
+
+// ---------------------------------------------------------------------------
+// Phase 4: Entity-set diff → rough migration evaluation (Option A)
+// ---------------------------------------------------------------------------
+
+export type ModelCudMigrationCandidate =
+  | { kind: "createEntity"; entityUuid: string; name: string }
+  | { kind: "dropEntity"; entityUuid: string; name: string }
+  | {
+      kind: "renameEntity";
+      entityUuid: string;
+      /** Name in previous snapshot. */
+      name: string;
+      /** Name in next snapshot. */
+      targetName: string;
+    }
+  | {
+      kind: "alterEntityAttribute";
+      entityUuid: string;
+      name: string;
+      differingFields: EntityPresentModelDefinitionField[];
+    };
+
+function stableJsonEqual(a: unknown, b: unknown): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+function indexEntityVersionsByLiveUuid(
+  versions: EntityVersion[],
+): Map<string, EntityVersion> {
+  const map = new Map<string, EntityVersion>();
+  for (const ev of versions) {
+    map.set(ev.entityUuid, ev);
+  }
+  return map;
+}
+
+/**
+ * Option A: rough migration candidates from consecutive EntityVersion snapshots,
+ * keyed by live `entityUuid`. Rename vs drop+create is uuid-based only (no fuzzy match).
+ *
+ * Order: creates → drops → per shared entity (rename then alter), each group sorted by entityUuid.
+ */
+export function diffEntityVersionSnapshots(
+  previous: EntityVersion[],
+  next: EntityVersion[],
+): ModelCudMigrationCandidate[] {
+  const prevByUuid = indexEntityVersionsByLiveUuid(previous);
+  const nextByUuid = indexEntityVersionsByLiveUuid(next);
+  const candidates: ModelCudMigrationCandidate[] = [];
+
+  const created = [...nextByUuid.keys()]
+    .filter((uuid) => !prevByUuid.has(uuid))
+    .sort();
+  for (const entityUuid of created) {
+    const ev = nextByUuid.get(entityUuid)!;
+    candidates.push({ kind: "createEntity", entityUuid, name: ev.name });
+  }
+
+  const dropped = [...prevByUuid.keys()]
+    .filter((uuid) => !nextByUuid.has(uuid))
+    .sort();
+  for (const entityUuid of dropped) {
+    const ev = prevByUuid.get(entityUuid)!;
+    candidates.push({ kind: "dropEntity", entityUuid, name: ev.name });
+  }
+
+  const shared = [...prevByUuid.keys()]
+    .filter((uuid) => nextByUuid.has(uuid))
+    .sort();
+  for (const entityUuid of shared) {
+    const prevEv = prevByUuid.get(entityUuid)!;
+    const nextEv = nextByUuid.get(entityUuid)!;
+
+    if (prevEv.name !== nextEv.name) {
+      candidates.push({
+        kind: "renameEntity",
+        entityUuid,
+        name: prevEv.name,
+        targetName: nextEv.name,
+      });
+    }
+
+    const differingFields = ENTITY_PRESENT_MODEL_DEFINITION_FIELDS.filter(
+      (field) => !stableJsonEqual(prevEv[field], nextEv[field]),
+    );
+    if (differingFields.length > 0) {
+      candidates.push({
+        kind: "alterEntityAttribute",
+        entityUuid,
+        name: nextEv.name,
+        differingFields: [...differingFields],
+      });
+    }
+  }
+
+  return candidates;
+}
 
 // ---------------------------------------------------------------------------
 // Phase 3: Linear tip resolution (`previousVersion`)
@@ -264,6 +371,11 @@ export function buildFreezeApplicationVersionPlan(
     newUuid: mintUuid,
   });
 
+  const modelCUDMigration =
+    input.previousEntityVersions !== undefined
+      ? diffEntityVersionSnapshots(input.previousEntityVersions, entityVersions)
+      : [];
+
   const selfApplicationVersion: ApplicationVersion = {
     uuid: selfApplicationVersionUuid,
     parentUuid: APPLICATION_VERSION_ENTITY_UUID,
@@ -272,7 +384,7 @@ export function buildFreezeApplicationVersionPlan(
     selfApplication: input.selfApplicationUuid,
     branch: input.branchUuid,
     modelStructureMigration: [],
-    modelCUDMigration: [],
+    modelCUDMigration,
     ...(input.description !== undefined ? { description: input.description } : {}),
     ...(previousVersionUuid !== undefined ? { previousVersion: previousVersionUuid } : {}),
   };
