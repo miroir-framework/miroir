@@ -29,7 +29,8 @@ export function buildMinimalLocalCacheStateForDeployment(
     [modelSection, entitySelfApplicationVersion.uuid],
     [modelSection, entityEndpointVersion.uuid],
     ["model", entityEntity.uuid],
-    ["model", entityEntityVersion.uuid],
+    // #222 — EV section matches deployment: Miroir data, Library model (same as modelSection here)
+    [modelSection, entityEntityVersion.uuid],
     [modelSection, entityJzodSchema.uuid],
     [modelSection, entityMenu.uuid],
     [modelSection, entityReport.uuid],

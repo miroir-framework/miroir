@@ -275,19 +275,22 @@ export async function extractApplicationModel(
     console.log("\n7. Reading model elements from filesystem store...");
 
     // Extract all entities
-    const entities = await extractEntityInstances(storeController, "model", entityEntity.uuid, "entities");
-    const entityDefinitions = await extractEntityInstances(storeController, "model", entityEntityVersion.uuid, "entity definitions");
-    const endpoints = await extractEntityInstances(storeController, "model", entityEndpointVersion.uuid, "endpoints");
-    const menus = await extractEntityInstances(storeController, "model", entityMenu.uuid, "menus");
-    const reports = await extractEntityInstances(storeController, "model", entityReport.uuid, "reports");
-    const jzodSchemas = await extractEntityInstances(storeController, "model", entityJzodSchema.uuid, "jzod schemas");
-    const queries = await extractEntityInstances(storeController, "model", entityQueryVersion.uuid, "queries");
-    const runners = await extractEntityInstances(storeController, "model", entityRunner.uuid, "runners");
-    const themes = await extractEntityInstances(storeController, "model", entityTheme.uuid, "themes");
-    const tests = await extractEntityInstances(storeController, "model", entityMiroirTest.uuid, "tests");
+    // #222 — section per concept (Miroir EntityVersion → data; Library MetaModel peers → model)
+    const sectionFor = (entityUuid: Uuid) => getApplicationSection(applicationUuid, entityUuid);
+
+    const entities = await extractEntityInstances(storeController, sectionFor(entityEntity.uuid), entityEntity.uuid, "entities");
+    const entityDefinitions = await extractEntityInstances(storeController, sectionFor(entityEntityVersion.uuid), entityEntityVersion.uuid, "entity definitions");
+    const endpoints = await extractEntityInstances(storeController, sectionFor(entityEndpointVersion.uuid), entityEndpointVersion.uuid, "endpoints");
+    const menus = await extractEntityInstances(storeController, sectionFor(entityMenu.uuid), entityMenu.uuid, "menus");
+    const reports = await extractEntityInstances(storeController, sectionFor(entityReport.uuid), entityReport.uuid, "reports");
+    const jzodSchemas = await extractEntityInstances(storeController, sectionFor(entityJzodSchema.uuid), entityJzodSchema.uuid, "jzod schemas");
+    const queries = await extractEntityInstances(storeController, sectionFor(entityQueryVersion.uuid), entityQueryVersion.uuid, "queries");
+    const runners = await extractEntityInstances(storeController, sectionFor(entityRunner.uuid), entityRunner.uuid, "runners");
+    const themes = await extractEntityInstances(storeController, sectionFor(entityTheme.uuid), entityTheme.uuid, "themes");
+    const tests = await extractEntityInstances(storeController, sectionFor(entityMiroirTest.uuid), entityMiroirTest.uuid, "tests");
     // 
-    const applications = await extractEntityInstances(storeController, "model", entitySelfApplication.uuid, "applications");
-    const applicationVersions = await extractEntityInstances(storeController, "model", entitySelfApplicationVersion.uuid, "application versions");
+    const applications = await extractEntityInstances(storeController, sectionFor(entitySelfApplication.uuid), entitySelfApplication.uuid, "applications");
+    const applicationVersions = await extractEntityInstances(storeController, sectionFor(entitySelfApplicationVersion.uuid), entitySelfApplicationVersion.uuid, "application versions");
 
     // Assemble the MetaModel
     console.log("\n8. Assembling MetaModel structure...");

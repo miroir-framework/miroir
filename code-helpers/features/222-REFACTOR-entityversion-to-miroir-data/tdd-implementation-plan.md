@@ -21,7 +21,7 @@ Related:
 |-------|-------|--------------|--------|
 | 0 | Characterization locks (today’s matrix) | P3, P10, P12, P16 baseline | ✅ DONE |
 | 1 | Atomic Miroir relocate (section API + assets + exports + docs + minimal load for EV list/CRUD) | P1, P3, P4, P5, P12, P13 + minimal P2/P6 | ✅ DONE |
-| 2 | Section-aware load / LocalCache / selectors / extract (listing & cache fallback — not bootstrap) | P2, P6, P9 | ⬜ TODO |
+| 2 | Section-aware load / LocalCache / selectors / extract (listing & cache fallback — not bootstrap) | P2, P6, P9 | ✅ DONE |
 | 3 | Persist / backends / Actions / ModelInitializer / Cross | P7, P8, P11 | ⬜ TODO |
 | 4 | Exit criteria & non-regression locks (incl. operational-role invariant) | P10, P14, P15, P16 | ⬜ TODO |
 
@@ -298,14 +298,20 @@ Optional (same slice, not a new slice): drop EntityVersion cache-policy fallback
 
 ### Validation (Slice 2)
 
-- [ ] `222.phase2` tests green
-- [ ] Grep load/selector/extract paths: no unconditional `"model"` + `entityEntityDefinition` for Miroir
-- [ ] Present-model paths still do not require EntityVersion
+- [x] `222.phase2` tests green
+- [x] Grep load/selector/extract paths: no unconditional `"model"` + `entityEntityDefinition` for Miroir
+- [x] Present-model paths still do not require EntityVersion
 - [ ] **SLICE EXIT:** `./build-all.sh full` (use `devBuild` only if assets/schemas changed again) + `npm run nonreg`
 
 ### Realization (Slice 2)
 
-- (fill when done)
+- `LocalCacheSliceModelSelector` (redux + zustand): EV listing via `getApplicationSection`
+- `extractApplicationModel`: all concept extracts use `getApplicationSection(applicationUuid, entityUuid)` (Miroir EV → data)
+- `ReduxDeploymentsStateQuerySelectors` cache-policy EV fallback: section-aware via `getApplicationSection`
+- DomainController: Miroir refresh policy remains Entity.cache-only (`miroirModelEntities` has no EV); Library still fills EV map from model fetch
+- Test helpers `minimalLocalCacheStateForModel`: EV index uses `modelSection` (data for Miroir, model for Library)
+- Tests: `222.phase2.localcache-selectors`, `222.phase2.extract-application-model`, `222.phase2.domain-controller-cache` (11/11)
+- Full recompile / nonreg: (pending exit)
 
 ---
 

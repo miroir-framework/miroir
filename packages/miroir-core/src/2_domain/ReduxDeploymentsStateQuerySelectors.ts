@@ -23,6 +23,7 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { entityEntity, entityEntityVersion } from "miroir-test-app_deployment-miroir";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import { getApplicationSection } from "../1_core/Model";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
   resolveCacheSegmentKind,
@@ -319,12 +320,14 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
 
 // ################################################################################################
 /**
- * Looks up cache policy for an entityUuid from model section of the local cache.
+ * Looks up cache policy for an entityUuid from the local cache.
  * #217 Phase 7: prefer Entity.cache; fall back to EntityVersion.
+ * #222 — EntityVersion section via getApplicationSection (Miroir → data).
  */
 function getCachePolicyCarrierFromReduxDeploymentsState(
   deploymentEntityState: ReduxDeploymentsState,
   deploymentUuid: string,
+  applicationUuid: string,
   entityUuid: string,
 ): CachePolicyCarrier {
   const entityIndex = getReduxDeploymentsStateIndex(
@@ -340,7 +343,7 @@ function getCachePolicyCarrierFromReduxDeploymentsState(
 
   const entityDefinitionIndex = getReduxDeploymentsStateIndex(
     deploymentUuid,
-    "model",
+    getApplicationSection(applicationUuid, entityEntityVersion.uuid),
     entityEntityVersion.uuid,
   );
   const definitions = deploymentEntityState[entityDefinitionIndex]?.entities;
@@ -399,6 +402,7 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
     const cachePolicyCarrier = getCachePolicyCarrierFromReduxDeploymentsState(
       deploymentEntityState,
       deploymentUuid,
+      foreignKeyParams.extractor.application,
       entityUuid,
     );
     if (isLazyCacheOnRefreshEntity(cachePolicyCarrier)) {

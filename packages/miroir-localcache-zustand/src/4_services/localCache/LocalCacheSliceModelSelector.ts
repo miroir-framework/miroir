@@ -13,6 +13,7 @@ import {
   ReduxDeploymentsState,
   Report,
   Uuid,
+  getApplicationSection,
   getReduxDeploymentsStateIndex,
   type ApplicationDeploymentMap,
   type EndpointDefinition,
@@ -150,13 +151,16 @@ const selectEntityDefinitionsFromReduxState = createSelector(
     applicationDeploymentMap: ApplicationDeploymentMap,
     params: MiroirQueryTemplate
   ): EntityInstancesUuidIndex | undefined => {
+    const application =
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application
+        : params.application;
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      "model",
+      application,
+      // #222 — Miroir EV instances live in data; Library keeps model
+      getApplicationSection(application, entityEntityVersion.uuid),
       entityEntityVersion.uuid
     );
   }

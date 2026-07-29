@@ -533,9 +533,9 @@ export class DomainController implements DomainControllerInterface {
           }));
           const modelInstances = await Promise.all(modelFetchTargets.map(fetchEntityInstances));
 
-          // Optional cache-policy fallback map from EntityVersion instances when they were
-          // fetched in the model phase (non-Miroir / legacy). Miroir EV lives in data (#222);
-          // empty map is fine — present-model uses Entity.cache.
+          // Optional cache-policy fallback from EntityVersion when EV was fetched in the
+          // model phase (Library / Admin). Miroir EV is not in miroirModelEntities (#222);
+          // empty map is fine — refresh policy uses Entity.cache from model-fetched Entities.
           const entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {};
           const entityDefinitionFetchIndex = modelEntitiesToFetch.findIndex(
             (e) => e.uuid === entityEntityVersion.uuid,

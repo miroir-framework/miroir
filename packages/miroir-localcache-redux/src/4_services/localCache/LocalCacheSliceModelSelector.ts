@@ -14,6 +14,7 @@ import {
   ReduxDeploymentsState,
   Report,
   Uuid,
+  getApplicationSection,
   type ApplicationDeploymentMap,
   type EndpointDefinition,
   type Query,
@@ -110,16 +111,16 @@ const selectEntityDefinitionsFromReduxState = createSelector(
     applicationDeploymentMap: ApplicationDeploymentMap,
     params: MiroirQueryTemplate
   ) => {
+    const application =
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application
+        : params.application;
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      // params.queryType == "localCacheEntityInstancesExtractor"
-      //   ? params.definition.deploymentUuid ?? "undefined"
-      //   : "undefined",
-      "model",
+      application,
+      // #222 — Miroir EV instances live in data; Library keeps model
+      getApplicationSection(application, entityEntityVersion.uuid),
       entityEntityVersion.uuid
     );
   }
