@@ -8,13 +8,13 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import type { EntityVersion } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { snapshotEntitiesAsHistoricalEntityVersions } from "../../../src/1_core/applicationVersionFreeze.js";
+import { snapshotEntitiesAsHistoricalEntityVersions } from "../../../src/1_core/versioning/applicationVersionFreeze.js";
 import type { Entity } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
 const FREEZE_MODULE = join(
   REPO_ROOT,
-  "packages/miroir-core/src/1_core/applicationVersionFreeze.ts",
+  "packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts",
 );
 
 const FORBIDDEN_IN_FREEZE = [

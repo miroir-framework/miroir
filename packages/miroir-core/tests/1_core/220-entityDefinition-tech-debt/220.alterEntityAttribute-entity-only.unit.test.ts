@@ -3,7 +3,7 @@
  * Plan: alterEntityAttribute-entity-only-tdd-plan.md
  */
 import { describe, expect, it } from "vitest";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
@@ -29,7 +29,9 @@ describe("220 alterEntityAttribute Entity-only — Slice 1 store mixins", () => 
     const src = readFileSync(join(REPO_ROOT, relPath), "utf8");
     const body = alterEntityAttributeBody(src);
 
-    expect(body).toMatch(/applyEntityOnlyAlterAttribute/);
+    // Entity-only alter is inlined via applyMlSchemaColumnChanges (no applyEntityOnlyAlterAttribute helper).
+    expect(body).toMatch(/applyMlSchemaColumnChanges/);
+    expect(body).not.toMatch(/applyEntityOnlyAlterAttribute/);
     expect(body).toMatch(/upsertInstance\s*\(\s*entityEntity\.uuid/);
     expect(body).not.toMatch(/persistEntityThenEntityDefinition/);
     expect(body).not.toMatch(/applyAlterEntityAttributePair/);
@@ -39,22 +41,15 @@ describe("220 alterEntityAttribute Entity-only — Slice 1 store mixins", () => 
 });
 
 describe("220 alterEntityAttribute Entity-only — Slice 2 planner + transformer", () => {
-  it("planAlterEntityAttributeMutation signature has no entityVersionUuid parameter", () => {
-    const src = readFileSync(
-      join(REPO_ROOT, "packages/miroir-core/src/1_core/modelEntityActionLiveResolve.ts"),
-      "utf8",
-    );
-    const start = src.indexOf("export function planAlterEntityAttributeMutation");
-    const end = src.indexOf("/** @deprecated", start);
-    const body = src.slice(start, end > start ? end : start + 1200);
-    expect(body).toContain("changes: AlterEntityAttributeColumns");
-    expect(body).not.toContain("entityVersionUuid");
-    expect(body).toContain('mode: "entityOnly"');
-    expect(body).not.toContain("dualWrite");
-    expect(body).not.toContain("applyAlterEntityAttributePair");
+  it("modelEntityActionLiveResolve planner is deleted", () => {
+    expect(
+      existsSync(
+        join(REPO_ROOT, "packages/miroir-core/src/1_core/modelEntityActionLiveResolve.ts"),
+      ),
+    ).toBe(false);
   });
 
-  it("ModelEntityActionTransformer alterEntityAttribute does not dual-write EntityVersion", () => {
+  it("ModelEntityActionTransformer alterEntityAttribute is Entity-only inline", () => {
     const src = readFileSync(
       join(REPO_ROOT, "packages/miroir-core/src/2_domain/ModelEntityActionTransformer.ts"),
       "utf8",
@@ -62,7 +57,8 @@ describe("220 alterEntityAttribute Entity-only — Slice 2 planner + transformer
     const start = src.indexOf('case "alterEntityAttribute"');
     const end = src.indexOf('case "initModel"', start);
     const body = src.slice(start, end > start ? end : start + 800);
-    expect(body).toContain("planAlterEntityAttributeMutation");
+    expect(body).toContain("applyMlSchemaColumnChanges");
+    expect(body).not.toContain("planAlterEntityAttributeMutation");
     expect(body).not.toContain("entityVersionUuid");
     expect(body).not.toContain("dualWrite");
   });

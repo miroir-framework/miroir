@@ -9,8 +9,8 @@ GitHub issue: https://github.com/miroir-framework/miroir/issues/220
 | Step | Issue | Role |
 |------|-------|------|
 | ✅ | #217 | Entity = authoritative present model; metamodel `EntityDefinition` → `EntityVersion`; deprecated TS aliases; dual-write during transition |
-| **→** | **#220 (this)** | Bring leftover vocabulary / dual-write / UUID-reuse debt to a **reasonable** level on the freeze path |
-| blocked until #220 “reasonable” | #216 | User-triggered freeze → historical EntityVersions + linear diff |
+| ✅ | **#220 (this)** | Leftover vocabulary / dual-write / UUID-reuse debt reduced to a **reasonable** level on the freeze path — issue AC met; Phase 7 / #213 deferred |
+| unblocked | #216 | User-triggered freeze → historical EntityVersions + linear diff |
 | later | #9 WP2 / #215 / #213 | Migrations, data migrations, pure doc cleanup |
 
 Canonical parents:
@@ -304,9 +304,10 @@ flowchart LR
 
 | Artifact | Role |
 |----------|------|
-| This `analysis.md` | Map for implementers; optional updates as cases close |
-| Code + tests meeting [issue #220 acceptance criteria](https://github.com/miroir-framework/miroir/issues/220) | **Actual done** |
-| Follow-up issues | Only if Cases 5b/6/8 need separate PRs after “reasonable” is accepted |
+| This `analysis.md` | Working map (inventory may lag after deletions); optional updates as cases close |
+| Code + tests meeting [issue #220 acceptance criteria](https://github.com/miroir-framework/miroir/issues/220) (8 bullets) | **Actual done** — see `tdd-implementation-plan.md` §Acceptance |
+| Phase 6 + Entity-only Action slices | Over-delivery vs issue minimum |
+| Follow-up | Case 8 / Phase 7 → #213; evolution-trace op strings left frozen |
 
 ### Cross-links
 

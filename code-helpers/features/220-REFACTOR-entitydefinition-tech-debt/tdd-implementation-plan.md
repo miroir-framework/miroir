@@ -36,9 +36,9 @@ Originally Phases **0–5** (analysis Cases 1–4, 5a, 7). **Phase 6** (Cases 5b
 |---|---|---|---|---|
 | 0 | Characterization locks & dividing-line guards | — | ✅ DONE | `220-entityDefinition-tech-debt/220.phase0` |
 | 1 | Freeze path vocabulary (`EntityVersion` return types) | Case 1 | ✅ DONE | 220.phase1 + freeze snapshot |
-| 2 | Quarantine UUID-reuse / compat helpers from freeze | Case 2 | ✅ DONE | 220.phase2 + compat module |
+| 2 | Quarantine UUID-reuse / compat helpers from freeze | Case 2 | ✅ DONE (compat module later **deleted**) | 220.phase2 |
 | 3 | Present-model Actions: Entity-only for complete Entities | Case 3 | ✅ DONE | 220.phase3 |
-| 4 | Dual-write persistence shrink / quarantine | Case 4 | ✅ DONE | 220.phase4 + EOL headers |
+| 4 | Dual-write persistence shrink / quarantine | Case 4 | ✅ DONE (persist dual-write **removed**) | 220.phase4 |
 | 5 | `entityVersions` preferred accessor + freeze-critical test vocabulary | Cases 5a, 7 | ✅ DONE | 220.phase5 + metaModelEntityVersions |
 | 6 | MetaModel / store / localcache rename wave | Cases 5b/5c, 6 | ✅ DONE | 220.phase6 |
 | 7 | Optional UI / docs | Case 8 | ⬜ DEFERRED → #213 | — |
@@ -380,19 +380,20 @@ Rename report diagram `entityDefinitions` field / standalone UI props only when 
 
 ## Acceptance checklist (#220)
 
-Original “reasonable” bar (Phases 0–5) — all checked. Phase 6 also done (see progress table).
+Authoritative AC = [issue #220](https://github.com/miroir-framework/miroir/issues/220) body (8 bullets). Plan phases map onto them; Phase 6 + Entity-only Action slices are **over-delivery**, not substitute ACs.
 
-- [x] Present-model resolution for ordinary complete Entities does not prefer/require a live EntityDefinition instance (Phase 3).
-- [x] Freeze-adjacent APIs/types in `miroir-core` use `EntityVersion` where they mean snapshots (Phase 1).
-- [x] Dual-write / UUID-reuse is quarantined; freeze must not call it for snapshot minting (Phases 2, 4).
-- [x] UUID-reuse helpers clearly separated from historical minting; freeze tests guard the boundary (Phases 0, 2).
-- [x] Critical tests assert Entity present-model + EntityVersion history concepts (Phase 5).
-- [x] Targeted `testByFile` suites above green; no new present-model coupling to ApplicationVersion Cross mappings.
-- [x] Remaining intentional `EntityDefinition` aliases/shims are greppable under compat / generated deprecated alias only.
-- [x] #216 TDD plan can continue at Phase 2 (freeze plan builder) without another vocabulary cleanup pass.
-- [x] `MetaModel.entityVersions` is the canonical collection; stores / localcache / deployment defaults updated (Phase 6).
+- [x] Present-model resolution used by model Actions / selectors / local cache no longer prefers or requires a live EntityDefinition instance for ordinary (post-#217) apps. *(Phases 3 + Entity-only Action slices; LocalCache PK/adapters Entity-first)*
+- [x] Freeze-adjacent and history-oriented APIs/types/helpers in `miroir-core` (and directly coupled localcache/store surfaces) use `EntityVersion` vocabulary where they mean snapshots. *(Phases 1, 5a; Phase 6 MetaModel/store `entityVersions`)*
+- [x] Dual-write / dual-read compatibility is either removed where unused, or quarantined behind an explicit compatibility boundary that #216 must not call for snapshot minting. *(Phases 2, 4 — completed by **removal**: compat + dual-write persist modules deleted)*
+- [x] Helpers that project Entity → redundant live definition (UUID-reuse) are clearly separated from historical EntityVersion minting; call sites that matter for #216 are updated or guarded. *(Phases 0, 2 — helper removed; freeze gates forbid the symbols)*
+- [x] Critical tests updated so they assert Entity present-model + EntityVersion history concepts rather than teaching EntityDefinition-as-live-model. *(`220.*` characterization suite; Phase 5)*
+- [x] Relevant package unit suites for touched areas pass; no new present-model coupling to ApplicationVersion Cross mappings. *(`npm run testByFile -w miroir-core -- '220.'` 12/12 files, 53/53; Entity-only plans’ curated integ noted in slice docs. Issue wording also names `testMiroir` — run as needed for freeze handoff.)*
+- [x] Remaining intentional `EntityDefinition` aliases/shims are greppable and justified (thin deprecated exports / temporary compat only). *(generated `EntityDefinition = EntityVersion`; evolution-trace op strings frozen; no live compat module)*
+- [x] #216 can resume without first inventing another vocabulary cleanup pass for the freeze path. *(handoff smoke Phase 5; freeze module EntityVersion-only)*
 
-Known pre-existing (not #220): `entityPresentModel.217.phase3` fails on `ApplicationVersionCrossEntityVersion` Entity↔EntityVersion `mlSchema` drift in miroir deployment assets — present before this work.
+**Over-delivery (not required by issue AC):** Phase 6 `MetaModel.entityVersions`; Entity-only `bootFromPersistedState`; Entity-only create/rename/alter/drop/DuplicateAttribute Action/store paths.
+
+**Deferred (not blocking):** Case 8 / Phase 7 report-diagram `definition.entityDefinitions` + docs → #213; evolution-trace op rename left frozen.
 
 ---
 

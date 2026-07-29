@@ -3,7 +3,7 @@
  * Slices 1–3 of createEntity-remove-entityVersion-tdd-plan.md
  */
 import { describe, expect, it } from "vitest";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
@@ -81,23 +81,12 @@ describe("220 createEntity Entity-only — Slice 2 FS / IndexedDB / Mongo", () =
 });
 
 describe("220 createEntity Entity-only — Slice 3 planner + transformer", () => {
-  it("planCreateEntityMutation is Entity-only (arity 1, no dual-write)", () => {
-    const src = readFileSync(
-      join(
-        REPO_ROOT,
-        "packages/miroir-core/src/1_core/modelEntityActionLiveResolve.ts",
+  it("modelEntityActionLiveResolve planner is deleted", () => {
+    expect(
+      existsSync(
+        join(REPO_ROOT, "packages/miroir-core/src/1_core/modelEntityActionLiveResolve.ts"),
       ),
-      "utf8",
-    );
-    const fnStart = src.search(/export function planCreateEntityMutation\(/);
-    const nextExport = src.indexOf("\nexport function ", fnStart + 1);
-    const body = src.slice(fnStart, nextExport === -1 ? undefined : nextExport);
-    expect(body).toMatch(
-      /export function planCreateEntityMutation\(\s*entity\s*:\s*Entity\s*,?\s*\)/,
-    );
-    expect(body).not.toMatch(/entityVersion/);
-    expect(body).not.toMatch(/normalizeCreateEntityPair/);
-    expect(body).not.toMatch(/dualWrite/);
+    ).toBe(false);
   });
 
   it("ModelEntityActionTransformer createEntity emits Entity-only createInstance", () => {
@@ -111,10 +100,11 @@ describe("220 createEntity Entity-only — Slice 3 planner + transformer", () =>
     const caseStart = src.search(/case "createEntity":/);
     const nextCase = src.indexOf('case "', caseStart + 1);
     const body = src.slice(caseStart, nextCase === -1 ? undefined : nextCase);
-    expect(body).toMatch(/for \(const entity of modelAction\.payload\.entities\)/);
-    expect(body).toMatch(/planCreateEntityMutation\(entity\)/);
+    expect(body).toMatch(/objects:\s*modelAction\.payload\.entities/);
+    expect(body).not.toMatch(/planCreateEntityMutation/);
     expect(body).not.toMatch(/pair\.entity/);
-    expect(body).toMatch(/complete Entity\.mlSchema/);
+    expect(body).not.toMatch(/entityVersion/);
+    expect(body).not.toMatch(/dualWrite/);
   });
 });
 
@@ -140,7 +130,7 @@ describe("220 createEntity Entity-only — Slice 4 Action schema", () => {
 describe("220 createEntity Entity-only — Slice 7 cleanup gate", () => {
   it("normalizeCreateEntityPair is gone from modelEntityDualWrite and index exports", () => {
     const dualWrite = readFileSync(
-      join(REPO_ROOT, "packages/miroir-core/src/1_core/modelEntityDualWrite.ts"),
+      join(REPO_ROOT, "packages/miroir-core/src/1_core/Entity/modelEntityDualWrite.ts"),
       "utf8",
     );
     const index = readFileSync(join(REPO_ROOT, "packages/miroir-core/src/index.ts"), "utf8");

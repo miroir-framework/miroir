@@ -3,7 +3,7 @@
  * Plan: renameEntity-remove-entityVersion-tdd-plan.md
  */
 import { describe, expect, it } from "vitest";
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
@@ -38,22 +38,15 @@ describe("220 renameEntity Entity-only — Slice 1 store mixins", () => {
 });
 
 describe("220 renameEntity Entity-only — Slice 2 planner + transformer", () => {
-  it("planRenameEntityMutation signature has no entityVersionUuid parameter", () => {
-    const src = readFileSync(
-      join(REPO_ROOT, "packages/miroir-core/src/1_core/modelEntityActionLiveResolve.ts"),
-      "utf8",
-    );
-    const start = src.indexOf("export function planRenameEntityMutation");
-    const end = src.indexOf("export function planAlterEntityAttributeMutation", start);
-    const body = src.slice(start, end);
-    expect(body).toContain("targetName: string");
-    expect(body).not.toContain("entityVersionUuid");
-    expect(body).toContain('mode: "entityOnly"');
-    expect(body).not.toContain("dualWrite");
-    expect(body).not.toContain("applyRenameEntityPair");
+  it("modelEntityActionLiveResolve planner is deleted", () => {
+    expect(
+      existsSync(
+        join(REPO_ROOT, "packages/miroir-core/src/1_core/modelEntityActionLiveResolve.ts"),
+      ),
+    ).toBe(false);
   });
 
-  it("ModelEntityActionTransformer renameEntity does not dual-write EntityVersion", () => {
+  it("ModelEntityActionTransformer renameEntity is Entity-only inline", () => {
     const src = readFileSync(
       join(REPO_ROOT, "packages/miroir-core/src/2_domain/ModelEntityActionTransformer.ts"),
       "utf8",
@@ -61,7 +54,8 @@ describe("220 renameEntity Entity-only — Slice 2 planner + transformer", () =>
     const start = src.indexOf('case "renameEntity"');
     const end = src.indexOf('case "alterEntityAttribute"', start);
     const body = src.slice(start, end);
-    expect(body).toContain("planRenameEntityMutation");
+    expect(body).toMatch(/name:\s*modelAction\.payload\.targetValue/);
+    expect(body).not.toContain("planRenameEntityMutation");
     expect(body).not.toContain("entityVersionUuid");
     expect(body).not.toContain("dualWrite");
   });

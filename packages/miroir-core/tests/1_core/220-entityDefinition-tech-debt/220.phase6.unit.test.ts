@@ -47,7 +47,7 @@ describe("220 Phase 6 — MetaModel.entityVersions vocabulary", () => {
     expect((defaultLibraryAppModel as MetaModel).entityVersions.length).toBeGreaterThan(0);
   });
 
-  it("bootFromPersistedState interface parameter is entityVersions", () => {
+  it("bootFromPersistedState is Entity-only (no entityVersions / entityDefinitions parameter)", () => {
     const iface = readFileSync(
       join(
         REPO_ROOT,
@@ -55,12 +55,14 @@ describe("220 Phase 6 — MetaModel.entityVersions vocabulary", () => {
       ),
       "utf8",
     );
-    expect(iface).toMatch(
-      /bootFromPersistedState\(\s*entities\s*:\s*Entity\[\],\s*entityVersions\s*:\s*Entity(?:Definition|Version)\[\]/,
-    );
-    expect(iface).not.toMatch(
-      /bootFromPersistedState\(\s*entities\s*:\s*Entity\[\],\s*entityDefinitions\s*:/,
-    );
+    const match = iface.match(/bootFromPersistedState\(([\s\S]*?)\):/);
+    expect(match).toBeTruthy();
+    const params = match![1];
+    expect(params).toMatch(/entities\s*:\s*Entity\[\]/);
+    // Strip line comments so historical `// entityVersions : …` does not count.
+    const activeParams = params.replace(/\/\/[^\n]*/g, "");
+    expect(activeParams).not.toMatch(/entityVersions\s*:/);
+    expect(activeParams).not.toMatch(/entityDefinitions\s*:/);
   });
 });
 
