@@ -70,4 +70,61 @@ describe("221 Phase 2 — rename present-model view vocabulary", () => {
       );
     }
   });
+
+  it("Reports context uses DeploymentUuidToReportsEntities* (not *EntitiesDefinitions*)", () => {
+    const filesToScan = [
+      "components/Page/RootComponent.tsx",
+      "routes/ReportDisplay.tsx",
+      "components/Reports/ReportTools.ts",
+      "components/Reports/ReportViewWithEditor.tsx",
+      "components/Reports/ReportSectionListDisplay.tsx",
+      "components/Reports/ReportSectionViewWithEditor.tsx",
+      "components/Reports/ReportSectionEntityInstance.tsx",
+      "components/JsonObjectEditFormDialog.tsx",
+    ];
+    for (const relativePath of filesToScan) {
+      const source = readFileSync(join(VIEW_ROOT, relativePath), "utf8");
+      expect(source, `${relativePath}`).not.toMatch(/ReportsEntitiesDefinitions/);
+      expect(source, `${relativePath}`).not.toMatch(
+        /getReportsAndEntitiesDefinitionsForDeploymentUuid/,
+      );
+    }
+    const root = readFileSync(join(VIEW_ROOT, "components/Page/RootComponent.tsx"), "utf8");
+    expect(root).toMatch(/getReportsAndEntitiesForDeploymentUuid/);
+    expect(root).toMatch(/deploymentUuidToReportsEntitiesMapping/);
+  });
+
+  it("diagram Report section / Mermaid use Entity entities prop (mlSchema)", () => {
+    const section = readFileSync(
+      join(VIEW_ROOT, "components/Reports/ModelDiagramReportSectionView.tsx"),
+      "utf8",
+    );
+    expect(section).toMatch(/\bentities:\s*Entity\[\]/);
+    expect(section).toMatch(/entities=\{entitiesWithSchema\}/);
+    expect(section).not.toMatch(/\bdiagramCarriers\b/);
+    expect(section).not.toMatch(/coerceDiagramCarriersToEntities/);
+    expect(section).not.toMatch(/\bEntityVersion\b/);
+
+    const editor = readFileSync(
+      join(VIEW_ROOT, "components/Reports/ReportSectionViewWithEditor.tsx"),
+      "utf8",
+    );
+    expect(editor).toMatch(/modelDiagramEntities:\s*Entity\[\]/);
+    expect(editor).toMatch(/entities=\{modelDiagramEntities\}/);
+    expect(editor).not.toMatch(/\bdiagramCarriers\b/);
+    expect(editor).not.toMatch(/modelDiagramCarriers/);
+
+    const mermaid = readFileSync(
+      join(
+        REPO_ROOT,
+        "packages/miroir-diagram-class/src/4_view/MermaidClassDiagram.tsx",
+      ),
+      "utf8",
+    );
+    expect(mermaid).toMatch(/\bentities:\s*MermaidDiagramEntity\[\]/);
+    expect(mermaid).toMatch(/entitiesToMermaidClassDiagram/);
+    expect(mermaid).not.toMatch(/entityDefinitionsToMermaid/);
+    expect(mermaid).not.toMatch(/\bdiagramCarriers:\s*EntityVersion/);
+    expect(mermaid).not.toMatch(/\bentities:\s*EntityVersion/);
+  });
 });

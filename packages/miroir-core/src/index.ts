@@ -531,8 +531,8 @@ export { DeploymentMode } from "./0_interfaces/1_core/MiroirConfig.js";
 export { LIBRARY_TMP } from "./0_interfaces/1_core/LIBRARY_TMP";
 export {
   defaultApplicationSection,
-  DeploymentUuidToReportsEntitiesDefinitions,
-  DeploymentUuidToReportsEntitiesDefinitionsMapping,
+  DeploymentUuidToReportsEntities,
+  DeploymentUuidToReportsEntitiesMapping,
   foldableElementTypes
 } from "./0_interfaces/1_core/Model.js";
 
@@ -846,7 +846,7 @@ export {
   emptyApplicationModel, extractApplicationData,
   extractApplicationModel,
   extractEntityInstances, getApplicationSection,
-  getReportsAndEntitiesDefinitionsForDeploymentUuid, metaMetaModelEntities,
+  getReportsAndEntitiesForDeploymentUuid, metaMetaModelEntities,
   metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities
 } from "./1_core/Model.js";
 export {

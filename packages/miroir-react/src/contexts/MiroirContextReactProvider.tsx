@@ -27,7 +27,7 @@ import type {
   ApplicationDeploymentMap, 
   MlSchema,
   MetaModel,
-  DeploymentUuidToReportsEntitiesDefinitionsMapping,
+  DeploymentUuidToReportsEntitiesMapping,
   GridType, 
   MiroirEvent,
 } from "miroir-core";
@@ -169,9 +169,9 @@ export interface MiroirReactContext {
   setInnerFormOutput: React.Dispatch<React.SetStateAction<any>>;
   formHelperState: any;
   setformHelperState: React.Dispatch<React.SetStateAction<any>>;
-  deploymentUuidToReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitionsMapping; // ??
-  setDeploymentUuidToReportsEntitiesDefinitionsMapping: React.Dispatch<
-    React.SetStateAction<DeploymentUuidToReportsEntitiesDefinitionsMapping>
+  deploymentUuidToReportsEntitiesMapping: DeploymentUuidToReportsEntitiesMapping; // ??
+  setDeploymentUuidToReportsEntitiesMapping: React.Dispatch<
+    React.SetStateAction<DeploymentUuidToReportsEntitiesMapping>
   >;
   // ###################################################################################################
   // outline <-> instance editor
@@ -250,9 +250,9 @@ export function MiroirContextReactProvider(props: {
     useState<Dispatch<SetStateAction<FoldedStateTree>>>();
 
   const [
-    deploymentUuidToReportsEntitiesDefinitionsMapping,
-    setDeploymentUuidToReportsEntitiesDefinitionsMapping,
-  ] = useState<DeploymentUuidToReportsEntitiesDefinitionsMapping>({});
+    deploymentUuidToReportsEntitiesMapping,
+    setDeploymentUuidToReportsEntitiesMapping,
+  ] = useState<DeploymentUuidToReportsEntitiesMapping>({});
   const [schemasPerDeployment, setSchemasPerDeployment] = useState<Record<Uuid, MlSchema>>({});
   const [schemaReloadRequired, setSchemaReloadRequired] = useState(false);
   const schemaRevisionsRef = useRef<Record<Uuid, DeploymentSchemaRevisions>>({});
@@ -635,8 +635,8 @@ export function MiroirContextReactProvider(props: {
       setInnerFormOutput,
       formHelperState,
       setformHelperState,
-      deploymentUuidToReportsEntitiesDefinitionsMapping,
-      setDeploymentUuidToReportsEntitiesDefinitionsMapping,
+      deploymentUuidToReportsEntitiesMapping,
+      setDeploymentUuidToReportsEntitiesMapping,
       schemasPerDeployment,
       setSchemaForDeployment,
       clearSchemaForDeployment,
@@ -721,7 +721,7 @@ export function MiroirContextReactProvider(props: {
       deploymentUuid,
       applicationSection,
       reportUuid,
-      deploymentUuidToReportsEntitiesDefinitionsMapping,
+      deploymentUuidToReportsEntitiesMapping,
       schemasPerDeployment,
       setSchemaForDeployment,
       clearSchemaForDeployment,

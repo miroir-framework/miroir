@@ -117,8 +117,6 @@ export function JsonObjectDeleteFormDialog(props: JsonObjectEditFormDialogProps)
     props.currentApplicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
   const currentDeploymentUuid = props.currentDeploymentUuid ?? props.currentApplicationDeploymentMap[props.currentApplication];
-  // const currentDeploymentReportsEntitiesDefinitionsMapping =
-  //   context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentDeploymentUuid] || {};
 
   const [dialogOuterFormObject, setdialogOuterFormObject] = useMiroirContextInnerFormOutput();
   // const [formHelperState, setformHelperState] = useMiroirContextformHelperState();

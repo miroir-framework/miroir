@@ -16,7 +16,7 @@ export function stringTuple<T extends [string] | string[]>(...data: T): T {
 }
 
 export function findEntityFromUuid(
-  model: MetaModel,
+  model: Pick<MetaModel, "entities">,
   entityUuid: Uuid,
 ): Entity | undefined {
   if (!model || !entityUuid) {

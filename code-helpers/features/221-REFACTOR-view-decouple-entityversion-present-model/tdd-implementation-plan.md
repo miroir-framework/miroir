@@ -53,7 +53,7 @@ Slices **5–6** are intentional non-migrations: they lock what #221 must **not*
 4. **Resolve**
    - Report subtree call sites: `resolvePresentEntityFromModel({ entities, entityVersions }, uuid)`.
 5. **Diagram**
-   - Prefer `entities` / `presentEntitiesAsDiagramCarriers`; stop casting live Entity to `EntityVersion[]` for Mermaid.
+   - Prefer `entities` / `Entity.mlSchema / coerceDiagramCarriersToEntities`; stop casting live Entity to `EntityVersion[]` for Mermaid.
 6. **deleteCascade**
    - Params named for Entity / `entities`; identity via `uuid` (and optional legacy `entityUuid` only until Slice 4).
 
@@ -67,7 +67,7 @@ Slices **5–6** are intentional non-migrations: they lock what #221 must **not*
 |---------|---------|
 | Standalone view unit | `npm run testByFile -w miroir-standalone-app -- <pattern>` |
 | Core present-model | `npm run testByFile -w miroir-core -- entityPresentModel` |
-| Diagram package | `npm run testByFile -w miroir-diagram-class -- entityDefinitionsToMermaid` |
+| Diagram package | `npm run testByFile -w miroir-diagram-class -- entitiesToMermaid` |
 | ReportPage integ (when needed) | `npm run testByFile -w miroir-standalone-app -- ReportPage.integ` |
 | Type-check | `npx tsc --noEmit --skipLibCheck` |
 
@@ -102,7 +102,7 @@ Report subtree passes the correct MetaModel key (`entityVersions`) into `resolve
 - `ReportTools.ts` objectInstance path — same.
 - Fix mapping destructure patterns that bind `entityDefinitions` from a structure that only has `entityVersions` (alias locally if needed: `const entityVersions = mapping.entityVersions`).
 
-Optional rename of context type `DeploymentUuidToReportsEntitiesDefinitions*` can wait for Slice 2/3 if it thrashs; key correctness is the Slice 1 exit.
+Optional rename of context type `DeploymentUuidToReportsEntities*` can wait for Slice 2/3 if it thrashs; key correctness is the Slice 1 exit.
 
 ### Validation (Slice 1)
 
@@ -203,7 +203,7 @@ Collapse APIs that still declare `entityVersion` while parents pass a live Entit
 | `scripts.ts` `deleteCascade` | Rename params to Entity/`entities`; `carrierIdentityUuid` prefers `uuid`; schema list from `entities` |
 | `GlideDataGridComponent` | Replace or delete unused `currentEntityDefinition` |
 | `ModelDiagramReportSectionView` / `ModelDiagramPage` | Prefer `entities`; stop casting live list to `EntityVersion[]` |
-| `miroir-diagram-class` | Prefer `presentEntitiesAsDiagramCarriers` / Entity-named entry; keep thin deprecated alias for old fn name if needed for one slice |
+| `miroir-diagram-class` | Prefer `Entity.mlSchema / coerceDiagramCarriersToEntities` / Entity-named entry; keep thin deprecated alias for old fn name if needed for one slice |
 
 ### Validation (Slice 3)
 
@@ -211,7 +211,7 @@ Collapse APIs that still declare `entityVersion` while parents pass a live Entit
 - [x] Dialog call sites in Report list + grid pass `entity`.
 - [x] Diagram unit tests still green with Entity carriers:
   ```
-  npm test -w miroir-diagram-class -- entityDefinitionsToMermaid
+  npm test -w miroir-diagram-class -- entitiesToMermaid
   ```
 - [ ] Typecheck; optional `ReportPage.integ` smoke if dialog mount path covered
 
@@ -280,7 +280,7 @@ After Slices 1–3, delete `Entity ?? EntityVersion` live paths in the Report/gr
 
 ```
 npm run testByFile -w miroir-core -- entityPresentModel.217
-npm run testByFile -w miroir-diagram-class -- entityDefinitionsToMermaid
+npm run testByFile -w miroir-diagram-class -- entitiesToMermaid
 ```
 
 ---
@@ -351,9 +351,11 @@ Optional: assert `ReportPage.tsx` still only mounts `ReportDisplay` (no Entity/E
 
 - [x] Slices **1–4** merged: live Report/grid/dialog path Entity-only for present-model fields.
 - [x] Slices **5–6** lock tests merged: history and JzodElementEditor boundaries held.
-- [ ] Analysis §5 acceptance checklist satisfied.
-- [ ] Issue #221 acceptance criteria checked off.
+- [x] Analysis §5 acceptance checklist satisfied.
+- [x] Issue #221 acceptance criteria checked off.
 - [x] No new live-schema resolution via ApplicationVersion Cross mappings.
+- [x] Obsolete ACs (dual-read EOL tracking; dedicated integ/Cross AC) removed from issue + analysis.
+- [x] Mermaid / diagram Report path uses Entity `mlSchema` (`entitiesToMermaid*`, `entities: Entity[]`).
 
 ---
 
@@ -362,4 +364,4 @@ Optional: assert `ReportPage.tsx` still only mounts `ReportDisplay` (no Entity/E
 - Analysis groups: [`./analysis.md`](./analysis.md) §2
 - Present-model fields: `packages/miroir-core/src/1_core/entityPresentModel.ts` (`ENTITY_PRESENT_MODEL_DEFINITION_FIELDS`)
 - FK tests to migrate in Slice 4: `packages/miroir-standalone-app/tests/4_view/utils/foreignKeyAttributeAnalyzer.unit.test.ts`
-- Diagram tests: `packages/miroir-diagram-class/tests/entityDefinitionsToMermaidClassDiagram.unit.test.ts`
+- Diagram tests: `packages/miroir-diagram-class/tests/entitiesToMermaidClassDiagram.unit.test.ts`

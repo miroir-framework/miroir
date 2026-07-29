@@ -6,7 +6,7 @@ import {
   MiroirLoggerFactory,
   findEntityFromUuid,
   type ApplicationDeploymentMap,
-  type DeploymentUuidToReportsEntitiesDefinitions,
+  type DeploymentUuidToReportsEntities,
   type JzodElement,
   type JzodObject,
   type MetaModel,
@@ -28,7 +28,7 @@ export const reportSectionsFormSchema = (
   reportSection: ReportSection,
   applicationUuid: Uuid,
   deploymentUuid: Uuid,
-  currentDeploymentReportsEntitiesDefinitionsMapping: DeploymentUuidToReportsEntitiesDefinitions,
+  currentDeploymentReportsEntitiesMapping: DeploymentUuidToReportsEntities,
   currentModel: MetaModel,
   reportData: Record<string, any>,
   reportSectionPath: (string | number)[]
@@ -44,7 +44,7 @@ export const reportSectionsFormSchema = (
               curr,
               applicationUuid,
               deploymentUuid,
-              currentDeploymentReportsEntitiesDefinitionsMapping,
+              currentDeploymentReportsEntitiesMapping,
               currentModel,
               reportData,
               reportSectionPath.concat("definition", index)
@@ -63,7 +63,7 @@ export const reportSectionsFormSchema = (
                 subSection,
                 applicationUuid,
                 deploymentUuid,
-                currentDeploymentReportsEntitiesDefinitionsMapping,
+                currentDeploymentReportsEntitiesMapping,
                 currentModel,
                 reportData,
                 reportSectionPath.concat("definition", rowIndex, colIndex)
@@ -79,11 +79,10 @@ export const reportSectionsFormSchema = (
       const entityUuid = reportSection.definition.parentUuid;
       const applicationSection = getApplicationSection(applicationUuid, entityUuid)
       const sectionMapping =
-        currentDeploymentReportsEntitiesDefinitionsMapping?.[applicationSection];
+        currentDeploymentReportsEntitiesMapping?.[applicationSection];
       const targetPresentEntity = findEntityFromUuid(
         {
           entities: sectionMapping?.entities,
-          entityVersions: sectionMapping?.entityVersions,
         },
         entityUuid,
       );

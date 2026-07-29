@@ -1,6 +1,6 @@
 /**
  * MermaidClassDiagram – a themed React component that renders a Mermaid
- * class diagram from Miroir EntityDefinitions.
+ * class diagram from Miroir Entities (`mlSchema`).
  *
  * Uses the `mermaid` library for SVG rendering and integrates with the
  * Miroir theme system via `useMiroirTheme()` from `miroir-react`.
@@ -17,15 +17,16 @@ import {
 } from "@mui/material";
 import { SvgToolbelt } from "svg-toolbelt";
 import "svg-toolbelt/dist/svg-toolbelt.css";
-import { MiroirLoggerFactory, type EntityVersion, type LoggerInterface } from "miroir-core";
+import { MiroirLoggerFactory, LoggerInterface } from "miroir-core";
 import {
-  entityDefinitionsToMermaidClassDiagram,
+  entitiesToMermaidClassDiagram,
   type ClassDiagramOptions,
-} from "../2_domain/entityDefinitionsToMermaidClassDiagram.js";
+  type MermaidDiagramEntity,
+} from "../2_domain/entitiesToMermaidClassDiagram.js";
 import {
-  entityDefinitionsToMermaidErDiagram,
+  entitiesToMermaidErDiagram,
   type ErDiagramOptions,
-} from "../2_domain/entityDefinitionsToMermaidErDiagram.js";
+} from "../2_domain/entitiesToMermaidErDiagram.js";
 import { JsonDisplayHelper, useMiroirTheme } from "miroir-react";
 import { cleanLevel, packageName } from "../constants.js";
 
@@ -60,20 +61,19 @@ function computeInitialZoom(entityCount: number): number {
 // ############################################################################
 
 export interface MermaidClassDiagramProps {
-  /** The entity definitions to render as a class diagram. */
-  entityDefinitions: EntityVersion[];
+  /** Present-model Entities (`mlSchema`) to render as a class diagram. */
+  entities: MermaidDiagramEntity[];
   /** Optional overrides for diagram generation options. */
   options?: Partial<ClassDiagramOptions>;
   /** Optional CSS height. Defaults to "auto". */
   height?: string;
   /**
    * Called when a class node is clicked in the diagram.
-   * Receives the entity-definition UUID (the `uuid` field of the EntityVersion,
-   * not the `entityUuid`).
+   * Receives the Entity UUID.
    * Requires `classClickLinks` to be set in `options` (e.g. via
-   * `buildEntityDefinitionClickLinks`).
+   * `buildEntityClickLinks`).
    */
-  onClassClick?: (entityVersionUuid: string) => void;
+  onClassClick?: (entityUuid: string) => void;
   /**
    * CSS color for relation lines (arrows / connections between classes).
    * Defaults to "#888888" in light mode, "#aaaaaa" in dark mode.
@@ -93,7 +93,7 @@ export interface MermaidClassDiagramProps {
 let mermaidInitialized = false;
 
 export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
-  entityDefinitions,
+  entities,
   options = {},
   height = "auto",
   onClassClick,
@@ -146,7 +146,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
   }), [options, direction, showInfra]);
 
   const renderDiagram = useCallback(async () => {
-    if (entityDefinitions.length === 0) {
+    if (entities.length === 0) {
       setSvgContent("");
       return;
     }
@@ -182,10 +182,10 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
           title: diagramOptions.title,
           classClickLinks: diagramOptions.classClickLinks,
         };
-        generatedDiagramText = entityDefinitionsToMermaidErDiagram(entityDefinitions, erOptions);
+        generatedDiagramText = entitiesToMermaidErDiagram(entities, erOptions);
       } else {
-        generatedDiagramText = entityDefinitionsToMermaidClassDiagram(
-          entityDefinitions,
+        generatedDiagramText = entitiesToMermaidClassDiagram(
+          entities,
           diagramOptions,
         );
       }
@@ -200,11 +200,11 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
       setError(err.message ?? "Failed to render diagram");
       setSvgContent("");
     }
-  }, [entityDefinitions, diagramOptions, isDark, themeColors, diagramMode, relationsColor]);
+  }, [entities, diagramOptions, isDark, themeColors, diagramMode, relationsColor]);
 
   // Key capturing all inputs that should trigger a re-render.
   const diagramKey = JSON.stringify({
-    defs: entityDefinitions.map((ed) => ed.uuid),
+    defs: entities.map((ed) => ed.uuid),
     direction,
     showInfra,
     theme: isDark,
@@ -249,7 +249,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
     enhancer.init();
 
     // Apply the computed initial scale.
-    enhancer.scale = computeInitialZoom(entityDefinitions.length);
+    enhancer.scale = computeInitialZoom(entities.length);
     enhancer.applyTransform();
 
     toolbeltRef.current = enhancer;
@@ -373,7 +373,7 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
       <JsonDisplayHelper debug={true}
         componentName="MermaidClassDiagram"
         elements={[
-          { label: "MermaidClassDiagram entityDefinitions", data: entityDefinitions },
+          { label: "MermaidClassDiagram entities", data: entities },
           { label: "MermaidClassDiagram diagramText", data: diagramText },
           { label: "MermaidClassDiagram diagramKey", data: diagramKey },
           { label: "MermaidClassDiagram options", data: diagramOptions },
@@ -484,12 +484,12 @@ export const MermaidClassDiagram: React.FC<MermaidClassDiagramProps> = ({
             Diagram rendering error: {error}
           </Typography>
         )}
-        {!error && entityDefinitions.length === 0 && (
+        {!error && entities.length === 0 && (
           <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.6 }}>
             No entity definitions available for the current application model.
           </Typography>
         )}
-        {!error && entityDefinitions.length > 0 && !svgContent && (
+        {!error && entities.length > 0 && !svgContent && (
           <Typography variant="body2" sx={{ color: themeColors.text, opacity: 0.6 }}>
             Rendering diagram...
           </Typography>

@@ -1,7 +1,7 @@
 //#########################################################################################
 /**
  * TODO: simila to 
- * miroir-core Model.ts getReportsAndEntitiesDefinitionsForDeploymentUuid, 
+ * miroir-core Model.ts getReportsAndEntitiesForDeploymentUuid, 
  * miroir-core DomainDataAccess.ts selectCurrentDeploymentModel
  * @param deploymentUuid 
  * @param state 

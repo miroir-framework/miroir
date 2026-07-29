@@ -28,7 +28,7 @@ import {
   EntityInstancesUuidIndex,
   getApplicationSection,
   getQueryRunnerParamsForReduxDeploymentsState,
-  getReportsAndEntitiesDefinitionsForDeploymentUuid,
+  getReportsAndEntitiesForDeploymentUuid,
   LoggerInterface,
   MetaModel,
   MiroirLoggerFactory,
@@ -324,20 +324,20 @@ export const RootComponent = (props: RootComponentProps) => {
   // ##############################################################################################
   // ##############################################################################################
   const currentDeployment = (applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap)[currentApplication];  
-  const deploymentUuidToReportsEntitiesDefinitionsMapping = useMemo(
+  const deploymentUuidToReportsEntitiesMapping = useMemo(
     () => (
       {
-        [deployment_Admin.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        [deployment_Admin.uuid]: getReportsAndEntitiesForDeploymentUuid(
           adminSelfApplication.uuid,// deployment_Admin.uuid,
           miroirMetaModel, 
           adminAppModel,
         ),
-        [deployment_Miroir.uuid]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        [deployment_Miroir.uuid]: getReportsAndEntitiesForDeploymentUuid(
           selfApplicationMiroir.uuid,// deployment_Miroir.uuid,
           miroirMetaModel, 
           miroirMetaModel, 
         ),
-        [currentDeployment]: getReportsAndEntitiesDefinitionsForDeploymentUuid(
+        [currentDeployment]: getReportsAndEntitiesForDeploymentUuid(
           currentApplication,
           miroirMetaModel, 
           currentModel,
@@ -349,10 +349,10 @@ export const RootComponent = (props: RootComponentProps) => {
 
   useEffect(
     () =>
-      context.setDeploymentUuidToReportsEntitiesDefinitionsMapping(
-        deploymentUuidToReportsEntitiesDefinitionsMapping,
+      context.setDeploymentUuidToReportsEntitiesMapping(
+        deploymentUuidToReportsEntitiesMapping,
       ),
-    [deploymentUuidToReportsEntitiesDefinitionsMapping],
+    [deploymentUuidToReportsEntitiesMapping],
   );
 
   // ##############################################################################################
@@ -785,8 +785,8 @@ export const RootComponent = (props: RootComponentProps) => {
         { label: "RootComponent currentThemes", data: miroirMetaModel.themes },
         { label: "RootComponent adminAppModel", data: adminAppModel },
         {
-          label: "RootComponent deploymentUuidToReportsEntitiesDefinitionsMapping",
-          data: deploymentUuidToReportsEntitiesDefinitionsMapping,
+          label: "RootComponent deploymentUuidToReportsEntitiesMapping",
+          data: deploymentUuidToReportsEntitiesMapping,
         },
         {
           label: "RootComponent viewParams generalEditMode",
@@ -800,7 +800,7 @@ export const RootComponent = (props: RootComponentProps) => {
       currentModel,
       adminAppModel,
       applicationDeploymentMap,
-      deploymentUuidToReportsEntitiesDefinitionsMapping,
+      deploymentUuidToReportsEntitiesMapping,
       context.viewParams.generalEditMode,
       adminDeploymentsQueryResult,
     ],

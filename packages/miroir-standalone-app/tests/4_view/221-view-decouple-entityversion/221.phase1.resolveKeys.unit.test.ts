@@ -1,6 +1,6 @@
 /**
- * #221 Slice 1 / Group C — Report subtree must pass `entityVersions`
- * into findEntityFromUuid (not `entityDefinitions`).
+ * #221 Slice 1 / Group C — Report subtree resolve uses Entity list only
+ * (`findEntityFromUuid` / `entities.find`); never the legacy `entityDefinitions` key.
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -26,9 +26,19 @@ const FORBIDDEN_RESOLVE_KEY_PATTERNS: { file: string; pattern: RegExp; label: st
     pattern: /findEntityFromUuid\(\s*\{\s*entities,\s*entityDefinitions\s*\}/,
     label: "findEntityFromUuid({ entities, entityDefinitions })",
   },
+  {
+    file: "components/Reports/ReportViewWithEditor.tsx",
+    pattern: /findEntityFromUuid\(\s*\{[^}]*\bentityVersions\b/,
+    label: "findEntityFromUuid(… entityVersions …)",
+  },
+  {
+    file: "components/Reports/ReportTools.ts",
+    pattern: /findEntityFromUuid\(\s*\{[^}]*\bentityVersions\b/,
+    label: "findEntityFromUuid(… entityVersions …)",
+  },
 ];
 
-/** Mapping destructures that must bind entityVersions (property on DeploymentUuidToReportsEntitiesDefinitions). */
+/** Mapping destructures that must bind entityVersions (property on DeploymentUuidToReportsEntities). */
 const MAPPING_DESTRUCTURE_FILES = [
   "routes/ReportDisplay.tsx",
   "components/Reports/ReportSectionListDisplay.tsx",
@@ -37,11 +47,20 @@ const MAPPING_DESTRUCTURE_FILES = [
 ] as const;
 
 describe("221 Phase 1 — Report subtree resolve keys", () => {
-  it("findEntityFromUuid call sites do not pass entityDefinitions key", () => {
+  it("findEntityFromUuid call sites do not pass entityDefinitions or entityVersions keys", () => {
     for (const { file, pattern, label } of FORBIDDEN_RESOLVE_KEY_PATTERNS) {
       const source = readFileSync(join(VIEW_ROOT, file), "utf8");
       expect(source, `${file} must not use ${label}`).not.toMatch(pattern);
     }
+  });
+
+  it("ReportSectionEntityInstance resolves target Entity from entities only", () => {
+    const source = readFileSync(
+      join(VIEW_ROOT, "components/Reports/ReportSectionEntityInstance.tsx"),
+      "utf8",
+    );
+    expect(source).toMatch(/entities\.find\(\(entity\)\s*=>\s*entity\.uuid\s*===\s*targetEntityUuid\)/);
+    expect(source).not.toMatch(/findEntityFromUuid/);
   });
 
   it("Report mapping destructures bind entityVersions (not entityDefinitions)", () => {

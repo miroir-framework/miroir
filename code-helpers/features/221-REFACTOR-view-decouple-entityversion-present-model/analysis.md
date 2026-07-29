@@ -118,7 +118,7 @@ Groups are ordered by **migration simplicity**. Each group shares one scenario: 
 | `GlideDataGridComponent` | `currentEntityDefinition` | Typed EV-like; **unused in body** after destructure — pass Entity or delete |
 | `ModelDiagramReportSectionView` | `mlSchema` | Prefer `entities`; stop casting to `EntityVersion[]` for Mermaid |
 | `ModelDiagramPage` | diagram input | Prefer entities-only when complete; drop EV fallback list when unused |
-| Mermaid / `entityDefinitionsToMermaidClassDiagram` | `mlSchema.definition` | Rename API surface to Entity carriers (diagram package) |
+| Mermaid / `entitiesToMermaidClassDiagram` | `Entity.mlSchema` | Done (#221) — Entity present-model input |
 
 **Validation:** Open list report → edit/create instance → dialog shows schema; delete cascade still finds reverse FKs on Entity-only model; diagram renders from `entities`.
 
@@ -136,7 +136,7 @@ Groups are ordered by **migration simplicity**. Each group shares one scenario: 
 | `ReportViewWithEditor` | Report Entity resolve | `entityDefinitions: miroirMapping.model.entityVersions` → use `entityVersions` |
 | `ReportSectionListDisplay` | parent Entity resolve | Same wrong key into `resolvePresentEntityFromModel` |
 | `ReportTools` objectInstance case | `mlSchema` | Same |
-| Context type name | — | `DeploymentUuidToReportsEntitiesDefinitions` / `deploymentUuidToReportsEntitiesDefinitionsMapping` — rename when touching UI |
+| Context type name | — | `DeploymentUuidToReportsEntities` / `deploymentUuidToReportsEntitiesMapping` — rename when touching UI |
 
 **Validation:** With incomplete Entity (no mlSchema) and a matching EntityVersion row, resolve still finds fallback **or** (preferred post-#221) incompleteness fails loudly once Group D removes fallback. Add/adjust a focused test for the key.
 
@@ -218,14 +218,14 @@ Thin vertical slices preferred (e.g. “edit dialog Entity-only” then “grid 
 
 ## 5. Acceptance checklist (maps to issue)
 
-- [ ] Live ReportPage tree resolves listed present-model fields from Entity.
-- [ ] Live props/types no longer require EntityVersion for those fields.
-- [ ] Edit/delete dialogs + EntityInstance grid Entity-only for schema/PK/details-report.
-- [ ] Dual-read removed or EOL-quarantined.
-- [ ] Wrong `entityDefinitions` resolve keys fixed.
-- [ ] JzodElementEditor remains free of EntityVersion coupling.
-- [ ] UI/integ tests updated; no live schema via Cross mappings.
-- [ ] Historical EntityVersion (#216) untouched as live schema source.
+- [x] Live ReportPage tree resolves listed present-model fields from Entity.
+- [x] Live props/types no longer require EntityVersion for those fields.
+- [x] Edit/delete dialogs + EntityInstance grid Entity-only for schema/PK/details-report.
+- [x] Wrong `entityDefinitions` resolve keys fixed.
+- [x] JzodElementEditor remains free of EntityVersion coupling.
+- [x] Historical EntityVersion (#216) untouched as live schema source.
+
+Dropped from issue (obsolete): dual-read EOL tracking; dedicated ReportPage integ / Cross-mapping AC.
 
 ---
 

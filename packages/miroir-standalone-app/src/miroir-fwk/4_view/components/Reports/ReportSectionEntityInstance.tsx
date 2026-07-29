@@ -16,7 +16,6 @@ import {
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
   resolvePathOnObject,
-  findEntityFromUuid,
   type ApplicationDeploymentMap,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type JzodObject,
@@ -215,20 +214,17 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
 
-  const currentDeploymentReportsEntitiesDefinitionsMapping =
-    context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid] || {};
-
   const { availableReports, entities, entityVersions } = useMemo(() => {
       return props.deploymentUuid &&
-        context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-        context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
-        ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
+        context.deploymentUuidToReportsEntitiesMapping &&
+        context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid]
+        ? context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid][
           props.applicationSection
           ]
         : { availableReports: [], entities: [], entityVersions: [] };
     }, [
       props.deploymentUuid,
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping,
+      context.deploymentUuidToReportsEntitiesMapping,
       props.applicationSection,
     ]);
   
@@ -236,15 +232,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const targetEntityUuid: Uuid | undefined =
     objectInstanceReportSection?.definition?.parentUuid;
 
-  const currentReportTargetEntity: Entity | undefined = findEntityFromUuid(
-    {
-      entities,
-      entityVersions:
-        currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection ?? "data"]
-          ?.entityVersions,
-    },
-    targetEntityUuid ?? "",
-  );
+  const currentReportTargetEntity: Entity | undefined = targetEntityUuid
+    ? entities.find((entity) => entity.uuid === targetEntityUuid)
+    : undefined;
 
   const currentFlattenedReportSectionTargetEntityMlSchema: JzodObject | undefined =
     currentReportTargetEntity
@@ -501,7 +491,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
                 // },
                 // {
                 //   label: "currentApplicationDeploymentMap",
-                //   data: { currentApplicationDeploymentMap, application, map: context.deploymentUuidToReportsEntitiesDefinitionsMapping },
+                //   data: { currentApplicationDeploymentMap, application, map: context.deploymentUuidToReportsEntitiesMapping },
                 //   useCodeBlock: true,
                 //   copyButton: true,
                 // },

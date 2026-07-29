@@ -179,18 +179,17 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ##############################################################################################
   // (meta-)information about the current report, to enable editing
   const reportPresentEntity: Entity | undefined = useMemo(() => {
-    const miroirMapping = context.deploymentUuidToReportsEntitiesDefinitionsMapping?.[deployment_Miroir.uuid];
+    const miroirMapping = context.deploymentUuidToReportsEntitiesMapping?.[deployment_Miroir.uuid];
     if (!miroirMapping) return undefined;
     const result = findEntityFromUuid(
       {
         entities: miroirMapping["model"]?.entities,
-        entityVersions: miroirMapping["model"]?.entityVersions,
       },
       entityReport.uuid,
     );
     log.info("ReportViewWithEditor found report present entity", { result });
     return result;
-  }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping]);
+  }, [context.deploymentUuidToReportsEntitiesMapping]);
 
   // ##############################################################################################
   const initialReportSectionsFormValue = useMemo(() => {

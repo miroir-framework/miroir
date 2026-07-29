@@ -1,24 +1,18 @@
 /**
- * Domain library for generating Mermaid class diagrams from Miroir EntityDefinitions.
+ * Domain library for generating Mermaid class diagrams from Miroir Entities
+ * (present-model `mlSchema`).
  *
- * This module is a side-effect-free, pure-function library (layer 2 – domain)
- * that converts a list of EntityDefinitions into a Mermaid classDiagram string.
- *
- * Key design decisions:
- * - Standard ("infrastructure") attributes like uuid, parentName, parentUuid,
- *   parentDefinitionVersionUuid, and conceptLevel are hidden by default so the
- *   diagram focuses on domain-specific attributes.
- * - Foreign-key relationships extracted from `tag.value.foreignKeyParams` are
- *   rendered as UML associations.
- * - A configureable options object lets callers tweak visibility, colors, and
- *   direction.
+ * Side-effect-free pure functions (layer 2 – domain).
  */
 
-import type { EntityVersion, Entity } from "miroir-core";
+import type { Entity } from "miroir-core";
 
 // ############################################################################
 // Types
 // ############################################################################
+
+/** Minimal Entity shape required for Mermaid diagram generation. */
+export type MermaidDiagramEntity = Pick<Entity, "uuid" | "name" | "description" | "mlSchema">
 
 /** Jzod schema attribute entry as found inside `mlSchema.definition`. */
 export interface JzodAttributeEntry {
@@ -105,11 +99,10 @@ export interface ClassDiagramOptions {
 
   /**
    * When provided, makes entity classes clickable in the diagram.
-   * Maps from sanitised entity name (Mermaid class identifier) to the entity
-   * definition UUID that will be passed to the `onClassClick` handler in the
-   * rendering component.
+   * Maps from sanitised entity name (Mermaid class identifier) to the Entity
+   * UUID passed to the `onClassClick` handler.
    *
-   * Use `buildEntityDefinitionClickLinks` to build this map from EntityDefinitions.
+   * Use `buildEntityClickLinks` to build this map from Entities.
    *
    * Generates Mermaid `click ClassName call miroirDiagramClassClick()` directives.
    */
@@ -160,15 +153,14 @@ export function jzodTypeToUml(jzodType: string): string {
 }
 
 /**
- * Build an entity-UUID → entity-name lookup from the entityDefinitions list.
- * Uses the `entityUuid` field on each definition.
+ * Build an entity-UUID → entity-name lookup from Entities.
  */
 export function buildEntityUuidToNameMap(
-  entityDefinitions: EntityVersion[],
+  entities: MermaidDiagramEntity[],
 ): Record<string, string> {
   const map: Record<string, string> = {};
-  for (const ed of entityDefinitions) {
-    map[ed.entityUuid] = ed.name;
+  for (const entity of entities) {
+    map[entity.uuid] = entity.name;
   }
   return map;
 }
@@ -182,29 +174,7 @@ export function sanitiseMermaidId(name: string): string {
 }
 
 /**
- * Build a map from sanitised entity name to entity-definition UUID for all
- * provided entity definitions.  The resulting map is ready to be passed as
- * `ClassDiagramOptions.classClickLinks`.
- *
- * @deprecated Prefer {@link buildEntityClickLinks} (#217 Phase 9). Retained for
- * callers that still navigate to EntityVersion detail reports.
- *
- * The map value is the EntityVersion instance UUID (i.e. `entityVersion.uuid`),
- * NOT the entity UUID, because it is used as the `instanceUuid` segment in the
- * report URL: `/report/:application/:deployment/:section/:reportUuid/:instanceUuid`.
- */
-export function buildEntityDefinitionClickLinks(
-  entityDefinitions: EntityVersion[],
-): Record<string, string> {
-  const links: Record<string, string> = {};
-  for (const ed of entityDefinitions) {
-    links[sanitiseMermaidId(ed.name)] = ed.uuid;
-  }
-  return links;
-}
-
-/**
- * #217 Phase 9 — map sanitised entity name → Entity UUID for diagram click navigation
+ * Map sanitised entity name → Entity UUID for diagram click navigation
  * to Entity detail reports (present-model authority).
  */
 export function buildEntityClickLinks(
@@ -218,45 +188,38 @@ export function buildEntityClickLinks(
 }
 
 /**
- * Project present Entities (with mlSchema) into EntityVersion-shaped carriers
- * for diagram generators that still consume EntityVersion.
+ * Coerce legacy report-transformer output (EntityVersion-shaped carriers with
+ * `entityUuid` + `mlSchema`) into Mermaid Entity carriers.
+ * Prefer passing live `Entity[]` with `mlSchema` instead.
  */
-export function presentEntitiesAsDiagramCarriers(
-  entities: Entity[],
-): EntityVersion[] {
-  return entities
-    .filter((entity) => !!entity.mlSchema)
-    .map(
-      (entity) =>
-        ({
-          uuid: entity.uuid,
-          parentName: "EntityVersion",
-          parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-          name: entity.name,
-          entityUuid: entity.uuid,
-          conceptLevel: "Model",
-          mlSchema: entity.mlSchema!,
-          ...(entity.description !== undefined ? { description: entity.description } : {}),
-        }) as EntityVersion,
-    );
+export function coerceDiagramCarriersToEntities(
+  carriers: Array<Record<string, any>>,
+): MermaidDiagramEntity[] {
+  return carriers
+    .filter((carrier) => !!carrier?.mlSchema && !!(carrier.uuid ?? carrier.entityUuid))
+    .map((carrier) => ({
+      uuid: String(carrier.uuid ?? carrier.entityUuid),
+      name: String(carrier.name ?? ""),
+      mlSchema: carrier.mlSchema,
+      ...(carrier.description !== undefined ? { description: String(carrier.description) } : {}),
+    }));
 }
 
 /**
- * Extract structured class information from an EntityVersion.
+ * Extract structured class information from an Entity (via `mlSchema`).
  */
 export function extractClassInfo(
-  entityVersion: EntityVersion,
+  entity: MermaidDiagramEntity,
   options: ClassDiagramOptions = {},
 ): ClassInfo {
   const showInfra = options.showInfrastructureAttributes ?? false;
-  const definition = entityVersion.mlSchema?.definition ?? {};
+  const definition = entity.mlSchema?.definition ?? {};
 
   const attributes: AttributeInfo[] = [];
 
   for (const [attrName, attrSchema] of Object.entries(definition)) {
     const attr = attrSchema as JzodAttributeEntry;
 
-    // Optionally skip infrastructure attributes
     if (!showInfra && INFRASTRUCTURE_ATTRIBUTES.has(attrName)) {
       continue;
     }
@@ -275,15 +238,15 @@ export function extractClassInfo(
   }
 
   return {
-    name: entityVersion.name,
-    entityUuid: entityVersion.entityUuid,
-    description: entityVersion.description,
+    name: entity.name,
+    entityUuid: entity.uuid,
+    description: entity.description,
     attributes,
   };
 }
 
 /**
- * Extract all relationships (foreign keys) across all entity definitions.
+ * Extract all relationships (foreign keys) across all entities.
  */
 export function extractRelationships(
   classes: ClassInfo[],
@@ -316,32 +279,21 @@ export function extractRelationships(
 // ############################################################################
 
 /**
- * Generate a Mermaid class-diagram string from a list of EntityDefinitions.
- *
- * @param entityDefinitions - The entity definitions to render.
- * @param options - Optional formatting / display options.
- * @returns A Mermaid classDiagram string ready for rendering.
+ * Generate a Mermaid class-diagram string from Entities (`mlSchema`).
  */
-export function entityDefinitionsToMermaidClassDiagram(
-  entityDefinitions: EntityVersion[],
+export function entitiesToMermaidClassDiagram(
+  entities: MermaidDiagramEntity[],
   options: ClassDiagramOptions = {},
 ): string {
   const direction = options.direction ?? "TB";
   const showLabels = options.showAttributeLabels ?? false;
 
-  // 1. Build entity UUID → name map
-  const entityUuidToName = buildEntityUuidToNameMap(entityDefinitions);
-
-  // 2. Extract class info for each entity
-  const classes = entityDefinitions.map((ed) => extractClassInfo(ed, options));
-
-  // 3. Extract relationships
+  const entityUuidToName = buildEntityUuidToNameMap(entities);
+  const classes = entities.map((entity) => extractClassInfo(entity, options));
   const relationships = extractRelationships(classes, entityUuidToName);
 
-  // 4. Build the Mermaid string
   const lines: string[] = [];
 
-  // Header
   if (options.showTitle && options.title) {
     lines.push("---");
     lines.push(`title: ${options.title}`);
@@ -351,13 +303,11 @@ export function entityDefinitionsToMermaidClassDiagram(
   lines.push(`  direction ${direction}`);
   lines.push("");
 
-  // Class definitions
   for (const cls of classes) {
     const id = sanitiseMermaidId(cls.name);
     lines.push(`  class ${id} {`);
 
     for (const attr of cls.attributes) {
-      // Skip FK attributes in the class body – they are shown as associations
       if (attr.isForeignKey) {
         continue;
       }
@@ -373,18 +323,14 @@ export function entityDefinitionsToMermaidClassDiagram(
     lines.push("");
   }
 
-  // Relationships
   for (const rel of relationships) {
     const sourceId = sanitiseMermaidId(rel.sourceClass);
     const targetId = sanitiseMermaidId(rel.targetClass);
-    // Many-to-one: many sources can reference one target
-    // Optional FK → "0..1", required FK → "1"
     const targetCardinality = rel.optional ? '"0..1"' : '"1"';
     const label = rel.attributeName;
     lines.push(`  ${sourceId} "*" --> ${targetCardinality} ${targetId} : ${label}`);
   }
 
-  // classDef colour directives
   if (options.classColors) {
     lines.push("");
     for (const [defName, colors] of Object.entries(options.classColors)) {
@@ -395,7 +341,6 @@ export function entityDefinitionsToMermaidClassDiagram(
     }
   }
 
-  // Apply colour assignments
   if (options.entityColorAssignment) {
     for (const [entityName, defName] of Object.entries(options.entityColorAssignment)) {
       const id = sanitiseMermaidId(entityName);
@@ -403,9 +348,6 @@ export function entityDefinitionsToMermaidClassDiagram(
     }
   }
 
-  // Click directives – make classes navigable via the miroirDiagramClassClick window callback.
-  // The UUID is embedded as an argument so the callback receives it directly, without
-  // needing a reverse lookup by class name.
   if (options.classClickLinks && Object.keys(options.classClickLinks).length > 0) {
     lines.push("");
     for (const [sanitisedName, uuid] of Object.entries(options.classClickLinks)) {
@@ -417,20 +359,13 @@ export function entityDefinitionsToMermaidClassDiagram(
 }
 
 /**
- * Convenience: generate a class diagram from a MetaModel-like structure
- * that contains both `entities` and `entityVersions`.
- *
- * #217 Phase 9 — prefer Entity present model (`mlSchema` on Entity) when available;
- * fall back to EntityVersions for legacy/incomplete Entity rows.
- * #220 Phase 6 — MetaModel collection key is `entityVersions`.
+ * Convenience: generate a class diagram from MetaModel `entities`
+ * (present-model `mlSchema` only; no EntityVersion fallback).
  */
 export function metaModelToMermaidClassDiagram(
-  metaModel: { entities: Entity[]; entityVersions: EntityVersion[] },
+  metaModel: { entities: Entity[] },
   options: ClassDiagramOptions = {},
 ): string {
-  const fromEntities = presentEntitiesAsDiagramCarriers(metaModel.entities ?? []);
-  if (fromEntities.length > 0) {
-    return entityDefinitionsToMermaidClassDiagram(fromEntities, options);
-  }
-  return entityDefinitionsToMermaidClassDiagram(metaModel.entityVersions, options);
+  const entities = (metaModel.entities ?? []).filter((entity) => !!entity.mlSchema);
+  return entitiesToMermaidClassDiagram(entities, options);
 }

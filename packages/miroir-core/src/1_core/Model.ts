@@ -23,7 +23,7 @@ import {
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
-import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
+import type { DeploymentUuidToReportsEntities } from "../0_interfaces/1_core/Model";
 import { resolveFundamentalSchemaForDeployment } from "./jzod/schemaForDeployment";
 import { defaultMiroirMetaModel } from "./defaultMiroirMetaModel";
 
@@ -141,11 +141,11 @@ export function getApplicationSection(
  * @param appModel 
  * @returns 
  */
-export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
+export function getReportsAndEntitiesForDeploymentUuid(
   application: Uuid,
   metaModel: MetaModel,
   appModel: MetaModel
-): DeploymentUuidToReportsEntitiesDefinitions
+): DeploymentUuidToReportsEntities
 {
   if (application === selfApplicationMiroir.uuid) {
     return {

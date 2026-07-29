@@ -1,16 +1,12 @@
 /**
  * Domain library for generating Mermaid Entity-Relation (ER) diagrams from
- * Miroir EntityDefinitions.
+ * Miroir Entities (present-model `mlSchema`).
  *
- * This module is a side-effect-free, pure-function library (layer 2 – domain)
- * that converts a list of EntityDefinitions into a Mermaid `erDiagram` string.
- *
- * Intentionally kept separate from the class-diagram generator so the two
- * rendering modes can evolve independently.
+ * Side-effect-free pure functions (layer 2 – domain). Kept separate from the
+ * class-diagram generator so the two rendering modes can evolve independently.
  */
 
-import type { EntityVersion } from "miroir-core";
-import { sanitiseMermaidId } from "./entityDefinitionsToMermaidClassDiagram.js";
+import { sanitiseMermaidId, type MermaidDiagramEntity } from "./entitiesToMermaidClassDiagram.js";
 
 // ############################################################################
 // Types
@@ -33,10 +29,10 @@ export interface ErDiagramOptions {
 
   /**
    * When provided, makes entity nodes clickable in the diagram.
-   * Maps from sanitised entity name to the entity-definition UUID passed to
+   * Maps from sanitised entity name to the Entity UUID passed to
    * the `onClassClick` handler in the rendering component.
    *
-   * Use `buildEntityDefinitionClickLinks` to build this map.
+   * Use `buildEntityClickLinks` to build this map.
    */
   classClickLinks?: Record<string, string>;
 }
@@ -59,31 +55,25 @@ const INFRASTRUCTURE_ATTRIBUTES = new Set([
 // ############################################################################
 
 /**
- * Generate a Mermaid erDiagram string from a list of EntityDefinitions.
+ * Generate a Mermaid erDiagram string from Entities (`mlSchema`).
  *
  * Each entity becomes an ER entity block with its non-FK attributes listed;
  * FK attributes are shown inside the entity block with the `FK` keyword AND
  * produce a relationship line between the two entities.
- *
- * @param entityDefinitions - The entity definitions to render.
- * @param options - Optional formatting / display options.
- * @returns A Mermaid erDiagram string ready for rendering.
  */
-export function entityDefinitionsToMermaidErDiagram(
-  entityDefinitions: EntityVersion[],
+export function entitiesToMermaidErDiagram(
+  entities: MermaidDiagramEntity[],
   options: ErDiagramOptions = {},
 ): string {
   const showInfra = options.showInfrastructureAttributes ?? false;
 
-  // Build entity UUID → sanitised name map for relationship resolution
   const entityUuidToSanitisedName: Record<string, string> = {};
-  for (const ed of entityDefinitions) {
-    entityUuidToSanitisedName[ed.entityUuid] = sanitiseMermaidId(ed.name);
+  for (const entity of entities) {
+    entityUuidToSanitisedName[entity.uuid] = sanitiseMermaidId(entity.name);
   }
 
   const lines: string[] = [];
 
-  // Optional title front-matter
   if (options.showTitle && options.title) {
     lines.push("---");
     lines.push(`title: ${options.title}`);
@@ -92,7 +82,7 @@ export function entityDefinitionsToMermaidErDiagram(
 
   lines.push("erDiagram");
 
-  if (entityDefinitions.length === 0) {
+  if (entities.length === 0) {
     return lines.join("\n");
   }
 
@@ -100,9 +90,9 @@ export function entityDefinitionsToMermaidErDiagram(
 
   const relationships: string[] = [];
 
-  for (const ed of entityDefinitions) {
-    const entityId = sanitiseMermaidId(ed.name);
-    const definition = (ed.mlSchema as any)?.definition ?? {};
+  for (const entity of entities) {
+    const entityId = sanitiseMermaidId(entity.name);
+    const definition = (entity.mlSchema as any)?.definition ?? {};
 
     lines.push(`  ${entityId} {`);
 
@@ -117,12 +107,10 @@ export function entityDefinitionsToMermaidErDiagram(
 
       lines.push(`    ${attrType} ${sanitisedAttrName}${fkMarker}`);
 
-      // Collect relationship line for FK attributes
       if (isForeignKey) {
         const targetUuid: string = attr.tag.value.foreignKeyParams.targetEntity;
         const targetId = entityUuidToSanitisedName[targetUuid];
         if (targetId) {
-          // Left-side cardinality: many required (}|) or many optional (}o)
           const isOptional: boolean = attr.optional ?? false;
           const leftCard = isOptional ? "}o" : "}|";
           relationships.push(
@@ -136,7 +124,6 @@ export function entityDefinitionsToMermaidErDiagram(
     lines.push("");
   }
 
-  // Relationships
   for (const rel of relationships) {
     lines.push(rel);
   }

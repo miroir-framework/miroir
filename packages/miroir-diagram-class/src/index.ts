@@ -1,12 +1,11 @@
 export {
-  entityDefinitionsToMermaidClassDiagram,
+  entitiesToMermaidClassDiagram,
   metaModelToMermaidClassDiagram,
   extractClassInfo,
   extractRelationships,
   buildEntityUuidToNameMap,
-  buildEntityDefinitionClickLinks,
   buildEntityClickLinks,
-  presentEntitiesAsDiagramCarriers,
+  coerceDiagramCarriersToEntities,
   jzodTypeToUml,
   sanitiseMermaidId,
   type ClassDiagramOptions,
@@ -14,12 +13,13 @@ export {
   type AttributeInfo,
   type RelationshipInfo,
   type JzodAttributeEntry,
-} from "./2_domain/entityDefinitionsToMermaidClassDiagram.js";
+  type MermaidDiagramEntity,
+} from "./2_domain/entitiesToMermaidClassDiagram.js";
 
 export {
-  entityDefinitionsToMermaidErDiagram,
+  entitiesToMermaidErDiagram,
   type ErDiagramOptions,
-} from "./2_domain/entityDefinitionsToMermaidErDiagram.js";
+} from "./2_domain/entitiesToMermaidErDiagram.js";
 
 // React component (requires react, @mui/material, miroir-react as peer dependencies)
 export { MermaidClassDiagram, type MermaidClassDiagramProps } from "./4_view/MermaidClassDiagram.js";

@@ -63,9 +63,9 @@ export const ReportDisplay: React.FC<{
 
   const { availableReports, entities, entityVersions } = useMemo(() => {
     const result = pageParams.applicationSection &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentApplicationDeploymentMap[application]]
-      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[
+      context.deploymentUuidToReportsEntitiesMapping &&
+      context.deploymentUuidToReportsEntitiesMapping[currentApplicationDeploymentMap[application]]
+      ? context.deploymentUuidToReportsEntitiesMapping[
           currentApplicationDeploymentMap[application]
         ][pageParams.applicationSection as ApplicationSection]
       : { availableReports: [], entities: [], entityVersions: [] };
@@ -75,7 +75,7 @@ export const ReportDisplay: React.FC<{
     currentApplicationDeploymentMap,
     application,
     currentApplicationDeploymentMap[application],
-    context.deploymentUuidToReportsEntitiesDefinitionsMapping,
+    context.deploymentUuidToReportsEntitiesMapping,
     pageParams.applicationSection,
   ]);
   
@@ -111,7 +111,7 @@ export const ReportDisplay: React.FC<{
           { label: "pageParams", data: pageParams },
           {
             label: "currentApplicationDeploymentMap",
-            data: { currentApplicationDeploymentMap, application, map: context.deploymentUuidToReportsEntitiesDefinitionsMapping },
+            data: { currentApplicationDeploymentMap, application, map: context.deploymentUuidToReportsEntitiesMapping },
             useCodeBlock: true,
             copyButton: true,
           },

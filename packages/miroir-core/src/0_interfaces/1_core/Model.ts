@@ -25,7 +25,7 @@ export const ApplicationVersionCrossEntityVersionSchema = entityInstance.extend(
 export const ApplicationVersionCrossEntityDefinitionSchema =
   ApplicationVersionCrossEntityVersionSchema;
 
-export type DeploymentUuidToReportsEntitiesDefinitions = {
+export type DeploymentUuidToReportsEntities = {
   model: {
     availableQueries: Query[];
     availableReports: Report[];
@@ -39,8 +39,8 @@ export type DeploymentUuidToReportsEntitiesDefinitions = {
     entityVersions: EntityVersion[];
   };
 };
-export type DeploymentUuidToReportsEntitiesDefinitionsMapping = {
-  [x: string]: DeploymentUuidToReportsEntitiesDefinitions
+export type DeploymentUuidToReportsEntitiesMapping = {
+  [x: string]: DeploymentUuidToReportsEntities
 };
 
 export const foldableElementTypes = [ "array", "tuple", "object", "record" ]; // no union or reference since we use the resolved type!

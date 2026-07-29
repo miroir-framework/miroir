@@ -110,39 +110,47 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
 
   const { availableReports, entities, entityVersions } = useMemo(() => {
     return props.deploymentUuid &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping &&
-      context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid]
-      ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
+      context.deploymentUuidToReportsEntitiesMapping &&
+      context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid]
+      ? context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid][
         props.applicationSection
         ]
       : { availableReports: [], entities: [], entityVersions: [] };
-  }, [context.deploymentUuidToReportsEntitiesDefinitionsMapping, props.deploymentUuid, props.applicationSection]);
+  }, [context.deploymentUuidToReportsEntitiesMapping, props.deploymentUuid, props.applicationSection]);
 
   const currentListReportTargetEntity: Entity | undefined =
     reportSectionDefinitionFromFormik?.type === "objectListReportSection"
       ? entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"]) 
       : undefined;
 
-  const modelDiagramEntityDefinitions: any[] = useMemo(() => {
+  /**
+   * Entities to render in a modelDiagramReportSection.
+   * Prefer the section definition field (metamodel still named `entityDefinitions`)
+   * when present; otherwise the deployment mapping `entities`.
+   */
+  const modelDiagramEntities: Entity[] = useMemo(() => {
     if (reportSectionDefinitionFromFormik?.type !== "modelDiagramReportSection") return [];
-    const edInput = (reportSectionDefinitionFromFormik as any).definition?.entityDefinitions;
-    if (!edInput) return [];
-    if (Array.isArray(edInput)) return edInput;
-    // It's a transformer – evaluate it against formik.values as context
+    const sectionEntitiesInput = (reportSectionDefinitionFromFormik as any).definition?.entityDefinitions;
+    if (!sectionEntitiesInput) {
+      return (entities ?? []).filter((entity) => !!entity.mlSchema);
+    }
+    if (Array.isArray(sectionEntitiesInput)) {
+      return sectionEntitiesInput as Entity[];
+    }
     const result = transformer_extended_apply_wrapper(
       context.miroirContext.miroirActivityTracker,
       "runtime",
       [],
-      (reportSectionDefinitionFromFormik as any).definition?.label ?? "modelDiagramReportSection entityDefinitions",
-      edInput, // transformer
-      "value", // resolveBuildTransformersTo
+      (reportSectionDefinitionFromFormik as any).definition?.label ?? "modelDiagramReportSection entities",
+      sectionEntitiesInput,
+      "value",
       defaultMiroirModelEnvironment,
       formik.values,
       formik.values,
     );
     if (!result || result instanceof TransformerFailure || !Array.isArray(result)) return [];
-    return result;
-  }, [reportSectionDefinitionFromFormik, formik.values]);
+    return result as Entity[];
+  }, [reportSectionDefinitionFromFormik, formik.values, entities]);
 
   const storedReportDisplayParameters: Params<ReportUrlParamKeys> | TransformerFailure | undefined = useMemo(() => {
     if (reportSectionDefinitionFromFormik?.type !== "storedReportDisplay") {
@@ -412,7 +420,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               <div style={{ color: "red" }}>
                 Report itself is not displayed on the reportDetails report to avoid infinite loop.
               </div>
-            ) : (
+            ) : storedReportDisplayPageParams && (
               <ReportDisplay pageParams={storedReportDisplayPageParams} />
             )}
           </div>
@@ -430,8 +438,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "modelDiagramReportSection" && (
           <ModelDiagramReportSectionView
-            entities={entities}
-            entityDefinitions={modelDiagramEntityDefinitions}
+            entities={modelDiagramEntities}
             label={(reportSectionDefinitionFromFormik as any).definition?.label}
             title={(reportSectionDefinitionFromFormik as any).definition?.title}
             direction={(reportSectionDefinitionFromFormik as any).definition?.direction}

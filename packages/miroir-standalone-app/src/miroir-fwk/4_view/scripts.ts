@@ -45,14 +45,14 @@ export const splitEntity = async (p: {
   domainController: DomainControllerInterface,
   deploymentUuid: string;
   applicationSection: ApplicationSection;
-  entityVersion: EntityVersion;
-  entityDefinitions: EntityVersion[];
+  entity: EntityVersion;
+  entities: EntityVersion[];
   newEntityName: string,
   splitAttributes: string[]
 }) => {
   log.info(
     "++++++++++++++++++++++++++++ splitEntity entity",
-    p.entityVersion.name,
+    p.entity.name,
   );
 
 }

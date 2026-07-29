@@ -5,12 +5,10 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   type Entity,
-  type EntityVersion,
 } from "miroir-core";
 import {
   buildEntityClickLinks,
   MermaidClassDiagram,
-  presentEntitiesAsDiagramCarriers,
 } from "miroir-diagram-class";
 
 import { packageName } from "../../../../constants.js";
@@ -32,15 +30,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export interface ModelDiagramReportSectionViewProps {
   /**
-   * Present-model Entities (#217 / #221). Preferred source for diagram generation.
+   * Present-model Entities whose `mlSchema` drives the Mermaid diagram (#217 / #221).
    */
-  entities?: Entity[];
-  /**
-   * @deprecated #221 Slice 4 — EOL dual-read for report-transformer output shaped like EntityVersion.
-   * Prefer `entities`. Remove when modelDiagramReportSection.definition.entityDefinitions
-   * metamodel field is migrated (#220 Case 8 / #213).
-   */
-  entityDefinitions?: any[];
+  entities: Entity[];
   /** Optional section label (displayed as a heading above the diagram). */
   label?: string;
   /** Optional diagram title embedded in the Mermaid header. */
@@ -72,28 +64,19 @@ export const ModelDiagramReportSectionView: React.FC<ModelDiagramReportSectionVi
     currentNavigationKey
   );
 
-  const diagramCarriers: EntityVersion[] = useMemo(() => {
-    const fromEntities = presentEntitiesAsDiagramCarriers(props.entities ?? []);
-    if (fromEntities.length > 0) {
-      return fromEntities;
-    }
-    if (!Array.isArray(props.entityDefinitions)) return [];
-    return props.entityDefinitions as EntityVersion[];
-  }, [props.entities, props.entityDefinitions]);
+  const entitiesWithSchema: Entity[] = useMemo(
+    () => (props.entities ?? []).filter((entity) => !!entity.mlSchema),
+    [props.entities],
+  );
 
-  const direction = props.direction ?? (diagramCarriers.length > 10 ? "TB" : "LR");
+  const direction = props.direction ?? (entitiesWithSchema.length > 10 ? "TB" : "LR");
 
   const height = props.height ?? "calc(100vh - 300px)";
 
   const classClickLinks = useMemo(() => {
     if (!props.onClassClick) return undefined;
-    return buildEntityClickLinks(
-      diagramCarriers.map((carrier) => ({
-        name: carrier.name,
-        uuid: carrier.entityUuid ?? carrier.uuid,
-      })),
-    );
-  }, [diagramCarriers, props.onClassClick]);
+    return buildEntityClickLinks(entitiesWithSchema);
+  }, [entitiesWithSchema, props.onClassClick]);
 
   return (
     <div>
@@ -103,7 +86,7 @@ export const ModelDiagramReportSectionView: React.FC<ModelDiagramReportSectionVi
         totalCount={totalCount}
       />
       <MermaidClassDiagram
-        entityDefinitions={diagramCarriers}
+        entities={entitiesWithSchema}
         options={{
           title: props.title,
           direction,

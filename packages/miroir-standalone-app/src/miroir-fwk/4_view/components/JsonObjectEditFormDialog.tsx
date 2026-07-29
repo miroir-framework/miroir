@@ -16,7 +16,7 @@ import {
   MiroirLoggerFactory,
   Uuid,
   type ApplicationDeploymentMap,
-  type DeploymentUuidToReportsEntitiesDefinitions,
+  type DeploymentUuidToReportsEntities,
   type Entity,
   type Report,
 } from "miroir-core";
@@ -36,7 +36,7 @@ import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.j
 import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
 import { ThemedDialog, ThemedDialogTitle } from "./Themes/index.js";
 
-import { entityDefinitionReport, entityEndpointVersion } from "miroir-test-app_deployment-miroir";
+import { entityDefinitionReport as reportFormMlSchemaSource, entityEndpointVersion } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectEditFormDialog"), "UI"
@@ -267,20 +267,20 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
 
   const formikReportDefinitionPath = "formikReportDefinitionPath";
   const reportSectionPath: (string | number)[] = ["definition", "section", "definition", 0];
-  const currentDeploymentReportsEntitiesDefinitionsMapping:DeploymentUuidToReportsEntitiesDefinitions | undefined  =
-    context.deploymentUuidToReportsEntitiesDefinitionsMapping[currentDeploymentUuid??""] || {};
+  const currentDeploymentReportsEntitiesMapping:DeploymentUuidToReportsEntities | undefined  =
+    context.deploymentUuidToReportsEntitiesMapping[currentDeploymentUuid??""] || {};
 
   const currentModel: MetaModel = currentAppModel;
 
   const defaultDetailsReport: Report | undefined = useMemo(() => {
     return entity.defaultInstanceDetailsReportUuid
-      ? currentDeploymentReportsEntitiesDefinitionsMapping?.[currentApplicationSection??"data"]?.availableReports?.find(
+      ? currentDeploymentReportsEntitiesMapping?.[currentApplicationSection??"data"]?.availableReports?.find(
           (r) => r.uuid === entity.defaultInstanceDetailsReportUuid
         )
       : undefined;
   }, [
     entity,
-    currentDeploymentReportsEntitiesDefinitionsMapping,
+    currentDeploymentReportsEntitiesMapping,
     currentApplicationSection,
   ]);
   const formik = useFormikContext<any>()
@@ -301,7 +301,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       (defaultDetailsReport as any)?.definition?.section?.definition[0],
       currentApplication,
       currentDeploymentUuid,
-      currentDeploymentReportsEntitiesDefinitionsMapping,
+      currentDeploymentReportsEntitiesMapping,
       currentModel,
       {
         ...formik.values,
@@ -315,12 +315,12 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
       type: "object",
       definition: {
         ...r,
-        [formikReportDefinitionPath]: entityDefinitionReport.mlSchema as JzodObject,
+        [formikReportDefinitionPath]: reportFormMlSchemaSource.mlSchema as JzodObject,
       },
     };
     return formValueMLSchema;
   }, [
-    currentDeploymentReportsEntitiesDefinitionsMapping,
+    currentDeploymentReportsEntitiesMapping,
   ]);
 
   // Determine if this is an Endpoint entity to use full width dialog

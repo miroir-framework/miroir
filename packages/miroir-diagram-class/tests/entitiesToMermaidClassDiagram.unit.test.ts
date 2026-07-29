@@ -3,38 +3,36 @@
  *
  * These are pure-function tests (layer 2 – domain); no side effects, no
  * mocking, no external dependencies beyond the library itself and the
- * EntityVersion type from miroir-core.
+ * Entity type from miroir-core.
  */
 
 import { describe, it, expect } from "vitest";
-import type { EntityVersion } from "miroir-core";
+import type { Entity } from "miroir-core";
 import {
   jzodTypeToUml,
   sanitiseMermaidId,
   buildEntityUuidToNameMap,
   extractClassInfo,
   extractRelationships,
-  entityDefinitionsToMermaidClassDiagram,
+  entitiesToMermaidClassDiagram,
   metaModelToMermaidClassDiagram,
-  buildEntityDefinitionClickLinks,
   buildEntityClickLinks,
-  presentEntitiesAsDiagramCarriers,
+  coerceDiagramCarriersToEntities,
   type ClassDiagramOptions,
-} from "../src/2_domain/entityDefinitionsToMermaidClassDiagram.js";
+} from "../src/2_domain/entitiesToMermaidClassDiagram.js";
 import {
-  entityDefinitionsToMermaidErDiagram,
+  entitiesToMermaidErDiagram,
   type ErDiagramOptions,
-} from "../src/2_domain/entityDefinitionsToMermaidErDiagram.js";
+} from "../src/2_domain/entitiesToMermaidErDiagram.js";
 
 // ############################################################################
-// Test fixtures – minimal EntityDefinitions modelled after the Library app
+// Test fixtures – minimal Entities (mlSchema) modelled after the Library app
 // ############################################################################
 
-const countryEntityDefinition: EntityVersion = {
-  uuid: "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
-  parentName: "EntityVersion",
-  parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  entityUuid: "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+const countryEntity: Entity = {
+  uuid: "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+  parentName: "Entity",
+  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   name: "Country",
   description: "Country",
   mlSchema: {
@@ -77,11 +75,10 @@ const countryEntityDefinition: EntityVersion = {
   } as any,
 };
 
-const authorEntityDefinition: EntityVersion = {
-  uuid: "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-  parentName: "EntityVersion",
-  parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  entityUuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+const authorEntity: Entity = {
+  uuid: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+  parentName: "Entity",
+  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   name: "Author",
   description: "author",
   mlSchema: {
@@ -148,11 +145,10 @@ const authorEntityDefinition: EntityVersion = {
   } as any,
 };
 
-const bookEntityDefinition: EntityVersion = {
-  uuid: "797dd185-0155-43fd-b23f-f6d0af8cae06",
-  parentName: "EntityVersion",
-  parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  entityUuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+const bookEntity: Entity = {
+  uuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+  parentName: "Entity",
+  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   name: "Book",
   mlSchema: {
     type: "object",
@@ -220,11 +216,10 @@ const bookEntityDefinition: EntityVersion = {
   } as any,
 };
 
-const publisherEntityDefinition: EntityVersion = {
-  uuid: "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
-  parentName: "EntityVersion",
-  parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-  entityUuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+const publisherEntity: Entity = {
+  uuid: "a027c379-8468-43a5-ba4d-bf618be25cab",
+  parentName: "Entity",
+  parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   name: "Publisher",
   description: "Publisher",
   mlSchema: {
@@ -277,11 +272,11 @@ const publisherEntityDefinition: EntityVersion = {
   } as any,
 };
 
-const allEntityDefinitions: EntityVersion[] = [
-  countryEntityDefinition,
-  authorEntityDefinition,
-  bookEntityDefinition,
-  publisherEntityDefinition,
+const allEntities: Entity[] = [
+  countryEntity,
+  authorEntity,
+  bookEntity,
+  publisherEntity,
 ];
 
 // ############################################################################
@@ -319,7 +314,7 @@ describe("sanitiseMermaidId", () => {
 
 describe("buildEntityUuidToNameMap", () => {
   it("builds a UUID-to-name lookup from entity definitions", () => {
-    const map = buildEntityUuidToNameMap(allEntityDefinitions);
+    const map = buildEntityUuidToNameMap(allEntities);
     expect(map).toEqual({
       "d3139a6d-0486-4ec8-bded-2a83a3c3cee4": "Country",
       "d7a144ff-d1b9-4135-800c-a7cfc1f38733": "Author",
@@ -335,7 +330,7 @@ describe("buildEntityUuidToNameMap", () => {
 
 describe("extractClassInfo", () => {
   it("excludes infrastructure attributes by default", () => {
-    const cls = extractClassInfo(countryEntityDefinition);
+    const cls = extractClassInfo(countryEntity);
     const attrNames = cls.attributes.map((a) => a.name);
     expect(attrNames).not.toContain("uuid");
     expect(attrNames).not.toContain("parentName");
@@ -347,7 +342,7 @@ describe("extractClassInfo", () => {
   });
 
   it("includes infrastructure attributes when option is set", () => {
-    const cls = extractClassInfo(countryEntityDefinition, { showInfrastructureAttributes: true });
+    const cls = extractClassInfo(countryEntity, { showInfrastructureAttributes: true });
     const attrNames = cls.attributes.map((a) => a.name);
     expect(attrNames).toContain("uuid");
     expect(attrNames).toContain("parentName");
@@ -356,7 +351,7 @@ describe("extractClassInfo", () => {
   });
 
   it("identifies foreign key attributes", () => {
-    const cls = extractClassInfo(authorEntityDefinition);
+    const cls = extractClassInfo(authorEntity);
     const countryAttr = cls.attributes.find((a) => a.name === "country");
     expect(countryAttr).toBeDefined();
     expect(countryAttr!.isForeignKey).toBe(true);
@@ -364,7 +359,7 @@ describe("extractClassInfo", () => {
   });
 
   it("marks optional attributes correctly", () => {
-    const cls = extractClassInfo(authorEntityDefinition);
+    const cls = extractClassInfo(authorEntity);
     const langAttr = cls.attributes.find((a) => a.name === "language");
     expect(langAttr!.optional).toBe(true);
 
@@ -373,18 +368,18 @@ describe("extractClassInfo", () => {
   });
 
   it("extracts description from entity definition", () => {
-    const cls = extractClassInfo(countryEntityDefinition);
+    const cls = extractClassInfo(countryEntity);
     expect(cls.description).toBe("Country");
   });
 
   it("extracts entity name and uuid", () => {
-    const cls = extractClassInfo(bookEntityDefinition);
+    const cls = extractClassInfo(bookEntity);
     expect(cls.name).toBe("Book");
     expect(cls.entityUuid).toBe("e8ba151b-d68e-4cc3-9a83-3459d309ccf5");
   });
 
   it("detects multiple foreign keys in one entity", () => {
-    const cls = extractClassInfo(bookEntityDefinition);
+    const cls = extractClassInfo(bookEntity);
     const fkAttrs = cls.attributes.filter((a) => a.isForeignKey);
     expect(fkAttrs).toHaveLength(2);
     expect(fkAttrs.map((a) => a.name).sort()).toEqual(["author", "publisher"]);
@@ -393,8 +388,8 @@ describe("extractClassInfo", () => {
 
 describe("extractRelationships", () => {
   it("extracts FK relationships between classes", () => {
-    const entityUuidToName = buildEntityUuidToNameMap(allEntityDefinitions);
-    const classes = allEntityDefinitions.map((ed) => extractClassInfo(ed));
+    const entityUuidToName = buildEntityUuidToNameMap(allEntities);
+    const classes = allEntities.map((ed) => extractClassInfo(ed));
     const rels = extractRelationships(classes, entityUuidToName);
 
     // Author → Country (optional)
@@ -430,31 +425,31 @@ describe("extractRelationships", () => {
   });
 
   it("returns empty array when no FKs are present", () => {
-    const classes = [extractClassInfo(countryEntityDefinition)];
-    const entityUuidToName = buildEntityUuidToNameMap([countryEntityDefinition]);
+    const classes = [extractClassInfo(countryEntity)];
+    const entityUuidToName = buildEntityUuidToNameMap([countryEntity]);
     const rels = extractRelationships(classes, entityUuidToName);
     expect(rels).toEqual([]);
   });
 
   it("ignores FKs pointing to entities not in the provided list", () => {
     // Author references Country, but Country is not included
-    const classes = [extractClassInfo(authorEntityDefinition)];
-    const entityUuidToName = buildEntityUuidToNameMap([authorEntityDefinition]);
+    const classes = [extractClassInfo(authorEntity)];
+    const entityUuidToName = buildEntityUuidToNameMap([authorEntity]);
     const rels = extractRelationships(classes, entityUuidToName);
     // Should be empty because Country is not in the map
     expect(rels).toEqual([]);
   });
 });
 
-describe("entityDefinitionsToMermaidClassDiagram", () => {
+describe("entitiesToMermaidClassDiagram", () => {
   it("produces valid Mermaid classDiagram header", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidClassDiagram(allEntities);
     expect(diagram).toContain("classDiagram");
     expect(diagram).toContain("direction TB");
   });
 
   it("defines classes for all entity definitions", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidClassDiagram(allEntities);
     expect(diagram).toContain("class Country {");
     expect(diagram).toContain("class Author {");
     expect(diagram).toContain("class Book {");
@@ -462,7 +457,7 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("includes domain attributes but not infrastructure attributes", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram([countryEntityDefinition]);
+    const diagram = entitiesToMermaidClassDiagram([countryEntity]);
     // Domain attributes
     expect(diagram).toContain("+String name");
     expect(diagram).toContain("+String iso3166_1Alpha_2?");
@@ -473,7 +468,7 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("shows infrastructure attributes when option is set", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram([countryEntityDefinition], {
+    const diagram = entitiesToMermaidClassDiagram([countryEntity], {
       showInfrastructureAttributes: true,
     });
     expect(diagram).toContain("+UUID uuid");
@@ -482,7 +477,7 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("renders FK attributes as associations, not class members", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidClassDiagram(allEntities);
     // FK attributes should NOT appear in class bodies
     expect(diagram).not.toMatch(/class Author \{[\s\S]*?\+UUID country/);
     // But should appear as relationship lines
@@ -490,19 +485,19 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("renders required FK with cardinality 1", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidClassDiagram(allEntities);
     expect(diagram).toContain('Book "*" --> "1" Author : author');
     expect(diagram).toContain('Book "*" --> "1" Publisher : publisher');
   });
 
   it("renders optional FK with cardinality 0..1", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidClassDiagram(allEntities);
     expect(diagram).toContain('Author "*" --> "0..1" Country : country');
     expect(diagram).toContain('Publisher "*" --> "0..1" Country : country');
   });
 
   it("supports LR direction", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions, {
+    const diagram = entitiesToMermaidClassDiagram(allEntities, {
       direction: "LR",
     });
     expect(diagram).toContain("direction LR");
@@ -510,7 +505,7 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("renders title when showTitle is true", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions, {
+    const diagram = entitiesToMermaidClassDiagram(allEntities, {
       showTitle: true,
       title: "Library Model",
     });
@@ -518,12 +513,12 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("does not render title by default", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidClassDiagram(allEntities);
     expect(diagram).not.toContain("title:");
   });
 
   it("renders classDef colour directives", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions, {
+    const diagram = entitiesToMermaidClassDiagram(allEntities, {
       classColors: {
         highlight: { fill: "#f9f", stroke: "#333", color: "#000" },
       },
@@ -536,7 +531,7 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("renders attribute labels as comments when showAttributeLabels is true", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram([countryEntityDefinition], {
+    const diagram = entitiesToMermaidClassDiagram([countryEntity], {
       showAttributeLabels: true,
     });
     expect(diagram).toContain("%% Name");
@@ -545,7 +540,7 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("handles empty entity definitions list", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram([]);
+    const diagram = entitiesToMermaidClassDiagram([]);
     expect(diagram).toContain("classDiagram");
     expect(diagram).toContain("direction TB");
     // No classes or relationships, just the header
@@ -553,28 +548,23 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("handles entity definition with empty mlSchema definition", () => {
-    const emptyDef: EntityVersion = {
-      uuid: "test-uuid",
-      parentName: "EntityVersion",
-      parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-      entityUuid: "test-entity-uuid",
+    const emptyDef: Entity = {
+      uuid: "test-entity-uuid",
+      parentName: "Entity",
+      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
       name: "EmptyEntity",
       mlSchema: { type: "object", definition: {} } as any,
     };
-    const diagram = entityDefinitionsToMermaidClassDiagram([emptyDef]);
+    const diagram = entitiesToMermaidClassDiagram([emptyDef]);
     expect(diagram).toContain("class EmptyEntity {");
     expect(diagram).toContain("}");
   });
 });
 
 describe("metaModelToMermaidClassDiagram", () => {
-  it("generates diagram from a MetaModel-like structure", () => {
+  it("generates diagram from MetaModel entities with mlSchema", () => {
     const metaModel = {
-      entities: [
-        { uuid: "d3139a6d", parentUuid: "16dbfe28", name: "Country" },
-        { uuid: "d7a144ff", parentUuid: "16dbfe28", name: "Author" },
-      ] as any[],
-      entityVersions: [countryEntityDefinition, authorEntityDefinition],
+      entities: [countryEntity, authorEntity],
     };
     const diagram = metaModelToMermaidClassDiagram(metaModel);
     expect(diagram).toContain("classDiagram");
@@ -582,17 +572,17 @@ describe("metaModelToMermaidClassDiagram", () => {
     expect(diagram).toContain("class Author {");
   });
 
-  it("prefers Entity present-model mlSchema over EntityVersions (#217 Phase 9)", () => {
+  it("ignores entities without mlSchema", () => {
     const metaModel = {
       entities: [
         {
-          uuid: countryEntityDefinition.entityUuid,
+          uuid: countryEntity.uuid,
           parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
           name: "Country",
-          mlSchema: countryEntityDefinition.mlSchema,
+          // no mlSchema
         },
+        countryEntity,
       ] as any[],
-      entityVersions: [],
     };
     const diagram = metaModelToMermaidClassDiagram(metaModel);
     expect(diagram).toContain("class Country {");
@@ -602,35 +592,47 @@ describe("metaModelToMermaidClassDiagram", () => {
 describe("buildEntityClickLinks", () => {
   it("maps sanitised entity name to Entity uuid", () => {
     const links = buildEntityClickLinks([
-      { uuid: countryEntityDefinition.entityUuid, name: "Country" },
-      { uuid: authorEntityDefinition.entityUuid, name: "Author" },
+      { uuid: countryEntity.uuid, name: "Country" },
+      { uuid: authorEntity.uuid, name: "Author" },
     ]);
     expect(links).toEqual({
-      Country: countryEntityDefinition.entityUuid,
-      Author: authorEntityDefinition.entityUuid,
+      Country: countryEntity.uuid,
+      Author: authorEntity.uuid,
     });
+  });
+
+  it("sanitises entity names with special characters", () => {
+    const links = buildEntityClickLinks([
+      { ...countryEntity, uuid: "aaaa-bbbb", name: "My-Entity" },
+    ]);
+    expect(links).toEqual({ My_Entity: "aaaa-bbbb" });
+  });
+
+  it("returns empty map for empty input", () => {
+    expect(buildEntityClickLinks([])).toEqual({});
   });
 });
 
-describe("presentEntitiesAsDiagramCarriers", () => {
-  it("projects Entities with mlSchema into ED-shaped carriers keyed by Entity uuid", () => {
-    const carriers = presentEntitiesAsDiagramCarriers([
+describe("coerceDiagramCarriersToEntities", () => {
+  it("maps legacy EV-shaped carriers onto Entity uuid + mlSchema", () => {
+    const carriers = coerceDiagramCarriersToEntities([
       {
-        uuid: countryEntityDefinition.entityUuid,
+        uuid: "ev-row-uuid",
+        entityUuid: countryEntity.uuid,
         name: "Country",
-        mlSchema: countryEntityDefinition.mlSchema,
-      } as any,
+        parentName: "Entity",
+        mlSchema: countryEntity.mlSchema,
+      },
     ]);
     expect(carriers).toHaveLength(1);
-    expect(carriers[0].entityUuid).toBe(countryEntityDefinition.entityUuid);
-    expect(carriers[0].uuid).toBe(countryEntityDefinition.entityUuid);
-    expect(carriers[0].mlSchema).toEqual(countryEntityDefinition.mlSchema);
+    expect(carriers[0].uuid).toBe("ev-row-uuid");
+    expect(carriers[0].mlSchema).toEqual(countryEntity.mlSchema);
   });
 });
 
 describe("full Library model diagram", () => {
   it("produces a complete diagram for the library model", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions, {
+    const diagram = entitiesToMermaidClassDiagram(allEntities, {
       showTitle: true,
       title: "Library Application Model",
       direction: "TB",
@@ -662,128 +664,90 @@ describe("full Library model diagram", () => {
 });
 
 // ############################################################################
-// buildEntityDefinitionClickLinks
+// classClickLinks option in entitiesToMermaidClassDiagram
 // ############################################################################
 
-describe("buildEntityDefinitionClickLinks", () => {
-  it("maps each entity definition to its UUID keyed by sanitised name", () => {
-    const links = buildEntityDefinitionClickLinks([countryEntityDefinition, authorEntityDefinition]);
-    expect(links).toEqual({
-      Country: "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
-      Author: "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-    });
-  });
-
-  it("sanitises entity names with special characters", () => {
-    const specialDef: EntityVersion = {
-      ...countryEntityDefinition,
-      uuid: "aaaa-bbbb",
-      name: "My-Entity",
-      entityUuid: "cccc-dddd",
-    };
-    const links = buildEntityDefinitionClickLinks([specialDef]);
-    expect(links).toHaveProperty("My_Entity");
-    expect(links["My_Entity"]).toBe("aaaa-bbbb");
-  });
-
-  it("returns empty map for empty input", () => {
-    expect(buildEntityDefinitionClickLinks([])).toEqual({});
-  });
-
-  it("uses entityVersion uuid (not entityUuid) as the value", () => {
-    const links = buildEntityDefinitionClickLinks([bookEntityDefinition]);
-    // bookEntityDefinition.uuid is the entityVersion instance UUID
-    expect(links["Book"]).toBe("797dd185-0155-43fd-b23f-f6d0af8cae06");
-    // That is bookEntityDefinition.uuid, NOT bookEntityDefinition.entityUuid
-    expect(links["Book"]).not.toBe("e8ba151b-d68e-4cc3-9a83-3459d309ccf5");
-  });
-});
-
-// ############################################################################
-// classClickLinks option in entityDefinitionsToMermaidClassDiagram
-// ############################################################################
-
-describe("entityDefinitionsToMermaidClassDiagram with classClickLinks", () => {
+describe("entitiesToMermaidClassDiagram with classClickLinks", () => {
   it("emits click directives for each entry in classClickLinks", () => {
     const clickLinks: Record<string, string> = {
-      Country: "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
-      Author: "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
+      Country: "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+      Author: "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
     };
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions, { classClickLinks: clickLinks });
-    expect(diagram).toContain('click Country call miroirDiagramClassClick("56628e31-3db5-4c5c-9328-4ff7ce54c36a")');
-    expect(diagram).toContain('click Author call miroirDiagramClassClick("b30b7180-f7dc-4cca-b4e8-e476b77fe61d")');
+    const diagram = entitiesToMermaidClassDiagram(allEntities, { classClickLinks: clickLinks });
+    expect(diagram).toContain('click Country call miroirDiagramClassClick("d3139a6d-0486-4ec8-bded-2a83a3c3cee4")');
+    expect(diagram).toContain('click Author call miroirDiagramClassClick("d7a144ff-d1b9-4135-800c-a7cfc1f38733")');
   });
 
   it("does not emit click directives when classClickLinks is absent", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidClassDiagram(allEntities);
     expect(diagram).not.toContain("click ");
   });
 
   it("does not emit click directives when classClickLinks is empty", () => {
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions, { classClickLinks: {} });
+    const diagram = entitiesToMermaidClassDiagram(allEntities, { classClickLinks: {} });
     expect(diagram).not.toContain("click ");
   });
 
   it("emits click directives only for entities present in classClickLinks", () => {
     const clickLinks: Record<string, string> = {
-      Book: "797dd185-0155-43fd-b23f-f6d0af8cae06",
+      Book: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     };
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions, { classClickLinks: clickLinks });
-    expect(diagram).toContain('click Book call miroirDiagramClassClick("797dd185-0155-43fd-b23f-f6d0af8cae06")');
+    const diagram = entitiesToMermaidClassDiagram(allEntities, { classClickLinks: clickLinks });
+    expect(diagram).toContain('click Book call miroirDiagramClassClick("e8ba151b-d68e-4cc3-9a83-3459d309ccf5")');
     expect(diagram).not.toContain("click Country call");
     expect(diagram).not.toContain("click Author call");
     expect(diagram).not.toContain("click Publisher call");
   });
 
   it("combines classClickLinks with classColors and entityColorAssignment", () => {
-    const clickLinks = buildEntityDefinitionClickLinks(allEntityDefinitions);
-    const diagram = entityDefinitionsToMermaidClassDiagram(allEntityDefinitions, {
+    const clickLinks = buildEntityClickLinks(allEntities);
+    const diagram = entitiesToMermaidClassDiagram(allEntities, {
       classClickLinks: clickLinks,
       classColors: { highlight: { fill: "#f9f" } },
       entityColorAssignment: { Book: "highlight" },
     });
-    expect(diagram).toContain('click Country call miroirDiagramClassClick("56628e31-3db5-4c5c-9328-4ff7ce54c36a")');
-    expect(diagram).toContain('click Book call miroirDiagramClassClick("797dd185-0155-43fd-b23f-f6d0af8cae06")');
+    expect(diagram).toContain('click Country call miroirDiagramClassClick("d3139a6d-0486-4ec8-bded-2a83a3c3cee4")');
+    expect(diagram).toContain('click Book call miroirDiagramClassClick("e8ba151b-d68e-4cc3-9a83-3459d309ccf5")');
     expect(diagram).toContain("classDef highlight fill:#f9f");
     expect(diagram).toContain("class Book highlight");
   });
 
   it("click directives appear after class definitions and relationships", () => {
-    const clickLinks = buildEntityDefinitionClickLinks([countryEntityDefinition]);
-    const diagram = entityDefinitionsToMermaidClassDiagram([countryEntityDefinition], {
+    const clickLinks = buildEntityClickLinks([countryEntity]);
+    const diagram = entitiesToMermaidClassDiagram([countryEntity], {
       classClickLinks: clickLinks,
     });
     const classDefIndex = diagram.indexOf("class Country {");
-    const clickIndex = diagram.indexOf('click Country call miroirDiagramClassClick("56628e31-3db5-4c5c-9328-4ff7ce54c36a")');
+    const clickIndex = diagram.indexOf('click Country call miroirDiagramClassClick("d3139a6d-0486-4ec8-bded-2a83a3c3cee4")');
     expect(classDefIndex).toBeGreaterThanOrEqual(0);
     expect(clickIndex).toBeGreaterThan(classDefIndex);
   });
 });
 
 // ############################################################################
-// entityDefinitionsToMermaidErDiagram
+// entitiesToMermaidErDiagram
 // ############################################################################
 
-describe("entityDefinitionsToMermaidErDiagram", () => {
+describe("entitiesToMermaidErDiagram", () => {
   it("returns just 'erDiagram' for empty input", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([]);
+    const diagram = entitiesToMermaidErDiagram([]);
     expect(diagram.trim()).toBe("erDiagram");
   });
 
   it("emits an erDiagram block, not classDiagram", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition]);
+    const diagram = entitiesToMermaidErDiagram([countryEntity]);
     expect(diagram).toContain("erDiagram");
     expect(diagram).not.toContain("classDiagram");
   });
 
   it("emits an entity block for each entity definition", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition, authorEntityDefinition]);
+    const diagram = entitiesToMermaidErDiagram([countryEntity, authorEntity]);
     expect(diagram).toContain("Country {");
     expect(diagram).toContain("Author {");
   });
 
   it("excludes infrastructure attributes by default", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition]);
+    const diagram = entitiesToMermaidErDiagram([countryEntity]);
     expect(diagram).not.toMatch(/\buuid\s+uuid\b/);
     expect(diagram).not.toContain("parentName");
     expect(diagram).not.toContain("parentUuid");
@@ -792,7 +756,7 @@ describe("entityDefinitionsToMermaidErDiagram", () => {
   });
 
   it("includes infrastructure attributes when showInfrastructureAttributes is true", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition], {
+    const diagram = entitiesToMermaidErDiagram([countryEntity], {
       showInfrastructureAttributes: true,
     });
     expect(diagram).toContain("parentName");
@@ -800,30 +764,30 @@ describe("entityDefinitionsToMermaidErDiagram", () => {
   });
 
   it("marks FK attributes with FK keyword inside the entity block", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([authorEntityDefinition]);
+    const diagram = entitiesToMermaidErDiagram([authorEntity]);
     expect(diagram).toMatch(/uuid\s+country\s+FK/);
   });
 
   it("emits a relationship line for each FK", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([authorEntityDefinition, countryEntityDefinition]);
+    const diagram = entitiesToMermaidErDiagram([authorEntity, countryEntity]);
     // Author.country is optional FK → }o--||
     expect(diagram).toContain('Author }o--|| Country : "country"');
   });
 
   it("uses required cardinality (}|) for non-optional FK", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidErDiagram(allEntities);
     // Book.author is required FK
     expect(diagram).toContain('Book }|--|| Author : "author"');
   });
 
   it("uses optional cardinality (}o) for optional FK", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidErDiagram(allEntities);
     // Author.country is optional FK
     expect(diagram).toContain('Author }o--|| Country : "country"');
   });
 
   it("emits relationships for all entities with FKs", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram(allEntityDefinitions);
+    const diagram = entitiesToMermaidErDiagram(allEntities);
     expect(diagram).toContain('Author }o--|| Country : "country"');
     expect(diagram).toContain('Book }|--|| Author : "author"');
     expect(diagram).toContain('Book }|--|| Publisher : "publisher"');
@@ -831,13 +795,13 @@ describe("entityDefinitionsToMermaidErDiagram", () => {
   });
 
   it("emits no relationship lines when there are no FKs", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition]);
+    const diagram = entitiesToMermaidErDiagram([countryEntity]);
     // Country has no FK attributes
     expect(diagram).not.toMatch(/--\|\|/);
   });
 
   it("supports showTitle option", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition], {
+    const diagram = entitiesToMermaidErDiagram([countryEntity], {
       showTitle: true,
       title: "Library ER",
     });
@@ -845,7 +809,7 @@ describe("entityDefinitionsToMermaidErDiagram", () => {
   });
 
   it("does not emit title when showTitle is false", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition], {
+    const diagram = entitiesToMermaidErDiagram([countryEntity], {
       showTitle: false,
       title: "Library ER",
     });
@@ -856,26 +820,25 @@ describe("entityDefinitionsToMermaidErDiagram", () => {
     // Mermaid erDiagram does not support `click … call` directives.  The
     // classClickLinks option is accepted for UUID lookup by DOM listeners in
     // the rendering component, but no directive is written into the diagram text.
-    const clickLinks = { Country: "56628e31-3db5-4c5c-9328-4ff7ce54c36a" };
-    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition], {
+    const clickLinks = { Country: "d3139a6d-0486-4ec8-bded-2a83a3c3cee4" };
+    const diagram = entitiesToMermaidErDiagram([countryEntity], {
       classClickLinks: clickLinks,
     });
     expect(diagram).not.toContain("click ");
   });
 
   it("does not emit click directives when classClickLinks is absent", () => {
-    const diagram = entityDefinitionsToMermaidErDiagram([countryEntityDefinition]);
+    const diagram = entitiesToMermaidErDiagram([countryEntity]);
     expect(diagram).not.toContain("click ");
   });
 
   it("sanitises entity names with special characters", () => {
-    const specialDef: EntityVersion = {
-      ...countryEntityDefinition,
+    const specialDef: Entity = {
+      ...countryEntity,
       uuid: "aaaa-1111",
       name: "My-Entity",
-      entityUuid: "bbbb-2222",
     };
-    const diagram = entityDefinitionsToMermaidErDiagram([specialDef]);
+    const diagram = entitiesToMermaidErDiagram([specialDef]);
     expect(diagram).toContain("My_Entity {");
     expect(diagram).not.toContain("My-Entity");
   });
