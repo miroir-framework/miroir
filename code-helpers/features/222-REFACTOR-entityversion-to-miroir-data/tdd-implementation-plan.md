@@ -23,7 +23,7 @@ Related:
 | 1 | Atomic Miroir relocate (section API + assets + exports + docs + minimal load for EV list/CRUD) | P1, P3, P4, P5, P12, P13 + minimal P2/P6 | ✅ DONE |
 | 2 | Section-aware load / LocalCache / selectors / extract (listing & cache fallback — not bootstrap) | P2, P6, P9 | ✅ DONE |
 | 3 | Persist / backends / Actions / ModelInitializer / Cross | P7, P8, P11 | ✅ DONE |
-| 4 | Exit criteria & non-regression locks (incl. operational-role invariant) | P10, P14, P15, P16 | ⬜ TODO |
+| 4 | Exit criteria & non-regression locks (incl. operational-role invariant) | P10, P14, P15, P16 | 🔄 IN PROGRESS |
 
 **Why Slice 1 is atomic:** changing `getApplicationSection` / `metaMetaModelEntities` / `conceptLevel` without moving Miroir EntityVersion assets (or the reverse) leaves **listing / CRUD / load of EV rows** inconsistent. Classification + filesystem/bundled placement + package export paths must land together, plus the **minimum** wiring so EV instances are readable from **data** (not so that present-model bootstrap depends on EV — it must not).
 
@@ -434,15 +434,17 @@ Close #222 acceptance criteria with durable locks: UUID continuity, **operationa
 
 ### Validation (Slice 4) — issue exit
 
-- [ ] Issue #222 acceptance criteria A–D satisfied
-- [ ] Explicit non-criteria E still true (no freeze feature required)
-- [ ] Operational-role invariant locked in tests
+- [x] Issue #222 acceptance criteria A–D satisfied (locked in `222.phase4.acceptance`)
+- [x] Explicit non-criteria E still true (no freeze feature required) — `222.phase4.nongoals`
+- [x] Operational-role invariant locked in tests
 - [ ] **SLICE EXIT:** `./build-all.sh full devBuild` + `npm run nonreg`
 - [ ] PR lists exact build-all + nonreg stamps
 
 ### Realization (Slice 4)
 
-- (fill when done)
+- Tests: `222.phase4.acceptance.unit.test.ts`, `222.phase4.nongoals.unit.test.ts` (13/13)
+- 4.3 sweep: no remaining production/test imports of `miroir_model/54b9c72f` (only intentional phase1 negative asserts); historical feature docs unchanged
+- Full recompile / nonreg: (pending exit)
 
 ---
 
