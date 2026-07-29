@@ -7,7 +7,7 @@ A Miroir application is always composed of at least two **Deployments**:
 | Deployment | UUID | Role |
 |---|---|---|
 | Admin | `18db21bf-f8d3-4f6a-8296-84b69f6dc48b` | Hosts meta-configuration: the list of deployments, their store configurations, the admin application itself (entities, reports, menus) |
-| Miroir | `10ff36f2-50a3-48d8-b80f-e48e5d13af8e` | Hosts the Miroir meta-model (Entity, EntityVersion, and all framework-level instances: reports, queries, menus, transformers, …) |
+| Miroir | `10ff36f2-50a3-48d8-b80f-e48e5d13af8e` | Hosts the Miroir meta-model bootstrap (**Entity**) plus framework-level concepts; EntityVersion instances and reports/queries/menus/… live in Miroir **data** (#222) |
 | App (optional) | e.g. `f714bb2f-a12d-4e71-a03b-74dcedea6eb4` | Hosts a user-defined application (e.g. Library). One or more per installation. |
 
 Each deployment is divided into three **sections**:
@@ -15,7 +15,7 @@ Each deployment is divided into three **sections**:
 | Section | Purpose |
 |---|---|
 | `admin` | Low-level administration store: list of schemas/collections managed by this deployment. Used internally by the store backend. |
-| `model` | Model definitions (Entity, EntityVersion) and model-level instances (Reports, Menus, Queries, SelfApplication, etc.) |
+| `model` | Model definitions (Entity; for non-Miroir apps also EntityVersion and other framework model concepts) and, for non-Miroir deployments, model-level instances (Reports, Menus, Queries, SelfApplication, etc.) |
 | `data` | Domain data instances (Application, Deployment, Book, Author, …) |
 
 ---
@@ -118,12 +118,12 @@ The bundled store factory (`miroir-store-bundled`) splits statically-imported in
 
 ### Miroir deployment
 
-Only `entity` and `entityDefinition` instances live in `miroir_model/`:
+Only **Entity** instances live in `miroir_model/`. **EntityVersion** instances live in `miroir_data/` (ordinary model concept / documentation-class data; #222):
 
 | Section | parentUuids |
 |---|---|
-| model | `16dbfe28…` (Entity), `54b9c72f…` (EntityVersion) |
-| data | All other parentUuids (reports, menus, selfApplication, selfApplicationVersion, …) from `miroir_data/` |
+| model | `16dbfe28…` (Entity) |
+| data | `54b9c72f…` (EntityVersion) and all other parentUuids (reports, menus, selfApplication, selfApplicationVersion, …) from `miroir_data/` |
 
 ### Admin deployment
 
@@ -175,8 +175,8 @@ Step 3 — For each non-admin deployment:
        → SERVER opens the store (idempotent if already open)
     b. CLIENT.handleAction("rollback", application=deployment.selfApplication)
        → loadConfigurationFromPersistenceStore(miroir/app, deploymentUuid)
-         → For Miroir: read miroirModelEntities (Entity+EntityVersion) from MODEL
-                        read everything else from DATA
+         → For Miroir: read miroirModelEntities (Entity MetaModel peers) from MODEL
+                        read EntityVersion instances and everything else from DATA
          → For App: read metaModelEntities from MODEL, read app entities from DATA
        → CLIENT Redux further populated
 ```
@@ -195,7 +195,7 @@ function loadConfigurationFromPersistenceStore(applicationUuid, deploymentUuid, 
   entities = callPersistenceAction("RestPersistenceAction_read", { section: "model", parentUuid: entityEntity.uuid })
 
   if (deploymentUuid == MIROIR_DEPLOYMENT_UUID):
-    modelEntitiesToFetch = miroirModelEntities  // [Entity, EntityVersion] only
+    modelEntitiesToFetch = miroirModelEntities  // Entity MetaModel peers (not EntityVersion; #222)
   else:
     modelEntitiesToFetch = metaModelEntities    // all framework-level entities
 

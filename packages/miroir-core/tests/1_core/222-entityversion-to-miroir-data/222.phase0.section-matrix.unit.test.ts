@@ -1,0 +1,49 @@
+/**
+ * #222 Phase 0.1 — section matrix locks (retargeted after Slice 1).
+ *
+ * Originally characterized pre-relocate “today”. After Slice 1, Miroir EntityVersion is data.
+ */
+import { describe, expect, it } from "vitest";
+
+import {
+  getApplicationSection,
+  metaMetaModelEntities,
+  metaMetaModelEntityUuids,
+} from "../../../src/1_core/Model.js";
+import {
+  entityEntity,
+  entityEntityDefinition,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
+import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import type { Entity } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+
+const ENTITY_UUID = entityEntity.uuid as string;
+const ENTITY_VERSION_ENTITY_UUID = entityEntityDefinition.uuid as string;
+const MIROIR_APP_UUID = selfApplicationMiroir.uuid as string;
+const LIBRARY_APP_UUID = selfApplicationLibrary.uuid as string;
+
+describe("222 Phase 0 — section matrix (post–Slice 1 locks)", () => {
+  it("Miroir + Entity → model", () => {
+    expect(getApplicationSection(MIROIR_APP_UUID, ENTITY_UUID)).toBe("model");
+  });
+
+  it("Miroir + EntityVersion → data", () => {
+    expect(getApplicationSection(MIROIR_APP_UUID, ENTITY_VERSION_ENTITY_UUID)).toBe("data");
+  });
+
+  it("Library (non-Miroir) + EntityVersion → model", () => {
+    expect(getApplicationSection(LIBRARY_APP_UUID, ENTITY_VERSION_ENTITY_UUID)).toBe("model");
+  });
+
+  it("metaMetaModelEntities is Entity-only", () => {
+    expect(metaMetaModelEntityUuids).toEqual([ENTITY_UUID]);
+    expect(metaMetaModelEntities).toHaveLength(1);
+  });
+
+  it("EntityVersion Entity asset conceptLevel is Model", () => {
+    expect((entityEntityDefinition as Entity).conceptLevel).toBe("Model");
+    expect((entityEntityDefinition as Entity).uuid).toBe(ENTITY_VERSION_ENTITY_UUID);
+    expect((entityEntityDefinition as Entity).name).toBe("EntityVersion");
+  });
+});

@@ -18,7 +18,7 @@ const ENTITY_ENTITY_VERSION_ASSET = join(
 
 const ENTITY_VERSION_OF_ENTITY_VERSION_ASSET = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_model",
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
   "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
   "bdd7ad43-f0fc-4716-90c1-87454c40dd95.json",
 );

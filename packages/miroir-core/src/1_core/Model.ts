@@ -59,14 +59,11 @@ const genType = { // <X> -> X[]
   }
 }
 /**
- * TODO: REMOVE THIS, IDEALLY!!! (WAIT, NO, THIS IS OK AS LONG AS IT ALLOWS TO MANAGE DISCREPANCIES BETWEEN 
- * META-APPLICATION AND OTHER APPLICATIONS, AND THIS CONCERNS MAINLY THE META-APPLICATION ITSELF)
- * */
-// FIRST: CENTRALIZE LOGIC TO DETERMINE MODEL ENTITIES
-// TODO: move entityEntityDefinition fo data section of miroir application
+ * MetaModel bootstrap for the Miroir (meta-)app: Entity only.
+ * EntityVersion is an ordinary Model concept; Miroir instances live in the data section (#222).
+ */
 export const metaMetaModelEntities: Entity[] = [
   entityEntity as Entity,
-  entityEntityDefinition as Entity,
 ];
 export const metaMetaModelEntityUuids: Uuid[] = metaMetaModelEntities.map((e) => e.uuid!);
 

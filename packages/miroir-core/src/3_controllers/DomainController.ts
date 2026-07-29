@@ -525,13 +525,17 @@ export class DomainController implements DomainControllerInterface {
           };
 
           // Model is always loaded entirely (application concepts). Fetch model first so
-          // Entity (and legacy EntityVersion) cache policies are available for data refresh.
+          // Entity cache policies are available for data refresh. EntityVersion is not
+          // required for Miroir bootstrap (#222 — EV instances load from data when listed).
           const modelFetchTargets = modelEntitiesToFetch.map((e) => ({
             section: "model" as ApplicationSection,
             entity: e,
           }));
           const modelInstances = await Promise.all(modelFetchTargets.map(fetchEntityInstances));
 
+          // Optional cache-policy fallback map from EntityVersion instances when they were
+          // fetched in the model phase (non-Miroir / legacy). Miroir EV lives in data (#222);
+          // empty map is fine — present-model uses Entity.cache.
           const entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {};
           const entityDefinitionFetchIndex = modelEntitiesToFetch.findIndex(
             (e) => e.uuid === entityEntityDefinition.uuid,

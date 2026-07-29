@@ -4,6 +4,7 @@
  */
 
 import {
+  getApplicationSection,
   getMiroirFundamentalSchemaForDeployment,
   getReduxDeploymentsStateIndex,
   type ApplicationDeploymentMap,
@@ -58,6 +59,10 @@ export function currentModel(
     const metaModelSection = "model";
     const modelSection =
       deploymentUuid == deployment_Miroir.uuid ? "data" : "model";
+    const entityVersionSection = getApplicationSection(
+      application,
+      entityEntityDefinition.uuid
+    );
     const applicationVersions =
       state.current[
         getReduxDeploymentsStateIndex(
@@ -76,7 +81,7 @@ export function currentModel(
       ];
     const entityDefinitions =
       state.current[
-        getReduxDeploymentsStateIndex(deploymentUuid, metaModelSection, entityEntityDefinition.uuid)
+        getReduxDeploymentsStateIndex(deploymentUuid, entityVersionSection, entityEntityDefinition.uuid)
       ];
     const jzodSchemas =
       state.current[

@@ -4,6 +4,8 @@
 
 Move **`EntityVersion`** out of the Miroir bootstrapped **(meta-)model** into the Miroir **data** section as an ordinary framework **model concept** (same class as Menu, Report, Transformer, Query). Present-model authority stays on **`Entity`** (#217). Freeze (#216) is **not** implemented here.
 
+**Operational role (today):** EntityVersion instances are non-operational — documentation / listing / CRUD only (like ApplicationVersion). They are not used to bootstrap or interpret the live model. Keep Report/Menu/Query/… **Entity** rows as-is; relocate matching EntityVersion **instances** to Miroir data (no purge).
+
 This plan turns [`./analysis.md`](./analysis.md) problematics **P1–P16** / groups **G1–G5** into vertical red→green slices. **Done means code + tests + green full recompile + green full nonreg per slice**, not docs alone.
 
 Related:
@@ -17,13 +19,15 @@ Related:
 
 | Slice | Title | Problematics | Status |
 |-------|-------|--------------|--------|
-| 0 | Characterization locks (today’s matrix) | P3, P10, P12, P16 baseline | ⬜ TODO |
-| 1 | Atomic Miroir relocate (section API + assets + exports + docs + minimal load/cache) | P1, P3, P4, P5, P12, P13 + minimal P2/P6 | ⬜ TODO |
-| 2 | Load / LocalCache / selectors / extract (section-aware) | P2, P6, P9 | ⬜ TODO |
-| 3 | Persist / backends / Actions / Cross | P7, P8, P11 | ⬜ TODO |
-| 4 | Exit criteria & non-regression locks | P10, P14, P15, P16 | ⬜ TODO |
+| 0 | Characterization locks (today’s matrix) | P3, P10, P12, P16 baseline | ✅ DONE |
+| 1 | Atomic Miroir relocate (section API + assets + exports + docs + minimal load for EV list/CRUD) | P1, P3, P4, P5, P12, P13 + minimal P2/P6 | ⬜ TODO |
+| 2 | Section-aware load / LocalCache / selectors / extract (listing & cache fallback — not bootstrap) | P2, P6, P9 | ⬜ TODO |
+| 3 | Persist / backends / Actions / ModelInitializer / Cross | P7, P8, P11 | ⬜ TODO |
+| 4 | Exit criteria & non-regression locks (incl. operational-role invariant) | P10, P14, P15, P16 | ⬜ TODO |
 
-**Why Slice 1 is atomic:** changing `getApplicationSection` / `metaMetaModelEntities` / `conceptLevel` without moving Miroir EntityVersion assets (or the reverse) leaves load/persist inconsistent. One vertical slice must land classification + filesystem/bundled asset placement + package export paths + the **minimum** DomainController / LocalCache section fix so Miroir still loads. Slice 2 deepens any remaining hard-coded `"model"` lookups.
+**Why Slice 1 is atomic:** changing `getApplicationSection` / `metaMetaModelEntities` / `conceptLevel` without moving Miroir EntityVersion assets (or the reverse) leaves **listing / CRUD / load of EV rows** inconsistent. Classification + filesystem/bundled placement + package export paths must land together, plus the **minimum** wiring so EV instances are readable from **data** (not so that present-model bootstrap depends on EV — it must not).
+
+**Slice cut unchanged after analysis adjustments:** no slices added or removed. Adjustments change **risk framing and exit criteria** inside Slices 1–4 (EV is documentation-class today; Entity-only bootstrap; codegen uses Entity `mlSchema`; relocate ≠ purge). Optional micro-work (e.g. drop EV cache-policy fallback) stays inside Slice 2.
 
 ---
 
@@ -33,14 +37,17 @@ Related:
 |-----------|----------------------|
 | `metaMetaModelEntities` | **Entity-only** after Slice 1. Do **not** add Commit. |
 | Commit (`conceptLevel: MetaModel`) | **Leave untouched** (P12). Do not demote/promote as part of #222. |
-| Redundant live EntityVersion rows (~20 Miroir copies) | **Relocate only** — **do not purge** in #222 (P10). File a follow-up if purge is desired. |
+| Redundant live EntityVersion rows (~20 Miroir copies) | **Relocate only** — **do not purge** in #222 (P10). Keep Report/Menu/Query/… **Entity** rows unchanged; move corresponding EntityVersion instances to data. |
 | Library / Admin EntityVersion section | **Unchanged**: remain **model** with other framework model concepts (P3). Only Miroir instances move to **data**. |
 | Admin bundled `ADMIN_MODEL_PARENT_UUIDS` | **Keep** EntityVersion parentUuid in Admin **model** set (Admin is not Miroir). |
 | Miroir bundled `MIROIR_MODEL_PARENT_UUIDS` | **Remove** EntityVersion (`54b9c72f…`) in Slice 1 — model = Entity only. |
 | `extractApplicationModel` | Use `getApplicationSection(applicationUuid, entityEntityDefinition.uuid)` (or equivalent) — not hard-coded `"model"` (Slice 2). |
 | Live schema authority | **Entity only**. Do not reintroduce EntityVersion as present-model carrier (#220/#221 coordination). |
+| Bootstrap | **Entity-only.** `loadConfigurationFromPersistenceStore` must not treat EntityVersion as required for live-model bootstrap (analysis P2). |
+| Codegen / fundamental schema (P5) | Uses Entity `entityEntityDefinition.mlSchema` — **not** self-EV as MetaModel bootstrap. Slice 1 updates import **paths**; do not invent codegen work around self-EV section. |
 | Freeze / historical minting | Out of scope; Slice 4 locks that existing relocated UUIDs are **not** freeze-mint helpers. |
 | Slice exit gate | **Full recompile + full nonreg** (mandatory — see below). |
+| Slice cut | **0–4 unchanged** (no add/remove). Framing updates only (see slice map). |
 
 ---
 
@@ -58,10 +65,11 @@ Related:
    - EntityVersion instances under `miroir_data/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/`
    - No EntityVersion instance files under `miroir_model/54b9c72f-…`
    - Entity “EntityVersion” row remains under `miroir_model/16dbfe28-…/54b9c72f-….json` with `conceptLevel: "Model"`
-5. **Load / cache**
-   - After Miroir rollback, EntityVersion instances are present in LocalCache under the **data** section index; `MetaModel.entityVersions` non-empty when assembled
+5. **Load / listing (not bootstrap)**
+   - After Miroir rollback: **Entity** instances under **model**; present-model (`mlSchema`, …) resolves **without** EntityVersion
+   - EntityVersion instances under the **data** section index when listing / assembling `MetaModel.entityVersions` / CRUD
 6. **Writes**
-   - Any remaining Miroir EntityVersion upsert uses `applicationSection: "data"`; Library stays `"model"`
+   - Any remaining Miroir EntityVersion upsert (incl. `ModelInitializer`) uses `applicationSection: "data"`; Library stays `"model"`
 
 ---
 
@@ -145,12 +153,19 @@ Lock **current** behavior so Slice 1+ changes are intentional and Library/Admin 
 
 ### Validation (Slice 0)
 
-- [ ] Targeted `222.phase0` tests green
-- [ ] **SLICE EXIT:** `./build-all.sh full` + `npm run nonreg`
+- [x] Targeted `222.phase0` tests green
+- [x] **SLICE EXIT:** `./build-all.sh full` + `npm run nonreg` (see Realization — DomainController.integ ignored)
 
 ### Realization (Slice 0)
 
-- (fill when done)
+- Tests:
+  - `packages/miroir-core/tests/1_core/222-entityversion-to-miroir-data/222.phase0.section-matrix.unit.test.ts`
+  - `packages/miroir-core/tests/1_core/222-entityversion-to-miroir-data/222.phase0.inventory-locks.unit.test.ts` (exports `MIROIR_ENTITY_VERSION_INSTANCE_UUIDS_SLICE0`)
+- Targeted: `npm run testByFile -w miroir-core -- 222.phase0` → 9/9 passed
+- Full recompile: `./build-all.sh full` (core: `devBuild` via default build-all path) → ALL DONE (~10m 14s)
+- Full nonreg: `npm run nonreg` → snapshot `test-results/nonreg/20260729T133928Z` — **31 passed, 1 failed**
+  - **Ignored (pre-existing / out of Slice 0 scope):** `appstack-DomainController.integ` — LEGACY compositePK Data.CRUD Postgres upsert syntax error (`ON` / composite PK); unrelated to characterization-only Slice 0 (no production code changes). Other DomainController MiroirTest integ suites in the same nonreg run passed.
+- Production code: none (characterization only)
 
 ---
 
@@ -158,9 +173,11 @@ Lock **current** behavior so Slice 1+ changes are intentional and Library/Admin 
 
 ### Goal
 
-EntityVersion becomes a Miroir **data**-section concept: classification, assets, exports, docs, and **minimum** load/cache wiring so Miroir startup still populates EntityVersion instances.
+EntityVersion becomes a Miroir **data**-section concept: classification, assets, exports, docs, and **minimum** load wiring so EV instances remain **listable / CRUD-able from data**.
 
-Covers analysis G1+G2 (+ minimal G3). Does **not** purge redundant rows (P10).
+Present-model **bootstrap is Entity-only** (analysis P2 / operational-role note). Empty or late EV collections must **not** break Entity load or live schema. Do **not** purge redundant EV rows (P10); keep Report/Menu/Query/… **Entity** rows as-is.
+
+Covers analysis G1+G2 (+ minimal G3 for EV visibility). Codegen (P5): path updates only — fundamental schema already reads Entity `mlSchema`, not self-EV as MetaModel bootstrap.
 
 ### 1.1 RED → GREEN — Target section matrix
 
@@ -186,39 +203,43 @@ Covers analysis G1+G2 (+ minimal G3). Does **not** purge redundant rows (P10).
 - `miroir_data/54b9c72f-…` exists and contains the **same UUID set** as Slice 0 inventory
 - `miroir_model/54b9c72f-…` is absent or empty (no instance files)
 - Deployment `index.ts` imports resolve from `miroir_data/54b9c72f-…` (no `miroir_model/54b9c72f` import paths for instances)
-- Self-EV `bdd7ad43-…` still loadable via export
+- Self-EV `bdd7ad43-…` still loadable via export (static path only — not a bootstrap artefact)
+- Entity `entityEntityDefinition` still exports with `mlSchema` (codegen input)
 
 **GREEN:**
 
-- Move instance JSON files model → data (preserve UUIDs / contents)
-- Update `packages/miroir-test-app_deployment-miroir/index.ts` (and any barrel) paths
+- Move **EntityVersion instance** JSON files model → data (preserve UUIDs / contents)
+- Leave Report/Menu/Query/… **Entity** JSON under `miroir_model/16dbfe28-…` unchanged
+- Update `packages/miroir-test-app_deployment-miroir/index.ts` (and any barrel) paths for EV instances
 - Update Miroir bundled classification: remove `54b9c72f…` from `MIROIR_MODEL_PARENT_UUIDS` (`miroir-sandbox` / any duplicate seed)
 - **Do not** remove EntityVersion from `ADMIN_MODEL_PARENT_UUIDS*`
+- Do **not** invent extra codegen changes beyond path/`devBuild` success (P5)
 
-### 1.3 RED → GREEN — Minimal load / cache so Miroir still boots
+### 1.3 RED → GREEN — Minimal load so Entity boots; EV listable from data
 
 **RED** (`222.phase1.miroir-load.unit.test.ts` and/or filesystem DomainController integ assert):
 
-- After Miroir `rollback` / loadConfiguration path, EntityVersion instances are readable from section **`"data"`**
-- Assembled MetaModel (or LocalCache index) exposes non-empty `entityVersions` with the Slice 0 UUID set
-- Live Entity `mlSchema` still resolves without requiring EntityVersion for present-model
+- After Miroir `rollback` / loadConfiguration: **Entity** instances present under **model**; sample Entity has `mlSchema` **without** requiring EntityVersion
+- EntityVersion instances are readable from section **`"data"`** (listing / inventory continuity vs Slice 0 UUID set)
+- Do **not** require that EV be available during the model-fetch phase for bootstrap to succeed
 
 **GREEN (minimum):**
 
-- DomainController: stop assuming EntityVersion collection comes from `modelInstances` / `modelEntitiesToFetch` for Miroir; read from data fetch (or section-aware index)
-- LocalCache redux/zustand MetaModel assembly: index EntityVersion with **data** section for Miroir (use `getApplicationSection` — avoid hard-coding if practical)
+- DomainController: Miroir model fetch no longer *requires* EntityVersion in `modelEntitiesToFetch`; data fetch (or section-aware path) supplies EV instances for listing
+- Enough LocalCache indexing so EV rows are not stuck under a stale `"model"` index for Miroir (prefer `getApplicationSection`; deepen remaining hardcodes in Slice 2)
 - `./build-all.sh full devBuild` required in this slice (assets moved)
 
 ### 1.4 Docs (same slice)
 
-- Update `docs/reference/data-architecture-deployments.md`: Miroir model = Entity only; EntityVersion instances in data
+- Update `docs/reference/data-architecture-deployments.md`: Miroir model = Entity only; EntityVersion instances in data (documentation-class / future versioning)
 - Fix comments in `Model.ts` / `bundledData.ts` that still say model = Entity + EntityVersion
 
 ### Validation (Slice 1)
 
 - [ ] `222.phase1` unit tests green
-- [ ] Filesystem DomainController Miroir load smoke green (targeted)
+- [ ] Miroir load smoke: Entity present-model OK **without** EV in model section; EV UUIDs readable from **data**
 - [ ] Grep: no `miroir_model/54b9c72f` imports for instances in deployment package
+- [ ] `devBuild` / type generation succeeds after path updates (no self-EV-as-bootstrap work)
 - [ ] **SLICE EXIT:** `./build-all.sh full devBuild` + `npm run nonreg`
 
 ### Realization (Slice 1)
@@ -227,19 +248,23 @@ Covers analysis G1+G2 (+ minimal G3). Does **not** purge redundant rows (P10).
 
 ---
 
-## Slice 2 — Load / LocalCache / selectors / extract (section-aware)
+## Slice 2 — Section-aware load / LocalCache / selectors / extract
 
 ### Goal
 
-Eliminate remaining hard-coded `"model"` + EntityVersion assumptions in load, selectors, and extraction tooling. Deepen Slice 1’s minimal patches into a single section strategy.
+Eliminate remaining hard-coded `"model"` + EntityVersion assumptions in load, selectors, and extraction tooling so **listing / `MetaModel.entityVersions` / cache-policy fallback** stay correct.
 
-### 2.1 RED → GREEN — Selectors & LocalCache
+**Not** “fix Entity bootstrap” — bootstrap is Entity-only (P2). Deepen Slice 1’s minimal patches into a single section strategy.
+
+Optional (same slice, not a new slice): drop EntityVersion cache-policy fallback and rely on `Entity.cache` only when safe.
+
+### 2.1 RED → GREEN — Selectors & LocalCache (listing)
 
 **RED** (`222.phase2.localcache-selectors.unit.test.ts`):
 
 - For Miroir deployment uuid, EntityVersion state index uses **data** section
 - For Library deployment uuid, EntityVersion state index uses **model** section
-- `getReportsAndEntitiesForDeploymentUuid` / MetaModel assemblers still return `entityVersions` for Miroir after load
+- After load, MetaModel assemblers / `getReportsAndEntitiesForDeploymentUuid` return `entityVersions` for Miroir when EV rows exist (listing continuity — not present-model authority)
 
 **GREEN:**
 
@@ -258,16 +283,17 @@ Eliminate remaining hard-coded `"model"` + EntityVersion assumptions in load, se
 
 - Replace hard-coded `extractEntityInstances(..., "model", entityEntityDefinition.uuid, ...)` with section from `getApplicationSection`
 
-### 2.3 RED → GREEN — DomainController leftover map
+### 2.3 RED → GREEN — DomainController cache-policy map (fallback, not bootstrap)
 
-**RED:** assert any `entityDefinitionsByEntityUuid` (or successor) built during Miroir load is populated from the **data** fetch results, not an empty model slot.
+**RED:** if `entityDefinitionsByEntityUuid` (or successor) is still built during Miroir load for `resolveEntitiesToFetchOnRefresh`, it is populated from the **data** fetch — or the fallback is removed and `Entity.cache` alone drives refresh policy.
 
-**GREEN:** finish DomainController cleanup left from Slice 1.
+**GREEN:** finish DomainController cleanup left from Slice 1; prefer Entity-only cache policy when practical.
 
 ### Validation (Slice 2)
 
 - [ ] `222.phase2` tests green
 - [ ] Grep load/selector/extract paths: no unconditional `"model"` + `entityEntityDefinition` for Miroir
+- [ ] Present-model paths still do not require EntityVersion
 - [ ] **SLICE EXIT:** `./build-all.sh full` (use `devBuild` only if assets/schemas changed again) + `npm run nonreg`
 
 ### Realization (Slice 2)
@@ -276,11 +302,11 @@ Eliminate remaining hard-coded `"model"` + EntityVersion assumptions in load, se
 
 ---
 
-## Slice 3 — Persist / backends / Actions / Cross
+## Slice 3 — Persist / backends / Actions / ModelInitializer / Cross
 
 ### Goal
 
-Reads **and writes** of EntityVersion for Miroir use `"data"`; Library remains `"model"`. Bundled/filesystem/indexedDb/postgres paths used in CI stay consistent. Cross / SAV queries still work across sections (P11).
+Reads **and writes** of EntityVersion for Miroir use `"data"`; Library remains `"model"`. Bundled/filesystem/indexedDb/postgres paths used in CI stay consistent. Explicitly fix **`ModelInitializer`** EV instance upserts that still force `"model"` (analysis P5/P8). Cross / SAV section matrix locked for future versioning (P11) — not required for live present-model ops.
 
 ### 3.1 RED → GREEN — Section on write
 
@@ -295,7 +321,19 @@ Reads **and writes** of EntityVersion for Miroir use `"data"`; Library remains `
 - Wire writes through `getApplicationSection`
 - Fix freeze scaffolding (`applicationVersionFreeze.ts`) section constant if it hard-codes model for Miroir (still no full freeze feature)
 
-### 3.2 RED → GREEN — Backend round-trip (filesystem first)
+### 3.2 RED → GREEN — `ModelInitializer` EV instance section
+
+**RED** (`222.phase3.model-initializer-section.unit.test.ts` or source/contract assert):
+
+- Miroir store bootstrap paths that upsert EntityVersion **instances** (incl. self-EV `entityDefinitionEntityDefinition` / `entityVersionEntityVersion`) use **`"data"`**, not `"model"`
+- Creating the Entity named EntityVersion / Entity rows for framework concepts remains consistent with Entity-in-model rules
+
+**GREEN:**
+
+- Update `ModelInitializer.ts` (and any twin initializer) section arguments for EV **instances** on Miroir
+- Do not move Report/Menu/Query **Entity** bootstrap into data
+
+### 3.3 RED → GREEN — Backend round-trip (filesystem first)
 
 **RED** (filesystem DomainController integ or store-level test):
 
@@ -304,11 +342,11 @@ Reads **and writes** of EntityVersion for Miroir use `"data"`; Library remains `
 
 **GREEN:** filesystem path correct; extend to indexedDb / sql **if** those configs are in the nonreg manifest for this repo’s default `npm run nonreg` (do not skip backends that nonreg already runs).
 
-### 3.3 RED → GREEN — Cross / SAV matrix lock
+### 3.4 RED → GREEN — Cross / SAV matrix lock
 
 **RED** (`222.phase3.versioning-section-matrix.unit.test.ts`):
 
-Document / assert Miroir section matrix:
+Document / assert Miroir section matrix (future versioning; documentation-class today):
 
 | Concept | Miroir section |
 |---------|----------------|
@@ -324,6 +362,7 @@ Library: EntityVersion remains model; Cross/SAV per existing Library layout.
 ### Validation (Slice 3)
 
 - [ ] `222.phase3` tests green
+- [ ] ModelInitializer Miroir EV instance writes use `"data"`
 - [ ] Filesystem (and nonreg-covered backends) EntityVersion round-trip green
 - [ ] **SLICE EXIT:** `./build-all.sh full` (+ `devBuild` if needed) + `npm run nonreg`
 
@@ -337,18 +376,20 @@ Library: EntityVersion remains model; Cross/SAV per existing Library layout.
 
 ### Goal
 
-Close #222 acceptance criteria with durable locks: UUID continuity, no live-schema regression, no purge of redundant rows unless explicitly scoped later, coordination with #220/#221.
+Close #222 acceptance criteria with durable locks: UUID continuity, **operational-role invariant** (live paths do not require EntityVersion), no purge of redundant EV rows, Report/Menu/Query Entities unchanged, coordination with #220/#221.
 
 ### 4.1 RED → GREEN — Acceptance checklist as tests
 
 **RED** (`222.phase4.acceptance.unit.test.ts` / integ):
 
 - Miroir EntityVersion Entity `conceptLevel === "Model"`
-- Miroir instances only under data assets
-- Slice 0 UUID set ⊆ loaded Miroir EntityVersion UUIDs after rollback
+- Miroir EV instances only under data assets
+- Slice 0 UUID set ⊆ loaded Miroir EntityVersion UUIDs after rollback (from **data**)
 - Sample Entity present-model (`mlSchema`) still on Entity
+- Present-model / ordinary Report–Query–Transformer smoke does **not** require EntityVersion instances (operational-role lock)
 - `metaMetaModelEntities` Entity-only
-- Grep-oriented lock: deployment instance imports not under `miroir_model/54b9c72f`
+- Grep-oriented lock: deployment EV instance imports not under `miroir_model/54b9c72f`
+- Report/Menu/Query/… Entity assets still under `miroir_model/16dbfe28-…` (P10)
 
 **GREEN:** fill any remaining gaps from Slices 1–3; no new product behavior.
 
@@ -359,6 +400,7 @@ Close #222 acceptance criteria with durable locks: UUID continuity, no live-sche
 - Redundant live EntityVersion rows still present (count ≥ Slice 0 count) — documents “relocate ≠ purge”
 - Commit still not forced into `metaMetaModelEntities`
 - Comment/JSDoc near freeze helpers: historical mint must use **new** UUIDs (not reuse relocated live rows) — characterization of code comment or helper contract if already present
+- EntityVersion remains documentation-class / listing-CRUD today (no freeze feature required to close #222)
 
 **GREEN:** documentation / comments / locks only.
 
@@ -371,6 +413,7 @@ Close #222 acceptance criteria with durable locks: UUID continuity, no live-sche
 
 - [ ] Issue #222 acceptance criteria A–D satisfied
 - [ ] Explicit non-criteria E still true (no freeze feature required)
+- [ ] Operational-role invariant locked in tests
 - [ ] **SLICE EXIT:** `./build-all.sh full devBuild` + `npm run nonreg`
 - [ ] PR lists exact build-all + nonreg stamps
 
@@ -384,11 +427,14 @@ Close #222 acceptance criteria with durable locks: UUID continuity, no live-sche
 
 - Freeze Action / Application Version planner (#216 proper)
 - Purging redundant live EntityVersion rows
+- Moving Report/Menu/Query/… **Entity** rows out of Miroir model
+- Treating EntityVersion as required for live present-model bootstrap
 - Full `EntityDefinition` string purge (#220)
 - View-tree present-model decoupling beyond breakage from section changes (#221)
 - Demoting/promoting Commit MetaModel peer
 - Moving Library/Admin EntityVersion instances to data
 - Option B action-log versioning
+- Inventing codegen changes that assume self-EV is MetaModel bootstrap (P5 — path update only)
 
 ---
 
@@ -396,7 +442,7 @@ Close #222 acceptance criteria with durable locks: UUID continuity, no live-sche
 
 | Slice | Targeted tests | Full recompile | Full nonreg | DONE |
 |-------|----------------|----------------|-------------|------|
-| 0 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 0 | ✅ | ✅ | ✅ (DomainController.integ ignored) | ✅ |
 | 1 | ⬜ | ⬜ | ⬜ | ⬜ |
 | 2 | ⬜ | ⬜ | ⬜ | ⬜ |
 | 3 | ⬜ | ⬜ | ⬜ | ⬜ |
