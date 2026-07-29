@@ -1,5 +1,5 @@
-import { ZodParseError, ZodParseErrorIssue } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { mergeIfUnique, pushIfUnique } from "./tools";
+import { ZodParseError, ZodParseErrorIssue } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { mergeIfUnique, pushIfUnique } from "../tools";
 
 export function zodErrorFirstIssueLeaf(error:ZodParseError): undefined | ZodParseErrorIssue {
   if (error.issues.length === 0) {

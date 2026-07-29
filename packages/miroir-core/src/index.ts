@@ -752,15 +752,15 @@ export {
   parseCompositeKeyValue,
   resolveInstanceParentUuid,
   serializeCompositeKeyValue
-} from "./1_core/EntityPrimaryKey";
-export type { EntityPrimaryKeySource } from "./1_core/EntityPrimaryKey";
+} from "./1_core/Entity/EntityPrimaryKey";
+export type { EntityPrimaryKeySource } from "./1_core/Entity/EntityPrimaryKey";
 export {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges,
-} from "./1_core/modelEntityDualWrite.js";
+} from "./1_core/Entity/modelEntityDualWrite.js";
 export type {
   AlterEntityAttributeColumns,
-} from "./1_core/modelEntityDualWrite.js";
+} from "./1_core/Entity/modelEntityDualWrite.js";
 export {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   UNVERSIONED_APPLICATION_FIXTURE,
@@ -780,14 +780,9 @@ export type {
   SnapshotOptions,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export {
-  getMetaModelEntityVersions,
-  withMetaModelEntityVersions,
-} from "./1_core/metaModelEntityVersions.js";
-export {
   actionsWithDeploymentInPayload, noValue
 } from "./1_core/Instance";
 export {
-  // getDefaultValueForJzodSchemaDEFUNCT,
   getDefaultValueForJzodSchemaWithResolution,
   getDefaultValueForJzodSchemaWithResolutionNonHook
 } from "./1_core/jzod/getDefaultValueForJzodSchema.js";
@@ -869,8 +864,8 @@ export {
   projectEntityInstance,
   projectEntityInstancesOnAttributes,
   resolveProjectionIdentityFields,
-} from "./1_core/instanceProjection.js";
-export type { InstanceProjectionAttributes } from "./1_core/instanceProjection.js";
+} from "./1_core/partials/instanceProjection.js";
+export type { InstanceProjectionAttributes } from "./1_core/partials/instanceProjection.js";
 export {
   LOCAL_CACHE_PARTIAL_SEGMENT_SUFFIX,
   buildLocalCacheSegmentHeader,
@@ -880,13 +875,13 @@ export {
   resolveCacheSegmentKind,
   resolveLoadCacheSegment,
   stripLocalCacheSegmentSuffix,
-} from "./1_core/localCacheSegment.js";
+} from "./1_core/localCache/localCacheSegment.js";
 export type {
   CacheFreshness,
   CacheSegmentKind,
   LocalCacheLoadSegmentHint,
   LocalCacheSegmentHeader,
-} from "./1_core/localCacheSegment.js";
+} from "./1_core/localCache/localCacheSegment.js";
 export {
   MIROIR_CACHE_SEGMENT_MARKER,
   PARTIAL_MUTATION_REJECTED_MESSAGE,
@@ -918,7 +913,7 @@ export {
   describe,
   expect,
   TestFramework
-} from "./1_core/test-expect";
+} from "./1_core/testing/test-expect";
 export {
   base64ToBlob,
   fileToBase64,
@@ -927,7 +922,7 @@ export {
   pushIfUnique,
   validateMimeType
 } from "./1_core/tools.js";
-export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/zodParseErrorHandler";
+export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/jzod/zodParseErrorHandler";
 export { shouldTraceEvolutionEvent, MIROIR_APPLICATION_UUID } from "./2_domain/evolutionTracePolicy.js";
 export {
   createTraceEventFromModelAction,
@@ -1033,7 +1028,7 @@ export {
   resolveReportQueryLoadAttributes,
   resolveReportQueryLoadSegmentKind,
   type LocalCacheSegmentHeaderLookup,
-} from "./1_core/reportQueryLoadSegment.js";
+} from "./1_core/localCache/reportQueryLoadSegment.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
 export {
   aggregateAttributedByEntity,

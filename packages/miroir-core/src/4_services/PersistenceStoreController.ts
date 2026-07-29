@@ -28,7 +28,7 @@ import {
   projectEntityInstance,
   projectEntityInstancesOnAttributes,
   resolveProjectionIdentityFields,
-} from "../1_core/instanceProjection.js";
+} from "../1_core/partials/instanceProjection.js";
 import { modelInitialize } from "../3_controllers/ModelInitializer";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -47,7 +47,7 @@ import {
 } from "../0_interfaces/2_domain/DomainElement";
 import { ACTION_OK } from "../1_core/constants";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { resolveInstanceParentUuid } from "../1_core/EntityPrimaryKey";
+import { resolveInstanceParentUuid } from "../1_core/Entity/EntityPrimaryKey";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(

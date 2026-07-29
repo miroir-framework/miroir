@@ -1,9 +1,9 @@
 /**
  * #220 Phase 6 — MetaModel.entityDefinitions → entityVersions rename wave.
  */
-import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { describe, expect, it } from "vitest";
 
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
@@ -13,10 +13,6 @@ import type {
   MetaModel,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { emptyMetaModel } from "../../../src/1_core/Deployment.js";
-import {
-  getMetaModelEntityVersions,
-  withMetaModelEntityVersions,
-} from "../../../src/1_core/metaModelEntityVersions.js";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
 
@@ -49,17 +45,6 @@ describe("220 Phase 6 — MetaModel.entityVersions vocabulary", () => {
     expect((defaultMiroirMetaModel as MetaModel).entityVersions.length).toBeGreaterThan(0);
     expect(Array.isArray((defaultLibraryAppModel as MetaModel).entityVersions)).toBe(true);
     expect((defaultLibraryAppModel as MetaModel).entityVersions.length).toBeGreaterThan(0);
-  });
-
-  it("getMetaModelEntityVersions reads entityVersions", () => {
-    const versions = getMetaModelEntityVersions(defaultLibraryAppModel as MetaModel);
-    expect(versions).toBe((defaultLibraryAppModel as MetaModel).entityVersions);
-  });
-
-  it("withMetaModelEntityVersions writes entityVersions only", () => {
-    const next = withMetaModelEntityVersions(defaultLibraryAppModel as MetaModel, []);
-    expect(next.entityVersions).toEqual([]);
-    expect(next).not.toHaveProperty("entityDefinitions");
   });
 
   it("bootFromPersistedState interface parameter is entityVersions", () => {

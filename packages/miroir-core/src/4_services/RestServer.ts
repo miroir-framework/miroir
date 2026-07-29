@@ -27,7 +27,7 @@ import { generateRestServiceResponse } from "./RestTools";
 import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
 import { defaultMiroirModelEnvironment } from "../1_core/Model";
-import { parseAttributesProjectionParam } from "../1_core/instanceProjection.js";
+import { parseAttributesProjectionParam } from "../1_core/partials/instanceProjection.js";
 import {
   // getExtractorTemplateRunnerParamsForDomainState,
   getQueryTemplateRunnerParamsForDomainState,

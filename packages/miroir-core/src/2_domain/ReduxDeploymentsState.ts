@@ -5,7 +5,7 @@ import {
   isPartialLocalCacheIndex,
   LOCAL_CACHE_PARTIAL_SEGMENT_SUFFIX,
   stripLocalCacheSegmentSuffix,
-} from "../1_core/localCacheSegment.js";
+} from "../1_core/localCache/localCacheSegment.js";
 
 //#########################################################################################
 export function getReduxDeploymentsStateIndex(

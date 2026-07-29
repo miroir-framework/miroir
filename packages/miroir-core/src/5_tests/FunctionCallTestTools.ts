@@ -9,7 +9,7 @@ import type {
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
-import { jsonify } from "../1_core/test-expect";
+import { jsonify } from "../1_core/testing/test-expect";
 import { Action2Error, TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
 import { resolvePathOnObject } from "../tools";
 import { ignorePostgresExtraAttributes, removeUndefinedProperties, unNullify } from "../4_services/otherTools";

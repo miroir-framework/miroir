@@ -5,7 +5,7 @@ import type { BoxedQueryWithExtractorCombinerTransformer } from "../0_interfaces
 import {
   resolveReportQueryLoadAttributes,
   resolveReportQueryLoadSegmentKind,
-} from "../1_core/reportQueryLoadSegment.js";
+} from "../1_core/localCache/reportQueryLoadSegment.js";
 
 export type ReportLoadStatus = "idle" | "loading" | "ready" | "error";
 

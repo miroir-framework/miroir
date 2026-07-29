@@ -28,7 +28,7 @@ import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainC
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
-import { jsonify } from "../1_core/test-expect";
+import { jsonify } from "../1_core/testing/test-expect";
 import {
   transformer_extended_apply_wrapper,
 } from "../2_domain/TransformersForRuntime";

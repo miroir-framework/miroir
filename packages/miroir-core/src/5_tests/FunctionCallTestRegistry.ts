@@ -10,7 +10,7 @@ import {
   parseCompositeKeyValue,
   resolveInstanceParentUuid,
   serializeCompositeKeyValue,
-} from "../1_core/EntityPrimaryKey";
+} from "../1_core/Entity/EntityPrimaryKey";
 import {
   JzodSchemaReferencesList,
   JzodSchemaReferencesSet,

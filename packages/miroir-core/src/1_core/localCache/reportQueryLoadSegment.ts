@@ -10,8 +10,8 @@ import {
   type CacheSegmentKind,
   type LocalCacheSegmentHeader,
 } from "./localCacheSegment.js";
-import { getReduxDeploymentsStateIndex } from "../2_domain/ReduxDeploymentsState.js";
-import type { ReportQueryLoadRequest } from "../2_domain/ReportQueryLoadService.js";
+import { getReduxDeploymentsStateIndex } from "../../2_domain/ReduxDeploymentsState.js";
+import type { ReportQueryLoadRequest } from "../../2_domain/ReportQueryLoadService.js";
 
 /**
  * Collects entity UUIDs referenced by extractorInstancesByEntity extractors

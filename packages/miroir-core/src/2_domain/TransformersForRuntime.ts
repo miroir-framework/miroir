@@ -88,7 +88,7 @@ import { packageName } from "../constants";
 import { findEntityFromUuid, resolvePathOnObject, safeResolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { getEntityInstancesIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
-import { getInstancePrimaryKeyValue } from "../1_core/EntityPrimaryKey";
+import { getInstancePrimaryKeyValue } from "../1_core/Entity/EntityPrimaryKey";
 // import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,

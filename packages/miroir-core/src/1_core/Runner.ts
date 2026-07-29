@@ -29,7 +29,6 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   testApplicationDeploymentUuid: string,
   testApplicationName: string,
   testParams: Record<string, any>,
-  // preTestCompositeActions: ActionTemplate[],
   preTestCompositeActions: CompositeActionTemplate[],
   testCompositeActionAssertions: CompositeRunTestAssertion[],
   //
@@ -37,17 +36,11 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   adminDeployment: Deployment,
   testDeploymentStorageConfiguration: StoreUnitConfiguration,
   initialModel: MetaModel | CoreTransformerForBuildPlusRuntime,
-  // preRunnerCompositeActions?: ActionTemplate[],
   preRunnerCompositeActions?: CompositeActionTemplate[],
   testCompositeActionLabel?: string,
   skipCreateDeployment?: boolean,
   skipDropDeployment?: boolean,
 ): TestCompositeActionParams {
-  // if (runner.definition.runnerType !== "customRunner") {
-  //   throw new Error(
-  //     "Runner_CreateEntity.integ.test: testRunnerActions only supports customRunner type",
-  //   );
-  // }
   const actionTemplateWithoutTemplates: CompositeActionTemplate =
     runner.definition.runnerType === "customRunner"
       ? {

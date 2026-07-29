@@ -4,8 +4,8 @@
  * Identity fields (PK + structural) are always retained when projecting.
  */
 
-import type { EntityVersion } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { getEntityPrimaryKeyAttributes } from "./EntityPrimaryKey.js";
+import type { EntityVersion } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { getEntityPrimaryKeyAttributes } from "../Entity/EntityPrimaryKey.js";
 
 /** Always kept alongside the entity primary key when projecting. */
 export const INSTANCE_PROJECTION_STRUCTURAL_FIELDS = [

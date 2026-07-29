@@ -33,7 +33,7 @@ import {
   // getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
   serializeCompositeKeyValue,
-} from "../1_core/EntityPrimaryKey";
+} from "../1_core/Entity/EntityPrimaryKey";
 import { findEntityFromUuid } from "../tools";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";

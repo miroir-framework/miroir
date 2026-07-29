@@ -12,7 +12,7 @@ import type { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-s
 import {
   parentUuidsFromResolvedReportQuery,
   resolveReportQueryLoadAttributes,
-} from "../1_core/reportQueryLoadSegment.js";
+} from "../1_core/localCache/reportQueryLoadSegment.js";
 
 import type {
   ReportQueryLoadExecutor,

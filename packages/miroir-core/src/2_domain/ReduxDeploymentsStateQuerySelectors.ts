@@ -26,7 +26,7 @@ import { cleanLevel } from "./constants";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
   resolveCacheSegmentKind,
-} from "../1_core/localCacheSegment.js";
+} from "../1_core/localCache/localCacheSegment.js";
 import {
   isLazyCacheOnRefreshEntity,
   type CachePolicyCarrier,
@@ -45,7 +45,7 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { transformer_extended_apply } from "./TransformersForRuntime";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { getForeignKeyValue } from "../1_core/EntityPrimaryKey";
+import { getForeignKeyValue } from "../1_core/Entity/EntityPrimaryKey";
 import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 

@@ -30,7 +30,7 @@ import { InitApplicationParameters } from "../../src/0_interfaces/4-services/Per
 
 
 
-import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandler";
+import { zodErrorDeepestIssueLeaves } from "../../src/1_core/jzod/zodParseErrorHandler";
 
 // import { extractorOrCombinerTemplate, StoreUnitConfiguration } from '../../dist';
 import { Uuid } from '../../src/0_interfaces/1_core/EntityVersion.js';

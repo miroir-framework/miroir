@@ -16,7 +16,7 @@ import {
 
 import { zodParseErrorJzodSchema } from "../../src/0_interfaces/1_core/zodParseError";
 import zodParseErrorExample from "./zodParseErrorExample.json";
-import { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "../../src/1_core/zodParseErrorHandler";
+import { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "../../src/1_core/jzod/zodParseErrorHandler";
 
 describe("zodParseError", () => {
   it("zodParseError type parses actual Zod parse error example", () => {

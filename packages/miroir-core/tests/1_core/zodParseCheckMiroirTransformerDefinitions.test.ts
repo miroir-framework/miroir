@@ -7,7 +7,7 @@ import {
   ZodParseError
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandler";
+import { zodErrorDeepestIssueLeaves } from "../../src/1_core/jzod/zodParseErrorHandler";
 import { test_createEntityAndReportFromSpreadsheetAndUpdateMenu } from "miroir-test-app_deployment-miroir";
 
 

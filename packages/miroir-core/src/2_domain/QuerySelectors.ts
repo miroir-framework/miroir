@@ -33,7 +33,7 @@ import {
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { getForeignKeyValue, instanceMatchesForeignKey } from "../1_core/EntityPrimaryKey";
+import { getForeignKeyValue, instanceMatchesForeignKey } from "../1_core/Entity/EntityPrimaryKey";
 import { defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";

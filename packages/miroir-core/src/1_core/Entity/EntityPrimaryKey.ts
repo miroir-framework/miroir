@@ -1,5 +1,5 @@
-import type { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
+import type { EntityInstance } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { Action2Error } from "../../0_interfaces/2_domain/DomainElement";
 
 // Composite key separator. Individual values are escaped so this separator is unambiguous.
 const COMPOSITE_KEY_SEPARATOR = "|";

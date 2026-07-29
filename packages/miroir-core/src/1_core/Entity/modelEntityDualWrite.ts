@@ -4,7 +4,7 @@ import type {
   Entity,
   JzodElement,
   JzodObject,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 export type AlterEntityAttributeColumns = {
   addColumns?: { name: string; definition: JzodElement }[] | undefined;
