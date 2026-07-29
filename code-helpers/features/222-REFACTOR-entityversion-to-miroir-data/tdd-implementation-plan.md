@@ -22,7 +22,7 @@ Related:
 | 0 | Characterization locks (today’s matrix) | P3, P10, P12, P16 baseline | ✅ DONE |
 | 1 | Atomic Miroir relocate (section API + assets + exports + docs + minimal load for EV list/CRUD) | P1, P3, P4, P5, P12, P13 + minimal P2/P6 | ✅ DONE |
 | 2 | Section-aware load / LocalCache / selectors / extract (listing & cache fallback — not bootstrap) | P2, P6, P9 | ✅ DONE |
-| 3 | Persist / backends / Actions / ModelInitializer / Cross | P7, P8, P11 | ⬜ TODO |
+| 3 | Persist / backends / Actions / ModelInitializer / Cross | P7, P8, P11 | ✅ DONE |
 | 4 | Exit criteria & non-regression locks (incl. operational-role invariant) | P10, P14, P15, P16 | ⬜ TODO |
 
 **Why Slice 1 is atomic:** changing `getApplicationSection` / `metaMetaModelEntities` / `conceptLevel` without moving Miroir EntityVersion assets (or the reverse) leaves **listing / CRUD / load of EV rows** inconsistent. Classification + filesystem/bundled placement + package export paths must land together, plus the **minimum** wiring so EV instances are readable from **data** (not so that present-model bootstrap depends on EV — it must not).
@@ -301,7 +301,7 @@ Optional (same slice, not a new slice): drop EntityVersion cache-policy fallback
 - [x] `222.phase2` tests green
 - [x] Grep load/selector/extract paths: no unconditional `"model"` + `entityEntityDefinition` for Miroir
 - [x] Present-model paths still do not require EntityVersion
-- [ ] **SLICE EXIT:** `./build-all.sh full` (use `devBuild` only if assets/schemas changed again) + `npm run nonreg`
+- [x] **SLICE EXIT:** `./build-all.sh full` (use `devBuild` only if assets/schemas changed again) + `npm run nonreg` (see Realization — DomainController.integ ignored)
 
 ### Realization (Slice 2)
 
@@ -311,7 +311,9 @@ Optional (same slice, not a new slice): drop EntityVersion cache-policy fallback
 - DomainController: Miroir refresh policy remains Entity.cache-only (`miroirModelEntities` has no EV); Library still fills EV map from model fetch
 - Test helpers `minimalLocalCacheStateForModel`: EV index uses `modelSection` (data for Miroir, model for Library)
 - Tests: `222.phase2.localcache-selectors`, `222.phase2.extract-application-model`, `222.phase2.domain-controller-cache` (11/11)
-- Full recompile / nonreg: (pending exit)
+- Full recompile: `./build-all.sh full` → ALL DONE
+- Full nonreg: `npm run nonreg` → snapshot `test-results/nonreg/20260729T162139Z` — **31 passed, 1 failed**
+  - **Ignored:** `appstack-DomainController.integ` (LEGACY compositePK upsert; same as Slice 0/1)
 
 ---
 
@@ -374,14 +376,22 @@ Library: EntityVersion remains model; Cross/SAV per existing Library layout.
 
 ### Validation (Slice 3)
 
-- [ ] `222.phase3` tests green
-- [ ] ModelInitializer Miroir EV instance writes use `"data"`
-- [ ] Filesystem (and nonreg-covered backends) EntityVersion round-trip green
-- [ ] **SLICE EXIT:** `./build-all.sh full` (+ `devBuild` if needed) + `npm run nonreg`
+- [x] `222.phase3` tests green
+- [x] ModelInitializer Miroir EV instance writes use `"data"`
+- [x] Filesystem (and nonreg-covered backends) EntityVersion round-trip green (section contracts + nonreg MiroirTest integ)
+- [x] **SLICE EXIT:** `./build-all.sh full` (+ `devBuild` if needed) + `npm run nonreg` (see Realization — DomainController.integ ignored)
 
 ### Realization (Slice 3)
 
-- (fill when done)
+- `getEntityVersionWriteSection` + `resolveFreezeEntityVersionApplicationSection` for EV write planning / freeze scaffolding
+- `ModelInitializer` Miroir: `createEntity(entityEntityVersion)` + EV instance upserts to `"data"` (re-enabled)
+- `Deployment.resetAndinitializeDeploymentCompositeAction`: meta-model instances grouped by `getApplicationSection` (model/data)
+- `DomainController.createModelInstancesFromResetModel`: section via `getApplicationSection(application, parentEntity.uuid)`
+- Cross/SAV matrix locked in `222.phase3.versioning-section-matrix` (Library Cross → data: Cross Entity absent from MetaModel.entities)
+- Tests: `222.phase3.*` (9/9)
+- Full recompile: `./build-all.sh full` → ALL DONE (TS2206 import fix in `applicationVersionFreeze.ts`)
+- Full nonreg: `npm run nonreg` → snapshot `test-results/nonreg/20260729T164954Z` — **31 passed, 1 failed**
+  - **Ignored:** `appstack-DomainController.integ` (LEGACY compositePK upsert; same as Slices 0–2)
 
 ---
 
@@ -457,8 +467,8 @@ Close #222 acceptance criteria with durable locks: UUID continuity, **operationa
 |-------|----------------|----------------|-------------|------|
 | 0 | ✅ | ✅ | ✅ (DomainController.integ ignored) | ✅ |
 | 1 | ✅ | ✅ | ✅ (DomainController.integ ignored) | ✅ |
-| 2 | ⬜ | ⬜ | ⬜ | ⬜ |
-| 3 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 2 | ✅ | ✅ | ✅ (DomainController.integ ignored) | ✅ |
+| 3 | ✅ | ✅ | ✅ (DomainController.integ ignored) | ✅ |
 | 4 | ⬜ | ⬜ | ⬜ | ⬜ |
 
 A slice may be marked DONE only when its row is all green.

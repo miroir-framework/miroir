@@ -20,6 +20,7 @@ import {
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import { getApplicationSection } from "./Model.js";
 
 import {
   adminApplication_Admin,
@@ -400,28 +401,45 @@ export function buildResetAndinitializeDeploymentActionSequence(
             entities,
           },
         },
-        // add reports, menus, etc. from metaModel
-        {
-          actionType: "createInstance" as const,
-          actionLabel: "resetAndinitializeDeploymentCompositeAction_createMetaModelInstances",
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" as const,
-          payload: {
-            application: applicationUuid,
-            applicationSection: "model" as const,
-            objects: [
-              ...appMetaModel.menus as EntityInstance[],
-              ...appMetaModel.reports as EntityInstance[],
-              ...appMetaModel.storedQueries as EntityInstance[],
-              ...appMetaModel.runners as EntityInstance[],
-              ...appMetaModel.themes as EntityInstance[],
-              ...appMetaModel.jzodSchemas as EntityInstance[],
-              ...appMetaModel.endpoints as EntityInstance[],
-              ...appMetaModel.applicationVersionCrossEntityVersion as EntityInstance[],
-              ...appMetaModel.applicationVersions as EntityInstance[],
-              ...appMetaModel.applications as EntityInstance[],
-            ],
-          },
-        },
+        // add reports, menus, etc. from metaModel (#222 — section per parentEntity via getApplicationSection)
+        ...(() => {
+          const metaModelObjects: EntityInstance[] = [
+            ...appMetaModel.menus as EntityInstance[],
+            ...appMetaModel.reports as EntityInstance[],
+            ...appMetaModel.storedQueries as EntityInstance[],
+            ...appMetaModel.runners as EntityInstance[],
+            ...appMetaModel.themes as EntityInstance[],
+            ...appMetaModel.jzodSchemas as EntityInstance[],
+            ...appMetaModel.endpoints as EntityInstance[],
+            ...appMetaModel.applicationVersionCrossEntityVersion as EntityInstance[],
+            ...appMetaModel.applicationVersions as EntityInstance[],
+            ...appMetaModel.applications as EntityInstance[],
+          ];
+          const bySection: Record<"model" | "data", EntityInstance[]> = {
+            model: [],
+            data: [],
+          };
+          for (const obj of metaModelObjects) {
+            const parentUuid = (obj as EntityInstance & { parentUuid?: string }).parentUuid;
+            if (!parentUuid) {
+              bySection.model.push(obj);
+              continue;
+            }
+            bySection[getApplicationSection(applicationUuid, parentUuid)].push(obj);
+          }
+          return (["model", "data"] as const)
+            .filter((section) => bySection[section].length > 0)
+            .map((section) => ({
+              actionType: "createInstance" as const,
+              actionLabel: `resetAndinitializeDeploymentCompositeAction_createMetaModelInstances_${section}`,
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" as const,
+              payload: {
+                application: applicationUuid,
+                applicationSection: section,
+                objects: bySection[section],
+              },
+            }));
+        })(),
         {
           actionType: "commit",
           actionLabel: "resetAndinitializeDeploymentCompositeAction_commitEntities",

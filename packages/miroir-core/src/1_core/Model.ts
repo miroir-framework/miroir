@@ -129,6 +129,14 @@ export function getApplicationSection(
   }
   return metaModelEntityUuids.includes(entityUuid)?"model":"data";
 }
+
+/**
+ * #222 — section for writing EntityVersion instances (Miroir → data, Library → model).
+ * Prefer this (or getApplicationSection) over hard-coded `"model"` for EV upserts.
+ */
+export function getEntityVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
+  return getApplicationSection(applicationUuid, entityEntityVersion.uuid);
+}
 // ################################################################################################
 /**
  * just filters the model / meta-model reports in the Miroir app for now

@@ -773,6 +773,7 @@ export type {
 export {
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
   assertApplicationVersioningEnabled,
+  resolveFreezeEntityVersionApplicationSection,
   snapshotEntitiesAsHistoricalEntityVersions,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
@@ -845,7 +846,7 @@ export {
   defaultMiroirModelEnvironment,
   emptyApplicationModel, extractApplicationData,
   extractApplicationModel,
-  extractEntityInstances, getApplicationSection,
+  extractEntityInstances, getApplicationSection, getEntityVersionWriteSection,
   getReportsAndEntitiesForDeploymentUuid, metaMetaModelEntities,
   metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities
 } from "./1_core/Model.js";

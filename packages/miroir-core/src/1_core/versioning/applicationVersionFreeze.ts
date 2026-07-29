@@ -6,9 +6,11 @@
 import { v4 as uuidv4 } from "uuid";
 
 import type {
+  ApplicationSection,
   Entity,
   EntityVersion,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { getEntityVersionWriteSection } from "../Model.js";
 
 // ---------------------------------------------------------------------------
 // Phase 0: Action type constant
@@ -48,6 +50,16 @@ const ENTITY_VERSION_ENTITY_UUID = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
   newUuid?: () => string;
+}
+
+/**
+ * #222 / #216 — section for persisting freeze-minted EntityVersion snapshots.
+ * Miroir → `"data"`; Library / other MetaModel apps → `"model"`.
+ */
+export function resolveFreezeEntityVersionApplicationSection(
+  applicationUuid: string,
+): ApplicationSection {
+  return getEntityVersionWriteSection(applicationUuid);
 }
 
 /**

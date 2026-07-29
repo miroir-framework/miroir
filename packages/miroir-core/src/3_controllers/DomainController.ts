@@ -79,6 +79,7 @@ import {
 } from "../1_core/versioning/applicationVersioning.js";
 import {
   defaultMiroirModelEnvironment,
+  getApplicationSection,
   metaModelEntities,
   miroirModelEntities,
 } from "../1_core/Model";
@@ -1039,7 +1040,8 @@ export class DomainController implements DomainControllerInterface {
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application,
-        applicationSection: "model",
+        // #222 — Miroir framework instances (Report/Menu/…) live in data; Library MetaModel peers stay model
+        applicationSection: getApplicationSection(application, parentEntity.uuid),
         objects: instances,
       },
     };

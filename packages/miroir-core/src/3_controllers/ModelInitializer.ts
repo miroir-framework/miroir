@@ -132,21 +132,21 @@ export async function modelInitialize(
       persistenceStoreController.getEntityUuids(),
     );
 
-    // // Bootstrap historical EntityVersion instances into Miroir data (#222).
-    // result = await persistenceStoreController.upsertInstance(
-    //   "data",
-    //   entityDefinitionEntity as EntityInstance,
-    // );
-    // if (result instanceof Action2Error) {
-    //   return result;
-    // }
-    // result = await persistenceStoreController.upsertInstance(
-    //   "data",
-    //   entityDefinitionEntityDefinition as EntityInstance,
-    // );
-    // if (result instanceof Action2Error) {
-    //   return result;
-    // }
+    // Bootstrap historical EntityVersion instances into Miroir data (#222).
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityDefinitionEntity as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityDefinitionEntityDefinition as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
     // bootstrap SelfApplication
     result = await persistenceStoreController.createEntity(
