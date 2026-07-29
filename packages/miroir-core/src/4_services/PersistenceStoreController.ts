@@ -455,9 +455,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       dataEntities
     );
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
+      // #222 — EntityVersion instances are in Miroir data; only Entity stays model-section-only.
       ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
-        (e) => ["Entity", "EntityVersion"].indexOf(e.name) == -1
-      ), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
+        (e) => e.name !== "Entity"
+      ),
     );
     if (
       dataBootFromPersistedState instanceof Action2Error ||
@@ -527,9 +528,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         `clearDataInstances failed for dataSectionEntities section: model, entityUuid ${entityEntity.uuid}, error: ${dataSectionEntities}`
       );
     }
+    // #222 — Miroir EntityVersion instances live in data (only Entity stays model-only).
+    // Other apps may get an unused empty EntityVersion data table; reads still use getApplicationSection.
     const dataSectionFilteredEntities: Entity[] = (
       dataSectionEntities.returnedDomainElement.instances as Entity[]
-    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityVersion"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
+    ).filter((e: EntityInstanceWithName) => e.name !== "Entity");
     log.trace(
       this.logHeader,
       "clearDataInstances found entities to clear:",

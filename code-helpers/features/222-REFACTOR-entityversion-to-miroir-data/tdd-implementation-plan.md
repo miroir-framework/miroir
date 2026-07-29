@@ -20,7 +20,7 @@ Related:
 | Slice | Title | Problematics | Status |
 |-------|-------|--------------|--------|
 | 0 | Characterization locks (today’s matrix) | P3, P10, P12, P16 baseline | ✅ DONE |
-| 1 | Atomic Miroir relocate (section API + assets + exports + docs + minimal load for EV list/CRUD) | P1, P3, P4, P5, P12, P13 + minimal P2/P6 | ⬜ TODO |
+| 1 | Atomic Miroir relocate (section API + assets + exports + docs + minimal load for EV list/CRUD) | P1, P3, P4, P5, P12, P13 + minimal P2/P6 | ✅ DONE |
 | 2 | Section-aware load / LocalCache / selectors / extract (listing & cache fallback — not bootstrap) | P2, P6, P9 | ⬜ TODO |
 | 3 | Persist / backends / Actions / ModelInitializer / Cross | P7, P8, P11 | ⬜ TODO |
 | 4 | Exit criteria & non-regression locks (incl. operational-role invariant) | P10, P14, P15, P16 | ⬜ TODO |
@@ -236,15 +236,22 @@ Covers analysis G1+G2 (+ minimal G3 for EV visibility). Codegen (P5): path updat
 
 ### Validation (Slice 1)
 
-- [ ] `222.phase1` unit tests green
-- [ ] Miroir load smoke: Entity present-model OK **without** EV in model section; EV UUIDs readable from **data**
-- [ ] Grep: no `miroir_model/54b9c72f` imports for instances in deployment package
-- [ ] `devBuild` / type generation succeeds after path updates (no self-EV-as-bootstrap work)
-- [ ] **SLICE EXIT:** `./build-all.sh full devBuild` + `npm run nonreg`
+- [x] `222.phase1` unit tests green
+- [x] Miroir load smoke: Entity present-model OK **without** EV in model section; EV UUIDs readable from **data**
+- [x] Grep: no `miroir_model/54b9c72f` imports for instances in deployment package
+- [x] `devBuild` / type generation succeeds after path updates (no self-EV-as-bootstrap work)
+- [x] **SLICE EXIT:** `./build-all.sh full devBuild` + `npm run nonreg` (see Realization — DomainController.integ ignored)
 
 ### Realization (Slice 1)
 
-- (fill when done)
+- Classification: EntityVersion Entity `conceptLevel: "Model"`; `metaMetaModelEntities = [entityEntity]`; Miroir `getApplicationSection(…, EntityVersion) → "data"`
+- Assets: EV instances moved `miroir_model/54b9c72f-…` → `miroir_data/54b9c72f-…`; deployment exports updated; Miroir bundled `MIROIR_MODEL_PARENT_UUIDS` no longer includes EV (Admin unchanged)
+- Load / persist wiring: LocalCache section via `getApplicationSection`; DomainController Miroir model fetch does not require EV; `ModelInitializer` Miroir path uses `createEntity(entityEntityVersion)` (data storage via mixin) + bootstrap EV instances upserted to `"data"`; `PersistenceStoreController` `bootFromPersistedState` / `clearDataInstances` exclude only `"Entity"` from data (include EntityVersion)
+- Prefer `entityEntityVersion` over deprecated `entityEntityDefinition` in code references
+- Docs: `docs/reference/data-architecture-deployments.md` + Model/bundled comments
+- Full recompile: `./build-all.sh full devBuild` → succeeded
+- Full nonreg: `npm run nonreg` → snapshot `test-results/nonreg/20260729T153104Z` — **31 passed, 1 failed**
+  - **Ignored (pre-existing / out of Slice 1 scope):** `appstack-DomainController.integ` — same LEGACY compositePK Postgres upsert issue as Slice 0. All DomainController MiroirTest integ suites (including `domain_controller_data_crud`) passed.
 
 ---
 
@@ -443,7 +450,7 @@ Close #222 acceptance criteria with durable locks: UUID continuity, **operationa
 | Slice | Targeted tests | Full recompile | Full nonreg | DONE |
 |-------|----------------|----------------|-------------|------|
 | 0 | ✅ | ✅ | ✅ (DomainController.integ ignored) | ✅ |
-| 1 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 1 | ✅ | ✅ | ✅ (DomainController.integ ignored) | ✅ |
 | 2 | ⬜ | ⬜ | ⬜ | ⬜ |
 | 3 | ⬜ | ⬜ | ⬜ | ⬜ |
 | 4 | ⬜ | ⬜ | ⬜ | ⬜ |

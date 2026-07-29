@@ -16,7 +16,8 @@ const vitestArgs = [
   "run",
   "--poolOptions.forks.singleFork",
   "--reporter=verbose",
-  `tests/${vitestEntry}.ts`,
+  // vitest root is `tests/` (vite.config.js); pass the entry relative to that root
+  `${vitestEntry}.ts`,
 ];
 
 const result = spawnSync("npx", vitestArgs, {

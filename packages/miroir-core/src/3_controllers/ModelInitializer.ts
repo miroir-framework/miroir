@@ -112,8 +112,15 @@ export async function modelInitialize(
       return result;
     }
 
-    // bootstrap MetaClass EntityVersion
-    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+    // Entity row for Entity (present model); EntityVersion Entity created via createEntity below.
+    result = await persistenceStoreController.upsertInstance("model", entityEntity as EntityInstance);
+    if (result instanceof Action2Error) {
+      return result;
+    }
+
+    // #222 — createEntity writes EntityVersion into the Entity table and creates
+    // instance storage on the paired data section (Miroir EV instances live in data).
+    result = await persistenceStoreController.createEntity(
       entityEntityVersion as Entity,
     );
     if (result instanceof Action2Error) {
@@ -125,33 +132,21 @@ export async function modelInitialize(
       persistenceStoreController.getEntityUuids(),
     );
 
-    // // because entityVersion for entityEntity has not been inserted during datastore.createEntity(entityEntity as Entity,entityDefinitionEntity as EntityVersion);!
-    result = await persistenceStoreController.upsertInstance("model", entityEntity as EntityInstance);
-    if (result instanceof Action2Error) {
-      return result;
-    }
-    result = await persistenceStoreController.upsertInstance(
-      "model",
-      entityEntityVersion as EntityInstance,
-    );
-    if (result instanceof Action2Error) {
-      return result;
-    }
-    result = await persistenceStoreController.upsertInstance(
-      "model",
-      entityDefinitionEntity as EntityInstance,
-    );
-    if (result instanceof Action2Error) {
-      return result;
-    }
-    result = await persistenceStoreController.upsertInstance(
-      "model",
-      entityDefinitionEntityDefinition as EntityInstance,
-    );
-    if (result instanceof Action2Error) {
-      return result;
-    }
-    log.info(logHeader, "created entity entity", persistenceStoreController.getEntityUuids());
+    // // Bootstrap historical EntityVersion instances into Miroir data (#222).
+    // result = await persistenceStoreController.upsertInstance(
+    //   "data",
+    //   entityDefinitionEntity as EntityInstance,
+    // );
+    // if (result instanceof Action2Error) {
+    //   return result;
+    // }
+    // result = await persistenceStoreController.upsertInstance(
+    //   "data",
+    //   entityDefinitionEntityDefinition as EntityInstance,
+    // );
+    // if (result instanceof Action2Error) {
+    //   return result;
+    // }
 
     // bootstrap SelfApplication
     result = await persistenceStoreController.createEntity(
