@@ -23,8 +23,8 @@ Related:
 
 | Phase | Title | Status | Tests |
 |---|---|---|---|
-| 0 | Lock freeze contracts & fixtures | ⬜ TODO | — |
-| 1 | Versioning gate + Entity snapshot planner | ⬜ TODO | — |
+| 0 | Lock freeze contracts & fixtures | ✅ DONE | 4/4 |
+| 1 | Versioning gate + Entity snapshot planner | ✅ DONE | 12/12 |
 | 2 | Freeze plan builder (SAV + Cross + isolation) | ⬜ TODO | — |
 | 3 | Linear tip resolution (`previousVersion`) | ⬜ TODO | — |
 | 4 | Entity-set diff → rough migration evaluation | ⬜ TODO | — |
@@ -91,15 +91,17 @@ Prefer pure domain tests in `miroir-core` for Phases 0–4; add persistence / Ac
 
 ---
 
-## Phase 0 — Lock freeze contracts & fixtures  ⬜ TODO
+## Phase 0 — Lock freeze contracts & fixtures  ✅ DONE
 
 ### Goal
 
 Characterize current gaps so freeze work does not regress #217 invariants, and lock naming / payload shape for the Action.
 
+**Realization:** `FREEZE_APPLICATION_VERSION_ACTION_TYPE` in `applicationVersionFreeze.ts`; characterization suite `applicationVersionFreeze.216.phase0.unit.test.ts` (4/4). Non-reg: `entityPresentModel.217.phase1` / `phase12` green.
+
 ### 0.1 RED → GREEN — Gate contract characterization
 
-Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.phase0.unit.test.ts`
+Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.216.phase0.unit.test.ts`
 
 Behaviors:
 
@@ -110,7 +112,7 @@ Behaviors:
 
 #### Validation
 ```
-npm run testByFile -w miroir-core -- applicationVersionFreeze.phase0
+npm run testByFile -w miroir-core -- applicationVersionFreeze.216.phase0
 ```
 
 ### 0.2 RED → GREEN — Snapshot UUID misuse guard (characterization)
@@ -119,13 +121,13 @@ Assert that `presentEntityAsRedundantEntityDefinition(entity)` uses `entity.uuid
 
 ### NON-REGRESSION
 ```
-npm run testByFile -w miroir-core -- entityPresentModel.phase1
-npm run testByFile -w miroir-core -- entityPresentModel.phase12
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase1
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase12
 ```
 
 ---
 
-## Phase 1 — Versioning gate + Entity snapshot planner  ⬜ TODO
+## Phase 1 — Versioning gate + Entity snapshot planner  ✅ DONE
 
 ### Goal
 
@@ -133,7 +135,7 @@ Pure helpers: reject unversioned apps; copy Entities into historical EntityVersi
 
 ### 1.1 RED → GREEN — `assertApplicationVersioningEnabled`
 
-Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.gate.unit.test.ts`
+Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.216.gate.unit.test.ts`
 
 | Input | Expected |
 |---|---|
@@ -145,7 +147,7 @@ Impl: `packages/miroir-core/src/1_core/applicationVersionFreeze.ts` (or sibling 
 
 ### 1.2 RED → GREEN — `snapshotEntitiesAsHistoricalEntityVersions`
 
-Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.snapshot.unit.test.ts`
+Test file: `packages/miroir-core/tests/1_core/applicationVersionFreeze.216.snapshot.unit.test.ts`
 
 Behaviors:
 
@@ -161,8 +163,8 @@ Behaviors:
 
 #### Validation
 ```
-npm run testByFile -w miroir-core -- applicationVersionFreeze.gate
-npm run testByFile -w miroir-core -- applicationVersionFreeze.snapshot
+npm run testByFile -w miroir-core -- applicationVersionFreeze.216.gate
+npm run testByFile -w miroir-core -- applicationVersionFreeze.216.snapshot
 ```
 
 ### NON-REGRESSION

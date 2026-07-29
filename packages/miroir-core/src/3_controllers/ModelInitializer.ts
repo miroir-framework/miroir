@@ -55,14 +55,7 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import {
-  entityDefinitionWithResolvedMLSchema
-} from "../0_interfaces/1_core/EntityDefinition";
-import {
-  alignEntityDefinitionToPresentEntity
-} from "../1_core/entityPresentModel.js";
-import {
   Entity,
-  EntityDefinition,
   EntityInstance,
   SelfApplication
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -79,17 +72,6 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-
-// ################################################################################################
-/** Entity-authoritative EntityDefinition for bootstrap dual-write (#217 Phase 4). */
-function bootstrapEntityDefinitionAligned(
-  entity: Entity,
-  entityDefinition: EntityDefinition,
-): EntityDefinition {
-  return entityDefinitionWithResolvedMLSchema(
-    alignEntityDefinitionToPresentEntity(entity, entityDefinition),
-  );
-}
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -125,33 +107,25 @@ export async function modelInitialize(
   if (dataStoreType == "miroir") {
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntity as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEntity as Entity,
-        entityDefinitionEntity as EntityDefinition,
-      ),
-    ); //entityDefinition for entityEntity has not been inserted!
+    ); //entityVersion for entityEntity has not been inserted!
     if (result instanceof Action2Error) {
       return result;
     }
 
-    // bootstrap MetaClass EntityDefinition
+    // bootstrap MetaClass EntityVersion
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntityDefinition as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEntityDefinition as Entity,
-        entityDefinitionEntityDefinition as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
     }
     log.info(
       logHeader,
-      "created entity EntityDefinition",
+      "created entity EntityVersion",
       persistenceStoreController.getEntityUuids(),
     );
 
-    // // because entityDefinition for entityEntity has not been inserted during datastore.createEntity(entityEntity as Entity,entityDefinitionEntity as EntityDefinition);!
+    // // because entityVersion for entityEntity has not been inserted during datastore.createEntity(entityEntity as Entity,entityDefinitionEntity as EntityVersion);!
     result = await persistenceStoreController.upsertInstance("model", entityEntity as EntityInstance);
     if (result instanceof Action2Error) {
       return result;
@@ -182,10 +156,6 @@ export async function modelInitialize(
     // bootstrap SelfApplication
     result = await persistenceStoreController.createEntity(
       entitySelfApplication as Entity,
-      bootstrapEntityDefinitionAligned(
-        entitySelfApplication as Entity,
-        entityDefinitionSelfApplication as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -199,10 +169,6 @@ export async function modelInitialize(
     // bootstrap ApplicationModelBranch
     result = await persistenceStoreController.createEntity(
       entitySelfApplicationModelBranch as Entity,
-      bootstrapEntityDefinitionAligned(
-        entitySelfApplicationModelBranch as Entity,
-        entityDefinitionSelfApplicationModelBranch as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -216,10 +182,6 @@ export async function modelInitialize(
     // bootstrap ApplicationVersion
     result = await persistenceStoreController.createEntity(
       entitySelfApplicationVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entitySelfApplicationVersion as Entity,
-        entityDefinitionSelfApplicationVersion as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -233,10 +195,6 @@ export async function modelInitialize(
     // bootstrap Endpoint version
     result = await persistenceStoreController.createEntity(
       entityEndpointVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEndpointVersion as Entity,
-        entityDefinitionEndpoint as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -246,10 +204,6 @@ export async function modelInitialize(
     // bootstrap Menu
     result = await persistenceStoreController.createEntity(
       entityMenu as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityMenu as Entity,
-        entityDefinitionMenu as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -259,10 +213,6 @@ export async function modelInitialize(
     // bootstrap EntityJzodSchema
     result = await persistenceStoreController.createEntity(
       entityJzodSchema as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityJzodSchema as Entity,
-        entityDefinitionJzodSchema as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -272,10 +222,6 @@ export async function modelInitialize(
     // bootstrap EntityReport
     result = await persistenceStoreController.createEntity(
       entityReport as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityReport as Entity,
-        entityDefinitionReport as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -285,10 +231,6 @@ export async function modelInitialize(
     // bootstrap EntityRunner
     result = await persistenceStoreController.createEntity(
       entityRunner as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityRunner as Entity,
-        entityDefinitionRunner as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -298,10 +240,6 @@ export async function modelInitialize(
     // bootstrap EntityMiroirTest
     result = await persistenceStoreController.createEntity(
       entityMiroirTest as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityMiroirTest as Entity,
-        entityDefinitionMiroirTest as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -311,10 +249,6 @@ export async function modelInitialize(
     // bootstrap EntityTheme
     result = await persistenceStoreController.createEntity(
       entityTheme as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityTheme as Entity,
-        entityDefinitionTheme as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -324,10 +258,6 @@ export async function modelInitialize(
     // bootstrap EntityQuery
     result = await persistenceStoreController.createEntity(
       entityQueryVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityQueryVersion as Entity,
-        entityDefinitionQuery as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -337,10 +267,6 @@ export async function modelInitialize(
     // bootstrap EntityQueryVersion
     result = await persistenceStoreController.createEntity(
       entityQueryVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityQueryVersion as Entity,
-        entityDefinitionQuery as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -350,10 +276,6 @@ export async function modelInitialize(
     // bootstrap ApplicationEvolutionTrace (WP1)
     result = await persistenceStoreController.createEntity(
       entityApplicationEvolutionTrace as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityApplicationEvolutionTrace as Entity,
-        entityDefinitionApplicationEvolutionTrace as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -367,10 +289,6 @@ export async function modelInitialize(
     // bootstrap ApplicationEvolutionTraceEvent (WP1)
     result = await persistenceStoreController.createEntity(
       entityApplicationEvolutionTraceEvent as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityApplicationEvolutionTraceEvent as Entity,
-        entityDefinitionApplicationEvolutionTraceEvent as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -529,11 +447,7 @@ export async function modelInitialize(
   if (dataStoreType == "app") {
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntity as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEntity as Entity,
-        entityDefinitionEntity as EntityDefinition,
-      ),
-    ); //entityDefinition for entityEntity has not been inserted!
+    ); //entityVersion for entityEntity has not been inserted!
     if (result instanceof Action2Error) {
       return result;
     }
@@ -544,13 +458,9 @@ export async function modelInitialize(
       persistenceStoreController.getEntityUuids(),
     );
 
-    // bootstrap MetaClass EntityDefinition
+    // bootstrap MetaClass EntityVersion
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEntityDefinition as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEntityDefinition as Entity,
-        entityDefinitionEntityDefinition as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -564,10 +474,6 @@ export async function modelInitialize(
     // bootstrap Self SelfApplication
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplication as Entity,
-      bootstrapEntityDefinitionAligned(
-        entitySelfApplication as Entity,
-        entityDefinitionSelfApplication as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -581,10 +487,6 @@ export async function modelInitialize(
     // bootstrap Self ApplicationModelBranch
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplicationModelBranch as Entity,
-      bootstrapEntityDefinitionAligned(
-        entitySelfApplicationModelBranch as Entity,
-        entityDefinitionSelfApplicationModelBranch as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -598,10 +500,6 @@ export async function modelInitialize(
     // bootstrap Self ApplicationVersion
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entitySelfApplicationVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entitySelfApplicationVersion as Entity,
-        entityDefinitionSelfApplicationVersion as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -615,10 +513,6 @@ export async function modelInitialize(
     // bootstrap Self Menu
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityMenu as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityMenu as Entity,
-        entityDefinitionMenu as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -628,10 +522,6 @@ export async function modelInitialize(
     // bootstrap Endpoint
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityEndpointVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityEndpointVersion as Entity,
-        entityDefinitionEndpoint as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -645,10 +535,6 @@ export async function modelInitialize(
     // bootstrap MlSchema (required by loadConfigurationFromPersistenceStore metaModelEntities)
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityJzodSchema as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityJzodSchema as Entity,
-        entityDefinitionJzodSchema as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -667,10 +553,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityQueryVersion as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityQueryVersion as Entity,
-        entityDefinitionQuery as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -684,10 +566,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityReport as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityReport as Entity,
-        entityDefinitionReport as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -705,10 +583,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityRunner as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityRunner as Entity,
-        entityDefinitionRunner as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -726,10 +600,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityMiroirTest as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityMiroirTest as Entity,
-        entityDefinitionMiroirTest as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -747,10 +617,6 @@ export async function modelInitialize(
     );
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityTheme as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityTheme as Entity,
-        entityDefinitionTheme as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
@@ -763,20 +629,12 @@ export async function modelInitialize(
 
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityApplicationEvolutionTrace as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityApplicationEvolutionTrace as Entity,
-        entityDefinitionApplicationEvolutionTrace as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;
     }
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityApplicationEvolutionTraceEvent as Entity,
-      bootstrapEntityDefinitionAligned(
-        entityApplicationEvolutionTraceEvent as Entity,
-        entityDefinitionApplicationEvolutionTraceEvent as EntityDefinition,
-      ),
     );
     if (result instanceof Action2Error) {
       return result;

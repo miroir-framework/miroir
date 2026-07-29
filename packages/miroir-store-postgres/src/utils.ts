@@ -2,7 +2,7 @@
 
 import {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   entityDefinitionMLSchema,
   entityMLSchema,
   JzodElement,
@@ -33,7 +33,7 @@ export type EntityUuidIndexedSequelizeModel = {
   };
 };
 
-/** #217 Phase 11 — Entity or EntityDefinition-shaped present-model schema carrier for Sequelize. */
+/** #217 Phase 11 — Entity or EntityVersion-shaped present-model schema carrier for Sequelize. */
 export type PresentModelSequelizeSource = {
   name?: string;
   mlSchema?: JzodObject | undefined;
@@ -53,11 +53,11 @@ function resolveMlSchemaForSequelize(source: PresentModelSequelizeSource): JzodO
   if (!source.mlSchema.extend) {
     return source.mlSchema;
   }
-  // Entity and EntityDefinition both resolve via the same extend flattening helpers.
+  // Entity and EntityVersion both resolve via the same extend flattening helpers.
   try {
     return entityMLSchema(source as Entity);
   } catch {
-    return entityDefinitionMLSchema(source as EntityDefinition);
+    return entityDefinitionMLSchema(source as EntityVersion);
   }
 }
 
@@ -137,12 +137,12 @@ export function fromMiroirPresentModelToSequelizeEntityDefinition(
 
 /**
  * @deprecated Prefer {@link fromMiroirPresentModelToSequelizeEntityDefinition} with Entity.
- * Retained for EntityDefinition-shaped callers during #217 Phase 11.
+ * Retained for EntityVersion-shaped callers during #217 Phase 11.
  */
 export function fromMiroirEntityDefinitionToSequelizeEntityDefinition(
-  entityDefinition: EntityDefinition
+  entityVersion: EntityVersion
 ): ModelAttributes<Model, Attributes<Model>> {
-  return fromMiroirPresentModelToSequelizeEntityDefinition(entityDefinition);
+  return fromMiroirPresentModelToSequelizeEntityDefinition(entityVersion);
 }
 
 // ##############################################################################################

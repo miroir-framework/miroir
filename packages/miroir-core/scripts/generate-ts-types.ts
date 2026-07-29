@@ -14,7 +14,7 @@ import {
 
 import { entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
 
-// Leftover Bundle EntityDefinition (Entity counterpart not exported from admin package with this UUID).
+// Leftover Bundle EntityVersion (Entity counterpart not exported from admin package with this UUID).
 import entityDefinitionBundleV1 from "../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json";
 // import miroirTransformersJzodSchemas from "../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json";
 
@@ -79,8 +79,8 @@ async function build() {
 build();
 
 // ################################################################################################
-/** Resolve mlSchema from Entity (preferred) or legacy EntityDefinition (#217 Phase 4). */
-function presentModelMLSchema(e: any /*Entity | EntityDefinition*/): any /*JzodObject*/ {
+/** Resolve mlSchema from Entity (preferred) or legacy EntityVersion (#217 Phase 4). */
+function presentModelMLSchema(e: any /*Entity | EntityVersion*/): any /*JzodObject*/ {
   if (!e?.mlSchema) {
     throw new Error(`Present-model source ${e?.name ?? e?.uuid ?? "<unknown>"} has no mlSchema`);
   }
@@ -105,7 +105,7 @@ function presentModelMLSchema(e: any /*Entity | EntityDefinition*/): any /*JzodO
 }
 
 /** @deprecated Prefer {@link presentModelMLSchema} with Entity assets. */
-function entityDefinitionMLSchema(e:any /*EntityDefinition*/): any /*JzodObject*/ {
+function entityDefinitionMLSchema(e:any /*EntityVersion*/): any /*JzodObject*/ {
   return presentModelMLSchema(e);
 }
 // ################################################################################################
@@ -316,15 +316,15 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
   const phase12AliasBlock = `
 
 // ################################################################################################
-// #217 Phase 12 — deprecated vocabulary aliases (EntityDefinition → EntityVersion)
+// #217 Phase 12 — deprecated vocabulary aliases (EntityVersion → EntityVersion)
 /** @deprecated Use EntityVersion */
-export type EntityDefinition = EntityVersion;
+// export type EntityVersion = EntityVersion;
 /** @deprecated Use entityVersion */
-export const entityDefinition = entityVersion;
+// export const entityVersion = entityVersion;
 `;
   if (
     targetFileName.includes("miroirFundamentalType") &&
-    !newFileContents.includes("export type EntityDefinition = EntityVersion")
+    !newFileContents.includes("export type EntityVersion = EntityVersion")
   ) {
     newFileContents = newFileContents + phase12AliasBlock;
   }

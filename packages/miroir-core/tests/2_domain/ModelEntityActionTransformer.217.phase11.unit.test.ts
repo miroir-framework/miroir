@@ -17,12 +17,12 @@ import {
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+const bookDefinition = defaultLibraryAppModel.entityVersions.find(
   (definition) => definition.entityUuid === bookEntity.uuid,
 )!;
 
 describe("217 Phase 11 — Model Actions Entity-first", () => {
-  it("resolves live EntityDefinition by entityUuid when entityVersionUuid omitted", () => {
+  it("resolves live EntityVersion by entityUuid when entityVersionUuid omitted", () => {
     const resolved = resolveLiveEntityDefinitionForAction(
       defaultLibraryAppModel as MetaModel,
       bookEntity.uuid,
@@ -30,20 +30,20 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     expect(resolved?.uuid).toBe(bookDefinition.uuid);
   });
 
-  it("createEntity without entityDefinition emits Entity-only when Entity is complete", () => {
+  it("createEntity without entityVersion emits Entity-only when Entity is complete", () => {
     const action: ModelAction = {
       actionType: "createEntity",
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: defaultLibraryAppModel.applicationUuid,
-        entities: [{ entity: bookEntity }],
+        entities: [bookEntity],
       },
     };
 
     const instanceActions = ModelEntityActionTransformer.modelActionToInstanceAction(
       "00000000-0000-4000-8000-000000000001",
       action,
-      { ...defaultLibraryAppModel, entityDefinitions: [] } as MetaModel,
+      { ...defaultLibraryAppModel, entityVersions: [] } as MetaModel,
     );
     expect(Array.isArray(instanceActions)).toBe(true);
     if (Array.isArray(instanceActions) && instanceActions[0]?.actionType === "createInstance") {
@@ -52,9 +52,21 @@ describe("217 Phase 11 — Model Actions Entity-first", () => {
     }
   });
 
-  it("plans Entity-only create when Entity is complete and no ED is supplied", () => {
+  it("plans Entity-only create when Entity is complete", () => {
     const plan = planCreateEntityMutation(bookEntity);
     expect(plan?.mode).toBe("entityOnly");
+    if (plan?.mode === "entityOnly") {
+      expect(plan.entity.uuid).toBe(bookEntity.uuid);
+    }
+  });
+
+  it("rejects incomplete Entity create (no EntityVersion enrichment on create)", () => {
+    const incomplete = {
+      uuid: bookEntity.uuid,
+      name: bookEntity.name,
+      parentUuid: bookEntity.parentUuid,
+    } as Entity;
+    expect(planCreateEntityMutation(incomplete)).toBeUndefined();
   });
 
   it("alterEntityAttribute updates Entity only when present model is complete (ED left historical)", () => {

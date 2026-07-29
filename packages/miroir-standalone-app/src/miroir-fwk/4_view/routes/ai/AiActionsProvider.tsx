@@ -112,8 +112,23 @@ function useApplyEntityProposal() {
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           entities: [
             {
-              entity: proposal.entity as any,
-              entityVersion: proposal.entityDefinition as any,
+              ...(proposal.entity as any),
+              // #220 — Entity-only create; promote schema from proposal EntityVersion / legacy jzodSchema
+              mlSchema:
+                (proposal.entity as any).mlSchema ??
+                (proposal.entityVersion as any)?.mlSchema ??
+                (proposal.entityVersion as any)?.jzodSchema,
+              defaultInstanceDetailsReportUuid:
+                (proposal.entity as any).defaultInstanceDetailsReportUuid ??
+                (proposal.entityVersion as any)?.defaultInstanceDetailsReportUuid,
+              viewAttributes:
+                (proposal.entity as any).viewAttributes ??
+                (proposal.entityVersion as any)?.viewAttributes,
+              cache:
+                (proposal.entity as any).cache ?? (proposal.entityVersion as any)?.cache,
+              idAttribute:
+                (proposal.entity as any).idAttribute ??
+                (proposal.entityVersion as any)?.idAttribute,
             },
           ],
         } as any,
@@ -172,7 +187,7 @@ function AiActionsProviderInner(): React.JSX.Element {
   useCopilotAction({
     name: "generateMiroirEntity",
     description:
-      "Generate a new Miroir Entity and its EntityDefinition based on a description. " +
+      "Generate a new Miroir Entity and its EntityVersion based on a description. " +
       "Present the proposal to the user for review before applying.",
     parameters: [
       { name: "entityName", type: "string", description: "Entity name", required: true },
@@ -238,8 +253,13 @@ function AiActionsProviderInner(): React.JSX.Element {
           conceptLevel: "Model",
           name: entityName,
           description: description ?? "",
+          // #220 — present-model on Entity for Entity-only createEntity
+          mlSchema: {
+            type: "object",
+            definition: { ...systemAttrs, ...customAttrs },
+          },
         },
-        entityDefinition: {
+        entityVersion: {
           uuid: entityDefUuid,
           parentName: "EntityVersion",
           parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -247,7 +267,7 @@ function AiActionsProviderInner(): React.JSX.Element {
           name: `${entityName}Definition`,
           entityUuid,
           conceptLevel: "Model",
-          jzodSchema: {
+          mlSchema: {
             type: "object",
             definition: { ...systemAttrs, ...customAttrs },
           },

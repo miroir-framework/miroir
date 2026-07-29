@@ -4,14 +4,14 @@ import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { resolvePresentEntityFromModel } from "../../src/1_core/entityPresentModel.js";
 
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+const bookDefinition = defaultLibraryAppModel.entityVersions.find(
   (definition) => definition.entityUuid === bookEntity.uuid,
 )!;
 const authorEntityUuid = "d7a144ff-d1b9-4135-800c-a7cfc1f38733";
@@ -24,7 +24,7 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
     expect(present?.viewAttributes).toEqual(bookEntity.viewAttributes);
   });
 
-  it("enriches incomplete Entity via EntityDefinition fallback hub", () => {
+  it("enriches incomplete Entity via EntityVersion fallback hub", () => {
     const legacyEntity: Entity = {
       uuid: bookEntity.uuid,
       name: bookEntity.name,
@@ -34,18 +34,18 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
     const present = resolvePresentEntityFromModel(
       {
         entities: [legacyEntity],
-        entityDefinitions: [bookDefinition],
+        entityVersions: [bookDefinition],
       },
       bookEntity.uuid,
     );
     expect(present?.mlSchema).toEqual(bookDefinition.mlSchema);
   });
 
-  it("synthesizes present model from EntityDefinition alone when Entity missing", () => {
+  it("synthesizes present model from EntityVersion alone when Entity missing", () => {
     const present = resolvePresentEntityFromModel(
       {
         entities: [],
-        entityDefinitions: [bookDefinition],
+        entityVersions: [bookDefinition],
       },
       bookEntity.uuid,
     );
@@ -59,11 +59,11 @@ describe("217 Phase 8 — resolvePresentEntityFromModel", () => {
     ).toBeUndefined();
   });
 
-  it("Library Author present model matches EntityDefinition mlSchema (equivalence)", () => {
+  it("Library Author present model matches EntityVersion mlSchema (equivalence)", () => {
     const present = resolvePresentEntityFromModel(defaultLibraryAppModel, authorEntityUuid);
-    const authorDefinition = defaultLibraryAppModel.entityDefinitions.find(
+    const authorDefinition = defaultLibraryAppModel.entityVersions.find(
       (definition) => definition.entityUuid === authorEntityUuid,
-    ) as EntityDefinition;
+    ) as EntityVersion;
     expect(present?.mlSchema).toEqual(authorDefinition.mlSchema);
   });
 });

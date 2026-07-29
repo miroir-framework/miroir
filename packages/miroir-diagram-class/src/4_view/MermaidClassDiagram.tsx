@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { SvgToolbelt } from "svg-toolbelt";
 import "svg-toolbelt/dist/svg-toolbelt.css";
-import { MiroirLoggerFactory, type EntityDefinition, type LoggerInterface } from "miroir-core";
+import { MiroirLoggerFactory, type EntityVersion, type LoggerInterface } from "miroir-core";
 import {
   entityDefinitionsToMermaidClassDiagram,
   type ClassDiagramOptions,
@@ -61,14 +61,14 @@ function computeInitialZoom(entityCount: number): number {
 
 export interface MermaidClassDiagramProps {
   /** The entity definitions to render as a class diagram. */
-  entityDefinitions: EntityDefinition[];
+  entityDefinitions: EntityVersion[];
   /** Optional overrides for diagram generation options. */
   options?: Partial<ClassDiagramOptions>;
   /** Optional CSS height. Defaults to "auto". */
   height?: string;
   /**
    * Called when a class node is clicked in the diagram.
-   * Receives the entity-definition UUID (the `uuid` field of the EntityDefinition,
+   * Receives the entity-definition UUID (the `uuid` field of the EntityVersion,
    * not the `entityUuid`).
    * Requires `classClickLinks` to be set in `options` (e.g. via
    * `buildEntityDefinitionClickLinks`).

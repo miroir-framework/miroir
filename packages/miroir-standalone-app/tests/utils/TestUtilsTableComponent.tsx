@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import {
   ApplicationSection,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstanceWithName,
   JzodElement,
@@ -33,7 +33,7 @@ export interface MiroirReportComponentProps {
   applicationDeploymentMap: ApplicationDeploymentMap;
   instancesApplicationSection?: ApplicationSection;
   entity: Entity;
-  entityDefinition: EntityDefinition;
+  entityVersion: EntityVersion;
 };
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -48,7 +48,7 @@ export const TestUtilsTableComponent = (
 ) => {
 
 
-  // const currentEntityDefinition: EntityDefinition | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
+  // const currentEntityDefinition: EntityVersion | undefined = entityInstances.Entity?.find(e=>e?.uuid === props.parentUuid);
   let instancesToDisplay:EntityInstance[];
 
 
@@ -105,7 +105,7 @@ export const TestUtilsTableComponent = (
   Domain2QueryReturnType<Record<string, any>>
     > = useQueryTemplateResults({}, props.applicationDeploymentMap, currentStoredQuery);
   log.info("TestUtilsTableComponent currentStoredQueryResults", JSON.stringify(currentStoredQueryResults));
-  log.info("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(props.entityDefinition));
+  log.info("TestUtilsTableComponent currentMiroirEntityDefinition",JSON.stringify(props.entityVersion));
 
   instancesToDisplay = (currentStoredQueryResults as any)?.reportData?.extractorByPrimaryKey;
   log.info("TestUtilsTableComponent currentStoredQueryResults",JSON.stringify(currentStoredQueryResults, null, 2));
@@ -113,8 +113,8 @@ export const TestUtilsTableComponent = (
   
   const currentAttributes: [string, JzodElement][] = [["uuid", { type: "uuid" } as JzodElement]]
   .concat(
-    props.entityDefinition?.mlSchema
-    ? Object.entries(props.entityDefinition?.mlSchema.definition)?.filter(
+    props.entityVersion?.mlSchema
+    ? Object.entries(props.entityVersion?.mlSchema.definition)?.filter(
         (a) => a[0] !== "parentUuid",
       ) as [string, JzodElement][]
     : [] as [string, JzodElement][]

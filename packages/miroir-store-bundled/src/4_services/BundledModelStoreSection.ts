@@ -9,7 +9,7 @@ import {
   defaultMetaModelEnvironment,
   Domain2ElementFailed,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstanceCollection,
   ExtractorRunnerInMemory,
@@ -64,7 +64,7 @@ export class BundledModelStoreSection
   // ##############################################################################################
   async bootFromPersistedState(
     entities: Entity[],
-    entityDefinitions: EntityDefinition[],
+    entityVersions: EntityVersion[],
   ): Promise<Action2VoidReturnType> {
     // #217 Phase 11 — Entity present-model first; ED idAttribute as legacy fill-in only.
     for (const entity of entities) {
@@ -73,7 +73,7 @@ export class BundledModelStoreSection
         this.entityIdAttributes[entity.uuid] = idAttr;
       }
     }
-    for (const ed of entityDefinitions) {
+    for (const ed of entityVersions) {
       if (this.entityIdAttributes[ed.entityUuid]) {
         continue;
       }
@@ -100,7 +100,7 @@ export class BundledModelStoreSection
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     _entity: Entity,
-    _entityDefinition?: EntityDefinition,
+    _entityDefinition?: EntityVersion,
   ): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }
@@ -113,7 +113,7 @@ export class BundledModelStoreSection
     _oldName: string,
     _newName: string,
     _entity: Entity,
-    _entityDefinition?: EntityDefinition,
+    _entityDefinition?: EntityVersion,
   ): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }
@@ -123,17 +123,12 @@ export class BundledModelStoreSection
     return this.dataMap.has(entityUuid);
   }
 
-  async createEntity(
-    _entity: Entity,
-    _entityDefinition?: EntityDefinition,
-  ): Promise<Action2VoidReturnType> {
-    // #217 Phase 6/11: bundled is read-only — dual-write N/A (no mutation of model assets).
+  async createEntity(_entity: Entity): Promise<Action2VoidReturnType> {
+    // #220: bundled is read-only — Entity-only create API (no mutation of model assets).
     return Promise.resolve(ACTION_OK);
   }
 
-  async createEntities(
-    _entities: { entity: Entity; entityDefinition?: EntityDefinition }[],
-  ): Promise<Action2VoidReturnType> {
+  async createEntities(_entities: Entity[]): Promise<Action2VoidReturnType> {
     return Promise.resolve(ACTION_OK);
   }
 

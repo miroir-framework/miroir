@@ -3,11 +3,11 @@
  *
  * These are pure-function tests (layer 2 – domain); no side effects, no
  * mocking, no external dependencies beyond the library itself and the
- * EntityDefinition type from miroir-core.
+ * EntityVersion type from miroir-core.
  */
 
 import { describe, it, expect } from "vitest";
-import type { EntityDefinition } from "miroir-core";
+import type { EntityVersion } from "miroir-core";
 import {
   jzodTypeToUml,
   sanitiseMermaidId,
@@ -30,7 +30,7 @@ import {
 // Test fixtures – minimal EntityDefinitions modelled after the Library app
 // ############################################################################
 
-const countryEntityDefinition: EntityDefinition = {
+const countryEntityDefinition: EntityVersion = {
   uuid: "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -77,7 +77,7 @@ const countryEntityDefinition: EntityDefinition = {
   } as any,
 };
 
-const authorEntityDefinition: EntityDefinition = {
+const authorEntityDefinition: EntityVersion = {
   uuid: "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -148,7 +148,7 @@ const authorEntityDefinition: EntityDefinition = {
   } as any,
 };
 
-const bookEntityDefinition: EntityDefinition = {
+const bookEntityDefinition: EntityVersion = {
   uuid: "797dd185-0155-43fd-b23f-f6d0af8cae06",
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -220,7 +220,7 @@ const bookEntityDefinition: EntityDefinition = {
   } as any,
 };
 
-const publisherEntityDefinition: EntityDefinition = {
+const publisherEntityDefinition: EntityVersion = {
   uuid: "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -277,7 +277,7 @@ const publisherEntityDefinition: EntityDefinition = {
   } as any,
 };
 
-const allEntityDefinitions: EntityDefinition[] = [
+const allEntityDefinitions: EntityVersion[] = [
   countryEntityDefinition,
   authorEntityDefinition,
   bookEntityDefinition,
@@ -553,7 +553,7 @@ describe("entityDefinitionsToMermaidClassDiagram", () => {
   });
 
   it("handles entity definition with empty mlSchema definition", () => {
-    const emptyDef: EntityDefinition = {
+    const emptyDef: EntityVersion = {
       uuid: "test-uuid",
       parentName: "EntityVersion",
       parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -574,7 +574,7 @@ describe("metaModelToMermaidClassDiagram", () => {
         { uuid: "d3139a6d", parentUuid: "16dbfe28", name: "Country" },
         { uuid: "d7a144ff", parentUuid: "16dbfe28", name: "Author" },
       ] as any[],
-      entityDefinitions: [countryEntityDefinition, authorEntityDefinition],
+      entityVersions: [countryEntityDefinition, authorEntityDefinition],
     };
     const diagram = metaModelToMermaidClassDiagram(metaModel);
     expect(diagram).toContain("classDiagram");
@@ -582,7 +582,7 @@ describe("metaModelToMermaidClassDiagram", () => {
     expect(diagram).toContain("class Author {");
   });
 
-  it("prefers Entity present-model mlSchema over EntityDefinitions (#217 Phase 9)", () => {
+  it("prefers Entity present-model mlSchema over EntityVersions (#217 Phase 9)", () => {
     const metaModel = {
       entities: [
         {
@@ -592,7 +592,7 @@ describe("metaModelToMermaidClassDiagram", () => {
           mlSchema: countryEntityDefinition.mlSchema,
         },
       ] as any[],
-      entityDefinitions: [],
+      entityVersions: [],
     };
     const diagram = metaModelToMermaidClassDiagram(metaModel);
     expect(diagram).toContain("class Country {");
@@ -675,7 +675,7 @@ describe("buildEntityDefinitionClickLinks", () => {
   });
 
   it("sanitises entity names with special characters", () => {
-    const specialDef: EntityDefinition = {
+    const specialDef: EntityVersion = {
       ...countryEntityDefinition,
       uuid: "aaaa-bbbb",
       name: "My-Entity",
@@ -690,9 +690,9 @@ describe("buildEntityDefinitionClickLinks", () => {
     expect(buildEntityDefinitionClickLinks([])).toEqual({});
   });
 
-  it("uses entityDefinition uuid (not entityUuid) as the value", () => {
+  it("uses entityVersion uuid (not entityUuid) as the value", () => {
     const links = buildEntityDefinitionClickLinks([bookEntityDefinition]);
-    // bookEntityDefinition.uuid is the entityDefinition instance UUID
+    // bookEntityDefinition.uuid is the entityVersion instance UUID
     expect(links["Book"]).toBe("797dd185-0155-43fd-b23f-f6d0af8cae06");
     // That is bookEntityDefinition.uuid, NOT bookEntityDefinition.entityUuid
     expect(links["Book"]).not.toBe("e8ba151b-d68e-4cc3-9a83-3459d309ccf5");
@@ -869,7 +869,7 @@ describe("entityDefinitionsToMermaidErDiagram", () => {
   });
 
   it("sanitises entity names with special characters", () => {
-    const specialDef: EntityDefinition = {
+    const specialDef: EntityVersion = {
       ...countryEntityDefinition,
       uuid: "aaaa-1111",
       name: "My-Entity",

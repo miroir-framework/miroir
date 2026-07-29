@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * #217 Phase 11 — characterization / grep gate for live EntityDefinition authority.
+ * #217 Phase 11 — characterization / grep gate for live EntityVersion authority.
  */
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
@@ -11,7 +11,7 @@ const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const LIVE_ED_FIND =
   /entityDefinitions\s*\.\s*find\s*\(\s*(?:\([^)]*\)|[^=])*entityUuid/;
 
-describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
+describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
   it("SqlGenerator does not join live schema/PK via entityDefinitions.find(entityUuid)", () => {
     const sqlGenerator = readFileSync(
       join(REPO_ROOT, "packages/miroir-store-postgres/src/1_core/SqlGenerator.ts"),
@@ -63,7 +63,7 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
     expect(transformer).not.toContain("resolveOrSynthesizeEntityDefinitionForCreate");
   });
 
-  it("store createEntity accepts optional EntityDefinition (filesystem + interface)", () => {
+  it("store createEntity is Entity-only (no EntityVersion param)", () => {
     const iface = readFileSync(
       join(
         REPO_ROOT,
@@ -78,11 +78,18 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
       ),
       "utf8",
     );
-    expect(iface).toMatch(/createEntity\(\s*entity:Entity,\s*entityDefinition\?: EntityDefinition/);
-    expect(fsMixin).toContain("Entity-only when ED omitted");
+    expect(iface).toMatch(
+      /createEntity\(\s*entity\s*:\s*Entity\s*\)\s*:\s*Promise<Action2VoidReturnType>/,
+    );
+    expect(iface).not.toMatch(
+      /createEntity\(\s*entity\s*:\s*Entity\s*,\s*entityVersion\?/,
+    );
+    expect(fsMixin).toMatch(
+      /async createEntity\(\s*entity\s*:\s*Entity\s*\)\s*:\s*Promise<Action2VoidReturnType>/,
+    );
   });
 
-  it("LocalCache registers PK adapters from Entity only (not EntityDefinition)", () => {
+  it("LocalCache registers PK adapters from Entity only (not EntityVersion)", () => {
     const redux = readFileSync(
       join(
         REPO_ROOT,
@@ -125,7 +132,7 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
     expect(sqlMixin).toContain("applyEntityOnlyRename");
   });
 
-  it("ModelEndpoint Action schemas mark entityVersion / entityVersionUuid optional", () => {
+  it("ModelEndpoint Action schemas: createEntity is Entity[]; alter/rename/drop keep optional entityVersionUuid", () => {
     const endpoint = JSON.parse(
       readFileSync(
         join(
@@ -143,7 +150,13 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
       "utf8",
     );
     expect(generated).toContain("entityVersionUuid?: string | undefined");
-    expect(generated).toMatch(/entityVersion\?: EntityVersion \| undefined/);
+    // #220 — createEntity payload is Entity[], not { entity, entityVersion? }
+    expect(generated).toMatch(
+      /export type ModelActionCreateEntity = \{[\s\S]*?entities: Entity\[\];/,
+    );
+    expect(generated).not.toMatch(
+      /export type ModelActionCreateEntity = \{[\s\S]*?entityVersion\?:/,
+    );
     expect(generated).toMatch(
       /modelActionAlterEntityAttribute[\s\S]*entityVersionUuid:z\.string\(\)\.optional\(\)/,
     );
@@ -160,10 +173,10 @@ describe("217 Phase 11 — live EntityDefinition authority grep gate", () => {
       const ap = actions.find((a) => a.actionType?.definition === name);
       expect(ap?.payload?.definition?.entityVersionUuid?.optional).toBe(true);
     }
-    const create = actions.find((a) => a.actionType?.definition === "createEntity");
-    expect(
-      create?.payload?.definition?.entities?.definition?.definition?.entityVersion?.optional,
-    ).toBe(true);
+    const createAp = actions.find((a) => a.actionType?.definition === "createEntity");
+    expect(createAp?.payload?.definition?.entities?.definition?.definition?.relativePath).toBe(
+      "entity",
+    );
   });
 
   it("Bundled store boot registers PK from Entity first", () => {

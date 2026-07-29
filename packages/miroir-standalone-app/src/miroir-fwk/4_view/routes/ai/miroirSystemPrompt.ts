@@ -20,7 +20,7 @@ It is the authoritative present-model definition: it carries mlSchema, viewAttri
 idAttribute, defaultInstanceDetailsReportUuid, and related display/cache fields.
 Create/update Actions may still dual-write a matching EntityVersion (historical /
 compatibility copy). Prefer putting present-model fields on the Entity.
-(Deprecated name in older docs/code: EntityDefinition — use EntityVersion.)
+(Deprecated name in older docs/code: EntityVersion — use EntityVersion.)
 
 Example Entity instance (present model — includes mlSchema):
 {

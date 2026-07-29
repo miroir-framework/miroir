@@ -18,7 +18,7 @@ import {
   Domain2ElementFailed,
   PersistenceStoreControllerManager,
   type Entity,
-  type EntityDefinition,
+  type EntityVersion,
   type EntityInstanceCollection,
   type StoreUnitConfiguration,
 } from "miroir-core";
@@ -94,11 +94,10 @@ async function copyBundledToIndexedDb(
   for (const parentUuid of modelParentUuids) {
     // Register the sublevel in the IndexedDB model section's internal Map
     // (and clear any stale data it may contain) before writing.
-    // The entity/entityDefinition args only need to supply matching `uuid` /
-    // `entityUuid` values; the rest of the object is unused here.
+    // The entity arg only needs to supply a matching `uuid`; the rest of the
+    // object is unused here for IndexedDB sublevel registration.
     await idb.createModelStorageSpaceForInstancesOfEntity(
       { uuid: parentUuid } as Entity,
-      { uuid: parentUuid, entityUuid: parentUuid } as unknown as EntityDefinition,
     );
 
     const result = await bundled.getInstances("model", parentUuid);
@@ -131,7 +130,7 @@ async function copyBundledToIndexedDb(
     // PersistenceStoreControllerInterface so we access it via any-cast.
     await (idb as any).createDataStorageSpaceForInstancesOfEntity(
       { uuid: parentUuid } as Entity,
-      { uuid: parentUuid, entityUuid: parentUuid } as unknown as EntityDefinition,
+      { uuid: parentUuid, entityUuid: parentUuid } as unknown as EntityVersion,
     );
 
     const result = await bundled.getInstances("data", parentUuid);

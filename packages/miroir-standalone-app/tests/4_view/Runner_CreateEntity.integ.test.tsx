@@ -163,7 +163,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
       [runnerCreateEntity.name]: {
         application: testApplicationUuid,
         entity: entityAuthor,
-        entityDefinition: entityDefinitionAuthor,
+        entityVersion: entityDefinitionAuthor,
         addDefaultReports: false,
         addMenuLink: false,
       },
@@ -256,7 +256,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
       [runnerCreateEntity.name]: {
         application: testApplicationUuid,
         entity: entityAuthor,
-        entityDefinition: entityDefinitionAuthor,
+        entityVersion: entityDefinitionAuthor,
         addDefaultReports: true,
         addMenuLink: true,
       },

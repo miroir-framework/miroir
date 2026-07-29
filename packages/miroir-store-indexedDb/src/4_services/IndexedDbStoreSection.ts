@@ -1,7 +1,7 @@
 import {
   ACTION_OK,
   Action2VoidReturnType,
-  EntityDefinition,
+  EntityVersion,
   LoggerInterface,
   Entity,
   MiroirLoggerFactory,
@@ -39,7 +39,7 @@ export class IndexedDbStoreSection
   }
 
   // ##################################################################################################
-  bootFromPersistedState(entities: Entity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[], entityVersions: EntityVersion[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState registering", entities.length, "entity sublevels without clearing");
     // Register all known entity UUIDs in the subLevels Map without clearing their data.
     // This is required so that getEntityUuids() / hasSubLevel() return correct results after
@@ -52,7 +52,7 @@ export class IndexedDbStoreSection
         this.entityIdAttributes[entity.uuid] = idAttr;
       }
     }
-    for (const ed of entityDefinitions) {
+    for (const ed of entityVersions) {
       if (this.entityIdAttributes[ed.entityUuid] !== undefined) {
         continue;
       }
@@ -83,23 +83,23 @@ export class IndexedDbStoreSection
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
       "input: entity",
       entity,
-      "entityDefinition",
-      entityDefinition,
+      "entityVersion",
+      entityVersion,
       "Entities",
       this.localUuidIndexedDb.getSubLevels()
     );
-    if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
+    if (entityVersion && entity.uuid != entityVersion.entityUuid) {
       log.error(
         this.logHeader,
         "createStorageSpaceForInstancesOfEntity",
-        "inconsistent input: given entityDefinition is not related to given entity."
+        "inconsistent input: given entityVersion is not related to given entity."
       );
     } else {
       if (!this.localUuidIndexedDb.hasSubLevel(entity.uuid)) {
@@ -111,15 +111,15 @@ export class IndexedDbStoreSection
           "createStorageSpaceForInstancesOfEntity",
           "input: entity",
           entity,
-          "entityDefinition",
-          entityDefinition,
+          "entityVersion",
+          entityVersion,
           "already has entity. Existing entities:",
           this.localUuidIndexedDb.getSubLevels()
         );
       }
     }
     // Register idAttribute for non-UUID PK entities (#217 Phase 11: Entity first)
-    const idAttr = entity.idAttribute ?? entityDefinition?.idAttribute ?? "uuid";
+    const idAttr = entity.idAttribute ?? entityVersion?.idAttribute ?? "uuid";
     if (idAttr !== "uuid") {
       this.entityIdAttributes[entity.uuid] = idAttr;
     }
@@ -156,7 +156,7 @@ export class IndexedDbStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.warn(
       this.logHeader,

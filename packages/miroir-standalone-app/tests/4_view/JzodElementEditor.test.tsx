@@ -8,7 +8,7 @@ import "@testing-library/jest-dom";
 import { Container } from "react-dom";
 
 import {
-  EntityDefinition,
+  EntityVersion,
   JzodAttributePlainDateWithValidations,
   JzodAttributePlainNumberWithValidations,
   JzodAttributePlainStringWithValidations,
@@ -2321,7 +2321,7 @@ export function getJzodUnionEditorTests(
 // BOOK
 // ################################################################################################
 export interface LocalBookEditorProps extends LocalEditorPropsRoot {
-  // rawJzodSchema: EntityDefinition | undefined;
+  // rawJzodSchema: EntityVersion | undefined;
   rawJzodSchema: JzodObject | undefined;
 }
 
@@ -2436,7 +2436,7 @@ export function getJzodBookEditorTests(
 // ENTITY DEFINITION
 // ################################################################################################
 export interface LocalEntityDefinitionEditorProps extends LocalEditorPropsRoot {
-  // rawJzodSchema: EntityDefinition | undefined;
+  // rawJzodSchema: EntityVersion | undefined;
   rawJzodSchema: JzodObject | undefined;
 }
 
@@ -2458,7 +2458,7 @@ export function getJzodEntityDefinitionEditorTests(
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).mlSchema,
+            rawJzodSchema: (entityDefinitionEntityDefinition as EntityVersion).mlSchema,
             initialFormState: entityDefinitionBook,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
@@ -3213,7 +3213,7 @@ export function getJzodAnyEditorTests(
 // PERFORMANCE TESTS
 // ################################################################################################
 // export interface LocalEntityDefinitionEditorProps extends LocalEditorPropsRoot{
-//   // rawJzodSchema: EntityDefinition | undefined;
+//   // rawJzodSchema: EntityVersion | undefined;
 //   rawJzodSchema: JzodObject | undefined;
 // }
 
@@ -3260,7 +3260,7 @@ export function getJzodEditorPerformanceTests(
         //     listKey: "ROOT.testField",
         //     rootLessListKey: "testField",
         //     rootLessListKeyArray: ["testField"],
-        //     rawJzodSchema: (entityDefinitionEntityDefinition as EntityDefinition).mlSchema,
+        //     rawJzodSchema: (entityDefinitionEntityDefinition as EntityVersion).mlSchema,
         //     initialFormState: entityDefinitionBook
         //   },
         //   tests: async (expect: ExpectStatic, container: Container) => {
@@ -3280,7 +3280,7 @@ export function getJzodEditorPerformanceTests(
 // ENDPOINT
 // ################################################################################################
 export interface LocalEndpointEditorProps extends LocalEditorPropsRoot {
-  // rawJzodSchema: EntityDefinition | undefined;
+  // rawJzodSchema: EntityVersion | undefined;
   rawJzodSchema: JzodElement | undefined;
 }
 

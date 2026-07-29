@@ -2,7 +2,7 @@ import {
   getMiroirFundamentalSchemaForDeployment,
   type EndpointDefinition,
   type Entity,
-  type EntityDefinition,
+  type EntityVersion,
   type Menu,
   type MetaModel,
   type MiroirModelEnvironment,
@@ -75,16 +75,16 @@ import menuDefaultLibrary from "../assets/library_model/dde4c883-ae6d-47c3-b6df-
 
 export type EntityDefinitionCouple = {
   entity: Entity,
-  entityDefinition: EntityDefinition,
+  entityVersion: EntityVersion,
 };
 
 const libraryAppEntities: EntityDefinitionCouple[] = [
-  { entity: entityAuthor as Entity, entityDefinition: entityDefinitionAuthor as EntityDefinition},
-  { entity: entityBook as Entity, entityDefinition: entityDefinitionBook as EntityDefinition},
-  { entity: entityCountry as Entity, entityDefinition: entityDefinitionCountry as EntityDefinition},
-  { entity: entityPublisher as Entity, entityDefinition: entityDefinitionPublisher as EntityDefinition},
-  { entity: entityUser as Entity, entityDefinition: entityDefinitionUser as any as EntityDefinition},
-  { entity: entityLendingHistoryItem as Entity, entityDefinition: entityDefinitionLendingHistoryItem as EntityDefinition},
+  { entity: entityAuthor as Entity, entityVersion: entityDefinitionAuthor as EntityVersion},
+  { entity: entityBook as Entity, entityVersion: entityDefinitionBook as EntityVersion},
+  { entity: entityCountry as Entity, entityVersion: entityDefinitionCountry as EntityVersion},
+  { entity: entityPublisher as Entity, entityVersion: entityDefinitionPublisher as EntityVersion},
+  { entity: entityUser as Entity, entityVersion: entityDefinitionUser as any as EntityVersion},
+  { entity: entityLendingHistoryItem as Entity, entityVersion: entityDefinitionLendingHistoryItem as EntityVersion},
 ];
 
 const libraryAppReportsByEntityName = {
@@ -98,7 +98,7 @@ const libraryAppReportsByEntityName = {
 //   applicationUuid: selfApplicationLibrary.uuid,
 //   applicationName: selfApplicationLibrary.name,
 //   entities: libraryAppEntities.map((couple) => couple.entity),
-//   entityDefinitions: libraryAppEntities.map((couple) => couple.entityDefinition),
+//   entityVersions: libraryAppEntities.map((couple) => couple.entityVersion),
 //   endpoints: [
 //     bookEndpoint as any as EndpointDefinition,
 //     lendingEndpoint as any as EndpointDefinition,
@@ -133,13 +133,13 @@ export const defaultLibraryAppModel: MetaModel = {
         entityPublisher as Entity,
         entityUser as Entity,
       ],
-      entityDefinitions: [
-        entityDefinitionAuthor as EntityDefinition,
-        entityDefinitionBook as EntityDefinition,
-        entityDefinitionCountry as EntityDefinition,
-        entityDefinitionLendingHistoryItem as EntityDefinition,
-        entityDefinitionPublisher as EntityDefinition,
-        entityDefinitionUser as EntityDefinition,
+      entityVersions: [
+        entityDefinitionAuthor as EntityVersion,
+        entityDefinitionBook as EntityVersion,
+        entityDefinitionCountry as EntityVersion,
+        entityDefinitionLendingHistoryItem as EntityVersion,
+        entityDefinitionPublisher as EntityVersion,
+        entityDefinitionUser as EntityVersion,
       ],
       endpoints: [
         bookEndpoint as any as EndpointDefinition,

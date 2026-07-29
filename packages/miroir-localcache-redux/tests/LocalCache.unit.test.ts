@@ -296,10 +296,10 @@ describe("LocalCache.unit.test", () => {
 // ################################################################################################
 
 /**
- * Registers a custom EntityAdapter (via loadNewInstancesInLocalCache with EntityDefinition instances)
+ * Registers a custom EntityAdapter (via loadNewInstancesInLocalCache with EntityVersion instances)
  * for an entity that uses a non-UUID primary key, then bootstraps the entity collection.
  *
- * Loading an EntityDefinition instance with parentUuid = entityDefinitionEntityDefinition.uuid
+ * Loading an EntityVersion instance with parentUuid = entityDefinitionEntityDefinition.uuid
  * triggers registerEntityAdapterFromDefinition inside loadNewEntityInstancesInLocalCache.
  * The section must match the one used for the entity's data instances.
  */
@@ -310,8 +310,8 @@ function bootstrapLocalCacheWithCustomPK(
   instances: EntityInstance[],
   applicationSection: "data" | "model" = "model"
 ): void {
-  // Step 1: Load a mock EntityDefinition to trigger custom adapter registration.
-  // The EntityDefinition instances must be loaded with parentUuid = entityDefinitionEntityDefinition.uuid.
+  // Step 1: Load a mock EntityVersion to trigger custom adapter registration.
+  // The EntityVersion instances must be loaded with parentUuid = entityDefinitionEntityDefinition.uuid.
   // The section must match the section used for the entity's data (model here, since that's
   // how registerEntityAdapterFromDefinition indexes the adapter: by (deploymentUuid, section, entityUuid)).
   const mockEntityDefinitionInstance: EntityInstance = {
@@ -511,13 +511,13 @@ describe("LocalCache.unit.test - custom idAttribute", () => {
 
   // ##############################################################################################
   // Reproduce the pg_namespace bug:
-  // EntityDefinition loaded under "model" section, but data instances loaded under "data" section.
+  // EntityVersion loaded under "model" section, but data instances loaded under "data" section.
   // The custom adapter registered during EntityDef loading (indexed by "model" section) must also
   // apply when loading/creating/updating/deleting instances in the "data" section.
-  it("cross-section: EntityDefinition in model, data instances in data, all keyed by custom idAttribute", () => {
+  it("cross-section: EntityVersion in model, data instances in data, all keyed by custom idAttribute", () => {
     const localCache = new LocalCache();
 
-    // Step 1: Load EntityDefinition under "model" section (real-app lifecycle)
+    // Step 1: Load EntityVersion under "model" section (real-app lifecycle)
     const mockEntityDefinitionInstance: EntityInstance = {
       uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
       parentUuid: entityEntityDefinition.uuid,

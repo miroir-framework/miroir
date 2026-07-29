@@ -39,6 +39,14 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                   "name": {
                     "transformerType": "getFromParameters",
                     "referenceName": "newEntityName"
+                  },
+                  "defaultInstanceDetailsReportUuid": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "defaultInstanceDetailsReportUuid"
+                  },
+                  "mlSchema": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "newEntityJzodSchema"
                   }
                 }
               },
@@ -237,14 +245,8 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                   },
                   "entities": [
                     {
-                      "entity": {
-                        "transformerType": "getFromParameters",
-                        "referenceName": "createEntity_newEntity"
-                      },
-                      "entityVersion": {
-                        "transformerType": "getFromParameters",
-                        "referenceName": "createEntity_newEntityDefinition"
-                      }
+                      "transformerType": "getFromParameters",
+                      "referenceName": "createEntity_newEntity"
                     }
                   ]
                 }
@@ -856,7 +858,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
 }
 
 
-const entityDefinition = {
+const entityVersion = {
   "parentName": "EntityVersion",
   "name": "Test",
   "uuid": "d2842a84-3e66-43ee-ac58-7e13b95b01e8",

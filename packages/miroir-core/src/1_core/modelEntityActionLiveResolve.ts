@@ -1,29 +1,29 @@
 /**
  * Issue #217 Phase 11 — Entity-authoritative model Action resolution.
- * Resolve live Entity / optional redundant EntityDefinition without requiring
+ * Resolve live Entity / optional redundant EntityVersion without requiring
  * Action payloads to carry entityVersionUuid.
  *
  * When Entity has a complete present model, mutations are Entity-only (live ED
- * copies become historical / not updated). Dual-write remains for create when
- * an EntityDefinition is explicitly supplied, and for alter/rename when Entity
- * is incomplete and a live ED is available for enrichment.
+ * copies become historical / not updated). Create is always Entity-only (#220).
+ * Dual-write remains for alter/rename when Entity is incomplete and a live ED
+ * is available for enrichment.
+ *
+ * #220 — UUID-reuse synthesize helpers live in entityDefinitionCompatibility.
  */
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   entityHasCompletePresentModel,
-  presentEntityAsRedundantEntityDefinition,
   resolvePresentEntityFromModel,
 } from "./entityPresentModel.js";
 import {
   applyAlterEntityAttributePair,
   applyMlSchemaColumnChanges,
   applyRenameEntityPair,
-  normalizeCreateEntityPair,
   type AlterEntityAttributeColumns,
   type EntityEntityDefinitionPair,
 } from "./modelEntityDualWrite.js";
@@ -32,15 +32,15 @@ export function resolveLiveEntityDefinitionForAction(
   currentModel: MetaModel,
   entityUuid: string,
   entityVersionUuid?: string | undefined,
-): EntityDefinition | undefined {
+): EntityVersion | undefined {
   if (entityVersionUuid) {
-    const byUuid = currentModel.entityDefinitions?.find((ed) => ed.uuid === entityVersionUuid);
+    const byUuid = currentModel.entityVersions?.find((ed) => ed.uuid === entityVersionUuid);
     if (byUuid) {
       return byUuid;
     }
   }
   const matches =
-    currentModel.entityDefinitions?.filter((ed) => ed.entityUuid === entityUuid) ?? [];
+    currentModel.entityVersions?.filter((ed) => ed.entityUuid === entityUuid) ?? [];
   if (matches.length === 1) {
     return matches[0];
   }
@@ -52,19 +52,12 @@ export type LiveEntityMutationPlan =
   | { mode: "entityOnly"; entity: Entity };
 
 /**
- * Create: Entity-only when complete and no ED supplied; dual-write when ED given
- * (bootstrap / legacy payloads) or when Entity is incomplete and ED can enrich.
+ * Create: Entity-only when Entity has complete present model (`mlSchema`).
+ * #220 — no EntityVersion dual-write on create; incomplete Entity is rejected.
  */
 export function planCreateEntityMutation(
   entity: Entity,
-  entityDefinition?: EntityDefinition | undefined,
 ): LiveEntityMutationPlan | undefined {
-  if (entityDefinition) {
-    return {
-      mode: "dualWrite",
-      pair: normalizeCreateEntityPair(entity, entityDefinition),
-    };
-  }
   if (!entityHasCompletePresentModel(entity)) {
     return undefined;
   }
@@ -91,15 +84,15 @@ export function planRenameEntityMutation(
       entity: { ...entity, name: targetName },
     };
   }
-  const entityDefinition = resolveLiveEntityDefinitionForAction(
+  const entityVersion = resolveLiveEntityDefinitionForAction(
     currentModel,
     entityUuid,
     entityVersionUuid,
   );
-  if (entityDefinition) {
+  if (entityVersion) {
     return {
       mode: "dualWrite",
-      pair: applyRenameEntityPair(entity, entityDefinition, targetName),
+      pair: applyRenameEntityPair(entity, entityVersion, targetName),
     };
   }
   return undefined;
@@ -128,32 +121,19 @@ export function planAlterEntityAttributeMutation(
       },
     };
   }
-  const entityDefinition = resolveLiveEntityDefinitionForAction(
+  const entityVersion = resolveLiveEntityDefinitionForAction(
     currentModel,
     entityUuid,
     entityVersionUuid,
   );
-  if (entityDefinition) {
+  if (entityVersion) {
     return {
       mode: "dualWrite",
-      pair: applyAlterEntityAttributePair(entity, entityDefinition, changes),
+      pair: applyAlterEntityAttributePair(entity, entityVersion, changes),
     };
   }
   return undefined;
 }
 
-/**
- * For bootstrap / reset paths that still call createEntity(entity, entityDefinition):
- * prefer live ED; otherwise synthesize a redundant ED-shaped copy from Entity.
- * Prefer Entity-only create via optional ED on createEntity when Entity is complete.
- */
-export function resolveOrSynthesizeEntityDefinitionForCreate(
-  entity: Entity,
-  entityDefinitions: EntityDefinition[] = [],
-): EntityDefinition {
-  const existing = entityDefinitions.find((ed) => ed.entityUuid === entity.uuid);
-  if (existing) {
-    return existing;
-  }
-  return presentEntityAsRedundantEntityDefinition(entity, entityDefinitions);
-}
+/** @deprecated Use import from entityDefinitionCompatibility (#220). */
+export { resolveOrSynthesizeEntityDefinitionForCreate } from "./entityDefinitionCompatibility.js";

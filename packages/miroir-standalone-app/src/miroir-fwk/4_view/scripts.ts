@@ -6,7 +6,7 @@ import {
   defaultMiroirModelEnvironment,
   Domain2QueryReturnType,
   DomainControllerInterface,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   InstanceAction,
   LoggerInterface,
@@ -40,14 +40,14 @@ export const splitEntity = async (p: {
   domainController: DomainControllerInterface,
   deploymentUuid: string;
   applicationSection: ApplicationSection;
-  entityDefinition: EntityDefinition;
-  entityDefinitions: EntityDefinition[];
+  entityVersion: EntityVersion;
+  entityDefinitions: EntityVersion[];
   newEntityName: string,
   splitAttributes: string[]
 }) => {
   log.info(
     "++++++++++++++++++++++++++++ splitEntity entity",
-    p.entityDefinition.name,
+    p.entityVersion.name,
     // p.entityInstances
   );
 
@@ -61,19 +61,19 @@ export const deleteCascade = async (p: {
   deploymentUuid: string;
   applicationSection: ApplicationSection;
   // state: LocalCacheSliceState;
-  entityDefinition: PresentModelSchemaCarrier;
-  entityDefinitions: EntityDefinition[];
+  entityVersion: PresentModelSchemaCarrier;
+  entityDefinitions: EntityVersion[];
   /** #217 Phase 9/12 — prefer Entity present model for FK walk when provided. */
   entities?: Entity[];
   entityInstances: EntityInstance[];
 }) => {
   log.info(
     "++++++++++++++++++++++++++++ deleteInstanceWithCascade deleteCascade deleting instances of entity",
-    p.entityDefinition.name,
+    p.entityVersion.name,
     p.entityInstances
   );
 
-  const targetEntityUuid = carrierIdentityUuid(p.entityDefinition);
+  const targetEntityUuid = carrierIdentityUuid(p.entityVersion);
   const schemaCarriers: PresentModelSchemaCarrier[] =
     p.entities && p.entities.length > 0
       ? p.entities
@@ -191,8 +191,8 @@ export const deleteCascade = async (p: {
     );
     // recursive calls
     for (const entityInstance of foreignKeyObjects) {
-      const entityDefinitionTmp: EntityDefinition | undefined = schemaCarriers.find(
-        (ed: EntityDefinition) => ed.entityUuid == entityInstance.parentUuid,
+      const entityDefinitionTmp: EntityVersion | undefined = schemaCarriers.find(
+        (ed: EntityVersion) => ed.entityUuid == entityInstance.parentUuid,
       );
       if (!entityDefinitionTmp) {
         throw new Error(
@@ -209,7 +209,7 @@ export const deleteCascade = async (p: {
         applicationDeploymentMap: p.applicationDeploymentMap,
         deploymentUuid: p.deploymentUuid,
         applicationSection: p.applicationSection,
-        entityDefinition: entityDefinitionTmp,
+        entityVersion: entityDefinitionTmp,
         entityDefinitions: p.entityDefinitions,
         entities: p.entities,
         entityInstances: [entityInstance],

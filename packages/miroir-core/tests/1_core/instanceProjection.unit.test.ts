@@ -35,7 +35,7 @@ describe("instanceProjection", () => {
     expect(projected).not.toHaveProperty("contents");
   });
 
-  it("retains non-uuid primary key attributes when EntityDefinition is supplied", () => {
+  it("retains non-uuid primary key attributes when EntityVersion is supplied", () => {
     const coded = {
       code: "FR",
       parentUuid: "22222222-2222-2222-2222-222222222222",

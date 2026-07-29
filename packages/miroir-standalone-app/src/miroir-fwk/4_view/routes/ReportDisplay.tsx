@@ -68,7 +68,7 @@ export const ReportDisplay: React.FC<{
       ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[
           currentApplicationDeploymentMap[application]
         ][pageParams.applicationSection as ApplicationSection]
-      : { availableReports: [], entities: [], entityDefinitions: [] };
+      : { availableReports: [], entities: [], entityVersions: [] };
     log.info("ReportDisplay new availableReports", result);
     return result;
   }, [

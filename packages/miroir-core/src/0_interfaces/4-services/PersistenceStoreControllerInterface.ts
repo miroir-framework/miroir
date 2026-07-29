@@ -1,11 +1,11 @@
 import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
-import { Uuid } from "../1_core/EntityDefinition";
+import { Uuid } from "../1_core/EntityVersion";
 
 import {
   ApplicationSection,
   DataStoreType,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstanceCollection,
   InstanceAction,
@@ -53,7 +53,7 @@ export interface PersistenceStoreAdminSectionInterface extends PersistenceStoreA
 export interface PersistenceStoreAbstractSectionInterface extends PersistenceStoreAbstractInterface {
   bootFromPersistedState(
     entities : Entity[],
-    entityDefinitions : EntityDefinition[],
+    entityVersions : EntityVersion[],
   ):Promise<Action2VoidReturnType>;
   getEntityUuids():string[];
   getEntityIdAttribute(entityUuid: string): string | string[];
@@ -69,14 +69,14 @@ export interface StorageSpaceHandlerInterface {
 
   createStorageSpaceForInstancesOfEntity(
     entity:Entity,
-    entityDefinition?: EntityDefinition,
+    entityVersion?: EntityVersion,
   ): Promise<Action2VoidReturnType>;
 
   renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition?: EntityDefinition,
+    entityVersion?: EntityVersion,
   ): Promise<Action2VoidReturnType>;
 }
 
@@ -104,16 +104,8 @@ export interface PersistenceStoreInstanceSectionAbstractInterface
 export interface PersistenceStoreEntitySectionAbstractInterface  extends PersistenceStoreAbstractSectionInterface {
   existsEntity(entityUuid:string):boolean;
 
-  createEntity(
-    entity:Entity,
-    entityDefinition?: EntityDefinition,
-  ): Promise<Action2VoidReturnType>;
-  createEntities(
-    entities: {
-      entity:Entity,
-      entityDefinition?: EntityDefinition,
-    }[]
-  ): Promise<Action2VoidReturnType>;
+  createEntity(entity: Entity): Promise<Action2VoidReturnType>;
+  createEntities(entities: Entity[]): Promise<Action2VoidReturnType>;
   renameEntityClean(update: ModelActionRenameEntity): Promise<Action2VoidReturnType>;
   alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType>;
   dropEntity(parentUuid:string): Promise<Action2VoidReturnType>;
@@ -192,7 +184,6 @@ export interface PersistenceStoreControllerInterface
 
   createModelStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType>;
 
   getModelState(): Promise<{ [uuid: string]: EntityInstanceCollection }>; // used only for testing purposes!
@@ -214,15 +205,15 @@ export interface PersistenceStoreControllerInterface
     section: ApplicationSection,
     parentUuid: string,
     attributes?: string[],
-    /** When set, PK attributes from this EntityDefinition are retained under projection. */
-    entityDefinition?: EntityDefinition
+    /** When set, PK attributes from this EntityVersion are retained under projection. */
+    entityVersion?: EntityVersion
   ): Promise<Action2EntityInstanceCollectionOrFailure>;
   getInstance(
     section: ApplicationSection,
     parentUuid: string,
     uuid: Uuid,
     attributes?: string[],
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2EntityInstanceReturnType>;
   upsertInstance(
     section: ApplicationSection,

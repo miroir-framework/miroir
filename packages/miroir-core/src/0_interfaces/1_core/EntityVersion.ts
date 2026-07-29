@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-import { EntityInstanceWithNameSchema } from "../../0_interfaces/1_core/Instance";
+import { EntityInstanceWithNameSchema } from "./Instance";
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   JzodObject,
 } from "./preprocessor-generated/miroirFundamentalType";
 import { miroirFundamentalJzodSchema } from "./preprocessor-generated/miroirFundamentalJzodSchema";
@@ -62,7 +62,7 @@ function assertPresentModelMlSchema(source: PresentModelSchemaSource): JzodObjec
       source.mlSchema.extend.definition.relativePath !== "entityDefinitionRoot")
   ) {
     throw new Error(
-      "Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an Entity / EntityDefinition",
+      "Only extension of the entityDefinitionRoot schema is allowed for the mlSchema of an Entity / EntityVersion",
     );
   }
   return source.mlSchema;
@@ -100,18 +100,18 @@ export function entityWithResolvedMLSchema(entity: Entity): Entity {
 }
 
 /**
- * @deprecated Prefer {@link entityMLSchema}. Retained for EntityDefinition compatibility readers.
+ * @deprecated Prefer {@link entityMLSchema}. Retained for EntityVersion compatibility readers.
  */
-export function entityDefinitionMLSchema(e: EntityDefinition): JzodObject {
+export function entityDefinitionMLSchema(e: EntityVersion): JzodObject {
   return resolvePresentModelMlSchema(e);
 }
 
 /**
  * @deprecated Prefer {@link entityWithResolvedMLSchema} and
  * `alignEntityDefinitionToPresentEntity` from entityPresentModel.
- * Retained for EntityDefinition compatibility readers during #217.
+ * Retained for EntityVersion compatibility readers during #217.
  */
-export function entityDefinitionWithResolvedMLSchema(e: EntityDefinition): EntityDefinition {
+export function entityDefinitionWithResolvedMLSchema(e: EntityVersion): EntityVersion {
   return {
     ...e,
     mlSchema: entityDefinitionMLSchema(e),

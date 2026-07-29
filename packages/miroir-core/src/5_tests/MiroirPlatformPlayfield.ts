@@ -2,7 +2,7 @@ import type {
   Deployment,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";

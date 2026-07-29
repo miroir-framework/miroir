@@ -25,7 +25,7 @@ export interface AnalyzeForeignKeyAttributesOptions {
 }
 
 /**
- * #217 Phase 8: any carrier with mlSchema — Entity (preferred) or EntityDefinition.
+ * #217 Phase 8: any carrier with mlSchema — Entity (preferred) or EntityVersion.
  */
 export type ForeignKeySchemaCarrier = {
   uuid?: string | undefined;
@@ -34,7 +34,7 @@ export type ForeignKeySchemaCarrier = {
 };
 
 function carrierEntityUuid(carrier: ForeignKeySchemaCarrier): string | undefined {
-  // EntityDefinition links via entityUuid; Entity identity is uuid.
+  // EntityVersion links via entityUuid; Entity identity is uuid.
   return carrier.entityUuid ?? carrier.uuid;
 }
 
@@ -42,8 +42,8 @@ function carrierEntityUuid(carrier: ForeignKeySchemaCarrier): string | undefined
  * Analyzes an entity present model / definition to find all foreign key attributes,
  * including transitive ones.
  *
- * @param mainEntityDefinition - Primary Entity or EntityDefinition to analyze
- * @param allEntityDefinitions - Available Entity and/or EntityDefinition carriers for lookup
+ * @param mainEntityDefinition - Primary Entity or EntityVersion to analyze
+ * @param allEntityDefinitions - Available Entity and/or EntityVersion carriers for lookup
  * @param options - Configuration options for the analysis
  */
 export function analyzeForeignKeyAttributes(

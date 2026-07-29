@@ -1,7 +1,7 @@
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 
 import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 import {
   ApplicationSection,
@@ -11,7 +11,7 @@ import {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject
@@ -455,14 +455,14 @@ export const selectEntityInstanceFromObjectQueryAndDomainState: SyncBoxedExtract
       ) as Entity[];
       const modelEntityDefinitions = Object.values(
         domainState[deploymentUuid]["model"]?.[entityEntityDefinition.uuid] ?? {},
-      ) as EntityDefinition[];
+      ) as EntityVersion[];
       const currentObjectPresentEntity = resolvePresentEntityFromModel(
-        { entities: modelEntities, entityDefinitions: modelEntityDefinitions },
+        { entities: modelEntities, entityVersions: modelEntityDefinitions },
         entityUuidReference,
       );
 
-      // const entityDefinition = Object.keys(domainState[deploymentUuid]["model"]);
-      // log.info("selectEntityInstanceFromObjectQueryAndDomainState entityDefinition", JSON.stringify(currentObjectEntityDefinition, null, 2));
+      // const entityVersion = Object.keys(domainState[deploymentUuid]["model"]);
+      // log.info("selectEntityInstanceFromObjectQueryAndDomainState entityVersion", JSON.stringify(currentObjectEntityDefinition, null, 2));
       if (!currentObjectPresentEntity?.mlSchema?.definition) {
         return new Domain2ElementFailed({
           queryFailure: "EntityNotFound",

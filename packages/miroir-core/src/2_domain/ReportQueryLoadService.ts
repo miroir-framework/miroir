@@ -1,6 +1,6 @@
 import stringify from "fast-json-stable-stringify";
 
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition.js";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion.js";
 import type { BoxedQueryWithExtractorCombinerTransformer } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   resolveReportQueryLoadAttributes,

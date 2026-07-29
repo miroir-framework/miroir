@@ -184,7 +184,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     const result = resolvePresentEntityFromModel(
       {
         entities: miroirMapping["model"]?.entities,
-        entityDefinitions: miroirMapping["model"]?.entityDefinitions,
+        entityDefinitions: miroirMapping["model"]?.entityVersions,
       },
       entityReport.uuid,
     );
@@ -289,7 +289,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         //   throw new Error("Editing entity definitions in the model section is not allowed.");
         // }
         
-        // update entityDefinition instance
+        // update entityVersion instance
         if (
           props.deploymentUuid == deployment_Miroir.uuid || // modifying the meta-model is always transactional
           applicationSection == "model" // in an application, modifying the model must be transactional

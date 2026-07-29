@@ -15599,33 +15599,15 @@ export const miroirFundamentalJzodSchema = {
               "entities": {
                 "type": "array",
                 "definition": {
-                  "type": "object",
-                  "definition": {
-                    "entity": {
-                      "type": "schemaReference",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true
-                        }
-                      },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "entity"
-                      }
-                    },
-                    "entityVersion": {
-                      "type": "schemaReference",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true
-                        }
-                      },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "entityVersion"
-                      },
-                      "optional": true
+                  "type": "schemaReference",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": true
                     }
+                  },
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entity"
                   }
                 }
               }
@@ -16524,33 +16506,15 @@ export const miroirFundamentalJzodSchema = {
                   "entities": {
                     "type": "array",
                     "definition": {
-                      "type": "object",
-                      "definition": {
-                        "entity": {
-                          "type": "schemaReference",
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": true
-                            }
-                          },
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "entity"
-                          }
-                        },
-                        "entityVersion": {
-                          "type": "schemaReference",
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": true
-                            }
-                          },
-                          "definition": {
-                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                            "relativePath": "entityVersion"
-                          },
-                          "optional": true
+                      "type": "schemaReference",
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": true
                         }
+                      },
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "entity"
                       }
                     }
                   }
@@ -33920,83 +33884,40 @@ export const miroirFundamentalJzodSchema = {
                   "entities": {
                     "type": "array",
                     "definition": {
-                      "type": "object",
-                      "definition": {
-                        "entity": {
-                          "type": "union",
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": true,
-                              "isTemplate": true
-                            }
-                          },
-                          "discriminator": [
-                            "transformerType",
-                            "interpolation"
-                          ],
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "tag": {
-                                "value": {
-                                  "canBeTemplate": true,
-                                  "isTemplate": true
-                                }
-                              },
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity"
-                              },
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "coreTransformerForBuildPlusRuntime"
-                              }
-                            }
-                          ]
-                        },
-                        "entityVersion": {
-                          "optional": true,
-                          "type": "union",
-                          "tag": {
-                            "value": {
-                              "canBeTemplate": true,
-                              "isTemplate": true
-                            }
-                          },
-                          "discriminator": [
-                            "transformerType",
-                            "interpolation"
-                          ],
-                          "definition": [
-                            {
-                              "type": "schemaReference",
-                              "tag": {
-                                "value": {
-                                  "canBeTemplate": true,
-                                  "isTemplate": true
-                                }
-                              },
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityVersion"
-                              },
-                              "optional": true,
-                              "context": {}
-                            },
-                            {
-                              "type": "schemaReference",
-                              "definition": {
-                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                "relativePath": "coreTransformerForBuildPlusRuntime"
-                              }
-                            }
-                          ]
+                      "type": "union",
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": true,
+                          "isTemplate": true
                         }
-                      }
+                      },
+                      "discriminator": [
+                        "transformerType",
+                        "interpolation"
+                      ],
+                      "definition": [
+                        {
+                          "type": "schemaReference",
+                          "tag": {
+                            "value": {
+                              "canBeTemplate": true,
+                              "isTemplate": true
+                            }
+                          },
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entity"
+                          },
+                          "context": {}
+                        },
+                        {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "coreTransformerForBuildPlusRuntime"
+                          }
+                        }
+                      ]
                     }
                   }
                 }
@@ -35973,234 +35894,6 @@ export const miroirFundamentalJzodSchema = {
               }
             },
             "optional": true
-          }
-        }
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityVersion": {
-        "type": "object",
-        "extend": [
-          {
-            "type": "schemaReference",
-            "definition": {
-              "eager": true,
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityDefinitionRoot_extend"
-            }
-          }
-        ],
-        "definition": {
-          "name": {
-            "type": "string",
-            "tag": {
-              "value": {
-                "id": 5,
-                "defaultLabel": "Name"
-              }
-            }
-          },
-          "entityUuid": {
-            "type": "uuid",
-            "tag": {
-              "value": {
-                "defaultLabel": "Entity Uuid of the Entity which this definition is the definition",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntityApplicationSection": "model",
-                  "targetEntity": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "conceptLevel": {
-            "type": "enum",
-            "definition": [
-              "MetaModel",
-              "Model",
-              "Data",
-              "External"
-            ],
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Concept Level",
-                "display": {
-                  "editable": false
-                }
-              }
-            }
-          },
-          "description": {
-            "type": "string",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Description"
-              }
-            }
-          },
-          "defaultInstanceDetailsReportUuid": {
-            "type": "uuid",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Default Report used to display instances of this Entity",
-                "display": {
-                  "editable": false
-                },
-                "foreignKeyParams": {
-                  "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-                  "targetEntityApplicationSection": "model",
-                  "targetEntityOrderInstancesBy": "name"
-                }
-              }
-            }
-          },
-          "viewAttributes": {
-            "type": "array",
-            "optional": true,
-            "definition": {
-              "type": "string"
-            },
-            "tag": {
-              "value": {
-                "defaultLabel": "Attributes shown in list",
-                "description": "List of attribute names to be shown when displaying lists of instances of this entity.",
-                "display": {
-                  "editable": true
-                },
-                "isTemplate": true
-              }
-            }
-          },
-          "icon": {
-            "type": "schemaReference",
-            "optional": true,
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_miroirIcon"
-            }
-          },
-          "display": {
-            "type": "object",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Display Options",
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "foldSubLevels": {
-                "type": "record",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Unfold Sub Levels",
-                    "isTemplate": true
-                  }
-                },
-                "definition": {
-                  "type": "boolean"
-                }
-              }
-            }
-          },
-          "cache": {
-            "type": "object",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Cache Options",
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "cacheAllInstancesOnRefresh": {
-                "type": "boolean",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Enable Systematic Caching of All Instances",
-                    "description": "If enabled, all instances of this entity will be cached in memory when the cache is refreshed. This can improve performance when working with large datasets, but will use more memory on the client side.",
-                    "initializeTo": {
-                      "initializeToType": "value",
-                      "value": true
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "idAttribute": {
-            "type": "union",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "Id Attribute",
-                "description": "The attribute(s) used as primary key for instances of this entity. Defaults to 'uuid' when absent. Can be a single attribute name (string) or an array of attribute names for composite primary keys.",
-                "isTemplate": true
-              }
-            },
-            "definition": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "definition": {
-                  "type": "string"
-                }
-              }
-            ]
-          },
-          "externalDataSource": {
-            "type": "object",
-            "optional": true,
-            "tag": {
-              "value": {
-                "defaultLabel": "External Data Source",
-                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'.",
-                "isTemplate": true
-              }
-            },
-            "definition": {
-              "schema": {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Schema",
-                    "description": "The database schema where an external table resides (e.g. 'pg_catalog'). Used by SQL stores only."
-                  }
-                }
-              },
-              "tableName": {
-                "type": "string",
-                "optional": true,
-                "tag": {
-                  "value": {
-                    "defaultLabel": "Table Name",
-                    "description": "The physical table name in the external storage. Defaults to the entity name when absent."
-                  }
-                }
-              }
-            }
-          },
-          "mlSchema": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_jzodObject"
-            },
-            "tag": {
-              "value": {
-                "defaultLabel": "ML Schema",
-                "isTemplate": true
-              }
-            }
           }
         }
       },
@@ -39439,7 +39132,7 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
-          "entityDefinitions": {
+          "entityVersions": {
             "type": "array",
             "definition": {
               "type": "schemaReference",

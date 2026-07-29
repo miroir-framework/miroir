@@ -20,7 +20,7 @@ import {
   StoreUnitConfiguration,
   noValue,
   type ApplicationEntitiesAndInstances,
-  type EntityDefinition,
+  type EntityVersion,
   type EntityInstance,
   type LoggerFactoryInterface,
   type LoggerOptions,
@@ -101,12 +101,12 @@ MiroirLoggerFactory.registerLoggerToStart(
 const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as Entity,
-    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityDefinition: entityDefinitionBook as EntityDefinition,
+    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
@@ -117,12 +117,12 @@ const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances =
   },
   {
     entity: entityPublisher as Entity,
-    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
   {
     entity: entityUser as Entity,
-    entityDefinition: entityDefinitionUser as EntityDefinition,
+    entityVersion: entityDefinitionUser as EntityVersion,
     instances: [
       user1 as EntityInstance,
       user2 as EntityInstance,

@@ -282,117 +282,105 @@
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "entities": [
                     {
-                      "entity": {
-                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                        "parentName": "Entity",
-                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                        "name": "Author",
-                        "conceptLevel": "Model",
-                        "description": "The Author of a book."
+                      "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                      "parentName": "Entity",
+                      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "name": "Author",
+                      "conceptLevel": "Model",
+                      "description": "The Author of a book.",
+                      "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+                      "viewAttributes": [
+                        "name",
+                        "country",
+                        "icon",
+                        "uuid"
+                      ],
+                      "cache": {
+                        "cacheAllInstancesOnRefresh": true
                       },
-                      "entityVersion": {
-                        "uuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-                        "parentName": "EntityVersion",
-                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                        "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                        "conceptLevel": "Model",
-                        "name": "Author",
-                        "description": "author",
-                        "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
-                        "cache": {
-                          "cacheAllInstancesOnRefresh": true
+                      "mlSchema": {
+                        "type": "object",
+                        "extend": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "eager": true,
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "entityDefinitionRoot"
+                          }
                         },
-                        "viewAttributes": [
-                          "name",
-                          "country",
-                          "icon",
-                          "uuid"
-                        ],
-                        "mlSchema": {
-                          "type": "object",
-                          "extend": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "eager": true,
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "entityDefinitionRoot"
+                        "definition": {
+                          "name": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "id": 4,
+                                "defaultLabel": "Name"
+                              }
                             }
                           },
-                          "definition": {
-                            "name": {
-                              "type": "string",
-                              "tag": {
-                                "value": {
-                                  "id": 4,
-                                  "defaultLabel": "Name"
+                          "language": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 5,
+                                "defaultLabel": "Language"
+                              }
+                            }
+                          },
+                          "birthDate": {
+                            "type": "date",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 6,
+                                "defaultLabel": "Birth"
+                              }
+                            }
+                          },
+                          "deathDate": {
+                            "type": "date",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 7,
+                                "defaultLabel": "Death"
+                              }
+                            }
+                          },
+                          "country": {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 8,
+                                "defaultLabel": "Country",
+                                "foreignKeyParams": {
+                                  "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                  "targetEntityOrderInstancesBy": "name"
                                 }
                               }
-                            },
-                            "language": {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 5,
-                                  "defaultLabel": "Language"
-                                }
+                            }
+                          },
+                          "icon": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 9,
+                                "defaultLabel": "Icon"
                               }
-                            },
-                            "birthDate": {
-                              "type": "date",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 6,
-                                  "defaultLabel": "Birth"
-                                }
-                              }
-                            },
-                            "deathDate": {
-                              "type": "date",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 7,
-                                  "defaultLabel": "Death"
-                                }
-                              }
-                            },
-                            "country": {
-                              "type": "uuid",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 8,
-                                  "defaultLabel": "Country",
-                                  "foreignKeyParams": {
-                                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-                                    "targetEntityOrderInstancesBy": "name"
-                                  }
-                                }
-                              }
-                            },
-                            "icon": {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 9,
-                                  "defaultLabel": "Icon"
-                                }
-                              }
-                            },
-                            "icons": {
-                              "type": "number",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 10,
-                                  "defaultLabel": "Icons"
-                                }
+                            }
+                          },
+                          "icons": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 10,
+                                "defaultLabel": "Icons"
                               }
                             }
                           }
@@ -563,117 +551,105 @@
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "entities": [
                     {
-                      "entity": {
-                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                        "parentName": "Entity",
-                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                        "name": "Author",
-                        "conceptLevel": "Model",
-                        "description": "The Author of a book."
+                      "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                      "parentName": "Entity",
+                      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "name": "Author",
+                      "conceptLevel": "Model",
+                      "description": "The Author of a book.",
+                      "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+                      "viewAttributes": [
+                        "name",
+                        "country",
+                        "icon",
+                        "uuid"
+                      ],
+                      "cache": {
+                        "cacheAllInstancesOnRefresh": true
                       },
-                      "entityVersion": {
-                        "uuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-                        "parentName": "EntityVersion",
-                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                        "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                        "conceptLevel": "Model",
-                        "name": "Author",
-                        "description": "author",
-                        "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
-                        "cache": {
-                          "cacheAllInstancesOnRefresh": true
+                      "mlSchema": {
+                        "type": "object",
+                        "extend": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "eager": true,
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "entityDefinitionRoot"
+                          }
                         },
-                        "viewAttributes": [
-                          "name",
-                          "country",
-                          "icon",
-                          "uuid"
-                        ],
-                        "mlSchema": {
-                          "type": "object",
-                          "extend": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "eager": true,
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "entityDefinitionRoot"
+                        "definition": {
+                          "name": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "id": 4,
+                                "defaultLabel": "Name"
+                              }
                             }
                           },
-                          "definition": {
-                            "name": {
-                              "type": "string",
-                              "tag": {
-                                "value": {
-                                  "id": 4,
-                                  "defaultLabel": "Name"
+                          "language": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 5,
+                                "defaultLabel": "Language"
+                              }
+                            }
+                          },
+                          "birthDate": {
+                            "type": "date",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 6,
+                                "defaultLabel": "Birth"
+                              }
+                            }
+                          },
+                          "deathDate": {
+                            "type": "date",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 7,
+                                "defaultLabel": "Death"
+                              }
+                            }
+                          },
+                          "country": {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 8,
+                                "defaultLabel": "Country",
+                                "foreignKeyParams": {
+                                  "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                  "targetEntityOrderInstancesBy": "name"
                                 }
                               }
-                            },
-                            "language": {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 5,
-                                  "defaultLabel": "Language"
-                                }
+                            }
+                          },
+                          "icon": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 9,
+                                "defaultLabel": "Icon"
                               }
-                            },
-                            "birthDate": {
-                              "type": "date",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 6,
-                                  "defaultLabel": "Birth"
-                                }
-                              }
-                            },
-                            "deathDate": {
-                              "type": "date",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 7,
-                                  "defaultLabel": "Death"
-                                }
-                              }
-                            },
-                            "country": {
-                              "type": "uuid",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 8,
-                                  "defaultLabel": "Country",
-                                  "foreignKeyParams": {
-                                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-                                    "targetEntityOrderInstancesBy": "name"
-                                  }
-                                }
-                              }
-                            },
-                            "icon": {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 9,
-                                  "defaultLabel": "Icon"
-                                }
-                              }
-                            },
-                            "icons": {
-                              "type": "number",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 10,
-                                  "defaultLabel": "Icons"
-                                }
+                            }
+                          },
+                          "icons": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 10,
+                                "defaultLabel": "Icons"
                               }
                             }
                           }
@@ -823,7 +799,7 @@
                 "actionType": "compositeRunBoxedQueryAction",
                 "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "calculateNewEntityDefinionAndReports",
-                "nameGivenToResult": "libraryEntityDefinitionListFromPersistentStore",
+                "nameGivenToResult": "libraryEntityListFromPersistentStore",
                 "payload": {
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -838,11 +814,11 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entityDefinitions": {
+                        "entities": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "model",
-                          "parentName": "EntityVersion",
-                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "orderBy": {
                             "attributeName": "name",
                             "direction": "ASC"
@@ -857,7 +833,7 @@
                 "actionType": "compositeRunBoxedQueryAction",
                 "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "calculateNewEntityDefinionAndReports",
-                "nameGivenToResult": "libraryEntityDefinitionListFromLocalCache",
+                "nameGivenToResult": "libraryEntityListFromLocalCache",
                 "payload": {
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -872,11 +848,11 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entityDefinitions": {
+                        "entities": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "model",
-                          "parentName": "EntityVersion",
-                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
                           "orderBy": {
                             "attributeName": "name",
                             "direction": "ASC"
@@ -897,7 +873,7 @@
             "nameGivenToResult": "checkNumberOfEntitiesFromPersistentStore",
             "testAssertion": {
               "testType": "testAssertion",
-              "testLabel": "checkNumberOfBooksFromPersisentStore",
+              "testLabel": "checkNumberOfEntitiesFromPersistentStore",
               "definition": {
                 "resultAccessPath": [
                   "0"
@@ -910,8 +886,8 @@
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referencePath": [
-                      "libraryEntityDefinitionListFromPersistentStore",
-                      "entityDefinitions"
+                      "libraryEntityListFromPersistentStore",
+                      "entities"
                     ]
                   }
                 },
@@ -927,7 +903,7 @@
             "nameGivenToResult": "checkNumberOfEntitiesFromLocalCache",
             "testAssertion": {
               "testType": "testAssertion",
-              "testLabel": "checkNumberOfBooksFromLocalCache",
+              "testLabel": "checkNumberOfEntitiesFromLocalCache",
               "definition": {
                 "resultAccessPath": [
                   "0"
@@ -940,8 +916,8 @@
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
                     "referencePath": [
-                      "libraryEntityDefinitionListFromLocalCache",
-                      "entityDefinitions"
+                      "libraryEntityListFromLocalCache",
+                      "entities"
                     ]
                   }
                 },
@@ -953,36 +929,26 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
-            "actionLabel": "checkEntityDefinitionFromLocalCache",
-            "nameGivenToResult": "checkEntityDefinitionFromLocalCache",
+            "actionLabel": "checkEntityFromLocalCache",
+            "nameGivenToResult": "checkEntityFromLocalCache",
             "testAssertion": {
               "testType": "testAssertion",
-              "testLabel": "checkEntityBooks",
+              "testLabel": "checkEntityFromLocalCache",
               "definition": {
                 "resultAccessPath": [
-                  "libraryEntityDefinitionListFromLocalCache",
-                  "entityDefinitions"
+                  "libraryEntityListFromLocalCache",
+                  "entities"
                 ],
                 "expectedValue": [
                   {
-                    "uuid": "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
-                    "parentName": "EntityVersion",
-                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                    "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                    "entityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-                    "conceptLevel": "Model",
+                    "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                     "name": "Country",
-                    "description": "Country",
-                    "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
-                    "cache": {
-                      "cacheAllInstancesOnRefresh": true
-                    },
-                    "viewAttributes": [
-                      "name",
-                      "iso3166-1Alpha-2",
-                      "icon",
-                      "uuid"
-                    ],
+                    "conceptLevel": "Model",
+                    "description": "Country.",
                     "mlSchema": {
                       "type": "object",
                       "extend": {
@@ -1024,28 +990,27 @@
                           }
                         }
                       }
-                    }
-                  },
-                  {
-                    "uuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
-                    "parentName": "EntityVersion",
-                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                    "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                    "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-                    "conceptLevel": "Model",
-                    "name": "Publisher",
-                    "description": "Publisher",
-                    "icon": "building",
-                    "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
-                    "cache": {
-                      "cacheAllInstancesOnRefresh": true
                     },
                     "viewAttributes": [
                       "name",
-                      "country",
+                      "iso3166-1Alpha-2",
                       "icon",
                       "uuid"
                     ],
+                    "cache": {
+                      "cacheAllInstancesOnRefresh": true
+                    },
+                    "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31"
+                  },
+                  {
+                    "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Publisher",
+                    "conceptLevel": "Model",
+                    "description": "The publisher of a book.",
                     "mlSchema": {
                       "type": "object",
                       "extend": {
@@ -1104,7 +1069,18 @@
                           }
                         }
                       }
-                    }
+                    },
+                    "viewAttributes": [
+                      "name",
+                      "country",
+                      "icon",
+                      "uuid"
+                    ],
+                    "cache": {
+                      "cacheAllInstancesOnRefresh": true
+                    },
+                    "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+                    "icon": "building"
                   }
                 ],
                 "ignoreAttributes": [
@@ -1116,36 +1092,26 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
-            "actionLabel": "checkEntityDefinitionFromPersistentStore",
-            "nameGivenToResult": "checkEntityDefinitionFromPersistentStore",
+            "actionLabel": "checkEntityFromPersistentStore",
+            "nameGivenToResult": "checkEntityFromPersistentStore",
             "testAssertion": {
               "testType": "testAssertion",
-              "testLabel": "checkEntityBooks",
+              "testLabel": "checkEntityFromPersistentStore",
               "definition": {
                 "resultAccessPath": [
-                  "libraryEntityDefinitionListFromPersistentStore",
-                  "entityDefinitions"
+                  "libraryEntityListFromPersistentStore",
+                  "entities"
                 ],
                 "expectedValue": [
                   {
-                    "uuid": "56628e31-3db5-4c5c-9328-4ff7ce54c36a",
-                    "parentName": "EntityVersion",
-                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                    "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                    "entityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-                    "conceptLevel": "Model",
+                    "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                     "name": "Country",
-                    "description": "Country",
-                    "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
-                    "cache": {
-                      "cacheAllInstancesOnRefresh": true
-                    },
-                    "viewAttributes": [
-                      "name",
-                      "iso3166-1Alpha-2",
-                      "icon",
-                      "uuid"
-                    ],
+                    "conceptLevel": "Model",
+                    "description": "Country.",
                     "mlSchema": {
                       "type": "object",
                       "extend": {
@@ -1187,28 +1153,27 @@
                           }
                         }
                       }
-                    }
-                  },
-                  {
-                    "uuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9",
-                    "parentName": "EntityVersion",
-                    "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                    "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                    "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
-                    "conceptLevel": "Model",
-                    "name": "Publisher",
-                    "description": "Publisher",
-                    "icon": "building",
-                    "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
-                    "cache": {
-                      "cacheAllInstancesOnRefresh": true
                     },
                     "viewAttributes": [
                       "name",
-                      "country",
+                      "iso3166-1Alpha-2",
                       "icon",
                       "uuid"
                     ],
+                    "cache": {
+                      "cacheAllInstancesOnRefresh": true
+                    },
+                    "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31"
+                  },
+                  {
+                    "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "parentName": "Entity",
+                    "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                    "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                    "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "Publisher",
+                    "conceptLevel": "Model",
+                    "description": "The publisher of a book.",
                     "mlSchema": {
                       "type": "object",
                       "extend": {
@@ -1267,12 +1232,22 @@
                           }
                         }
                       }
-                    }
+                    },
+                    "viewAttributes": [
+                      "name",
+                      "country",
+                      "icon",
+                      "uuid"
+                    ],
+                    "cache": {
+                      "cacheAllInstancesOnRefresh": true
+                    },
+                    "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+                    "icon": "building"
                   }
                 ],
                 "ignoreAttributes": [
-                  "author",
-                  "storageAccess"
+                  "author"
                 ]
               }
             }
@@ -1331,8 +1306,8 @@
               {
                 "actionType": "compositeRunBoxedQueryAction",
                 "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-                "actionLabel": "fetchEntityDefinitionAfterAction",
-                "nameGivenToResult": "entityDefinitionAfterAction",
+                "actionLabel": "fetchEntityAfterAction",
+                "nameGivenToResult": "entityAfterAction",
                 "payload": {
                   "actionType": "runBoxedQueryAction",
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
@@ -1344,12 +1319,12 @@
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                       "extractors": {
-                        "entityDefinitions": {
+                        "entities": {
                           "extractorOrCombinerType": "extractorByPrimaryKey",
                           "applicationSection": "model",
-                          "parentName": "EntityVersion",
-                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                          "instanceUuid": "7a939fe8-d119-4e7f-ab94-95b2aae30db9"
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "instanceUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
                         }
                       }
                     }
@@ -1380,12 +1355,12 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "entityDefinitionAfterAction",
-                        "entityDefinitions",
+                        "entityAfterAction",
+                        "entities",
                         "uuid"
                       ]
                     },
-                    "right": "7a939fe8-d119-4e7f-ab94-95b2aae30db9"
+                    "right": "a027c379-8468-43a5-ba4d-bf618be25cab"
                   },
                   "right": {
                     "transformerType": "boolExpr",
@@ -1395,8 +1370,8 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "entityDefinitionAfterAction",
-                        "entityDefinitions",
+                        "entityAfterAction",
+                        "entities",
                         "mlSchema",
                         "definition",
                         "iso3166-1Alpha-2"
@@ -1453,117 +1428,105 @@
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "entities": [
                     {
-                      "entity": {
-                        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                        "parentName": "Entity",
-                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                        "name": "Author",
-                        "conceptLevel": "Model",
-                        "description": "The Author of a book."
+                      "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                      "parentName": "Entity",
+                      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "name": "Author",
+                      "conceptLevel": "Model",
+                      "description": "The Author of a book.",
+                      "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+                      "viewAttributes": [
+                        "name",
+                        "country",
+                        "icon",
+                        "uuid"
+                      ],
+                      "cache": {
+                        "cacheAllInstancesOnRefresh": true
                       },
-                      "entityVersion": {
-                        "uuid": "b30b7180-f7dc-4cca-b4e8-e476b77fe61d",
-                        "parentName": "EntityVersion",
-                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                        "entityUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
-                        "conceptLevel": "Model",
-                        "name": "Author",
-                        "description": "author",
-                        "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
-                        "cache": {
-                          "cacheAllInstancesOnRefresh": true
+                      "mlSchema": {
+                        "type": "object",
+                        "extend": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "eager": true,
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "entityDefinitionRoot"
+                          }
                         },
-                        "viewAttributes": [
-                          "name",
-                          "country",
-                          "icon",
-                          "uuid"
-                        ],
-                        "mlSchema": {
-                          "type": "object",
-                          "extend": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "eager": true,
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "entityDefinitionRoot"
+                        "definition": {
+                          "name": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "id": 4,
+                                "defaultLabel": "Name"
+                              }
                             }
                           },
-                          "definition": {
-                            "name": {
-                              "type": "string",
-                              "tag": {
-                                "value": {
-                                  "id": 4,
-                                  "defaultLabel": "Name"
+                          "language": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 5,
+                                "defaultLabel": "Language"
+                              }
+                            }
+                          },
+                          "birthDate": {
+                            "type": "date",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 6,
+                                "defaultLabel": "Birth"
+                              }
+                            }
+                          },
+                          "deathDate": {
+                            "type": "date",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 7,
+                                "defaultLabel": "Death"
+                              }
+                            }
+                          },
+                          "country": {
+                            "type": "uuid",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 8,
+                                "defaultLabel": "Country",
+                                "foreignKeyParams": {
+                                  "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                  "targetEntityOrderInstancesBy": "name"
                                 }
                               }
-                            },
-                            "language": {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 5,
-                                  "defaultLabel": "Language"
-                                }
+                            }
+                          },
+                          "icon": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 9,
+                                "defaultLabel": "Icon"
                               }
-                            },
-                            "birthDate": {
-                              "type": "date",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 6,
-                                  "defaultLabel": "Birth"
-                                }
-                              }
-                            },
-                            "deathDate": {
-                              "type": "date",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 7,
-                                  "defaultLabel": "Death"
-                                }
-                              }
-                            },
-                            "country": {
-                              "type": "uuid",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 8,
-                                  "defaultLabel": "Country",
-                                  "foreignKeyParams": {
-                                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
-                                    "targetEntityOrderInstancesBy": "name"
-                                  }
-                                }
-                              }
-                            },
-                            "icon": {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 9,
-                                  "defaultLabel": "Icon"
-                                }
-                              }
-                            },
-                            "icons": {
-                              "type": "number",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 10,
-                                  "defaultLabel": "Icons"
-                                }
+                            }
+                          },
+                          "icons": {
+                            "type": "number",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 10,
+                                "defaultLabel": "Icons"
                               }
                             }
                           }
@@ -1721,7 +1684,15 @@
                 ],
                 "ignoreAttributes": [
                   "author",
-                  "storageAccess"
+                  "storageAccess",
+                  "mlSchema",
+                  "viewAttributes",
+                  "cache",
+                  "defaultInstanceDetailsReportUuid",
+                  "idAttribute",
+                  "icon",
+                  "display",
+                  "externalDataSource"
                 ]
               }
             }
@@ -1792,7 +1763,15 @@
                 ],
                 "ignoreAttributes": [
                   "author",
-                  "storageAccess"
+                  "storageAccess",
+                  "mlSchema",
+                  "viewAttributes",
+                  "cache",
+                  "defaultInstanceDetailsReportUuid",
+                  "idAttribute",
+                  "icon",
+                  "display",
+                  "externalDataSource"
                 ]
               }
             }
@@ -1948,7 +1927,15 @@
                 ],
                 "ignoreAttributes": [
                   "author",
-                  "storageAccess"
+                  "storageAccess",
+                  "mlSchema",
+                  "viewAttributes",
+                  "cache",
+                  "defaultInstanceDetailsReportUuid",
+                  "idAttribute",
+                  "icon",
+                  "display",
+                  "externalDataSource"
                 ]
               }
             }

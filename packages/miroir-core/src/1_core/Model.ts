@@ -22,14 +22,14 @@ import {
 
 // import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type { DeploymentUuidToReportsEntitiesDefinitions } from "../0_interfaces/1_core/Model";
 import { resolveFundamentalSchemaForDeployment } from "./jzod/schemaForDeployment";
 import { defaultMiroirMetaModel } from "./defaultMiroirMetaModel";
 
 import {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   Menu,
   MetaModel,
   MlSchema,
@@ -166,13 +166,13 @@ export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
         availableQueries: metaModel.storedQueries,
         availableReports: metaModel.reports.filter((r:Report) => metaModelReports.includes(r.uuid)),
         entities: metaModel.entities,
-        entityDefinitions: metaModel.entityDefinitions,
+        entityVersions: metaModel.entityVersions,
       },
       data: {
         availableQueries: metaModel.storedQueries,
         availableReports: metaModel.reports.filter((r) => !metaModelReports.includes(r.uuid)),
         entities: metaModel.entities,
-        entityDefinitions: metaModel.entityDefinitions,
+        entityVersions: metaModel.entityVersions,
       },
     };
   } else {
@@ -181,13 +181,13 @@ export function getReportsAndEntitiesDefinitionsForDeploymentUuid(
         availableQueries: metaModel.storedQueries,
         availableReports: metaModel.reports,
         entities: metaModel.entities,
-        entityDefinitions: metaModel.entityDefinitions,
+        entityVersions: metaModel.entityVersions,
       },
       data: {
         availableQueries: metaModel.storedQueries,
         availableReports: appModel.reports,
         entities: appModel.entities,
-        entityDefinitions: appModel.entityDefinitions,
+        entityVersions: appModel.entityVersions,
       },
     };
   }
@@ -201,7 +201,7 @@ export const emptyApplicationModel: MetaModel = {
   applicationVersionCrossEntityVersion: [],
   endpoints: [],
   entities: [],
-  entityDefinitions: [],
+  entityVersions: [],
   jzodSchemas: [],
   menus: [],
   reports: [],
@@ -224,7 +224,7 @@ const modelIcons: Record<string, string> = {
   Endpoint: "api",//"webhook", //"settings_ethernet", //"api",
   EndpointDefinition: "webhook", //"settings_ethernet", //"api",
   Entity: "category",
-  EntityDefinition: "category",
+  EntityVersion: "category",
   Menu: "menu", // "menu_book", "list",
   QueryVersion: "query-version",
   Report: "dashboard", //"newspaper", "article", "clarify", 
@@ -312,7 +312,7 @@ export async function extractApplicationModel(
       applicationName: applicationName,
       applications: applications as SelfApplication[],
       entities: entities as Entity[],
-      entityDefinitions: entityDefinitions as EntityDefinition[],
+      entityVersions: entityDefinitions as EntityVersion[],
       endpoints: endpoints as EndpointDefinition[],
       menus: menus as Menu[],
       reports: reports as Report[],

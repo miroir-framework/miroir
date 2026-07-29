@@ -11,7 +11,7 @@ import {
 
 import {
   Uuid,
-} from "../0_interfaces/1_core/EntityDefinition";
+} from "../0_interfaces/1_core/EntityVersion";
 
 import {
   ReduxDeploymentsState,

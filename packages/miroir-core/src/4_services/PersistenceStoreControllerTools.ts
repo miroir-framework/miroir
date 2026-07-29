@@ -15,7 +15,7 @@ export async function startLocalPersistenceStoreControllers(
   try {
     await localMiroirPersistenceStoreController?.bootFromPersistedState(
       defaultMiroirMetaModel.entities,
-      defaultMiroirMetaModel.entityDefinitions,
+      defaultMiroirMetaModel.entityVersions,
     );
   } catch (error) {
     console.log(
@@ -25,7 +25,7 @@ export async function startLocalPersistenceStoreControllers(
   try {
     await localAppPersistenceStoreController?.bootFromPersistedState(
       defaultMiroirMetaModel.entities,
-      defaultMiroirMetaModel.entityDefinitions,
+      defaultMiroirMetaModel.entityVersions,
     );
   } catch (error) {
     console.log(

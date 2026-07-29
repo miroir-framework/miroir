@@ -4,7 +4,7 @@
 // ################################################################################################
 export { default as entityEndpointVersion } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/3d8da4d4-8f76-4bb4-9212-14869d81c00c.json" with { type: "json" };
 export { default as entityEntity } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json" with { type: "json" };
-// #217 Phase 12: Entity formerly named EntityDefinition
+// #217 Phase 12: Entity formerly named EntityVersion
 export { default as entityEntityVersion } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json" with { type: "json" };
 /** @deprecated Use entityEntityVersion */
 export { default as entityEntityDefinition } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json" with { type: "json" };

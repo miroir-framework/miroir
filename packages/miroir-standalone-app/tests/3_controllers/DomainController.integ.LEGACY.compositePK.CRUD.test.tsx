@@ -12,7 +12,7 @@ import type {
   ApplicationDeploymentMap,
   Deployment,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   MetaModel,
   SelfApplication,
@@ -84,7 +84,7 @@ const entityCompositePK: Entity = {
   description: "Test entity with a composite primary key [region, code].",
 } as Entity;
 
-const entityDefinitionCompositePK: EntityDefinition = {
+const entityDefinitionCompositePK: EntityVersion = {
   uuid: entityDefinitionCompositePKUuid,
   parentName: "EntityVersion",
   parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
@@ -119,7 +119,7 @@ const entityDefinitionCompositePK: EntityDefinition = {
       },
     },
   },
-} as any as EntityDefinition;
+} as any as EntityVersion;
 
 // Test data instances — PK is composite: region + code
 const compositeItem1: EntityInstance = {
@@ -151,7 +151,7 @@ const compositePKTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityCompositePK],
-  entityDefinitions: [entityDefinitionPublisher as EntityDefinition, entityDefinitionCompositePK],
+  entityVersions: [entityDefinitionPublisher as EntityVersion, entityDefinitionCompositePK],
   endpoints: [],
   jzodSchemas: [],
   menus: [],
@@ -417,7 +417,7 @@ const dataTestActions: Record<string, TestCompositeActionParams> = {
         [
           {
             entity: entityCompositePK,
-            entityDefinition: entityDefinitionCompositePK,
+            entityVersion: entityDefinitionCompositePK,
             instances: [compositeItem1, compositeItem2, compositeItem3],
           },
         ],

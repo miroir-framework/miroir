@@ -7,7 +7,7 @@ import {
   resolvePresentEntityFromModel,
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesDefinitions,
-  type EntityDefinition,
+  type EntityVersion,
   type JzodElement,
   type JzodObject,
   type MetaModel,
@@ -84,7 +84,7 @@ export const reportSectionsFormSchema = (
       const targetPresentEntity = resolvePresentEntityFromModel(
         {
           entities: sectionMapping?.entities,
-          entityDefinitions: sectionMapping?.entityDefinitions,
+          entityDefinitions: sectionMapping?.entityVersions,
         },
         entityUuid,
       );

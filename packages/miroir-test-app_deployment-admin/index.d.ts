@@ -53,7 +53,9 @@ export declare const deployment_Miroir: any;
 export declare const adminStoreBasedConfiguration: any;
 export declare const defaultAdminViewParams: any;
 export declare const adminImport: any;
-export declare const miroirUser_AliceAdmin: any;
-export declare const miroirUser_BobInactive: any;
-export declare const miroirRight_AliceLibraryAppAdmin: any;
-export declare const miroirRight_AliceLibraryDeploymentRead: any;
+export declare const deployment_Admin: any;
+export declare const deployment_Miroir: any;
+// export declare const selfApplicationLibrary: any;
+// export declare const selfApplicationVersionLibraryInitialVersion: any;
+// export declare const selfApplicationModelBranchLibraryMasterBranch: any;
+

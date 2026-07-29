@@ -34,10 +34,10 @@ describe("schemaReloadPolicy (199 Phase 5)", () => {
     );
 
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityDefinitions = mutated.entityDefinitions.map((entityDefinition) =>
-      entityDefinition.uuid === entityDefinitionEntity.uuid
-        ? { ...entityDefinition, name: "EntityRenamed" }
-        : entityDefinition,
+    mutated.entityVersions = mutated.entityVersions.map((entityVersion) =>
+      entityVersion.uuid === entityDefinitionEntity.uuid
+        ? { ...entityVersion, name: "EntityRenamed" }
+        : entityVersion,
     );
     const nextMetaRevision = computeSchemaRevision(
       deployment_Miroir.uuid,
@@ -134,10 +134,10 @@ describe("schemaReloadPolicy (199 Phase 5)", () => {
     );
 
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityDefinitions = mutated.entityDefinitions.map((entityDefinition) =>
-      entityDefinition.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
-        ? { ...entityDefinition, name: "BookRenamed" }
-        : entityDefinition,
+    mutated.entityVersions = mutated.entityVersions.map((entityVersion) =>
+      entityVersion.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
+        ? { ...entityVersion, name: "BookRenamed" }
+        : entityVersion,
     );
     const nextAppRevision = computeSchemaRevision(
       deployment_Library_DO_NO_USE.uuid,
@@ -173,10 +173,10 @@ describe("schemaReloadPolicy (199 Phase 5)", () => {
     );
 
     const mutatedLibrary = cloneModel(libraryModel) as MetaModel;
-    mutatedLibrary.entityDefinitions = mutatedLibrary.entityDefinitions.map((entityDefinition) =>
-      entityDefinition.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
-        ? { ...entityDefinition, name: "BookRenamed" }
-        : entityDefinition,
+    mutatedLibrary.entityVersions = mutatedLibrary.entityVersions.map((entityVersion) =>
+      entityVersion.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
+        ? { ...entityVersion, name: "BookRenamed" }
+        : entityVersion,
     );
     const nextLibraryRevision = computeSchemaRevision(
       deployment_Library_DO_NO_USE.uuid,
@@ -199,10 +199,10 @@ describe("schemaReloadPolicy (199 Phase 5)", () => {
   it("re-resolves with extended mode once for overlay revision bump", () => {
     const base = cloneModel(defaultLibraryAppModel) as MetaModel;
     const mutated = cloneModel(base) as MetaModel;
-    mutated.entityDefinitions = mutated.entityDefinitions.map((entityDefinition) =>
-      entityDefinition.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
-        ? { ...entityDefinition, viewAttributes: [...(entityDefinition.viewAttributes ?? []), "isbn"] }
-        : entityDefinition,
+    mutated.entityVersions = mutated.entityVersions.map((entityVersion) =>
+      entityVersion.uuid === "797dd185-0155-43fd-b23f-f6d0af8cae06"
+        ? { ...entityVersion, viewAttributes: [...(entityVersion.viewAttributes ?? []), "isbn"] }
+        : entityVersion,
     );
 
     const initial = resolveSchemaForDeploymentPolicy(

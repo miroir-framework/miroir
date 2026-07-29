@@ -13,7 +13,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import GlideDataGridFilterComponent from './GlideDataGridFilterComponent.js';
 
 import {
-  EntityDefinition,
+  EntityVersion,
   LoggerInterface,
   MiroirLoggerFactory
 } from "miroir-core";
@@ -68,7 +68,7 @@ interface GlideDataGridComponentProps {
   columnDefs: { columnDefs: any[] };
   styles?: any;
   type: string;
-  currentEntityDefinition?: EntityDefinition | { uuid?: string; entityUuid?: string; mlSchema?: any; name?: string };
+  currentEntityDefinition?: EntityVersion | { uuid?: string; entityUuid?: string; mlSchema?: any; name?: string };
   // calculatedColumnWidths?: ColumnWidthSpec[];
   containerWidth?: number; // Container width from parent EntityInstanceGrid
   containerHeight?: number; // Container width from parent EntityInstanceGrid

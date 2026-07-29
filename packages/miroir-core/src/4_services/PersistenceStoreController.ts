@@ -1,8 +1,8 @@
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import {
   ApplicationSection,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstanceCollection,
   MetaModel,
@@ -263,15 +263,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
               "handleAction applyModelEntityUpdates createEntity inserting",
               persistenceStoreControllerAction.payload.entities
             );
-            // #217 Phase 12: Action payload uses entityVersion; store API still entityDefinition
-            return this.createEntities(
-              persistenceStoreControllerAction.payload.entities.map((pair) => ({
-                entity: pair.entity,
-                entityDefinition:
-                  (pair as { entityVersion?: EntityDefinition }).entityVersion ??
-                  (pair as { entityDefinition?: EntityDefinition }).entityDefinition,
-              })),
-            );
+            // #220: Action payload.entities is Entity[]
+            return this.createEntities(persistenceStoreControllerAction.payload.entities);
             break;
           }
           default:
@@ -433,7 +426,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #############################################################################################
   async bootFromPersistedState(
     metaModelEntities: Entity[],
-    metaModelEntityDefinitions: EntityDefinition[]
+    metaModelEntityDefinitions: EntityVersion[]
   ): Promise<Action2VoidReturnType> {
     const modelBootFromPersistedState: Action2ReturnType =
       await this.modelStoreSection.bootFromPersistedState(
@@ -468,7 +461,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     ) {
       return new Action2Error(
         "FailedToGetInstances",
-        `bootFromPersistedState for entityDefinitions getInstances(${
+        `bootFromPersistedState for entityVersions getInstances(${
           entityEntityDefinition.uuid
         }) status: ${dataEntityDefinitions.status}. Message: ${
           dataEntityDefinitions instanceof Action2Error ? dataEntityDefinitions?.errorMessage : ""
@@ -483,9 +476,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     );
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
       ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
-        (e) => ["Entity", "EntityDefinition", "EntityVersion"].indexOf(e.name) == -1
-      ), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityDefinition defined in its Entity table
-      (dataEntityDefinitions as any).returnedDomainElement?.instances as EntityDefinition[]
+        (e) => ["Entity", "EntityVersion", "EntityVersion"].indexOf(e.name) == -1
+      ), // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
+      (dataEntityDefinitions as any).returnedDomainElement?.instances as EntityVersion[]
     );
     if (
       dataBootFromPersistedState instanceof Action2Error ||
@@ -570,7 +563,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     }
     const dataSectionFilteredEntities: Entity[] = (
       dataSectionEntities.returnedDomainElement.instances as Entity[]
-    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityDefinition", "EntityVersion"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
+    ).filter((e: EntityInstanceWithName) => ["Entity", "EntityVersion", "EntityVersion"].indexOf(e.name) == -1); // for Miroir selfApplication only, which has the Meta-Entities Entity and EntityVersion defined in its Entity table
     log.trace(
       this.logHeader,
       "clearDataInstances found entities to clear:",
@@ -579,12 +572,12 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     await this.dataStoreSection.clear();
 
     for (const entity of dataSectionFilteredEntities) {
-      const entityDefinition: EntityDefinition | undefined =
+      const entityVersion: EntityVersion | undefined =
         dataSectionEntityDefinitions.returnedDomainElement.instances.find(
-          (d: EntityInstance) => (d as EntityDefinition).entityUuid == entity.uuid
-        ) as EntityDefinition;
-      if (entityDefinition) {
-        await this.createDataStorageSpaceForInstancesOfEntity(entity, entityDefinition);
+          (d: EntityInstance) => (d as EntityVersion).entityUuid == entity.uuid
+        ) as EntityVersion;
+      if (entityVersion) {
+        await this.createDataStorageSpaceForInstancesOfEntity(entity, entityVersion);
       } else {
         log.error(
           this.logHeader,
@@ -619,35 +612,26 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async createModelStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
   ): Promise<Action2VoidReturnType> {
-    return this.modelStoreSection.createStorageSpaceForInstancesOfEntity(entity, entityDefinition);
+    return this.modelStoreSection.createStorageSpaceForInstancesOfEntity(entity);
   }
 
   // ##############################################################################################
   async createDataStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition: EntityDefinition
+    entityVersion: EntityVersion
   ): Promise<Action2VoidReturnType> {
-    return this.dataStoreSection.createStorageSpaceForInstancesOfEntity(entity, entityDefinition);
+    return this.dataStoreSection.createStorageSpaceForInstancesOfEntity(entity, entityVersion);
   }
 
   // ##############################################################################################
-  async createEntity(
-    entity: Entity,
-    entityDefinition?: EntityDefinition
-  ): Promise<Action2VoidReturnType> {
-    const result = await this.modelStoreSection.createEntity(entity, entityDefinition);
+  async createEntity(entity: Entity): Promise<Action2VoidReturnType> {
+    const result = await this.modelStoreSection.createEntity(entity);
     return Promise.resolve(result);
   }
 
   // ##############################################################################################
-  async createEntities(
-    entities: {
-      entity: Entity;
-      entityDefinition?: EntityDefinition;
-    }[]
-  ): Promise<Action2VoidReturnType> {
+  async createEntities(entities: Entity[]): Promise<Action2VoidReturnType> {
     const result = await this.modelStoreSection.createEntities(entities);
     return Promise.resolve(result);
   }
@@ -698,7 +682,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     entityUuid: string,
     instancePrimaryKey: Uuid,
     attributes?: string[],
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2EntityInstanceReturnType> {
     log.info(this.logHeader, "getInstance", "section", section, "entity", entityUuid, "instancePrimaryKey", instancePrimaryKey);
 
@@ -729,7 +713,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       result.returnedDomainElement &&
       typeof result.returnedDomainElement === "object"
     ) {
-      const identityFields = resolveProjectionIdentityFields(entityDefinition);
+      const identityFields = resolveProjectionIdentityFields(entityVersion);
       return {
         ...result,
         returnedDomainElement: projectEntityInstance(
@@ -747,7 +731,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     section: ApplicationSection,
     entityUuid: string,
     attributes?: string[],
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2EntityInstanceCollectionOrFailure> {
     // TODO: fix applicationSection!!!
     
@@ -783,7 +767,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
     if (attributes && attributes.length > 0) {
       const collection = instances.returnedDomainElement;
-      const identityFields = resolveProjectionIdentityFields(entityDefinition);
+      const identityFields = resolveProjectionIdentityFields(entityVersion);
       return {
         ...instances,
         returnedDomainElement: {

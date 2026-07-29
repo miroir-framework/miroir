@@ -8,7 +8,7 @@ import {
 import type {
   ApplicationSection,
   Entity,
-  EntityDefinition,
+  EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 function entity(uuid: string, name: string): Entity {
@@ -20,10 +20,10 @@ function entity(uuid: string, name: string): Entity {
   } as Entity;
 }
 
-function entityDefinition(
+function entityVersion(
   entityUuid: string,
   cacheAllInstancesOnRefresh?: boolean,
-): EntityDefinition {
+): EntityVersion {
   return {
     uuid: `def-${entityUuid}`,
     name: `Def-${entityUuid}`,
@@ -34,11 +34,11 @@ function entityDefinition(
     ...(cacheAllInstancesOnRefresh === undefined
       ? {}
       : { cache: { cacheAllInstancesOnRefresh } }),
-  } as EntityDefinition;
+  } as EntityVersion;
 }
 
 describe("shouldCacheAllInstancesOnRefresh (1.1 default eager)", () => {
-  it("returns true when EntityDefinition is missing", () => {
+  it("returns true when EntityVersion is missing", () => {
     expect(shouldCacheAllInstancesOnRefresh(undefined)).toBe(true);
   });
 
@@ -56,31 +56,31 @@ describe("shouldCacheAllInstancesOnRefresh (1.1 default eager)", () => {
   });
 
   it("returns true when cacheAllInstancesOnRefresh is true", () => {
-    expect(shouldCacheAllInstancesOnRefresh(entityDefinition("e1", true))).toBe(true);
+    expect(shouldCacheAllInstancesOnRefresh(entityVersion("e1", true))).toBe(true);
   });
 
   it("returns false when cacheAllInstancesOnRefresh is false", () => {
-    expect(shouldCacheAllInstancesOnRefresh(entityDefinition("e1", false))).toBe(false);
+    expect(shouldCacheAllInstancesOnRefresh(entityVersion("e1", false))).toBe(false);
   });
 
   it("isLazyCacheOnRefreshEntity is true only for explicit false", () => {
     expect(isLazyCacheOnRefreshEntity(undefined)).toBe(false);
-    expect(isLazyCacheOnRefreshEntity(entityDefinition("e1"))).toBe(false);
-    expect(isLazyCacheOnRefreshEntity(entityDefinition("e1", true))).toBe(false);
-    expect(isLazyCacheOnRefreshEntity(entityDefinition("e1", false))).toBe(true);
+    expect(isLazyCacheOnRefreshEntity(entityVersion("e1"))).toBe(false);
+    expect(isLazyCacheOnRefreshEntity(entityVersion("e1", true))).toBe(false);
+    expect(isLazyCacheOnRefreshEntity(entityVersion("e1", false))).toBe(true);
   });
 });
 
 describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
   const modelA = entity("model-a", "Entity");
-  const modelB = entity("model-b", "EntityDefinition");
+  const modelB = entity("model-b", "EntityVersion");
   const dataEager = entity("data-eager", "Book");
   const dataLazy = entity("data-lazy", "Blob");
   const dataDefault = entity("data-default", "Author");
 
-  const definitionsByEntityUuid: Record<string, EntityDefinition> = {
-    "data-eager": entityDefinition("data-eager", true),
-    "data-lazy": entityDefinition("data-lazy", false),
+  const definitionsByEntityUuid: Record<string, EntityVersion> = {
+    "data-eager": entityVersion("data-eager", true),
+    "data-lazy": entityVersion("data-lazy", false),
     // data-default intentionally omitted → default eager
   };
 
@@ -89,9 +89,9 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
       [modelA, modelB],
       [dataLazy],
       {
-        "data-lazy": entityDefinition("data-lazy", false),
-        "model-a": entityDefinition("model-a", false),
-        "model-b": entityDefinition("model-b", false),
+        "data-lazy": entityVersion("data-lazy", false),
+        "model-a": entityVersion("model-a", false),
+        "model-b": entityVersion("model-b", false),
       },
     );
 
@@ -124,7 +124,7 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
     expect(result).toEqual([]);
   });
 
-  it("excludes Miroir Blob when EntityDefinition asset sets cacheAllInstancesOnRefresh false (Phase 4)", async () => {
+  it("excludes Miroir Blob when EntityVersion asset sets cacheAllInstancesOnRefresh false (Phase 4)", async () => {
     const { entityBlob, entityDefinitionBlob } = await import(
       "miroir-test-app_deployment-miroir"
     );
@@ -133,13 +133,13 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
     const result = resolveEntitiesToFetchOnRefresh(
       [],
       [entityBlob as Entity],
-      { [entityBlob.uuid]: entityDefinitionBlob as EntityDefinition },
+      { [entityBlob.uuid]: entityDefinitionBlob as EntityVersion },
     );
 
     expect(result).toEqual([]);
   });
 
-  it("excludes Blob from Entity.cache without EntityDefinition map (Phase 7)", async () => {
+  it("excludes Blob from Entity.cache without EntityVersion map (Phase 7)", async () => {
     const { entityBlob } = await import("miroir-test-app_deployment-miroir");
     expect(entityBlob.cache?.cacheAllInstancesOnRefresh).toBe(false);
 

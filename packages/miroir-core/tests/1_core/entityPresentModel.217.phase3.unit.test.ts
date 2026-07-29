@@ -8,7 +8,7 @@ import {
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   SelfApplication,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
@@ -56,7 +56,7 @@ function loadJsonInstancesFromCollection(
 
 function assertEntityEntityDefinitionRedundancy(
   entities: Entity[],
-  entityDefinitions: EntityDefinition[],
+  entityDefinitions: EntityVersion[],
   label: string,
 ) {
   const inventory = inventoryEntityEntityDefinitionJoins(entities, entityDefinitions);
@@ -66,21 +66,21 @@ function assertEntityEntityDefinitionRedundancy(
 
   for (const match of inventory.matched) {
     const entity = entities.find((candidate) => candidate.uuid === match.entityUuid)!;
-    const entityDefinition = entityDefinitions.find(
+    const entityVersion = entityDefinitions.find(
       (definition) => definition.uuid === match.entityDefinitionUuids[0],
     )!;
     expect(entityHasCompletePresentModel(entity), `${label}:${entity.name}`).toBe(true);
     expect(
-      compareEntityPresentModelDefinitions(entity, entityDefinition),
+      compareEntityPresentModelDefinitions(entity, entityVersion),
       `${label}:${entity.name}`,
     ).toEqual({ equal: true, differingFields: [] });
-    expect(resolveCurrentEntityModel(entity, [entityDefinition])).toBe(entity);
+    expect(resolveCurrentEntityModel(entity, [entityVersion])).toBe(entity);
   }
 }
 
-describe("217 Phase 3 — Entity ↔ EntityDefinition asset redundancy", () => {
+describe("217 Phase 3 — Entity ↔ EntityVersion asset redundancy", () => {
   for (const modelRoot of CANONICAL_MODEL_ROOTS) {
-    it(`${modelRoot} Entities carry definition fields equal to their EntityDefinition`, () => {
+    it(`${modelRoot} Entities carry definition fields equal to their EntityVersion`, () => {
       const entities = loadJsonInstancesFromCollection(
         modelRoot,
         ENTITY_COLLECTION_UUID,
@@ -88,7 +88,7 @@ describe("217 Phase 3 — Entity ↔ EntityDefinition asset redundancy", () => {
       const entityDefinitions = loadJsonInstancesFromCollection(
         modelRoot,
         ENTITY_DEFINITION_COLLECTION_UUID,
-      ) as EntityDefinition[];
+      ) as EntityVersion[];
       assertEntityEntityDefinitionRedundancy(entities, entityDefinitions, modelRoot);
     });
   }
@@ -96,7 +96,7 @@ describe("217 Phase 3 — Entity ↔ EntityDefinition asset redundancy", () => {
   it("defaultLibraryAppModel Entities are complete and consistent with EntityDefinitions", () => {
     assertEntityEntityDefinitionRedundancy(
       defaultLibraryAppModel.entities,
-      defaultLibraryAppModel.entityDefinitions,
+      defaultLibraryAppModel.entityVersions,
       "defaultLibraryAppModel",
     );
   });
@@ -104,7 +104,7 @@ describe("217 Phase 3 — Entity ↔ EntityDefinition asset redundancy", () => {
   it("defaultMiroirMetaModel Entities are complete and consistent with EntityDefinitions", () => {
     assertEntityEntityDefinitionRedundancy(
       defaultMiroirMetaModel.entities,
-      defaultMiroirMetaModel.entityDefinitions,
+      defaultMiroirMetaModel.entityVersions,
       "defaultMiroirMetaModel",
     );
   });

@@ -1,7 +1,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { Uuid } from '../0_interfaces/1_core/EntityDefinition.js';
+import { Uuid } from '../0_interfaces/1_core/EntityVersion.js';
 import {
   DomainControllerInterface,
   DomainState,
@@ -45,7 +45,7 @@ import {
   Deployment,
   DomainAction,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   InstanceAction,
   MetaModel,
@@ -74,6 +74,11 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { ACTION_OK } from "../1_core/constants";
+import {
+  entityHasCompletePresentModel,
+  ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+  resolveCurrentEntityModel,
+} from "../1_core/entityPresentModel.js";
 import { rejectPartialMutationInstanceAction } from "../1_core/partialMutationGuard.js";
 import {
   resolveEntitiesToFetchOnRefresh,
@@ -522,14 +527,14 @@ export class DomainController implements DomainControllerInterface {
           };
 
           // Model is always loaded entirely (application concepts). Fetch model first so
-          // Entity (and legacy EntityDefinition) cache policies are available for data refresh.
+          // Entity (and legacy EntityVersion) cache policies are available for data refresh.
           const modelFetchTargets = modelEntitiesToFetch.map((e) => ({
             section: "model" as ApplicationSection,
             entity: e,
           }));
           const modelInstances = await Promise.all(modelFetchTargets.map(fetchEntityInstances));
 
-          const entityDefinitionsByEntityUuid: Record<string, EntityDefinition> = {};
+          const entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {};
           const entityDefinitionFetchIndex = modelEntitiesToFetch.findIndex(
             (e) => e.uuid === entityEntityDefinition.uuid,
           );
@@ -540,7 +545,7 @@ export class DomainController implements DomainControllerInterface {
               entityDefinitionCollection &&
               Array.isArray(entityDefinitionCollection.instances)
             ) {
-              for (const def of entityDefinitionCollection.instances as EntityDefinition[]) {
+              for (const def of entityDefinitionCollection.instances as EntityVersion[]) {
                 if (def?.entityUuid) {
                   entityDefinitionsByEntityUuid[def.entityUuid] = def;
                 }
@@ -723,9 +728,10 @@ export class DomainController implements DomainControllerInterface {
         //   // JSON.stringify(runBoxedQueryTemplateOrBoxedExtractorTemplateAction)
         //   runBoxedExtractorOrQueryAction
         // );
+        // Transactional / model scripts mutate the local cache until commit; defaulting to
+        // storage makes uncommitted create/undo/redo invisible to boxed queries.
         const executionStrategy =
-          // runBoxedExtractorOrQueryAction.queryExecutionStrategy ?? "localCacheOrFail";
-          runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy ?? "storage";
+          runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy ?? "localCacheOrFail";
         switch (executionStrategy) {
           case "ServerCache":
           case "localCacheOrFetch": {
@@ -1181,16 +1187,16 @@ export class DomainController implements DomainControllerInterface {
             const model = modelActionResetModel.payload.model;
             // log.info("handleModelAction resetModel creating entities from provided model", {
             //   entitiesCount: model.entities?.length || 0,
-            //   entityDefinitionsCount: model.entityDefinitions?.length || 0
+            //   entityDefinitionsCount: model.entityVersions?.length || 0
             // });
             
             // Combine entities with their definitions
-            const entitiesToCreate: { entity: Entity; entityDefinition?: EntityDefinition }[] = [];
+            const entitiesToCreate: { entity: Entity; entityVersion?: EntityVersion }[] = [];
             
             // Create a map of entityDefinitions by entityUuid for quick lookup
-            const entityDefinitionMap = new Map<string, EntityDefinition>();
-            if (model.entityDefinitions) {
-              for (const entityDef of model.entityDefinitions) {
+            const entityDefinitionMap = new Map<string, EntityVersion>();
+            if (model.entityVersions) {
+              for (const entityDef of model.entityVersions) {
                 entityDefinitionMap.set(entityDef.entityUuid, entityDef);
               }
             }
@@ -1198,14 +1204,14 @@ export class DomainController implements DomainControllerInterface {
             // Match entities with their definitions (#217 Phase 11: Entity-complete needs no live ED)
             if (model.entities) {
               for (const entity of model.entities) {
-                const entityDefinition = entityDefinitionMap.get(entity.uuid);
-                if (entityDefinition) {
-                  entitiesToCreate.push({ entity, entityDefinition });
+                const entityVersion = entityDefinitionMap.get(entity.uuid);
+                if (entityVersion) {
+                  entitiesToCreate.push({ entity, entityVersion });
                 } else if (entity.mlSchema) {
                   entitiesToCreate.push({ entity });
                 } else {
                   log.warn(
-                    "handleModelAction resetModel: no entityDefinition found for entity",
+                    "handleModelAction resetModel: no entityVersion found for entity",
                     entity.uuid,
                     entity.name
                   );
@@ -1222,15 +1228,22 @@ export class DomainController implements DomainControllerInterface {
               // );
               
               // Create entities via persistence action for each entity
-              for (const { entity, entityDefinition } of entitiesToCreate) {
+              for (const { entity, entityVersion } of entitiesToCreate) {
                 const createEntityAction: ModelAction = {
                   actionType: "createEntity",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionResetModel.payload.application,
-                    entities: entityDefinition
-                      ? [{ entity, entityVersion: entityDefinition }]
-                      : [{ entity }],
+                    // #220 — entities: Entity[]; enrich from EV when incomplete
+                    entities: [
+                      entityHasCompletePresentModel(entity)
+                        ? entity
+                        : entityVersion
+                          ? resolveCurrentEntityModel(entity, [entityVersion], {
+                              onInconsistency: "preferEntity",
+                            })
+                          : entity,
+                    ],
                   }
                 };
                 
@@ -1343,56 +1356,27 @@ export class DomainController implements DomainControllerInterface {
             const model = modelActionInitModel.payload.model;
             log.info("handleModelAction resetModel creating entities from provided model", {
               entitiesCount: model.entities?.length || 0,
-              entityDefinitionsCount: model.entityDefinitions?.length || 0
+              entityDefinitionsCount: model.entityVersions?.length || 0
             });
             
-            // Combine entities with their definitions
-            const entitiesToCreate: { entity: Entity; entityDefinition?: EntityDefinition }[] = [];
-            
-            // Create a map of entityDefinitions by entityUuid for quick lookup
-            const entityDefinitionMap = new Map<string, EntityDefinition>();
-            if (model.entityDefinitions) {
-              for (const entityDef of model.entityDefinitions) {
-                entityDefinitionMap.set(entityDef.entityUuid, entityDef);
-              }
-            }
-            
-            // Match entities with their definitions (#217 Phase 11: Entity-complete needs no live ED)
-            if (model.entities) {
-              for (const entity of model.entities) {
-                const entityDefinition = entityDefinitionMap.get(entity.uuid);
-                if (entityDefinition) {
-                  entitiesToCreate.push({ entity, entityDefinition });
-                } else if (entity.mlSchema) {
-                  entitiesToCreate.push({ entity });
-                } else {
-                  log.warn(
-                    "handleModelAction resetModel: no entityDefinition found for entity",
-                    entity.uuid,
-                    entity.name
-                  );
-                }
-              }
-            }
-            
-            if (entitiesToCreate.length > 0) {
+            if (model.entities && model.entities.length > 0) {
               log.info(
                 "handleModelAction resetModel creating",
-                entitiesToCreate.length,
+                model.entities.length,
                 "entities",
-                entitiesToCreate,
+                model.entities,
               );
               
               // Create entities via persistence action for each entity
-              for (const { entity, entityDefinition } of entitiesToCreate) {
+              for (const entity of model.entities) {
                 const createEntityAction: ModelAction = {
                   actionType: "createEntity",
                   endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
                   payload: {
                     application: modelActionInitModel.payload.application,
-                    entities: entityDefinition
-                      ? [{ entity, entityVersion: entityDefinition }]
-                      : [{ entity }],
+                    // #220 — entities: Entity[]; enrich from EV when incomplete
+                    // entities: model.entities,
+                    entities: [entity],
                   }
                 };
                 
@@ -3105,38 +3089,47 @@ export class DomainController implements DomainControllerInterface {
           prePreValueToTest,
           currentAction.testAssertion.definition.resultAccessPath ?? [],
         );
+        // #220 / #217 — skinny Entity expectations ignore present-model fields now carried on Entity
+        const assertionIgnoreAttributes = [
+          ...(currentAction.testAssertion.definition.ignoreAttributes ?? []),
+          ...ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+        ];
   
         valueToTest = removeUndefinedProperties(
           unNullify(
             Array.isArray(preValueToTest)
               ? ignorePostgresExtraAttributesOnList(
                   preValueToTest,
-                  currentAction.testAssertion.definition.ignoreAttributes ?? [],
+                  assertionIgnoreAttributes,
                 )
               : ignorePostgresExtraAttributesOnObject(
                   preValueToTest,
-                  currentAction.testAssertion.definition.ignoreAttributes ?? [],
+                  assertionIgnoreAttributes,
                 ),
           ),
         );
       } else {
         valueToTest = prePreValueToTest;
       }
+      const assertionIgnoreAttributes = [
+        ...(currentAction.testAssertion.definition.ignoreAttributes ?? []),
+        ...ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+      ];
       const expectedValue = typeof currentAction.testAssertion.definition.expectedValue === "object"?
       Array.isArray(currentAction.testAssertion.definition.expectedValue)
         ? ignorePostgresExtraAttributesOnList(
             currentAction.testAssertion.definition.expectedValue,
-            currentAction.testAssertion.definition.ignoreAttributes ?? [],
+            assertionIgnoreAttributes,
           )
         : ignorePostgresExtraAttributesOnObject(
             currentAction.testAssertion.definition.expectedValue,
-            currentAction.testAssertion.definition.ignoreAttributes ?? [],
+            assertionIgnoreAttributes,
           ):currentAction.testAssertion.definition.expectedValue;
       log.info(
         "handleTestCompositeActionAssertion compositeRunTestAssertion to handle",
         JSON.stringify(currentAction.testAssertion, null, 2),
         "ignoreAttributes",
-        currentAction.testAssertion.definition.ignoreAttributes ?? [],
+        assertionIgnoreAttributes,
         "expectedValue",
         JSON.stringify(expectedValue, null, 2),
         // "preValueToTest is array",
@@ -3755,12 +3748,13 @@ export class DomainController implements DomainControllerInterface {
             ],
           },
         };
-        const result = await this.handleCompositeAction(
+        await this.handleCompositeAction(
           localCompositeAction,
           applicationDeploymentMap,
           modelEnvironment,
           localActionParams,
         );
+        break;
       }
       case "testBuildPlusRuntimeCompositeAction": {
         const localCompositeAction: CompositeActionSequenceTemplate = {
@@ -3774,12 +3768,13 @@ export class DomainController implements DomainControllerInterface {
             ] as any, // TODO: correct type
           },
         };
-        const result = await this.handleRuntimeCompositeActionDO_NOT_USE(
+        await this.handleRuntimeCompositeActionDO_NOT_USE(
           localCompositeAction,
           applicationDeploymentMap,
           modelEnvironment,
           localActionParams,
         );
+        break;
       }
     }
 

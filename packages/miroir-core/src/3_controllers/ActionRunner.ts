@@ -207,7 +207,7 @@ export async function storeActionOrBundleActionStoreRunner(
 
       await localPersistenceStoreController?.bootFromPersistedState(
         defaultMiroirMetaModel.entities,
-        defaultMiroirMetaModel.entityDefinitions
+        defaultMiroirMetaModel.entityVersions
       );
       log.info(
         "storeActionOrBundleActionStoreRunner openStore for deployment",

@@ -48,63 +48,52 @@
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "entities": [
                     {
-                      "entity": {
-                        "uuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
-                        "parentName": "Entity",
-                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                        "name": "TestEntityCodeNumber",
-                        "conceptLevel": "Model",
-                        "description": "Test entity with a non-UUID number primary key."
-                      },
-                      "entityVersion": {
-                        "uuid": "dceae8f8-c657-49df-9967-64ac3e52f5b4",
-                        "parentName": "EntityVersion",
-                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                        "entityUuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
-                        "conceptLevel": "Model",
-                        "name": "TestEntityCodeNumber",
-                        "idAttribute": "code",
-                        "mlSchema": {
-                          "type": "object",
-                          "definition": {
-                            "code": {
-                              "type": "number",
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Code"
-                                }
+                      "uuid": "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f",
+                      "parentName": "Entity",
+                      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "name": "TestEntityCodeNumber",
+                      "conceptLevel": "Model",
+                      "description": "Test entity with a non-UUID number primary key.",
+                      "idAttribute": "code",
+                      "mlSchema": {
+                        "type": "object",
+                        "definition": {
+                          "code": {
+                            "type": "number",
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Code"
                               }
-                            },
-                            "parentName": {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 2,
-                                  "defaultLabel": "Entity Name"
-                                }
+                            }
+                          },
+                          "parentName": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Entity Name"
                               }
-                            },
-                            "parentUuid": {
-                              "type": "uuid",
-                              "tag": {
-                                "value": {
-                                  "id": 3,
-                                  "defaultLabel": "Entity Uuid"
-                                }
+                            }
+                          },
+                          "parentUuid": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "id": 3,
+                                "defaultLabel": "Entity Uuid"
                               }
-                            },
-                            "name": {
-                              "type": "string",
-                              "tag": {
-                                "value": {
-                                  "id": 4,
-                                  "defaultLabel": "Name"
-                                }
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "id": 4,
+                                "defaultLabel": "Name"
                               }
                             }
                           }

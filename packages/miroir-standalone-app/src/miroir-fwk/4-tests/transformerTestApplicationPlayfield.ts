@@ -221,10 +221,9 @@ export async function seedTransformerTestApplicationData(
       payload: {
         application: identity.applicationUuid,
         transactional: false,
-        entities: INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES.flatMap((entry) => ({
-          entity: entry.entity as Entity,
-          entityVersion: entry.entityDefinition,
-        })),
+        entities: INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES.map(
+          (entry) => entry.entity as Entity,
+        ),
       },
     },
     applicationDeploymentMap,

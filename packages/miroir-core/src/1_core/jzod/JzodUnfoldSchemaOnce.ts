@@ -4,7 +4,7 @@ import {
   MlSchema,
   MetaModel,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../../0_interfaces/1_core/EntityVersion";
 import type { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";

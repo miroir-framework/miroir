@@ -153,7 +153,7 @@ export async function extractApplicationAndData(
     console.log(`Application UUID: ${libraryMetaModel.applicationUuid}`);
     console.log(`Application Name: ${libraryMetaModel.applicationName}`);
     console.log(`  - Entities: ${libraryMetaModel.entities.length}`);
-    console.log(`  - Entity Definitions: ${libraryMetaModel.entityDefinitions.length}`);
+    console.log(`  - Entity Definitions: ${libraryMetaModel.entityVersions.length}`);
     console.log(`  - Endpoints: ${libraryMetaModel.endpoints.length}`);
     console.log(`  - Menus: ${libraryMetaModel.menus.length}`);
     console.log(`  - Reports: ${libraryMetaModel.reports.length}`);

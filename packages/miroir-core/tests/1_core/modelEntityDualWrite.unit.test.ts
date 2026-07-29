@@ -1,10 +1,13 @@
+/**
+ * #217 Phase 5 — modelEntityDualWrite pure helpers.
+ * #220 compat suite — dual-write pair construction (not present-model authority).
+ */
 import { describe, expect, it } from "vitest";
 
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
 import type {
   Entity,
-  EntityDefinition,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   applyAlterEntityAttributePair,
@@ -12,7 +15,6 @@ import {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges,
   applyRenameEntityPair,
-  normalizeCreateEntityPair,
 } from "../../src/1_core/modelEntityDualWrite.js";
 import {
   compareEntityPresentModelDefinitions,
@@ -22,7 +24,7 @@ import {
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityDefinitions.find(
+const bookDefinition = defaultLibraryAppModel.entityVersions.find(
   (definition) => definition.entityUuid === bookEntity.uuid,
 )!;
 
@@ -38,76 +40,42 @@ describe("217 Phase 5 — applyMlSchemaColumnChanges", () => {
   });
 });
 
-describe("217 Phase 5 — normalizeCreateEntityPair", () => {
-  it("keeps Entity authoritative and aligns EntityDefinition for complete Entity", () => {
-    const pair = normalizeCreateEntityPair(bookEntity, bookDefinition);
-    expect(pair.entity).toBe(bookEntity);
-    expect(compareEntityPresentModelDefinitions(pair.entity, pair.entityDefinition).equal).toBe(
-      true,
-    );
-    expect(pair.entityDefinition.uuid).toBe(bookDefinition.uuid);
-  });
-
-  it("enriches legacy incomplete Entity from EntityDefinition then dual-writes", () => {
-    const legacyEntity: Entity = {
-      uuid: bookEntity.uuid,
-      name: bookEntity.name,
-      parentUuid: bookEntity.parentUuid,
-      parentName: bookEntity.parentName,
-      description: bookEntity.description,
-    };
-    const pair = normalizeCreateEntityPair(legacyEntity, bookDefinition);
-    expect(pair.entity.mlSchema).toEqual(bookDefinition.mlSchema);
-    expect(compareEntityPresentModelDefinitions(pair.entity, pair.entityDefinition).equal).toBe(
-      true,
-    );
-  });
-
-  it("prefers Entity definition fields over diverging EntityDefinition on create", () => {
-    const entity: Entity = {
-      ...bookEntity,
-      viewAttributes: ["titleOnly"],
-    };
-    const pair = normalizeCreateEntityPair(entity, bookDefinition);
-    expect(pair.entity.viewAttributes).toEqual(["titleOnly"]);
-    expect(pair.entityDefinition.viewAttributes).toEqual(["titleOnly"]);
-  });
-});
+// #220 — normalizeCreateEntityPair create dual-write tests removed (create is Entity-only).
 
 describe("217 Phase 5 — applyAlterEntityAttributePair", () => {
-  it("updates Entity.mlSchema and dual-writes EntityDefinition", () => {
+  it("updates Entity.mlSchema and dual-writes EntityVersion", () => {
     const pair = applyAlterEntityAttributePair(bookEntity, bookDefinition, {
       addColumns: [{ name: "isbn", definition: { type: "string" } }],
     });
     expect(pair.entity.mlSchema?.definition).toHaveProperty("isbn");
-    expect(pair.entityDefinition.mlSchema.definition).toHaveProperty("isbn");
-    expect(compareEntityPresentModelDefinitions(pair.entity, pair.entityDefinition).equal).toBe(
+    expect(pair.entityVersion.mlSchema.definition).toHaveProperty("isbn");
+    expect(compareEntityPresentModelDefinitions(pair.entity, pair.entityVersion).equal).toBe(
       true,
     );
   });
 
-  it("removes columns from both Entity and EntityDefinition", () => {
+  it("removes columns from both Entity and EntityVersion", () => {
     const pair = applyAlterEntityAttributePair(bookEntity, bookDefinition, {
       removeColumns: ["year"],
     });
     expect(pair.entity.mlSchema?.definition).not.toHaveProperty("year");
-    expect(pair.entityDefinition.mlSchema.definition).not.toHaveProperty("year");
+    expect(pair.entityVersion.mlSchema.definition).not.toHaveProperty("year");
   });
 });
 
 describe("217 Phase 5 — applyRenameEntityPair", () => {
-  it("renames Entity and aligned EntityDefinition together", () => {
+  it("renames Entity and aligned EntityVersion together", () => {
     const pair = applyRenameEntityPair(bookEntity, bookDefinition, "Tome");
     expect(pair.entity.name).toBe("Tome");
-    expect(pair.entityDefinition.name).toBe("Tome");
+    expect(pair.entityVersion.name).toBe("Tome");
     expect(
       projectEntityPresentModelDefinition(pair.entity).mlSchema,
-    ).toEqual(projectEntityPresentModelDefinition(pair.entityDefinition).mlSchema);
+    ).toEqual(projectEntityPresentModelDefinition(pair.entityVersion).mlSchema);
   });
 });
 
 describe("217 Phase 11 — Entity-only store mutations", () => {
-  it("applyEntityOnlyAlterAttribute mutates Entity.mlSchema without needing EntityDefinition", () => {
+  it("applyEntityOnlyAlterAttribute mutates Entity.mlSchema without needing EntityVersion", () => {
     const next = applyEntityOnlyAlterAttribute(bookEntity, {
       addColumns: [{ name: "isbnStore", definition: { type: "string" } }],
     });
@@ -116,7 +84,7 @@ describe("217 Phase 11 — Entity-only store mutations", () => {
     expect(next!.uuid).toBe(bookEntity.uuid);
   });
 
-  it("applyEntityOnlyRename renames Entity without needing EntityDefinition", () => {
+  it("applyEntityOnlyRename renames Entity without needing EntityVersion", () => {
     const next = applyEntityOnlyRename(bookEntity, "Volume");
     expect(next).toBeDefined();
     expect(next!.name).toBe("Volume");

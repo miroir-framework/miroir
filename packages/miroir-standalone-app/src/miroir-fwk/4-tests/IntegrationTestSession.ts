@@ -59,7 +59,7 @@ import {
   type CompositeActionSequence,
   type DomainControllerInterface,
   type Entity,
-  type EntityDefinition,
+  type EntityVersion,
   type EntityInstance,
   type MiroirConfigClient,
   type MiroirModelEnvironment,
@@ -182,12 +182,12 @@ export const POSTGRES_TEST_VERSION_UUID = INTEG_TEST_VERSION_UUID;
 export const INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as Entity,
-    entityDefinition: entityDefinitionAuthor as EntityDefinition,
+    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityDefinition: entityDefinitionBook as EntityDefinition,
+    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
@@ -198,7 +198,7 @@ export const INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES: ApplicationEntitiesAndIn
   },
   {
     entity: entityPublisher as Entity,
-    entityDefinition: entityDefinitionPublisher as EntityDefinition,
+    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
 ];

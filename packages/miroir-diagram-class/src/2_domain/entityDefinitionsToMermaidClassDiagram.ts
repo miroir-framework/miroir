@@ -14,7 +14,7 @@
  *   direction.
  */
 
-import type { EntityDefinition, Entity } from "miroir-core";
+import type { EntityVersion, Entity } from "miroir-core";
 
 // ############################################################################
 // Types
@@ -164,7 +164,7 @@ export function jzodTypeToUml(jzodType: string): string {
  * Uses the `entityUuid` field on each definition.
  */
 export function buildEntityUuidToNameMap(
-  entityDefinitions: EntityDefinition[],
+  entityDefinitions: EntityVersion[],
 ): Record<string, string> {
   const map: Record<string, string> = {};
   for (const ed of entityDefinitions) {
@@ -187,14 +187,14 @@ export function sanitiseMermaidId(name: string): string {
  * `ClassDiagramOptions.classClickLinks`.
  *
  * @deprecated Prefer {@link buildEntityClickLinks} (#217 Phase 9). Retained for
- * callers that still navigate to EntityDefinition detail reports.
+ * callers that still navigate to EntityVersion detail reports.
  *
- * The map value is the EntityDefinition instance UUID (i.e. `entityDefinition.uuid`),
+ * The map value is the EntityVersion instance UUID (i.e. `entityVersion.uuid`),
  * NOT the entity UUID, because it is used as the `instanceUuid` segment in the
  * report URL: `/report/:application/:deployment/:section/:reportUuid/:instanceUuid`.
  */
 export function buildEntityDefinitionClickLinks(
-  entityDefinitions: EntityDefinition[],
+  entityDefinitions: EntityVersion[],
 ): Record<string, string> {
   const links: Record<string, string> = {};
   for (const ed of entityDefinitions) {
@@ -218,12 +218,12 @@ export function buildEntityClickLinks(
 }
 
 /**
- * Project present Entities (with mlSchema) into EntityDefinition-shaped carriers
- * for diagram generators that still consume EntityDefinition.
+ * Project present Entities (with mlSchema) into EntityVersion-shaped carriers
+ * for diagram generators that still consume EntityVersion.
  */
 export function presentEntitiesAsDiagramCarriers(
   entities: Entity[],
-): EntityDefinition[] {
+): EntityVersion[] {
   return entities
     .filter((entity) => !!entity.mlSchema)
     .map(
@@ -237,19 +237,19 @@ export function presentEntitiesAsDiagramCarriers(
           conceptLevel: "Model",
           mlSchema: entity.mlSchema!,
           ...(entity.description !== undefined ? { description: entity.description } : {}),
-        }) as EntityDefinition,
+        }) as EntityVersion,
     );
 }
 
 /**
- * Extract structured class information from an EntityDefinition.
+ * Extract structured class information from an EntityVersion.
  */
 export function extractClassInfo(
-  entityDefinition: EntityDefinition,
+  entityVersion: EntityVersion,
   options: ClassDiagramOptions = {},
 ): ClassInfo {
   const showInfra = options.showInfrastructureAttributes ?? false;
-  const definition = entityDefinition.mlSchema?.definition ?? {};
+  const definition = entityVersion.mlSchema?.definition ?? {};
 
   const attributes: AttributeInfo[] = [];
 
@@ -275,9 +275,9 @@ export function extractClassInfo(
   }
 
   return {
-    name: entityDefinition.name,
-    entityUuid: entityDefinition.entityUuid,
-    description: entityDefinition.description,
+    name: entityVersion.name,
+    entityUuid: entityVersion.entityUuid,
+    description: entityVersion.description,
     attributes,
   };
 }
@@ -323,7 +323,7 @@ export function extractRelationships(
  * @returns A Mermaid classDiagram string ready for rendering.
  */
 export function entityDefinitionsToMermaidClassDiagram(
-  entityDefinitions: EntityDefinition[],
+  entityDefinitions: EntityVersion[],
   options: ClassDiagramOptions = {},
 ): string {
   const direction = options.direction ?? "TB";
@@ -418,18 +418,19 @@ export function entityDefinitionsToMermaidClassDiagram(
 
 /**
  * Convenience: generate a class diagram from a MetaModel-like structure
- * that contains both `entities` and `entityDefinitions`.
+ * that contains both `entities` and `entityVersions`.
  *
  * #217 Phase 9 — prefer Entity present model (`mlSchema` on Entity) when available;
- * fall back to EntityDefinitions for legacy/incomplete Entity rows.
+ * fall back to EntityVersions for legacy/incomplete Entity rows.
+ * #220 Phase 6 — MetaModel collection key is `entityVersions`.
  */
 export function metaModelToMermaidClassDiagram(
-  metaModel: { entities: Entity[]; entityDefinitions: EntityDefinition[] },
+  metaModel: { entities: Entity[]; entityVersions: EntityVersion[] },
   options: ClassDiagramOptions = {},
 ): string {
   const fromEntities = presentEntitiesAsDiagramCarriers(metaModel.entities ?? []);
   if (fromEntities.length > 0) {
     return entityDefinitionsToMermaidClassDiagram(fromEntities, options);
   }
-  return entityDefinitionsToMermaidClassDiagram(metaModel.entityDefinitions, options);
+  return entityDefinitionsToMermaidClassDiagram(metaModel.entityVersions, options);
 }

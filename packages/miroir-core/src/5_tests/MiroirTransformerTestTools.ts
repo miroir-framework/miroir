@@ -27,7 +27,7 @@ import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import { jsonify } from "../1_core/test-expect";
 import {
   transformer_extended_apply_wrapper,

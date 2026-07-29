@@ -1,6 +1,6 @@
 // import { selfApplicationMiroir } from "..";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import {
   GetBasicApplicationConfigurationParameters,
   StoreUnitConfiguration,

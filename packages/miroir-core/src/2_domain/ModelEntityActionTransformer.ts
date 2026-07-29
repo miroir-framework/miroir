@@ -1,6 +1,5 @@
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import {
-  EntityDefinition,
   InstanceAction,
   MetaModel,
   ModelAction,
@@ -39,30 +38,17 @@ export class ModelEntityActionTransformer{
     switch (modelAction.actionType) {
       case "createEntity": {
         const objects: EntityInstance[] = [];
-        for (const pair of modelAction.payload.entities) {
-          const entity = pair.entity as Entity;
-          // #217 Phase 12: Action field entityVersion (legacy entityDefinition still accepted)
-          const entityDefinition = (
-            (pair as { entityVersion?: EntityDefinition }).entityVersion ??
-            (pair as { entityDefinition?: EntityDefinition }).entityDefinition
-          ) as EntityDefinition | undefined;
-          const plan = planCreateEntityMutation(entity, entityDefinition);
-          if (!plan) {
+        for (const entity of modelAction.payload.entities) {
+          const plan = planCreateEntityMutation(entity);
+          if (!plan || plan.mode !== "entityOnly") {
             return new TransformerFailure({
               queryFailure: "FailedTransformer",
               failureMessage:
-                "modelActionToInstanceAction createEntity requires complete Entity.mlSchema or an entityDefinition",
+                "modelActionToInstanceAction createEntity requires complete Entity.mlSchema",
               query: { modelAction, entityUuid: entity.uuid } as any,
             });
           }
-          if (plan.mode === "dualWrite") {
-            objects.push(
-              plan.pair.entity as EntityInstance,
-              plan.pair.entityDefinition as EntityInstance,
-            );
-          } else {
-            objects.push(plan.entity as EntityInstance);
-          }
+          objects.push(plan.entity as EntityInstance);
         }
         return [
           {
@@ -90,7 +76,7 @@ export class ModelEntityActionTransformer{
           modelAction.payload.entityUuid,
           modelAction.payload.entityVersionUuid,
         );
-        // Drops the live Entity; deletes redundant live EntityDefinition when present.
+        // Drops the live Entity; deletes redundant live EntityVersion when present.
         // Historical EntityVersion copies (other UUIDs) are not referenced here.
         const objects: { parentUuid: string; uuid: string }[] = [
           { parentUuid: entityEntity.uuid, uuid: modelAction.payload.entityUuid },
@@ -134,7 +120,7 @@ export class ModelEntityActionTransformer{
         }
         const objects: EntityInstance[] =
           plan.mode === "dualWrite"
-            ? [plan.pair.entity as EntityInstance, plan.pair.entityDefinition as EntityInstance]
+            ? [plan.pair.entity as EntityInstance, plan.pair.entityVersion as EntityInstance]
             : [plan.entity as EntityInstance];
         return [
           {
@@ -166,7 +152,7 @@ export class ModelEntityActionTransformer{
         }
         const objects: EntityInstance[] =
           plan.mode === "dualWrite"
-            ? [plan.pair.entity as EntityInstance, plan.pair.entityDefinition as EntityInstance]
+            ? [plan.pair.entity as EntityInstance, plan.pair.entityVersion as EntityInstance]
             : [plan.entity as EntityInstance];
         const result: InstanceAction[] = [
           {

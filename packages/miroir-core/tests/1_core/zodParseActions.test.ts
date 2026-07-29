@@ -11,7 +11,7 @@ import {
   domainAction,
   DomainAction,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   extractorOrCombinerTemplate,
   ExtractorOrCombinerTemplate,
@@ -33,7 +33,7 @@ import { InitApplicationParameters } from "../../src/0_interfaces/4-services/Per
 import { zodErrorDeepestIssueLeaves } from "../../src/1_core/zodParseErrorHandler";
 
 // import { extractorOrCombinerTemplate, StoreUnitConfiguration } from '../../dist';
-import { Uuid } from '../../src/0_interfaces/1_core/EntityDefinition.js';
+import { Uuid } from '../../src/0_interfaces/1_core/EntityVersion.js';
 import { getBasicApplicationConfiguration } from '../../src/2_domain/Deployment.js';
 
 const testApplicationName = "testApplication"
@@ -130,7 +130,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             applicationName: "",
             endpoints: [],
             entities: [],
-            entityDefinitions: [],
+            entityVersions: [],
             jzodSchemas: [],
             menus: [],
             applicationVersions: [],
@@ -214,12 +214,7 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
       endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
       payload: {
         application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-        entities: [
-          {
-            entity: entityEntity as Entity,
-            entityVersion: entityDefinitionEntity as EntityDefinition,
-          },
-        ],
+        entities: [entityEntity as Entity],
       },
     },
   },
@@ -637,6 +632,24 @@ describe("zodParseActions", () => {
       expect(true).toBe(false); // Fail the test if parsing throws an error
       // throw error; // Re-throw the error to fail the test
     }
+  });
+
+  // #220 — createEntity entities is Entity[]; legacy { entity, entityVersion } rejected by .strict() entity schema
+  it("createEntity rejects legacy { entity, entityVersion } pair payload", () => {
+    const legacyPairAction = {
+      actionType: "createEntity" as const,
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e" as const,
+      payload: {
+        application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+        entities: [
+          {
+            entity: entityEntity as Entity,
+            entityVersion: entityDefinitionEntity as EntityVersion,
+          },
+        ],
+      },
+    };
+    expect(() => domainAction.parse(legacyPairAction)).toThrow();
   });
 });
 

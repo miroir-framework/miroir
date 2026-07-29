@@ -1,4 +1,4 @@
-import type { Entity, EntityDefinition, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { Entity, EntityVersion, EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
 import {
   resolveCurrentEntityModel,
@@ -11,7 +11,7 @@ const COMPOSITE_KEY_ESCAPE = "\\";
 
 /**
  * Any present-model source that may declare `idAttribute` (Entity after #217 Phase 1,
- * or legacy EntityDefinition).
+ * or legacy EntityVersion).
  */
 export type EntityPrimaryKeySource = {
   idAttribute?: (string | string[]) | undefined;
@@ -50,7 +50,7 @@ export function entityHasCompositePrimaryKey(source: EntityPrimaryKeySource): bo
  */
 export function getResolvedEntityPrimaryKeyAttribute(
   entity: Entity,
-  legacyEntityDefinitions: EntityDefinition[],
+  legacyEntityDefinitions: EntityVersion[],
   options?: ResolveCurrentEntityModelOptions,
 ): string | string[] {
   return getEntityPrimaryKeyAttribute(
@@ -60,7 +60,7 @@ export function getResolvedEntityPrimaryKeyAttribute(
 
 export function getResolvedEntityPrimaryKeyAttributes(
   entity: Entity,
-  legacyEntityDefinitions: EntityDefinition[],
+  legacyEntityDefinitions: EntityVersion[],
   options?: ResolveCurrentEntityModelOptions,
 ): string[] {
   return getEntityPrimaryKeyAttributes(
@@ -142,7 +142,7 @@ export function parseCompositeKeyValue(pkAttributes: string[], serializedKey: st
 
 // ##############################################################################################
 /**
- * Returns the primary key value for a given entity instance, based on its EntityDefinition.
+ * Returns the primary key value for a given entity instance, based on its EntityVersion.
  * For composite PKs, returns the serialized composite key string.
  */
 export function getInstancePrimaryKeyValue(source: EntityPrimaryKeySource, instance: EntityInstance): string {

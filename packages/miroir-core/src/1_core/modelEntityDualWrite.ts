@@ -1,11 +1,15 @@
 /**
  * Issue #217 Phase 5 — Entity-authoritative model mutations with dual-write.
- * Pure helpers: construct post-change Entity + redundant EntityDefinition pairs.
+ * Pure helpers: construct post-change Entity + redundant EntityVersion pairs
+ * for alter/rename when Entity is incomplete.
+ *
+ * #220 — create-path dual-write (`normalizeCreateEntityPair`) removed; create is Entity-only.
+ * Not for Application Version freeze (#216).
  */
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   JzodElement,
   JzodObject,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -18,7 +22,7 @@ import {
 
 export type EntityEntityDefinitionPair = {
   entity: Entity;
-  entityDefinition: EntityDefinition;
+  entityVersion: EntityVersion;
 };
 
 export type AlterEntityAttributeColumns = {
@@ -93,46 +97,25 @@ export function applyEntityOnlyRename(
 function assertDualWriteEquality(pair: EntityEntityDefinitionPair): EntityEntityDefinitionPair {
   const comparison = compareEntityPresentModelDefinitions(
     pair.entity,
-    pair.entityDefinition,
+    pair.entityVersion,
   );
   if (!comparison.equal) {
     throw new Error(
-      `Entity/EntityDefinition dual-write divergence for ${pair.entity.uuid} (${pair.entity.name}): ${comparison.differingFields.join(", ")}`,
+      `Entity/EntityVersion dual-write divergence for ${pair.entity.uuid} (${pair.entity.name}): ${comparison.differingFields.join(", ")}`,
     );
   }
   return pair;
 }
 
 /**
- * Create-path adapter: Entity is authoritative when complete; legacy incomplete
- * Entity is enriched from EntityDefinition, then ED is aligned from Entity.
- */
-export function normalizeCreateEntityPair(
-  entity: Entity,
-  entityDefinition: EntityDefinition,
-): EntityEntityDefinitionPair {
-  const authoritativeEntity = entityHasCompletePresentModel(entity)
-    ? entity
-    : resolveCurrentEntityModel(entity, [entityDefinition]);
-  const alignedEntityDefinition = alignEntityDefinitionToPresentEntity(
-    authoritativeEntity,
-    entityDefinition,
-  );
-  return assertDualWriteEquality({
-    entity: authoritativeEntity,
-    entityDefinition: alignedEntityDefinition,
-  });
-}
-
-/**
- * Alter-attribute: mutate Entity.mlSchema, dual-write redundant EntityDefinition.
+ * Alter-attribute: mutate Entity.mlSchema, dual-write redundant EntityVersion.
  */
 export function applyAlterEntityAttributePair(
   entity: Entity,
-  entityDefinition: EntityDefinition,
+  entityVersion: EntityVersion,
   changes: AlterEntityAttributeColumns,
 ): EntityEntityDefinitionPair {
-  const resolvedEntity = resolveCurrentEntityModel(entity, [entityDefinition], {
+  const resolvedEntity = resolveCurrentEntityModel(entity, [entityVersion], {
     onInconsistency: "preferEntity",
   });
   if (!resolvedEntity.mlSchema) {
@@ -146,23 +129,23 @@ export function applyAlterEntityAttributePair(
   };
   const nextEntityDefinition = alignEntityDefinitionToPresentEntity(
     nextEntity,
-    entityDefinition,
+    entityVersion,
   );
   return assertDualWriteEquality({
     entity: nextEntity,
-    entityDefinition: nextEntityDefinition,
+    entityVersion: nextEntityDefinition,
   });
 }
 
 /**
- * Rename: update both Entity and redundant EntityDefinition names; keep definition fields aligned.
+ * Rename: update both Entity and redundant EntityVersion names; keep definition fields aligned.
  */
 export function applyRenameEntityPair(
   entity: Entity,
-  entityDefinition: EntityDefinition,
+  entityVersion: EntityVersion,
   targetName: string,
 ): EntityEntityDefinitionPair {
-  const resolvedEntity = resolveCurrentEntityModel(entity, [entityDefinition], {
+  const resolvedEntity = resolveCurrentEntityModel(entity, [entityVersion], {
     onInconsistency: "preferEntity",
   });
   const renamedEntity: Entity = {
@@ -170,11 +153,11 @@ export function applyRenameEntityPair(
     name: targetName,
   };
   const renamedEntityDefinition = alignEntityDefinitionToPresentEntity(renamedEntity, {
-    ...entityDefinition,
+    ...entityVersion,
     name: targetName,
   });
   return assertDualWriteEquality({
     entity: renamedEntity,
-    entityDefinition: renamedEntityDefinition,
+    entityVersion: renamedEntityDefinition,
   });
 }

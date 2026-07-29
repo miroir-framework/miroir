@@ -154,7 +154,7 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
       createEntity: {
         application: testApplicationUuid,
         entity: entityAuthor,
-        entityDefinition: entityDefinitionAuthor,
+        entityVersion: entityDefinitionAuthor,
       },
       [runnerDropEntity.name]: {
         application: testApplicationUuid,

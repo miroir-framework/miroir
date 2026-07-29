@@ -4,7 +4,7 @@ import type {
   ApplicationEvolutionTrace,
   ApplicationEvolutionTraceEvent,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   InstanceCUDAction,
   JzodObject,
@@ -58,7 +58,7 @@ const mockEntity: Entity = {
   name: "TestEntity",
 };
 
-const mockEntityDefinition: EntityDefinition = {
+const mockEntityDefinition: EntityVersion = {
   uuid: ENTITYDEF_UUID,
   parentUuid: ENTITYDEF_PARENT_UUID,
   name: "TestEntity",
@@ -93,7 +93,7 @@ describe("produceEvolutionTraceEvent — section/app tracking policy", () => {
       endpoint: MODEL_ENDPOINT,
       payload: {
         application: LIBRARY_UUID,
-        entities: [{ entity: mockEntity, entityVersion: mockEntityDefinition }],
+        entities: [mockEntity],
       },
     };
 

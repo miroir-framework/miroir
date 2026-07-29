@@ -1,7 +1,7 @@
 import {
   ACTION_OK,
   Action2VoidReturnType,
-  EntityDefinition,
+  EntityVersion,
   LoggerInterface,
   MetaEntity,
   MiroirLoggerFactory,
@@ -42,7 +42,7 @@ export class MongoDbStoreSection
   }
 
   // ##################################################################################################
-  bootFromPersistedState(entities: Entity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[], entityVersions: EntityVersion[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
     return Promise.resolve(ACTION_OK);
   }
@@ -66,23 +66,23 @@ export class MongoDbStoreSection
   // #############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
       "createStorageSpaceForInstancesOfEntity",
       "input: entity",
       entity,
-      "entityDefinition",
-      entityDefinition,
+      "entityVersion",
+      entityVersion,
       "Entities",
       this.localUuidMongoDb.getCollections()
     );
-    if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
+    if (entityVersion && entity.uuid != entityVersion.entityUuid) {
       log.error(
         this.logHeader,
         "createStorageSpaceForInstancesOfEntity",
-        "inconsistent input: given entityDefinition is not related to given entity."
+        "inconsistent input: given entityVersion is not related to given entity."
       );
     } else {
       if (!this.localUuidMongoDb.hasCollection(entity.uuid)) {
@@ -97,8 +97,8 @@ export class MongoDbStoreSection
           "createStorageSpaceForInstancesOfEntity",
           "input: entity",
           entity,
-          "entityDefinition",
-          entityDefinition,
+          "entityVersion",
+          entityVersion,
           "already has entity. Existing entities:",
           this.localUuidMongoDb.getCollections()
         );
@@ -137,7 +137,7 @@ export class MongoDbStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.warn(
       this.logHeader,

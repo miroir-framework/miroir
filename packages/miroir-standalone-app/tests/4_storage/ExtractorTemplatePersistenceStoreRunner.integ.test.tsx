@@ -9,7 +9,7 @@ import {
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   ignorePostgresExtraAttributes,
   LoggerInterface,
@@ -210,7 +210,7 @@ beforeEach(
             // authors
             {
               entity: entityAuthor as Entity,
-              entityDefinition: entityDefinitionAuthor as EntityDefinition,
+              entityVersion: entityDefinitionAuthor as EntityVersion,
               instances: [
                 author1,
                 author2,
@@ -220,7 +220,7 @@ beforeEach(
             // books
             {
               entity: entityBook as Entity,
-              entityDefinition: entityDefinitionBook as EntityDefinition,
+              entityVersion: entityDefinitionBook as EntityVersion,
               instances: [
                 book1 as EntityInstance,
                 book2 as EntityInstance,
@@ -233,7 +233,7 @@ beforeEach(
             // publishers
             {
               entity: entityPublisher as Entity,
-              entityDefinition: entityDefinitionPublisher as EntityDefinition,
+              entityVersion: entityDefinitionPublisher as EntityVersion,
               instances: [
                 publisher1,
                 publisher2,

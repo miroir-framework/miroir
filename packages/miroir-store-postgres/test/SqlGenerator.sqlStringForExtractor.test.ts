@@ -3,7 +3,7 @@ import { type MiroirModelEnvironment } from "miroir-core";
 import { sqlStringForExtractor } from "../src/1_core/SqlGenerator";
 
 // ################################################################################################
-// Minimal model environment factory: only provides currentModel.entityDefinitions.
+// Minimal model environment factory: only provides currentModel.entityVersions.
 // The tested function only reads `modelEnvironment?.currentModel?.entityDefinitions`.
 function makeModelEnv(
   entityDefinitions: Array<{
@@ -13,7 +13,7 @@ function makeModelEnv(
   }>
 ): MiroirModelEnvironment {
   return {
-    currentModel: { entityDefinitions } as any,
+    currentModel: { entityVersions: entityDefinitions } as any,
     endpointsByUuid: {},
     miroirFundamentalJzodSchema: {} as any,
   } as unknown as MiroirModelEnvironment;

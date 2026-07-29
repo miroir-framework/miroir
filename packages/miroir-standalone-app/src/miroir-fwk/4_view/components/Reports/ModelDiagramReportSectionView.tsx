@@ -5,7 +5,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   type Entity,
-  type EntityDefinition,
+  type EntityVersion,
 } from "miroir-core";
 import {
   buildEntityClickLinks,
@@ -37,7 +37,7 @@ export interface ModelDiagramReportSectionViewProps {
    */
   entities?: Entity[];
   /**
-   * Legacy / report-transformer EntityDefinition carriers (or Entity-projected ED shape).
+   * Legacy / report-transformer EntityVersion carriers (or Entity-projected ED shape).
    * Used when `entities` is absent or incomplete.
    */
   entityDefinitions?: any[];
@@ -72,13 +72,13 @@ export const ModelDiagramReportSectionView: React.FC<ModelDiagramReportSectionVi
     currentNavigationKey
   );
 
-  const diagramCarriers: EntityDefinition[] = useMemo(() => {
+  const diagramCarriers: EntityVersion[] = useMemo(() => {
     const fromEntities = presentEntitiesAsDiagramCarriers(props.entities ?? []);
     if (fromEntities.length > 0) {
       return fromEntities;
     }
     if (!Array.isArray(props.entityDefinitions)) return [];
-    return props.entityDefinitions as EntityDefinition[];
+    return props.entityDefinitions as EntityVersion[];
   }, [props.entities, props.entityDefinitions]);
 
   const direction = props.direction ?? (diagramCarriers.length > 10 ? "TB" : "LR");

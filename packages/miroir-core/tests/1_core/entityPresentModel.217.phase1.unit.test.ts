@@ -23,19 +23,19 @@ describe("217 Phase 1 — Entity schema accepts optional definition fields", () 
 
   it("parses an Entity carrying all present-model definition fields", () => {
     const base = defaultLibraryAppModel.entities[0];
-    const entityDefinition = defaultLibraryAppModel.entityDefinitions.find(
+    const entityVersion = defaultLibraryAppModel.entityVersions.find(
       (definition) => definition.entityUuid === base.uuid,
     )!;
     const enriched: Entity = {
       ...base,
-      defaultInstanceDetailsReportUuid: entityDefinition.defaultInstanceDetailsReportUuid,
-      viewAttributes: entityDefinition.viewAttributes,
-      icon: entityDefinition.icon,
-      display: entityDefinition.display,
-      cache: entityDefinition.cache,
-      idAttribute: entityDefinition.idAttribute,
-      externalDataSource: entityDefinition.externalDataSource,
-      mlSchema: entityDefinition.mlSchema,
+      defaultInstanceDetailsReportUuid: entityVersion.defaultInstanceDetailsReportUuid,
+      viewAttributes: entityVersion.viewAttributes,
+      icon: entityVersion.icon,
+      display: entityVersion.display,
+      cache: entityVersion.cache,
+      idAttribute: entityVersion.idAttribute,
+      externalDataSource: entityVersion.externalDataSource,
+      mlSchema: entityVersion.mlSchema,
     };
 
     const parsed = entityZod.safeParse(enriched);

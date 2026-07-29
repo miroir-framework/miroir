@@ -3,7 +3,7 @@ import deepEqual from "fast-deep-equal";
 import { serializeError } from "serialize-error";
 // import Mustache from "mustache";
 import { v4 as uuidv4 } from "uuid";
-import { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import {
   DomainElementInstanceArray,
   DomainElementString,

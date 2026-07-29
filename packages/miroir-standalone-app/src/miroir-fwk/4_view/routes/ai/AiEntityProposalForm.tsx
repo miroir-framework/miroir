@@ -1,7 +1,7 @@
 /**
  * AiEntityProposalForm
  *
- * Displays an AI-generated Entity + EntityDefinition proposal for user review.
+ * Displays an AI-generated Entity + EntityVersion proposal for user review.
  * The user may edit fields, then Accept (apply via DomainController) or Reject.
  */
 import React, { useState } from "react";
@@ -29,7 +29,7 @@ export interface EntityProposal {
     description?: string;
     [key: string]: unknown;
   };
-  entityDefinition: {
+  entityVersion: {
     uuid: string;
     parentName: string;
     parentUuid: string;
@@ -37,7 +37,9 @@ export interface EntityProposal {
     name: string;
     entityUuid: string;
     conceptLevel: string;
-    jzodSchema: Record<string, unknown>;
+    /** @deprecated prefer mlSchema; kept for older proposal payloads */
+    jzodSchema?: Record<string, unknown>;
+    mlSchema?: Record<string, unknown>;
     [key: string]: unknown;
   };
   deploymentUuid: string;
@@ -71,8 +73,11 @@ export function AiEntityProposalForm({
     "conceptLevel",
     "parentDefinitionVersionUuid",
   ]);
-  const jzodDef =
-    (proposal.entityDefinition.jzodSchema as any)?.definition ?? {};
+  const schemaCarrier =
+    (proposal.entity as any).mlSchema ??
+    proposal.entityVersion.mlSchema ??
+    proposal.entityVersion.jzodSchema;
+  const jzodDef = (schemaCarrier as any)?.definition ?? {};
   const customAttributeNames = Object.keys(jzodDef).filter(
     (k) => !systemFields.has(k) && k !== "name",
   );
@@ -85,8 +90,8 @@ export function AiEntityProposalForm({
         name: entityName,
         description: entityDescription || undefined,
       },
-      entityDefinition: {
-        ...proposal.entityDefinition,
+      entityVersion: {
+        ...proposal.entityVersion,
         name: `${entityName}Definition`,
       },
     };

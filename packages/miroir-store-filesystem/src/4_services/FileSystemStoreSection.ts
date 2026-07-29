@@ -5,7 +5,7 @@ import {
   ACTION_OK,
   Action2Error,
   Action2VoidReturnType,
-  EntityDefinition,
+  EntityVersion,
   LoggerInterface,
   Entity,
   MiroirLoggerFactory,
@@ -49,7 +49,7 @@ export class FileSystemStoreSection
   }
 
   // #############################################################################################
-  bootFromPersistedState(entities: Entity[], entityDefinitions: EntityDefinition[]): Promise<Action2VoidReturnType> {
+  bootFromPersistedState(entities: Entity[], entityVersions: EntityVersion[]): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "bootFromPersistedState does nothing!");
     // #217 Phase 11 — register idAttribute from Entity first; ED map is legacy fill-in only.
     for (const entity of entities) {
@@ -58,7 +58,7 @@ export class FileSystemStoreSection
         this.entityIdAttributes[entity.uuid] = idAttr;
       }
     }
-    for (const ed of entityDefinitions) {
+    for (const ed of entityVersions) {
       if (this.entityIdAttributes[ed.entityUuid] !== undefined) {
         continue;
       }
@@ -95,7 +95,7 @@ export class FileSystemStoreSection
   // #############################################################################################
   createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", entity);
     const entityInstancesPath = path.join(this.directory, entity.uuid);
@@ -105,7 +105,7 @@ export class FileSystemStoreSection
       log.debug(this.logHeader, "createStorageSpaceForInstancesOfEntity storage space already exists for", entity.uuid);
     }
     // Register idAttribute for non-UUID PK entities (#217 Phase 11: Entity first)
-    const idAttr = entity.idAttribute ?? entityDefinition?.idAttribute ?? "uuid";
+    const idAttr = entity.idAttribute ?? entityVersion?.idAttribute ?? "uuid";
     if (idAttr !== "uuid") {
       this.entityIdAttributes[entity.uuid] = idAttr;
     }
@@ -141,7 +141,7 @@ export class FileSystemStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "renameStorageSpaceForInstancesOfEntity does nothing!");
     return Promise.resolve(ACTION_OK);

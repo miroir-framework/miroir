@@ -9,7 +9,7 @@ import {
   Action2VoidReturnType,
   Domain2ElementFailed,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   EntityInstanceWithName,
   LoggerInterface,
@@ -23,7 +23,6 @@ import {
   applyEntityOnlyAlterAttribute,
   applyEntityOnlyRename,
   applyRenameEntityPair,
-  normalizeCreateEntityPair,
   persistEntityThenEntityDefinition,
 } from "miroir-core";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
@@ -80,84 +79,30 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
-    // #217 Phase 6/11: Entity then optional EntityDefinition; Entity-only when ED omitted.
-    async createEntity(entity: Entity, entityDefinition?: EntityDefinition): Promise<Action2VoidReturnType> {
-      if (entityDefinition && entity.uuid != entityDefinition.entityUuid) {
-        log.error(
-          this.logHeader,
-          "createEntity",
-          "inconsistent input: given entityDefinition is not related to given entity."
-        );
-        return new Action2Error(
-          "FailedToCreateStore",
-          "createEntity failed: entity.uuid != entityDefinition.entityUuid",
-        );
-      }
-      if (!entityDefinition) {
-        if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
-          log.warn(
-            this.logHeader,
-            "createEntity",
-            entity.name,
-            "already existing entity",
-            entity.uuid,
-          );
-        } else {
-          await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
-        }
-        const entities = fs.readdirSync(this.directory);
-        if (!entities.includes(entity.uuid)) {
-          fs.mkdirSync(path.join(this.directory, entity.uuid));
-        }
-        return this.upsertInstance(entityEntity.uuid, entity);
-      }
-
-      const pair = normalizeCreateEntityPair(entity, entityDefinition);
-      if (this.dataStore.getEntityUuids().includes(pair.entity.uuid)) {
+    // #220 — createEntity is Entity-only (complete present model on Entity required).
+    async createEntity(entity: Entity): Promise<Action2VoidReturnType> {
+      if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
         log.warn(
           this.logHeader,
           "createEntity",
-          pair.entity.name,
+          entity.name,
           "already existing entity",
-          pair.entity.uuid,
-          "existing entities",
-          this.dataStore.getEntityUuids()
+          entity.uuid,
         );
       } else {
-        await this.dataStore.createStorageSpaceForInstancesOfEntity(
-          pair.entity,
-          pair.entityDefinition,
-        );
+        await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
       }
-
       const entities = fs.readdirSync(this.directory);
-
-      if (!entities.includes(pair.entity.uuid)) {
-        fs.mkdirSync(path.join(this.directory, pair.entity.uuid));
+      if (!entities.includes(entity.uuid)) {
+        fs.mkdirSync(path.join(this.directory, entity.uuid));
       }
-
-      return persistEntityThenEntityDefinition(
-        pair,
-        {
-          writeEntity: (nextEntity) => this.upsertInstance(entityEntity.uuid, nextEntity),
-          writeEntityDefinition: (nextEntityDefinition) =>
-            this.upsertInstance(entityEntityDefinition.uuid, nextEntityDefinition),
-          deleteEntity: (writtenEntity) =>
-            this.deleteInstance(entityEntity.uuid, writtenEntity),
-        },
-        { failurePolicy: { kind: "compensate" } },
-      );
+      return this.upsertInstance(entityEntity.uuid, entity);
     }
 
     // ##############################################################################################
-    async createEntities(
-      entities: {
-        entity:Entity,
-        entityDefinition?: EntityDefinition,
-      }[]
-    ): Promise<Action2VoidReturnType> {
-      for (const e of entities) {
-        const result = await this.createEntity(e.entity, e.entityDefinition);
+    async createEntities(entities: Entity[]): Promise<Action2VoidReturnType> {
+      for (const entity of entities) {
+        const result = await this.createEntity(entity);
         if (result instanceof Action2Error) {
           return result;
         }
@@ -210,10 +155,10 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
           ));
         }
 
-        for (const entityDefinition of entityDefinitions.returnedDomainElement.instances.filter(
-          (i: EntityInstance) => (i as EntityDefinition).entityUuid == entityUuid
+        for (const entityVersion of entityDefinitions.returnedDomainElement.instances.filter(
+          (i: EntityInstance) => (i as EntityVersion).entityUuid == entityUuid
         )) {
-          await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityDefinition);
+          await this.dataStore.deleteInstance(entityEntityDefinition.uuid, entityVersion);
         }
       } else {
         log.warn(
@@ -289,7 +234,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         ));
       }
       const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+        currentEntityDefinition.returnedDomainElement as EntityVersion;
       const pair = applyRenameEntityPair(
         previousEntity,
         previousEntityDefinition,
@@ -315,7 +260,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         (previousEntity as EntityInstanceWithName).name,
         update.payload.targetValue,
         pair.entity,
-        pair.entityDefinition
+        pair.entityVersion
       );
       return Promise.resolve(ACTION_OK);
     }
@@ -374,7 +319,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         );
       }
       const previousEntityDefinition =
-        currentEntityDefinition.returnedDomainElement as EntityDefinition;
+        currentEntityDefinition.returnedDomainElement as EntityVersion;
       const pair = applyAlterEntityAttributePair(
         previousEntity,
         previousEntityDefinition,

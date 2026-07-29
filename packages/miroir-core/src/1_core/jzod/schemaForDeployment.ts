@@ -1,4 +1,4 @@
-import type { Uuid } from "../../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../../0_interfaces/1_core/EntityVersion";
 import { applyDeploymentDomainActionCarryOn } from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
 import { miroirFundamentalJzodSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
 import type {

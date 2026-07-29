@@ -2,20 +2,20 @@
  * Issue #217 Phase 0 — present-model characterization helpers.
  *
  * Pure inventory / projection / consistency utilities for the Entity ↔
- * EntityDefinition migration. No runtime resolution or dual-write yet.
+ * EntityVersion migration. No runtime resolution or dual-write yet.
  */
 
 import deepEqual from "fast-deep-equal";
 
 import type {
   Entity,
-  EntityDefinition,
+  EntityVersion,
   JzodObject,
   MiroirIcon,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 /**
- * Definition-bearing fields that live on EntityDefinition today and must
+ * Definition-bearing fields that live on EntityVersion today and must
  * eventually be carried by the authoritative live Entity (#217 §1.1).
  */
 export const ENTITY_PRESENT_MODEL_DEFINITION_FIELDS = [
@@ -65,22 +65,22 @@ export type EntityEntityDefinitionJoinInventory = {
 };
 
 /**
- * Characterizes Entity ↔ EntityDefinition joins by `entityDefinition.entityUuid`.
+ * Characterizes Entity ↔ EntityVersion joins by `entityVersion.entityUuid`.
  * Does not pick a "current" definition when multiples exist.
  */
 export function inventoryEntityEntityDefinitionJoins(
   entities: Entity[],
-  entityDefinitions: EntityDefinition[],
+  entityVersions: EntityVersion[],
 ): EntityEntityDefinitionJoinInventory {
   const entityByUuid = new Map(entities.map((entity) => [entity.uuid, entity]));
-  const definitionsByEntityUuid = new Map<string, EntityDefinition[]>();
+  const definitionsByEntityUuid = new Map<string, EntityVersion[]>();
 
-  for (const entityDefinition of entityDefinitions) {
-    const existing = definitionsByEntityUuid.get(entityDefinition.entityUuid);
+  for (const entityVersion of entityVersions) {
+    const existing = definitionsByEntityUuid.get(entityVersion.entityUuid);
     if (existing) {
-      existing.push(entityDefinition);
+      existing.push(entityVersion);
     } else {
-      definitionsByEntityUuid.set(entityDefinition.entityUuid, [entityDefinition]);
+      definitionsByEntityUuid.set(entityVersion.entityUuid, [entityVersion]);
     }
   }
 
@@ -103,12 +103,12 @@ export function inventoryEntityEntityDefinitionJoins(
     }
   }
 
-  const orphanEntityDefinitions = entityDefinitions
-    .filter((entityDefinition) => !entityByUuid.has(entityDefinition.entityUuid))
-    .map((entityDefinition) => ({
-      uuid: entityDefinition.uuid,
-      name: entityDefinition.name,
-      entityUuid: entityDefinition.entityUuid,
+  const orphanEntityDefinitions = entityVersions
+    .filter((entityVersion) => !entityByUuid.has(entityVersion.entityUuid))
+    .map((entityVersion) => ({
+      uuid: entityVersion.uuid,
+      name: entityVersion.name,
+      entityUuid: entityVersion.entityUuid,
     }))
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 
@@ -146,7 +146,7 @@ export type EntityPresentModelDefinitionComparison = {
 
 /**
  * Deep-compares definition-bearing fields between two projections
- * (Entity-side vs EntityDefinition-side during dual-write).
+ * (Entity-side vs EntityVersion-side during dual-write).
  * Absent on both sides is equal; present-vs-absent is a difference.
  */
 export function compareEntityPresentModelDefinitions(
@@ -226,7 +226,7 @@ export class EntityPresentModelResolutionError extends Error {
 export type ResolveCurrentEntityModelOptions = {
   /**
    * When Entity is complete (`mlSchema` present) and overlaps with a legacy
-   * EntityDefinition but overlapping fields differ:
+   * EntityVersion but overlapping fields differ:
    * - `error` (default): throw `EntityPresentModelResolutionError`
    * - `preferEntity`: return the Entity (Entity-authoritative)
    */
@@ -235,7 +235,7 @@ export type ResolveCurrentEntityModelOptions = {
 
 /**
  * Present-model completeness for #217 Phase 2: Entity carries `mlSchema`.
- * Other definition fields may still be filled from EntityDefinition.
+ * Other definition fields may still be filled from EntityVersion.
  */
 export function entityHasCompletePresentModel(entity: Entity): boolean {
   return (
@@ -246,23 +246,23 @@ export function entityHasCompletePresentModel(entity: Entity): boolean {
 
 function matchingEntityDefinitionsForEntity(
   entity: Entity,
-  legacyEntityDefinitions: EntityDefinition[],
-): EntityDefinition[] {
+  legacyEntityDefinitions: EntityVersion[],
+): EntityVersion[] {
   return legacyEntityDefinitions.filter(
-    (entityDefinition) => entityDefinition.entityUuid === entity.uuid,
+    (entityVersion) => entityVersion.entityUuid === entity.uuid,
   );
 }
 
 /**
- * Fields present on Entity that also exist on EntityDefinition and differ.
- * Fields only on EntityDefinition are ignored (not yet copied onto Entity).
+ * Fields present on Entity that also exist on EntityVersion and differ.
+ * Fields only on EntityVersion are ignored (not yet copied onto Entity).
  */
 export function overlappingPresentModelDifferences(
   entity: Entity,
-  entityDefinition: EntityDefinition,
+  entityVersion: EntityVersion,
 ): EntityPresentModelDefinitionField[] {
   const entityProjection = projectEntityPresentModelDefinition(entity);
-  const definitionProjection = projectEntityPresentModelDefinition(entityDefinition);
+  const definitionProjection = projectEntityPresentModelDefinition(entityVersion);
   const differingFields: EntityPresentModelDefinitionField[] = [];
 
   for (const field of ENTITY_PRESENT_MODEL_DEFINITION_FIELDS) {
@@ -278,9 +278,9 @@ export function overlappingPresentModelDifferences(
 
 function enrichEntityFromLegacyDefinition(
   entity: Entity,
-  entityDefinition: EntityDefinition,
+  entityVersion: EntityVersion,
 ): Entity {
-  const fromDefinition = projectEntityPresentModelDefinition(entityDefinition);
+  const fromDefinition = projectEntityPresentModelDefinition(entityVersion);
   const fromEntity = projectEntityPresentModelDefinition(entity);
   return {
     ...entity,
@@ -293,13 +293,13 @@ function enrichEntityFromLegacyDefinition(
  * Entity-first present-model resolver (#217 Phase 2).
  *
  * - complete Entity (`mlSchema` present) → return Entity (optionally consistency-checked)
- * - incomplete Entity + one matching EntityDefinition → in-memory enriched Entity
+ * - incomplete Entity + one matching EntityVersion → in-memory enriched Entity
  * - ambiguous definitions → error
  * - incomplete with no definition → error
  */
 export function resolveCurrentEntityModel(
   entity: Entity,
-  legacyEntityDefinitions: EntityDefinition[],
+  legacyEntityDefinitions: EntityVersion[],
   options?: ResolveCurrentEntityModelOptions,
 ): Entity {
   const matching = matchingEntityDefinitionsForEntity(entity, legacyEntityDefinitions);
@@ -324,7 +324,7 @@ export function resolveCurrentEntityModel(
         throw new EntityPresentModelResolutionError(
           "inconsistent",
           entity.uuid,
-          `Entity ${entity.uuid} (${entity.name}) definition fields diverge from EntityDefinition ${matching[0].uuid}: ${differingFields.join(", ")}`,
+          `Entity ${entity.uuid} (${entity.name}) definition fields diverge from EntityVersion ${matching[0].uuid}: ${differingFields.join(", ")}`,
           { differingFields, entityVersionUuid: matching[0].uuid },
         );
       }
@@ -336,7 +336,7 @@ export function resolveCurrentEntityModel(
     throw new EntityPresentModelResolutionError(
       "missingDefinition",
       entity.uuid,
-      `Entity ${entity.uuid} (${entity.name}) is incomplete (no mlSchema) and has no matching EntityDefinition fallback.`,
+      `Entity ${entity.uuid} (${entity.name}) is incomplete (no mlSchema) and has no matching EntityVersion fallback.`,
     );
   }
 
@@ -345,20 +345,20 @@ export function resolveCurrentEntityModel(
 
 /**
  * Dual-write helper: copy Entity present-model definition fields onto the
- * redundant EntityDefinition while preserving EntityDefinition identity UUIDs.
+ * redundant EntityVersion while preserving EntityVersion identity UUIDs.
  */
 export function alignEntityDefinitionToPresentEntity(
   entity: Entity,
-  entityDefinition: EntityDefinition,
-): EntityDefinition {
+  entityVersion: EntityVersion,
+): EntityVersion {
   const definitionProjection = projectEntityPresentModelDefinition(entity);
-  const aligned: EntityDefinition = {
-    ...entityDefinition,
+  const aligned: EntityVersion = {
+    ...entityVersion,
     ...definitionProjection,
-    uuid: entityDefinition.uuid,
+    uuid: entityVersion.uuid,
     entityUuid: entity.uuid,
     name: entity.name,
-    mlSchema: entity.mlSchema ?? entityDefinition.mlSchema,
+    mlSchema: entity.mlSchema ?? entityVersion.mlSchema,
   };
   for (const field of ENTITY_PRESENT_MODEL_DEFINITION_FIELDS) {
     if (
@@ -378,11 +378,11 @@ export function alignEntityDefinitionToPresentEntity(
  */
 export function assembleLivePresentModelEntities(
   entities: Entity[],
-  entityDefinitions: EntityDefinition[],
+  entityVersions: EntityVersion[],
 ): Entity[] {
   return entities.map((entity) => {
     try {
-      return resolveCurrentEntityModel(entity, entityDefinitions, {
+      return resolveCurrentEntityModel(entity, entityVersions, {
         onInconsistency: "preferEntity",
       });
     } catch {
@@ -396,14 +396,14 @@ const ENTITY_PARENT_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 /**
  * #217 Phase 8 — single hub for live present-model lookup by entity UUID.
  * Prefer MetaModel.entities (assembled); fall back through `resolveCurrentEntityModel`
- * using EntityDefinitions only when needed. Call sites must not
- * `entityDefinitions.find(ed => ed.entityUuid === …)` for live schema/PK.
+ * using EntityVersions only when needed. Call sites must not
+ * `entityVersions.find(ed => ed.entityUuid === …)` for live schema/PK.
  */
 export function resolvePresentEntityFromModel(
   model:
     | {
         entities?: Entity[] | undefined;
-        entityDefinitions?: EntityDefinition[] | undefined;
+        entityVersions?: EntityVersion[] | undefined;
       }
     | null
     | undefined,
@@ -414,12 +414,12 @@ export function resolvePresentEntityFromModel(
     return undefined;
   }
   const entities = model.entities ?? [];
-  const entityDefinitions = model.entityDefinitions ?? [];
+  const entityVersions = model.entityVersions ?? [];
   const entity = entities.find((candidate) => candidate.uuid === entityUuid);
 
   if (entity) {
     try {
-      return resolveCurrentEntityModel(entity, entityDefinitions, {
+      return resolveCurrentEntityModel(entity, entityVersions, {
         onInconsistency: "preferEntity",
         ...options,
       });
@@ -428,8 +428,8 @@ export function resolvePresentEntityFromModel(
     }
   }
 
-  const matching = entityDefinitions.filter(
-    (entityDefinition) => entityDefinition.entityUuid === entityUuid,
+  const matching = entityVersions.filter(
+    (entityVersion) => entityVersion.entityUuid === entityUuid,
   );
   if (matching.length !== 1) {
     return undefined;
@@ -450,46 +450,3 @@ export function resolvePresentEntityFromModel(
   }
 }
 
-/**
- * #217 Phase 9/12 — UI/tooling boundary: project present Entity onto EntityVersion /
- * EntityDefinition shape for legacy callers still typed that way.
- *
- * Prefer passing Entity (with mlSchema) directly. UI Report/grid paths no longer use this.
- *
- * @deprecated Prefer Entity present-model fields; keep only for non-UI dual-write / compat.
- */
-export function presentEntityAsRedundantEntityDefinition(
-  entity: Entity,
-  entityDefinitions: EntityDefinition[] = [],
-): EntityDefinition {
-  const existing = entityDefinitions.find(
-    (entityDefinition) => entityDefinition.entityUuid === entity.uuid,
-  );
-  if (existing) {
-    return alignEntityDefinitionToPresentEntity(entity, existing);
-  }
-  if (!entity.mlSchema) {
-    throw new Error(
-      `presentEntityAsRedundantEntityDefinition: Entity ${entity.uuid} (${entity.name}) has no mlSchema`,
-    );
-  }
-  return {
-    uuid: entity.uuid,
-    parentName: "EntityVersion",
-    parentUuid: "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-    name: entity.name,
-    entityUuid: entity.uuid,
-    conceptLevel: "Model",
-    mlSchema: entity.mlSchema,
-    ...(entity.viewAttributes !== undefined
-      ? { viewAttributes: entity.viewAttributes }
-      : {}),
-    ...(entity.defaultInstanceDetailsReportUuid !== undefined
-      ? { defaultInstanceDetailsReportUuid: entity.defaultInstanceDetailsReportUuid }
-      : {}),
-    ...(entity.idAttribute !== undefined ? { idAttribute: entity.idAttribute } : {}),
-    ...(entity.display !== undefined ? { display: entity.display } : {}),
-    ...(entity.cache !== undefined ? { cache: entity.cache } : {}),
-    ...(entity.icon !== undefined ? { icon: entity.icon } : {}),
-  } as EntityDefinition;
-}

@@ -1,7 +1,7 @@
 import {
   ACTION_OK,
   Action2VoidReturnType,
-  EntityDefinition,
+  EntityVersion,
   LoggerInterface,
   Entity,
   MiroirLoggerFactory,
@@ -77,7 +77,7 @@ export class SqlDbStoreSection
   // ##############################################################################################
   async bootFromPersistedState(
     entities: Entity[],
-    entityDefinitions: EntityDefinition[]
+    entityVersions: EntityVersion[]
   ): Promise<Action2VoidReturnType> {
     log.info(
       this.logHeader,
@@ -91,27 +91,27 @@ export class SqlDbStoreSection
     //   JSON.stringify(wrongDefinitions, null, 2)
     // );
     this.sqlSchemaTableAccess = entities
-      // .filter(e=>['Entity','EntityDefinition'].indexOf(e.name)==-1)
+      // .filter(e=>['Entity','EntityVersion'].indexOf(e.name)==-1)
       .reduce((prev, curr: Entity) => {
         // #217 Phase 11 — prefer Entity present-model fields; ED only as legacy fill-in.
-        const entityDefinition = entityDefinitions.find((e) => e.entityUuid == curr.uuid);
+        const entityVersion = entityVersions.find((e) => e.entityUuid == curr.uuid);
         const presentCarrier: Entity = {
           ...curr,
-          ...(curr.mlSchema === undefined && entityDefinition?.mlSchema !== undefined
-            ? { mlSchema: entityDefinition.mlSchema }
+          ...(curr.mlSchema === undefined && entityVersion?.mlSchema !== undefined
+            ? { mlSchema: entityVersion.mlSchema }
             : {}),
-          ...(curr.idAttribute === undefined && (entityDefinition as any)?.idAttribute !== undefined
-            ? { idAttribute: (entityDefinition as any).idAttribute }
+          ...(curr.idAttribute === undefined && (entityVersion as any)?.idAttribute !== undefined
+            ? { idAttribute: (entityVersion as any).idAttribute }
             : {}),
           ...(curr.externalDataSource === undefined &&
-          (entityDefinition as any)?.externalDataSource !== undefined
-            ? { externalDataSource: (entityDefinition as any).externalDataSource }
+          (entityVersion as any)?.externalDataSource !== undefined
+            ? { externalDataSource: (entityVersion as any).externalDataSource }
             : {}),
         };
         if (!presentCarrier.mlSchema) {
           return prev;
         }
-        const part = this.getAccessToDataSectionEntity(presentCarrier, entityDefinition)
+        const part = this.getAccessToDataSectionEntity(presentCarrier, entityVersion)
         const result = Object.assign(prev, part);
         log.info(
           this.logHeader,
@@ -140,15 +140,15 @@ export class SqlDbStoreSection
   // ##############################################################################################
   getAccessToDataSectionEntity(
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): EntityUuidIndexedSequelizeModel {
     // #217 Phase 11 — Entity is present-model authority; ED optional legacy fill-in only.
     const schemaSource = {
       name: entity.name,
-      mlSchema: entity.mlSchema ?? entityDefinition?.mlSchema,
-      idAttribute: entity.idAttribute ?? (entityDefinition as any)?.idAttribute,
+      mlSchema: entity.mlSchema ?? entityVersion?.mlSchema,
+      idAttribute: entity.idAttribute ?? (entityVersion as any)?.idAttribute,
       externalDataSource:
-        entity.externalDataSource ?? (entityDefinition as any)?.externalDataSource,
+        entity.externalDataSource ?? (entityVersion as any)?.externalDataSource,
     };
     const idAttribute: string | string[] = schemaSource.idAttribute ?? "uuid";
     const isExternal = entity.conceptLevel === "External" || !!schemaSource.externalDataSource;
@@ -200,12 +200,12 @@ export class SqlDbStoreSection
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     this.sqlSchemaTableAccess = Object.assign(
       {},
       this.sqlSchemaTableAccess,
-      this.getAccessToDataSectionEntity(entity, entityDefinition)
+      this.getAccessToDataSectionEntity(entity, entityVersion)
     );
     if (this.sqlSchemaTableAccess[entity.uuid]?.isExternal) {
       log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", "skipping table creation for external entity", entity.name);
@@ -223,7 +223,7 @@ export class SqlDbStoreSection
     oldName: string,
     newName: string,
     entity: Entity,
-    entityDefinition?: EntityDefinition
+    entityVersion?: EntityVersion
   ): Promise<Action2VoidReturnType> {
     const queryInterface = this.sequelize.getQueryInterface();
     await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
@@ -236,7 +236,7 @@ export class SqlDbStoreSection
       this.getAccessToDataSectionEntity(
         // TODO: decouple from ModelUpdateConverter implementation
         entity,
-        entityDefinition
+        entityVersion
       )
     );
     return Promise.resolve(ACTION_OK);
@@ -245,7 +245,7 @@ export class SqlDbStoreSection
   // // ##############################################################################################
   // async alterStorageSpaceForInstancesOfEntity(
   //   entity: Entity,
-  //   entityDefinition: EntityDefinition
+  //   entityVersion: EntityVersion
   // ): Promise<Action2VoidReturnType> {
   //   const queryInterface = this.sequelize.getQueryInterface();
   //   await queryInterface.renameTable({ tableName: oldName, schema: this.schema }, newName);
@@ -258,7 +258,7 @@ export class SqlDbStoreSection
   //     this.getAccessToDataSectionEntity(
   //       // TODO: decouple from ModelUpdateConverter implementation
   //       entity,
-  //       entityDefinition
+  //       entityVersion
   //     )
   //   );
   //   return Promise.resolve( ACTION_OK );

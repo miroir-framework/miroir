@@ -67,16 +67,16 @@ describe("ApplicationEvolutionTrace entity assets", () => {
       expect(found!.name).toBe("ApplicationEvolutionTraceEvent");
     });
 
-    it("defaultMiroirMetaModel.entityDefinitions contains entityDefinitionApplicationEvolutionTrace", async () => {
+    it("defaultMiroirMetaModel.entityVersions contains entityDefinitionApplicationEvolutionTrace", async () => {
       const { defaultMiroirMetaModel } = await import("miroir-test-app_deployment-miroir");
-      const found = defaultMiroirMetaModel.entityDefinitions.find((ed: any) => ed.uuid === TRACE_ROOT_ENTITYDEF_UUID);
+      const found = defaultMiroirMetaModel.entityVersions.find((ed: any) => ed.uuid === TRACE_ROOT_ENTITYDEF_UUID);
       expect(found).toBeDefined();
       expect(found!.entityUuid).toBe(TRACE_ROOT_ENTITY_UUID);
     });
 
-    it("defaultMiroirMetaModel.entityDefinitions contains entityDefinitionApplicationEvolutionTraceEvent", async () => {
+    it("defaultMiroirMetaModel.entityVersions contains entityDefinitionApplicationEvolutionTraceEvent", async () => {
       const { defaultMiroirMetaModel } = await import("miroir-test-app_deployment-miroir");
-      const found = defaultMiroirMetaModel.entityDefinitions.find((ed: any) => ed.uuid === TRACE_EVENT_ENTITYDEF_UUID);
+      const found = defaultMiroirMetaModel.entityVersions.find((ed: any) => ed.uuid === TRACE_EVENT_ENTITYDEF_UUID);
       expect(found).toBeDefined();
       expect(found!.entityUuid).toBe(TRACE_EVENT_ENTITY_UUID);
     });

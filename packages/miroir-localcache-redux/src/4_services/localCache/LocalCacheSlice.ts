@@ -239,7 +239,7 @@ function getEntityIdAttribute(entityInstancesLocationIndex: string): string | st
 // ##########################################################################################
 /**
  * #217 Phase 11: register non-UUID PK adapters from Entity present-model only.
- * EntityDefinition is historical and no longer registers live PK adapters.
+ * EntityVersion is historical and no longer registers live PK adapters.
  */
 function registerEntityAdapterFromPresentModelSource(
   deploymentUuid: string,
@@ -273,9 +273,9 @@ function registerEntityAdapterFromPresentModelSource(
 function registerEntityAdapterFromDefinition(
   deploymentUuid: string,
   _section: ApplicationSection,
-  entityDefinition: EntityInstance
+  entityVersion: EntityInstance
 ): void {
-  registerEntityAdapterFromPresentModelSource(deploymentUuid, entityDefinition);
+  registerEntityAdapterFromPresentModelSource(deploymentUuid, entityVersion);
 }
 
 //#########################################################################################
@@ -565,19 +565,12 @@ function handleInstanceAction(
           //   JSON.stringify(state)
           // );
 
-          const result = sliceEntityAdapter.addOne(
+          // Always assign: when initializeLocalCacheSliceStateWithEntityAdapter just wrote a
+          // plain getInitialState() into the draft, addOne does not mutate in place.
+          state.current[instanceCollectionEntityIndex] = sliceEntityAdapter.addOne(
             state.current[instanceCollectionEntityIndex],
             instance
           );
-          // const result = sliceEntityAdapter.addMany(
-          //   state.current[instanceCollectionEntityIndex],
-          //   instances.instances
-          // );
-
-          // log.info(
-          //   "localCacheSliceObject handleInstanceAction createInstance result",
-          //   JSON.stringify(result, null, 2)
-          // );
 
           markSiblingPartialSegmentStale(
             state as any,
@@ -656,7 +649,7 @@ function handleInstanceAction(
             const deleteIdAttribute = getEntityIdAttribute(instanceCollectionEntityIndex);
             const deletePkAttrs = Array.isArray(deleteIdAttribute) ? deleteIdAttribute : [deleteIdAttribute];
             const deletePkValue = serializeCompositeKeyValue(deletePkAttrs, instance);
-            sliceEntityAdapter.removeOne(
+            state.current[instanceCollectionEntityIndex] = sliceEntityAdapter.removeOne(
               state.current[instanceCollectionEntityIndex],
               deletePkValue
             );
@@ -727,10 +720,13 @@ function handleInstanceAction(
               }
             }
           }
-          sliceEntityAdapter.updateOne(state.current[instanceCollectionEntityIndex], {
-            id: updatePkValue,
-            changes: instance,
-          });
+          state.current[instanceCollectionEntityIndex] = sliceEntityAdapter.updateOne(
+            state.current[instanceCollectionEntityIndex],
+            {
+              id: updatePkValue,
+              changes: instance,
+            }
+          );
           markSiblingPartialSegmentStale(
             state as any,
             deploymentUuid,
@@ -797,7 +793,7 @@ function handleModelAction(
     "action",
     action, 
   );
-  // TODO: fail in case of Transactional Entity (Entity, EntityDefinition...)?
+  // TODO: fail in case of Transactional Entity (Entity, EntityVersion...)?
   // switch (action.actionType) {
   //   case "modelAction": {
   // switch (action.actionName) {

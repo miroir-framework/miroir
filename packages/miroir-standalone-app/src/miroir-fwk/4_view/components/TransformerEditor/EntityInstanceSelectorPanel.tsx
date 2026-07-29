@@ -166,9 +166,9 @@ export function EntityInstanceSelectorPanel(props:{
   const isMiroirApp = inputSelector_applicationUuid === selfApplicationMiroir.uuid;
 
   // model (user apps): every Entity instance from the miroir meta-app model section.
-  // model (Miroir): only Entity + EntityDefinition (meta-meta-model).
+  // model (Miroir): only Entity + EntityVersion (meta-meta-model).
   // data (user apps): the application's own entities.
-  // data (Miroir): miroir entities excluding Entity + EntityDefinition.
+  // data (Miroir): miroir entities excluding Entity + EntityVersion.
   const currentReportDeploymentSectionEntities: Entity[] = useMemo(() => {
     let entities: Entity[];
     if (applicationSection === "model") {

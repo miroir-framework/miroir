@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * #217 Phase 12 — vocabulary rename gate (EntityDefinition → EntityVersion).
+ * #217 Phase 12 — vocabulary rename gate (EntityVersion → EntityVersion).
  * Rename-only: no present-model authority change. UI hub remains until a follow-up slice.
  */
 
@@ -73,12 +73,12 @@ const MENU_MIROIR = join(
   "eaac459c-6c2b-475c-8ae4-c6c3032dae00.json",
 );
 
-describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", () => {
-  it("bootstrap Entity formerly EntityDefinition is named EntityVersion (UUID preserved)", () => {
+describe("217 Phase 12 — EntityVersion → EntityVersion vocabulary gate", () => {
+  it("bootstrap Entity formerly EntityVersion is named EntityVersion (UUID preserved)", () => {
     const asset = JSON.parse(readFileSync(ENTITY_ENTITY_VERSION_ASSET, "utf8"));
     expect(asset.uuid).toBe("54b9c72f-d4f3-4db9-9e0e-0dc840b530bd");
     expect(asset.name).toBe("EntityVersion");
-    expect(asset.name).not.toBe("EntityDefinition");
+    expect(asset.name).not.toBe("EntityVersion");
   });
 
   it("self-describing EntityVersion instance uses parentName EntityVersion", () => {
@@ -103,16 +103,16 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
     );
   });
 
-  it("generated types export EntityVersion and deprecated EntityDefinition alias", () => {
+  it("generated types export EntityVersion and deprecated EntityVersion alias", () => {
     const generated = readFileSync(FUNDAMENTAL_TYPE, "utf8");
     expect(generated).toMatch(/export type EntityVersion\s*=/);
     const index = readFileSync(INDEX_TS, "utf8");
-    // Public surface keeps EntityDefinition as deprecated alias for one release
-    expect(index).toMatch(/EntityDefinition/);
+    // Public surface keeps EntityVersion as deprecated alias for one release
+    expect(index).toMatch(/EntityVersion/);
     expect(index).toMatch(/EntityVersion/);
   });
 
-  it("deployment package exports EntityVersion symbols with deprecated EntityDefinition aliases", () => {
+  it("deployment package exports EntityVersion symbols with deprecated EntityVersion aliases", () => {
     const src = readFileSync(DEPLOYMENT_INDEX, "utf8");
     expect(src).toMatch(/\bas entityEntityVersion\b/);
     expect(src).toMatch(/\bas entityEntityDefinition\b/); // deprecated alias
@@ -124,7 +124,7 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
     expect(src).toMatch(/\bas reportEntityDefinitionList\b/); // deprecated alias
   });
 
-  it("non-bootstrap EntityVersion instance exports use entityVersion* with deprecated entityDefinition* aliases", () => {
+  it("non-bootstrap EntityVersion instance exports use entityVersion* with deprecated entityVersion* aliases", () => {
     const miroir = readFileSync(DEPLOYMENT_INDEX, "utf8");
     for (const [primary, deprecated] of [
       ["entityVersionEntity", "entityDefinitionEntity"],
@@ -192,7 +192,7 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
     );
   });
 
-  it("AVCED data instances store entityVersion (not entityDefinition) FK", () => {
+  it("AVCED data instances store entityVersion (not entityVersion) FK", () => {
     const sample = JSON.parse(
       readFileSync(
         join(
@@ -205,10 +205,10 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
       ),
     );
     expect(sample.entityVersion).toBe("bdd7ad43-f0fc-4716-90c1-87454c40dd95");
-    expect(sample.entityDefinition).toBeUndefined();
+    expect(sample.entityVersion).toBeUndefined();
   });
 
-  it("Action payloads use entityVersionUuid / entityVersion (not entityDefinition*)", () => {
+  it("Action payloads use entityVersionUuid / entityVersion (not entityVersion*)", () => {
     const endpoint = JSON.parse(
       readFileSync(
         join(
@@ -246,14 +246,20 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
       create?.payload?.definition?.entities?.definition?.definition?.entityVersion?.optional,
     ).toBe(true);
     expect(
-      create?.payload?.definition?.entities?.definition?.definition?.entityDefinition,
+      create?.payload?.definition?.entities?.definition?.definition?.entityVersion,
     ).toBeUndefined();
   });
 
-  it("UI no longer calls presentEntityAsRedundantEntityDefinition (hub kept deprecated for non-UI)", () => {
+  it("UI no longer calls presentEntityAsRedundantEntityDefinition (compat module #220)", () => {
+    const compat = readFileSync(
+      join(REPO_ROOT, "packages/miroir-core/src/1_core/entityDefinitionCompatibility.ts"),
+      "utf8",
+    );
+    expect(compat).toContain("presentEntityAsRedundantEntityDefinition");
+    expect(compat).toMatch(/@deprecated/);
+
     const hub = readFileSync(ENTITY_PRESENT_MODEL, "utf8");
-    expect(hub).toContain("presentEntityAsRedundantEntityDefinition");
-    expect(hub).toMatch(/@deprecated/);
+    expect(hub).not.toContain("export function presentEntityAsRedundantEntityDefinition");
 
     const uiFiles = [
       "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.tsx",
@@ -281,7 +287,7 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
     );
     expect(coreConcepts).toMatch(/## Entity & EntityVersion/);
     expect(coreConcepts).toMatch(/authoritative present-model/i);
-    expect(coreConcepts).not.toMatch(/## Entity & EntityDefinition/);
+    expect(coreConcepts).not.toMatch(/## Entity & EntityVersion/);
 
     const entityApi = readFileSync(
       join(REPO_ROOT, "docs/reference/api/entity.md"),
@@ -295,7 +301,7 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
       "utf8",
     );
     expect(defining).toMatch(/\*\*EntityVersion\*\*/);
-    expect(defining).not.toMatch(/\*\*EntityDefinition\*\*/);
+    expect(defining).not.toMatch(/\*\*EntityVersion\*\*/);
 
     const agents = readFileSync(join(REPO_ROOT, "AGENTS.md"), "utf8");
     expect(agents).toMatch(/EntityVersion/);
@@ -316,8 +322,8 @@ describe("217 Phase 12 — EntityDefinition → EntityVersion vocabulary gate", 
       expect(prompt).toMatch(/### EntityVersion/);
       expect(prompt).toMatch(/authoritative present-model definition/);
       expect(prompt).toMatch(/AND the EntityVersion/);
-      expect(prompt).not.toMatch(/AND the EntityDefinition/);
-      expect(prompt).not.toMatch(/corresponding EntityDefinition that holds/);
+      expect(prompt).not.toMatch(/AND the EntityVersion/);
+      expect(prompt).not.toMatch(/corresponding EntityVersion that holds/);
     }
   });
 });

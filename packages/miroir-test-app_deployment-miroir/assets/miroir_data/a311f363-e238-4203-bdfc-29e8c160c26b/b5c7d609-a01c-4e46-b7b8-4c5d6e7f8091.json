@@ -66,56 +66,45 @@
                   "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
                   "entities": [
                     {
-                      "entity": {
-                        "uuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
-                        "parentName": "Entity",
-                        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-                        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                        "name": "TestEntityNoParentUuid",
-                        "conceptLevel": "Model",
-                        "description": "Test entity whose instances do not bear a parentUuid attribute."
-                      },
-                      "entityVersion": {
-                        "uuid": "0057f84b-64d8-4395-8841-b264e3f9473a",
-                        "parentName": "EntityVersion",
-                        "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-                        "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
-                        "entityUuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
-                        "conceptLevel": "Model",
-                        "name": "TestEntityNoParentUuid",
-                        "mlSchema": {
-                          "type": "object",
-                          "definition": {
-                            "uuid": {
-                              "type": "uuid",
-                              "tag": {
-                                "value": {
-                                  "id": 1,
-                                  "defaultLabel": "Uuid",
-                                  "display": {
-                                    "editable": false
-                                  }
+                      "uuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
+                      "parentName": "Entity",
+                      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "name": "TestEntityNoParentUuid",
+                      "conceptLevel": "Model",
+                      "description": "Test entity whose instances do not bear a parentUuid attribute.",
+                      "mlSchema": {
+                        "type": "object",
+                        "definition": {
+                          "uuid": {
+                            "type": "uuid",
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Uuid",
+                                "display": {
+                                  "editable": false
                                 }
                               }
-                            },
-                            "name": {
-                              "type": "string",
-                              "tag": {
-                                "value": {
-                                  "id": 2,
-                                  "defaultLabel": "Name"
-                                }
+                            }
+                          },
+                          "name": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "id": 2,
+                                "defaultLabel": "Name"
                               }
-                            },
-                            "description": {
-                              "type": "string",
-                              "optional": true,
-                              "tag": {
-                                "value": {
-                                  "id": 3,
-                                  "defaultLabel": "Description"
-                                }
+                            }
+                          },
+                          "description": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "id": 3,
+                                "defaultLabel": "Description"
                               }
                             }
                           }

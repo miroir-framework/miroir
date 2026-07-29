@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type {
   ApplicationEvolutionTrace,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   JzodObject,
   ModelActionAlterEntityAttribute,
   ModelActionCreateEntity,
@@ -36,7 +36,7 @@ const mockEntity: Entity = {
   name: "TestEntity",
 };
 
-const mockEntityDefinition: EntityDefinition = {
+const mockEntityDefinition: EntityVersion = {
   uuid: ENTITYDEF_UUID,
   parentUuid: ENTITYDEF_PARENT_UUID,
   name: "TestEntity",
@@ -50,7 +50,7 @@ const createEntityAction: ModelActionCreateEntity = {
   endpoint: MODEL_ENDPOINT,
   payload: {
     application: APP_UUID,
-    entities: [{ entity: mockEntity, entityVersion: mockEntityDefinition }],
+    entities: [mockEntity],
   },
 };
 

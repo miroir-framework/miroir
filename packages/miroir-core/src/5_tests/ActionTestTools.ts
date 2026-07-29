@@ -6,7 +6,7 @@ import type {
   MiroirTestForAction,
   TestCompositeActionParams,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import { LIBRARY_TMP } from "../0_interfaces/1_core/LIBRARY_TMP.js";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type {

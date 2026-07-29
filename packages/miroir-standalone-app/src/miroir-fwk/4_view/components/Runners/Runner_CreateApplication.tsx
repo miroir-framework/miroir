@@ -1826,7 +1826,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
         error={fileError}
         successMessage={
           selectedMetaModel
-            ? `MetaModel loaded successfully with ${selectedMetaModel?.entities?.length || 0} entities and ${selectedMetaModel?.entityDefinitions?.length || 0} entity definitions.`
+            ? `MetaModel loaded successfully with ${selectedMetaModel?.entities?.length || 0} entities and ${selectedMetaModel?.entityVersions?.length || 0} entity definitions.`
             : undefined
         }
       /> */}

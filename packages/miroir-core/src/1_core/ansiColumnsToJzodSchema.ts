@@ -48,7 +48,7 @@ export const postgresDataTypeToJzodTypeMap: Record<string, string> = {
 
 /**
  * Converts a list of information_schema.columns rows (e.g. from a CSV export or SQL query)
- * into a Jzod object schema suitable for use as the `mlSchema` of a Miroir EntityDefinition.
+ * into a Jzod object schema suitable for use as the `mlSchema` of a Miroir EntityVersion.
  *
  * - Columns are sorted by `ordinal_position` before processing.
  * - Nullable columns (`is_nullable === "YES"`) get `optional: true`.

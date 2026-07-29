@@ -225,7 +225,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
         ? context.deploymentUuidToReportsEntitiesDefinitionsMapping[props.deploymentUuid][
           props.applicationSection
           ]
-        : { availableReports: [], entities: [], entityDefinitions: [] };
+        : { availableReports: [], entities: [], entityVersions: [] };
     }, [
       props.deploymentUuid,
       context.deploymentUuidToReportsEntitiesDefinitionsMapping,
@@ -239,9 +239,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentReportTargetEntity: Entity | undefined = resolvePresentEntityFromModel(
     {
       entities,
-      entityDefinitions:
+      entityVersions:
         currentDeploymentReportsEntitiesDefinitionsMapping?.[props.applicationSection ?? "data"]
-          ?.entityDefinitions,
+          ?.entityVersions,
     },
     targetEntityUuid ?? "",
   );

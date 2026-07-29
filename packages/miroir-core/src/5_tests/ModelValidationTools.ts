@@ -7,7 +7,7 @@
  */
 
 import type {
-  EntityDefinition,
+  EntityVersion,
   JzodElement,
   MetaModel,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -91,9 +91,9 @@ export function modelValidationInstancesArrayToRecord(
 
 export function entityDefinitionsByEntityName(
   metaModel: MetaModel,
-): Record<string, EntityDefinition> {
+): Record<string, EntityVersion> {
   return Object.fromEntries(
-    metaModel.entityDefinitions.map((entityDefinition) => [entityDefinition.name, entityDefinition]),
+    metaModel.entityVersions.map((entityVersion) => [entityVersion.name, entityVersion]),
   );
 }
 

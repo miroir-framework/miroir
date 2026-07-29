@@ -1,4 +1,4 @@
-import type { Uuid } from "../0_interfaces/1_core/EntityDefinition";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type {
   AdminApplication,
   CompositeActionSequence,
@@ -6,7 +6,7 @@ import type {
   CoreTransformerForBuildPlusRuntime_getFromParameters,
   Deployment,
   Entity,
-  EntityDefinition,
+  EntityVersion,
   EntityInstance,
   MetaModel,
   MiroirConfigClient,
@@ -21,7 +21,11 @@ import {
   buildEvolutionBaselineCreateInstanceActions,
   EVOLUTION_TRACE_ENTITY_UUID,
 } from "../2_domain/evolutionTraceBaseline.js";
-import { entityHasCompletePresentModel } from "./entityPresentModel.js";
+import { entityHasCompletePresentModel, resolveCurrentEntityModel } from "./entityPresentModel.js";
+import {
+  getMetaModelEntityVersions,
+  withMetaModelEntityVersions,
+} from "./metaModelEntityVersions.js";
 
 import {
   selfApplicationMiroir,
@@ -230,7 +234,7 @@ export interface EntityDefinitionCouple {
   // entity: Entity;
   entity: Entity;
   /** Optional during #217 Phase 11 — Entity-only create when present model is complete. */
-  entityDefinition?: EntityDefinition;
+  entityVersion?: EntityVersion;
 }
 export type ApplicationEntitiesDefinitionAndInstances = {
   instances: EntityInstance[];
@@ -243,7 +247,7 @@ export const emptyMetaModel: MetaModel = {
   applicationName: "",
   applications: [],
   entities: [],
-  entityDefinitions: [],
+  entityVersions: [],
   applicationVersionCrossEntityVersion: [],
   applicationVersions: [],
   endpoints: [],
@@ -263,14 +267,16 @@ export function metaModelFilterEntities(
   const filteredEntities = entityUuidsToKeep ? metaModel.entities.filter((entity) =>
     entityUuidsToKeep.includes(entity.uuid)
   ) : metaModel.entities;
-  const filteredEntityDefinitions = entityUuidsToKeep ? metaModel.entityDefinitions.filter((entityDefinition) =>
-    entityUuidsToKeep.includes(entityDefinition.entityUuid)
-  ) : metaModel.entityDefinitions;
-  return {
-    ...metaModel,
-    entities: filteredEntities,
-    entityDefinitions: filteredEntityDefinitions,
-  };
+  const sourceEntityVersions = getMetaModelEntityVersions(metaModel);
+  const filteredEntityVersions = entityUuidsToKeep
+    ? sourceEntityVersions.filter((entityVersion) =>
+        entityUuidsToKeep.includes(entityVersion.entityUuid),
+      )
+    : sourceEntityVersions;
+  return withMetaModelEntityVersions(
+    { ...metaModel, entities: filteredEntities },
+    filteredEntityVersions,
+  );
 }
 export type ResolvableAppMetaModel = MetaModel | CoreTransformerForBuildPlusRuntime_getFromParameters;
 
@@ -362,20 +368,21 @@ export function buildResetAndinitializeDeploymentActionSequence(
     "filteredEntities to create=",
     filteredEntitiesMetaModel.entities.map((e) => ({ name: e.name, uuid: e.uuid })),
     "filteredEntityDefinitions=",
-    filteredEntitiesMetaModel.entityDefinitions.map((ed) => ({
+    getMetaModelEntityVersions(filteredEntitiesMetaModel).map((ed) => ({
       name: ed.name,
       uuid: ed.uuid,
       entityUuid: ed.entityUuid,
     })),
   );
 
+  const filteredEntityVersions = getMetaModelEntityVersions(filteredEntitiesMetaModel);
   const entities: EntityDefinitionCouple[] = filteredEntitiesMetaModel.entities.map((entity) => {
-    const entityDefinition = filteredEntitiesMetaModel.entityDefinitions.find(
+    const entityVersion = filteredEntityVersions.find(
       (ed) => ed.entityUuid === entity.uuid,
     );
     // #217 Phase 11 — Entity with present-model fields does not require a live ED row.
-    if (entityDefinition) {
-      return { entity, entityDefinition };
+    if (entityVersion) {
+      return { entity, entityVersion };
     }
     if (entityHasCompletePresentModel(entity)) {
       return { entity };
@@ -395,8 +402,12 @@ export function buildResetAndinitializeDeploymentActionSequence(
     "appMetaModel",
     "entities=",
     appMetaModel.entities.map((ed) => ({ name: ed.name, uuid: ed.uuid })),
-    "entityDefinitions=",
-    appMetaModel.entityDefinitions.map((ed) => ({ name: ed.name, uuid: ed.uuid, entityUuid: ed.entityUuid })),
+    "entityVersions=",
+    getMetaModelEntityVersions(appMetaModel).map((ed) => ({
+      name: ed.name,
+      uuid: ed.uuid,
+      entityUuid: ed.entityUuid,
+    })),
     // "initApplicationParameters=",
     // initApplicationParameters,
   );
@@ -446,12 +457,20 @@ export function buildResetAndinitializeDeploymentActionSequence(
           endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
           payload: {
             application: applicationUuid,
-            // #217 Phase 12: Action field is entityVersion; couple API still uses entityDefinition
-            entities: entities.map(({ entity, entityDefinition }) =>
-              entityDefinition
-                ? { entity, entityVersion: entityDefinition }
-                : { entity },
-            ),
+            // #220 — Action payload.entities is Entity[]; enrich incomplete Entity from EV when needed
+            entities: entities.map(({ entity, entityVersion }) => {
+              if (entityHasCompletePresentModel(entity)) {
+                return entity;
+              }
+              if (!entityVersion) {
+                throw new Error(
+                  `Incomplete Entity ${entity.uuid} (${entity.name}) has no EntityVersion to enrich for createEntity`,
+                );
+              }
+              return resolveCurrentEntityModel(entity, [entityVersion], {
+                onInconsistency: "preferEntity",
+              });
+            }),
           },
         },
         // add reports, menus, etc. from metaModel

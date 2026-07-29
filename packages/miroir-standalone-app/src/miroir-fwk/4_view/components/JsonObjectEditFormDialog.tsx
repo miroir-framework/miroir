@@ -67,7 +67,7 @@ export interface JsonObjectFormEditorCoreDialogProps {
   valueObjectEditMode: ValueObjectEditMode,
   label?: string,
   isAttributes?: boolean,
-  entityDefinition: PresentModelSchemaCarrier,
+  entityVersion: PresentModelSchemaCarrier,
   entityDefinitionJzodSchema: JzodObject,
   defaultFormValuesObject: any,
   currentApplication: Uuid,
@@ -223,7 +223,7 @@ interface JsonElementEditorDialogProps {
   applicationDeploymentMap: ApplicationDeploymentMap,
   currentDeploymentUuid?: Uuid;
   currentApplicationSection?: ApplicationSection;
-  entityDefinition: PresentModelSchemaCarrier;
+  entityVersion: PresentModelSchemaCarrier;
   entityDefinitionJzodSchema: JzodObject;
   resolvedJzodSchema: any;
   foreignKeyObjects: Record<string, EntityInstancesUuidIndex>;
@@ -253,7 +253,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   currentApplication,
   currentDeploymentUuid,
   currentApplicationSection,
-  entityDefinition,
+  entityVersion,
   entityDefinitionJzodSchema,
   resolvedJzodSchema,
   foreignKeyObjects,
@@ -281,13 +281,13 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
   const currentModel: MetaModel = currentAppModel;
 
   const defaultDetailsReport: Report | undefined = useMemo(() => {
-    return entityDefinition.defaultInstanceDetailsReportUuid
+    return entityVersion.defaultInstanceDetailsReportUuid
       ? currentDeploymentReportsEntitiesDefinitionsMapping?.[currentApplicationSection??"data"]?.availableReports?.find(
-          (r) => r.uuid === entityDefinition.defaultInstanceDetailsReportUuid
+          (r) => r.uuid === entityVersion.defaultInstanceDetailsReportUuid
         )
       : undefined;
   }, [
-    entityDefinition,
+    entityVersion,
     currentDeploymentReportsEntitiesDefinitionsMapping,
     currentApplicationSection,
   ]);
@@ -333,7 +333,7 @@ const JsonElementEditorDialog: React.FC<JsonElementEditorDialogProps> = ({
 
   // Determine if this is an Endpoint entity to use full width dialog
   const isEndpointEntity =
-    (entityDefinition.entityUuid ?? entityDefinition.uuid) ===
+    (entityVersion.entityUuid ?? entityVersion.uuid) ===
     "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
 
   return (
@@ -583,7 +583,7 @@ export function JsonObjectEditFormDialog(props: JsonObjectEditFormDialogProps) {
           applicationDeploymentMap={props.applicationDeploymentMap}
           currentDeploymentUuid={currentDeploymentUuid}
           currentApplicationSection={currentApplicationSection}
-          entityDefinition={props.entityDefinition}
+          entityVersion={props.entityVersion}
           entityDefinitionJzodSchema={entityDefinitionJzodSchema}
           resolvedJzodSchema={resolvedJzodSchema}
           foreignKeyObjects={foreignKeyObjects}

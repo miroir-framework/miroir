@@ -30,7 +30,7 @@ async function generateLibraryMetaModel() {
     console.log("uuid:", defaultLibraryAppModel.applicationUuid);
     console.log("name:", defaultLibraryAppModel.applicationName);
     console.log(`  - Entities: ${defaultLibraryAppModel.entities.length}`);
-    console.log(`  - Entity Definitions: ${defaultLibraryAppModel.entityDefinitions.length}`);
+    console.log(`  - Entity Definitions: ${defaultLibraryAppModel.entityVersions.length}`);
     console.log(`  - Endpoints: ${defaultLibraryAppModel.endpoints.length}`);
     console.log(`  - Menus: ${defaultLibraryAppModel.menus.length}`);
     console.log(`  - Reports: ${defaultLibraryAppModel.reports.length}`);

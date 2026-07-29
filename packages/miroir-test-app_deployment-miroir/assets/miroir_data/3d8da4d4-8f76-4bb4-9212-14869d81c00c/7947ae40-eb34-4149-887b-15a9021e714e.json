@@ -860,33 +860,15 @@
               "entities": {
                 "type": "array",
                 "definition": {
-                  "type": "object",
-                  "definition": {
-                    "entity": {
-                      "type": "schemaReference",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true
-                        }
-                      },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "entity"
-                      }
-                    },
-                    "entityVersion": {
-                      "type": "schemaReference",
-                      "tag": {
-                        "value": {
-                          "canBeTemplate": true
-                        }
-                      },
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "entityVersion"
-                      },
-                      "optional": true
+                  "type": "schemaReference",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": true
                     }
+                  },
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entity"
                   }
                 }
               }

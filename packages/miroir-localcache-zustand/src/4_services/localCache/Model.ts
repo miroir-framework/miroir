@@ -9,7 +9,7 @@ import {
   type ApplicationDeploymentMap,
   type ApplicationVersion,
   type Entity,
-  type EntityDefinition,
+  type EntityVersion,
   type Menu,
   type MetaModel,
   type MiroirModelEnvironment,
@@ -133,11 +133,11 @@ export function currentModel(
           : []) as Entity[],
         (entityDefinitions && entityDefinitions.entities
           ? Object.values(entityDefinitions.entities)
-          : []) as EntityDefinition[],
+          : []) as EntityVersion[],
       ),
       entityDefinitions: (entityDefinitions && entityDefinitions.entities
         ? Object.values(entityDefinitions.entities)
-        : []) as EntityDefinition[],
+        : []) as EntityVersion[],
       jzodSchemas: (jzodSchemas && jzodSchemas.entities
         ? Object.values(jzodSchemas.entities)
         : []) as MlSchema[],
