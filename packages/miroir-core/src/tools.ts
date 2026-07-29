@@ -2,11 +2,27 @@ import { ZodTypeAny } from "zod";
 import { DomainState } from "./0_interfaces/2_domain/DomainControllerInterface";
 import { ReduxDeploymentsState } from "./0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { getReduxDeploymentsStateIndex } from "./2_domain/ReduxDeploymentsState";
-import { ApplicationSection, type ClientEnvironment } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { Uuid } from "./0_interfaces/1_core/EntityVersion.js";
+import {
+  ApplicationSection,
+  type ClientEnvironment,
+  type Entity,
+  type MetaModel,
+} from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { TransformerFailure, type Domain2QueryReturnType } from "./0_interfaces/2_domain/DomainElement";
 
 export function stringTuple<T extends [string] | string[]>(...data: T): T {
   return data;
+}
+
+export function findEntityFromUuid(
+  model: MetaModel,
+  entityUuid: Uuid,
+): Entity | undefined {
+  if (!model || !entityUuid) {
+    return undefined;
+  }
+  return model.entities.find((candidate) => candidate.uuid === entityUuid);
 }
 
 export const devRelativePathPrefix = "miroir-server/tests/tmp";

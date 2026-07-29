@@ -12,9 +12,8 @@ import type { ResolveBuildTransformersTo, Step } from "../../2_domain/Transforme
 import { transformer_extended_apply } from "../../2_domain/TransformersForRuntime";
 import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
 import { packageName } from "../../constants";
-import { RelativePath, resolveRelativePath } from '../../tools';
+import { findEntityFromUuid, RelativePath, resolveRelativePath } from '../../tools';
 import { cleanLevel } from "../constants";
-import { findEntityFromUuid } from "../versioning/applicationVersioning.js";
 
 // Error value types for resolveConditionalSchema
 export type ResolveConditionalSchemaError =

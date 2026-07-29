@@ -29,12 +29,12 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreInstanceSectionAbstractInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { findEntityFromUuid } from "../1_core/versioning/applicationVersioning.js";
 import {
   // getEntityPrimaryKeyAttributes,
   getForeignKeyValue,
   serializeCompositeKeyValue,
 } from "../1_core/EntityPrimaryKey";
+import { findEntityFromUuid } from "../tools";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import {

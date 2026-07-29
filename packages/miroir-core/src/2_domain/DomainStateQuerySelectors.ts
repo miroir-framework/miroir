@@ -32,9 +32,9 @@ import {
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { getForeignKeyValue } from "../1_core/EntityPrimaryKey";
-import { findEntityFromUuid } from "../1_core/versioning/applicationVersioning.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
+import { findEntityFromUuid } from "../tools";
 import { cleanLevel } from "./constants";
 import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelector";
 import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";

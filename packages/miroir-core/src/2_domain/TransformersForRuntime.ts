@@ -85,11 +85,10 @@ import { handleTransformer_menu_AddItem } from "../1_core/Menu";
 import { ansiColumnsToJzodSchema } from "../1_core/postgres/ansiColumnsToJzodSchema";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
-import { resolvePathOnObject, safeResolvePathOnObject } from "../tools";
+import { findEntityFromUuid, resolvePathOnObject, safeResolvePathOnObject } from "../tools";
 import { cleanLevel } from "./constants";
 import { getEntityInstancesIndexNonHook } from "./ReduxDeploymentsStateQueryExecutor";
 import { getInstancePrimaryKeyValue } from "../1_core/EntityPrimaryKey";
-import { findEntityFromUuid } from "../1_core/versioning/applicationVersioning.js";
 // import { transformer_spreadSheetToJzodSchema } from "./Transformer_Spreadsheet";
 import {
   mlsTransformers,

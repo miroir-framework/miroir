@@ -5,13 +5,6 @@
  * EntityVersion migration. No runtime resolution or dual-write yet.
  */
 
-
-import type { Uuid } from "../../0_interfaces/1_core/EntityVersion.js";
-import type {
-  Entity,
-  MetaModel,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-
 /**
  * Definition-bearing fields that live on EntityVersion today and must
  * eventually be carried by the authoritative live Entity (#217 §1.1).
@@ -54,21 +47,5 @@ export function assertVersioningEnabledImmutable(
       `SelfApplication.versioningEnabled is immutable (was ${String(before.versioningEnabled)}, attempted ${String(after.versioningEnabled)})`,
     );
   }
-}
-
-/**
- * Finds an entity in a model by its UUID.
- * @param model - The model to search.
- * @param entityUuid - The UUID of the entity to find.
- * @returns The entity, or undefined if the entity is not found.
- */
-export function findEntityFromUuid(
-  model: MetaModel,
-  entityUuid: Uuid,
-): Entity | undefined {
-  if (!model || !entityUuid) {
-    return undefined;
-  }
-  return model.entities?.find((candidate) => candidate.uuid === entityUuid);
 }
 

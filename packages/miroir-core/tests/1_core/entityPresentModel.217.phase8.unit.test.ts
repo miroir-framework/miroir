@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
-import { findEntityFromUuid } from "../../src/1_core/entityPresentModel.js";
+import { findEntityFromUuid } from "../../src/tools.js";
 
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

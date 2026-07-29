@@ -12,8 +12,8 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 
 import { entityEntity } from "miroir-test-app_deployment-miroir";
 
-import { findEntityFromUuid } from "../1_core/versioning/applicationVersioning";
 import { applyMlSchemaColumnChanges } from "../1_core/modelEntityDualWrite";
+import { findEntityFromUuid } from "../tools";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 

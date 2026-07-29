@@ -766,7 +766,6 @@ export {
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE,
   assertVersioningEnabledImmutable,
-  findEntityFromUuid,
 } from "./1_core/versioning/applicationVersioning.js";
 export type {
   EntityPresentModelDefinitionField,
@@ -1357,6 +1356,7 @@ export {
   safeResolvePathOnObject,
   setValueAtPath,
   stringTuple,
+  findEntityFromUuid,
   type AbsolutePath as ResultAccessPath,
 } from "./tools";
 
