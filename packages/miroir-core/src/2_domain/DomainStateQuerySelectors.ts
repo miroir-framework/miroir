@@ -1,6 +1,6 @@
 import { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 
-import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntity } from "miroir-test-app_deployment-miroir";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 import {

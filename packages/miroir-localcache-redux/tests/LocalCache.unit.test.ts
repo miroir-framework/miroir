@@ -9,7 +9,7 @@ import {
 
 import { LocalCache } from "../src/4_services/LocalCache";
 
-import { entityDefinitionEntityDefinition, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityDefinitionEntityDefinition, entityEntityVersion } from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 // ################################################################################################
 //  TEST CONSTANTS
@@ -316,7 +316,7 @@ function bootstrapLocalCacheWithCustomPK(
   // how registerEntityAdapterFromDefinition indexes the adapter: by (deploymentUuid, section, entityUuid)).
   const mockEntityDefinitionInstance: EntityInstance = {
     uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    parentUuid: entityEntityDefinition.uuid,
+    parentUuid: entityEntityVersion.uuid,
     entityUuid,
     idAttribute,
     name: "TestEntityWithCustomPK",
@@ -329,7 +329,7 @@ function bootstrapLocalCacheWithCustomPK(
       application: testApplicationUuid,
       objects: [
         {
-          parentUuid: entityEntityDefinition.uuid,
+          parentUuid: entityEntityVersion.uuid,
           applicationSection,
           instances: [mockEntityDefinitionInstance],
         } as EntityInstanceCollection,
@@ -520,7 +520,7 @@ describe("LocalCache.unit.test - custom idAttribute", () => {
     // Step 1: Load EntityVersion under "model" section (real-app lifecycle)
     const mockEntityDefinitionInstance: EntityInstance = {
       uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-      parentUuid: entityEntityDefinition.uuid,
+      parentUuid: entityEntityVersion.uuid,
       entityUuid: testEntityUuidWithCustomPK,
       idAttribute: "name",
       name: "TestEntityCrossSection",
@@ -533,7 +533,7 @@ describe("LocalCache.unit.test - custom idAttribute", () => {
         application: testApplicationUuid,
         objects: [
           {
-            parentUuid: entityEntityDefinition.uuid,
+            parentUuid: entityEntityVersion.uuid,
             applicationSection: "model",
             instances: [mockEntityDefinitionInstance],
           } as EntityInstanceCollection,

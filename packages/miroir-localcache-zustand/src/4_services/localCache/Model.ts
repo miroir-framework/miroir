@@ -28,7 +28,7 @@ import {
   defaultMiroirMetaModel,
   entityEndpointVersion,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityJzodSchema,
   entityMenu,
   entityQueryVersion,
@@ -61,7 +61,7 @@ export function currentModel(
       deploymentUuid == deployment_Miroir.uuid ? "data" : "model";
     const entityVersionSection = getApplicationSection(
       application,
-      entityEntityDefinition.uuid
+      entityEntityVersion.uuid
     );
     const applicationVersions =
       state.current[
@@ -81,7 +81,7 @@ export function currentModel(
       ];
     const entityDefinitions =
       state.current[
-        getReduxDeploymentsStateIndex(deploymentUuid, entityVersionSection, entityEntityDefinition.uuid)
+        getReduxDeploymentsStateIndex(deploymentUuid, entityVersionSection, entityEntityVersion.uuid)
       ];
     const jzodSchemas =
       state.current[

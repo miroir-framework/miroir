@@ -21,7 +21,7 @@ import {
   entityDefinitionApplicationEvolutionTraceEvent,
   entityEndpointVersion,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityJzodSchema,
   entityMenu,
   entityMiroirTest,
@@ -114,7 +114,7 @@ export async function modelInitialize(
 
     // bootstrap MetaClass EntityVersion
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
-      entityEntityDefinition as Entity,
+      entityEntityVersion as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -132,7 +132,7 @@ export async function modelInitialize(
     }
     result = await persistenceStoreController.upsertInstance(
       "model",
-      entityEntityDefinition as EntityInstance,
+      entityEntityVersion as EntityInstance,
     );
     if (result instanceof Action2Error) {
       return result;
@@ -460,7 +460,7 @@ export async function modelInitialize(
 
     // bootstrap MetaClass EntityVersion
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
-      entityEntityDefinition as Entity,
+      entityEntityVersion as Entity,
     );
     if (result instanceof Action2Error) {
       return result;

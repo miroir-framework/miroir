@@ -62,7 +62,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entityEntityVersion } from "miroir-test-app_deployment-miroir";
 let domainController: DomainControllerInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -528,7 +528,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           async () =>
             await localAppPersistenceStoreController.getInstances(
               "model",
-              entityEntityDefinition.uuid,
+              entityEntityVersion.uuid,
             ),
           (a, p) => (a as any).returnedDomainElement.instances as EntityVersion[],
           "entityDefinitions", // name to give to result
@@ -583,7 +583,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           async () =>
             await localAppPersistenceStoreController.getInstances(
               "model",
-              entityEntityDefinition.uuid,
+              entityEntityVersion.uuid,
             ),
           (a) =>
             ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
@@ -628,7 +628,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
     };
 
     // const entities: MetaEntity[] = (await localAppPersistenceStoreController.getInstances("model",entityEntity.uuid))?.instances as MetaEntity[];
-    // const entityDefinitions: EntityVersion[] = (await localAppPersistenceStoreController.getInstances("model",entityEntityDefinition.uuid))?.instances as EntityVersion[];
+    // const entityDefinitions: EntityVersion[] = (await localAppPersistenceStoreController.getInstances("model",entityEntityVersion.uuid))?.instances as EntityVersion[];
     await chainVitestSteps(
       //   "setup_createEntity",
       //   {},
@@ -657,7 +657,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           async () =>
             await localAppPersistenceStoreController.getInstances(
               "model",
-              entityEntityDefinition.uuid,
+              entityEntityVersion.uuid,
             ),
           (a, p) => (a as any).returnedDomainElement.instances as EntityVersion[],
           "entityDefinitions", // name to give to result
@@ -752,7 +752,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   //         async () =>
   //           await localAppPersistenceStoreController.getInstances(
   //             "model",
-  //             entityEntityDefinition.uuid,
+  //             entityEntityVersion.uuid,
   //           ),
   //         (a, p) => (a as any).returnedDomainElement.instances as EntityVersion[],
   //         "entityDefinitions", // name to give to result
@@ -782,7 +782,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   //         async () =>
   //           await localAppPersistenceStoreController.getInstances(
   //             "model",
-  //             entityEntityDefinition.uuid,
+  //             entityEntityVersion.uuid,
   //           ),
   //         (a) =>
   //           ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
@@ -818,7 +818,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
   //   //   chainVitestSteps(
   //   //     "getEntityDefinitionInstancesToCheckResult",
   //   //     v,
-  //   //     async () => await localAppPersistenceStoreController.getInstances("model", entityEntityDefinition.uuid),
+  //   //     async () => await localAppPersistenceStoreController.getInstances("model", entityEntityVersion.uuid),
   //   //     (a) => ignorePostgresExtraAttributes((a as any).returnedDomainElement.instances),
   //   //     undefined, // name to give to result
   //   //     "entityInstanceCollection",

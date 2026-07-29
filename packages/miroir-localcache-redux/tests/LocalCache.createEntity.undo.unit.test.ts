@@ -8,7 +8,7 @@ import {
 } from "miroir-core";
 import {
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
 } from "miroir-test-app_deployment-miroir";
 import {
   entityAuthor,
@@ -62,7 +62,7 @@ describe("LocalCache createEntity undo/redo (Entity-only create)", () => {
     // load/rollback pairs wipe prior deployment collections from `current`.
     bootstrapModelEntityCollections(localCache, [
       entityEntity.uuid,
-      entityEntityDefinition.uuid,
+      entityEntityVersion.uuid,
     ]);
 
     const createAuthor: ModelAction = {

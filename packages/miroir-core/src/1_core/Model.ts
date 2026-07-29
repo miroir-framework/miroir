@@ -1,7 +1,7 @@
 import {
   entityEndpointVersion,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityJzodSchema,
   entityMenu,
   entityMiroirTest,
@@ -276,7 +276,7 @@ export async function extractApplicationModel(
 
     // Extract all entities
     const entities = await extractEntityInstances(storeController, "model", entityEntity.uuid, "entities");
-    const entityDefinitions = await extractEntityInstances(storeController, "model", entityEntityDefinition.uuid, "entity definitions");
+    const entityDefinitions = await extractEntityInstances(storeController, "model", entityEntityVersion.uuid, "entity definitions");
     const endpoints = await extractEntityInstances(storeController, "model", entityEndpointVersion.uuid, "endpoints");
     const menus = await extractEntityInstances(storeController, "model", entityMenu.uuid, "menus");
     const reports = await extractEntityInstances(storeController, "model", entityReport.uuid, "reports");

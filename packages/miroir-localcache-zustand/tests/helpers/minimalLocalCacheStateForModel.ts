@@ -6,7 +6,7 @@ import {
 import {
   entityEndpointVersion,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityJzodSchema,
   entityMenu,
   entityQueryVersion,
@@ -29,7 +29,7 @@ export function buildMinimalLocalCacheStateForDeployment(
     [modelSection, entitySelfApplicationVersion.uuid],
     [modelSection, entityEndpointVersion.uuid],
     ["model", entityEntity.uuid],
-    ["model", entityEntityDefinition.uuid],
+    ["model", entityEntityVersion.uuid],
     [modelSection, entityJzodSchema.uuid],
     [modelSection, entityMenu.uuid],
     [modelSection, entityReport.uuid],

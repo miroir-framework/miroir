@@ -265,8 +265,8 @@ export const ImportEntityFromSpreadsheetRunner: React.FC<CreateEntityToolProps> 
   //                 entityDefinitions: {
   //                   label: "entityDefinitions of the deployment",
   //                   extractorOrCombinerType: "extractorInstancesByEntity",
-  //                   parentUuid: entityEntityDefinition.uuid,
-  //                   parentName: entityEntityDefinition.name,
+  //                   parentUuid: entityEntityVersion.uuid,
+  //                   parentName: entityEntityVersion.name,
   //                   applicationSection: "model",
   //                   filter: {
   //                     attributeName: "entityUuid",

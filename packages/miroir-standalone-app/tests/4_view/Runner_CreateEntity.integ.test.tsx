@@ -37,7 +37,7 @@ import {
 } from "miroir-test-app_deployment-library";
 import {
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityMenu,
   entityReport,
   runnerCreateEntity,
@@ -329,8 +329,8 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
                 entityDefs: {
                   extractorOrCombinerType: "extractorInstancesByEntity",
                   applicationSection: "model",
-                  parentName: entityEntityDefinition.name,
-                  parentUuid: entityEntityDefinition.uuid,
+                  parentName: entityEntityVersion.name,
+                  parentUuid: entityEntityVersion.uuid,
                 },
               },
             },

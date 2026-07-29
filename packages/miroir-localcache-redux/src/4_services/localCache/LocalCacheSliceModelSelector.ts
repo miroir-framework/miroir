@@ -25,7 +25,7 @@ import {
 import {
   entityEndpointVersion,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityJzodSchema,
   entityMenu,
   entityQueryVersion,
@@ -120,7 +120,7 @@ const selectEntityDefinitionsFromReduxState = createSelector(
       //   ? params.definition.deploymentUuid ?? "undefined"
       //   : "undefined",
       "model",
-      entityEntityDefinition.uuid
+      entityEntityVersion.uuid
     );
   }
 );

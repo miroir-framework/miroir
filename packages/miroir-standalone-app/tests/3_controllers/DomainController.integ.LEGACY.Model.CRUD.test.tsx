@@ -866,8 +866,8 @@
 //         //                   entityDefinitions: {
 //         //                     extractorOrCombinerType: "extractorInstancesByEntity",
 //         //                     applicationSection: "model",
-//         //                     parentName: entityEntityDefinition.name,
-//         //                     parentUuid: entityEntityDefinition.uuid,
+//         //                     parentName: entityEntityVersion.name,
+//         //                     parentUuid: entityEntityVersion.uuid,
 //         //                     orderBy: {
 //         //                       attributeName: "name",
 //         //                       direction: "ASC",
@@ -901,8 +901,8 @@
 //         //                   entityDefinitions: {
 //         //                     extractorOrCombinerType: "extractorInstancesByEntity",
 //         //                     applicationSection: "model",
-//         //                     parentName: entityEntityDefinition.name,
-//         //                     parentUuid: entityEntityDefinition.uuid,
+//         //                     parentName: entityEntityVersion.name,
+//         //                     parentUuid: entityEntityVersion.uuid,
 //         //                     orderBy: {
 //         //                       attributeName: "name",
 //         //                       direction: "ASC",
@@ -1093,8 +1093,8 @@
 //         //                   entityDefinitions: {
 //         //                     extractorOrCombinerType: "extractorByPrimaryKey",
 //         //                     applicationSection: "model",
-//         //                     parentName: entityEntityDefinition.name,
-//         //                     parentUuid: entityEntityDefinition.uuid,
+//         //                     parentName: entityEntityVersion.name,
+//         //                     parentUuid: entityEntityVersion.uuid,
 //         //                     instanceUuid: entityDefinitionPublisher.uuid,
 //         //                     orderBy: {
 //         //                       attributeName: "name",
@@ -1613,8 +1613,8 @@
 //         // //                   entityDefinitions: {
 //         // //                     extractorOrCombinerType: "extractorInstancesByEntity",
 //         // //                     applicationSection: "model",
-//         // //                     parentName: entityEntityDefinition.name,
-//         // //                     parentUuid: entityEntityDefinition.uuid,
+//         // //                     parentName: entityEntityVersion.name,
+//         // //                     parentUuid: entityEntityVersion.uuid,
 //         // //                     orderBy: {
 //         // //                       attributeName: "name",
 //         // //                       direction: "ASC",
@@ -1648,8 +1648,8 @@
 //         // //                   entityDefinitions: {
 //         // //                     extractorOrCombinerType: "extractorInstancesByEntity",
 //         // //                     applicationSection: "model",
-//         // //                     parentName: entityEntityDefinition.name,
-//         // //                     parentUuid: entityEntityDefinition.uuid,
+//         // //                     parentName: entityEntityVersion.name,
+//         // //                     parentUuid: entityEntityVersion.uuid,
 //         // //                     orderBy: {
 //         // //                       attributeName: "name",
 //         // //                       direction: "ASC",

@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntityVersion } from "miroir-test-app_deployment-miroir";
 import type { Entity } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { MIROIR_ENTITY_VERSION_INSTANCE_UUIDS_SLICE0 } from "./222.slice0-inventory.js";
 
@@ -64,7 +64,7 @@ describe("222 Phase 1 — assets layout", () => {
     const selfEv = JSON.parse(readFileSync(selfPath, "utf8"));
     expect(selfEv.uuid).toBe(SELF_EV);
     expect(selfEv.mlSchema).toBeDefined();
-    expect((entityEntityDefinition as Entity).mlSchema).toBeDefined();
+    expect((entityEntityVersion as Entity).mlSchema).toBeDefined();
   });
 
   it("Miroir bundled model parent UUIDs exclude EntityVersion", () => {

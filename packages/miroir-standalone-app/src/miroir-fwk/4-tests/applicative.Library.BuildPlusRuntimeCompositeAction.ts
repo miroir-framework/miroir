@@ -19,7 +19,7 @@ import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 import {
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityMenu,
   entityReport,
 } from "miroir-test-app_deployment-miroir";
@@ -150,7 +150,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
         testDeploymentUuid,
         testSelfApplicationUuid,
         entityEntity,
-        entityEntityDefinition,
+        entityEntityVersion,
         entityMenu,
         entityReport,
         testAdminConfigurationDeploymentUuid: testDeploymentUuid, // TODO: remove this
@@ -239,7 +239,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                 //     parentUuid: {
                 //       transformerType: "getFromParameters",
                 //       interpolation: "build",
-                //       referencePath: ["entityEntityDefinition", "uuid"],
+                //       referencePath: ["entityEntityVersion", "uuid"],
                 //     },
                 //     entityUuid: {
                 //       transformerType: "getFromParameters",
@@ -537,12 +537,12 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                               parentName: {
                                 transformerType: "getFromParameters",
                                 interpolation: "build",
-                                referencePath: ["entityEntityDefinition", "name"],
+                                referencePath: ["entityEntityVersion", "name"],
                               } as any,
                               parentUuid: {
                                 transformerType: "getFromParameters",
                                 interpolation: "build",
-                                referencePath: ["entityEntityDefinition", "uuid"],
+                                referencePath: ["entityEntityVersion", "uuid"],
                               } as any,
                               orderBy: {
                                 attributeName: "name",
@@ -951,7 +951,7 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
                         parentUuid: {
                           transformerType: "getFromParameters",
                           interpolation: "build",
-                          referencePath: ["entityEntityDefinition", "uuid"],
+                          referencePath: ["entityEntityVersion", "uuid"],
                         },
                         entityUuid: {
                           transformerType: "getFromParameters",

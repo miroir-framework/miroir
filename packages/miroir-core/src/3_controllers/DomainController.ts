@@ -20,7 +20,7 @@ import {
 import {
   entityEndpointVersion,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityMenu,
   entityQueryVersion,
   entityReport,
@@ -538,7 +538,7 @@ export class DomainController implements DomainControllerInterface {
           // empty map is fine — present-model uses Entity.cache.
           const entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {};
           const entityDefinitionFetchIndex = modelEntitiesToFetch.findIndex(
-            (e) => e.uuid === entityEntityDefinition.uuid,
+            (e) => e.uuid === entityEntityVersion.uuid,
           );
           if (entityDefinitionFetchIndex >= 0) {
             const entityDefinitionCollection = modelInstances[entityDefinitionFetchIndex];

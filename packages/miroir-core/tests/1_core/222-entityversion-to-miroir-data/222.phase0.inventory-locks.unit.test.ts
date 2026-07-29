@@ -13,7 +13,7 @@ import {
 } from "../../../src/1_core/Model.js";
 import {
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
 } from "miroir-test-app_deployment-miroir";
 import type { Entity } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
@@ -52,8 +52,8 @@ describe("222 Phase 0 — UUID inventory & non-goals (post–Slice 1)", () => {
     const selfEvPath = join(ENTITY_VERSION_DATA_DIR, `${SELF_ENTITY_VERSION_UUID}.json`);
     const selfEv = JSON.parse(readFileSync(selfEvPath, "utf8"));
     expect(selfEv.uuid).toBe(SELF_ENTITY_VERSION_UUID);
-    expect(selfEv.entityUuid).toBe(entityEntityDefinition.uuid);
-    expect(selfEv.parentUuid).toBe(entityEntityDefinition.uuid);
+    expect(selfEv.entityUuid).toBe(entityEntityVersion.uuid);
+    expect(selfEv.parentUuid).toBe(entityEntityVersion.uuid);
   });
 
   it("Commit is not in metaMetaModelEntities (P12 baseline)", () => {

@@ -65,7 +65,7 @@ import { emptyObject } from "../../src/miroir-fwk/4_view/routes/TransformerBuild
 import {
   defaultMiroirMetaModel,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityJzodSchema,
   entityMenu,
   entityReport,
@@ -632,8 +632,8 @@ export function getWrapperLoadingLocalCache(
           instances: defaultMiroirMetaModel.entities
         },
         {
-          parentName: entityEntityDefinition.name,
-          parentUuid: entityEntityDefinition.uuid,
+          parentName: entityEntityVersion.name,
+          parentUuid: entityEntityVersion.uuid,
           applicationSection: "model",
           instances: defaultMiroirMetaModel.entityVersions
         },
@@ -705,8 +705,8 @@ export function getWrapperLoadingLocalCache(
           ]
         },
         {
-          parentName: entityEntityDefinition.name,
-          parentUuid: entityEntityDefinition.uuid,
+          parentName: entityEntityVersion.name,
+          parentUuid: entityEntityVersion.uuid,
           applicationSection: "model",
           instances: [
             entityDefinitionBook as EntityInstance,

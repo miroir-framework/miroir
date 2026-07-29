@@ -9,7 +9,7 @@ import {
 } from "../../../src/1_core/Model.js";
 import {
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityVersionEntityVersion,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
@@ -22,13 +22,13 @@ describe("222 Phase 1 — Miroir load contracts (Entity bootstrap; EV in data)",
   it("miroir model bootstrap set is Entity MetaModel peers without EntityVersion", () => {
     const uuids = miroirModelEntities.map((e: Entity) => e.uuid);
     expect(uuids).toContain(entityEntity.uuid);
-    expect(uuids).not.toContain(entityEntityDefinition.uuid);
+    expect(uuids).not.toContain(entityEntityVersion.uuid);
   });
 
   it("Entity present-model mlSchema does not require EntityVersion section model", () => {
     expect((entityEntity as Entity).mlSchema).toBeDefined();
     expect(getApplicationSection(MIROIR_APP_UUID, entityEntity.uuid as string)).toBe("model");
-    expect(getApplicationSection(MIROIR_APP_UUID, entityEntityDefinition.uuid as string)).toBe(
+    expect(getApplicationSection(MIROIR_APP_UUID, entityEntityVersion.uuid as string)).toBe(
       "data",
     );
   });
@@ -39,7 +39,7 @@ describe("222 Phase 1 — Miroir load contracts (Entity bootstrap; EV in data)",
     );
     expect(entityVersionEntityVersion.uuid).toBe("bdd7ad43-f0fc-4716-90c1-87454c40dd95");
     expect((entityVersionEntityVersion as { parentUuid?: string }).parentUuid).toBe(
-      entityEntityDefinition.uuid,
+      entityEntityVersion.uuid,
     );
   });
 });

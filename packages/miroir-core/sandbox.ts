@@ -66,7 +66,7 @@
 //                   parentUuid: {
 //                     transformerType: "getFromParameters",
 //                     interpolation: "build",
-//                     referencePath: ["entityEntityDefinition", "uuid"],
+//                     referencePath: ["entityEntityVersion", "uuid"],
 //                   },
 //                   entityUuid: {
 //                     transformerType: "getFromParameters",
@@ -386,12 +386,12 @@
 //                           parentName: {
 //                             transformerType: "getFromParameters",
 //                             interpolation: "build",
-//                             referencePath: ["entityEntityDefinition", "name"],
+//                             referencePath: ["entityEntityVersion", "name"],
 //                           },
 //                           parentUuid: {
 //                             transformerType: "getFromParameters",
 //                             interpolation: "build",
-//                             referencePath: ["entityEntityDefinition", "uuid"],
+//                             referencePath: ["entityEntityVersion", "uuid"],
 //                           },
 //                           orderBy: {
 //                             attributeName: "name",
@@ -784,7 +784,7 @@
 //                     parentUuid: {
 //                       transformerType: "getFromParameters",
 //                       interpolation: "build",
-//                       referencePath: ["entityEntityDefinition", "uuid"],
+//                       referencePath: ["entityEntityVersion", "uuid"],
 //                     },
 //                     entityUuid: {
 //                       transformerType: "getFromParameters",

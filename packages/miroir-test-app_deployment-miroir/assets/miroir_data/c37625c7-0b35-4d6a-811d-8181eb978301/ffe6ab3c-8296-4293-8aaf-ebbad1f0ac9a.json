@@ -68,7 +68,7 @@
                   "parentUuid": {
                     "transformerType": "getFromParameters",
                     "referencePath": [
-                      "entityEntityDefinition",
+                      "entityEntityVersion",
                       "uuid"
                     ]
                   },
@@ -338,14 +338,14 @@
                           "parentName": {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "entityEntityDefinition",
+                              "entityEntityVersion",
                               "name"
                             ]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "entityEntityDefinition",
+                              "entityEntityVersion",
                               "uuid"
                             ]
                           },
@@ -759,7 +759,7 @@
                     "parentUuid": {
                       "transformerType": "getFromParameters",
                       "referencePath": [
-                        "entityEntityDefinition",
+                        "entityEntityVersion",
                         "uuid"
                       ]
                     },

@@ -9,7 +9,7 @@ import {
   type EntityVersion
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
-import { entityEntity, entityReport, entityEntityDefinition, entityMenu } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entityReport, entityEntityVersion, entityMenu } from "miroir-test-app_deployment-miroir";
 
 import { MetaEntity, type Uuid } from "../../src/0_interfaces/1_core/EntityVersion";
 import { resolveTestCompositeActionTemplate, resolveTestCompositeActionTemplateSuite } from "../../src/2_domain/TestSuiteTemplate";
@@ -75,7 +75,7 @@ describe('resolveTestCompositeActionTemplate', () => {
               parentUuid: {
                 transformerType: "mustacheStringTemplate",
                 interpolation: "build",
-                definition: "{{entityEntityDefinition.uuid}}",
+                definition: "{{entityEntityVersion.uuid}}",
               },
               entityUuid: {
                 transformerType: "mustacheStringTemplate",
@@ -164,7 +164,7 @@ describe('resolveTestCompositeActionTemplate', () => {
         adminConfigurationDeploymentParis,
         //TODO: tag params, should be passed as context instead?
         // mlSchema,
-        entityEntityDefinition,
+        entityEntityVersion,
         entityReport,
         createEntity_newEntity: newEntity,
         entityMenu,

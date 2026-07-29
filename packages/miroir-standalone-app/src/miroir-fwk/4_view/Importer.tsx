@@ -311,7 +311,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     adminConfigurationDeploymentParis,
   //     //TODO: tag params, should be passed as context instead?
   //     mlSchema,
-  //     entityEntityDefinition,
+  //     entityEntityVersion,
   //     entityReport,
   //     createEntity_newEntity: newEntity,
   //     entityMenu,
@@ -384,7 +384,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //   //       parentName: "EntityVersion",
   //   //       parentUuid: {
   //   //         transformerType: "mustacheStringTemplate",
-  //   //         definition: "{{entityEntityDefinition.uuid}}",
+  //   //         definition: "{{entityEntityVersion.uuid}}",
   //   //       },
   //   //       entityUuid: {
   //   //         transformerType: "mustacheStringTemplate",
@@ -848,7 +848,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //     // mlSchema,
   //     // splittedEntityDefinition, // !!!
   //     entityEntity,
-  //     entityEntityDefinition,
+  //     entityEntityVersion,
   //     entityReport,
   //     // newEntity,
       
@@ -910,7 +910,7 @@ export const Importer:FC<ImporterCoreProps> = (props:ImporterCoreProps) => {
   //         parentName: "EntityVersion",
   //         parentUuid: {
   //           transformerType: "mustacheStringTemplate",
-  //           definition: "{{entityEntityDefinition.uuid}}",
+  //           definition: "{{entityEntityVersion.uuid}}",
   //         },
   //         entityUuid: {
   //           transformerType: "mustacheStringTemplate",

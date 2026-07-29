@@ -65,7 +65,7 @@ import {
   entityApplicationEvolutionTraceEvent,
   entityEndpointVersion,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityMenu,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
@@ -506,7 +506,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         entityApplicationEvolutionTraceEvent,
         entityEndpointVersion,
         entityEntity,
-        entityEntityDefinition,
+        entityEntityVersion,
         entityMenu,
       ].sort((a, b) => a.name.localeCompare(b.name)),
     );

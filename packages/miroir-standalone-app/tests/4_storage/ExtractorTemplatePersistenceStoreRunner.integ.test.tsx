@@ -76,7 +76,7 @@ import {
   entityApplicationEvolutionTraceEvent,
   entityEndpointVersion,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityMenu,
 } from "miroir-test-app_deployment-miroir";
 let domainController: DomainControllerInterface;
@@ -465,7 +465,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
         entityApplicationEvolutionTraceEvent,
         entityEndpointVersion,
         entityEntity,
-        entityEntityDefinition,
+        entityEntityVersion,
         entityMenu,
       ].sort((a, b) => a.name.localeCompare(b.name))
       // [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))

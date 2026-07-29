@@ -64,7 +64,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                   "parentName": "EntityVersion",
                   "parentUuid": {
                     "transformerType": "getFromParameters",
-                    "referencePath": ["entityEntityDefinition", "uuid"]
+                    "referencePath": ["entityEntityVersion", "uuid"]
                   },
                   "entityUuid": {
                     "transformerType": "getFromParameters",
@@ -328,11 +328,11 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                           "applicationSection": "model",
                           "parentName": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityEntityDefinition", "name"]
+                            "referencePath": ["entityEntityVersion", "name"]
                           },
                           "parentUuid": {
                             "transformerType": "getFromParameters",
-                            "referencePath": ["entityEntityDefinition", "uuid"]
+                            "referencePath": ["entityEntityVersion", "uuid"]
                           },
                           "orderBy": {
                             "attributeName": "name",
@@ -701,7 +701,7 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
                     "parentName": "EntityVersion",
                     "parentUuid": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["entityEntityDefinition", "uuid"]
+                      "referencePath": ["entityEntityVersion", "uuid"]
                     },
                     "entityUuid": {
                       "transformerType": "getFromParameters",

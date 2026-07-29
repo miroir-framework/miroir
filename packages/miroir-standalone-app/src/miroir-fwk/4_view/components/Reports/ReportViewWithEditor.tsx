@@ -284,7 +284,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           ));
         }
 
-        // if (applicationSection === "model" && currentInstance.parentUuid === entityEntityDefinition.uuid) {
+        // if (applicationSection === "model" && currentInstance.parentUuid === entityEntityVersion.uuid) {
         //   throw new Error("Editing entity definitions in the model section is not allowed.");
         // }
         

@@ -7,7 +7,7 @@ import {
 import {
   entityEndpointVersion,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityJzodSchema,
   entityMenu,
   entityQueryVersion,
@@ -29,7 +29,7 @@ export function buildMinimalLocalCacheStateForDeployment(
     [modelSection, entitySelfApplicationVersion.uuid],
     [modelSection, entityEndpointVersion.uuid],
     ["model", entityEntity.uuid],
-    ["model", entityEntityDefinition.uuid],
+    ["model", entityEntityVersion.uuid],
     [modelSection, entityJzodSchema.uuid],
     [modelSection, entityMenu.uuid],
     [modelSection, entityReport.uuid],
@@ -137,7 +137,7 @@ export function mutateEntityDefinitionInLocalCacheState(
   const index = getReduxDeploymentsStateIndex(
     deploymentUuid,
     "model",
-    entityEntityDefinition.uuid,
+    entityEntityVersion.uuid,
   );
   const collection = slice.current[index];
   const existing = collection?.entities?.[entityVersionUuid];

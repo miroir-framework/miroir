@@ -12,14 +12,14 @@ import {
 } from "../../../src/1_core/Model.js";
 import {
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import type { Entity } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 const ENTITY_UUID = entityEntity.uuid as string;
-const ENTITY_VERSION_ENTITY_UUID = entityEntityDefinition.uuid as string;
+const ENTITY_VERSION_ENTITY_UUID = entityEntityVersion.uuid as string;
 const MIROIR_APP_UUID = selfApplicationMiroir.uuid as string;
 const LIBRARY_APP_UUID = selfApplicationLibrary.uuid as string;
 
@@ -42,8 +42,8 @@ describe("222 Phase 0 — section matrix (post–Slice 1 locks)", () => {
   });
 
   it("EntityVersion Entity asset conceptLevel is Model", () => {
-    expect((entityEntityDefinition as Entity).conceptLevel).toBe("Model");
-    expect((entityEntityDefinition as Entity).uuid).toBe(ENTITY_VERSION_ENTITY_UUID);
-    expect((entityEntityDefinition as Entity).name).toBe("EntityVersion");
+    expect((entityEntityVersion as Entity).conceptLevel).toBe("Model");
+    expect((entityEntityVersion as Entity).uuid).toBe(ENTITY_VERSION_ENTITY_UUID);
+    expect((entityEntityVersion as Entity).name).toBe("EntityVersion");
   });
 });

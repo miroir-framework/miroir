@@ -20,7 +20,7 @@ import {
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
-import { entityEntity, entityEntityDefinition } from "miroir-test-app_deployment-miroir";
+import { entityEntity, entityEntityVersion } from "miroir-test-app_deployment-miroir";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
@@ -341,7 +341,7 @@ function getCachePolicyCarrierFromReduxDeploymentsState(
   const entityDefinitionIndex = getReduxDeploymentsStateIndex(
     deploymentUuid,
     "model",
-    entityEntityDefinition.uuid,
+    entityEntityVersion.uuid,
   );
   const definitions = deploymentEntityState[entityDefinitionIndex]?.entities;
   if (!definitions) {

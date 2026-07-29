@@ -98,7 +98,7 @@ describe("217 Phase 11 — live EntityVersion authority grep gate", () => {
     expect(redux).toContain("register PK from Entity only");
     expect(zustand).toContain("register PK from Entity only");
     expect(redux).not.toMatch(
-      /parentUuid === entityEntityDefinition\.uuid[\s\S]{0,120}registerEntityAdapterFromPresentModelSource/,
+      /parentUuid === entityEntityVersion\.uuid[\s\S]{0,120}registerEntityAdapterFromPresentModelSource/,
     );
   });
 

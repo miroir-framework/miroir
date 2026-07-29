@@ -135,7 +135,7 @@ const entityInstances = import.meta.glob(
   { eager: true },
 ) as Record<string, { default: any }>;
 
-// Model: EntityDefinitions (parentUuid = entityEntityDefinition = 54b9c72f)
+// Model: EntityDefinitions (parentUuid = entityEntityVersion = 54b9c72f)
 const entityDefinitionInstances = import.meta.glob(
   "../assets/designer_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/*.json",
   { eager: true },

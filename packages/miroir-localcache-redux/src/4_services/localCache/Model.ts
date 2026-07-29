@@ -32,7 +32,7 @@ import {
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   defaultMiroirMetaModel, entityDefinitionTheme, entityEndpointVersion, entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityJzodSchema,
   entityMenu, entityMiroirTest, entityQueryVersion,
   entityReport,
@@ -70,7 +70,7 @@ export function currentModel(
       deploymentUuid == deployment_Miroir.uuid ? "data" : "model";
     const entityVersionSection = getApplicationSection(
       application,
-      entityEntityDefinition.uuid
+      entityEntityVersion.uuid
     );
     const applicationVersions =
       state.current[
@@ -90,7 +90,7 @@ export function currentModel(
       ];
     const entityDefinitions =
       state.current[
-        getReduxDeploymentsStateIndex(deploymentUuid, entityVersionSection, entityEntityDefinition.uuid)
+        getReduxDeploymentsStateIndex(deploymentUuid, entityVersionSection, entityEntityVersion.uuid)
       ];
     const jzodSchemas =
       state.current[

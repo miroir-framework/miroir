@@ -17,7 +17,7 @@ import {
   entityDefinitionMenu,
   entityDefinitionSelfApplication,
   entityEntity,
-  entityEntityDefinition,
+  entityEntityVersion,
   entityMenu,
   entitySelfApplication,
   selfApplicationMiroir,
@@ -60,7 +60,7 @@ describe("§11.1 / Phase 4 — codegen source Entity.mlSchema ≡ EntityVersion.
     },
     {
       label: "EntityVersion",
-      entity: entityEntityDefinition as Entity,
+      entity: entityEntityVersion as Entity,
       entityVersion: entityDefinitionEntityDefinition as EntityVersion,
     },
     {

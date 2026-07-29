@@ -89,7 +89,7 @@ const MIROIR_MODEL_PARENT_UUIDS = new Set([
  */
 export const ADMIN_MODEL_PARENT_UUIDS_ARRAY: string[] = [
   "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", // entityEntity
-  "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd", // entityEntityDefinition
+  "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd", // entityEntityVersion
   "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916", // entityReport (8 admin reports)
   "dde4c883-ae6d-47c3-b6df-26bc6e3c1842", // entityMenu  (AdminMenu)
   "a659d350-dd97-4da9-91de-524fa01745dc", // entitySelfApplication
