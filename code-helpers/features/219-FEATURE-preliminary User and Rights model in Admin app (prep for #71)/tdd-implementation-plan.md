@@ -63,7 +63,7 @@ Legend:
 | 3 | Admin list/detail reporting | ✅ DONE | `… -- miroirUserRights.219.phase3` |
 | 4 | Behavior non-change safety net | ✅ DONE | `… -- miroirUserRights.219.phase4` + DomainController.integ |
 | 5 | Multi-store / bundled load checks | ✅ DONE | DomainController.integ + sandbox bundled test |
-| 6 | Final acceptance gate | ⬜ TODO | full phase command set below |
+| 6 | Final acceptance gate | ✅ DONE | full phase command set below |
 
 ---
 
@@ -482,7 +482,7 @@ Expect: filesystem path + modelValidation + phase5 classification green.
 
 ---
 
-## Phase 6 — Final acceptance gate
+## Phase 6 — Final acceptance gate  ✅ DONE
 
 ### Goal
 
@@ -511,15 +511,17 @@ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificL
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Model.CRUD
 ```
 
+**Acceptance run (2026-07-27):** build OK; `miroirUserRights` 23/23; `modelValidation` 45/45; DomainController Data+Model integ exit 0.
+
 ### Checklist
 
-- [ ] `MiroirUser` / `MiroirRight` exist and pass `modelValidation` (C1).
-- [ ] Seeds cover application + deployment scopes (`targetType` + `targetUuid`) (C3).
-- [ ] Rights use `miroirUser` only; `capability` free-string (C2, C4).
-- [ ] List/detail reports + menu wiring present; no custom CRUD forms (C5).
-- [ ] Direct assets; no migration Action package (C6).
-- [ ] Phase 4 scan: no enforcement hooks.
-- [ ] Commands above green.
+- [x] `MiroirUser` / `MiroirRight` exist and pass `modelValidation` (C1).
+- [x] Seeds cover application + deployment scopes (`targetType` + `targetUuid`) (C3).
+- [x] Rights use `miroirUser` only; `capability` free-string (C2, C4).
+- [x] List/detail reports + menu wiring present; no custom CRUD forms (C5).
+- [x] Direct assets; no migration Action package (C6).
+- [x] Phase 4 scan: no enforcement hooks.
+- [x] Commands above green.
 
 ---
 
