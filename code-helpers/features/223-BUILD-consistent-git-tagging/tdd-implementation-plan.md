@@ -26,7 +26,7 @@ Related:
 | 0 | Lock defaults, module layout, test harness | ✅ DONE | pytest harness green |
 | 1 | SemVer validate + pre-release classify | ✅ DONE | `semver_util.py` |
 | 2 | Allow-list + bump `version` only (preserve deps) | ✅ DONE | `allowlist.py`, `bump.py` |
-| 3 | Runtime cycle abort / dev cycle allow (D6) | ⬜ TODO | |
+| 3 | Runtime cycle abort / dev cycle allow (D6) | ✅ DONE | `dep_graph.py`, cycle gate in `plan.py` |
 | 4 | Dry-run plan (no filesystem/git mutation) | ⬜ TODO | |
 | 5 | Apply bump to a real directory tree | ⬜ TODO | |
 | 6 | Git commit + annotated tag (temp repo) | ⬜ TODO | |
@@ -275,8 +275,8 @@ Match real B+ **names** from analysis D2.
 
 ### Done when
 
-- [ ] Present-repo policy encoded: N1/N2 abort, OK1 allow
-- [ ] No need to mirror every historical Lerna ECYCLE path — only the D6 definitions
+- [x] Present-repo policy encoded: N1/N2 abort, OK1 allow
+- [x] No need to mirror every historical Lerna ECYCLE path — only the D6 definitions
 
 ---
 
