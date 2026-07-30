@@ -74,6 +74,7 @@ import { AppStackIntegrationTestSession } from '../helpers/IntegrationTestSessio
 
 import {
   entityApplicationEvolutionTraceEvent,
+  entityApplicationVersionCrossEntityVersion,
   entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
@@ -463,6 +464,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       undefined,
       [
         entityApplicationEvolutionTraceEvent,
+        entityApplicationVersionCrossEntityVersion,
         entityEndpointVersion,
         entityEntity,
         entityEntityVersion,

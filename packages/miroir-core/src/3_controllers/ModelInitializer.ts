@@ -34,6 +34,8 @@ import {
   entityTheme,
   entityApplicationEvolutionTrace,
   entityApplicationEvolutionTraceEvent,
+  entityApplicationVersionCrossEntityVersion,
+  entityDefinitionApplicationVersionCrossEntityDefinition,
   instanceEndpointV1,
   materialStoredMiroirTheme,
   menuDefaultMiroir,
@@ -293,6 +295,26 @@ export async function modelInitialize(
       "created entity ApplicationEvolutionTraceEvent",
       persistenceStoreController.getEntityUuids(),
     );
+
+    // bootstrap ApplicationVersionCrossEntityVersion (#216)
+    result = await persistenceStoreController.createEntity(
+      entityApplicationVersionCrossEntityVersion as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(
+      logHeader,
+      "created entity ApplicationVersionCrossEntityVersion",
+      persistenceStoreController.getEntityUuids(),
+    );
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityDefinitionApplicationVersionCrossEntityDefinition as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
     // await persistenceStoreController.upsertInstance('data', reportEndpointList as EntityInstance);
     result = await persistenceStoreController.upsertInstance(
@@ -630,6 +652,14 @@ export async function modelInitialize(
     }
     result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
       entityApplicationEvolutionTraceEvent as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+
+    // #216 — Cross Entity storage (metaModelEntities refresh / freeze ensure-create)
+    result = await persistenceStoreController.createModelStorageSpaceForInstancesOfEntity(
+      entityApplicationVersionCrossEntityVersion as Entity,
     );
     if (result instanceof Action2Error) {
       return result;

@@ -63,6 +63,7 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 import {
   defaultMiroirMetaModel,
   entityApplicationEvolutionTraceEvent,
+  entityApplicationVersionCrossEntityVersion,
   entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
@@ -504,6 +505,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
       undefined,
       [
         entityApplicationEvolutionTraceEvent,
+        entityApplicationVersionCrossEntityVersion,
         entityEndpointVersion,
         entityEntity,
         entityEntityVersion,
