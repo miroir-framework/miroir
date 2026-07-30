@@ -15,6 +15,7 @@ import {
   miroirTest_evolutionTraceWP1,
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
+  miroirTest_runner_freeze_application_version,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 
@@ -28,12 +29,14 @@ import {
   DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY,
   EVOLUTION_TRACE_WP1_SUITE_KEY,
+  domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
   libraryPlayfieldSeedForActionSuite,
   type LibraryPlayfieldSeed,
 } from "../../../tests/helpers/libraryPlayfieldSeeds.js";
 
 export const RUNNER_CREATE_ENTITY_SUITE_KEY = "runner_create_entity";
 export const RUNNER_DROP_ENTITY_SUITE_KEY = "runner_drop_entity";
+export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY = "runner_freeze_application_version";
 
 export type UiIntegrationRunnerSuiteEntry = {
   suiteDefinition: MiroirTestSuite;
@@ -87,6 +90,12 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
       skipRunTargetPlayfieldReset: true,
       defaultApplicationName: "testApplication_CreateEntity",
+    },
+    [RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY]: {
+      suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
+        .definition as MiroirTestSuite,
+      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      libraryPlayfieldSeed: domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
     },
     [DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY]: actionSuiteEntry(
       DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,

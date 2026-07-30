@@ -5,6 +5,7 @@ export {
   extractRelationships,
   buildEntityUuidToNameMap,
   buildEntityClickLinks,
+  buildEntityVersionClickLinks,
   coerceDiagramCarriersToEntities,
   jzodTypeToUml,
   sanitiseMermaidId,
@@ -14,6 +15,7 @@ export {
   type RelationshipInfo,
   type JzodAttributeEntry,
   type MermaidDiagramEntity,
+  type DiagramCarrierMode,
 } from "./2_domain/entitiesToMermaidClassDiagram.js";
 
 export {

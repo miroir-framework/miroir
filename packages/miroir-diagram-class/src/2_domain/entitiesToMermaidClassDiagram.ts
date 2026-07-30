@@ -188,21 +188,51 @@ export function buildEntityClickLinks(
 }
 
 /**
- * Coerce legacy report-transformer output (EntityVersion-shaped carriers with
- * `entityUuid` + `mlSchema`) into Mermaid Entity carriers.
- * Prefer passing live `Entity[]` with `mlSchema` instead.
+ * Diagram carrier mode:
+ * - Entity: class identity / click UUID = Entity.uuid (present model)
+ * - EntityVersion: class identity = entityUuid (for FK matching); click UUID =
+ *   EntityVersion.uuid (historical snapshot details report)
+ */
+export type DiagramCarrierMode = "Entity" | "EntityVersion";
+
+/**
+ * Coerce Entity / EntityVersion-shaped carriers (must have `mlSchema`) into
+ * Mermaid Entity carriers.
+ *
+ * EntityVersion mode uses `entityUuid` as the class identity so FK
+ * `targetEntity` edges resolve; pair with {@link buildEntityVersionClickLinks}
+ * so clicks still navigate to the EntityVersion instance.
  */
 export function coerceDiagramCarriersToEntities(
   carriers: Array<Record<string, any>>,
+  mode: DiagramCarrierMode = "Entity",
 ): MermaidDiagramEntity[] {
   return carriers
     .filter((carrier) => !!carrier?.mlSchema && !!(carrier.uuid ?? carrier.entityUuid))
-    .map((carrier) => ({
-      uuid: String(carrier.uuid ?? carrier.entityUuid),
-      name: String(carrier.name ?? ""),
-      mlSchema: carrier.mlSchema,
-      ...(carrier.description !== undefined ? { description: String(carrier.description) } : {}),
-    }));
+    .map((carrier) => {
+      const classUuid =
+        mode === "EntityVersion"
+          ? String(carrier.entityUuid ?? carrier.uuid)
+          : String(carrier.uuid ?? carrier.entityUuid);
+      return {
+        uuid: classUuid,
+        name: String(carrier.name ?? ""),
+        mlSchema: carrier.mlSchema,
+        ...(carrier.description !== undefined
+          ? { description: String(carrier.description) }
+          : {}),
+      };
+    });
+}
+
+/**
+ * Map sanitised class name → EntityVersion instance uuid for
+ * EntityVersionDetails navigation.
+ */
+export function buildEntityVersionClickLinks(
+  entityVersions: Array<{ uuid: string; name: string }>,
+): Record<string, string> {
+  return buildEntityClickLinks(entityVersions);
 }
 
 /**

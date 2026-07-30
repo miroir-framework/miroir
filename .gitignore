@@ -6,6 +6,7 @@ node_modules*/
 node_modules/.cache*/
 **__pycache__**
 tmp*/
+**__pycache__**
 graphify-out*/
 packages/graphify-out*/
 packages/miroir-cli/dist*/

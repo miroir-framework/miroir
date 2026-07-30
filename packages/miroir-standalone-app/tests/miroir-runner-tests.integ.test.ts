@@ -35,17 +35,23 @@ import { createStandaloneAppIntegrationOrchestrator } from "./helpers/Standalone
 import {
   libraryPlayfieldSeedForActionSuite,
   isDomainControllerActionCrudSuite,
+  domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
 } from "./helpers/libraryPlayfieldSeeds.js";
 
 const pageLabel = "miroir-runner-tests.integ";
 
 const RUNNER_CREATE_ENTITY_SUITE_KEY = "runner_create_entity";
 const RUNNER_DROP_ENTITY_SUITE_KEY = "runner_drop_entity";
+const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY = "runner_freeze_application_version";
 
 function isMiroirEntityRunnerSuite(suiteKey: string): boolean {
   return (
     suiteKey === RUNNER_CREATE_ENTITY_SUITE_KEY || suiteKey === RUNNER_DROP_ENTITY_SUITE_KEY
   );
+}
+
+function isFreezeApplicationVersionRunnerSuite(suiteKey: string): boolean {
+  return suiteKey === RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY;
 }
 
 let log: LoggerInterface = console as unknown as LoggerInterface;
@@ -98,6 +104,15 @@ function sessionOptionsForSuite(suiteKey: string, suite: MiroirTestSuite) {
       suiteTestParams: suite.testParams,
       runnerRegistry: {},
       libraryPlayfieldSeed: playfieldSeed,
+    };
+  }
+  if (isFreezeApplicationVersionRunnerSuite(suiteKey)) {
+    return {
+      pageLabel,
+      runTarget,
+      suiteTestParams: suite.testParams,
+      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      libraryPlayfieldSeed: domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
     };
   }
   if (isMiroirEntityRunnerSuite(suiteKey)) {

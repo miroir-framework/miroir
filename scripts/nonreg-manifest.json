@@ -475,6 +475,26 @@
       ]
     },
     {
+      "id": "integ-runner-runner_freeze_application_version",
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 runner_freeze_application_version (runnerTest, filesystem)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "emulatedServer-filesystem",
+        "--suites",
+        "runner_freeze_application_version",
+        "--mode",
+        "integ"
+      ]
+    },
+    {
       "id": "appstack-DomainController.integ",
       "tier": "default",
       "title": "App-stack \u2014 DomainController.integ (all; Data.CRUD deprecated but kept green)",

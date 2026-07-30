@@ -94,16 +94,17 @@ describe("221 Phase 2 — rename present-model view vocabulary", () => {
     expect(root).toMatch(/deploymentUuidToReportsEntitiesMapping/);
   });
 
-  it("diagram Report section / Mermaid use Entity entities prop (mlSchema)", () => {
+  it("diagram Report section / Mermaid use Entity carriers (mlSchema); EntityVersion is opt-in mode", () => {
     const section = readFileSync(
       join(VIEW_ROOT, "components/Reports/ModelDiagramReportSectionView.tsx"),
       "utf8",
     );
-    expect(section).toMatch(/\bentities:\s*Entity\[\]/);
-    expect(section).toMatch(/entities=\{entitiesWithSchema\}/);
+    // Present-model default remains Entity; EntityVersion mode is opt-in for versioning diagrams.
+    expect(section).toMatch(/mode\?:\s*DiagramCarrierMode/);
+    expect(section).toMatch(/coerceDiagramCarriersToEntities/);
+    expect(section).toMatch(/buildEntityVersionClickLinks/);
     expect(section).not.toMatch(/\bdiagramCarriers\b/);
-    expect(section).not.toMatch(/coerceDiagramCarriersToEntities/);
-    expect(section).not.toMatch(/\bEntityVersion\b/);
+    expect(section).not.toMatch(/entities=\{entitiesWithSchema\}/);
 
     const editor = readFileSync(
       join(VIEW_ROOT, "components/Reports/ReportSectionViewWithEditor.tsx"),
@@ -111,6 +112,8 @@ describe("221 Phase 2 — rename present-model view vocabulary", () => {
     );
     expect(editor).toMatch(/modelDiagramEntities:\s*Entity\[\]/);
     expect(editor).toMatch(/entities=\{modelDiagramEntities\}/);
+    expect(editor).toMatch(/mode=\{modelDiagramMode\}/);
+    expect(editor).toMatch(/reportEntityVersionDetails/);
     expect(editor).not.toMatch(/\bdiagramCarriers\b/);
     expect(editor).not.toMatch(/modelDiagramCarriers/);
 

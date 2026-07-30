@@ -23,7 +23,8 @@ import { applyPerformanceDisplayGate } from '../../tools/performanceDisplayGate.
 import { applyLocalCacheMonitorGate } from '../../tools/localCacheMonitorGate.js';
 import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
-import { reportMiroirRunners } from 'miroir-test-app_deployment-miroir';
+import { reportMiroirRunners, reportVersioning } from 'miroir-test-app_deployment-miroir';
+import { resolveAppBarReportLinkApplication } from './appBarReportNavigation.js';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -333,6 +334,16 @@ export function AppBar(props:AppBarProps) {
       icon: "directions_run"
     },
     {
+      miroirMenuItemType: "miroirMenuReportLink",
+      label: "Versioning",
+      // Miroir scaffolding report — open under Miroir data section; in-report
+      // inputReportSection steers which application's versions are listed (#225).
+      section: "data",
+      selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+      reportUuid: reportVersioning.uuid,
+      icon: "commit",
+    },
+    {
       miroirMenuItemType: "miroirMenuPageLink",
       label: "events",
       targetRoot: "events",
@@ -451,18 +462,24 @@ export function AppBar(props:AppBarProps) {
                     return (
                        <Button
                          key={item.label}
-                         onClick={() =>
+                         onClick={() => {
+                           const applicationUuid = resolveAppBarReportLinkApplication({
+                             reportUuid: item.reportUuid ?? "",
+                             itemSelfApplication: item.selfApplication,
+                             versioningReportUuid: reportVersioning.uuid,
+                             applicationSelector: context.toolsPageState?.applicationSelector,
+                           });
                            navigate(
                              reportUrl(
-                               item.selfApplication,
+                               applicationUuid,
                                (context.applicationDeploymentMap ??
-                                 defaultSelfApplicationDeploymentMap)[item.selfApplication] ?? "",
+                                 defaultSelfApplicationDeploymentMap)[applicationUuid] ?? "",
                                item.section,
                                item.reportUuid ?? "",
                                item.instanceUuid ?? "xxxxxx",
                              )
-                           )
-                         }
+                           );
+                         }}
                          sx={{
                            my: 2,
                            color: miroirTheme.currentTheme.components.appBar.textColor,

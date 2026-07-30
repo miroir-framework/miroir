@@ -45,6 +45,7 @@ import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCle
 import { useRunner } from "../Reports/ReportHooks.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
 import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
+import { resolveRunnerDefinitionApplication } from "./runnerDefinitionApplication.js";
 
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -64,13 +65,18 @@ export function StoredRunnerView(props: {
 }) {
   const applicationDeploymentMap = props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
 
-  const runnerDeploymentUuid: Uuid = applicationDeploymentMap[props.applicationUuid];
+  // Runner instances are stored on Miroir; callers may still pass a page application
+  // (e.g. Versioning for Library). Resolve storage application for definition lookup.
+  const runnerDefinitionApplicationUuid: Uuid = resolveRunnerDefinitionApplication(
+    props.applicationUuid
+  );
+  const runnerDeploymentUuid: Uuid = applicationDeploymentMap[runnerDefinitionApplicationUuid];
   const context = useMiroirContextService();
   const currentModelEnvironment: MiroirModelEnvironment =
-    useCurrentModelEnvironment(props.applicationUuid??selfApplicationMiroir.uuid, applicationDeploymentMap); // TODO: WRONG!!
+    useCurrentModelEnvironment(runnerDefinitionApplicationUuid, applicationDeploymentMap);
 
   const runnerDefinitionFromLocalCache: Domain2QueryReturnType<Runner | undefined> = useRunner(
-    props.applicationUuid,
+    runnerDefinitionApplicationUuid,
     applicationDeploymentMap,
     props.runnerUuid
   );
@@ -92,7 +98,7 @@ export function StoredRunnerView(props: {
   // ##############################################################################################
   // ##############################################################################################
   const libraryAppModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
-    props.applicationUuid,
+    runnerDefinitionApplicationUuid,
     applicationDeploymentMap
   );
 
@@ -328,6 +334,7 @@ export function StoredRunnerView(props: {
             label: `${runnerName} application & deployment`,
             data: {
               applicationUuid: props.applicationUuid,
+              runnerDefinitionApplicationUuid,
               applicationDeploymentMap:
                 props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
               runnerDeploymentUuid,
@@ -371,7 +378,7 @@ export function StoredRunnerView(props: {
           {runnerDefinitionFromLocalCache.definition.runnerType == "customRunner" ? (
             <RunnerView
               runnerName={runnerName}
-              application={props.applicationUuid}
+              application={runnerDefinitionApplicationUuid}
               applicationDeploymentMap={
                 props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
               }
@@ -393,7 +400,7 @@ export function StoredRunnerView(props: {
             <>
               <RunnerView
                 runnerName={runnerName}
-                application={props.applicationUuid}
+                application={runnerDefinitionApplicationUuid}
                 applicationDeploymentMap={
                   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
                 }

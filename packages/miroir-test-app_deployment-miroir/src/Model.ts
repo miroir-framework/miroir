@@ -103,6 +103,7 @@ import {
   miroirTest_resolveSchemaReferenceInContext,
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
+  miroirTest_runner_freeze_application_version,
   miroirTest_selectUnionBranchFromDiscriminator,
   miroirTest_tools,
   miroirTest_unfoldSchemaOnce,
@@ -115,6 +116,8 @@ import {
   reportApplicationList,
   reportApplicationModelBranchList,
   reportApplicationVersionList,
+  reportApplicationVersionDetails,
+  reportVersioning,
   reportEndpointVersionList,
   reportEntityList,
   reportEntityVersionList,
@@ -125,11 +128,13 @@ import {
   reportRunnerList,
   runnerDropApplication,
   runnerDropEntity,
+  runnerFreezeApplicationVersion,
   selfApplicationMiroir,
   selfApplicationVersionInitialMiroirVersion,
   storeManagementEndpoint,
   testEndpointVersionV1,
-  undoRedoEndpointVersionV1
+  undoRedoEndpointVersionV1,
+  entityCommit
 } from "..";
 
 export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, string> = {
@@ -157,6 +162,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityEntity as Entity,
     entityEntityVersion as Entity,
     //
+    entityCommit as Entity,
     entityEndpointVersion as Entity,
     entityJzodSchema as Entity, // null
     entityMenu as Entity,
@@ -215,6 +221,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     reportApplicationList as Report,
     reportApplicationModelBranchList as Report,
     reportApplicationVersionList as Report,
+    reportApplicationVersionDetails as Report,
+    reportVersioning as Report,
     reportApplicationEvolutionTraceList as Report,
     reportApplicationEvolutionTraceHistory as Report,
     reportApplicationEvolutionTraceDetails as Report,
@@ -227,7 +235,11 @@ export const defaultMiroirMetaModel: MetaModel = {
     reportRunnerList as Report,
     reportRunnerDetails as Report,
   ],
-  runners: [runnerDropApplication as Runner, runnerDropEntity as any as Runner],
+  runners: [
+    runnerDropApplication as Runner,
+    runnerDropEntity as any as Runner,
+    runnerFreezeApplicationVersion as any as Runner,
+  ],
   applicationVersionCrossEntityVersion: [
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,
@@ -282,6 +294,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     miroirTest_evolutionTraceWP1 as MiroirTestDefinition,
     miroirTest_runner_create_entity as MiroirTestDefinition,
     miroirTest_runner_drop_entity as MiroirTestDefinition,
+    miroirTest_runner_freeze_application_version as MiroirTestDefinition,
     // miroirTest_mustache as MiroirTestDefinition
   ],
   themes: [

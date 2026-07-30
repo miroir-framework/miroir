@@ -40,6 +40,7 @@ import {
 import { cleanLevel } from '../../constants.js';
 
 import { entityRunner, entityTransformerDefinition } from "miroir-test-app_deployment-miroir";
+import { resolveRunnerDefinitionApplication } from "../Runners/runnerDefinitionApplication.js";
 // Entity constants
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -397,8 +398,10 @@ export function useRunner(
   applicationDeploymentMap: ApplicationDeploymentMap,
   runnerUuid: Uuid | undefined
 ): Domain2QueryReturnType<Runner | undefined>  {
+  // Runner instances live in Miroir data; page `application` may be Library (Versioning).
+  const runnerStorageApplication = resolveRunnerDefinitionApplication(application);
   const runnerApplicationSection = getApplicationSection(
-    application,
+    runnerStorageApplication,
     entityRunner.uuid
   );
 
@@ -406,10 +409,10 @@ export function useRunner(
     | BoxedQueryWithExtractorCombinerTransformer
     | undefined = useMemo(
     () =>
-      application && application !== noValue.uuid
+      runnerStorageApplication && runnerStorageApplication !== noValue.uuid
         ? ({
             queryType: "boxedQueryWithExtractorCombinerTransformer",
-            application,
+            application: runnerStorageApplication,
             extractors: {
               runners: {
                 label: "runners of the given application",
@@ -426,7 +429,7 @@ export function useRunner(
             application: "",
             extractors: {},
           },
-    [application, runnerApplicationSection, runnerUuid]
+    [runnerStorageApplication, runnerApplicationSection, runnerUuid]
   );
 
   log.info("useRunner runnerQuery", runnerQuery);
