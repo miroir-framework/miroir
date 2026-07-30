@@ -73,6 +73,30 @@ describe("216 Phase 3 — resolvePreviousApplicationVersion", () => {
     ).toBeUndefined();
   });
 
+  it("ignores Initial and commit TODO placeholders even when freezeProduced omitted (#216 Phase 7)", () => {
+    const initial = sav("11111111-1111-4111-8111-111111111111", "Initial");
+    const commitTodo = sav(
+      "12121212-1212-4121-8121-121212121212",
+      "TODO: No label was given to this version.",
+    );
+    expect(
+      resolvePreviousApplicationVersion([initial, commitTodo], {
+        selfApplicationUuid: APP_UUID,
+        branchUuid: BRANCH_UUID,
+      }),
+    ).toBeUndefined();
+  });
+
+  it("prefers real freeze tip over coexisting Initial placeholder", () => {
+    const initial = sav("11111111-1111-4111-8111-111111111111", "Initial");
+    const v1 = sav("22222222-2222-4222-8222-222222222222", "V1");
+    const tip = resolvePreviousApplicationVersion([initial, v1], {
+      selfApplicationUuid: APP_UUID,
+      branchUuid: BRANCH_UUID,
+    });
+    expect(tip?.uuid).toBe(v1.uuid);
+  });
+
   it("returns the single freeze-produced SAV as tip", () => {
     const v1 = sav("22222222-2222-4222-8222-222222222222", "V1");
     const tip = resolvePreviousApplicationVersion([v1], {

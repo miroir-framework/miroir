@@ -1,5 +1,5 @@
 /**
- * #216 Phase 6 — freezeApplicationVersion persistence (filesystem emulated server).
+ * #216 — freezeApplicationVersion persistence + Phase 8 tracer (filesystem emulated server).
  *
  * Run:
  * ```bash
@@ -34,6 +34,7 @@ import {
   MiroirLoggerFactory,
   resetAndinitializeDeploymentCompositeAction,
   resolveFreezeEntityVersionApplicationSection,
+  resolvePreviousApplicationVersion,
   StoreUnitConfiguration,
   testUtils_deleteApplicationDeployment,
   testUtils_resetApplicationDeployment,
@@ -499,6 +500,197 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
         libraryModelEnv(),
       );
       expect(result instanceof Action2Error).toBe(true);
+    },
+    globalTimeOut,
+  );
+
+  it(
+    "commit without freeze does not create a freeze tip or Cross Entity snapshot set (#216 Phase 7)",
+    async () => {
+      await refreshLibraryCache();
+      const before = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const freezeCrossBefore = before.applicationVersionCrossEntityVersion.filter((c) =>
+        before.applicationVersions.some(
+          (v) =>
+            v.uuid === c.applicationVersion &&
+            v.name !== "Initial" &&
+            !v.name.startsWith("TODO:"),
+        ),
+      ).length;
+      const freezeSavBefore = before.applicationVersions.filter(
+        (v) => v.name !== "Initial" && !v.name.startsWith("TODO:"),
+      ).length;
+
+      // Transactional model edit + commit (commit must not publish Application Versions).
+      const liveBook = before.entities.find((e) => e.uuid === entityBook.uuid)!;
+      expect(
+        (
+          await domainController.handleAction(
+            {
+              actionType: "updateInstance",
+              endpoint: INSTANCE_ENDPOINT,
+              payload: {
+                application: testApplicationUuid,
+                applicationSection: "model",
+                objects: [{ ...liveBook, description: "commit-hygiene" } as EntityInstance],
+              },
+            },
+            applicationDeploymentMap,
+            libraryModelEnv(),
+          )
+        ) instanceof Action2Error,
+      ).toBe(false);
+
+      const commitResult = await domainController.handleAction(
+        {
+          actionType: "commit",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: testApplicationUuid },
+        },
+        applicationDeploymentMap,
+        libraryModelEnv(),
+      );
+      expect(commitResult instanceof Action2Error, JSON.stringify(commitResult)).toBe(false);
+
+      await refreshLibraryCache();
+      const after = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const freezeSavAfter = after.applicationVersions.filter(
+        (v) => v.name !== "Initial" && !v.name.startsWith("TODO:"),
+      ).length;
+      const freezeCrossAfter = after.applicationVersionCrossEntityVersion.filter((c) =>
+        after.applicationVersions.some(
+          (v) =>
+            v.uuid === c.applicationVersion &&
+            v.name !== "Initial" &&
+            !v.name.startsWith("TODO:"),
+        ),
+      ).length;
+
+      expect(freezeSavAfter).toBe(freezeSavBefore);
+      expect(freezeCrossAfter).toBe(freezeCrossBefore);
+
+      const freezeProduced = after.applicationVersions
+        .filter((sav) =>
+          after.applicationVersionCrossEntityVersion.some(
+            (c) => c.applicationVersion === sav.uuid,
+          ),
+        )
+        .map((sav) => sav.uuid);
+      expect(
+        resolvePreviousApplicationVersion(after.applicationVersions, {
+          selfApplicationUuid: testApplicationUuid,
+          branchUuid: BRANCH_UUID,
+          freezeProducedVersionUuids: freezeProduced,
+        }),
+      ).toBeUndefined();
+    },
+    globalTimeOut,
+  );
+});
+
+describe.sequential("216 Phase 8 — end-to-end freeze tracer bullet", () => {
+  it(
+    "V1 freeze → mutate Entity attribute → V2 freeze with previousVersion + alterEntityAttribute",
+    async () => {
+      await refreshLibraryCache();
+      let model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+
+      // 1. Baseline: no freeze tip (placeholders ignored)
+      const freezeProducedBefore = model.applicationVersions
+        .filter((sav) =>
+          model.applicationVersionCrossEntityVersion.some(
+            (c) => c.applicationVersion === sav.uuid,
+          ),
+        )
+        .map((sav) => sav.uuid);
+      expect(
+        resolvePreviousApplicationVersion(model.applicationVersions, {
+          selfApplicationUuid: testApplicationUuid,
+          branchUuid: BRANCH_UUID,
+          freezeProducedVersionUuids: freezeProducedBefore,
+        }),
+      ).toBeUndefined();
+
+      // 2. Freeze V1 — empty migration, Entity snapshots
+      expect((await freezeLibrary("Tracer-V1")) instanceof Action2Error).toBe(false);
+      await refreshLibraryCache();
+      model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const v1 = model.applicationVersions.find((v) => v.name === "Tracer-V1")!;
+      expect(v1).toBeDefined();
+      expect(v1.previousVersion).toBeUndefined();
+      expect(v1.modelCUDMigration ?? []).toEqual([]);
+      const v1Crosses = model.applicationVersionCrossEntityVersion.filter(
+        (c) => c.applicationVersion === v1.uuid,
+      );
+      expect(v1Crosses.length).toBeGreaterThan(0);
+      const liveBookBefore = model.entities.find((e) => e.uuid === entityBook.uuid)!;
+      const bookEvV1 = model.entityVersions.find((ev) =>
+        v1Crosses.some(
+          (c) => c.entityVersion === ev.uuid && ev.entityUuid === entityBook.uuid,
+        ),
+      )!;
+      expect(bookEvV1).toBeDefined();
+      expect(presentModelSlice(bookEvV1)).toEqual(presentModelSlice(liveBookBefore));
+
+      // 3. Mutate live Entity — add attribute only (no rename)
+      const updatedBook: Entity = {
+        ...liveBookBefore,
+        mlSchema: {
+          ...liveBookBefore.mlSchema!,
+          definition: {
+            ...(liveBookBefore.mlSchema as any).definition,
+            tracerPhase8Attr: { type: "string" },
+          },
+        },
+      };
+      expect(
+        (
+          await domainController.handleAction(
+            {
+              actionType: "updateInstance",
+              endpoint: INSTANCE_ENDPOINT,
+              payload: {
+                application: testApplicationUuid,
+                applicationSection: "model",
+                objects: [updatedBook as EntityInstance],
+              },
+            },
+            applicationDeploymentMap,
+            libraryModelEnv(),
+          )
+        ) instanceof Action2Error,
+      ).toBe(false);
+
+      // 4. Freeze V2 — links V1; diff has alterEntityAttribute for Book only
+      expect((await freezeLibrary("Tracer-V2")) instanceof Action2Error).toBe(false);
+      await refreshLibraryCache();
+      model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const v2 = model.applicationVersions.find((v) => v.name === "Tracer-V2")!;
+      expect(v2).toBeDefined();
+      expect(v2.previousVersion).toBe(v1.uuid);
+
+      const migration = (v2.modelCUDMigration ?? []) as Array<{
+        kind: string;
+        entityUuid?: string;
+        differingFields?: string[];
+      }>;
+      expect(migration.length).toBeGreaterThan(0);
+      const bookAlter = migration.find(
+        (c) => c.kind === "alterEntityAttribute" && c.entityUuid === entityBook.uuid,
+      );
+      expect(bookAlter, `expected alterEntityAttribute for Book; got ${JSON.stringify(migration)}`).toBeDefined();
+      expect(bookAlter!.differingFields).toContain("mlSchema");
+      expect(migration.some((c) => c.kind === "renameEntity")).toBe(false);
+      expect(migration.some((c) => c.kind === "createEntity" || c.kind === "dropEntity")).toBe(false);
+
+      // 5. Live model remains Entity-authoritative (not read through Cross / V1 EV)
+      const liveBookAfter = model.entities.find((e) => e.uuid === entityBook.uuid)!;
+      expect((liveBookAfter.mlSchema as any).definition.tracerPhase8Attr).toEqual({
+        type: "string",
+      });
+      const frozenBookEvV1 = model.entityVersions.find((e) => e.uuid === bookEvV1.uuid)!;
+      expect((frozenBookEvV1.mlSchema as any).definition.tracerPhase8Attr).toBeUndefined();
+      expect(presentModelSlice(liveBookAfter)).not.toEqual(presentModelSlice(frozenBookEvV1));
     },
     globalTimeOut,
   );

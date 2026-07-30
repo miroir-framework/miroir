@@ -101,15 +101,22 @@ Semantics:
 
 ## 3. Problem specific to WP2
 
-**Blocked by #216:** WP2 assumes each application has a live `current` Application Version with a complete `ApplicationVersionCrossEntityDefinition` index, and can freeze that tip into numbered versions. Without #216, migration nodes have no reliable squashed-model anchor.
+**Blocked by #216 (resolved for Option A):** WP2 assumed each application has
+reliable frozen Application Version **nodes** (squashed Entity snapshots via Cross)
+and some form of **edge** between consecutive versions. [#216](https://github.com/miroir-framework/miroir/issues/216)
+now delivers those nodes via user-triggered `freezeApplicationVersion`, plus
+**derived** edges in `SelfApplicationVersion.modelCUDMigration` (Option A Entity-set
+diff — not a faithful Action tape). See **§5.5 #216 handoff**.
 
-Issue #9 requires deferred, ordered application of migrations. WP2 must turn the WP1 timeline into a **replayable migration chain**:
+Issue #9 still requires deferred, ordered application of migrations. WP2 must turn
+the WP1 timeline (and/or #216 derived edges) into a **replayable migration chain**:
 
-1. Persist on each relevant `ApplicationEvolutionTraceEvent` (or a closely linked artefact) the **resolved Action** that produced the event.
+1. Persist on each relevant `ApplicationEvolutionTraceEvent` (or a closely linked artefact) the **resolved Action** that produced the event — *or* consume/refine `modelCUDMigration` candidates from freeze until Option B lands.
 2. Define how **Application Versions** bound **segments** of that Action tape (fromVersion → toVersion).
 3. Provide an **apply / replay** path: given a deployment at version *Vs* and a target *Vt*, resolve the ordered events between them and execute their Actions against the deployment’s model store.
 4. Keep the **squashed model** at each version consistent with what replay would produce (deployable baseline + incremental edges).
 5. Remain compatible with WP1 display/compaction and with #15 definition-version anchoring.
+
 
 Out of WP2 (separate issue): associating a **data migration** with a given model Action (e.g. non-null attribute requires a defaulting script). See §8.
 
@@ -195,7 +202,7 @@ Each `SelfApplicationVersion` should mean:
 
 1. **Squashed model index** — via `ApplicationVersionCrossEntityDefinition` (and possibly stronger FK to EntityDefinition UUID; today’s field naming/`entity` target should be audited in implementation — see §9).
 2. **Incoming migration edge** — the ordered events with `toVersionUuid = this version` (or equivalently `fromVersion = previousVersion`).
-3. Optional legacy fields `modelStructureMigration` / `modelCUDMigration` — **do not** use as primary store; either deprecate gradually or populate as derived views of the trace Action tape for compatibility.
+3. Optional legacy fields `modelStructureMigration` / `modelCUDMigration` — after #216, **`modelCUDMigration` holds Option A derived freeze-diff candidates** (primary edge artefact for the Option A path). Faithful Action-tape edges (Option B / §5.1) remain the upgrade target; until then treat `modelCUDMigration` as the starting edge, not as guaranteed-faithful replay.
 
 ### 5.3 Replay executor
 
@@ -207,6 +214,26 @@ A pure-ish planner + DomainController apply path:
 4. Update head version; emit apply status / errors.
 
 Invariant: **replay(AV1, TE1..TEk) ≡ squashed(AV2)** for the model section under test.
+
+### 5.5 #216 handoff (freeze artefacts available now)
+
+[#216](https://github.com/miroir-framework/miroir/issues/216) / TDD plan
+[`../216-FEATURE-application-versions-and-freeze/tdd-implementation-plan.md`](../216-FEATURE-application-versions-and-freeze/tdd-implementation-plan.md)
+ships the first concrete migration graph under **Option A**:
+
+| Role | Artefact after #216 |
+|---|---|
+| **Migration node** | Frozen `SelfApplicationVersion` with complete `ApplicationVersionCrossEntityVersion` → historical `EntityVersion` snapshots (new UUIDs; Entities only) |
+| **Migration edge (derived)** | `SelfApplicationVersion.modelCUDMigration` — candidate list from Entity-set diff vs previous freeze (`createEntity` / `dropEntity` / `renameEntity` / `alterEntityAttribute`) |
+| **Not shipped** | Faithful Action tape / WP1 `replayableAction`; full-model snapshots; auto-freeze on commit |
+
+WP2 should:
+
+1. Treat frozen SAVs as the authoritative **version nodes** for apply/target selection.
+2. Treat `modelCUDMigration` as a **starting edge** for human review or planner input — **not** as guaranteed-faithful replay until Option B (or equivalent Action payloads) lands.
+3. Keep §5.1–5.3 as the upgrade path when exact Action replay becomes mandatory.
+
+Placeholder fixture SAVs (`"Initial"`, commit `"TODO:…"` labels) are **ignored** for freeze tip resolution; first real freeze is *V1* with empty migration.
 
 ### 5.4 Relationship to WP1 compaction
 
@@ -270,7 +297,8 @@ See [#215 — Associate data migrations with model Actions (Entity evolution)](h
 5. **Deferred vs immediate commit**: flag/API shape; default for interactive UI vs server/deploy pipelines.
 6. **Idempotency**: re-applying an already-applied segment — reject, no-op, or detect via head version only?
 7. **Size / retention**: full EntityDefinition bodies inside `createEntity` Actions can be large; any compression or external blob strategy?
-8. **Relation to placeholder `modelStructureMigration` / `modelCUDMigration`**: populate, ignore, or remove in a later cleanup issue?
+8. **Relation to placeholder `modelStructureMigration` / `modelCUDMigration`**: **#216 populates `modelCUDMigration`** with Option A freeze-diff candidates (`modelStructureMigration` left empty in v1). WP2 may refine, replace with Action-tape edges, or keep both as derived views — do not delete until a cleanup issue decides.
+
 
 ---
 

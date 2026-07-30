@@ -269,17 +269,31 @@ export function diffEntityVersionSnapshots(
 }
 
 // ---------------------------------------------------------------------------
-// Phase 3: Linear tip resolution (`previousVersion`)
+// Phase 3 / 7: Linear tip resolution (`previousVersion`)
 // ---------------------------------------------------------------------------
+
+/**
+ * #216 ADR D6 / Phase 7 — SAV names that are never freeze tips.
+ * Fixture `"Initial"` and legacy commit placeholder labels are ignored for tip
+ * resolution even when `freezeProducedVersionUuids` is omitted.
+ */
+export const APPLICATION_VERSION_PLACEHOLDER_NAMES: ReadonlySet<string> = new Set([
+  "Initial",
+  "TODO: No label was given to this version.",
+]);
+
+export function isApplicationVersionPlaceholder(sav: { name: string }): boolean {
+  return APPLICATION_VERSION_PLACEHOLDER_NAMES.has(sav.name);
+}
 
 export type ResolvePreviousApplicationVersionOptions = {
   selfApplicationUuid: string;
   branchUuid: string;
   /**
    * SAV uuids produced by freeze (have Entity-covering Cross rows).
-   * When provided, only those SAVs are eligible as tip — commit placeholders
-   * like `"Initial"` are ignored. When omitted, all SAVs for app+branch are
-   * eligible (useful once Phase 7 hygiene removes placeholders).
+   * When provided, only those SAVs are eligible as tip.
+   * When omitted, all non-placeholder SAVs for app+branch are eligible
+   * (#216 Phase 7: `"Initial"` / commit TODO labels always excluded).
    */
   freezeProducedVersionUuids?: ReadonlySet<string> | readonly string[];
 };
@@ -288,9 +302,9 @@ export type ResolvePreviousApplicationVersionOptions = {
  * Resolve the linear tip (chain head) for an application+branch.
  *
  * Tip = SAV for app+branch that is not referenced as `previousVersion` by any
- * other eligible SAV. When `freezeProducedVersionUuids` is provided, only those
- * SAVs are considered (v1: ignore fixture/commit placeholders until Phase 7).
- * Throws if multiple chain heads remain among freeze-produced SAVs.
+ * other eligible SAV. Placeholders (`"Initial"`, commit TODO labels) are never
+ * tips. When `freezeProducedVersionUuids` is provided, only those SAVs are
+ * considered. Throws if multiple chain heads remain.
  */
 export function resolvePreviousApplicationVersion(
   versions: ApplicationVersion[],
@@ -312,6 +326,7 @@ export function resolvePreviousApplicationVersion(
     (sav) =>
       sav.selfApplication === options.selfApplicationUuid &&
       sav.branch === options.branchUuid &&
+      !isApplicationVersionPlaceholder(sav) &&
       (freezeSet === undefined || freezeSet.has(sav.uuid)),
   );
   if (scoped.length === 0) {

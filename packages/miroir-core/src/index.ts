@@ -771,10 +771,12 @@ export type {
   EntityPresentModelDefinitionField,
 } from "./1_core/versioning/applicationVersioning.js";
 export {
+  APPLICATION_VERSION_PLACEHOLDER_NAMES,
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
   assertApplicationVersioningEnabled,
   buildFreezeApplicationVersionPlan,
   diffEntityVersionSnapshots,
+  isApplicationVersionPlaceholder,
   planFreezeApplicationVersion,
   planFreezeApplicationVersionFromMetaModel,
   resolveFreezeEntityVersionApplicationSection,

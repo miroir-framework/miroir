@@ -17,7 +17,7 @@ Related:
 - Prerequisites (realized): [#217](../217-FEATURE-%20Make%20Entity%20the%20authoritative%20present-model%20definition/analysis.md), [#220](../220-REFACTOR-entitydefinition-tech-debt/), [#221](../221-REFACTOR-view-decouple-entityversion-present-model/), [#222](../222-REFACTOR-entityversion-to-miroir-data/)
 - WP2 consumer: [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md)
 
-**Resume note (2026-07-30):** Phases 0–5 DONE. **Phase 6 DONE** — DomainController persists freeze (SAV+EV+Cross); filesystem integ green. Continue at **Phase 7** (commit / `"Initial"` hygiene).
+**Resume note (2026-07-30):** Phases 0–8 DONE. #216 TDD plan complete (freeze + Option A diff + WP2 handoff).
 
 ---
 
@@ -32,8 +32,8 @@ Related:
 | 4 | Entity-set diff → rough migration evaluation | ✅ DONE | 11/11 |
 | 5 | Wire `freezeApplicationVersion` Action | ✅ DONE | 10/10 |
 | 6 | Persist freeze (filesystem integ) | ✅ DONE | 5/5 |
-| 7 | Commit / `"Initial"` hygiene | ⬜ TODO | — |
-| 8 | End-to-end tracer bullet + WP2 handoff note | ⬜ TODO | — |
+| 7 | Commit / `"Initial"` hygiene | ✅ DONE | tip + commitHygiene unit; integ commit-without-freeze |
+| 8 | End-to-end tracer bullet + WP2 handoff note | ✅ DONE | integ tracer; WP2 §5.5 |
 
 ---
 
@@ -310,63 +310,60 @@ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificL
 
 ---
 
-## Phase 7 — Commit / `"Initial"` hygiene  ⬜ TODO
+## Phase 7 — Commit / `"Initial"` hygiene  ✅ DONE
 
 ### Goal
 
 Commit must not compete with freeze as the version publisher (ADR D6).
 
-### 7.1 RED → GREEN — Commit does not create authoritative freeze snapshots
+### 7.1 RED → GREEN — Commit does not create authoritative freeze snapshots ✅
 
-Characterization → behavior change:
+- DomainController `commit` no longer constructs/persists placeholder SelfApplicationVersion rows (`commitUuid` kept only for WP1 evolution-trace correlation).
+- Tip resolution always excludes `APPLICATION_VERSION_PLACEHOLDER_NAMES` (`"Initial"`, `"TODO: No label was given to this version."`) via `isApplicationVersionPlaceholder`.
+- Unit: `applicationVersionFreeze.commitHygiene.unit.test.ts` + tip suite extensions.
+- Integ: commit without freeze → no freeze tip / no Cross snapshot set.
 
-- Either stop creating placeholder SAV on commit, **or** create it only as non-tip internal marker clearly excluded from `resolvePreviousApplicationVersion`
-- Test: after model Action + commit without freeze, tip resolution for freeze still `undefined` / unchanged; no new complete Cross Entity snapshot set
+### 7.2 Document fixture policy ✅
 
-Test file: extend freeze tip/integ tests + focused DomainController unit if commit path is isolatable.
-
-### 7.2 Document fixture policy
-
-Short note in `./analysis.md` §9 item 3 → resolved: ignore `"Initial"` for tip; optional follow-up migration issue (do not block #216).
+`./analysis.md` §9 item 3 resolved: ignore placeholders for tip; optional follow-up migration does not block #216.
 
 #### Validation
 ```
-npm run testByFile -w miroir-core -- applicationVersionFreeze.tip
-# + integ assertion from 7.1
+npm run testByFile -w miroir-core -- applicationVersionFreeze
+# + filesystem integ applicationVersionFreeze (Phase 7 commit case)
 ```
 
 ---
 
-## Phase 8 — End-to-end tracer bullet + WP2 handoff  ⬜ TODO
+## Phase 8 — End-to-end tracer bullet + WP2 handoff  ✅ DONE
 
 ### Goal
 
 One narrative test locks the accepted product path; WP2 analysis points at freeze artefacts.
 
-### 8.1 RED → GREEN — Tracer bullet
+### 8.1 RED → GREEN — Tracer bullet ✅
 
-Single integ (or MiroirTest) scenario:
+Integ `216 Phase 8 — end-to-end freeze tracer bullet`:
 
-1. Versioned app, baseline (no freeze tip)
-2. Freeze `V1` → snapshot Entities, empty migration
-3. Mutate one Entity (add attribute)
-4. Freeze `V2` → `previousVersion = V1`, diff contains alter (and not unrelated noise)
-5. Assert live model still Entity-authoritative (no read through Cross)
+1. Versioned Library, no freeze tip
+2. Freeze `Tracer-V1` → empty `modelCUDMigration`
+3. Add attribute on live Book Entity
+4. Freeze `Tracer-V2` → `previousVersion = V1`, `alterEntityAttribute` (no rename/create/drop noise)
+5. Live Entity authoritative; V1 historical EV unchanged
 
-### 8.2 Docs
+### 8.2 Docs ✅
 
-- Update WP2 analysis: migration **nodes** = frozen SAVs; **edges** = `modelCUDMigration` from Option A diff (derived, not Action tape).
-- Link this plan from analysis §8.
+- WP2 analysis §5.5: migration **nodes** = frozen SAVs; **edges** = `modelCUDMigration` (Option A derived, not Action tape)
+- `analysis.md` §8 links plan + WP2 §5.5
 
-### 8.3 Progress
+### 8.3 Progress ✅
 
-Mark phases in this file’s progress table as DONE with test counts.
+All phases in this file’s progress table marked DONE.
 
 #### Validation
 ```
 npm run testByFile -w miroir-core -- applicationVersionFreeze
-# + integ tracer from 8.1
-npx tsc --noEmit --skipLibCheck
+# + filesystem integ applicationVersionFreeze (includes Phase 8 tracer)
 ```
 
 ---

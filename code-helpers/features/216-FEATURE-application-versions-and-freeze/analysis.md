@@ -502,7 +502,7 @@ Already enforced on LocalCache SelfApplication `updateInstance`. #216 adds freez
 
 ## 8. Suggested implementation slices
 
-Canonical TDD plan (vertical red→green phases 0–8): [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+Canonical TDD plan (vertical red→green phases 0–8): [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) — **all phases DONE** (Phase 8 tracer + WP2 handoff).
 
 Summary:
 
@@ -510,7 +510,7 @@ Summary:
 2. **Pure domain — linear tip + diff** — `previousVersion` + Option A Entity-set diff → `modelCUDMigration`  
 3. **Wire freeze Action** — `freezeApplicationVersion` on Model Endpoint; persist; reject unversioned  
 4. **Commit / fixture hygiene** — quarantine placeholder SAV-on-commit; ignore `"Initial"` for tip  
-5. **WP2 handoff** — nodes = frozen SAVs; edges = derived diff (not Action tape)
+5. **WP2 handoff** — nodes = frozen SAVs; edges = derived `modelCUDMigration` (not Action tape) — documented in [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md) §5.5
 
 ---
 
@@ -520,7 +520,7 @@ Architectural forks D1–D6 are recorded under **§ADR** (Accepted / Rejected / 
 
 1. Version label format (free string vs semver) — default: free string unique per application.
 2. Exact persistence shape for diff artefact: reuse `modelStructureMigration` / `modelCUDMigration` vs new field/entity.
-3. Fate of existing `"Initial"` / placeholder SAV + partial Cross sets (treat as *V0* vs ignore).
+3. Fate of existing `"Initial"` / placeholder SAV + partial Cross sets: **Resolved (#216 Phase 7)** — ignore for tip resolution (`isApplicationVersionPlaceholder` / `APPLICATION_VERSION_PLACEHOLDER_NAMES`). First real freeze starts *V1* fresh; optional follow-up migration to delete leftover fixture rows does not block #216.
 4. Whether freeze is a ModelAction on the shared model endpoint or a dedicated Endpoint Action.
 5. Default branch UUID resolution when linking `previousVersion` (single linear branch assumption from WP1).
 6. Diff heuristics for rename vs drop+create (v1 may emit drop+create and document the limitation).

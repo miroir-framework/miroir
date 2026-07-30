@@ -35,7 +35,6 @@ import {
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   ApplicationSection,
-  ApplicationVersion,
   CompositeActionSequence,
   CompositeActionTemplate,
   Deployment,
@@ -47,7 +46,6 @@ import {
   MetaModel,
   ModelAction,
   ModelActionResetModel,
-  RestPersistenceAction,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   TestAssertion,
@@ -1620,67 +1618,11 @@ export class DomainController implements DomainControllerInterface {
             );
           }
 
-          const sectionOfapplicationEntities: ApplicationSection =
-            currentDeploymentUuid == deployment_Miroir.uuid ? "data" : "model";
-          const newModelVersionUuid = uuidv4();
-          // TODO: this seems to be taken from the Admin Model Version
-          // in the application, only the selfApplication could be used
-          const newModelVersion: ApplicationVersion = {
-            uuid: newModelVersionUuid,
-            // conceptLevel: "Data",
-            parentName: entitySelfApplicationVersion.name,
-            parentUuid: entitySelfApplicationVersion.uuid,
-            description: "TODO: no description yet",
-            name: "TODO: No label was given to this version.",
-            previousVersion: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: how to get the previous version? The current version shall be found somewhere in the schema
-            branch: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-            selfApplication: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa", // TODO: this is wrong, selfApplication, selfApplication version, etc. must be passed as parameters!!!!!!!!!!!!!!!!!!!!
-          };
-
-          log.info(
-            "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit create new version",
-            newModelVersion,
-          );
-          const newModelVersionAction: RestPersistenceAction = {
-            actionType: "RestPersistenceAction_create",
-            endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-            payload: {
-              application: currentApplication,
-              // deploymentUuid: currentDeploymentUuid,
-              section: sectionOfapplicationEntities,
-              parentName: entitySelfApplicationVersion.name ?? "Self Application",
-              parentUuid: entitySelfApplicationVersion.uuid,
-              objects: [newModelVersion],
-              // objects: [{
-              //   parentUuid: entitySelfApplicationVersion.uuid,
-              //   instances: [newModelVersion]
-              // }],
-            },
-          };
-
-          // // in the case of the Miroir app, this should be done in the 'data' section
-          // const newModelVersionActionResult = await this.callUtil.callPersistenceAction(
-          //   {}, // context
-          //   {}, // continuation
-          //   applicationDeploymentMap,
-          //   newModelVersionAction,
-          // );
-          // log.info(
-          //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit persistenceActionResult for new version",
-          //   newModelVersionActionResult,
-          //   "newModelVersionActionResult instanceof Action2Error",
-          //   newModelVersionActionResult instanceof Action2Error,
-          // );
-          // if (newModelVersionActionResult instanceof Action2Error) {
-          //   return Promise.resolve(
-          //     new Action2Error(
-          //       "FailedToHandleAction",
-          //       "handleModelAction commit create new model version failed",
-          //       [],
-          //       newModelVersionActionResult,
-          //     ),
-          //   );
-          // }
+          // #216 ADR D6 / Phase 7: commit does NOT publish Application Versions.
+          // Freeze (`freezeApplicationVersion`) is the sole version publisher.
+          // commitUuid is for WP1 evolution-trace correlation only — do not
+          // construct or persist placeholder SelfApplicationVersion rows here.
+          const commitUuid = uuidv4();
 
           log.info(
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replaying currentTransaction",
@@ -1758,10 +1700,10 @@ export class DomainController implements DomainControllerInterface {
                   return replayActionResult;
                 }
                 await this.maybeRecordEvolutionTrace(replayAction, applicationDeploymentMap, {
-                  commitUuid: newModelVersionUuid,
-                  fromVersionUuid:
-                    newModelVersion.previousVersion ?? "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa",
-                  toVersionUuid: newModelVersionUuid,
+                  commitUuid,
+                  // Observational only — not an Application Version tip (#216 ADR D6).
+                  fromVersionUuid: "aaaaaaaa-aaaa-4aaa-9aaa-aaaaaaaaaaaa",
+                  toVersionUuid: commitUuid,
                 });
                 break;
               }
@@ -1792,35 +1734,8 @@ export class DomainController implements DomainControllerInterface {
                   // deploymentUuid: currentDeploymentUuid,
                 },
               },
-            )
-            // .then((context) => {
-            //   // log.debug(
-            //   //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed and notified to local cache, currentTransaction:",
-            //   //   this.localCache.currentTransaction(),
-            //   // );
-            //   return this.callUtil.callLocalCacheAction(
-            //     {}, // context
-            //     {}, // continuation
-            //     applicationDeploymentMap,
-            //     {
-            //       actionType: "createInstance",
-            //       application: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-            //       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            //       payload: {
-            //         application: currentApplication,
-            //         applicationSection: "model",
-            //         parentUuid: newModelVersion.parentUuid,
-            //         objects: [
-            //           {
-            //             parentUuid: newModelVersion.parentUuid,
-            //             applicationSection: sectionOfapplicationEntities,
-            //             instances: [newModelVersion],
-            //           },
-            //         ],
-            //       },
-            //     },
-            //   );
-            // });
+            );
+          // #216 ADR D6: do not createInstance SelfApplicationVersion on commit.
           // log.info(
           //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done!",
           // );
