@@ -25,7 +25,7 @@ Related:
 |---|---|---|---|
 | 0 | Lock defaults, module layout, test harness | ✅ DONE | pytest harness green |
 | 1 | SemVer validate + pre-release classify | ✅ DONE | `semver_util.py` |
-| 2 | Allow-list + bump `version` only (preserve deps) | ⬜ TODO | |
+| 2 | Allow-list + bump `version` only (preserve deps) | ✅ DONE | `allowlist.py`, `bump.py` |
 | 3 | Runtime cycle abort / dev cycle allow (D6) | ⬜ TODO | |
 | 4 | Dry-run plan (no filesystem/git mutation) | ⬜ TODO | |
 | 5 | Apply bump to a real directory tree | ⬜ TODO | |
@@ -249,8 +249,8 @@ Match real B+ **names** from analysis D2.
 
 ### Done when
 
-- [ ] Bump never alters dep maps (assert deep equality of those keys before/after)
-- [ ] Allow-list constant single-sourced in `allowlist.py`
+- [x] Bump never alters dep maps (assert deep equality of those keys before/after)
+- [x] Allow-list constant single-sourced in `allowlist.py`
 
 ---
 
