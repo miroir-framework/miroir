@@ -138,6 +138,7 @@ export { default as selfApplicationVersionInitialMiroirVersion } from "./assets/
 export { default as reportApplicationList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0e4cf674-3a26-422a-8618-09e32302ac0c.json" with { type: "json" };
 export { default as reportApplicationModelBranchList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/60648b22-e2c6-4b74-8031-53884f597d63.json" with { type: "json" };
 export { default as reportApplicationVersionList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/0810de28-fdab-4baf-8935-7e04a8f779a9.json" with { type: "json" };
+export { default as reportApplicationVersionDetails } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/17e78252-2540-4003-9305-d85c0c02d7ba.json" with { type: "json" };
 export { default as reportEndpointVersionList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ace3d5c9-b6a7-43e6-a277-595329e7532a.json" with { type: "json" };
 export { default as reportEntityVersionList } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f9aff35d-8636-4519-8361-c7648e0ddc68.json" with { type: "json" };
 /** @deprecated Use reportEntityVersionList */

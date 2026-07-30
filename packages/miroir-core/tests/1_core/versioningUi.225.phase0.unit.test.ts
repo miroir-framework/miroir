@@ -90,13 +90,28 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(step?.endpoint).toBe(VERSIONING_UI_225.modelEndpointUuid);
   });
 
-  it("gap: SelfApplicationVersion has no defaultInstanceDetailsReportUuid (Phase 3)", () => {
+  it("SelfApplicationVersion points to ApplicationVersionDetails report (Phase 3)", () => {
     const entity = JSON.parse(readFileSync(SAV_ENTITY_PATH, "utf8")) as Record<
       string,
       unknown
     >;
     expect(entity.uuid).toBe(VERSIONING_UI_225.selfApplicationVersionEntityUuid);
-    expect(entity.defaultInstanceDetailsReportUuid).toBeUndefined();
+    expect(entity.defaultInstanceDetailsReportUuid).toBe(
+      "17e78252-2540-4003-9305-d85c0c02d7ba",
+    );
+    const detailsPath = join(
+      REPO_ROOT,
+      "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/17e78252-2540-4003-9305-d85c0c02d7ba.json",
+    );
+    expect(existsSync(detailsPath)).toBe(true);
+    const details = JSON.parse(readFileSync(detailsPath, "utf8")) as {
+      name: string;
+      definition: { extractorTemplates: Record<string, { parentUuid: string }> };
+    };
+    expect(details.name).toBe(VERSIONING_UI_225.applicationVersionDetailsReportName);
+    expect(
+      details.definition.extractorTemplates.applicationVersion.parentUuid,
+    ).toBe(VERSIONING_UI_225.selfApplicationVersionEntityUuid);
   });
 
   it("gap: AppBar has no commit / Versioning report link yet (Phase 5)", () => {

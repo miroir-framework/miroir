@@ -19,7 +19,7 @@ Related:
 - Prerequisite: [#216](../216-FEATURE-application-versions-and-freeze/) ✅
 - Working branch: `cursor/versioning-ui-freeze-report-2a38`
 
-**Resume note:** Phases 0–1 DONE.
+**Resume note:** Phases 0–2 DONE.
 
 ---
 
@@ -29,7 +29,7 @@ Related:
 |---|---|---|---|
 | 0 | Lock contracts & fixtures (Runner payload, report shape, AppBar link) | ✅ DONE | 6/6 `versioningUi.225.phase0` |
 | 1 | Freeze Runner asset + registry | ✅ DONE | registry 1/1; modelValidation Runner instance; phase0 flipped |
-| 2 | MiroirTest runnerTest integ — freeze Runner | ⬜ TODO | runnerTest suite |
+| 2 | MiroirTest runnerTest integ — freeze Runner | ✅ DONE | `runner_freeze_application_version` 2/2 filesystem; action freeze 8/8 |
 | 3 | Application Version details report + SAV `defaultInstanceDetailsReportUuid` | ⬜ TODO | modelValidation + list→details smoke |
 | 4 | Versioning report (freeze Runner + filtered AV list) | ⬜ TODO | modelValidation + report composition |
 | 5 | AppBar `commit` → Versioning (current-application aware) | ⬜ TODO | unit / light UI proof |
@@ -162,7 +162,7 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- 'model' -t ''
 
 ---
 
-## Phase 2 — MiroirTest runnerTest integ  ⬜ TODO
+## Phase 2 — MiroirTest runnerTest integ  ✅ DONE
 
 ### Goal
 
@@ -193,13 +193,23 @@ npm run testMiroir -w miroir-standalone-app -- \
   --suites runner_freeze_application_version --mode integ
 ```
 
+**Result (2026-07-30):** ✅ 2/2 passed (`Freeze V1 Baseline`, `Freeze V1 alter Publisher commit Freeze V2`).
+
+**Fix required:** `testBuildPlusRuntimeCompositeActionSuiteForRunner` recreates Library SelfApplication without `versioningEnabled`; set it for `LIBRARY_TMP.selfApplicationLibraryUuid` so freeze gate passes (ephemeral createEntity apps stay unversioned).
+
 **NON-REGRESSION:**
 
 ```bash
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-filesystem \
-  --suites domain_controller_application_version_freeze,runner_create_entity --mode integ
+  --suites domain_controller_application_version_freeze --mode integ
+# runner_create_entity separately (mixed suite keys share primary session registry)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-filesystem \
+  --suites runner_create_entity --mode integ
 ```
+
+**Result:** action freeze ✅ 8/8. `runner_create_entity` “Create Entity (no reports)” ✅; “Create Entity with reports” ❌ on filesystem independently of Phase 2 (reproduced with Runner.ts stashed). Not a Phase 2 regression.
 
 ---
 
