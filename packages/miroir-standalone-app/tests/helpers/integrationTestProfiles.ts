@@ -114,6 +114,7 @@ const STANDALONE_APP_PACKAGE_DIR = "packages/miroir-standalone-app";
 /** Resolve monorepo root for repo-relative profile paths (no import.meta — tests/ is outside tsconfig). */
 export function resolveRepoRoot(): string {
   const candidates = [
+    process.env.INIT_CWD,
     process.env.PWD,
     process.cwd(),
     path.resolve(process.cwd(), ".."),

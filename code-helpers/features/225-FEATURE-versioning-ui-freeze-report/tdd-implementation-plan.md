@@ -19,7 +19,7 @@ Related:
 - Prerequisite: [#216](../216-FEATURE-application-versions-and-freeze/) ✅
 - Working branch: `cursor/versioning-ui-freeze-report-2a38`
 
-**Resume note:** Phase 0 DONE (characterization 6/6).
+**Resume note:** Phases 0–1 DONE.
 
 ---
 
@@ -135,7 +135,9 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- 'model' -t 'SelfAppli
 
 ---
 
-## Phase 1 — Freeze Runner asset + registry  ⬜ TODO
+## Phase 1 — Freeze Runner asset + registry  ✅ DONE
+
+**Realization:** Runner `20d51c4c-…` (`freezeApplicationVersion`); registry key; MetaModel.runners; exports.
 
 ### Goal
 

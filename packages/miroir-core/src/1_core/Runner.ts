@@ -14,6 +14,7 @@ import type {
   StoreUnitConfiguration,
   TestCompositeActionParams
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LIBRARY_TMP } from "../0_interfaces/1_core/LIBRARY_TMP";
 import {
   createDeploymentCompositeAction,
   resetAndinitializeDeploymentCompositeAction,
@@ -102,6 +103,11 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
                 defaultLabel: `The ${testApplicationName} selfApplication.`,
                 description: `The model and data of the ${testApplicationName} selfApplication.`,
                 homePageUrl: `/report/${testApplicationUuid}/${testApplicationDeploymentUuid}/data/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8/xxxxx`,
+                // Canonical Library SelfApplication is versioned (#216). Ephemeral runner
+                // apps (createEntity / dropEntity) must stay unversioned.
+                ...(testApplicationUuid === LIBRARY_TMP.selfApplicationLibraryUuid
+                  ? { versioningEnabled: true as const }
+                  : {}),
               },
               applicationModelBranch: {
                 uuid: "00000000-0000-0000-0000-000000000001",

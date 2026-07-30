@@ -4,12 +4,19 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { prepareTestMiroirLaunch } from "./testMiroirLauncher.js";
+import { resolveRepoRoot } from "../tests/helpers/integrationTestProfiles.js";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(scriptDir, "..");
 
 const argv = process.argv.slice(2);
 const { vitestEntry, spawnEnv } = prepareTestMiroirLaunch(process.env, argv);
+
+// npm -w sets PWD to the package dir; profile config paths are repo-root relative.
+const launchEnv: NodeJS.ProcessEnv = {
+  ...spawnEnv,
+  PWD: resolveRepoRoot(),
+};
 
 const vitestArgs = [
   "vitest",
@@ -22,7 +29,7 @@ const vitestArgs = [
 
 const result = spawnSync("npx", vitestArgs, {
   cwd: packageRoot,
-  env: spawnEnv,
+  env: launchEnv,
   stdio: "inherit",
   shell: true,
 });
