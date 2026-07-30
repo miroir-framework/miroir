@@ -8,6 +8,7 @@ from release_tag_lib.dep_graph import (
     find_runtime_cycles,
     workspace_package_jsons,
 )
+from release_tag_lib.git_ops import GitError, GitRepo
 from release_tag_lib.plan import (
     ReleasePlan,
     ReleasePlanError,
@@ -19,6 +20,8 @@ from release_tag_lib.semver_util import is_prerelease, parse_product_version
 __all__ = [
     "BPLUS_PACKAGE_NAMES",
     "Cycle",
+    "GitError",
+    "GitRepo",
     "ReleasePlan",
     "ReleasePlanError",
     "apply_release_plan",

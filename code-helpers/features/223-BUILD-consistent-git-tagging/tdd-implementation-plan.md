@@ -29,7 +29,7 @@ Related:
 | 3 | Runtime cycle abort / dev cycle allow (D6) | ✅ DONE | `dep_graph.py`, cycle gate in `plan.py` |
 | 4 | Dry-run plan (no filesystem/git mutation) | ✅ DONE | `test_plan_dry_run.py` |
 | 5 | Apply bump to a real directory tree | ✅ DONE | `apply_release_plan` |
-| 6 | Git commit + annotated tag (temp repo) | ⬜ TODO | |
+| 6 | Git commit + annotated tag (temp repo) | ✅ DONE | `git_ops.py` |
 | 7 | CLI flags + push opt-in / docs | ⬜ TODO | |
 
 ---
@@ -339,8 +339,8 @@ Match real B+ **names** from analysis D2.
 
 ### Done when
 
-- [ ] No network; no `gh`
-- [ ] Push method exists but is untested for remote success — only “orchestration does not call it without flag” (Phase 7)
+- [x] No network; no `gh`
+- [x] Push method exists but is untested for remote success — only “orchestration does not call it without flag” (Phase 7)
 
 ---
 
