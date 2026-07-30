@@ -17,7 +17,7 @@ Related:
 - Prerequisites (realized): [#217](../217-FEATURE-%20Make%20Entity%20the%20authoritative%20present-model%20definition/analysis.md), [#220](../220-REFACTOR-entitydefinition-tech-debt/), [#221](../221-REFACTOR-view-decouple-entityversion-present-model/), [#222](../222-REFACTOR-entityversion-to-miroir-data/)
 - WP2 consumer: [`../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md`](../9-FEATURE-create-migrations-for-model-and-data-updates/wp2-analysis-application-version-migrations.md)
 
-**Resume note (2026-07-30):** Phases 0–4 DONE. **Phase 5 DONE** — `freezeApplicationVersion` on Model Endpoint + DomainController plan/gate (persist = Phase 6). Continue at **Phase 6** (filesystem integ persistence).
+**Resume note (2026-07-30):** Phases 0–5 DONE. **Phase 6 DONE** — DomainController persists freeze (SAV+EV+Cross); filesystem integ green. Continue at **Phase 7** (commit / `"Initial"` hygiene).
 
 ---
 
@@ -31,7 +31,7 @@ Related:
 | 3 | Linear tip resolution (`previousVersion`) | ✅ DONE | 8/8 |
 | 4 | Entity-set diff → rough migration evaluation | ✅ DONE | 11/11 |
 | 5 | Wire `freezeApplicationVersion` Action | ✅ DONE | 10/10 |
-| 6 | Persist freeze (filesystem integ) | ⬜ TODO | — |
+| 6 | Persist freeze (filesystem integ) | ✅ DONE | 5/5 |
 | 7 | Commit / `"Initial"` hygiene | ⬜ TODO | — |
 | 8 | End-to-end tracer bullet + WP2 handoff note | ⬜ TODO | — |
 
@@ -285,42 +285,28 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze.actionSchema
 
 ---
 
-## Phase 6 — Persist freeze (filesystem integ)  ⬜ TODO
+## Phase 6 — Persist freeze (filesystem integ)  ✅ DONE
 
 ### Goal
 
 End-to-end on filesystem emulated server: freeze persists SAV + EntityVersions + Cross; live Entity edit afterward leaves snapshot intact; second freeze diffs and links.
 
-### 6.1 RED → GREEN — First freeze persistence
+### Delivered
 
-Test file (standalone): e.g. `packages/miroir-standalone-app/tests/.../applicationVersionFreeze.integ.test.ts`  
-Config: filesystem emulated server (same pattern as DomainController.integ).
-
-Behaviors:
-
-- After freeze: reload → SAV present; Cross count = Entity count; each EntityVersion §11.3-equal to Entity at freeze
-- **Section matrix:** Miroir historical EV instances under **data**; Library under **model** (`resolveFreezeEntityVersionApplicationSection`)
-- Live `alterEntityAttribute` / Entity field update after freeze → historical EntityVersion unchanged
-- Unversioned deployment (fixture or toggled only if test can create unversioned app) rejects freeze
-- Pre-existing Miroir documentation-class EV rows (if present) are not mutated / not reused as freeze snapshot UUIDs
-
-### 6.2 RED → GREEN — Second freeze
-
-- `previousVersion` set
-- `modelCUDMigration` non-empty when Entities changed between freezes; empty when unchanged
+- `DomainController.persistFreezeApplicationVersionPlan` — `createInstance` for SAV + EVs + Cross (section via SAV co-location for Cross; EV via `plan.entityVersionApplicationSection`)
+- Ensures Cross Entity exists (`createEntity` transactional:false) when missing from app model
+- Freeze snapshots **application Entities only** (excludes MetaModel bootstrap Entities)
+- `currentModel` fix: real SelfApplication + Cross rows (not SAV-as-application; Cross co-located with SAV)
+- Filesystem `getInstances`: missing path → empty collection (rollback-safe for new MetaModel Entities)
+- Cross Entity added to `defaultMiroirMetaModel` entities/entityVersions
+- Integ: `applicationVersionFreeze.integ.test.ts` — **5/5** (filesystem)
 
 #### Validation
 ```
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
   npm run testByFile -w miroir-standalone-app -- applicationVersionFreeze
 ```
-
-### NON-REGRESSION
-```
-# existing DomainController / model CRUD integ subset as used after #217
-npm run testByFile -w miroir-standalone-app -- DomainController.integ
-```
-(Run selectively if full file is heavy; document chosen subset.)
 
 ---
 

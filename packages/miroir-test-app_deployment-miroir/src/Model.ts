@@ -26,8 +26,10 @@ import {
   domainEndpointVersionV1,
   entityApplicationEvolutionTrace,
   entityApplicationEvolutionTraceEvent,
+  entityApplicationVersionCrossEntityVersion,
   entityDefinitionApplicationEvolutionTrace,
   entityDefinitionApplicationEvolutionTraceEvent,
+  entityDefinitionApplicationVersionCrossEntityDefinition,
   entityDefinitionEndpoint,
   entityDefinitionEntity,
   entityDefinitionJzodSchema,
@@ -167,6 +169,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityTheme as Entity,
     entityApplicationEvolutionTrace as Entity,
     entityApplicationEvolutionTraceEvent as Entity,
+    entityApplicationVersionCrossEntityVersion as Entity,
   ],
   entityVersions: [
     // bootstrap entities have to come first
@@ -186,6 +189,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityDefinitionTheme as EntityVersion,
     entityDefinitionApplicationEvolutionTrace as EntityVersion,
     entityDefinitionApplicationEvolutionTraceEvent as EntityVersion,
+    entityDefinitionApplicationVersionCrossEntityDefinition as EntityVersion,
   ],
   endpoints: [
     applicationEndpointV1 as any as EndpointDefinition,

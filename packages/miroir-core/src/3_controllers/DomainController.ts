@@ -26,6 +26,7 @@ import {
   entityReport,
   entityRunner,
   entitySelfApplicationVersion,
+  entityApplicationVersionCrossEntityVersion,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationVersionInitialMiroirVersion
@@ -79,6 +80,7 @@ import {
 } from "../1_core/versioning/applicationVersioning.js";
 import {
   planFreezeApplicationVersionFromMetaModel,
+  type FreezeApplicationVersionPlan,
 } from "../1_core/versioning/applicationVersionFreeze.js";
 import {
   defaultMiroirModelEnvironment,
@@ -1075,6 +1077,84 @@ export class DomainController implements DomainControllerInterface {
     return ACTION_OK;
   }
 
+  /**
+   * #216 Phase 6 — persist freeze plan rows immediately (SAV + historical EVs + Cross).
+   * Uses createInstance (not transactional createEntity / commit replay).
+   */
+  private async persistFreezeApplicationVersionPlan(
+    plan: FreezeApplicationVersionPlan,
+    application: Uuid,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2VoidReturnType> {
+    const persistBatch = async (
+      actionLabel: string,
+      objects: EntityInstance[],
+      parentEntityUuid: Uuid,
+      applicationSection: ApplicationSection,
+    ): Promise<Action2VoidReturnType> => {
+      if (objects.length === 0) {
+        return ACTION_OK;
+      }
+      const result = await this.handleInstanceAction(
+        {
+          actionType: "createInstance",
+          actionLabel,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            application,
+            applicationSection,
+            objects,
+          },
+        },
+        applicationDeploymentMap,
+      );
+      if (result instanceof Action2Error) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          `freezeApplicationVersion failed to persist ${actionLabel}`,
+          [],
+          result,
+        );
+      }
+      return ACTION_OK;
+    };
+
+    const savSection = getApplicationSection(
+      application,
+      entitySelfApplicationVersion.uuid,
+    );
+    // Cross Entity is not always listed in metaModelEntityUuids; co-locate with SAV
+    // (Miroir → data, Library → model) so the Entity definition exists in that section.
+    const versioningHistorySection = savSection;
+
+    const savResult = await persistBatch(
+      "freezeSelfApplicationVersion",
+      [plan.selfApplicationVersion as EntityInstance],
+      entitySelfApplicationVersion.uuid,
+      savSection,
+    );
+    if (savResult instanceof Action2Error) {
+      return savResult;
+    }
+
+    const evResult = await persistBatch(
+      "freezeEntityVersions",
+      plan.entityVersions as EntityInstance[],
+      entityEntityVersion.uuid,
+      plan.entityVersionApplicationSection,
+    );
+    if (evResult instanceof Action2Error) {
+      return evResult;
+    }
+
+    return persistBatch(
+      "freezeCrossEntityVersions",
+      plan.crossEntityVersions as EntityInstance[],
+      entityApplicationVersionCrossEntityVersion.uuid,
+      versioningHistorySection,
+    );
+  }
+
   // ##############################################################################################
   async handleModelAction(
     modelAction: ModelAction,
@@ -1751,7 +1831,7 @@ export class DomainController implements DomainControllerInterface {
           break;
         }
         case "freezeApplicationVersion": {
-          // Phase 5: gate + plan only. Phase 6 persists SAV / EntityVersions / Cross.
+          // Phase 6: plan then persist SAV + EntityVersions + Cross via createInstance.
           const metaModel = currentModelEnvironment.currentModel;
           const payload = modelAction.payload as {
             application: string;
@@ -1759,7 +1839,58 @@ export class DomainController implements DomainControllerInterface {
             description?: string;
             branch?: string;
           };
-          planFreezeApplicationVersionFromMetaModel(payload, metaModel);
+
+          // Cross Entity may be absent from app model when init/filter did not create it.
+          const crossEntityUuid = entityApplicationVersionCrossEntityVersion.uuid;
+          const crossEntityPresent = metaModel.entities.some((e) => e.uuid === crossEntityUuid);
+          if (!crossEntityPresent) {
+            const ensureCross = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureApplicationVersionCrossEntityVersion",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityApplicationVersionCrossEntityVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              currentModelEnvironment,
+            );
+            if (ensureCross instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure Cross Entity exists",
+                [],
+                ensureCross,
+              );
+            }
+          }
+
+          // Freeze application Entities only — exclude MetaModel bootstrap Entities
+          // (Entity, Report, Cross, …) that may appear in currentModel.entities.
+          const metaBootstrapUuids = new Set(
+            (currentModelEnvironment.miroirMetaModel?.entities ?? []).map((e) => e.uuid),
+          );
+          metaBootstrapUuids.add(crossEntityUuid);
+          const applicationEntities = metaModel.entities.filter(
+            (e) => !metaBootstrapUuids.has(e.uuid),
+          );
+
+          const plan = planFreezeApplicationVersionFromMetaModel(payload, {
+            ...metaModel,
+            entities: applicationEntities,
+          });
+
+          const persistResult = await this.persistFreezeApplicationVersionPlan(
+            plan,
+            payload.application,
+            applicationDeploymentMap,
+          );
+          if (persistResult instanceof Action2Error) {
+            return persistResult;
+          }
           break;
         }
         default: {

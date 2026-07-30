@@ -37,7 +37,9 @@ import {
   entityMenu, entityMiroirTest, entityQueryVersion,
   entityReport,
   entityRunner,
-  entitySelfApplicationVersion
+  entitySelfApplication,
+  entitySelfApplicationVersion,
+  entityApplicationVersionCrossEntityVersion,
 } from "miroir-test-app_deployment-miroir";
 import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 
@@ -72,12 +74,29 @@ export function currentModel(
       application,
       entityEntityVersion.uuid
     );
+    const selfApplicationSection = getApplicationSection(
+      application,
+      entitySelfApplication.uuid,
+    );
+    // Co-locate Cross with SAV (see DomainController.persistFreezeApplicationVersionPlan).
+    const crossEntityVersionSection = getApplicationSection(
+      application,
+      entitySelfApplicationVersion.uuid,
+    );
     const applicationVersions =
       state.current[
         getReduxDeploymentsStateIndex(
           deploymentUuid,
           modelSection,
           entitySelfApplicationVersion.uuid
+        )
+      ];
+    const applicationVersionCross =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossEntityVersion.uuid,
         )
       ];
     const endpoints =
@@ -110,26 +129,31 @@ export function currentModel(
       state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityMiroirTest.uuid)];
     const themes =
       state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityDefinitionTheme.entityUuid)];
-    const currentApplicationDefinitions = state.current[
-        getReduxDeploymentsStateIndex(
-          deploymentUuid,
-          metaModelSection,
-          entitySelfApplicationVersion.uuid
-        )
-      ]?.entities;
-    const currentApplicationDefinition = currentApplicationDefinitions
-      ? Object.values(currentApplicationDefinitions)[0]
-      : null;
+    // #216 — SelfApplication instances (not SelfApplicationVersion / SAV)
+    const selfApplicationsSlice = state.current[
+      getReduxDeploymentsStateIndex(
+        deploymentUuid,
+        selfApplicationSection,
+        entitySelfApplication.uuid,
+      )
+    ];
+    const applications = (
+      selfApplicationsSlice?.entities
+        ? Object.values(selfApplicationsSlice.entities)
+        : []
+    ) as SelfApplication[];
+    const matchedApplication =
+      applications.find((a) => a.uuid === application) ?? applications[0] ?? null;
     const result = {
       applicationUuid: application,
-      applicationName: currentApplicationDefinition
-        ? (currentApplicationDefinition as any).name
-        : "",
-      applications: (currentApplicationDefinition ? [currentApplicationDefinition] : []) as SelfApplication[],
+      applicationName: matchedApplication ? matchedApplication.name : "",
+      applications,
       applicationVersions: (applicationVersions && applicationVersions.entities
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],
-      applicationVersionCrossEntityVersion: [],
+      applicationVersionCrossEntityVersion: (applicationVersionCross?.entities
+        ? Object.values(applicationVersionCross.entities)
+        : []) as MetaModel["applicationVersionCrossEntityVersion"],
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],

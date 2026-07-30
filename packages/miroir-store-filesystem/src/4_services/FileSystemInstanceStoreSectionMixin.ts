@@ -150,27 +150,26 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
 
       const entityInstancesPath = path.join(this.directory, entityUuid);
       if (!fs.existsSync(entityInstancesPath)) {
-        log.warn(
+        // Missing directory ≡ no instances yet (e.g. newly added MetaModel Entity
+        // before first createEntity / upsert). Do not fail refresh/rollback.
+        log.info(
           this.logHeader,
           "FileSystemInstanceStore getInstances",
           "entityUuid",
           entityUuid,
           "applicationSection",
           this.applicationSection,
-          "could not find path",
+          "path missing — returning empty collection",
           entityInstancesPath,
         );
-        return Promise.resolve(
-          new Action2Error(
-            "FailedToGetInstances",
-            `FileSystemInstanceStore getInstances entityUuid ${entityUuid} could not find path ${entityInstancesPath}`,
-            [],
-            undefined,
-            {
-              attemptedPath: entityInstancesPath
-            }
-          ),
-        );
+        return Promise.resolve({
+          status: "ok",
+          returnedDomainElement: {
+            parentUuid: entityUuid,
+            applicationSection: this.applicationSection,
+            instances: [],
+          },
+        });
       }
 
       try {
