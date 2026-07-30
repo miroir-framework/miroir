@@ -1,0 +1,10 @@
+{
+  "uuid": "48b2048f-507f-40ee-a890-b6eca83596f5",
+  "parentName": "MiroirRight",
+  "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
+  "miroirUser": "1c39328c-7de4-44ae-bcf1-5bbc38d8e267",
+  "targetType": "application",
+  "targetUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "capability": "admin",
+  "description": "Alice Admin — illustrative admin capability on Library AdminApplication."
+}
