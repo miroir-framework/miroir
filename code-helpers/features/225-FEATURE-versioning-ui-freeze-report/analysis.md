@@ -26,16 +26,18 @@ TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md)
 
 ### Tracer (filesystem / manual)
 
-1. Sidebar → select Library (versioned).
-2. AppBar `commit` → Versioning report for Library.
-3. Freeze form must load (not stuck on “Loading runner definition…” — Runner is fetched from Miroir while SAV list stays Library-scoped).
+1. AppBar `commit` → Versioning opens under **Miroir** (`applicationSection=data`).
+2. In-report **Application** `inputReportSection` → pick Library (navigates; SAV list filters to Library).
+3. Freeze form loads (Runner definition always from Miroir). Freeze Runner has its own application field.
 4. Freeze `UI-V1` via Runner → list shows V1; empty `modelCUDMigration`.
 5. Alter Entity; freeze `UI-V2` → list shows both; V2 details: `previousVersion` + diff.
 6. Open V1 details → unchanged by live edits (#216 isolation).
 
 Automated tracer equivalent: `runner_freeze_application_version` integ (V1 baseline + V1→alter→V2).
 
-**Runtime fix (runner load):** `resolveRunnerDefinitionApplication` / `useRunner` always load Runner instances from Miroir data, even when the Versioning page application is Library.
+**Runtime notes:**
+- Runner load: `resolveRunnerDefinitionApplication` / `useRunner` always load Runner instances from Miroir data.
+- Versioning is a Miroir scaffolding report; AppBar always opens Miroir. Target app is chosen via `inputReportSection` (steers pageParams.application / SAV list).
 
 ---
 
