@@ -151,6 +151,34 @@ describe("216 Phase 5 — planFreezeApplicationVersionFromMetaModel gate", () =>
     ).toThrow(/branch/i);
   });
 
+  it("treats noValue branch as missing and reuses branch from existing SAV", () => {
+    const NO_VALUE = "31f3a03a-f150-416d-9315-d3a752cb4eb4";
+    const plan = planFreezeApplicationVersionFromMetaModel(
+      {
+        application: APP_UUID,
+        versionName: "V1",
+        branch: NO_VALUE,
+      },
+      emptyMeta({
+        applicationVersions: [
+          {
+            uuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+            parentUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+            parentName: "ApplicationVersion",
+            name: "Initial",
+            selfApplication: APP_UUID,
+            branch: BRANCH_UUID,
+            description: "placeholder",
+            modelCUDMigration: [],
+            modelStructureMigration: [],
+          } as any,
+        ],
+      }),
+    );
+    expect(plan.selfApplicationVersion.name).toBe("V1");
+    expect(plan.selfApplicationVersion.branch).toBe(BRANCH_UUID);
+  });
+
   it("builds plan for versioned app with branch", () => {
     const plan = planFreezeApplicationVersionFromMetaModel(
       {

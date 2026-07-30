@@ -1747,13 +1747,19 @@ export class DomainController implements DomainControllerInterface {
         }
         case "freezeApplicationVersion": {
           // Phase 6: plan then persist SAV + EntityVersions + Cross via createInstance.
-          const metaModel = currentModelEnvironment.currentModel;
+          // Plan against the *payload* application's model — not the caller's
+          // environment (Versioning Runner is Miroir-hosted while freezing Library).
           const payload = modelAction.payload as {
             application: string;
             versionName: string;
             description?: string;
             branch?: string;
           };
+          const targetModelEnvironment = this.currentModelEnvironment(
+            payload.application,
+            applicationDeploymentMap,
+          );
+          const metaModel = targetModelEnvironment.currentModel;
 
           // Cross Entity may be absent from app model when init/filter did not create it.
           const crossEntityUuid = entityApplicationVersionCrossEntityVersion.uuid;
@@ -1771,7 +1777,7 @@ export class DomainController implements DomainControllerInterface {
                 },
               },
               applicationDeploymentMap,
-              currentModelEnvironment,
+              targetModelEnvironment,
             );
             if (ensureCross instanceof Action2Error) {
               return new Action2Error(
@@ -1786,7 +1792,7 @@ export class DomainController implements DomainControllerInterface {
           // Freeze application Entities only — exclude MetaModel bootstrap Entities
           // (Entity, Report, Cross, …) that may appear in currentModel.entities.
           const metaBootstrapUuids = new Set(
-            (currentModelEnvironment.miroirMetaModel?.entities ?? []).map((e) => e.uuid),
+            (targetModelEnvironment.miroirMetaModel?.entities ?? []).map((e) => e.uuid),
           );
           metaBootstrapUuids.add(crossEntityUuid);
           const applicationEntities = metaModel.entities.filter(
