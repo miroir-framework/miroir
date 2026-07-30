@@ -13,7 +13,7 @@
     "branchName",
     "uuid"
   ],
-  "defaultInstanceDetailsReportUuid": "c4d5e6f7-a8b9-4c01-d345-67890abcdef1",
+  "defaultInstanceDetailsReportUuid": "c4d5e6f7-a8b9-4c01-a345-67890abcdef1",
   "cache": {
     "cacheAllInstancesOnRefresh": true
   },

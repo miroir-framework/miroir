@@ -7,7 +7,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
   "description": "A durable trace root for the model evolution history of a Miroir application, one per application/branch.",
-  "defaultInstanceDetailsReportUuid": "c4d5e6f7-a8b9-4c01-d345-67890abcdef1",
+  "defaultInstanceDetailsReportUuid": "c4d5e6f7-a8b9-4c01-a345-67890abcdef1",
   "viewAttributes": [
     "name",
     "applicationUuid",

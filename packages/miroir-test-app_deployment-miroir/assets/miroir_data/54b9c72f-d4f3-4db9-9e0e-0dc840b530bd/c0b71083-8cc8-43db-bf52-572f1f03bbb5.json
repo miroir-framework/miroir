@@ -22,65 +22,11 @@
       }
     },
     "definition": {
-      "name": {
-        "type": "string",
-        "tag": {
-          "value": {
-            "id": 5,
-            "defaultLabel": "Name",
-            "display": {
-              "editable": true
-            }
-          }
-        }
-      },
-      "defaultLabel": {
-        "type": "string",
-        "tag": {
-          "value": {
-            "id": 6,
-            "defaultLabel": "Default Label",
-            "display": {
-              "editable": true
-            }
-          }
-        }
-      },
-      "description": {
-        "type": "string",
-        "optional": true,
-        "tag": {
-          "value": {
-            "id": 7,
-            "defaultLabel": "Description",
-            "display": {
-              "editable": true
-            }
-          }
-        }
-      },
-      "selfApplication": {
-        "type": "uuid",
-        "tag": {
-          "value": {
-            "id": 8,
-            "display": {
-              "editable": false
-            },
-            "defaultLabel": "SelfApplication",
-            "description": "The SelfApplication of the Branch.",
-            "foreignKeyParams": {
-              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-              "targetEntityOrderInstancesBy": "name"
-            }
-          }
-        }
-      },
       "applicationVersion": {
         "type": "uuid",
         "tag": {
           "value": {
-            "id": 9,
+            "id": 5,
             "display": {
               "editable": false
             },
@@ -97,7 +43,7 @@
         "type": "uuid",
         "tag": {
           "value": {
-            "id": 10,
+            "id": 6,
             "display": {
               "editable": false
             },

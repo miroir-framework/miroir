@@ -6,7 +6,7 @@
   "name": "ApplicationVersionCrossEntityVersion",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
-  "description": "The (many-to-many) sssociation among ApplicationVersions and EntityVersions.",
+  "description": "The (many-to-many) association among ApplicationVersions and EntityVersions.",
   "icon": "Interests",
   "cache": {
     "cacheAllInstancesOnRefresh": true
@@ -22,65 +22,11 @@
       }
     },
     "definition": {
-      "name": {
-        "type": "string",
-        "tag": {
-          "value": {
-            "id": 5,
-            "defaultLabel": "Name",
-            "display": {
-              "editable": true
-            }
-          }
-        }
-      },
-      "defaultLabel": {
-        "type": "string",
-        "tag": {
-          "value": {
-            "id": 6,
-            "defaultLabel": "Default Label",
-            "display": {
-              "editable": true
-            }
-          }
-        }
-      },
-      "description": {
-        "type": "string",
-        "optional": true,
-        "tag": {
-          "value": {
-            "id": 7,
-            "defaultLabel": "Description",
-            "display": {
-              "editable": true
-            }
-          }
-        }
-      },
-      "selfApplication": {
-        "type": "uuid",
-        "tag": {
-          "value": {
-            "id": 8,
-            "display": {
-              "editable": false
-            },
-            "defaultLabel": "SelfApplication",
-            "description": "The SelfApplication of the Branch.",
-            "foreignKeyParams": {
-              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
-              "targetEntityOrderInstancesBy": "name"
-            }
-          }
-        }
-      },
       "applicationVersion": {
         "type": "uuid",
         "tag": {
           "value": {
-            "id": 9,
+            "id": 5,
             "display": {
               "editable": false
             },
@@ -93,16 +39,16 @@
           }
         }
       },
-      "entity": {
+      "entityVersion": {
         "type": "uuid",
         "tag": {
           "value": {
-            "id": 10,
+            "id": 6,
             "display": {
               "editable": false
             },
-            "defaultLabel": "Entity",
-            "description": "The Entity definition of this mapping.",
+            "defaultLabel": "Entity Version",
+            "description": "The EntityVersion of this mapping.",
             "foreignKeyParams": {
               "targetEntity": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
               "targetEntityOrderInstancesBy": "name"
