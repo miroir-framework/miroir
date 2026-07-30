@@ -8,7 +8,12 @@ from release_tag_lib.dep_graph import (
     find_runtime_cycles,
     workspace_package_jsons,
 )
-from release_tag_lib.plan import ReleasePlan, ReleasePlanError, build_release_plan
+from release_tag_lib.plan import (
+    ReleasePlan,
+    ReleasePlanError,
+    apply_release_plan,
+    build_release_plan,
+)
 from release_tag_lib.semver_util import is_prerelease, parse_product_version
 
 __all__ = [
@@ -16,6 +21,7 @@ __all__ = [
     "Cycle",
     "ReleasePlan",
     "ReleasePlanError",
+    "apply_release_plan",
     "build_release_plan",
     "bump_package_version",
     "find_dev_involving_cycles",

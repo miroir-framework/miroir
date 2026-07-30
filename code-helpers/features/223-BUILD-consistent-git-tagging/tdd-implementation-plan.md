@@ -28,7 +28,7 @@ Related:
 | 2 | Allow-list + bump `version` only (preserve deps) | ✅ DONE | `allowlist.py`, `bump.py` |
 | 3 | Runtime cycle abort / dev cycle allow (D6) | ✅ DONE | `dep_graph.py`, cycle gate in `plan.py` |
 | 4 | Dry-run plan (no filesystem/git mutation) | ✅ DONE | `test_plan_dry_run.py` |
-| 5 | Apply bump to a real directory tree | ⬜ TODO | |
+| 5 | Apply bump to a real directory tree | ✅ DONE | `apply_release_plan` |
 | 6 | Git commit + annotated tag (temp repo) | ⬜ TODO | |
 | 7 | CLI flags + push opt-in / docs | ⬜ TODO | |
 
@@ -314,7 +314,7 @@ Match real B+ **names** from analysis D2.
 
 ### Done when
 
-- [ ] Apply is the only writer of package.json in the library (CLI does not hand-roll JSON)
+- [x] Apply is the only writer of package.json in the library (CLI does not hand-roll JSON)
 
 ---
 
