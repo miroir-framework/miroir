@@ -36,6 +36,7 @@ import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
 import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
+import { ReportInputSection } from './ReportInputSection.js';
 
 import { reportReportDetails } from "miroir-test-app_deployment-miroir";
 import { resolveRunnerDefinitionApplication } from "../Runners/runnerDefinitionApplication.js";
@@ -553,70 +554,21 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           // />
         )}
         {reportSectionDefinitionFromFormik?.type == "inputReportSection" && (
-          <>
-            {reportSectionDefinitionFromFormik.definition.inputPrefix ??
-              props.reportSectionPath.join("_")}{" "}
-            - inputMLSchema:
-            <pre
-              style={{
-                maxHeight: "400px",
-                overflow: "auto",
-                backgroundColor: "#f0f0f0",
-                padding: "10px",
-              }}
-            >
-              {JSON.stringify(reportSectionDefinitionFromFormik.definition.inputMLSchema, null, 2)}
-            </pre>
-            <pre
-              style={{
-                maxHeight: "400px",
-                overflow: "auto",
-                backgroundColor: "#f0f0f0",
-                padding: "10px",
-              }}
-            >
-              {JSON.stringify(
-                formik.values && props.reportSectionPath
-                  ? formik.values[
-                      reportSectionDefinitionFromFormik.definition.inputPrefix ??
-                        (props.reportSectionPath.join("_") + "_inputMLSchema")
-                    ]
-                  : "unknown",
-                null,
-                2,
-              )}
-            </pre>
-            <TypedValueObjectEditor
-              labelElement={<h2>Report Input</h2>}
-              formValueMLSchema={
-                reportSectionDefinitionFromFormik.definition.inputMLSchema as JzodObject
-              }
-              formikValuePathAsString={reportSectionDefinitionFromFormik.definition.inputPrefix ?? (props.reportSectionPath.join("_") + "_inputMLSchema")}
-              application={props.application}
-              applicationDeploymentMap={props.applicationDeploymentMap}
-              deploymentUuid={props.deploymentUuid}
-              applicationSection="model"
-              formLabel={"Report Input WHAT"}
-              zoomInPath=""
-              maxRenderDepth={Infinity}
-              displaySubmitButton="noDisplay"
-              useActionButton={false}
-              valueObjectEditMode="create" // N/A
-              // validationTransformer={validationTransformer}
-            />
-          </>
-          // <JsonDisplayHelper
-          //   debug={true}
-          //   componentName="ReportSectionViewWithEditor - jsonReportSection"
-          //   elements={[
-          //     {
-          //       label: "reportSectionDefinitionFromFormik",
-          //       data: reportSectionDefinitionFromFormik,
-          //       useCodeBlock: true,
-          //       copyButton: true,
-          //     },
-          //   ]}
-          // />
+          <ReportInputSection
+            label={reportSectionDefinitionFromFormik.definition.label ?? "Report Input"}
+            inputPrefix={
+              reportSectionDefinitionFromFormik.definition.inputPrefix ??
+              props.reportSectionPath.join("_") + "_inputMLSchema"
+            }
+            inputMLSchema={
+              reportSectionDefinitionFromFormik.definition.inputMLSchema as JzodObject
+            }
+            application={props.application}
+            applicationDeploymentMap={props.applicationDeploymentMap}
+            deploymentUuid={props.deploymentUuid}
+            applicationSection={props.applicationSection}
+            pageParams={props.paramsAsdomainElements}
+          />
         )}
       </div>
     </>

@@ -1,7 +1,9 @@
 /**
  * Resolve which SelfApplication uuid an AppBar report link should navigate with.
- * Versioning (#225) must follow the sidebar applicationSelector; other report
- * links keep their static selfApplication (e.g. Miroir Runners).
+ *
+ * Versioning (#225) is a Miroir scaffolding report: always open it under the
+ * report's static selfApplication (Miroir). Target-app filtering is done inside
+ * the report via inputReportSection (and the freeze Runner's own application field).
  */
 export function resolveAppBarReportLinkApplication(params: {
   reportUuid: string;
@@ -9,8 +11,8 @@ export function resolveAppBarReportLinkApplication(params: {
   versioningReportUuid: string;
   applicationSelector?: string | undefined;
 }): string {
-  if (params.reportUuid === params.versioningReportUuid) {
-    return params.applicationSelector || params.itemSelfApplication;
-  }
+  void params.reportUuid;
+  void params.versioningReportUuid;
+  void params.applicationSelector;
   return params.itemSelfApplication;
 }

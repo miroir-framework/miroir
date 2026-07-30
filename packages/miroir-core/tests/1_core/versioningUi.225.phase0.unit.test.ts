@@ -125,6 +125,7 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(existsSync(versioningPath)).toBe(true);
     const report = JSON.parse(readFileSync(versioningPath, "utf8")) as {
       name: string;
+      selfApplication: string;
       definition: {
         extractorTemplates: {
           applicationVersions: {
@@ -141,7 +142,16 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
       };
     };
     expect(report.name).toBe(VERSIONING_UI_225.versioningReportName);
+    expect(report.selfApplication).toBe("360fcf1f-f0d4-4f8a-9262-07886e70fa15");
     expect(report.definition.section.type).toBe("list");
+    const inputSection = report.definition.section.definition.find(
+      (s) => s.type === "inputReportSection",
+    );
+    expect(inputSection?.definition.inputPrefix).toBe("versioningInput");
+    expect(
+      (inputSection?.definition.inputMLSchema as { definition?: { application?: unknown } })
+        ?.definition?.application,
+    ).toBeTruthy();
     const runnerSection = report.definition.section.definition.find(
       (s) => s.type === "runnerReportSection",
     );
@@ -161,13 +171,14 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     ).toBe("application");
   });
 
-  it("AppBar commit icon links to Versioning via applicationSelector (Phase 5)", () => {
+  it("AppBar commit icon links to Versioning as Miroir scaffolding report (Phase 5)", () => {
     const appBar = readFileSync(APP_BAR_PATH, "utf8");
     expect(appBar.includes('icon: "commit"') || appBar.includes("icon: 'commit'")).toBe(true);
     expect(appBar.includes("Versioning")).toBe(true);
     expect(appBar.includes("reportVersioning")).toBe(true);
     expect(appBar.includes("resolveAppBarReportLinkApplication")).toBe(true);
-    expect(appBar.includes("applicationSelector")).toBe(true);
+    // Open under Miroir data section; in-report input steers target application.
+    expect(appBar).toMatch(/label:\s*"Versioning"[\s\S]*?section:\s*"data"/);
   });
 
   it("ApplicationVersionList exists and is unscoped (Versioning report is new)", () => {
