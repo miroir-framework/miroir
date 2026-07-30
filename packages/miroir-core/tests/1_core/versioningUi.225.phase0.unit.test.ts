@@ -109,12 +109,48 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(existsSync(detailsPath)).toBe(true);
     const details = JSON.parse(readFileSync(detailsPath, "utf8")) as {
       name: string;
-      definition: { extractorTemplates: Record<string, { parentUuid: string }> };
+      definition: {
+        extractorTemplates: Record<string, { parentUuid: string }>;
+        combinerTemplates?: Record<
+          string,
+          {
+            extractorOrCombinerType?: string;
+            parentUuid?: string;
+            objectListReference?: string;
+            objectListReferenceAttribute?: string;
+          }
+        >;
+        section: {
+          type: string;
+          definition: Array<{
+            type: string;
+            definition: Record<string, unknown>;
+          }>;
+        };
+      };
     };
     expect(details.name).toBe(VERSIONING_UI_225.applicationVersionDetailsReportName);
     expect(
       details.definition.extractorTemplates.applicationVersion.parentUuid,
     ).toBe(VERSIONING_UI_225.selfApplicationVersionEntityUuid);
+    // EntityVersions linked via ApplicationVersionCrossEntityVersion (many-to-many).
+    expect(details.definition.combinerTemplates?.["00_crossEntityVersions"]?.parentUuid).toBe(
+      "8bec933d-6287-4de7-8a88-5c24216de9f4",
+    );
+    expect(details.definition.combinerTemplates?.["01_entityVersions"]?.extractorOrCombinerType).toBe(
+      "combinerManyToMany",
+    );
+    expect(
+      details.definition.combinerTemplates?.["01_entityVersions"]?.objectListReferenceAttribute,
+    ).toBe("entityVersion");
+    const entityVersionsSection = details.definition.section.definition.find(
+      (s) =>
+        s.type === "objectListReportSection" &&
+        s.definition.fetchedDataReference === "01_entityVersions",
+    );
+    expect(entityVersionsSection?.definition.parentUuid).toBe(
+      "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+    );
   });
 
   it("Versioning report embeds freeze Runner and filters SAV by application (Phase 4)", () => {
