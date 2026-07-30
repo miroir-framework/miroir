@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import {
   ApplicationSection,
@@ -6,6 +6,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
   Entity,
+  getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
   ReportSection,
@@ -20,8 +21,10 @@ import {
 import { useFormikContext } from 'formik';
 import { JsonDisplayHelper, useMiroirContextService } from 'miroir-react';
 import type { Params } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import { reportUrl } from '../../navigation.js';
 import { ReportDisplay } from '../../routes/ReportDisplay';
 import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
@@ -38,7 +41,13 @@ import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
 import { ReportInputSection } from './ReportInputSection.js';
 
-import { reportReportDetails } from "miroir-test-app_deployment-miroir";
+import {
+  entityEntity,
+  entityEntityVersion,
+  reportEntityDetails,
+  reportEntityVersionDetails,
+  reportReportDetails,
+} from "miroir-test-app_deployment-miroir";
 import { resolveRunnerDefinitionApplication } from "../Runners/runnerDefinitionApplication.js";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -88,6 +97,7 @@ export interface ReportSectionViewWithEditorProps extends ReportSectionViewProps
 export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorProps) => {
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
+  const navigate = useNavigate();
 
   const formik = useFormikContext<Record<string, any>>();
   const valueObjectEditMode = props.valueObjectEditMode || "update";
@@ -152,7 +162,41 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     );
     if (!result || result instanceof TransformerFailure || !Array.isArray(result)) return [];
     return result as Entity[];
-  }, [reportSectionDefinitionFromFormik, formik.values, entities]);
+  }, [reportSectionDefinitionFromFormik, formik.values, entities, context.miroirContext.miroirActivityTracker]);
+
+  const modelDiagramMode =
+    reportSectionDefinitionFromFormik?.type === "modelDiagramReportSection"
+      ? ((reportSectionDefinitionFromFormik as any).definition?.mode as "Entity" | "EntityVersion" | undefined) ??
+        "Entity"
+      : "Entity";
+
+  const handleModelDiagramClassClick = useCallback(
+    (instanceUuid: string) => {
+      const detailsReport =
+        modelDiagramMode === "EntityVersion" ? reportEntityVersionDetails : reportEntityDetails;
+      const targetEntityUuid =
+        modelDiagramMode === "EntityVersion"
+          ? (entityEntityVersion as any).uuid
+          : (entityEntity as any).uuid;
+      const applicationSection = getApplicationSection(props.application, targetEntityUuid);
+      log.info("Model diagram class clicked", {
+        mode: modelDiagramMode,
+        instanceUuid,
+        reportUuid: (detailsReport as any).uuid,
+        applicationSection,
+      });
+      navigate(
+        reportUrl(
+          props.application,
+          props.deploymentUuid,
+          applicationSection,
+          (detailsReport as any).uuid,
+          instanceUuid,
+        ),
+      );
+    },
+    [modelDiagramMode, navigate, props.application, props.deploymentUuid],
+  );
 
   const storedReportDisplayParameters: Params<ReportUrlParamKeys> | TransformerFailure | undefined = useMemo(() => {
     if (reportSectionDefinitionFromFormik?.type !== "storedReportDisplay") {
@@ -441,9 +485,11 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {reportSectionDefinitionFromFormik?.type == "modelDiagramReportSection" && (
           <ModelDiagramReportSectionView
             entities={modelDiagramEntities}
+            mode={modelDiagramMode}
             label={(reportSectionDefinitionFromFormik as any).definition?.label}
             title={(reportSectionDefinitionFromFormik as any).definition?.title}
             direction={(reportSectionDefinitionFromFormik as any).definition?.direction}
+            onClassClick={handleModelDiagramClassClick}
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
             showPerformanceDisplay={props.showPerformanceDisplay}

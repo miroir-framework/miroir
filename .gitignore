@@ -5,6 +5,7 @@ certs/*.key
 node_modules*/
 node_modules/.cache*/
 tmp*/
+**__pycache__**
 graphify-out*/
 packages/graphify-out*/
 packages/miroir-cli/dist*/

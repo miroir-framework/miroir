@@ -17,6 +17,7 @@ import {
   entitiesToMermaidClassDiagram,
   metaModelToMermaidClassDiagram,
   buildEntityClickLinks,
+  buildEntityVersionClickLinks,
   coerceDiagramCarriersToEntities,
   type ClassDiagramOptions,
 } from "../src/2_domain/entitiesToMermaidClassDiagram.js";
@@ -614,7 +615,7 @@ describe("buildEntityClickLinks", () => {
 });
 
 describe("coerceDiagramCarriersToEntities", () => {
-  it("maps legacy EV-shaped carriers onto Entity uuid + mlSchema", () => {
+  it("Entity mode keeps carrier uuid (present-model Entity)", () => {
     const carriers = coerceDiagramCarriersToEntities([
       {
         uuid: "ev-row-uuid",
@@ -627,6 +628,35 @@ describe("coerceDiagramCarriersToEntities", () => {
     expect(carriers).toHaveLength(1);
     expect(carriers[0].uuid).toBe("ev-row-uuid");
     expect(carriers[0].mlSchema).toEqual(countryEntity.mlSchema);
+  });
+
+  it("EntityVersion mode uses entityUuid so FK targetEntity edges resolve", () => {
+    const carriers = coerceDiagramCarriersToEntities(
+      [
+        {
+          uuid: "ev-row-uuid",
+          entityUuid: countryEntity.uuid,
+          name: "Country",
+          mlSchema: countryEntity.mlSchema,
+        },
+      ],
+      "EntityVersion",
+    );
+    expect(carriers).toHaveLength(1);
+    expect(carriers[0].uuid).toBe(countryEntity.uuid);
+  });
+});
+
+describe("buildEntityVersionClickLinks", () => {
+  it("maps sanitised name to EntityVersion instance uuid", () => {
+    const links = buildEntityVersionClickLinks([
+      { uuid: "ev-country", name: "Country" },
+      { uuid: "ev-author", name: "Author" },
+    ]);
+    expect(links).toEqual({
+      Country: "ev-country",
+      Author: "ev-author",
+    });
   });
 });
 

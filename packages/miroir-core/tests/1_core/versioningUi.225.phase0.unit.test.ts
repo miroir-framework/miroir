@@ -151,6 +151,13 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(entityVersionsSection?.definition.parentUuid).toBe(
       "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
     );
+    const diagramSection = details.definition.section.definition.find(
+      (s) => s.type === "modelDiagramReportSection",
+    );
+    expect(diagramSection?.definition.mode).toBe("EntityVersion");
+    expect(
+      (diagramSection?.definition.entityDefinitions as { referenceName?: string })?.referenceName,
+    ).toBe("01_entityVersions");
   });
 
   it("Versioning report embeds freeze Runner and filters SAV by application (Phase 4)", () => {

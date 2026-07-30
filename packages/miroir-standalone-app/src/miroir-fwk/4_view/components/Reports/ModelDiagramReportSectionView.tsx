@@ -8,7 +8,10 @@ import {
 } from "miroir-core";
 import {
   buildEntityClickLinks,
+  buildEntityVersionClickLinks,
+  coerceDiagramCarriersToEntities,
   MermaidClassDiagram,
+  type DiagramCarrierMode,
 } from "miroir-diagram-class";
 
 import { packageName } from "../../../../constants.js";
@@ -30,9 +33,16 @@ MiroirLoggerFactory.registerLoggerToStart(
 
 export interface ModelDiagramReportSectionViewProps {
   /**
-   * Present-model Entities whose `mlSchema` drives the Mermaid diagram (#217 / #221).
+   * Carriers with `mlSchema` (present-model Entities, or EntityVersion snapshots).
+   * Mode controls class identity and click-link UUIDs.
    */
-  entities: Entity[];
+  entities: Array<Entity | Record<string, any>>;
+  /**
+   * Entity: click → Entity details (carrier.uuid = Entity.uuid).
+   * EntityVersion: geometry uses entityUuid; click → EntityVersion details (carrier.uuid).
+   * @default "Entity"
+   */
+  mode?: DiagramCarrierMode;
   /** Optional section label (displayed as a heading above the diagram). */
   label?: string;
   /** Optional diagram title embedded in the Mermaid header. */
@@ -43,9 +53,9 @@ export interface ModelDiagramReportSectionViewProps {
   height?: string;
   /**
    * Called when a class node is clicked.
-   * Receives the Entity UUID (present-model identity).
+   * Receives Entity.uuid (Entity mode) or EntityVersion.uuid (EntityVersion mode).
    */
-  onClassClick?: (entityUuid: string) => void;
+  onClassClick?: (instanceUuid: string) => void;
   showPerformanceDisplay?: boolean;
   applicationSection?: ApplicationSection;
   deploymentUuid?: string;
@@ -64,19 +74,37 @@ export const ModelDiagramReportSectionView: React.FC<ModelDiagramReportSectionVi
     currentNavigationKey
   );
 
-  const entitiesWithSchema: Entity[] = useMemo(
-    () => (props.entities ?? []).filter((entity) => !!entity.mlSchema),
-    [props.entities],
+  const mode: DiagramCarrierMode = props.mode ?? "Entity";
+
+  const diagramEntities = useMemo(
+    () => coerceDiagramCarriersToEntities((props.entities ?? []) as Array<Record<string, any>>, mode),
+    [props.entities, mode],
   );
 
-  const direction = props.direction ?? (entitiesWithSchema.length > 10 ? "TB" : "LR");
+  const direction = props.direction ?? (diagramEntities.length > 10 ? "TB" : "LR");
 
   const height = props.height ?? "calc(100vh - 300px)";
 
   const classClickLinks = useMemo(() => {
     if (!props.onClassClick) return undefined;
-    return buildEntityClickLinks(entitiesWithSchema);
-  }, [entitiesWithSchema, props.onClassClick]);
+    if (mode === "EntityVersion") {
+      return buildEntityVersionClickLinks(
+        ((props.entities ?? []) as Array<Record<string, any>>)
+          .filter((c) => !!c?.uuid && !!c?.name)
+          .map((c) => ({ uuid: String(c.uuid), name: String(c.name) })),
+      );
+    }
+    return buildEntityClickLinks(diagramEntities);
+  }, [props.entities, diagramEntities, mode, props.onClassClick]);
+
+  if (props.label) {
+    log.debug("Rendering model diagram section", {
+      label: props.label,
+      mode,
+      carrierCount: (props.entities ?? []).length,
+      diagramCount: diagramEntities.length,
+    });
+  }
 
   return (
     <div>
@@ -85,8 +113,9 @@ export const ModelDiagramReportSectionView: React.FC<ModelDiagramReportSectionVi
         navigationCount={navigationCount}
         totalCount={totalCount}
       />
+      {props.label ? <h3>{props.label}</h3> : null}
       <MermaidClassDiagram
-        entities={entitiesWithSchema}
+        entities={diagramEntities}
         options={{
           title: props.title,
           direction,

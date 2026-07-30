@@ -54,6 +54,20 @@
             "fetchedDataReference": "01_entityVersions",
             "sortByAttribute": "name"
           }
+        },
+        {
+          "type": "modelDiagramReportSection",
+          "definition": {
+            "label": "Entity Versions Diagram",
+            "title": "Application Version – Entity Versions",
+            "mode": "EntityVersion",
+            "direction": "LR",
+            "entityDefinitions": {
+              "transformerType": "getFromContext",
+              "referenceName": "01_entityVersions",
+              "interpolation": "runtime"
+            }
+          }
         }
       ]
     }
