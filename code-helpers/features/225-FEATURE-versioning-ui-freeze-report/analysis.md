@@ -9,7 +9,9 @@ Later consumers: [#9 WP2](https://github.com/miroir-framework/miroir/issues/9) �
 
 Working branch: `cursor/versioning-ui-freeze-report-2a38`
 
-**Status:** issue filed — implementation not started.
+**Status:** issue filed — TDD plan written (`./tdd-implementation-plan.md`); implementation not started.
+
+TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md)
 
 ---
 
