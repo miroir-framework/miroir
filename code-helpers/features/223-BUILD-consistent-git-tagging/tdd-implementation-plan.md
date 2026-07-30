@@ -13,7 +13,9 @@ Related:
 - Spike (D5): [`./d5-spike-results.md`](./d5-spike-results.md)
 - Soft consumer: https://github.com/miroir-framework/miroir/issues/224
 
-**Out of scope:** artefact builds (#224), `nonreg` gating, `gh release create`, renaming root package `name`, changing `"private"` flags, npm publish.
+**Out of scope:** artefact builds (#224), `nonreg` gating, `gh release create`, changing `"private"` flags, npm publish.
+
+**Prerequisite (done before Phase 0):** root `package.json` `"name"` renamed `"Miroir Framework"` → `miroir-framework` (unblocks Lerna; spike L0).
 
 ---
 
@@ -21,7 +23,7 @@ Related:
 
 | Phase | Title | Status | Notes |
 |---|---|---|---|
-| 0 | Lock defaults, module layout, test harness | ⬜ TODO | |
+| 0 | Lock defaults, module layout, test harness | ✅ DONE | pytest harness green |
 | 1 | SemVer validate + pre-release classify | ⬜ TODO | |
 | 2 | Allow-list + bump `version` only (preserve deps) | ⬜ TODO | |
 | 3 | Runtime cycle abort / dev cycle allow (D6) | ⬜ TODO | |
@@ -46,7 +48,7 @@ Unresolved analysis §8 items are locked here so TDD does not stall. Revisit onl
 | Dirty tree | Refuse apply/tag unless `--allow-dirty` or `--dry-run` |
 | Duplicate tag | Refuse unless `--force` (documented dangerous; overwrites local tag only, never push-by-default) |
 | Push | Only with explicit `--push` (implies tag+commit already done); default off |
-| Test runner | Stdlib **`unittest`** + `python -m unittest` (no new pytest dependency) |
+| Test runner | **`pytest`** (`python -m pytest scripts/tests -v`) |
 | Git in tests | Prefer **real `git` in temp dirs** for Phase 6+; fake runners only for “push was/wasn’t invoked” |
 
 ---
@@ -153,15 +155,15 @@ Exit non-zero on validation / runtime-cycle / dirty / duplicate-tag failures.
 
 ```bash
 # from repo root
-python -m unittest discover -s scripts/tests -v
+python -m pytest scripts/tests -v
 
 # single module while iterating
-python -m unittest scripts.tests.test_bump -v
+python -m pytest scripts/tests/test_bump.py -v
 ```
 
-Windows: same commands from git-bash or PowerShell (use `python`, not `py` unless documented).
+`scripts/tests/conftest.py` prepends `scripts/` to `sys.path` so `import release_tag_lib` works without setting `PYTHONPATH`.
 
-Fixtures: build tiny synthetic workspace trees under `tempfile.TemporaryDirectory` — do **not** mutate the real monorepo in unit tests. One optional Phase 7 dry-run against the real repo is manual smoke, not a unittest.
+Fixtures: build tiny synthetic workspace trees under `tempfile.TemporaryDirectory` — do **not** mutate the real monorepo in unit tests. One optional Phase 7 dry-run against the real repo is manual smoke, not a pytest case.
 
 ---
 
@@ -173,27 +175,19 @@ Fixtures: build tiny synthetic workspace trees under `tempfile.TemporaryDirector
 
 | ID | Behavior |
 |---|---|
-| 0.1 | `python -m unittest discover -s scripts/tests -v` runs (may collect 0 tests until Phase 1) |
-| 0.2 | Package `scripts/release_tag_lib` importable |
+| 0.1 | `python -m pytest scripts/tests -v` runs and collects tests |
+| 0.2 | Package `release_tag_lib` importable |
 
 ### RED → GREEN
 
-1. Add `scripts/tests/test_harness.py` asserting `import release_tag_lib` or path setup works → fail
-2. Add `scripts/release_tag_lib/__init__.py` (+ `sys.path` strategy: tests add `scripts/` to path, or use relative package under `scripts`) → pass
-
-**Recommendation:** put tests as `scripts/tests/` and make `scripts` the path root:
-
-```python
-# scripts/tests/__init__.py empty
-# discover with: cd repo && PYTHONPATH=scripts python -m unittest discover -s scripts/tests -v
-```
-
-Document the exact command in this file’s header once harness works.
+1. Add `scripts/tests/test_harness.py` asserting `import release_tag_lib` → fail if package missing
+2. Add `scripts/release_tag_lib/__init__.py` + `scripts/tests/conftest.py` (path bootstrap) → pass
 
 ### Done when
 
-- [ ] Discover command documented and green
-- [ ] Analysis §10 points at this plan
+- [x] Pytest command documented and green (`1 passed`)
+- [x] Analysis §10 points at this plan
+- [x] Root package renamed to `miroir-framework`
 
 ---
 
@@ -422,21 +416,23 @@ Never refactor while RED.
 
 ## Explicit non-goals (do not TDD)
 
-- Renaming root `"Miroir Framework"` → `miroir-framework`
 - Teaching Lerna to respect B+
 - Artefact filename stamping (#224)
 - Auto `gh release create`
 - Branch allowlist enforcement
-- Lockfile updates
+- Lockfile updates beyond root `name` sync
+
+~~Renaming root `"Miroir Framework"` → `miroir-framework`~~ **Done** (pre–Phase 0).
 
 ---
 
 ## Approval gate
 
-Before Phase 1 implementation, confirm:
+**Settled (2026-07-30):**
 
-1. Stdlib `unittest` (no pytest) is OK  
-2. Plan defaults for commit message / any-branch / D1-a are OK  
-3. Public layout under `scripts/release_tag_lib/` is OK  
+1. **pytest** (not unittest)  
+2. Commit message / any-branch / D1-a defaults OK  
+3. Layout `scripts/release_tag_lib/` OK  
+4. Root rename done before Phase 0  
 
-If yes, start Phase 0 → Phase 1 tracer bullet.
+Start Phase 0 → Phase 1 tracer bullet.

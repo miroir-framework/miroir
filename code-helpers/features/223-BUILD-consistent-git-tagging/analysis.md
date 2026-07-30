@@ -364,7 +364,7 @@ Settle these before writing the production workflow:
 9. **Annotated vs lightweight tags?** Spike showed Lerna uses annotated — prefer annotated for custom script too
 10. **Allowed branches** for non-dry-run tags? (`main` only vs any)
 11. **Prefix `v`?** **Settled by practice + spike:** no `v`
-12. **Optional hygiene:** rename root `"name"` from `"Miroir Framework"` → `miroir-framework` (unblocks `lerna list`; separate from #223 tagging script)
+12. ~~Optional hygiene: rename root `"name"`~~ **Done:** `miroir-framework`
 
 
 ---
