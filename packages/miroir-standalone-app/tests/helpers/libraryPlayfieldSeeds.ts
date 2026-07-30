@@ -66,6 +66,10 @@ export const DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY =
 export const DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY =
   "domain_controller_model_undo_redo";
 
+/** Suite registry key for DomainController Application Version freeze action MiroirTest (#216). */
+export const DOMAIN_CONTROLLER_APPLICATION_VERSION_FREEZE_SUITE_KEY =
+  "domain_controller_application_version_freeze";
+
 /** Suite registry key for the Phase 8 evolution trace tracer bullet. */
 export const EVOLUTION_TRACE_WP1_SUITE_KEY = "evolutionTraceWP1";
 
@@ -208,7 +212,7 @@ export const compositePKTestMetaModel: MetaModel = {
 export const libraryEntitiesAndInstancesCompositePK: ApplicationEntitiesAndInstances = [
   {
     entity: entityCompositePK,
-    entityVersion: entityDefinitionCompositePK,
+    // entityVersion: entityDefinitionCompositePK,
     instances: [compositeItem1, compositeItem2, compositeItem3],
   },
 ];
@@ -328,7 +332,6 @@ export const codeNumberTestMetaModel: MetaModel = {
 export const libraryEntitiesAndInstancesCodeNumber: ApplicationEntitiesAndInstances = [
   {
     entity: entityCodeNumber,
-    entityVersion: entityDefinitionCodeNumber,
     instances: [codeItem1, codeItem2, codeItem3],
   },
 ];
@@ -337,7 +340,6 @@ export const libraryEntitiesAndInstancesCodeNumber: ApplicationEntitiesAndInstan
 export const libraryEntitiesAndInstancesPublisherOnly: ApplicationEntitiesAndInstances = [
   {
     entity: entityPublisher as Entity,
-    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -469,7 +471,6 @@ export const noParentUuidTestMetaModel: MetaModel = {
 export const libraryEntitiesAndInstancesNoParentUuid: ApplicationEntitiesAndInstances = [
   {
     entity: entityPublisher as Entity,
-    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -478,7 +479,6 @@ export const libraryEntitiesAndInstancesNoParentUuid: ApplicationEntitiesAndInst
   },
   {
     entity: entityNoParentUuid,
-    entityVersion: entityDefinitionNoParentUuid,
     instances: [noParentItem1, noParentItem2, noParentItem3],
   },
 ];
@@ -495,12 +495,10 @@ export const libraryPlayfieldSeedInitParams: InitApplicationParameters = {
 export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as Entity,
-    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
@@ -512,7 +510,6 @@ export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   },
   {
     entity: entityPublisher as Entity,
-    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -525,12 +522,10 @@ export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
 export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as Entity,
-    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
@@ -541,7 +536,6 @@ export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInst
   },
   {
     entity: entityPublisher as Entity,
-    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -580,7 +574,6 @@ export function isDomainControllerDataCrudSuite(suiteKey: string): boolean {
 export const libraryEntitiesAndInstancesPublisherAndCountry: ApplicationEntitiesAndInstances = [
   {
     entity: entityPublisher as Entity,
-    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [
       publisher1 as EntityInstance,
       publisher2 as EntityInstance,
@@ -589,7 +582,6 @@ export const libraryEntitiesAndInstancesPublisherAndCountry: ApplicationEntities
   },
   {
     entity: entityCountry as Entity,
-    entityVersion: entityDefinitionCountry as EntityVersion,
     instances: [
       Country1 as EntityInstance,
       Country2 as EntityInstance,
@@ -732,6 +724,17 @@ export function isDomainControllerModelUndoRedoSuite(suiteKey: string): boolean 
   return suiteKey === DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY;
 }
 
+/**
+ * Session playfield seed for `domain_controller_application_version_freeze`.
+ * Same minimal Library as Model.CRUD (Publisher + Country).
+ */
+export const domainControllerApplicationVersionFreezeLibraryPlayfieldSeed: LibraryPlayfieldSeed =
+  domainControllerModelCrudLibraryPlayfieldSeed;
+
+export function isDomainControllerApplicationVersionFreezeSuite(suiteKey: string): boolean {
+  return suiteKey === DOMAIN_CONTROLLER_APPLICATION_VERSION_FREEZE_SUITE_KEY;
+}
+
 export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
   return (
     isDomainControllerDataCrudSuite(suiteKey) ||
@@ -741,6 +744,7 @@ export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
     isDomainControllerNonUuidPkDataCrudSuite(suiteKey) ||
     isDomainControllerNoParentUuidCrudSuite(suiteKey) ||
     isDomainControllerModelUndoRedoSuite(suiteKey) ||
+    isDomainControllerApplicationVersionFreezeSuite(suiteKey) ||
     isEvolutionTraceWP1Suite(suiteKey)
   );
 }
@@ -768,6 +772,9 @@ export function libraryPlayfieldSeedForActionSuite(
   }
   if (isDomainControllerModelUndoRedoSuite(suiteKey)) {
     return domainControllerModelUndoRedoLibraryPlayfieldSeed;
+  }
+  if (isDomainControllerApplicationVersionFreezeSuite(suiteKey)) {
+    return domainControllerApplicationVersionFreezeLibraryPlayfieldSeed;
   }
   if (isEvolutionTraceWP1Suite(suiteKey)) {
     return domainControllerModelCrudLibraryPlayfieldSeed;

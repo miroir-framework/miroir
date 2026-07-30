@@ -19,6 +19,7 @@ import {
   miroirTest_domain_controller_data_crud,
   miroirTest_domain_controller_model_crud,
   miroirTest_domain_controller_model_undo_redo,
+  miroirTest_domain_controller_application_version_freeze,
   miroirTest_domain_controller_no_parent_uuid_crud,
   miroirTest_domain_controller_non_uuid_pk_data_crud,
   miroirTest_domain_controller_non_uuid_pk_model_crud,
@@ -43,6 +44,8 @@ const SUITE_BY_KEY: Record<string, MiroirTestDefinition> = {
     miroirTest_domain_controller_no_parent_uuid_crud as MiroirTestDefinition,
   domain_controller_model_undo_redo:
     miroirTest_domain_controller_model_undo_redo as MiroirTestDefinition,
+  domain_controller_application_version_freeze:
+    miroirTest_domain_controller_application_version_freeze as MiroirTestDefinition,
   evolutionTraceWP1: miroirTest_evolutionTraceWP1 as MiroirTestDefinition,
 };
 

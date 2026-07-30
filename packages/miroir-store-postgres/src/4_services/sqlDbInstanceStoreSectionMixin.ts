@@ -340,15 +340,21 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           }
           log.info("getInstancesWithFilter result", JSON.stringify(cleanResult, null, 2));
         } else {
-          log.warn(
+          log.info(
             this.logHeader,
             "getInstancesWithFilter",
-            "could not find entity in database: entityUuid",
-            parentUuid
+            "entityUuid",
+            parentUuid,
+            "not in sqlSchemaTableAccess — returning empty collection",
           );
-          return Promise.resolve(
-            new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`)
-          );
+          return Promise.resolve({
+            status: "ok",
+            returnedDomainElement: {
+              parentUuid,
+              applicationSection: this.applicationSection,
+              instances: [],
+            },
+          });
         }
         // TODO: CORRECT APPLICATION SECTION
         return Promise.resolve({
@@ -411,15 +417,21 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           }
           log.info("getOrderedInstancesWithFilter result", cleanResult);
         } else {
-          log.warn(
+          log.info(
             this.logHeader,
             "getOrderedInstancesWithFilter",
-            "could not find entity in database: entityUuid",
-            parentUuid
+            "entityUuid",
+            parentUuid,
+            "not in sqlSchemaTableAccess — returning empty collection",
           );
-          return Promise.resolve(
-            new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`)
-          );
+          return Promise.resolve({
+            status: "ok",
+            returnedDomainElement: {
+              parentUuid,
+              applicationSection: this.applicationSection,
+              instances: [],
+            },
+          });
         }
         // TODO: CORRECT APPLICATION SECTION
         return Promise.resolve({
@@ -469,15 +481,24 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           }
           // log.info("getInstances result", JSON.stringify(cleanResult, null, 2));
         } else {
-          log.warn(
+          // Missing table ≡ no instances yet (e.g. MetaModel Entity listed for refresh
+          // before createEntity / boot registers it). Match filesystem getInstances.
+          log.info(
             this.logHeader,
             "getInstances",
-            "could not find entity in database: entityUuid",
-            parentUuid
+            "entityUuid",
+            parentUuid,
+            "not in sqlSchemaTableAccess — returning empty collection; available entities:",
+            Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {}),
           );
-          return Promise.resolve(
-            new Action2Error("FailedToGetInstances", `could not find entity ${parentUuid} in database schema ${this.schema}, available entities: ${Object.keys(this.sqlSchemaTableAccess ? this.sqlSchemaTableAccess : {})}`)
-          );
+          return Promise.resolve({
+            status: "ok",
+            returnedDomainElement: {
+              parentUuid,
+              applicationSection: this.applicationSection,
+              instances: [],
+            },
+          });
         }
         // TODO: CORRECT APPLICATION SECTION
         return Promise.resolve({

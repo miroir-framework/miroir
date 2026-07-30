@@ -1,0 +1,3112 @@
+{
+  "uuid": "d7e9f81b-c23d-4f68-b9a0-6e7f8091a2b3",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "domain_controller_application_version_freeze",
+  "description": "DomainController freezeApplicationVersion action integration tests (#216). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session libraryPlayfieldSeed (Publisher+Country). Duplicate versionName rejection remains unit-covered (actionTest cannot express expected Action failure).",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "domainController.applicationVersion.freeze",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Baseline freeze V1 on seed Entities",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Baseline freeze V1 on seed Entities",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V1-Baseline",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V1-Baseline",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crosses": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V1-Baseline",
+            "nameGivenToResult": "countSAV_V1-Baseline",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V1-Baseline",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V1-Baseline"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "savMigration_V1-Baseline",
+            "nameGivenToResult": "savMigration_V1-Baseline",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "savMigration_V1-Baseline",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "applicationVersions"
+                    ]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "accessDynamicPath",
+                      "interpolation": "runtime",
+                      "objectAccessPath": [
+                        {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "__element__"
+                        },
+                        "name"
+                      ]
+                    },
+                    "right": "V1-Baseline"
+                  }
+                },
+                "expectedValue": [
+                  {
+                    "name": "V1-Baseline",
+                    "modelStructureMigration": [],
+                    "modelCUDMigration": []
+                  }
+                ],
+                "ignoreAttributes": [
+                  "uuid",
+                  "previousVersion",
+                  "parentName",
+                  "parentUuid",
+                  "parentDefinitionVersionUuid",
+                  "selfApplication",
+                  "branch",
+                  "description",
+                  "conceptLevel",
+                  "defaultLabel",
+                  "timestamp",
+                  "storageAccess"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countCross_2",
+            "nameGivenToResult": "countCross_2",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countCross_2",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crosses"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 2
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEV_a027c379",
+            "nameGivenToResult": "countEV_a027c379",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEV_a027c379",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entityVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "entityUuid"
+                        ]
+                      },
+                      "right": "a027c379-8468-43a5-ba4d-bf618be25cab"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEV_d3139a6d",
+            "nameGivenToResult": "countEV_d3139a6d",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEV_d3139a6d",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entityVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "entityUuid"
+                        ]
+                      },
+                      "right": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Create Entity Author commit then freeze V1",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Create Entity Author commit then freeze V1",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createEntity",
+                "actionLabel": "addEntityAuthor",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [
+                    {
+                      "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                      "parentName": "Entity",
+                      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "name": "Author",
+                      "conceptLevel": "Model",
+                      "description": "The Author of a book.",
+                      "viewAttributes": [
+                        "name",
+                        "uuid"
+                      ],
+                      "cache": {
+                        "cacheAllInstancesOnRefresh": true
+                      },
+                      "mlSchema": {
+                        "type": "object",
+                        "extend": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "eager": true,
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "entityDefinitionRoot"
+                          }
+                        },
+                        "definition": {
+                          "name": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Name"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V1-Create",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V1-Create",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crosses": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V1-Create",
+            "nameGivenToResult": "countSAV_V1-Create",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V1-Create",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V1-Create"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "savMigration_V1-Create",
+            "nameGivenToResult": "savMigration_V1-Create",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "savMigration_V1-Create",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "applicationVersions"
+                    ]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "accessDynamicPath",
+                      "interpolation": "runtime",
+                      "objectAccessPath": [
+                        {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "__element__"
+                        },
+                        "name"
+                      ]
+                    },
+                    "right": "V1-Create"
+                  }
+                },
+                "expectedValue": [
+                  {
+                    "name": "V1-Create",
+                    "modelStructureMigration": [],
+                    "modelCUDMigration": []
+                  }
+                ],
+                "ignoreAttributes": [
+                  "uuid",
+                  "previousVersion",
+                  "parentName",
+                  "parentUuid",
+                  "parentDefinitionVersionUuid",
+                  "selfApplication",
+                  "branch",
+                  "description",
+                  "conceptLevel",
+                  "defaultLabel",
+                  "timestamp",
+                  "storageAccess"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEntity_Author",
+            "nameGivenToResult": "countEntity_Author",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEntity_Author",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entities"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "Author"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEV_d7a144ff",
+            "nameGivenToResult": "countEV_d7a144ff",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEV_d7a144ff",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entityVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "entityUuid"
+                        ]
+                      },
+                      "right": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countCross_3",
+            "nameGivenToResult": "countCross_3",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countCross_3",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crosses"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 3
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Freeze V1 alter Publisher commit freeze V2",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Freeze V1 alter Publisher commit freeze V2",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V1-Alter",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V1-Alter",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "alterEntityAttribute",
+                "actionLabel": "alterEntityPublisher",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entityName": "Publisher",
+                  "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "addColumns": [
+                    {
+                      "name": "freezeTestAttr",
+                      "definition": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "id": 99,
+                            "defaultLabel": "Freeze Test Attr"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V2-Alter",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V2-Alter",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crosses": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V1-Alter",
+            "nameGivenToResult": "countSAV_V1-Alter",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V1-Alter",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V1-Alter"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V2-Alter",
+            "nameGivenToResult": "countSAV_V2-Alter",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V2-Alter",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V2-Alter"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countLinkedSAV_V2-Alter",
+            "nameGivenToResult": "countLinkedSAV_V2-Alter",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countLinkedSAV_V2-Alter",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "name"
+                          ]
+                        },
+                        "right": "V2-Alter"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "!=",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "previousVersion"
+                          ]
+                        },
+                        "right": null
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "savMigration_V2-Alter",
+            "nameGivenToResult": "savMigration_V2-Alter",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "savMigration_V2-Alter",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "applicationVersions"
+                    ]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "accessDynamicPath",
+                      "interpolation": "runtime",
+                      "objectAccessPath": [
+                        {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "__element__"
+                        },
+                        "name"
+                      ]
+                    },
+                    "right": "V2-Alter"
+                  }
+                },
+                "expectedValue": [
+                  {
+                    "name": "V2-Alter",
+                    "modelStructureMigration": [],
+                    "modelCUDMigration": [
+                      {
+                        "kind": "alterEntityAttribute",
+                        "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                        "name": "Publisher",
+                        "differingFields": [
+                          "mlSchema"
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "ignoreAttributes": [
+                  "uuid",
+                  "previousVersion",
+                  "parentName",
+                  "parentUuid",
+                  "parentDefinitionVersionUuid",
+                  "selfApplication",
+                  "branch",
+                  "description",
+                  "conceptLevel",
+                  "defaultLabel",
+                  "timestamp",
+                  "storageAccess"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countCross_4",
+            "nameGivenToResult": "countCross_4",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countCross_4",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crosses"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 4
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Freeze V1 drop Country commit freeze V2",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Freeze V1 drop Country commit freeze V2",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V1-Drop",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V1-Drop",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "dropEntity",
+                "actionLabel": "dropEntityCountry",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V2-Drop",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V2-Drop",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crosses": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V2-Drop",
+            "nameGivenToResult": "countSAV_V2-Drop",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V2-Drop",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V2-Drop"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countLinkedSAV_V2-Drop",
+            "nameGivenToResult": "countLinkedSAV_V2-Drop",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countLinkedSAV_V2-Drop",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "name"
+                          ]
+                        },
+                        "right": "V2-Drop"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "!=",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "previousVersion"
+                          ]
+                        },
+                        "right": null
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "savMigration_V2-Drop",
+            "nameGivenToResult": "savMigration_V2-Drop",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "savMigration_V2-Drop",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "applicationVersions"
+                    ]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "accessDynamicPath",
+                      "interpolation": "runtime",
+                      "objectAccessPath": [
+                        {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "__element__"
+                        },
+                        "name"
+                      ]
+                    },
+                    "right": "V2-Drop"
+                  }
+                },
+                "expectedValue": [
+                  {
+                    "name": "V2-Drop",
+                    "modelStructureMigration": [],
+                    "modelCUDMigration": [
+                      {
+                        "kind": "dropEntity",
+                        "entityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                        "name": "Country"
+                      }
+                    ]
+                  }
+                ],
+                "ignoreAttributes": [
+                  "uuid",
+                  "previousVersion",
+                  "parentName",
+                  "parentUuid",
+                  "parentDefinitionVersionUuid",
+                  "selfApplication",
+                  "branch",
+                  "description",
+                  "conceptLevel",
+                  "defaultLabel",
+                  "timestamp",
+                  "storageAccess"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEntity_Country",
+            "nameGivenToResult": "countEntity_Country",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEntity_Country",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entities"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "Country"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEV_d3139a6d",
+            "nameGivenToResult": "countEV_d3139a6d",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEV_d3139a6d",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entityVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "entityUuid"
+                        ]
+                      },
+                      "right": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countCross_3",
+            "nameGivenToResult": "countCross_3",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countCross_3",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crosses"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 3
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Freeze then rename live Entity leaves historical EntityVersion",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Freeze then rename live Entity leaves historical EntityVersion",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V1-Isolation",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V1-Isolation",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "renameEntity",
+                "actionLabel": "renameEntityPublisher_PublisherRenamed",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "entityName": "Publisher",
+                  "targetValue": "PublisherRenamed"
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crosses": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V1-Isolation",
+            "nameGivenToResult": "countSAV_V1-Isolation",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V1-Isolation",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V1-Isolation"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEntity_PublisherRenamed",
+            "nameGivenToResult": "countEntity_PublisherRenamed",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEntity_PublisherRenamed",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entities"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "PublisherRenamed"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEntity_Publisher",
+            "nameGivenToResult": "countEntity_Publisher",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEntity_Publisher",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entities"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "Publisher"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEV_Publisher_a027c379",
+            "nameGivenToResult": "countEV_Publisher_a027c379",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEV_Publisher_a027c379",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entityVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "entityUuid"
+                          ]
+                        },
+                        "right": "a027c379-8468-43a5-ba4d-bf618be25cab"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "name"
+                          ]
+                        },
+                        "right": "Publisher"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Freeze V1 rename Publisher commit freeze V2",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Freeze V1 rename Publisher commit freeze V2",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V1-Rename",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V1-Rename",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "renameEntity",
+                "actionLabel": "renameEntityPublisher_Publishers",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "entityName": "Publisher",
+                  "targetValue": "Publishers"
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V2-Rename",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V2-Rename",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crosses": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V2-Rename",
+            "nameGivenToResult": "countSAV_V2-Rename",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V2-Rename",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V2-Rename"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countLinkedSAV_V2-Rename",
+            "nameGivenToResult": "countLinkedSAV_V2-Rename",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countLinkedSAV_V2-Rename",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "name"
+                          ]
+                        },
+                        "right": "V2-Rename"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "!=",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "previousVersion"
+                          ]
+                        },
+                        "right": null
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "savMigration_V2-Rename",
+            "nameGivenToResult": "savMigration_V2-Rename",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "savMigration_V2-Rename",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "applicationVersions"
+                    ]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "accessDynamicPath",
+                      "interpolation": "runtime",
+                      "objectAccessPath": [
+                        {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "__element__"
+                        },
+                        "name"
+                      ]
+                    },
+                    "right": "V2-Rename"
+                  }
+                },
+                "expectedValue": [
+                  {
+                    "name": "V2-Rename",
+                    "modelStructureMigration": [],
+                    "modelCUDMigration": [
+                      {
+                        "kind": "renameEntity",
+                        "entityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                        "name": "Publisher",
+                        "targetName": "Publishers"
+                      }
+                    ]
+                  }
+                ],
+                "ignoreAttributes": [
+                  "uuid",
+                  "previousVersion",
+                  "parentName",
+                  "parentUuid",
+                  "parentDefinitionVersionUuid",
+                  "selfApplication",
+                  "branch",
+                  "description",
+                  "conceptLevel",
+                  "defaultLabel",
+                  "timestamp",
+                  "storageAccess"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Second freeze with unchanged Entities yields empty migration",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Second freeze with unchanged Entities yields empty migration",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V1-Same",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V1-Same",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V2-Same",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V2-Same",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crosses": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V1-Same",
+            "nameGivenToResult": "countSAV_V1-Same",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V1-Same",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V1-Same"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V2-Same",
+            "nameGivenToResult": "countSAV_V2-Same",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V2-Same",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V2-Same"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countLinkedSAV_V2-Same",
+            "nameGivenToResult": "countLinkedSAV_V2-Same",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countLinkedSAV_V2-Same",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "name"
+                          ]
+                        },
+                        "right": "V2-Same"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "!=",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "previousVersion"
+                          ]
+                        },
+                        "right": null
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "savMigration_V2-Same",
+            "nameGivenToResult": "savMigration_V2-Same",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "savMigration_V2-Same",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "filterList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "__element__",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "applicationVersions"
+                    ]
+                  },
+                  "predicate": {
+                    "transformerType": "boolExpr",
+                    "interpolation": "runtime",
+                    "operator": "==",
+                    "left": {
+                      "transformerType": "accessDynamicPath",
+                      "interpolation": "runtime",
+                      "objectAccessPath": [
+                        {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "__element__"
+                        },
+                        "name"
+                      ]
+                    },
+                    "right": "V2-Same"
+                  }
+                },
+                "expectedValue": [
+                  {
+                    "name": "V2-Same",
+                    "modelStructureMigration": [],
+                    "modelCUDMigration": []
+                  }
+                ],
+                "ignoreAttributes": [
+                  "uuid",
+                  "previousVersion",
+                  "parentName",
+                  "parentUuid",
+                  "parentDefinitionVersionUuid",
+                  "selfApplication",
+                  "branch",
+                  "description",
+                  "conceptLevel",
+                  "defaultLabel",
+                  "timestamp",
+                  "storageAccess"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countCross_4",
+            "nameGivenToResult": "countCross_4",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countCross_4",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crosses"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 4
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Commit without freeze does not create freeze tip or Cross set",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Commit without freeze does not create freeze tip or Cross set",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createEntity",
+                "actionLabel": "addEntityAuthor",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [
+                    {
+                      "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                      "parentName": "Entity",
+                      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "name": "Author",
+                      "conceptLevel": "Model",
+                      "description": "The Author of a book.",
+                      "viewAttributes": [
+                        "name",
+                        "uuid"
+                      ],
+                      "cache": {
+                        "cacheAllInstancesOnRefresh": true
+                      },
+                      "mlSchema": {
+                        "type": "object",
+                        "extend": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "eager": true,
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "entityDefinitionRoot"
+                          }
+                        },
+                        "definition": {
+                          "name": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "id": 1,
+                                "defaultLabel": "Name"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crosses": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_Initial",
+            "nameGivenToResult": "countSAV_Initial",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_Initial",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "Initial"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V1-Create",
+            "nameGivenToResult": "countSAV_V1-Create",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V1-Create",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V1-Create"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countCross_0",
+            "nameGivenToResult": "countCross_0",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countCross_0",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crosses"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countEntity_Author",
+            "nameGivenToResult": "countEntity_Author",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countEntity_Author",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "entities"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "Author"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

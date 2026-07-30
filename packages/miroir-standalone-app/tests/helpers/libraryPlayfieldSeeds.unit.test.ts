@@ -5,6 +5,7 @@ import {
   DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY,
+  DOMAIN_CONTROLLER_APPLICATION_VERSION_FREEZE_SUITE_KEY,
   DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY,
   DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY,
   DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY,
@@ -66,6 +67,12 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
     ]);
     expect(isDomainControllerModelCrudSuite(DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY)).toBe(true);
     expect(libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY)).toBe(seed);
+  });
+
+  it("domainControllerApplicationVersionFreezeLibraryPlayfieldSeed reuses Model.CRUD seed", () => {
+    expect(
+      libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_APPLICATION_VERSION_FREEZE_SUITE_KEY),
+    ).toBe(domainControllerModelCrudLibraryPlayfieldSeed);
   });
 
   it("domainControllerCompositePkCrudLibraryPlayfieldSeed seeds TestEntityCompositePK only", () => {
