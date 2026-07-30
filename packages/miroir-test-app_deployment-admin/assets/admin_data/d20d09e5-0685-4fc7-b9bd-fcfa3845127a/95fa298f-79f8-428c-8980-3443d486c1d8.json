@@ -1,0 +1,8 @@
+{
+  "uuid": "95fa298f-79f8-428c-8980-3443d486c1d8",
+  "parentName": "MiroirUser",
+  "parentUuid": "d20d09e5-0685-4fc7-b9bd-fcfa3845127a",
+  "name": "Bob Inactive",
+  "status": "inactive",
+  "description": "Sample inactive platform user for Admin rights prep (#219)."
+}

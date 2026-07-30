@@ -6,6 +6,8 @@ export declare const entityDeployment: any;
 export declare const entityViewParams: any;
 export declare const entityStoreBasedConfiguration: any;
 export declare const entityImport: any;
+export declare const entityMiroirUser: any;
+export declare const entityMiroirRight: any;
 export declare const entityVersionAdminApplication: any;
 /** @deprecated Use entityVersionAdminApplication */
 export declare const entityDefinitionAdminApplication: any;
@@ -21,6 +23,12 @@ export declare const entityDefinitionStoreBasedConfiguration: any;
 export declare const entityVersionImport: any;
 /** @deprecated Use entityVersionImport */
 export declare const entityDefinitionImport: any;
+export declare const entityVersionMiroirUser: any;
+/** @deprecated Use entityVersionMiroirUser */
+export declare const entityDefinitionMiroirUser: any;
+export declare const entityVersionMiroirRight: any;
+/** @deprecated Use entityVersionMiroirRight */
+export declare const entityDefinitionMiroirRight: any;
 export declare const reportViewParamsDetails: any;
 export declare const reportApplicationList: any;
 export declare const reportApplicationDetails: any;
@@ -29,6 +37,10 @@ export declare const reportDeploymentDetails: any;
 export declare const reportViewParamsList: any;
 export declare const reportStoreBasedConfigurationList: any;
 export declare const reportApplicationListWithDeployments: any;
+export declare const reportMiroirUserList: any;
+export declare const reportMiroirUserDetails: any;
+export declare const reportMiroirRightList: any;
+export declare const reportMiroirRightDetails: any;
 export declare const menuDefaultAdmin: any;
 export declare const adminSelfApplication: any;
 export declare const selfApplicationStoreBasedConfigurationAdmin: any;

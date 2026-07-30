@@ -67,6 +67,22 @@
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
             "reportUuid": "a0503a52-befd-4dcd-90c8-3c96c90f805d",
             "icon": "settings"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Users",
+            "section": "data",
+            "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+            "reportUuid": "c8aa168d-2835-46cc-a602-2d071fb7d263",
+            "icon": "person"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Rights",
+            "section": "data",
+            "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+            "reportUuid": "42994013-4494-4510-8531-7c811a9aa0d0",
+            "icon": "lock"
           }
         ]
       }

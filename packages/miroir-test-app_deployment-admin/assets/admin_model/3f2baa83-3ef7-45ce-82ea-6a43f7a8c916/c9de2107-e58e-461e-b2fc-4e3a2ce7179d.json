@@ -1,0 +1,35 @@
+{
+  "uuid": "c9de2107-e58e-461e-b2fc-4e3a2ce7179d",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "MiroirUserDetails",
+  "defaultLabel": "User details",
+  "definition": {
+    "extractorTemplates": {
+      "miroirUser": {
+        "extractorOrCombinerType": "extractorByPrimaryKey",
+        "parentName": "MiroirUser",
+        "parentUuid": "d20d09e5-0685-4fc7-b9bd-fcfa3845127a",
+        "instanceUuid": {
+          "transformerType": "getFromParameters",
+          "interpolation": "build",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "d20d09e5-0685-4fc7-b9bd-fcfa3845127a",
+            "fetchedDataReference": "miroirUser"
+          }
+        }
+      ]
+    }
+  }
+}
