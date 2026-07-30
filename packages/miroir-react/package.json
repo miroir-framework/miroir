@@ -1,6 +1,6 @@
 {
   "name": "miroir-react",
-  "version": "1.0.0",
+  "version": "0.5.0-rc.2",
   "description": "Reusable React context and theme system for the Miroir Framework",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
@@ -22,12 +22,12 @@
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
-    "@uiw/react-codemirror": "^4.23.13",
-    "miroir-core": "*",
     "@redux-devtools/core": "^3.13.1",
-    "miroir-test-app_deployment-miroir": "*",
-    "miroir-localcache-redux": "*",
-    "miroir-localcache-zustand": "*",
+    "@uiw/react-codemirror": "^4.23.13",
+    "miroir-core": "^0.5.0-rc.2",
+    "miroir-localcache-redux": "^0.5.0-rc.2",
+    "miroir-localcache-zustand": "^0.5.0-rc.2",
+    "miroir-test-app_deployment-miroir": "^0.5.0-rc.2",
     "react-error-boundary": "^4.0.13",
     "react-hook-form": "^7.51.1",
     "react-markdown": "^10.1.0",
@@ -38,16 +38,16 @@
   "peerDependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@mui/material": ">=5.0.0",
     "react": ">=18.0.0",
-    "react-dom": "^18.2.0",
-    "@mui/material": ">=5.0.0"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "tsup": "^8.0.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "vitest": "^3.2.4",
-    "miroir-test-app_deployment-admin": "*",
-    "miroir-test-app_deployment-library": "*"
+    "miroir-test-app_deployment-admin": "^0.5.0-rc.2",
+    "miroir-test-app_deployment-library": "^0.5.0-rc.2",
+    "tsup": "^8.0.0",
+    "vitest": "^3.2.4"
   }
 }
