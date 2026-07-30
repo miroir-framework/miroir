@@ -26,7 +26,8 @@
     "nonreg": "python scripts/run-nonreg.py",
     "nonreg:unit": "python scripts/run-nonreg.py --tier unit --run-all",
     "nonreg:default": "python scripts/run-nonreg.py --tier default --run-all",
-    "nonreg:fail-fast": "python scripts/run-nonreg.py --tier default --fail-fast"
+    "nonreg:fail-fast": "python scripts/run-nonreg.py --tier default --fail-fast",
+    "release:tag": "python scripts/release_tag.py"
   },
   "nx": {
     "targets": {

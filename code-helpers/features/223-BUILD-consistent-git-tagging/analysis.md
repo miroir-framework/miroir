@@ -384,7 +384,7 @@ Settle these before writing the production workflow:
 
 ## 10. Suggested implementation slices (after decisions)
 
-1. **Docs-first:** write convention into `release-process.md` (D2–D6; D1-a as plan default) — can land with TDD Phase 7 or earlier stub.
+1. ~~Docs-first~~ **Done** — [`docs/contributing/release-process.md`](../../../docs/contributing/release-process.md)
 2. ~~D5 spike~~ **Done** — [`d5-spike-results.md`](./d5-spike-results.md); **D5-a** accepted.
-3. **TDD implement** `scripts/release_tag.py` per [`tdd-implementation-plan.md`](./tdd-implementation-plan.md) (Phases 0–7).
-4. **Smoke:** `--dry-run` on real repo; then optional local `--commit --tag` without `--push`.
+3. ~~TDD implement~~ **Done** — Phases 0–7 in [`tdd-implementation-plan.md`](./tdd-implementation-plan.md); CLI `scripts/release_tag.py` / `npm run release:tag`
+4. Smoke: `--dry-run` on real repo verified; optional local `--commit --tag` without `--push` when cutting a real pre-release.

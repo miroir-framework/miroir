@@ -30,7 +30,7 @@ Related:
 | 4 | Dry-run plan (no filesystem/git mutation) | ✅ DONE | `test_plan_dry_run.py` |
 | 5 | Apply bump to a real directory tree | ✅ DONE | `apply_release_plan` |
 | 6 | Git commit + annotated tag (temp repo) | ✅ DONE | `git_ops.py` |
-| 7 | CLI flags + push opt-in / docs | ⬜ TODO | |
+| 7 | CLI flags + push opt-in / docs | ✅ DONE | `release_tag.py`, `release-process.md` |
 
 ---
 
@@ -360,8 +360,9 @@ Match real B+ **names** from analysis D2.
 
 ### Done when
 
-- [ ] Issue #223 acceptance criteria checkboxes can be closed (except human GitHub release process, which stays manual)
-- [ ] Analysis §10 marked complete / progress table updated
+- [x] Issue #223 acceptance criteria checkboxes can be closed (except human GitHub release process, which stays manual)
+- [x] Analysis §10 marked complete / progress table updated
+- [x] Real-repo smoke: `--dry-run` for `0.5.0-rc.2` succeeded (no runtime cycles; root version unchanged)
 
 ---
 
