@@ -19,7 +19,7 @@ Related:
 - Prerequisite: [#216](../216-FEATURE-application-versions-and-freeze/) ✅
 - Working branch: `cursor/versioning-ui-freeze-report-2a38`
 
-**Resume note:** Phases 0–2 DONE.
+**Resume note:** Phases 0–3 DONE.
 
 ---
 
@@ -30,7 +30,7 @@ Related:
 | 0 | Lock contracts & fixtures (Runner payload, report shape, AppBar link) | ✅ DONE | 6/6 `versioningUi.225.phase0` |
 | 1 | Freeze Runner asset + registry | ✅ DONE | registry 1/1; modelValidation Runner instance; phase0 flipped |
 | 2 | MiroirTest runnerTest integ — freeze Runner | ✅ DONE | `runner_freeze_application_version` 2/2 filesystem; action freeze 8/8 |
-| 3 | Application Version details report + SAV `defaultInstanceDetailsReportUuid` | ⬜ TODO | modelValidation + list→details smoke |
+| 3 | Application Version details report + SAV `defaultInstanceDetailsReportUuid` | ✅ DONE | phase0 flipped; modelValidation 117/117 |
 | 4 | Versioning report (freeze Runner + filtered AV list) | ⬜ TODO | modelValidation + report composition |
 | 5 | AppBar `commit` → Versioning (current-application aware) | ⬜ TODO | unit / light UI proof |
 | 6 | Nonreg + docs + end-to-end tracer | ⬜ TODO | nonreg step + manual/integ tracer |
@@ -213,7 +213,7 @@ npm run testMiroir -w miroir-standalone-app -- \
 
 ---
 
-## Phase 3 — Application Version details report  ⬜ TODO
+## Phase 3 — Application Version details report  ✅ DONE
 
 ### Goal
 
@@ -221,9 +221,11 @@ List row click can open a details report for one SAV.
 
 ### 3.1 RED → GREEN — Details report + Entity pointer
 
-- Add `ApplicationVersionDetails` Report (`extractorByPrimaryKey` on SAV `c3f0facf-…`, `instanceUuid` from parameters) — mirror `EntityDetails`.
+- Add `ApplicationVersionDetails` Report (`extractorByPrimaryKey` on SAV `c3f0facf-…`, `instanceUuid` from parameters) — mirror `EntityDetails` / `RunnerDetails`.
 - Set `defaultInstanceDetailsReportUuid` on SelfApplicationVersion Entity (and EV row if required for consistency / modelValidation).
 - Export report; include in `defaultMiroirMetaModel.reports`.
+
+**Delivered:** Report `17e78252-2540-4003-9305-d85c0c02d7ba`; SAV Entity + EV pointer; `reportApplicationVersionDetails` export + MetaModel.reports.
 
 #### Validation
 
@@ -232,7 +234,7 @@ npm run build -w miroir-test-app_deployment-miroir
 npm run testByFile -w miroir-test-app_deployment-miroir -- 'model' -t ''
 ```
 
-Manual / light integ: open existing AV list or Versioning list (Phase 4), click a row → details page renders SAV fields (`name`, `description`, `previousVersion`, `modelCUDMigration`).
+**Result (2026-07-30):** ✅ modelValidation 117/117; phase0 SAV details lock green.
 
 ---
 
