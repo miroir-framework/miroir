@@ -27,7 +27,7 @@ Related:
 | 1 | SemVer validate + pre-release classify | ✅ DONE | `semver_util.py` |
 | 2 | Allow-list + bump `version` only (preserve deps) | ✅ DONE | `allowlist.py`, `bump.py` |
 | 3 | Runtime cycle abort / dev cycle allow (D6) | ✅ DONE | `dep_graph.py`, cycle gate in `plan.py` |
-| 4 | Dry-run plan (no filesystem/git mutation) | ⬜ TODO | |
+| 4 | Dry-run plan (no filesystem/git mutation) | ✅ DONE | `test_plan_dry_run.py` |
 | 5 | Apply bump to a real directory tree | ⬜ TODO | |
 | 6 | Git commit + annotated tag (temp repo) | ⬜ TODO | |
 | 7 | CLI flags + push opt-in / docs | ⬜ TODO | |
@@ -295,7 +295,7 @@ Match real B+ **names** from analysis D2.
 
 ### Done when
 
-- [ ] CLI can later print plan from `--dry-run` using this object only
+- [x] CLI can later print plan from `--dry-run` using this object only
 
 ---
 
