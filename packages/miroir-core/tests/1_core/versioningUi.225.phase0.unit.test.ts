@@ -161,12 +161,13 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     ).toBe("application");
   });
 
-  it("gap: AppBar has no commit / Versioning report link yet (Phase 5)", () => {
+  it("AppBar commit icon links to Versioning via applicationSelector (Phase 5)", () => {
     const appBar = readFileSync(APP_BAR_PATH, "utf8");
-    expect(appBar.includes('icon: "commit"') || appBar.includes("icon: 'commit'")).toBe(
-      false,
-    );
-    expect(appBar.includes("Versioning")).toBe(false);
+    expect(appBar.includes('icon: "commit"') || appBar.includes("icon: 'commit'")).toBe(true);
+    expect(appBar.includes("Versioning")).toBe(true);
+    expect(appBar.includes("reportVersioning")).toBe(true);
+    expect(appBar.includes("resolveAppBarReportLinkApplication")).toBe(true);
+    expect(appBar.includes("applicationSelector")).toBe(true);
   });
 
   it("ApplicationVersionList exists and is unscoped (Versioning report is new)", () => {

@@ -19,7 +19,7 @@ Related:
 - Prerequisite: [#216](../216-FEATURE-application-versions-and-freeze/) ✅
 - Working branch: `cursor/versioning-ui-freeze-report-2a38`
 
-**Resume note:** Phases 0–4 DONE.
+**Resume note:** Phases 0–5 DONE.
 
 ---
 
