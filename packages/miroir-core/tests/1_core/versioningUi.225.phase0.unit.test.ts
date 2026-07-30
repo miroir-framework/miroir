@@ -73,11 +73,21 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     );
   });
 
-  it("gap: no freezeApplicationVersion Runner asset yet (Phase 1)", () => {
+  it("freezeApplicationVersion Runner asset exists (Phase 1)", () => {
     const freezeRunners = runnerJsonFiles().filter(
       (r) => r.name === VERSIONING_UI_225.runnerName,
     );
-    expect(freezeRunners).toHaveLength(0);
+    expect(freezeRunners).toHaveLength(1);
+    const raw = JSON.parse(readFileSync(freezeRunners[0].path, "utf8")) as {
+      definition?: {
+        compositeActionSequence?: {
+          payload?: { actionSequence?: { actionType?: string; endpoint?: string }[] };
+        };
+      };
+    };
+    const step = raw.definition?.compositeActionSequence?.payload?.actionSequence?.[0];
+    expect(step?.actionType).toBe("freezeApplicationVersion");
+    expect(step?.endpoint).toBe(VERSIONING_UI_225.modelEndpointUuid);
   });
 
   it("gap: SelfApplicationVersion has no defaultInstanceDetailsReportUuid (Phase 3)", () => {

@@ -273,6 +273,7 @@ export declare const runnerDeployApplication: any;
 export declare const runnerDropApplication: any;
 export declare const runnerDropEntity: any;
 export declare const runnerCreateEntity: any;
+export declare const runnerFreezeApplicationVersion: any;
 export declare const blobMiroirLogo: any;
 export declare const applicationVersionInitialMiroirVersionCrossEntityDefinitionEntity: any;
 export declare const applicationVersionInitialMiroirVersionCrossEntityVersionEntityVersion: any;

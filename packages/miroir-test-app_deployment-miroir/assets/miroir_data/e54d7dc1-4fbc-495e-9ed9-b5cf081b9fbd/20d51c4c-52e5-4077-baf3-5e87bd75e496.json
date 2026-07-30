@@ -1,0 +1,167 @@
+{
+  "uuid": "20d51c4c-52e5-4077-baf3-5e87bd75e496",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "name": "freezeApplicationVersion",
+  "defaultLabel": "Freeze Application Version",
+  "parentName": "Runner",
+  "description": "Freeze the current present-model Entities into a new SelfApplicationVersion (#225 / #216).",
+  "definition": {
+    "runnerType": "customRunner",
+    "formMLSchema": {
+      "formMLSchemaType": "transformer",
+      "initialFormValues": {
+        "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
+        "versionName": "",
+        "description": "",
+        "branch": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+      },
+      "transformer": {
+        "type": "object",
+        "definition": {
+          "application": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Application",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                },
+                "foreignKeyParams": {
+                  "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "versionName": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Version Name",
+                "description": "Unique label for the new Application Version (same application + branch)."
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "branch": {
+            "type": "uuid",
+            "optional": true,
+            "nullable": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Branch",
+                "description": "Model branch for the freeze chain (required on first freeze).",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                },
+                "foreignKeyParams": {
+                  "targetApplicationUuid": {
+                    "transformerType": "ifThenElse",
+                    "interpolation": "build",
+                    "if": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "build",
+                      "operator": "!=",
+                      "left": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "safe": true,
+                        "referencePath": [
+                          "freezeApplicationVersion",
+                          "application"
+                        ]
+                      },
+                      "right": {
+                        "transformerType": "returnValue",
+                        "interpolation": "build",
+                        "value": null
+                      }
+                    },
+                    "then": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "build",
+                      "safe": true,
+                      "referencePath": [
+                        "freezeApplicationVersion",
+                        "application"
+                      ]
+                    },
+                    "else": {
+                      "transformerType": "returnValue",
+                      "interpolation": "build",
+                      "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                    }
+                  },
+                  "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+                  "targetEntityApplicationSection": "model",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "compositeActionSequence": {
+      "actionType": "compositeActionSequence",
+      "actionLabel": "Freeze Application Version",
+      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      "payload": {
+        "actionSequence": [
+          {
+            "actionType": "freezeApplicationVersion",
+            "actionLabel": "freezeApplicationVersion",
+            "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+            "payload": {
+              "application": {
+                "transformerType": "getFromParameters",
+                "referencePath": [
+                  "freezeApplicationVersion",
+                  "application"
+                ]
+              },
+              "versionName": {
+                "transformerType": "getFromParameters",
+                "referencePath": [
+                  "freezeApplicationVersion",
+                  "versionName"
+                ]
+              },
+              "description": {
+                "transformerType": "getFromParameters",
+                "safe": true,
+                "referencePath": [
+                  "freezeApplicationVersion",
+                  "description"
+                ]
+              },
+              "branch": {
+                "transformerType": "getFromParameters",
+                "safe": true,
+                "referencePath": [
+                  "freezeApplicationVersion",
+                  "branch"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

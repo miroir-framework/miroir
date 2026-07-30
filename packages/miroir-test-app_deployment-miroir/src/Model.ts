@@ -125,6 +125,7 @@ import {
   reportRunnerList,
   runnerDropApplication,
   runnerDropEntity,
+  runnerFreezeApplicationVersion,
   selfApplicationMiroir,
   selfApplicationVersionInitialMiroirVersion,
   storeManagementEndpoint,
@@ -227,7 +228,11 @@ export const defaultMiroirMetaModel: MetaModel = {
     reportRunnerList as Report,
     reportRunnerDetails as Report,
   ],
-  runners: [runnerDropApplication as Runner, runnerDropEntity as any as Runner],
+  runners: [
+    runnerDropApplication as Runner,
+    runnerDropEntity as any as Runner,
+    runnerFreezeApplicationVersion as any as Runner,
+  ],
   applicationVersionCrossEntityVersion: [
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
     applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,

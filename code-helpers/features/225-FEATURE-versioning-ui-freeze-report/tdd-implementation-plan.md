@@ -19,7 +19,7 @@ Related:
 - Prerequisite: [#216](../216-FEATURE-application-versions-and-freeze/) ✅
 - Working branch: `cursor/versioning-ui-freeze-report-2a38`
 
-**Resume note:** Phases 0–N not started.
+**Resume note:** Phase 0 DONE (characterization 6/6).
 
 ---
 
@@ -27,8 +27,8 @@ Related:
 
 | Phase | Title | Status | Tests |
 |---|---|---|---|
-| 0 | Lock contracts & fixtures (Runner payload, report shape, AppBar link) | ⬜ TODO | — |
-| 1 | Freeze Runner asset + registry | ⬜ TODO | modelValidation + registry resolve |
+| 0 | Lock contracts & fixtures (Runner payload, report shape, AppBar link) | ✅ DONE | 6/6 `versioningUi.225.phase0` |
+| 1 | Freeze Runner asset + registry | ✅ DONE | registry 1/1; modelValidation Runner instance; phase0 flipped |
 | 2 | MiroirTest runnerTest integ — freeze Runner | ⬜ TODO | runnerTest suite |
 | 3 | Application Version details report + SAV `defaultInstanceDetailsReportUuid` | ⬜ TODO | modelValidation + list→details smoke |
 | 4 | Versioning report (freeze Runner + filtered AV list) | ⬜ TODO | modelValidation + report composition |
@@ -106,7 +106,9 @@ Prefer **runnerTest** / modelValidation / thin AppBar unit over mocking DomainCo
 
 ---
 
-## Phase 0 — Lock contracts & fixtures  ⬜ TODO
+## Phase 0 — Lock contracts & fixtures  ✅ DONE
+
+**Realization:** `packages/miroir-core/tests/1_core/versioningUi.225.phase0.unit.test.ts` (filesystem locks + gap inventory).
 
 ### Goal
 
