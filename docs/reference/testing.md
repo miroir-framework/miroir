@@ -261,7 +261,7 @@ Use **`--profile`** so one preset sets both `VITE_MIROIR_*` (app-stack / runner)
 | Kind | Suite key (`--suites`) | Session | Typical profile |
 |------|------------------------|---------|-----------------|
 | **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` (synthetic `testApplication`) | `emulatedServer-sql` |
-| **Runner** | `runner_library` | `RunnerTestSession` (library playfield + runners) | `emulatedServer-sql` |
+| **Runner** | `runner_library`, `runner_create_entity`, `runner_drop_entity`, `runner_freeze_application_version` | `RunnerTestSession` (library / Miroir entity registries) | `emulatedServer-sql` (freeze runner also green on `emulatedServer-filesystem`) |
 | **Action** | `domain_controller_data_crud`, `domain_controller_model_crud`, `domain_controller_composite_pk_crud`, `domain_controller_non_uuid_pk_{model,data}_crud`, `domain_controller_no_parent_uuid_crud`, `domain_controller_model_undo_redo`, `domain_controller_application_version_freeze` (all Miroir `miroir_data`) | `RunnerTestSession` + `libraryPlayfieldSeed` (`actionTest` leaves); Library is `runTarget`/testbed | `emulatedServer-sql` (also green on `emulatedServer-filesystem` for freeze) |
 
 

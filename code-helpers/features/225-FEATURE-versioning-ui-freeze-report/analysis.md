@@ -9,9 +9,30 @@ Later consumers: [#9 WP2](https://github.com/miroir-framework/miroir/issues/9) �
 
 Working branch: `cursor/versioning-ui-freeze-report-2a38`
 
-**Status:** issue filed — TDD plan written (`./tdd-implementation-plan.md`); implementation not started.
+**Status:** ✅ implemented — Phases 0–6 complete on `cursor/versioning-ui-freeze-report-2a38` (PR #226).
 
 TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md)
+
+### Delivered surfaces
+
+| Surface | Uuid / key |
+|---------|------------|
+| Freeze Runner | `20d51c4c-52e5-4077-baf3-5e87bd75e496` / `freezeApplicationVersion` |
+| runnerTest suite | `967eff73-…` / `runner_freeze_application_version` |
+| ApplicationVersionDetails | `17e78252-2540-4003-9305-d85c0c02d7ba` |
+| Versioning report | `c2b89408-bed7-473d-ab0a-2f4adc6a85e1` |
+| AppBar | `commit` → Versioning via `applicationSelector` |
+| Nonreg | `integ-runner-runner_freeze_application_version` (filesystem) |
+
+### Tracer (filesystem / manual)
+
+1. Sidebar → select Library (versioned).
+2. AppBar `commit` → Versioning report for Library.
+3. Freeze `UI-V1` via Runner → list shows V1; empty `modelCUDMigration`.
+4. Alter Entity; freeze `UI-V2` → list shows both; V2 details: `previousVersion` + diff.
+5. Open V1 details → unchanged by live edits (#216 isolation).
+
+Automated tracer equivalent: `runner_freeze_application_version` integ (V1 baseline + V1→alter→V2).
 
 ---
 
