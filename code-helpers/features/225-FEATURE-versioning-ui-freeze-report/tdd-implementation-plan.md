@@ -19,7 +19,7 @@ Related:
 - Prerequisite: [#216](../216-FEATURE-application-versions-and-freeze/) ✅
 - Working branch: `cursor/versioning-ui-freeze-report-2a38`
 
-**Resume note:** Phases 0–3 DONE.
+**Resume note:** Phases 0–4 DONE.
 
 ---
 
@@ -31,7 +31,7 @@ Related:
 | 1 | Freeze Runner asset + registry | ✅ DONE | registry 1/1; modelValidation Runner instance; phase0 flipped |
 | 2 | MiroirTest runnerTest integ — freeze Runner | ✅ DONE | `runner_freeze_application_version` 2/2 filesystem; action freeze 8/8 |
 | 3 | Application Version details report + SAV `defaultInstanceDetailsReportUuid` | ✅ DONE | phase0 flipped; modelValidation 117/117 |
-| 4 | Versioning report (freeze Runner + filtered AV list) | ⬜ TODO | modelValidation + report composition |
+| 4 | Versioning report (freeze Runner + filtered AV list) | ✅ DONE | phase0 Versioning lock; modelValidation 118/118 |
 | 5 | AppBar `commit` → Versioning (current-application aware) | ⬜ TODO | unit / light UI proof |
 | 6 | Nonreg + docs + end-to-end tracer | ⬜ TODO | nonreg step + manual/integ tracer |
 
@@ -238,7 +238,7 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- 'model' -t ''
 
 ---
 
-## Phase 4 — Versioning report  ⬜ TODO
+## Phase 4 — Versioning report  ✅ DONE
 
 ### Goal
 
@@ -249,11 +249,11 @@ Single report composition: freeze Runner on top, Application Versions for **curr
 - New Report `Versioning` with `definition.section.type: "list"`:
   1. `runnerReportSection` → freeze Runner uuid (`storedRunner`)
   2. `objectListReportSection` (or equivalent) listing SAVs **filtered** by current application
-- Filtering strategy (pick one and stick to it in this phase):
-  - **Preferred:** report parameter / page context `application` (or deployment’s SelfApplication) fed into extractor `filter` on attribute `selfApplication`, **or**
-  - Combiner that compares SAV.`selfApplication` to context application uuid
-- Ensure row navigation uses `defaultInstanceDetailsReportUuid` from Phase 3.
+- Filtering: extractor `filter` on `selfApplication` ← `getFromParameters("application")`
+- Row navigation uses `defaultInstanceDetailsReportUuid` from Phase 3.
 - Export + MetaModel.reports wiring.
+
+**Delivered:** Report `c2b89408-bed7-473d-ab0a-2f4adc6a85e1` (`reportVersioning`).
 
 #### Validation
 
@@ -262,9 +262,7 @@ npm run build -w miroir-test-app_deployment-miroir
 npm run testByFile -w miroir-test-app_deployment-miroir -- 'model' -t ''
 ```
 
-Behavioral check (manual or thin ReportPage integ if one exists): with Library selected in sidebar, Versioning list shows only Library SAVs; freeze Runner section visible.
-
-**NON-REGRESSION:** `ApplicationVersionList` (`0810de28-…`) still modelValidation-green; sidebar menu link still works.
+**Result (2026-07-30):** ✅ modelValidation 118/118; phase0 Versioning composition lock green. ApplicationVersionList remains unscoped.
 
 ---
 
