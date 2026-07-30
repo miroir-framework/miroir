@@ -1,0 +1,48 @@
+{
+  "uuid": "c2b89408-bed7-473d-ab0a-2f4adc6a85e1",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "Versioning",
+  "defaultLabel": "Versioning",
+  "definition": {
+    "extractorTemplates": {
+      "applicationVersions": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "ApplicationVersion",
+        "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+        "filter": {
+          "attributeName": "selfApplication",
+          "value": {
+            "transformerType": "getFromParameters",
+            "referenceName": "application"
+          }
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "freezeApplicationVersion",
+            "runner": "20d51c4c-52e5-4077-baf3-5e87bd75e496"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "SelfApplication Versions",
+            "parentName": "ApplicationVersion",
+            "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+            "fetchedDataReference": "applicationVersions",
+            "sortByAttribute": "name"
+          }
+        }
+      ]
+    }
+  }
+}

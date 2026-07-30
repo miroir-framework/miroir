@@ -120,6 +120,7 @@ export declare const reportApplicationDeploymentConfigurationList: any;
 export declare const reportApplicationModelBranchList: any;
 export declare const reportApplicationVersionList: any;
 export declare const reportApplicationVersionDetails: any;
+export declare const reportVersioning: any;
 export declare const reportConfigurationList: any;
 export declare const reportEndpointVersionList: any;
 export declare const reportEntityVersionList: any;

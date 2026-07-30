@@ -35,7 +35,10 @@ export const VERSIONING_UI_225 = {
   runnerRegistryKey: "freezeApplicationVersion",
   runnerName: "freezeApplicationVersion",
   versioningReportName: "Versioning",
+  versioningReportUuid: "c2b89408-bed7-473d-ab0a-2f4adc6a85e1",
   applicationVersionDetailsReportName: "ApplicationVersionDetails",
+  applicationVersionDetailsReportUuid: "17e78252-2540-4003-9305-d85c0c02d7ba",
+  freezeRunnerUuid: "20d51c4c-52e5-4077-baf3-5e87bd75e496",
   appBarIcon: "commit",
   modelEndpointUuid: "7947ae40-eb34-4149-887b-15a9021e714e",
   selfApplicationVersionEntityUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
@@ -97,11 +100,11 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     >;
     expect(entity.uuid).toBe(VERSIONING_UI_225.selfApplicationVersionEntityUuid);
     expect(entity.defaultInstanceDetailsReportUuid).toBe(
-      "17e78252-2540-4003-9305-d85c0c02d7ba",
+      VERSIONING_UI_225.applicationVersionDetailsReportUuid,
     );
     const detailsPath = join(
       REPO_ROOT,
-      "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/17e78252-2540-4003-9305-d85c0c02d7ba.json",
+      `packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/${VERSIONING_UI_225.applicationVersionDetailsReportUuid}.json`,
     );
     expect(existsSync(detailsPath)).toBe(true);
     const details = JSON.parse(readFileSync(detailsPath, "utf8")) as {
@@ -112,6 +115,50 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(
       details.definition.extractorTemplates.applicationVersion.parentUuid,
     ).toBe(VERSIONING_UI_225.selfApplicationVersionEntityUuid);
+  });
+
+  it("Versioning report embeds freeze Runner and filters SAV by application (Phase 4)", () => {
+    const versioningPath = join(
+      REPO_ROOT,
+      `packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/${VERSIONING_UI_225.versioningReportUuid}.json`,
+    );
+    expect(existsSync(versioningPath)).toBe(true);
+    const report = JSON.parse(readFileSync(versioningPath, "utf8")) as {
+      name: string;
+      definition: {
+        extractorTemplates: {
+          applicationVersions: {
+            filter?: { attributeName?: string; value?: { referenceName?: string } };
+          };
+        };
+        section: {
+          type: string;
+          definition: Array<{
+            type: string;
+            definition: Record<string, unknown>;
+          }>;
+        };
+      };
+    };
+    expect(report.name).toBe(VERSIONING_UI_225.versioningReportName);
+    expect(report.definition.section.type).toBe("list");
+    const runnerSection = report.definition.section.definition.find(
+      (s) => s.type === "runnerReportSection",
+    );
+    expect(runnerSection?.definition.runner).toBe(VERSIONING_UI_225.freezeRunnerUuid);
+    expect(runnerSection?.definition.runnerReportSectionType).toBe("storedRunner");
+    const listSection = report.definition.section.definition.find(
+      (s) => s.type === "objectListReportSection",
+    );
+    expect(listSection?.definition.parentUuid).toBe(
+      VERSIONING_UI_225.selfApplicationVersionEntityUuid,
+    );
+    expect(report.definition.extractorTemplates.applicationVersions.filter?.attributeName).toBe(
+      "selfApplication",
+    );
+    expect(
+      report.definition.extractorTemplates.applicationVersions.filter?.value?.referenceName,
+    ).toBe("application");
   });
 
   it("gap: AppBar has no commit / Versioning report link yet (Phase 5)", () => {
