@@ -1,4 +1,4 @@
-import { describe, expect, beforeAll, afterAll, beforeEach, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 // import { miroirFileSystemStoreSectionStartup } from "../dist/bundle";
 import {
@@ -7,22 +7,21 @@ import {
   Action2ReturnType,
   Action2VoidReturnType,
   ActionError,
+  ConfigurationService,
   DomainControllerInterface,
   DomainElementType,
-  EntityVersion,
   EntityInstance,
+  EntityVersion,
   LoggerInterface,
   MetaEntity,
   MiroirActivityTracker,
   MiroirEventService,
   MiroirLoggerFactory,
-  ModelAction,
   ModelActionDropEntity,
   ModelActionRenameEntity,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
-  ConfigurationService,
   defaultLevels,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -32,11 +31,12 @@ import {
   testUtils_deleteApplicationDeployment,
   type ApplicationDeploymentMap,
   type Deployment,
-  type Entity,
+  type Entity
 } from "miroir-core";
 import {
   deployment_Admin,
   deployment_Miroir,
+  entityStoreBasedConfiguration,
 } from "miroir-test-app_deployment-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
 
@@ -50,19 +50,37 @@ import {
   entityDefinitionAuthor,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { cleanLevel, packageName } from "../../src/constants.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   selfApplicationDeploymentConfigurationsTO_REMOVE,
 } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
-import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
 
-import { entityEntity, entityEntityVersion } from "miroir-test-app_deployment-miroir";
+import {
+  entityApplicationEvolutionTrace,
+  entityApplicationEvolutionTraceEvent,
+  entityApplicationVersionCrossEntityVersion,
+  entityEndpointVersion,
+  entityEntity,
+  entityEntityVersion,
+  entityJzodSchema,
+  entityMenu,
+  entityMiroirTest,
+  entityQueryVersion,
+  entityReport,
+  entityRunner,
+  entitySelfApplication,
+  // entitySelfApplicationDeploymentConfiguration,
+  entitySelfApplicationModelBranch,
+  entitySelfApplicationVersion,
+  entityTheme,
+} from "miroir-test-app_deployment-miroir";
 let domainController: DomainControllerInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -398,22 +416,24 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       // "entityInstanceCollection",
       undefined,
       [
-        "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-        "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-        "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-        "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
-        "5e81e1b9-38be-487c-b3e5-53796c57fccf",
-        "a311f363-e238-4203-bdfc-29e8c160c26b",
-        "a659d350-dd97-4da9-91de-524fa01745dc",
-        "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
-        "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
-        "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
-        "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-        "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
-        "e4320b9e-ab45-4abe-85d8-359604b3c62f",
-        "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
-        "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c",
-      ],
+        // UUIDs match ModelInitializer bootstrap (sorted — same as result handler).
+        entityEntity.uuid,
+        entityEndpointVersion.uuid,
+        entityReport.uuid,
+        entityEntityVersion.uuid,
+        entityJzodSchema.uuid,
+        entityApplicationVersionCrossEntityVersion.uuid,
+        entityMiroirTest.uuid,
+        entitySelfApplication.uuid,
+        entityTheme.uuid,
+        entitySelfApplicationVersion.uuid,
+        entitySelfApplicationModelBranch.uuid,
+        entityMenu.uuid,
+        entityApplicationEvolutionTrace.uuid,
+        entityQueryVersion.uuid,
+        entityRunner.uuid,
+        entityApplicationEvolutionTraceEvent.uuid,
+      ].sort(),
     );
   });
 
