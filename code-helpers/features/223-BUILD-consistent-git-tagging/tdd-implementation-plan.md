@@ -24,7 +24,7 @@ Related:
 | Phase | Title | Status | Notes |
 |---|---|---|---|
 | 0 | Lock defaults, module layout, test harness | ✅ DONE | pytest harness green |
-| 1 | SemVer validate + pre-release classify | ⬜ TODO | |
+| 1 | SemVer validate + pre-release classify | ✅ DONE | `semver_util.py` |
 | 2 | Allow-list + bump `version` only (preserve deps) | ⬜ TODO | |
 | 3 | Runtime cycle abort / dev cycle allow (D6) | ⬜ TODO | |
 | 4 | Dry-run plan (no filesystem/git mutation) | ⬜ TODO | |
@@ -211,8 +211,8 @@ Fixtures: build tiny synthetic workspace trees under `tempfile.TemporaryDirector
 
 ### Done when
 
-- [ ] All 1.x green
-- [ ] No filesystem or git code yet
+- [x] All 1.x green
+- [x] No filesystem or git code yet
 
 ---
 
