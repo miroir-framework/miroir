@@ -182,12 +182,10 @@ export const POSTGRES_TEST_VERSION_UUID = INTEG_TEST_VERSION_UUID;
 export const INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as Entity,
-    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
@@ -198,7 +196,6 @@ export const INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES: ApplicationEntitiesAndIn
   },
   {
     entity: entityPublisher as Entity,
-    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
 ];
