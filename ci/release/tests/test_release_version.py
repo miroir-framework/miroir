@@ -12,7 +12,11 @@ if str(RELEASE_DIR) not in sys.path:
 
 from release_lib.common import ReleaseError
 from release_lib.handoff import HANDOFF_SCHEMA_VERSION, write_handoff_contract, write_release_plan
-from release_lib.lerna_ops import restore_files
+from release_lib.lerna_ops import (
+    restore_files,
+    rewrite_internal_wildcard_ranges,
+    verify_release_ranges,
+)
 from release_lib.plan import build_plan
 from release_lib.semver import increment
 from release_lib.workspace import find_cycles, topological_layers, workspace_packages
@@ -206,6 +210,44 @@ def test_restore_files_isolates_failures_and_restores_the_rest(
     # being restored — a single-file glitch must never look like a full restore
     # while silently leaving the rest of the tree mutated.
     assert good.read_bytes() == b"original"
+
+
+def test_verify_release_ranges_rejects_untouched_wildcards(repo: Path) -> None:
+    # Every internal edge in the fixture uses '*', mirroring this monorepo's
+    # real convention: `lerna version` never rewrites it (there is no old
+    # version number in the string for it to bump), so left alone it fails
+    # the "must be concrete before release" check.
+    plan = build_plan(
+        repo,
+        bump="minor",
+        since="1.2.2",
+        force=[],
+        disable=[],
+        candidate_provider=candidates(["app"]),
+    )
+    with pytest.raises(ReleaseError, match="is not releaseable: '\\*'"):
+        verify_release_ranges(repo, plan)
+
+
+def test_rewrite_internal_wildcard_ranges_makes_ranges_releaseable(repo: Path) -> None:
+    plan = build_plan(
+        repo,
+        bump="minor",
+        since="1.2.2",
+        force=[],
+        disable=[],
+        candidate_provider=candidates(["app"]),
+    )
+
+    rewritten = rewrite_internal_wildcard_ranges(repo, plan)
+
+    assert set(rewritten) == {"app", "lib"}
+    app_manifest = json.loads((repo / "packages" / "app" / "package.json").read_text(encoding="utf-8"))
+    assert app_manifest["dependencies"] == {"core": "^1.3.0", "lib": "^1.3.0"}
+    lib_manifest = json.loads((repo / "packages" / "lib" / "package.json").read_text(encoding="utf-8"))
+    assert lib_manifest["dependencies"] == {"core": "^1.3.0"}
+    # Nothing to rewrite for 'core' (it has no internal runtime dependencies itself).
+    verify_release_ranges(repo, plan)
 
 
 def test_handoff_contract_written(repo: Path) -> None:

@@ -97,6 +97,48 @@ def verify_selection_enforced(
             )
 
 
+def rewrite_internal_wildcard_ranges(repo_root: Path, plan: ReleasePlan) -> list[str]:
+    """Force-rewrite '*'/'file:' internal runtime ranges Lerna leaves untouched.
+
+    `lerna version` only rewrites a dependency range when it can recognize an
+    existing version number to bump (e.g. `^0.5.0-rc.1` -> `^0.5.0`). A `"*"`
+    range carries no version number to replace, so Lerna leaves it exactly as
+    `"*"` — and in this monorepo `"*"` is the universal convention for every
+    internal `dependencies`/`peerDependencies` edge (it is how the dev-time
+    workspace linking works, see docs/reference/release-process.md). Left
+    alone, every selected package would fail `verify_release_ranges` below.
+    This rewrites those edges to a concrete `^<product_version>` range,
+    exactly like the (rare) internal edges that already used real semver
+    ranges and that Lerna did bump automatically.
+    """
+    packages = workspace_packages(repo_root)
+    rewritten: list[str] = []
+    for name in plan.selected:
+        workspace = packages[name]
+        manifest = load_json(workspace.path)
+        changed = False
+        for kind in RUNTIME_KINDS:
+            dependencies = manifest.get(kind)
+            if not isinstance(dependencies, dict):
+                continue
+            for dependency in list(dependencies):
+                if dependency not in plan.selected:
+                    continue
+                value = dependencies[dependency]
+                if value == "*" or (isinstance(value, str) and value.startswith("file:")):
+                    dependencies[dependency] = f"^{plan.product_version}"
+                    changed = True
+        if changed:
+            dump_json(workspace.path, manifest)
+            rewritten.append(name)
+    if rewritten:
+        log_step(
+            f"rewrote '*'/'file:' internal runtime range(s) Lerna left untouched to "
+            f"^{plan.product_version} in {len(rewritten)} package(s): {', '.join(sorted(rewritten))}"
+        )
+    return rewritten
+
+
 def verify_release_ranges(repo_root: Path, plan: ReleasePlan) -> None:
     packages = workspace_packages(repo_root)
     for name in plan.selected:
@@ -171,6 +213,8 @@ def apply_lerna_version(repo_root: Path, plan: ReleasePlan) -> None:
                 f"restored {len(restored)} unselected package manifest(s) Lerna touched "
                 f"outside the reviewed closure: {', '.join(sorted(restored))}"
             )
+
+        rewrite_internal_wildcard_ranges(repo_root, plan)
 
         set_root_and_lerna_version(repo_root, plan.product_version)
         lock_result = run(

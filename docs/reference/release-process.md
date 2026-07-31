@@ -103,13 +103,52 @@ one or the other deliberately:
 A genuine **runtime** cycle among selected packages is a hard error (`ReleaseError`);
 a **dev-only** cycle is expected, tolerated, and simply surfaced in the plan.
 
-## 4. Concrete-range verification exempts dev-only edges
+## 4. Lerna never rewrites `"*"`, so the pipeline does it explicitly
 
-After Lerna versions the selected closure, `verify_release_ranges()` checks that no
-selected package still carries a `"*"` or `file:` internal range — but only for
+`lerna version` rewrites a dependency range only when it recognizes an existing
+version number inside it to bump (e.g. `^0.5.0-rc.1` → `^0.5.0`). A `"*"` range has
+no version number in the string for Lerna to replace, so it leaves it exactly as
+`"*"` — and in this monorepo `"*"` is the *universal* convention for every internal
+`dependencies`/`peerDependencies` edge, not an exception (see §2). Left alone, every
+selected package would still carry `"*"` runtime edges after `lerna version` runs.
+
+`rewrite_internal_wildcard_ranges()` closes that gap immediately after `lerna
+version` (and after unselected packages are restored, §5 step 3): it walks every
+selected package's `RUNTIME_KINDS` entries and force-rewrites any `"*"` or `file:`
+value that points at another *selected* package to `^<product_version>` — the same
+shape Lerna itself produces for the rare internal edges that already used a real
+semver range.
+
+```12:44:ci/release/release_lib/lerna_ops.py
+def rewrite_internal_wildcard_ranges(repo_root: Path, plan: ReleasePlan) -> list[str]:
+    packages = workspace_packages(repo_root)
+    rewritten: list[str] = []
+    for name in plan.selected:
+        workspace = packages[name]
+        manifest = load_json(workspace.path)
+        changed = False
+        for kind in RUNTIME_KINDS:
+            dependencies = manifest.get(kind)
+            if not isinstance(dependencies, dict):
+                continue
+            for dependency in list(dependencies):
+                if dependency not in plan.selected:
+                    continue
+                value = dependencies[dependency]
+                if value == "*" or (isinstance(value, str) and value.startswith("file:")):
+                    dependencies[dependency] = f"^{plan.product_version}"
+                    changed = True
+        if changed:
+            dump_json(workspace.path, manifest)
+            rewritten.append(name)
+    ...
+```
+
+Only *after* this pass does `verify_release_ranges()` check that no selected
+package still carries a `"*"` or `file:` internal range — but only for
 `RUNTIME_KINDS`:
 
-```64:81:ci/release/release_lib/lerna_ops.py
+```100:117:ci/release/release_lib/lerna_ops.py
 def verify_release_ranges(repo_root: Path, plan: ReleasePlan) -> None:
     packages = workspace_packages(repo_root)
     for name in plan.selected:
@@ -131,9 +170,9 @@ def verify_release_ranges(repo_root: Path, plan: ReleasePlan) -> None:
 ```
 
 `deployment-miroir`'s `devDependencies["miroir-core"] = "*"` is never inspected by
-this check and is explicitly allowed to survive, untouched, into the frozen release
-tree. This is the direct enforcement of "never tighten the dev-only bootstrap edge to
-a concrete range."
+this check (or touched by the rewrite pass above) and is explicitly allowed to
+survive, untouched, into the frozen release tree. This is the direct enforcement of
+"never tighten the dev-only bootstrap edge to a concrete range."
 
 ## 5. The disposable worktree still needs the same linking trick
 
@@ -147,16 +186,21 @@ Since `dist/` and `node_modules/` are both git-ignored, the fresh worktree start
 2. `npx lerna version <product_version> --force-publish=<selected> --yes --no-git-tag-version --no-push --no-changelog --ignore-scripts`.
 3. Restore the manifests of any package **outside** the selected closure (Lerna must
    not be allowed to permanently rewrite packages the release manager didn't approve).
-4. Rewrite root `package.json` / `lerna.json` to the product version.
-5. `npm install --package-lock-only --ignore-scripts` (lockfile sync).
-6. `verify_selection_enforced()` — only selected packages changed version, nothing else.
-7. `verify_release_ranges()` — see §4.
-8. `npm ci --ignore-scripts`.
+4. `rewrite_internal_wildcard_ranges()` — force-rewrite any `"*"`/`file:` runtime edge
+   between two selected packages to `^<product_version>` — see §4 (Lerna does not do
+   this on its own).
+5. Rewrite root `package.json` / `lerna.json` to the product version.
+6. `npm install --package-lock-only --ignore-scripts` (lockfile sync).
+7. `verify_selection_enforced()` — only selected packages changed version, nothing else.
+8. `verify_release_ranges()` — see §4.
+9. `npm ci --ignore-scripts`.
 
-Step 8's `npm ci` must symlink `node_modules/miroir-core` to the worktree's own
-(not-yet-built) `packages/miroir-core` — this is the exact `"*"`-bypasses-pre-release
--exclusion behavior from §2, now relied on a second time, inside a brand-new worktree,
-for `npm ci` to succeed without hitting the registry.
+By step 9, every selected package's internal runtime edges are concrete
+`^<product_version>` ranges (step 4), so `npm ci` resolves them as ordinary
+in-range workspace matches — no bootstrap trick needed there anymore. The
+`"*"`-bypasses-pre-release-exclusion behavior from §2 is still relied on exactly
+once in this flow: for `deployment-miroir`/`deployment-admin`'s **dev-only**
+`"miroir-core": "*"` edge, which step 4 deliberately never touches.
 
 Any failure at any step restores every backed-up file before raising.
 
@@ -318,7 +362,7 @@ fully resolved and verified — #224 never needs to reason about it.
 | | Dev worktree (`build-all.sh`) | Release worktree (`ci/release/`) |
 |---|---|---|
 | Bootstrap edge value | Stays `"*"` forever | Stays `"*"` forever too (§4) — never rewritten |
-| Runtime edges | Stay `"*"` during normal dev | Rewritten to the concrete product version by Lerna |
+| Runtime edges | Stay `"*"` during normal dev | Rewritten to `^<product_version>` by `rewrite_internal_wildcard_ranges()` (§4) — Lerna itself leaves `"*"` untouched |
 | Ordering mechanism | Hand-maintained `STAGE_*` arrays | Derived from `dependencies`/`peerDependencies` vs `devDependencies` classification (§3) |
 | `node_modules` state | Long-lived, incrementally updated | Fresh per release, `npm ci`'d once versions/ranges are final |
 | Validation | `npm run build` succeeding | + `npm pack` + isolated `file:` consumer install per distributeable layer (§6) |
