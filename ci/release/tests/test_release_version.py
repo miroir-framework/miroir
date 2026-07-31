@@ -10,7 +10,7 @@ RELEASE_DIR = Path(__file__).resolve().parents[1]
 if str(RELEASE_DIR) not in sys.path:
     sys.path.insert(0, str(RELEASE_DIR))
 
-from release_lib.common import ReleaseError
+from release_lib.common import ReleaseError, run
 from release_lib.handoff import HANDOFF_SCHEMA_VERSION, write_handoff_contract, write_release_plan
 from release_lib.lerna_ops import (
     restore_files,
@@ -248,6 +248,25 @@ def test_rewrite_internal_wildcard_ranges_makes_ranges_releaseable(repo: Path) -
     assert lib_manifest["dependencies"] == {"core": "^1.3.0"}
     # Nothing to rewrite for 'core' (it has no internal runtime dependencies itself).
     verify_release_ranges(repo, plan)
+
+
+def test_run_decodes_utf8_child_output_not_locale_codepage(tmp_path: Path) -> None:
+    # Regression for the `_readerthread` UnicodeDecodeError seen on Windows:
+    # tsup emits UTF-8 output containing characters outside cp1252 (e.g. its
+    # "\u26a1\ufe0f Build success" emoji). Without an explicit encoding, a
+    # captured pipe falls back to locale.getpreferredencoding() (cp1252 on a
+    # non-UTF-8 Windows console), and decoding those bytes crashes subprocess's
+    # internal reader thread. That crash is harmless to the child process
+    # itself (build still succeeds) but is confusing noise in the CLI output.
+    emitter = tmp_path / "emit_utf8.py"
+    emitter.write_text(
+        "import sys\n"
+        "sys.stdout.buffer.write('\\u26a1\\ufe0f ok'.encode('utf-8'))\n",
+        encoding="utf-8",
+    )
+    result = run([sys.executable, str(emitter)], cwd=tmp_path, check=False, announce=False)
+    assert result.returncode == 0
+    assert result.stdout == "\u26a1\ufe0f ok"
 
 
 def test_handoff_contract_written(repo: Path) -> None:

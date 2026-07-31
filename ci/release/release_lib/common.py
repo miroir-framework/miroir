@@ -43,6 +43,17 @@ def run(
         check=check,
         capture_output=True,
         text=True,
+        # npm/tsup/lerna emit UTF-8 (e.g. tsup's "\u26a1\ufe0f Build success" emoji).
+        # Without an explicit encoding, Python falls back to
+        # locale.getpreferredencoding() for a captured pipe, which on a
+        # non-UTF-8 Windows console (cp1252 here) cannot decode those bytes.
+        # That raises UnicodeDecodeError inside subprocess's internal
+        # _readerthread — a background thread whose exception can only print
+        # a traceback and be swallowed, it can never fail this call or the
+        # child process, so the build result is unaffected either way, but it
+        # is confusing noise in the CLI output.
+        encoding="utf-8",
+        errors="replace",
     )
 
 
