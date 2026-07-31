@@ -8,18 +8,21 @@ Produce a release from a Git worktree with a single target bump (`major`, `minor
 
 Unlike normal workspace development, release production must rewrite internal `"*"` dependency ranges to releaseable version ranges. The produced package manifests and lockfile describe a distributable release graph; the source-worktree `"*"` ranges remain a development convenience before the release process runs.
 
-The implementation belongs under `ci/`, for example:
+The implementation lives under `ci/release/`:
 
 ```text
-ci/
-  release/
-    release-version.sh          # local/CI entrypoint
-    select-release-packages.py # Lerna JSON + operator overrides
-    verify-release.py           # manifest, lockfile, and package checks
-    tests/
+ci/release/
+  release_version.py       # CLI entrypoint
+  release_lib/             # plan, layers, Lerna ops, tarballs, handoff
+  HANDOFF.md               # #227 → #224 contract
+  lerna-spike.md           # encoded Lerna version invocation
+  README.md
+  tests/
 ```
 
-The exact file names may change, but #227 must not modify `scripts/release_tag.py` or its support modules.
+#227 must not modify `scripts/release_tag.py` or its support modules. Platform
+artefact assembly remains #224 and consumes `release-handoff.json`.
+
 
 ## 2. Primary release use case
 

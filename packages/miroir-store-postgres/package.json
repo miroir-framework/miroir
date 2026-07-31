@@ -1,7 +1,7 @@
 {
   "name": "miroir-store-postgres",
   "private": true,
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
   "description": "The Miroir implementation for accessing Postgres databases.",
@@ -28,8 +28,8 @@
     "generate-ts-types": "tsx ./scripts/postgres-generate-ts-types.ts"
   },
   "dependencies": {
-    "miroir-core": "^0.5.0-rc.2",
-    "miroir-test-app_deployment-miroir": "^0.5.0-rc.2",
+    "miroir-core": "*",
+    "miroir-test-app_deployment-miroir": "*",
     "pg": "^8.9.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.3"

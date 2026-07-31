@@ -1,0 +1,62 @@
+name: Release tree (layered #227)
+
+# Manual validation of the layered release producer.
+# Does NOT mutate package versions or create tags.
+# Full --apply must run from a disposable local/CI worktree.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: SemVer bump kind for dry-run planning
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      since:
+        description: Previous release tag/ref (optional; defaults to previous reachable SemVer tag)
+        required: false
+        type: string
+
+jobs:
+  release-plan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python test deps
+        run: python -m pip install pytest
+
+      - name: Install npm dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Unit tests for ci/release
+        run: python -m pytest ci/release/tests -v
+
+      - name: Dry-run release plan
+        env:
+          BUMP: ${{ inputs.bump }}
+          SINCE: ${{ inputs.since }}
+        run: |
+          set -euo pipefail
+          ARGS=(--bump "$BUMP")
+          if [[ -n "${SINCE}" ]]; then
+            ARGS+=(--since "$SINCE")
+          fi
+          python ci/release/release_version.py "${ARGS[@]}"

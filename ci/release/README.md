@@ -1,18 +1,25 @@
-# Lerna release producer
+# Layered Lerna release producer (#227)
 
-`release_version.py` is the CI/local release producer for issue #227. It is
-independent of other release scripts.
+`ci/release/release_version.py` produces a **validated release tree** and
+tarball layers. It is independent of `scripts/release_tag.py`.
 
-It asks Lerna for packages changed since a release ref, applies human
-force/disable overrides, expands the selected runtime/peer dependency closure,
-and uses Lerna to produce concrete internal dependency ranges for the release.
+Platform artefacts (server zip, Electron, Docker, …) are assembled by #224
+from the handoff contract described in [HANDOFF.md](./HANDOFF.md).
 
-Run `--apply` only from a disposable, clean release worktree. It intentionally
-rewrites manifests and the lockfile. The current GitHub Actions build workflows
-do not yet invoke this producer and some regenerate their lockfile, so they are
-not release validation until wired to this same entrypoint.
+## Release model
 
-## Plan a release
+1. Discover packages changed since a previous tag (`lerna ls --since`).
+2. Refine with `--force` / `--disable`.
+3. Expand the runtime/peer dependency closure.
+4. Layer the closure as P0…Pn (runtime DAG only; runtime cycles abort).
+5. Version with Lerna (rewrites internal `"*"` ranges); restore unselected packages.
+6. Build, `npm pack`, hash, and clean-consumer-validate each layer.
+7. Emit `release-plan.json` + `release-handoff.json` for #224.
+
+Dev-only dependency cycles are reported for build context and do **not** define
+publish/build layers.
+
+## Plan (no mutation)
 
 ```bash
 python ci/release/release_version.py \
@@ -20,26 +27,40 @@ python ci/release/release_version.py \
   --since 0.5.0-rc.1
 ```
 
-The default is a no-mutation JSON plan. Add `--force <workspace>` and
-`--disable <workspace>` to refine Lerna's candidates.
-
-## Apply a release
+## Apply in a disposable worktree (recommended)
 
 ```bash
 python ci/release/release_version.py \
   --bump patch \
   --since 0.5.0-rc.1 \
-  --force miroir-cli \
   --apply \
-  --commit --tag
+  --worktree \
+  --keep-worktree
 ```
 
-`--push` additionally requires `--commit --tag`. Apply runs Lerna with
-non-publishing options, restores unselected package manifests, regenerates the
-root lockfile, and verifies the selected release closure with `npm ci`.
+`--skip-build` versions and rewrites ranges without packing tarballs.
+`--commit --tag` (and optional `--push`) create the single product tag from the
+release worktree.
 
-Run tests with:
+## Verify a handoff for #224
+
+```bash
+python ci/release/release_version.py --verify path/to/release-handoff.json
+```
+
+## Tests
 
 ```bash
 python -m pytest ci/release/tests -v
 ```
+
+## Lerna version invocation (encoded)
+
+```text
+npx lerna version <product_version> \
+  --force-publish=<selected,...> \
+  --yes --no-git-tag-version --no-push --no-changelog --ignore-scripts
+```
+
+Unselected package manifests are restored from pre-version backups so the
+reviewed closure is enforced even if Lerna considers additional packages.
