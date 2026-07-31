@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-from release_lib.common import ReleaseError, run
+from release_lib.common import ReleaseError, log_step, run
 
 
 def assert_clean(repo_root: Path, *, allow_dirty: bool = False) -> None:
@@ -33,10 +33,12 @@ def create_release_worktree(repo_root: Path, *, branch_name: str | None = None) 
     )
     # Record the intended branch name for optional later commit/tag in the worktree.
     (parent / "branch-name.txt").write_text(branch, encoding="utf-8")
+    log_step(f"created disposable release worktree at {worktree} (branch: {branch})")
     return worktree
 
 
 def remove_release_worktree(repo_root: Path, worktree: Path) -> None:
+    log_step(f"removing disposable release worktree at {worktree}")
     run(
         ["git", "worktree", "remove", "--force", str(worktree)],
         cwd=repo_root,

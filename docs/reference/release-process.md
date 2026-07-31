@@ -239,14 +239,39 @@ The resulting `ReleasePlan` (dataclass) is printed as JSON on every invocation �
 --since <ref>                Base ref for `lerna ls --since`; defaults to latest reachable tag
 --force <workspace>          Repeatable: add to Lerna candidates
 --disable <workspace>        Repeatable: remove from Lerna candidates (must be a raw candidate; fails if a required runtime dependency)
+--dry-run                     Explicit no-op: planning without --apply is always a dry run; rejected together with --apply
 --apply                      Mutate: version, build, pack, validate (default is dry-run plan only)
 --worktree                   Run --apply inside a disposable `git worktree` (recommended)
---keep-worktree               Do not delete the worktree after a successful --apply
+--keep-worktree               Do not delete the worktree after a successful --apply (a FAILED --apply always preserves it, regardless of this flag)
 --skip-build                  Version + lockfile only; skip build/pack/consumer validation
 --commit / --tag / --push     Explicit release commit / annotated product tag / push (push requires both)
 --allow-dirty                  Allow --apply directly in a dirty tree without --worktree
---verify <release-handoff.json>  Validate an existing #227→#224 handoff descriptor and exit
+--verify <release-handoff.json>  Validate an existing #227->#224 handoff descriptor and exit
 ```
+
+### Transparency / safety behavior
+
+- **stdout is data-only; stderr is narration.** Every `print(json.dumps(...))` call
+  stays machine-parseable on stdout. All progress narration — including the exact
+  command line of every subprocess invocation (`release_lib.common.run()` announces
+  each one before executing it) — goes to stderr via `log_step()`, so a human watching
+  the terminal is never staring at silence during a multi-minute `--apply`, and a
+  script piping stdout to `jq`/`json.load` is never polluted by log lines.
+- **`--apply` without `--worktree` prints an explicit warning** before mutating,
+  since it changes the current working tree in place (including a real
+  commit/tag/push if requested) rather than an isolated disposable copy.
+- **A failed `--apply --worktree` always preserves the worktree** for post-mortem
+  inspection, regardless of `--keep-worktree` — a failure is never auto-cleaned-up,
+  and the error message prints the exact `git worktree remove --force <path>`
+  command to clean it up once you're done.
+- **`restore_files()` (the rollback used when `apply_lerna_version` fails) restores
+  every backed-up file independently, with retries**, instead of aborting at the
+  first failure. On Windows, a file Lerna/npm just wrote to can transiently refuse a
+  follow-up write for a few hundred milliseconds; without per-file isolation, a
+  single transient failure used to abort the whole rollback and leave *every
+  subsequent* package manifest stuck at the failed release's version while the tool
+  reported nothing beyond the original error. If any file still can't be restored
+  after retries, the aggregated `ReleaseError` names every one of them explicitly.
 
 ```bash
 # Dry run: show the plan only, no mutation

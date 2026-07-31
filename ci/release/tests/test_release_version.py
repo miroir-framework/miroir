@@ -12,6 +12,7 @@ if str(RELEASE_DIR) not in sys.path:
 
 from release_lib.common import ReleaseError
 from release_lib.handoff import HANDOFF_SCHEMA_VERSION, write_handoff_contract, write_release_plan
+from release_lib.lerna_ops import restore_files
 from release_lib.plan import build_plan
 from release_lib.semver import increment
 from release_lib.workspace import find_cycles, topological_layers, workspace_packages
@@ -180,6 +181,31 @@ def test_dev_cycle_is_reported_but_does_not_block_runtime_layers(tmp_path: Path)
     assert find_cycles(packages, selected=["a", "b"], runtime_only=True) == []
     assert find_cycles(packages, selected=["a", "b"], runtime_only=False)
     assert topological_layers(packages, ["a", "b"]) == (("a",), ("b",))
+
+
+def test_restore_files_isolates_failures_and_restores_the_rest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # No retry delay: this test asserts isolation/aggregation, not the retry timing.
+    import release_lib.lerna_ops as lerna_ops
+
+    monkeypatch.setattr(lerna_ops, "_RESTORE_RETRY_ATTEMPTS", 1)
+    monkeypatch.setattr(lerna_ops, "_RESTORE_RETRY_DELAY_SECONDS", 0)
+
+    good = tmp_path / "good.json"
+    good.write_text("mutated", encoding="utf-8")
+    # A missing parent directory makes the write deterministically fail every attempt,
+    # simulating a file a concurrent process (e.g. Lerna/npm) still holds.
+    unrestorable = tmp_path / "missing-dir" / "bad.json"
+    backups = {good: b"original", unrestorable: b"original"}
+
+    with pytest.raises(ReleaseError, match=r"RESTORE FAILED for 1 of 2"):
+        restore_files(backups)
+
+    # The failure on one path must not prevent every other backed-up file from
+    # being restored — a single-file glitch must never look like a full restore
+    # while silently leaving the rest of the tree mutated.
+    assert good.read_bytes() == b"original"
 
 
 def test_handoff_contract_written(repo: Path) -> None:

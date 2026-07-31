@@ -6,11 +6,12 @@ import hashlib
 import json
 import shutil
 import tempfile
+import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from release_lib.common import ReleaseError, dump_json, executable, load_json, run
+from release_lib.common import ReleaseError, dump_json, executable, load_json, log_step, run
 from release_lib.plan import ReleasePlan
 from release_lib.workspace import workspace_packages
 
@@ -33,23 +34,32 @@ def sha256_file(path: Path) -> str:
 
 
 def build_selected_packages(repo_root: Path, plan: ReleasePlan) -> None:
-    """Build selected packages in P0…Pn runtime order."""
+    """Build selected packages in P0...Pn runtime order."""
     packages = workspace_packages(repo_root)
+    total = sum(len(layer) for layer in plan.layers)
+    done = 0
     for layer_index, layer in enumerate(plan.layers):
+        log_step(f"[P{layer_index}] building {len(layer)} package(s): {', '.join(layer)}")
         for name in layer:
+            done += 1
             workspace = packages[name]
             if not workspace.has_build:
+                log_step(f"  ({done}/{total}) {name}: no build script, skipping")
                 continue
+            log_step(f"  ({done}/{total}) [P{layer_index}] npm run build -w {name} ...")
+            started = time.monotonic()
             result = run(
                 [executable("npm"), "run", "build", "-w", name],
                 cwd=repo_root,
                 check=False,
             )
+            elapsed = time.monotonic() - started
             if result.returncode != 0:
                 raise ReleaseError(
                     f"build failed for P{layer_index} package {name}:\n"
                     + (result.stderr or result.stdout or "")
                 )
+            log_step(f"  ({done}/{total}) {name}: built in {elapsed:.1f}s")
 
 
 def pack_layer(
@@ -67,6 +77,7 @@ def pack_layer(
     for layer_index, layer in enumerate(plan.layers):
         layer_dir = tarball_root / f"P{layer_index}"
         layer_dir.mkdir(parents=True, exist_ok=True)
+        log_step(f"[P{layer_index}] packing {len(layer)} package(s) into {layer_dir}")
         for name in layer:
             workspace = packages[name]
             package_dir = workspace.path.parent
@@ -100,6 +111,7 @@ def pack_layer(
                     raise ReleaseError(f"packed tarball not found for {name}: {filename}")
             destination = layer_dir / filename
             shutil.move(str(source), str(destination))
+            log_step(f"  [P{layer_index}] packed {name} -> {destination.name}")
             infos.append(
                 TarballInfo(
                     package=name,
@@ -127,15 +139,23 @@ def validate_layer_consumer(
     *,
     through_layer: int,
 ) -> None:
-    """Install P0…Pn tarballs into a clean consumer and ensure no workspace resolution."""
+    """Install P0...Pn tarballs into a clean consumer and ensure no workspace resolution."""
     layer_infos = _tarballs_through_layer(infos, through_layer)
     if not layer_infos:
         return
     distributeable = [info for info in layer_infos if info.distributeable]
     if not distributeable:
         # Bundle-only layers still pack, but have no standalone consumer contract.
+        log_step(
+            f"[P{through_layer}] no distributeable package through this layer "
+            "(bundle-only); skipping clean-consumer install check"
+        )
         return
 
+    log_step(
+        f"[P{through_layer}] clean-consumer install check: {len(distributeable)} "
+        f"distributeable package(s) via file: deps ({', '.join(i.package for i in distributeable)})"
+    )
     with tempfile.TemporaryDirectory(prefix="miroir-release-consumer-") as tmp:
         consumer = Path(tmp)
         dump_json(

@@ -3,7 +3,7 @@
 
 Creates a reviewed release plan from Lerna change detection, versions the
 selected runtime dependency closure (rewriting internal ``"*"`` ranges), builds
-packages in P0…Pn order, packs tarballs, and validates each layer in a clean
+packages in P0...Pn order, packs tarballs, and validates each layer in a clean
 consumer. Platform artefact assembly is #224 and consumes the handoff contract
 emitted here.
 
@@ -24,7 +24,7 @@ RELEASE_DIR = Path(__file__).resolve().parent
 if str(RELEASE_DIR) not in sys.path:
     sys.path.insert(0, str(RELEASE_DIR))
 
-from release_lib.common import ReleaseError
+from release_lib.common import ReleaseError, log_step
 from release_lib.handoff import read_handoff, write_handoff_contract, write_release_plan
 from release_lib.lerna_ops import apply_lerna_version, commit_tag_push
 from release_lib.plan import build_plan
@@ -45,6 +45,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--force", action="append", default=[])
     parser.add_argument("--disable", action="append", default=[])
     parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Explicit no-op: planning without --apply is always a dry run. "
+        "Rejected together with --apply so the intent is unambiguous.",
+    )
+    parser.add_argument(
         "--apply",
         action="store_true",
         help="Mutate a release worktree: version, build, pack, validate",
@@ -57,7 +63,9 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--keep-worktree",
         action="store_true",
-        help="Do not delete the disposable worktree after a successful --apply",
+        help="Do not delete the disposable worktree after a successful --apply. "
+        "A worktree from a FAILED --apply is always preserved for inspection, "
+        "regardless of this flag.",
     )
     parser.add_argument(
         "--skip-build",
@@ -75,7 +83,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "--verify",
         metavar="HANDOFF_JSON",
-        help="Validate an existing #227→#224 handoff descriptor and exit",
+        help="Validate an existing #227->#224 handoff descriptor and exit",
     )
     return parser.parse_args(argv)
 
@@ -110,6 +118,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.verify:
             verify_handoff(Path(args.verify))
             return 0
+        if args.dry_run and args.apply:
+            raise ReleaseError("--dry-run cannot be combined with --apply")
         if not args.bump:
             raise ReleaseError("--bump is required unless --verify is used")
 
@@ -123,10 +133,20 @@ def main(argv: list[str] | None = None) -> int:
         )
         print(json.dumps(plan.to_dict(), indent=2))
         if not args.apply:
+            log_step("no --apply: this was a dry run; nothing was written or mutated")
             return 0
+
+        if not args.worktree:
+            log_step(
+                "warning: --apply without --worktree mutates THIS working tree "
+                f"({source_root}) in place, including package.json/lockfile rewrites, "
+                "builds, and (if requested) a real commit/tag/push. "
+                "--worktree is the recommended, isolated way to run --apply."
+            )
 
         worktree: Path | None = None
         apply_root = source_root
+        failed = False
         try:
             if args.worktree:
                 worktree = create_release_worktree(source_root)
@@ -145,6 +165,8 @@ def main(argv: list[str] | None = None) -> int:
             tarballs = []
             if not args.skip_build:
                 tarballs = build_pack_and_validate(apply_root, plan)
+            else:
+                log_step("--skip-build: versioned and range-rewritten only; no build/pack/consumer validation ran")
             write_release_plan(
                 apply_root,
                 plan,
@@ -152,6 +174,7 @@ def main(argv: list[str] | None = None) -> int:
                 worktree_path=apply_root,
             )
             handoff = write_handoff_contract(apply_root, plan, tarballs=tarballs)
+            log_step(f"wrote release-plan.json and release-handoff.json under {apply_root}")
             print(json.dumps({"handoff": str(handoff)}, indent=2))
             commit_tag_push(
                 apply_root,
@@ -163,9 +186,21 @@ def main(argv: list[str] | None = None) -> int:
             if worktree and args.keep_worktree:
                 print(json.dumps({"worktree": str(worktree)}, indent=2))
             return 0
+        except BaseException:
+            failed = True
+            raise
         finally:
-            if worktree is not None and not args.keep_worktree:
-                remove_release_worktree(source_root, worktree)
+            if worktree is not None:
+                if failed:
+                    log_step(
+                        f"--apply failed; preserving the release worktree for inspection at {worktree} "
+                        "(a failed run is never auto-deleted, regardless of --keep-worktree). "
+                        f"Clean it up manually once done: git worktree remove --force \"{worktree}\""
+                    )
+                elif not args.keep_worktree:
+                    remove_release_worktree(source_root, worktree)
+                else:
+                    log_step(f"--keep-worktree: leaving the release worktree at {worktree}")
     except (OSError, ReleaseError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1

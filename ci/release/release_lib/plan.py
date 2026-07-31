@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
-from release_lib.common import ReleaseError, load_json, run, executable
+from release_lib.common import ReleaseError, load_json, log_step, run, executable
 from release_lib.semver import SEMVER, increment
 from release_lib.workspace import (
     Workspace,
@@ -59,6 +59,7 @@ def previous_release_tag(repo_root: Path) -> str:
 
 
 def lerna_candidates(repo_root: Path, base_ref: str) -> list[str]:
+    log_step(f"asking Lerna which packages changed since {base_ref!r}")
     result = run(
         [executable("npx"), "lerna", "ls", "--since", base_ref, "--json"],
         cwd=repo_root,
@@ -160,11 +161,24 @@ def build_plan(
     # Dev cycles are reported for build context; they do not abort release layering.
     dev_cycles = tuple(find_cycles(packages, selected=selected, runtime_only=False))
     distributeable, bundle_only = classify_packages(packages, selected)
+    product_version = increment(root_version, bump)
+
+    if dev_cycles:
+        log_step(
+            f"note: {len(dev_cycles)} dev-only dependency cycle(s) detected "
+            "(devDependencies only; informational, does not block the release) - "
+            "see plan.dev_cycles"
+        )
+    log_step(
+        f"plan: {root_version} --{bump}--> {product_version}; "
+        f"{len(selected)} package(s) selected in {len(layers)} layer(s) "
+        f"({len(distributeable)} distributeable, {len(bundle_only)} bundle-only)"
+    )
 
     return ReleasePlan(
         base_ref=base_ref,
         bump=bump,
-        product_version=increment(root_version, bump),
+        product_version=product_version,
         lerna_candidates=tuple(sorted(raw_candidates)),
         forced=tuple(sorted(set(force))),
         disabled=tuple(sorted(disabled_set)),

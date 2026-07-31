@@ -18,12 +18,25 @@ def executable(name: str) -> str:
     return f"{name}.cmd" if sys.platform == "win32" else name
 
 
+def log_step(message: str) -> None:
+    """Print a human-readable progress line to stderr.
+
+    Kept off stdout deliberately: every ``print(json.dumps(...))`` call in this
+    package is meant to stay machine-parseable. Progress/diagnostic narration
+    always goes to stderr so a caller can safely treat stdout as data-only.
+    """
+    print(f"[release] {message}", file=sys.stderr, flush=True)
+
+
 def run(
     args: list[str],
     *,
     cwd: Path,
     check: bool = True,
+    announce: bool = True,
 ) -> subprocess.CompletedProcess[str]:
+    if announce:
+        log_step(f"$ {' '.join(args)}  (cwd={cwd})")
     return subprocess.run(
         args,
         cwd=cwd,
