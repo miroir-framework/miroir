@@ -159,6 +159,41 @@ def verify_release_ranges(repo_root: Path, plan: ReleasePlan) -> None:
                     )
 
 
+# Root `package.json`'s "postinstall" applies a required, idempotent patch to the
+# freshly-installed tsup (node_modules/tsup/dist/rollup.js) working around an
+# upstream bug (egoist/tsup#1388) where tsup injects a synthesized `baseUrl: "."`
+# into the compiler options it feeds the DTS build, which newer TypeScript
+# releases (6.0+) reject with a hard `TS5101` error, failing the DTS build.
+# Every `npm ci`/`npm install` in this pipeline runs with `--ignore-scripts` (so an
+# arbitrary, unreviewed lifecycle script from any dependency cannot execute during
+# an automated release) — but that also means this *specific*, known-safe,
+# in-repo patch never runs either, silently leaving a fresh worktree's tsup
+# unpatched and its DTS builds broken. Re-applying it explicitly (safe: it is a
+# no-op if already applied, or if tsup/rollup.js is missing/changed shape) closes
+# that gap without turning `--ignore-scripts` back on for every dependency.
+_POSTINSTALL_PATCH_SCRIPT = Path("scripts") / "patch-tsup-baseurl.cjs"
+
+
+def apply_required_postinstall_patches(repo_root: Path) -> None:
+    script = repo_root / _POSTINSTALL_PATCH_SCRIPT
+    if not script.is_file():
+        log_step(
+            f"note: {_POSTINSTALL_PATCH_SCRIPT} not found; skipping the required-postinstall-patch step"
+        )
+        return
+    # Unlike npm/npx, Node itself ships as `node.exe` on Windows (no `.cmd` shim),
+    # so it must not go through executable()'s "add .cmd on win32" rule.
+    result = run(["node", str(script)], cwd=repo_root, check=False)
+    if result.returncode != 0:
+        raise ReleaseError(
+            f"required postinstall patch {_POSTINSTALL_PATCH_SCRIPT} failed "
+            "(this patch is normally applied by `npm install`'s postinstall hook, "
+            "which `--ignore-scripts` deliberately skips during release versioning):\n"
+            + (result.stderr or result.stdout or f"exit {result.returncode}")
+        )
+    log_step(f"applied required postinstall patch: {_POSTINSTALL_PATCH_SCRIPT}")
+
+
 def apply_lerna_version(repo_root: Path, plan: ReleasePlan) -> None:
     """Version the selected closure with Lerna; restore unselected manifests."""
     packages = workspace_packages(repo_root)
@@ -245,6 +280,7 @@ def apply_lerna_version(repo_root: Path, plan: ReleasePlan) -> None:
                 "npm ci failed after release versioning:\n"
                 + (ci_result.stderr or ci_result.stdout or "")
             )
+        apply_required_postinstall_patches(repo_root)
     except Exception:
         log_step("apply_lerna_version failed; restoring all backed-up manifest/lock files")
         restore_files(backups)
