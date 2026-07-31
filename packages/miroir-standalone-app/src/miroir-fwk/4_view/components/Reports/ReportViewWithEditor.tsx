@@ -30,6 +30,7 @@ import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
+import { seedReportInputApplicationFromPageParams } from './reportInputApplication.js';
 import { useEnsureReportQueryLoaded } from './useEnsureReportQueryLoaded.js';
 import { useReportQueryLoadService } from './useReportQueryLoadService.js';
 
@@ -209,8 +210,15 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       defaultMiroirModelEnvironment,
       {}, // transformerParams
     );
+    // Seed inputReportSection application pickers from the page URL so the
+    // control matches the extractor filter (getFromParameters "application").
+    const seededInputs = seedReportInputApplicationFromPageParams(
+      reportSectionsData,
+      props.reportDefinition?.definition.section,
+      props.pageParams?.application,
+    );
     const result = {
-      ...reportSectionsData,
+      ...seededInputs,
       ...props.storedQueryData,
       ...reportData, // TODO: choose between spreading reportData or including as reportData attribute
       pageParams: props.pageParams,

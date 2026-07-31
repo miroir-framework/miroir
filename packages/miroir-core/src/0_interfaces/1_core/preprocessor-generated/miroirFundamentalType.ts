@@ -3086,6 +3086,12 @@ export type ModelDiagramReportSection = {
         label?: string | undefined;
         title?: string | undefined;
         direction?: ("TB" | "BT" | "LR" | "RL") | undefined;
+        /**
+         * Entity: click navigates to Entity details (present model).
+         * EntityVersion: click navigates to EntityVersion details (snapshot).
+         * @default "Entity"
+         */
+        mode?: ("Entity" | "EntityVersion") | undefined;
         entityDefinitions: any[] | CoreTransformerForBuildPlusRuntime;
     };
 };
@@ -9627,7 +9633,7 @@ export const listReportSection: z.ZodType<ListReportSection> = z.object({type:z.
 export const accordionReportSection: z.ZodType<AccordionReportSection> = z.object({type:z.literal("accordionReportSection"), label:z.string().optional(), definition:z.lazy(() =>reportSection)}).strict();
 export const graphReportSection: z.ZodType<GraphReportSection> = z.object({type:z.literal("graphReportSection"), definition:z.object({label:z.string().optional(), fetchedDataReference:z.string(), graphType:z.enum(["bar","line","pie"]), dataMapping:z.object({labelField:z.string(), valueField:z.string(), colorField:z.string().optional()}).strict(), config:z.object({width:z.number().optional(), height:z.number().optional(), margins:z.object({top:z.number(), right:z.number(), bottom:z.number(), left:z.number()}).strict().optional(), colors:z.array(z.string()).optional(), showLegend:z.boolean().optional(), showTooltips:z.boolean().optional(), labelPresentation:z.enum(["auto","basic","slanted","separate"]).optional(), legendPosition:z.enum(["top-left","top-right"]).optional(), slantAngle:z.number().optional(), fontSize:z.number().optional()}).strict().optional()}).strict()}).strict();
 export const markdownReportSection: z.ZodType<MarkdownReportSection> = z.object({style:z.object({maxWidth:z.string()}).strict().optional(), type:z.literal("markdownReportSection"), definition:z.object({label:z.string().optional(), content:z.string(), fetchedDataReference:z.string().optional()}).strict()}).strict();
-export const modelDiagramReportSection: z.ZodType<ModelDiagramReportSection> = z.object({type:z.literal("modelDiagramReportSection"), definition:z.object({label:z.string().optional(), title:z.string().optional(), direction:z.enum(["TB","BT","LR","RL"]).optional(), entityDefinitions:z.union([z.array(z.any()), z.lazy(() =>coreTransformerForBuildPlusRuntime)])}).strict()}).strict();
+export const modelDiagramReportSection: z.ZodType<ModelDiagramReportSection> = z.object({type:z.literal("modelDiagramReportSection"), definition:z.object({label:z.string().optional(), title:z.string().optional(), direction:z.enum(["TB","BT","LR","RL"]).optional(), mode:z.enum(["Entity","EntityVersion"]).optional(), entityDefinitions:z.union([z.array(z.any()), z.lazy(() =>coreTransformerForBuildPlusRuntime)])}).strict()}).strict();
 export const jsonReportSection: z.ZodType<JsonReportSection> = z.object({type:z.literal("jsonReportSection"), definition:z.object({label:z.string().optional(), fetchedDataReference:z.string().optional()}).strict()}).strict();
 export const miroirTestReportSection: z.ZodType<MiroirTestReportSection> = z.object({type:z.literal("miroirTestReportSection"), definition:z.object({label:z.string().optional(), fetchedDataReference:z.string()}).strict()}).strict();
 export const inputReportSection: z.ZodType<InputReportSection> = z.object({type:z.literal("inputReportSection"), definition:z.object({label:z.string().optional(), inputPrefix:z.string().optional(), inputMLSchema:z.lazy(() =>jzodElement).optional()}).strict()}).strict();

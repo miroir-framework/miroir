@@ -25,6 +25,52 @@
       "type": "list",
       "definition": [
         {
+          "type": "inputReportSection",
+          "definition": {
+            "label": "Application",
+            "inputPrefix": "versioningInput",
+            "inputMLSchema": {
+              "type": "object",
+              "tag": {
+                "value": {
+                  "defaultLabel": "Application",
+                  "display": {
+                    "objectWithoutHeader": true,
+                    "objectOrArrayWithoutFrame": true,
+                    "objectAttributesNoIndent": true
+                  }
+                }
+              },
+              "definition": {
+                "application": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "defaultLabel": "Application",
+                      "initializeTo": {
+                        "initializeToType": "value",
+                        "value": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                      },
+                      "foreignKeyParams": {
+                        "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                        "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                        "targetEntityOrderInstancesBy": "name"
+                      },
+                      "display": {
+                        "objectUuidAttributeLabelPosition": "hidden",
+                        "objectHideDeleteButton": true,
+                        "uuid": {
+                          "selector": "muiSelector"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
           "type": "runnerReportSection",
           "definition": {
             "runnerReportSectionType": "storedRunner",

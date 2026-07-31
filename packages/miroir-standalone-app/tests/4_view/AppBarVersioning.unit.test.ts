@@ -7,8 +7,8 @@ const MIROIR_APP = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 const LIBRARY_APP = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const RUNNERS_UUID = "ac75382d-00fc-4f93-a169-3f76ef85834e";
 
-describe("resolveAppBarReportLinkApplication (#225 Phase 5)", () => {
-  it("Versioning uses sidebar applicationSelector when set", () => {
+describe("resolveAppBarReportLinkApplication (#225)", () => {
+  it("Versioning always opens under Miroir (scaffolding report)", () => {
     expect(
       resolveAppBarReportLinkApplication({
         reportUuid: VERSIONING_UUID,
@@ -16,10 +16,10 @@ describe("resolveAppBarReportLinkApplication (#225 Phase 5)", () => {
         versioningReportUuid: VERSIONING_UUID,
         applicationSelector: LIBRARY_APP,
       }),
-    ).toBe(LIBRARY_APP);
+    ).toBe(MIROIR_APP);
   });
 
-  it("Versioning falls back to item.selfApplication when selector empty", () => {
+  it("Versioning ignores empty applicationSelector and keeps Miroir", () => {
     expect(
       resolveAppBarReportLinkApplication({
         reportUuid: VERSIONING_UUID,

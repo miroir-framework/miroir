@@ -11,11 +11,20 @@ import type {
   Entity,
   EntityVersion,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { noValue } from "../Instance.js";
 import { getEntityVersionWriteSection } from "../Model.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   type EntityPresentModelDefinitionField,
 } from "./applicationVersioning.js";
+
+/** Runner form defaults often leave branch as the `noValue` sentinel UUID. */
+function normalizeOptionalBranchUuid(branch: string | undefined): string | undefined {
+  if (!branch || branch === noValue.uuid) {
+    return undefined;
+  }
+  return branch;
+}
 
 // ---------------------------------------------------------------------------
 // Phase 0: Action type constant
@@ -488,7 +497,7 @@ export function planFreezeApplicationVersionFromMetaModel(
     )
     .map((sav) => sav.uuid);
 
-  let branchUuid = payload.branch;
+  let branchUuid = normalizeOptionalBranchUuid(payload.branch);
   if (!branchUuid) {
     const freezeSet = new Set(freezeProducedVersionUuids);
     const freezeSavs = metaModel.applicationVersions.filter((sav) => freezeSet.has(sav.uuid));
@@ -499,16 +508,28 @@ export function planFreezeApplicationVersionFromMetaModel(
     );
     const heads = freezeSavs.filter((s) => !referenced.has(s.uuid));
     if (heads.length === 1) {
-      branchUuid = heads[0].branch;
-    } else if (heads.length === 0) {
-      throw new Error(
-        "freezeApplicationVersion requires payload.branch on first freeze (no previous freeze tip)",
-      );
-    } else {
+      branchUuid = normalizeOptionalBranchUuid(heads[0].branch);
+    } else if (heads.length > 1) {
       throw new Error(
         "freezeApplicationVersion requires payload.branch when multiple freeze tips exist",
       );
     }
+  }
+  // First freeze (or tip without branch): reuse branch from any existing SAV for
+  // this application (e.g. Library "Initial" → master), so Runner form "no value"
+  // still works when an ApplicationModelBranch already exists.
+  if (!branchUuid) {
+    const existingWithBranch = metaModel.applicationVersions.find(
+      (sav) =>
+        sav.selfApplication === payload.application &&
+        !!normalizeOptionalBranchUuid(sav.branch),
+    );
+    branchUuid = normalizeOptionalBranchUuid(existingWithBranch?.branch);
+  }
+  if (!branchUuid) {
+    throw new Error(
+      "freezeApplicationVersion requires payload.branch on first freeze (no previous freeze tip)",
+    );
   }
 
   const tip = resolvePreviousApplicationVersion(metaModel.applicationVersions, {

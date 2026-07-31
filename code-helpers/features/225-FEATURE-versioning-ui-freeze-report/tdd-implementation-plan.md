@@ -45,8 +45,8 @@ Related:
 | Runner form fields | Required: `versionName`. Optional: `description`, `branch`. `application` bound from report/page context when possible; form may still expose it for runnerTest param banks |
 | Model Endpoint | Existing `7947ae40-eb34-4149-887b-15a9021e714e` — **do not** fork a new Endpoint |
 | Versioning report name | `Versioning` (Report Entity `3f2baa83-…`) |
-| Current application source | Sidebar / `toolsPageState.applicationSelector` (and context application). AppBar navigation must use that uuid for `reportUrl`’s application argument, not a hard-coded Miroir SelfApplication |
-| AV list filter | Extractor / combiner filter on SAV `selfApplication` === current application uuid. Do not list all apps’ versions |
+| Current application source | Versioning is a **Miroir scaffolding report**: AppBar always opens Miroir. In-report `inputReportSection` (`versioningInput.application`) steers pageParams / SAV list. Freeze Runner keeps its own application field. |
+| AV list filter | Extractor filter on SAV `selfApplication` === page `application` (from URL / input picker). Do not list all apps’ versions |
 | Details drill-down | New details Report + set `defaultInstanceDetailsReportUuid` on SelfApplicationVersion Entity (`c3f0facf-…`) mirroring Entity → EntityDetails |
 | AppBar icon | Material Symbol / ThemedIcon name **`commit`** |
 | Placeholder SAV rows | List may show historical `"Initial"` fixtures; freeze tip hygiene remains #216’s concern. Optional later: filter placeholders in the Versioning list only if product asks |

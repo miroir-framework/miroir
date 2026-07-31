@@ -109,12 +109,55 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(existsSync(detailsPath)).toBe(true);
     const details = JSON.parse(readFileSync(detailsPath, "utf8")) as {
       name: string;
-      definition: { extractorTemplates: Record<string, { parentUuid: string }> };
+      definition: {
+        extractorTemplates: Record<string, { parentUuid: string }>;
+        combinerTemplates?: Record<
+          string,
+          {
+            extractorOrCombinerType?: string;
+            parentUuid?: string;
+            objectListReference?: string;
+            objectListReferenceAttribute?: string;
+          }
+        >;
+        section: {
+          type: string;
+          definition: Array<{
+            type: string;
+            definition: Record<string, unknown>;
+          }>;
+        };
+      };
     };
     expect(details.name).toBe(VERSIONING_UI_225.applicationVersionDetailsReportName);
     expect(
       details.definition.extractorTemplates.applicationVersion.parentUuid,
     ).toBe(VERSIONING_UI_225.selfApplicationVersionEntityUuid);
+    // EntityVersions linked via ApplicationVersionCrossEntityVersion (many-to-many).
+    expect(details.definition.combinerTemplates?.["00_crossEntityVersions"]?.parentUuid).toBe(
+      "8bec933d-6287-4de7-8a88-5c24216de9f4",
+    );
+    expect(details.definition.combinerTemplates?.["01_entityVersions"]?.extractorOrCombinerType).toBe(
+      "combinerManyToMany",
+    );
+    expect(
+      details.definition.combinerTemplates?.["01_entityVersions"]?.objectListReferenceAttribute,
+    ).toBe("entityVersion");
+    const entityVersionsSection = details.definition.section.definition.find(
+      (s) =>
+        s.type === "objectListReportSection" &&
+        s.definition.fetchedDataReference === "01_entityVersions",
+    );
+    expect(entityVersionsSection?.definition.parentUuid).toBe(
+      "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+    );
+    const diagramSection = details.definition.section.definition.find(
+      (s) => s.type === "modelDiagramReportSection",
+    );
+    expect(diagramSection?.definition.mode).toBe("EntityVersion");
+    expect(
+      (diagramSection?.definition.entityDefinitions as { referenceName?: string })?.referenceName,
+    ).toBe("01_entityVersions");
   });
 
   it("Versioning report embeds freeze Runner and filters SAV by application (Phase 4)", () => {
@@ -125,6 +168,7 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(existsSync(versioningPath)).toBe(true);
     const report = JSON.parse(readFileSync(versioningPath, "utf8")) as {
       name: string;
+      selfApplication: string;
       definition: {
         extractorTemplates: {
           applicationVersions: {
@@ -141,7 +185,16 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
       };
     };
     expect(report.name).toBe(VERSIONING_UI_225.versioningReportName);
+    expect(report.selfApplication).toBe("360fcf1f-f0d4-4f8a-9262-07886e70fa15");
     expect(report.definition.section.type).toBe("list");
+    const inputSection = report.definition.section.definition.find(
+      (s) => s.type === "inputReportSection",
+    );
+    expect(inputSection?.definition.inputPrefix).toBe("versioningInput");
+    expect(
+      (inputSection?.definition.inputMLSchema as { definition?: { application?: unknown } })
+        ?.definition?.application,
+    ).toBeTruthy();
     const runnerSection = report.definition.section.definition.find(
       (s) => s.type === "runnerReportSection",
     );
@@ -161,13 +214,14 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     ).toBe("application");
   });
 
-  it("AppBar commit icon links to Versioning via applicationSelector (Phase 5)", () => {
+  it("AppBar commit icon links to Versioning as Miroir scaffolding report (Phase 5)", () => {
     const appBar = readFileSync(APP_BAR_PATH, "utf8");
     expect(appBar.includes('icon: "commit"') || appBar.includes("icon: 'commit'")).toBe(true);
     expect(appBar.includes("Versioning")).toBe(true);
     expect(appBar.includes("reportVersioning")).toBe(true);
     expect(appBar.includes("resolveAppBarReportLinkApplication")).toBe(true);
-    expect(appBar.includes("applicationSelector")).toBe(true);
+    // Open under Miroir data section; in-report input steers target application.
+    expect(appBar).toMatch(/label:\s*"Versioning"[\s\S]*?section:\s*"data"/);
   });
 
   it("ApplicationVersionList exists and is unscoped (Versioning report is new)", () => {

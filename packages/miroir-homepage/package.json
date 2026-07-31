@@ -1,6 +1,6 @@
 {
   "name": "miroir-homepage",
-  "version": "1.0.0",
+  "version": "0.5.0-rc.2",
   "description": "Miroir Framework marketing homepage — static HTML + Tailwind",
   "private": true,
   "type": "module",

@@ -336,8 +336,9 @@ export function AppBar(props:AppBarProps) {
     {
       miroirMenuItemType: "miroirMenuReportLink",
       label: "Versioning",
-      section: "model",
-      // Placeholder only — navigation uses sidebar applicationSelector (#225).
+      // Miroir scaffolding report — open under Miroir data section; in-report
+      // inputReportSection steers which application's versions are listed (#225).
+      section: "data",
       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       reportUuid: reportVersioning.uuid,
       icon: "commit",

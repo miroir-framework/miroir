@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import {
   ApplicationSection,
@@ -6,6 +6,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
   Entity,
+  getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
   ReportSection,
@@ -20,8 +21,10 @@ import {
 import { useFormikContext } from 'formik';
 import { JsonDisplayHelper, useMiroirContextService } from 'miroir-react';
 import type { Params } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import { reportUrl } from '../../navigation.js';
 import { ReportDisplay } from '../../routes/ReportDisplay';
 import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
@@ -36,8 +39,15 @@ import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
 import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
+import { ReportInputSection } from './ReportInputSection.js';
 
-import { reportReportDetails } from "miroir-test-app_deployment-miroir";
+import {
+  entityEntity,
+  entityEntityVersion,
+  reportEntityDetails,
+  reportEntityVersionDetails,
+  reportReportDetails,
+} from "miroir-test-app_deployment-miroir";
 import { resolveRunnerDefinitionApplication } from "../Runners/runnerDefinitionApplication.js";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -87,6 +97,7 @@ export interface ReportSectionViewWithEditorProps extends ReportSectionViewProps
 export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorProps) => {
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
+  const navigate = useNavigate();
 
   const formik = useFormikContext<Record<string, any>>();
   const valueObjectEditMode = props.valueObjectEditMode || "update";
@@ -151,7 +162,41 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
     );
     if (!result || result instanceof TransformerFailure || !Array.isArray(result)) return [];
     return result as Entity[];
-  }, [reportSectionDefinitionFromFormik, formik.values, entities]);
+  }, [reportSectionDefinitionFromFormik, formik.values, entities, context.miroirContext.miroirActivityTracker]);
+
+  const modelDiagramMode =
+    reportSectionDefinitionFromFormik?.type === "modelDiagramReportSection"
+      ? ((reportSectionDefinitionFromFormik as any).definition?.mode as "Entity" | "EntityVersion" | undefined) ??
+        "Entity"
+      : "Entity";
+
+  const handleModelDiagramClassClick = useCallback(
+    (instanceUuid: string) => {
+      const detailsReport =
+        modelDiagramMode === "EntityVersion" ? reportEntityVersionDetails : reportEntityDetails;
+      const targetEntityUuid =
+        modelDiagramMode === "EntityVersion"
+          ? (entityEntityVersion as any).uuid
+          : (entityEntity as any).uuid;
+      const applicationSection = getApplicationSection(props.application, targetEntityUuid);
+      log.info("Model diagram class clicked", {
+        mode: modelDiagramMode,
+        instanceUuid,
+        reportUuid: (detailsReport as any).uuid,
+        applicationSection,
+      });
+      navigate(
+        reportUrl(
+          props.application,
+          props.deploymentUuid,
+          applicationSection,
+          (detailsReport as any).uuid,
+          instanceUuid,
+        ),
+      );
+    },
+    [modelDiagramMode, navigate, props.application, props.deploymentUuid],
+  );
 
   const storedReportDisplayParameters: Params<ReportUrlParamKeys> | TransformerFailure | undefined = useMemo(() => {
     if (reportSectionDefinitionFromFormik?.type !== "storedReportDisplay") {
@@ -440,9 +485,11 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         {reportSectionDefinitionFromFormik?.type == "modelDiagramReportSection" && (
           <ModelDiagramReportSectionView
             entities={modelDiagramEntities}
+            mode={modelDiagramMode}
             label={(reportSectionDefinitionFromFormik as any).definition?.label}
             title={(reportSectionDefinitionFromFormik as any).definition?.title}
             direction={(reportSectionDefinitionFromFormik as any).definition?.direction}
+            onClassClick={handleModelDiagramClassClick}
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
             showPerformanceDisplay={props.showPerformanceDisplay}
@@ -553,70 +600,21 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           // />
         )}
         {reportSectionDefinitionFromFormik?.type == "inputReportSection" && (
-          <>
-            {reportSectionDefinitionFromFormik.definition.inputPrefix ??
-              props.reportSectionPath.join("_")}{" "}
-            - inputMLSchema:
-            <pre
-              style={{
-                maxHeight: "400px",
-                overflow: "auto",
-                backgroundColor: "#f0f0f0",
-                padding: "10px",
-              }}
-            >
-              {JSON.stringify(reportSectionDefinitionFromFormik.definition.inputMLSchema, null, 2)}
-            </pre>
-            <pre
-              style={{
-                maxHeight: "400px",
-                overflow: "auto",
-                backgroundColor: "#f0f0f0",
-                padding: "10px",
-              }}
-            >
-              {JSON.stringify(
-                formik.values && props.reportSectionPath
-                  ? formik.values[
-                      reportSectionDefinitionFromFormik.definition.inputPrefix ??
-                        (props.reportSectionPath.join("_") + "_inputMLSchema")
-                    ]
-                  : "unknown",
-                null,
-                2,
-              )}
-            </pre>
-            <TypedValueObjectEditor
-              labelElement={<h2>Report Input</h2>}
-              formValueMLSchema={
-                reportSectionDefinitionFromFormik.definition.inputMLSchema as JzodObject
-              }
-              formikValuePathAsString={reportSectionDefinitionFromFormik.definition.inputPrefix ?? (props.reportSectionPath.join("_") + "_inputMLSchema")}
-              application={props.application}
-              applicationDeploymentMap={props.applicationDeploymentMap}
-              deploymentUuid={props.deploymentUuid}
-              applicationSection="model"
-              formLabel={"Report Input WHAT"}
-              zoomInPath=""
-              maxRenderDepth={Infinity}
-              displaySubmitButton="noDisplay"
-              useActionButton={false}
-              valueObjectEditMode="create" // N/A
-              // validationTransformer={validationTransformer}
-            />
-          </>
-          // <JsonDisplayHelper
-          //   debug={true}
-          //   componentName="ReportSectionViewWithEditor - jsonReportSection"
-          //   elements={[
-          //     {
-          //       label: "reportSectionDefinitionFromFormik",
-          //       data: reportSectionDefinitionFromFormik,
-          //       useCodeBlock: true,
-          //       copyButton: true,
-          //     },
-          //   ]}
-          // />
+          <ReportInputSection
+            label={reportSectionDefinitionFromFormik.definition.label ?? "Report Input"}
+            inputPrefix={
+              reportSectionDefinitionFromFormik.definition.inputPrefix ??
+              props.reportSectionPath.join("_") + "_inputMLSchema"
+            }
+            inputMLSchema={
+              reportSectionDefinitionFromFormik.definition.inputMLSchema as JzodObject
+            }
+            application={props.application}
+            applicationDeploymentMap={props.applicationDeploymentMap}
+            deploymentUuid={props.deploymentUuid}
+            applicationSection={props.applicationSection}
+            pageParams={props.paramsAsdomainElements}
+          />
         )}
       </div>
     </>

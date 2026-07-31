@@ -1,7 +1,7 @@
 {
   "name": "miroir-store-indexedDb",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.5.0-rc.2",
   "description": "The Miroir implementation for accessing indexedDb databases (on web browser, or file-based on nodejs server).",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,9 +15,9 @@
     "test": "jest --verbose --silent=false -t"
   },
   "dependencies": {
-    "miroir-core": "*",
-    "miroir-test-app_deployment-miroir": "*",
-    "level": "^8.0.0"
+    "level": "^8.0.0",
+    "miroir-core": "^0.5.0-rc.2",
+    "miroir-test-app_deployment-miroir": "^0.5.0-rc.2"
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",

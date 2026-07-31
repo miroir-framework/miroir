@@ -1,6 +1,6 @@
 {
   "name": "miroir-diagram-class",
-  "version": "1.0.0",
+  "version": "0.5.0-rc.2",
   "description": "UML-like class diagram generation from Miroir Entities (mlSchema) using Mermaid",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "mermaid": "*",
-    "miroir-core": "*",
+    "miroir-core": "^0.5.0-rc.2",
     "svg-toolbelt": "^0.7.0"
   },
   "peerDependencies": {

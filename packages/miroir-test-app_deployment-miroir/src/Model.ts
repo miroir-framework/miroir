@@ -133,7 +133,8 @@ import {
   selfApplicationVersionInitialMiroirVersion,
   storeManagementEndpoint,
   testEndpointVersionV1,
-  undoRedoEndpointVersionV1
+  undoRedoEndpointVersionV1,
+  entityCommit
 } from "..";
 
 export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, string> = {
@@ -161,6 +162,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityEntity as Entity,
     entityEntityVersion as Entity,
     //
+    entityCommit as Entity,
     entityEndpointVersion as Entity,
     entityJzodSchema as Entity, // null
     entityMenu as Entity,

@@ -11065,6 +11065,28 @@ export const miroirFundamentalJzodSchema = {
                   }
                 }
               },
+              "mode": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "Entity",
+                  "EntityVersion"
+                ],
+                "tag": {
+                  "value": {
+                    "id": 5,
+                    "defaultLabel": "Diagram Carrier Mode",
+                    "description": "Entity: click opens Entity details. EntityVersion: click opens EntityVersion details (geometry still uses entityUuid for FK edges).",
+                    "display": {
+                      "editable": true
+                    },
+                    "initializeTo": {
+                      "initializeToType": "value",
+                      "value": "Entity"
+                    }
+                  }
+                }
+              },
               "entityDefinitions": {
                 "type": "union",
                 "discriminator": "transformerType",
