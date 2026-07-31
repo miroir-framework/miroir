@@ -1,6 +1,6 @@
 {
   "name": "miroir-cli",
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "description": "Command Line Interface for Miroir Framework - exposes Endpoint Actions as CLI commands",
   "main": "dist/index.js",
   "type": "module",

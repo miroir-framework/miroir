@@ -1,7 +1,7 @@
 {
   "name": "miroir-store-postgres",
   "private": true,
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
   "description": "The Miroir implementation for accessing Postgres databases.",

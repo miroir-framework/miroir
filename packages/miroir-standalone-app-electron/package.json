@@ -1,6 +1,6 @@
 {
   "name": "miroir-standalone-app-electron",
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "description": "Electron desktop application wrapper for miroir-standalone-app",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "homepage": "https://github.com/miroir-framework/miroir/packages/miroir-standalone-app-electron/#readme",

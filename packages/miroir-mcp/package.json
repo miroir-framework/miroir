@@ -1,6 +1,6 @@
 {
   "name": "miroir-mcp",
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "description": "Model Context Protocol (MCP) server for Miroir Framework - exposes InstanceEndpoint actions as MCP tools",
   "main": "dist/index.js",
   "type": "module",

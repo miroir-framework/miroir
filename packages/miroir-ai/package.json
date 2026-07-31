@@ -1,6 +1,6 @@
 {
   "name": "miroir-ai",
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "description": "LLM/AI assistant backend for Miroir Framework — CopilotKit Runtime endpoint exposing Miroir element generation tools",
   "main": "dist/index.js",
   "type": "module",

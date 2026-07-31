@@ -1,7 +1,7 @@
 {
   "name": "miroir-test-app_deployment-admin",
   "private": true,
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "description": "Admin deployment assets for the Miroir Framework",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",

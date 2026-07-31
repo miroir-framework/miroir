@@ -1,7 +1,7 @@
 {
   "name": "miroir-store-indexedDb",
   "private": true,
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "description": "The Miroir implementation for accessing indexedDb databases (on web browser, or file-based on nodejs server).",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

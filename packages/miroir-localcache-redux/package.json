@@ -1,7 +1,7 @@
 {
   "name": "miroir-localcache-redux",
   "private": true,
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "description": "The Miroir implementation of Local Cache and Remote Access based on Redux.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

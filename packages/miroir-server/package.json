@@ -1,6 +1,6 @@
 {
   "name": "miroir-server",
-  "version": "0.5.0-rc.2",
+  "version": "0.5.0-rc.1",
   "description": "server for mirroir-based front-end",
   "main": "server.js",
   "type": "module",
