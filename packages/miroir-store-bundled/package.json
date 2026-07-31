@@ -12,7 +12,7 @@
     "devBuild": "npm run build"
   },
   "dependencies": {
-    "miroir-core": "^0.5.0-rc.2"
+    "miroir-core": "*"
   },
   "devDependencies": {
     "tsup": "^8.0.1"

@@ -10,7 +10,7 @@
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
   "dependencies": {
-    "miroir-core": "^0.5.0-rc.2",
+    "miroir-core": "*",
     "mongodb": "^6.0.0"
   },
   "devDependencies": {
