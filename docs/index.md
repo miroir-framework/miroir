@@ -125,6 +125,10 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 - [Developer Testing Guide](guides/developer/testing.md) - Concepts, CLI, UI runner, writing tests
 - [Contributor Testing Guidelines](contributing/testing.md) - Commands for contributors
 
+### Release Process
+- [Release Process Internals](reference/release-process.md) - Layered Lerna release-tree producer (#227), `ci/release/` internals
+- [Contributing: Release Process](contributing/release-process.md) - Superseded #223 tagging notes; see the reference above for the current process
+
 ### API Reference
 - [API Overview](reference/api/) - Complete API documentation
 - [Entity & EntityVersion](reference/api/entity.md) - Data model API

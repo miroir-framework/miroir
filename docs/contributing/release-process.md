@@ -1,5 +1,12 @@
 # Release Process
 
+> **Superseded.** This page describes the original #223 tagging approach
+> (`scripts/release_tag.py`), which is obsolete / on the wrong track. The current
+> release producer is [#227](https://github.com/miroir-framework/miroir/issues/227)
+> (`ci/release/`) — see [Release Process Internals](../reference/release-process.md)
+> for the authoritative reference, including why it *does* use `lerna version`
+> (contradicting the "never use Lerna" guidance below).
+
 Local-first product (pre-)release tagging for the Miroir monorepo (#223).  
 Artefact builds are [#224](https://github.com/miroir-framework/miroir/issues/224). GitHub Release upload stays **manual**.
 
