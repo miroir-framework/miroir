@@ -8,11 +8,3 @@ export const RUNNER_LIBRARY_RUNNER_REGISTRY: Record<string, Runner> = {
   lendDocument: lendDocument as unknown as Runner,
   returnDocument: returnDocument as unknown as Runner,
 };
-
-export function resolveRunnerLibraryRunnerRef(runnerRef: string): Runner {
-  const runner = RUNNER_LIBRARY_RUNNER_REGISTRY[runnerRef];
-  if (!runner) {
-    throw new Error(`Unknown runnerRef for runner.library suite: ${runnerRef}`);
-  }
-  return runner;
-}

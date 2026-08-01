@@ -20,15 +20,6 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import {
-  DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY,
-  DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,
-  DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY,
-  DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY,
-  DOMAIN_CONTROLLER_APPLICATION_VERSION_FREEZE_SUITE_KEY,
-  DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY,
-  DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY,
-  DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY,
-  EVOLUTION_TRACE_WP1_SUITE_KEY,
   domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
   libraryPlayfieldSeedForActionSuite,
   type LibraryPlayfieldSeed,
@@ -97,42 +88,21 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
       libraryPlayfieldSeed: domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
     },
-    [DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY]: actionSuiteEntry(
-      DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY,
-      miroirTest_domain_controller_data_crud as MiroirTestDefinition,
-    ),
-    [DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY]: actionSuiteEntry(
-      DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY,
-      miroirTest_domain_controller_model_crud as MiroirTestDefinition,
-    ),
-    [DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY]: actionSuiteEntry(
-      DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY,
-      miroirTest_domain_controller_composite_pk_crud as MiroirTestDefinition,
-    ),
-    [DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY]: actionSuiteEntry(
-      DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY,
-      miroirTest_domain_controller_non_uuid_pk_model_crud as MiroirTestDefinition,
-    ),
-    [DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY]: actionSuiteEntry(
-      DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY,
-      miroirTest_domain_controller_non_uuid_pk_data_crud as MiroirTestDefinition,
-    ),
-    [DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY]: actionSuiteEntry(
-      DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY,
-      miroirTest_domain_controller_no_parent_uuid_crud as MiroirTestDefinition,
-    ),
-    [DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY]: actionSuiteEntry(
-      DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY,
-      miroirTest_domain_controller_model_undo_redo as MiroirTestDefinition,
-    ),
-    [DOMAIN_CONTROLLER_APPLICATION_VERSION_FREEZE_SUITE_KEY]: actionSuiteEntry(
-      DOMAIN_CONTROLLER_APPLICATION_VERSION_FREEZE_SUITE_KEY,
-      miroirTest_domain_controller_application_version_freeze as MiroirTestDefinition,
-    ),
-    [EVOLUTION_TRACE_WP1_SUITE_KEY]: actionSuiteEntry(
-      EVOLUTION_TRACE_WP1_SUITE_KEY,
-      miroirTest_evolutionTraceWP1 as MiroirTestDefinition,
-    ),
+    ...(
+      Object.fromEntries(
+        [
+          miroirTest_domain_controller_data_crud,
+          miroirTest_domain_controller_model_crud,
+          miroirTest_domain_controller_composite_pk_crud,
+          miroirTest_domain_controller_non_uuid_pk_model_crud,
+          miroirTest_domain_controller_non_uuid_pk_data_crud,
+          miroirTest_domain_controller_no_parent_uuid_crud,
+          miroirTest_domain_controller_model_undo_redo,
+          miroirTest_domain_controller_application_version_freeze,
+          miroirTest_evolutionTraceWP1,
+        ].map(test => [test.name, actionSuiteEntry(test.name, test as MiroirTestDefinition)])
+      )
+    )
   };
 
 export function listUiIntegrationRunnerSuiteKeys(): string[] {

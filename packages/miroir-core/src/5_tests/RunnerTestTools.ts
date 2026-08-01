@@ -19,7 +19,6 @@ import type {
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "../1_core/Runner";
 import { runCompositeActionTestParams } from "./CompositeActionTestTools.js";
-import { resolveRunnerFromRegistry } from "./resolveRunnerFromRegistry.js";
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
 import type { TestbedUuids } from "./TestbedUuids";
@@ -68,7 +67,7 @@ export function resolveRunnerTestLeaf({
 
   return testBuildPlusRuntimeCompositeActionSuiteForRunner(
     pageLabel,
-    resolveRunnerFromRegistry(runnerRegistry, leaf.runnerRef),
+    runnerRegistry[leaf.runnerRef],
     runTarget.applicationUuid,
     runTarget.deploymentUuid,
     runTarget.applicationName,

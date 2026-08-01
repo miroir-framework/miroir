@@ -107,5 +107,4 @@ export { default as miroirTest_runner_library } from "./assets/library_model/a31
 
 export {
   RUNNER_LIBRARY_RUNNER_REGISTRY,
-  resolveRunnerLibraryRunnerRef,
 } from "./src/runnerLibraryTestRegistry.js";

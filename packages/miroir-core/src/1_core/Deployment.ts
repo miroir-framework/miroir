@@ -323,6 +323,16 @@ export function expandResolvableResetAndinitializeDeploymentCompositeAction(
 }
 
 // ################################################################################################
+/**
+ * Build the action sequence to reset and initialize the deployment.
+ * @param applicationUuid - The UUID of the application.
+ * @param deploymentUuid - The UUID of the deployment.
+ * @param initApplicationParameters - The parameters to initialize the application.
+ * @param appEntitesAndInstances - The entities and instances to create.
+ * @param appMetaModel - The meta model to use.
+ * @param filterEntities - The entities to filter.
+ * @returns The action sequence.
+ */
 export function buildResetAndinitializeDeploymentActionSequence(
   applicationUuid: Uuid,
   deploymentUuid: Uuid,
@@ -470,6 +480,16 @@ export function buildResetAndinitializeDeploymentActionSequence(
 }
 
 // ################################################################################################
+/**
+ * Reset and initialize the deployment.
+ * @param applicationUuid - The UUID of the application.
+ * @param deploymentUuid - The UUID of the deployment.
+ * @param initApplicationParameters - The parameters to initialize the application.
+ * @param appEntitesAndInstances - The entities and instances to create.
+ * @param appMetaModel - The meta model to use.
+ * @param filterEntities - The entities to filter.
+ * @returns The action sequence.
+ */
 export function resetAndinitializeDeploymentCompositeAction(
   applicationUuid: Uuid,
   deploymentUuid: Uuid,

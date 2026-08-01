@@ -291,8 +291,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
       deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
     }, {
-      // Keep UI mounted during browser-triggered integration runs.
-      clearDocumentBody: false,
+      clearDocumentBody: false, // Keep UI mounted during browser-triggered integration runs.
       resetMiroirPlatform: emulateServer,
       ...(playfieldSeed
         ? {

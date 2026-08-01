@@ -85,4 +85,3 @@ export declare function getDefaultLibraryModelEnvironmentDEFUNCT(
 export declare const resolveLibraryDeploymentUuid: any;
 export declare const libraryApplicationInstances: any;
 export declare const RUNNER_LIBRARY_RUNNER_REGISTRY: any;
-export declare const resolveRunnerLibraryRunnerRef: any;

@@ -118,6 +118,12 @@ export async function ensureLibraryPlayfield(
   return { created: true };
 }
 
+// ################################################################################################
+/**
+ * Reset the library playfield.
+ * @param params - The parameters for the resetLibraryPlayfield function.
+ * @returns A promise that resolves when the library playfield is reset.
+ */
 export async function resetLibraryPlayfield(
   params: ResetLibraryPlayfieldParams,
 ): Promise<void> {
@@ -174,11 +180,11 @@ export async function resetLibraryPlayfield(
 
     const initResult = await domainController.handleCompositeAction(
       resetAndinitializeDeploymentCompositeAction(
-        librarySelfApplicationUuid,
-        libraryDeploymentUuid,
-        librarySeedInitParams,
-        libraryEntitiesAndInstances,
-        librarySeedMetaModel,
+        librarySelfApplicationUuid, // applicationUuid
+        libraryDeploymentUuid, // deploymentUuid
+        librarySeedInitParams, // initApplicationParameters
+        libraryEntitiesAndInstances, // appEntitesAndInstances
+        librarySeedMetaModel, // appMetaModel
       ),
       applicationDeploymentMap,
       defaultMiroirModelEnvironment,
