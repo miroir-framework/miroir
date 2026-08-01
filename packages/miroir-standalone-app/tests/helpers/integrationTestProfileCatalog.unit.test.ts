@@ -51,18 +51,38 @@ describe("resolveUiIntegrationRunnerSuiteKey (B6-d0)", () => {
   it("maps instance name and miroirTestLabel to registry key runner_library", async () => {
     const { resolveUiIntegrationRunnerSuiteKey, isUiIntegrationRunnerSuiteSupportedForInstance } =
       await import("../../src/miroir-fwk/4-tests/resolveUiIntegrationRunnerSuiteKey.js");
+    const { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } = await import(
+      "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js"
+    );
+    const { UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY } = await import(
+      "../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
+    );
 
-    expect(resolveUiIntegrationRunnerSuiteKey(miroirTest_runner_library as never)).toBe(
-      "runner_library",
-    );
-    expect(isUiIntegrationRunnerSuiteSupportedForInstance(miroirTest_runner_library as never)).toBe(
-      true,
-    );
+    expect(
+      resolveUiIntegrationRunnerSuiteKey(
+        miroirTest_runner_library as never,
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+        UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+      ),
+    ).toBe("runner_library");
+    expect(
+      isUiIntegrationRunnerSuiteSupportedForInstance(
+        miroirTest_runner_library as never,
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+        UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+      ),
+    ).toBe(true);
 
     const byLabelOnly = {
       ...miroirTest_runner_library,
       name: "other-name",
     };
-    expect(resolveUiIntegrationRunnerSuiteKey(byLabelOnly as never)).toBe("runner_library");
+    expect(
+      resolveUiIntegrationRunnerSuiteKey(
+        byLabelOnly as never,
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+        UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+      ),
+    ).toBe("runner_library");
   });
 });

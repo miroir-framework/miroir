@@ -27,6 +27,8 @@ import {
 } from '../../../4-tests/miroirTestSuiteUiExecution.js';
 import type { UiIntegrationTestLauncherEnvironment } from '../../../4-tests/uiIntegrationTestLauncher.js';
 import type { UiIntegrationTestRunTargetMode } from '../../../4-tests/uiIntegrationTestLauncherTypes.js';
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from '../../../4-tests/uiIntegrationTestRunnerSuiteRegistry.js';
+import { UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY } from '../../../4-tests/uiIntegrationTestTransformerSuiteRegistry.js';
 import { useIntegTestRunCoordinator } from '../../../4-tests/useIntegTestRunCoordinator.js';
 import { ActionButtonWithSnackbar } from '../../components/Page/ActionButtonWithSnackbar.js';
 import { cleanLevel } from '../../constants.js';
@@ -77,7 +79,11 @@ function createBatchNestedCoordinator(): IntegTestRunCoordinator {
 function selectLaunchableIntegrationInstances(
   miroirTests: MiroirTestDefinition[],
 ): MiroirTestDefinition[] {
-  const listCaps = classifyMiroirTestListExecutionCapabilities(miroirTests);
+  const listCaps = classifyMiroirTestListExecutionCapabilities(
+    miroirTests,
+    UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+    UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+  );
   const launchableKeySet = new Set(listCaps.launchableIntegrationSuiteKeys);
 
   if (listCaps.integrationSuiteKeys.length > listCaps.launchableIntegrationSuiteKeys.length) {
@@ -88,7 +94,11 @@ function selectLaunchableIntegrationInstances(
   }
 
   return sortMiroirTestInstances(miroirTests).filter((instance) => {
-    const registryKey = resolveUiIntegrationRunnerSuiteKey(instance);
+    const registryKey = resolveUiIntegrationRunnerSuiteKey(
+      instance,
+      UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+      UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+    );
     return registryKey !== undefined && launchableKeySet.has(registryKey);
   });
 }
@@ -125,7 +135,11 @@ async function runLaunchableIntegrationBatch(params: {
     };
 
     for (const instance of sortedLaunchable) {
-      const registryKey = resolveUiIntegrationRunnerSuiteKey(instance);
+      const registryKey = resolveUiIntegrationRunnerSuiteKey(
+        instance,
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+        UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+      );
       if (!registryKey) {
         continue;
       }

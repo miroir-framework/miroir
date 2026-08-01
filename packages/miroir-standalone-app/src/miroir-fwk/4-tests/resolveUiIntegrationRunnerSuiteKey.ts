@@ -1,16 +1,16 @@
 import type { MiroirTestDefinition, MiroirTestSuite } from "miroir-core";
 
-import {
-  listUiIntegrationRunnerSuiteKeys,
-  UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
-} from "./uiIntegrationTestRunnerSuiteRegistry.js";
-import {
-  listUiIntegrationTransformerSuiteKeys,
-  UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
-} from "./uiIntegrationTestTransformerSuiteRegistry.js";
+import type { UiIntegrationRunnerSuiteEntry } from "./uiIntegrationTestRunnerSuiteRegistry.js";
+import type { UiIntegrationTransformerSuiteEntry } from "./uiIntegrationTestTransformerSuiteRegistry.js";
 
-function listAllUiIntegrationSuiteKeys(): string[] {
-  return [...listUiIntegrationRunnerSuiteKeys(), ...listUiIntegrationTransformerSuiteKeys()].sort();
+function listAllUiIntegrationSuiteKeys(
+  runnerSuiteRegistry: Record<string, UiIntegrationRunnerSuiteEntry>,
+  transformerSuiteRegistry: Record<string, UiIntegrationTransformerSuiteEntry>,
+): string[] {
+  return [
+    ...Object.keys(runnerSuiteRegistry),
+    ...Object.keys(transformerSuiteRegistry),
+  ].sort();
 }
 
 /**
@@ -19,24 +19,26 @@ function listAllUiIntegrationSuiteKeys(): string[] {
  */
 export function resolveUiIntegrationRunnerSuiteKey(
   miroirTest: MiroirTestDefinition,
+  runnerSuiteRegistry: Record<string, UiIntegrationRunnerSuiteEntry>,
+  transformerSuiteRegistry: Record<string, UiIntegrationTransformerSuiteEntry>,
 ): string | undefined {
   const instanceName = miroirTest.name?.trim();
-  if (instanceName && instanceName in UI_INTEGRATION_RUNNER_SUITE_REGISTRY) {
+  if (instanceName && instanceName in runnerSuiteRegistry) {
     return instanceName;
   }
-  if (instanceName && instanceName in UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY) {
+  if (instanceName && instanceName in transformerSuiteRegistry) {
     return instanceName;
   }
 
   const suite = miroirTest.definition as MiroirTestSuite | undefined;
   const label = suite?.miroirTestLabel?.trim();
   if (label) {
-    for (const [registryKey, entry] of Object.entries(UI_INTEGRATION_RUNNER_SUITE_REGISTRY)) {
+    for (const [registryKey, entry] of Object.entries(runnerSuiteRegistry)) {
       if (entry.suiteDefinition.miroirTestLabel === label) {
         return registryKey;
       }
     }
-    for (const [registryKey, entry] of Object.entries(UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY)) {
+    for (const [registryKey, entry] of Object.entries(transformerSuiteRegistry)) {
       if (entry.suiteDefinition.miroirTestLabel === label) {
         return registryKey;
       }
@@ -48,12 +50,27 @@ export function resolveUiIntegrationRunnerSuiteKey(
 
 export function isUiIntegrationRunnerSuiteSupportedForInstance(
   miroirTest: MiroirTestDefinition,
+  runnerSuiteRegistry: Record<string, UiIntegrationRunnerSuiteEntry>,
+  transformerSuiteRegistry: Record<string, UiIntegrationTransformerSuiteEntry>,
 ): boolean {
-  const key = resolveUiIntegrationRunnerSuiteKey(miroirTest);
-  return key !== undefined && listAllUiIntegrationSuiteKeys().includes(key);
+  const key = resolveUiIntegrationRunnerSuiteKey(
+    miroirTest,
+    runnerSuiteRegistry,
+    transformerSuiteRegistry,
+  );
+  return (
+    key !== undefined &&
+    listAllUiIntegrationSuiteKeys(runnerSuiteRegistry, transformerSuiteRegistry).includes(key)
+  );
 }
 
 /** @deprecated Prefer resolveUiIntegrationRunnerSuiteKey / isUiIntegrationRunnerSuiteSupportedForInstance */
-export function isUiIntegrationRunnerSuiteSupported(suiteKey: string): boolean {
-  return listAllUiIntegrationSuiteKeys().includes(suiteKey);
+export function isUiIntegrationRunnerSuiteSupported(
+  suiteKey: string,
+  runnerSuiteRegistry: Record<string, UiIntegrationRunnerSuiteEntry>,
+  transformerSuiteRegistry: Record<string, UiIntegrationTransformerSuiteEntry>,
+): boolean {
+  return listAllUiIntegrationSuiteKeys(runnerSuiteRegistry, transformerSuiteRegistry).includes(
+    suiteKey,
+  );
 }

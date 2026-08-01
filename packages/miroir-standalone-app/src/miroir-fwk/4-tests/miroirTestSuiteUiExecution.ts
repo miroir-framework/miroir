@@ -9,8 +9,8 @@ import {
   isUiIntegrationRunnerSuiteSupportedForInstance,
   resolveUiIntegrationRunnerSuiteKey,
 } from './resolveUiIntegrationRunnerSuiteKey.js';
-import { listUiIntegrationRunnerSuiteKeys } from './uiIntegrationTestRunnerSuiteRegistry.js';
-import { listUiIntegrationTransformerSuiteKeys } from './uiIntegrationTestTransformerSuiteRegistry.js';
+import type { UiIntegrationRunnerSuiteEntry } from './uiIntegrationTestRunnerSuiteRegistry.js';
+import type { UiIntegrationTransformerSuiteEntry } from './uiIntegrationTestTransformerSuiteRegistry.js';
 
 export type MiroirTestListExecutionCapabilities = {
   hasUnitLeaves: boolean;
@@ -32,10 +32,12 @@ function listSuiteIdentityKey(instance: MiroirTestDefinition): string {
 
 /**
  * Aggregate unit/integ capabilities across a MiroirTest list report fetch.
- * Launchable integ keys use the UI suite registry (runner + transformer).
+ * Launchable integ keys use the supplied UI suite registries (runner + transformer).
  */
 export function classifyMiroirTestListExecutionCapabilities(
   instances: MiroirTestDefinition[],
+  runnerSuiteRegistry: Record<string, UiIntegrationRunnerSuiteEntry>,
+  transformerSuiteRegistry: Record<string, UiIntegrationTransformerSuiteEntry>,
 ): MiroirTestListExecutionCapabilities {
   const unitSuiteKeys = new Set<string>();
   const integrationSuiteKeys = new Set<string>();
@@ -50,8 +52,18 @@ export function classifyMiroirTestListExecutionCapabilities(
     }
     if (caps.hasIntegrationLeaves) {
       integrationSuiteKeys.add(identityKey);
-      if (isUiIntegrationRunnerSuiteSupportedForInstance(instance)) {
-        const registryKey = resolveUiIntegrationRunnerSuiteKey(instance);
+      if (
+        isUiIntegrationRunnerSuiteSupportedForInstance(
+          instance,
+          runnerSuiteRegistry,
+          transformerSuiteRegistry,
+        )
+      ) {
+        const registryKey = resolveUiIntegrationRunnerSuiteKey(
+          instance,
+          runnerSuiteRegistry,
+          transformerSuiteRegistry,
+        );
         if (registryKey) {
           launchableIntegrationSuiteKeys.add(registryKey);
         }
@@ -74,12 +86,24 @@ export function resolveMiroirTestSuiteUiExecutionMode(
   return classifyMiroirTestSuiteExecutionCapabilities(suite).uiExecutionMode;
 }
 
-export function listUiIntegrationSuiteKeys(): string[] {
-  return [...listUiIntegrationRunnerSuiteKeys(), ...listUiIntegrationTransformerSuiteKeys()].sort();
+export function listUiIntegrationSuiteKeys(
+  runnerSuiteRegistry: Record<string, UiIntegrationRunnerSuiteEntry>,
+  transformerSuiteRegistry: Record<string, UiIntegrationTransformerSuiteEntry>,
+): string[] {
+  return [
+    ...Object.keys(runnerSuiteRegistry),
+    ...Object.keys(transformerSuiteRegistry),
+  ].sort();
 }
 
-export function isUiIntegrationRunnerSuiteSupported(suiteKey: string): boolean {
-  return listUiIntegrationSuiteKeys().includes(suiteKey);
+export function isUiIntegrationRunnerSuiteSupported(
+  suiteKey: string,
+  runnerSuiteRegistry: Record<string, UiIntegrationRunnerSuiteEntry>,
+  transformerSuiteRegistry: Record<string, UiIntegrationTransformerSuiteEntry>,
+): boolean {
+  return listUiIntegrationSuiteKeys(runnerSuiteRegistry, transformerSuiteRegistry).includes(
+    suiteKey,
+  );
 }
 
 export {

@@ -21,6 +21,8 @@ import {
 } from "../../../4-tests/integrationTestProfileAssets.js";
 import type { UiIntegrationTestRunTargetMode } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
 import { isUiIntegrationRunnerSuiteSupported } from "../../../4-tests/miroirTestSuiteUiExecution.js";
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../../../4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import { UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY } from "../../../4-tests/uiIntegrationTestTransformerSuiteRegistry.js";
 import { setLastUiIntegrationTestRunResult } from "../../../4-tests/uiIntegrationTestRunState.js";
 import { useIntegTestRunCoordinator } from "../../../4-tests/useIntegTestRunCoordinator.js";
 import { ActionButtonWithSnackbar } from "../../components/Page/ActionButtonWithSnackbar.js";
@@ -97,7 +99,12 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
     : "unit";
 
   const integrationSupported =
-    resolvedRunMode !== "integration" || isUiIntegrationRunnerSuiteSupported(testSuiteKey);
+    resolvedRunMode !== "integration" ||
+    isUiIntegrationRunnerSuiteSupported(
+      testSuiteKey,
+      UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+      UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+    );
 
   const onUnitAction = async (): Promise<Action2VoidReturnType> => {
     miroirContextService.miroirContext.miroirActivityTracker.resetResults();
@@ -139,7 +146,13 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
     if (!miroirTestSuite) {
       throw new Error(`No MiroirTest suite found for ${testSuiteKey}`);
     }
-    if (!isUiIntegrationRunnerSuiteSupported(testSuiteKey)) {
+    if (
+      !isUiIntegrationRunnerSuiteSupported(
+        testSuiteKey,
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+        UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+      )
+    ) {
       throw new Error(`UI integration launcher does not support suite "${testSuiteKey}" yet`);
     }
 

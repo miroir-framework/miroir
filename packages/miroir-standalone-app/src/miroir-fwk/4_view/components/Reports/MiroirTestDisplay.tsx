@@ -15,6 +15,8 @@ import {
   uiExecutionModeBadgeColors,
 } from "../../../4-tests/miroirTestSuiteUiExecution.js";
 import { isUiIntegrationProfileLaunchableInBrowser } from "../../../4-tests/integrationTestProfileCatalog.js";
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../../../4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import { UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY } from "../../../4-tests/uiIntegrationTestTransformerSuiteRegistry.js";
 import { useUiIntegrationTestRunPreferences } from "../../../4-tests/useUiIntegrationTestRunPreferences.js";
 import { cleanLevel } from "../../constants.js";
 import {
@@ -67,10 +69,19 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => {
   const uiExecutionMode = resolveMiroirTestSuiteUiExecutionMode(instance.definition);
   const badgeColors = uiExecutionModeBadgeColors(uiExecutionMode);
   const integrationSuiteKey = useMemo(
-    () => resolveUiIntegrationRunnerSuiteKey(instance),
+    () =>
+      resolveUiIntegrationRunnerSuiteKey(
+        instance,
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+        UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+      ),
     [instance],
   );
-  const integrationUiSupported = isUiIntegrationRunnerSuiteSupportedForInstance(instance);
+  const integrationUiSupported = isUiIntegrationRunnerSuiteSupportedForInstance(
+    instance,
+    UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+    UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+  );
 
   const integrationPreferences = useUiIntegrationTestRunPreferences();
   const integrationProfileBrowserLaunchable = isUiIntegrationProfileLaunchableInBrowser(
