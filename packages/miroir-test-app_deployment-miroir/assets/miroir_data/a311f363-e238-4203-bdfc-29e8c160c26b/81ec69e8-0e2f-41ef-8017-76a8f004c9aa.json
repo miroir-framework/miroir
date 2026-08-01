@@ -14,7 +14,7 @@
       {
         "miroirTestType": "runnerTest",
         "miroirTestLabel": "Create and Drop Entity Author",
-        "runnerRef": "dropEntity",
+        "runnerRef": "44313751-b0e5-4132-bb12-a544806e759b",
         "testCompositeActionLabel": "Create and Drop Entity Author",
         "initialModel": {
           "transformerType": "getFromParameters",

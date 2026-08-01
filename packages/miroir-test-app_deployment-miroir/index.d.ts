@@ -300,7 +300,6 @@ import type { MetaModel } from "miroir-core";
 
 export declare const defaultMiroirMetaModel: MetaModel;
 export declare const RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY: any;
-export declare const resolveRunnerMiroirEntityRunnerRef: any;
 export declare const miroirThemeSchemaJson: any;
 export declare const tableThemeSchemaJson: any;
 export declare const defaultMiroirMetaModelEntityNameToAttributeName: any;

@@ -18,7 +18,7 @@
       {
         "miroirTestType": "runnerTest",
         "miroirTestLabel": "Freeze V1 Baseline",
-        "runnerRef": "freezeApplicationVersion",
+        "runnerRef": "20d51c4c-52e5-4077-baf3-5e87bd75e496",
         "testCompositeActionLabel": "Freeze V1 Baseline",
         "initialModel": {
           "transformerType": "getFromParameters",
@@ -246,7 +246,7 @@
       {
         "miroirTestType": "runnerTest",
         "miroirTestLabel": "Freeze V1 alter Publisher commit Freeze V2",
-        "runnerRef": "freezeApplicationVersion",
+        "runnerRef": "20d51c4c-52e5-4077-baf3-5e87bd75e496",
         "testCompositeActionLabel": "Freeze V1 alter Publisher commit Freeze V2",
         "initialModel": {
           "transformerType": "getFromParameters",

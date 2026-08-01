@@ -27,7 +27,7 @@
         "miroirTestType": "runnerTest",
         "miroirTestLabel": "Lend Book Test Composite Action",
         "environmentRef": "libraryRunnerTestEnvironment",
-        "runnerRef": "lendDocument",
+        "runnerRef": "cc853632-f158-43fa-b9ed-437c9c25f539",
         "deploymentRef": "libraryTestIdentifiers",
         "testCompositeActionLabel": "Lend Book Test Composite Action",
         "initialModel": {
@@ -150,7 +150,7 @@
         "miroirTestType": "runnerTest",
         "miroirTestLabel": "Return Book Test Composite Action",
         "environmentRef": "libraryRunnerTestEnvironment",
-        "runnerRef": "returnDocument",
+        "runnerRef": "98a38a84-e702-4540-a056-c7676a193a2b",
         "deploymentRef": "libraryTestIdentifiers",
         "testCompositeActionLabel": "Return Book Test Composite Action",
         "initialModel": {

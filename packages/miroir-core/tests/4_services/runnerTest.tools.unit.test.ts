@@ -259,7 +259,8 @@ describe("runnerTest tools", () => {
     expect(suite.miroirTests).toHaveLength(2);
     for (const test of suite.miroirTests) {
       const leaf = test as MiroirTestForRunner;
-      expect(leaf.runnerRef).toBe("createEntity");
+      expect(leaf.runnerRef).toBe("82f81a25-2366-4abf-8a97-83ca5e9a9c46");
+      expect(RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[leaf.runnerRef]?.uuid).toBe(leaf.runnerRef);
       expect(leaf.initialModel).toEqual(getFromParameters("emptyApplicationModel"));
       expect(leaf.testParams?.createEntity).toBeDefined();
     }
@@ -307,7 +308,8 @@ describe("runnerTest tools", () => {
     expect(suite.runTarget).toBeUndefined();
     expect(suite.miroirTests).toHaveLength(1);
     const leaf = suite.miroirTests[0] as MiroirTestForRunner;
-    expect(leaf.runnerRef).toBe("dropEntity");
+    expect(leaf.runnerRef).toBe("44313751-b0e5-4132-bb12-a544806e759b");
+    expect(RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[leaf.runnerRef]?.uuid).toBe(leaf.runnerRef);
     expect(leaf.initialModel).toEqual(getFromParameters("emptyApplicationModel"));
     expect(leaf.preRunnerCompositeActions).toHaveLength(1);
     expect(leaf.preRunnerCompositeActions?.[0]).toMatchObject({

@@ -110,8 +110,8 @@ const runnerTestSession = new RunnerTestSession({
   runTarget,
   suiteTestParams: {},
   runnerRegistry: {
-    [runnerDropEntity.name]: runnerDropEntity as unknown as Runner,
-    [runnerCreateEntity.name]: runnerCreateEntity as unknown as Runner,
+    [runnerDropEntity.uuid]: runnerDropEntity as unknown as Runner,
+    [runnerCreateEntity.uuid]: runnerCreateEntity as unknown as Runner,
   },
 });
 

@@ -375,5 +375,4 @@ export { default as materialStoredMiroirTheme } from "./assets/miroir_data/bdcf9
 export { defaultMiroirMetaModel } from "./src/Model";
 export {
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
-  resolveRunnerMiroirEntityRunnerRef,
 } from "./src/runnerMiroirEntityTestRegistry";

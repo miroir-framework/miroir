@@ -116,7 +116,7 @@ const runnerTestSession = new RunnerTestSession({
   runTarget,
   suiteTestParams: {},
   runnerRegistry: {
-    [runnerCreateEntity.name]: runnerCreateEntity as unknown as Runner,
+    [runnerCreateEntity.uuid]: runnerCreateEntity as unknown as Runner,
   },
 });
 

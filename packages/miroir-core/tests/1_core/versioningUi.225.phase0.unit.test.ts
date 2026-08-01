@@ -32,7 +32,7 @@ const APP_BAR_PATH = join(
 
 /** Locked naming for later phases. */
 export const VERSIONING_UI_225 = {
-  runnerRegistryKey: "freezeApplicationVersion",
+  runnerRegistryKey: "20d51c4c-52e5-4077-baf3-5e87bd75e496",
   runnerName: "freezeApplicationVersion",
   versioningReportName: "Versioning",
   versioningReportUuid: "c2b89408-bed7-473d-ab0a-2f4adc6a85e1",
@@ -62,7 +62,7 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(src).toMatch(
       /FREEZE_APPLICATION_VERSION_ACTION_TYPE\s*=\s*"freezeApplicationVersion"/,
     );
-    expect(VERSIONING_UI_225.runnerRegistryKey).toBe("freezeApplicationVersion");
+    expect(VERSIONING_UI_225.runnerRegistryKey).toBe(VERSIONING_UI_225.freezeRunnerUuid);
   });
 
   it("locks Versioning UI naming constants", () => {

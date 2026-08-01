@@ -16,7 +16,7 @@
       {
         "miroirTestType": "runnerTest",
         "miroirTestLabel": "Create Entity (no reports)",
-        "runnerRef": "createEntity",
+        "runnerRef": "82f81a25-2366-4abf-8a97-83ca5e9a9c46",
         "testCompositeActionLabel": "Create Entity (no reports)",
         "initialModel": {
           "transformerType": "getFromParameters",
@@ -253,7 +253,7 @@
       {
         "miroirTestType": "runnerTest",
         "miroirTestLabel": "Create Entity with reports",
-        "runnerRef": "createEntity",
+        "runnerRef": "82f81a25-2366-4abf-8a97-83ca5e9a9c46",
         "testCompositeActionLabel": "Create Entity with reports",
         "initialModel": {
           "transformerType": "getFromParameters",

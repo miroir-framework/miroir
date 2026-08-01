@@ -68,21 +68,21 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
     },
-    [RUNNER_CREATE_ENTITY_SUITE_KEY]: {
+    ["runner_create_entity"]: {
       suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
       skipRunTargetPlayfieldReset: true,
       defaultApplicationName: "testApplication_CreateEntity",
     },
-    [RUNNER_DROP_ENTITY_SUITE_KEY]: {
+    ["runner_drop_entity"]: {
       suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
       skipRunTargetPlayfieldReset: true,
       defaultApplicationName: "testApplication_CreateEntity",
     },
-    [RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY]: {
+    ["runner_freeze_application_version"]: {
       suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
