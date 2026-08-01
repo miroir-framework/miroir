@@ -21,8 +21,8 @@ import {
   resolveRunnerTestLeaf,
 } from "../../src/5_tests/RunnerTestTools";
 import { getTestbedUuidsForTestSuite } from "../../src/5_tests/TestbedUuids";
-import { remapLibraryAppModelForRunTarget } from "../../src/1_core/remapApplicationModelAtPaths";
-import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment";
+import { remapLibraryAppModelForRunTarget } from "../../src/1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
+import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment.js";
 
 const getFromParameters = (referenceName: string) => ({
   transformerType: "getFromParameters" as const,
@@ -79,15 +79,28 @@ const buildContext = {
 
 describe("runnerTest tools", () => {
   it("miroirTestForRunner validates a minimal inline runnerTest leaf", () => {
+    const lendDocumentUuid = "cc853632-f158-43fa-b9ed-437c9c25f539";
     const parsed = miroirTestForRunnerSchema.parse({
       miroirTestType: "runnerTest",
       miroirTestLabel: "Lend Book Test Composite Action",
-      runnerRef: "lendDocument",
+      runnerRef: lendDocumentUuid,
       deploymentRef: "libraryTestIdentifiers",
       initialModel: getFromParameters("defaultLibraryAppModel"),
     });
-    expect(parsed.runnerRef).toBe("lendDocument");
+    expect(parsed.runnerRef).toBe(lendDocumentUuid);
     expect(parsed.fixtureRef).toBeUndefined();
+  });
+
+  it("RUNNER_LIBRARY_RUNNER_REGISTRY is indexed by Runner uuid", () => {
+    const lendDocumentUuid = "cc853632-f158-43fa-b9ed-437c9c25f539";
+    const returnDocumentUuid = "98a38a84-e702-4540-a056-c7676a193a2b";
+    expect(Object.keys(RUNNER_LIBRARY_RUNNER_REGISTRY).sort()).toEqual(
+      [lendDocumentUuid, returnDocumentUuid].sort(),
+    );
+    expect(RUNNER_LIBRARY_RUNNER_REGISTRY[lendDocumentUuid]?.uuid).toBe(lendDocumentUuid);
+    expect(RUNNER_LIBRARY_RUNNER_REGISTRY[returnDocumentUuid]?.uuid).toBe(returnDocumentUuid);
+    expect(RUNNER_LIBRARY_RUNNER_REGISTRY).not.toHaveProperty("lendDocument");
+    expect(RUNNER_LIBRARY_RUNNER_REGISTRY).not.toHaveProperty("returnDocument");
   });
 
   it("runner_library leaves are inline runnerTests without fixtureRef", () => {
@@ -95,6 +108,7 @@ describe("runnerTest tools", () => {
       const leaf = test as MiroirTestForRunner;
       expect(leaf.fixtureRef).toBeUndefined();
       expect(leaf.initialModel).toEqual(getFromParameters("defaultLibraryAppModel"));
+      expect(RUNNER_LIBRARY_RUNNER_REGISTRY[leaf.runnerRef]?.uuid).toBe(leaf.runnerRef);
     }
   });
 

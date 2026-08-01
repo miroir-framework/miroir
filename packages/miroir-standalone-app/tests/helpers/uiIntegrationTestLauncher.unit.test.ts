@@ -29,7 +29,12 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
   it("resolves runner_library entry", () => {
     const entry = resolveUiIntegrationRunnerSuite("runner_library");
     expect(entry.suiteDefinition.miroirTestLabel).toBe("runner.library");
-    expect(Object.keys(entry.runnerRegistry).length).toBeGreaterThan(0);
+    expect(Object.keys(entry.runnerRegistry).sort()).toEqual(
+      [
+        "98a38a84-e702-4540-a056-c7676a193a2b",
+        "cc853632-f158-43fa-b9ed-437c9c25f539",
+      ].sort(),
+    );
   });
 
   it("resolves runner_create_entity with entity runners and skip playfield reset", () => {

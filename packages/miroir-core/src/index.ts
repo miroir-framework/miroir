@@ -1283,9 +1283,7 @@ export {
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
   runnerTestJzodSchema,
-} from "./5_tests/RunnerTestTools.js";export {
-  resolveRunnerFromRegistry,
-} from "./5_tests/resolveRunnerFromRegistry.js";
+} from "./5_tests/RunnerTestTools.js";
 export {
   isRunnerTestRunTargetUuid,
   getTestbedUuidsForTestSuite,

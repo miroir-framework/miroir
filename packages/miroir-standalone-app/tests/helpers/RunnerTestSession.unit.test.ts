@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildRunnerTestSessionParamBank,
+  emptyApplicationModel,
   getBootstrapPhasesForSessionKind,
   MiroirActivityTracker,
   MiroirEventService,
@@ -192,6 +193,7 @@ describe("RunnerTestSession (Gap E R)", () => {
           deployment_Library_DO_NO_USE.uuid,
           runTarget,
         ),
+        emptyApplicationModel,
       }),
     );
   });
