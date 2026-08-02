@@ -109,13 +109,3 @@ export function listUiIntegrationRunnerSuiteKeys(): string[] {
   return Object.keys(UI_INTEGRATION_RUNNER_SUITE_REGISTRY).sort();
 }
 
-export function resolveUiIntegrationRunnerSuite(suiteKey: string): UiIntegrationRunnerSuiteEntry {
-  const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey];
-  if (!entry) {
-    throw new Error(
-      `Unknown UI integration runner suite: ${suiteKey}. ` +
-        `Valid keys: ${listUiIntegrationRunnerSuiteKeys().join(", ")}`,
-    );
-  }
-  return entry;
-}

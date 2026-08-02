@@ -53,7 +53,8 @@ import {
   reportJzodSchemaList,
   reportMenuList,
   reportQueryList,
-  reportReportList
+  reportReportList,
+  entityCommit
 } from "miroir-test-app_deployment-miroir";
 
 import {
@@ -197,6 +198,15 @@ export async function modelInitialize(
       return result;
     }
     log.info(logHeader, "created entity Endpoint", persistenceStoreController.getEntityUuids());
+
+    // bootstrap Commit
+    result = await persistenceStoreController.createEntity(
+      entityCommit as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(logHeader, "created entity Commit", persistenceStoreController.getEntityUuids());
 
     // bootstrap Menu
     result = await persistenceStoreController.createEntity(

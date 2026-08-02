@@ -13,10 +13,6 @@ import {
 
 import { applyIntegrationTestProfile } from "../tests/helpers/integrationTestProfiles.js";
 
-function listRunnerTestSuiteKeys(): string[] {
-  return [...MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES];
-}
-
 function resolveRequestedSuiteKeys(
   env: NodeJS.ProcessEnv,
   argv: string[],

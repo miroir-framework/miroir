@@ -30,7 +30,7 @@ import {
   assertMiroirServerReachable,
   MiroirServerUnreachableError,
 } from "../../src/miroir-fwk/4-tests/assertMiroirServerReachable.js";
-import { resolveUiIntegrationRunnerSuite } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { resolveRealServerUiIntegrationProfile } from "./resolveRealServerUiIntegrationProfile.js";
 import { runUiIntegrationTestSuiteInNode } from "./runUiIntegrationTestSuiteInNode.js";
 
@@ -71,7 +71,7 @@ describe(`runUiIntegrationTestSuite ${profileName}`, () => {
       throw error;
     }
 
-    const { suiteDefinition } = resolveUiIntegrationRunnerSuite("runner_library");
+    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner_library"].suiteDefinition;
 
     const result = await runUiIntegrationTestSuiteInNode(
       {

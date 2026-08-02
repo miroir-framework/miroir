@@ -29,7 +29,7 @@ import {
 import type { RealServerTransformerTestSessionOptions } from "./RealServerTransformerTestSession.js";
 import { transformerIdentityToRunTarget } from "./resolveTransformerTestSessionOptions.js";
 import {
-  resolveUiIntegrationRunnerSuite,
+  UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
   type UiIntegrationRunnerSuiteEntry,
 } from "./uiIntegrationTestRunnerSuiteRegistry.js";
 import { resolveUiIntegrationTransformerSuite } from "./uiIntegrationTestTransformerSuiteRegistry.js";
@@ -368,7 +368,13 @@ export async function runUiIntegrationTestSuite(
     );
   }
 
-  const runnerEntry = resolveUiIntegrationRunnerSuite(request.suiteKey);
+  const runnerEntry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[request.suiteKey];
+  if (!runnerEntry) {
+    throw new Error(
+      `Unknown UI integration runner suite: ${request.suiteKey}. ` +
+        `Valid keys: ${Object.keys(UI_INTEGRATION_RUNNER_SUITE_REGISTRY).sort().join(", ")}`,
+    );
+  }
   const runTarget = resolveUiIntegrationTestRunTarget(
     request.runTargetMode,
     request.suiteDefinition,

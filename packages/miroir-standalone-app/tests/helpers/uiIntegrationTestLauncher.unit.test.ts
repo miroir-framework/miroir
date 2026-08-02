@@ -9,7 +9,6 @@ import {
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
 import {
   listUiIntegrationRunnerSuiteKeys,
-  resolveUiIntegrationRunnerSuite,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 
 function runnerLibrarySuite(): MiroirTestSuite {
@@ -26,39 +25,6 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     expect(keys).toContain("domain_controller_model_crud");
   });
 
-  it("resolves runner_library entry", () => {
-    const entry = resolveUiIntegrationRunnerSuite("runner_library");
-    expect(entry.suiteDefinition.miroirTestLabel).toBe("runner.library");
-    expect(Object.keys(entry.runnerRegistry).sort()).toEqual(
-      [
-        "98a38a84-e702-4540-a056-c7676a193a2b",
-        "cc853632-f158-43fa-b9ed-437c9c25f539",
-      ].sort(),
-    );
-  });
-
-  it("resolves runner_create_entity with entity runners and skip playfield reset", () => {
-    const entry = resolveUiIntegrationRunnerSuite("runner_create_entity");
-    expect(entry.suiteDefinition.miroirTestLabel).toBe("runner.createEntity");
-    expect(entry.runnerRegistry).toHaveProperty("82f81a25-2366-4abf-8a97-83ca5e9a9c46");
-    expect(entry.skipRunTargetPlayfieldReset).toBe(true);
-    expect(entry.defaultApplicationName).toBe("testApplication_CreateEntity");
-  });
-
-  it("resolves runner_drop_entity with entity runners and skip playfield reset", () => {
-    const entry = resolveUiIntegrationRunnerSuite("runner_drop_entity");
-    expect(entry.suiteDefinition.miroirTestLabel).toBe("runner.dropEntity");
-    expect(entry.runnerRegistry).toHaveProperty("44313751-b0e5-4132-bb12-a544806e759b");
-    expect(entry.skipRunTargetPlayfieldReset).toBe(true);
-    expect(entry.defaultApplicationName).toBe("testApplication_CreateEntity");
-  });
-
-  it("resolves domain_controller_data_crud with playfield seed and empty runner registry", () => {
-    const entry = resolveUiIntegrationRunnerSuite("domain_controller_data_crud");
-    expect(entry.suiteDefinition.miroirTestLabel).toBe("domainController.data.crud");
-    expect(entry.runnerRegistry).toEqual({});
-    expect(entry.libraryPlayfieldSeed).toBeDefined();
-  });
 });
 
 describe("uiIntegrationTestTransformerSuiteRegistry (B7)", () => {

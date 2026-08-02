@@ -9,7 +9,7 @@ import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
 import { miroirAppStartup } from "../../src/startup.js";
-import { resolveUiIntegrationRunnerSuite } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { runUiIntegrationTestSuiteInNode } from "./runUiIntegrationTestSuiteInNode.js";
 
 const RETURN_BOOK_LEAF = "Return Book Test Composite Action";
@@ -28,7 +28,7 @@ beforeAll(() => {
 
 describe("runUiIntegrationTestSuite (B3)", () => {
   it("runs runner_library Return Book leaf via in-process launcher", async () => {
-    const { suiteDefinition } = resolveUiIntegrationRunnerSuite("runner_library");
+    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner_library"].suiteDefinition;
 
     const result = await runUiIntegrationTestSuiteInNode(
       {
