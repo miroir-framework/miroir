@@ -3,7 +3,6 @@ import type {
   EntityInstance,
   MetaModel,
   MiroirConfigClient,
-  Runner,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion.js";
@@ -149,23 +148,18 @@ export type RunnerLibraryPlayfieldSeed = {
   librarySeedMetaModel: MetaModel;
 };
 
-type RunnerIntegrationSessionOptionsBase = IntegTestHostOptions & {
+export type RunnerIntegrationSessionOptions = IntegTestHostOptions & {
   pageLabel?: string;
   runTarget: TestbedUuids;
   suiteTestParams?: Record<string, unknown>;
   skipRunTargetPlayfieldReset?: boolean;
+  libraryPlayfieldSeed?: RunnerLibraryPlayfieldSeed;
 };
 
-export type RunnerIntegrationSessionOptions = RunnerIntegrationSessionOptionsBase &
-  (
-    | { runnerRegistry: Record<string, Runner>; libraryPlayfieldSeed?: RunnerLibraryPlayfieldSeed }
-    | { runnerRegistry?: Record<string, Runner>; libraryPlayfieldSeed: RunnerLibraryPlayfieldSeed }
-  );
-
-export type IntegrationTestSessionOptionsByKind = {
-  transformer: TransformerIntegrationSessionOptions | undefined;
-  appStackPersistenceStoreController: AppStackIntegrationSessionOptions;
-  domainController: DomainControllerOrchestratorSessionOptions;
-  runner: RunnerIntegrationSessionOptions | undefined;
-};
+// export type IntegrationTestSessionOptionsByKind = {
+//   transformer: TransformerIntegrationSessionOptions | undefined;
+//   appStackPersistenceStoreController: AppStackIntegrationSessionOptions;
+//   domainController: DomainControllerOrchestratorSessionOptions;
+//   runner: RunnerIntegrationSessionOptions | undefined;
+// };
 

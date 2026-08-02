@@ -70,8 +70,9 @@ function assertBrowserSafeTransformerOptions(options: TestSessionForIntegOptions
 
 const browserSessionFactory: IntegrationTestSessionFactory = {
   createSession(params: IntegrationTestSessionFactoryCreateParams) {
-    const { kind, context, sessionSpecificOptions } = params;
+    const { kind, context } = params;
     if (kind === "transformer") {
+      const { sessionSpecificOptions } = params;
       if (isRealServerTransformerSessionOptions(sessionSpecificOptions)) {
         const hostBootstrap = resolveBootstrapHostOptions(context, sessionSpecificOptions);
         const resolvedOptions: RealServerTransformerIntegrationSessionOptions & {
@@ -111,6 +112,7 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
         `Browser integration orchestrator supports runner and transformer sessions only (got "${kind}")`,
       );
     }
+    const { runnerRegistry, sessionSpecificOptions } = params;
     if (!context.miroirActivityTracker || !context.miroirEventService) {
       throw new Error(
         "Browser integration orchestrator: runner session requires miroirActivityTracker and miroirEventService",
@@ -119,7 +121,7 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
     if (!sessionSpecificOptions?.runTarget) {
       throw new Error("Browser integration orchestrator: runner session requires runTarget");
     }
-    if (!sessionSpecificOptions.runnerRegistry && !sessionSpecificOptions.libraryPlayfieldSeed) {
+    if (Object.keys(runnerRegistry).length === 0 && !sessionSpecificOptions.libraryPlayfieldSeed) {
       throw new Error(
         "Browser integration orchestrator: runner session requires runnerRegistry or libraryPlayfieldSeed",
       );
@@ -131,7 +133,7 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
       miroirConfig: context.miroirConfig,
       miroirActivityTracker: context.miroirActivityTracker,
       miroirEventService: context.miroirEventService,
-      runnerRegistry: runnerOptions.runnerRegistry ?? {},
+      runnerRegistry,
       customFetch:
         typeof window !== "undefined" && typeof window.fetch === "function"
           ? (window.fetch.bind(window) as typeof fetch)

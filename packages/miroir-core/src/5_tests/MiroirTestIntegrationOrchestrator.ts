@@ -1,4 +1,5 @@
-import type { MiroirConfigClient } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { MiroirConfigClient, Runner } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment.js";
 import type { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import type { MiroirEventService } from "../3_controllers/MiroirEventService";
 import {
@@ -11,14 +12,12 @@ import {
 import type {
   AppStackIntegrationSessionOptions,
   DomainControllerOrchestratorSessionOptions,
-  IntegrationTestSessionOptionsByKind,
   RunnerIntegrationSessionOptions,
-  TransformerIntegrationSessionOptions,
+  TransformerIntegrationSessionOptions
 } from "./IntegTestHostOptions.js";
 import type { LibraryPlayfieldEnsureMode } from "./LibraryPlayfield.js";
 import type { MiroirPlatformEnsureMode } from "./MiroirPlatformPlayfield.js";
 import type { MiroirTestExecutionEnvironment, RunnerTestSessionInterface } from "./MiroirTestTools.js";
-import type { ApplicationDeploymentMap } from "../1_core/Deployment.js";
 
 export type IntegrationTestOrchestratorContext = {
   miroirConfig: MiroirConfigClient;
@@ -57,6 +56,7 @@ export type IntegrationTestSessionFactoryCreateParams =
   | {
       kind: "runner";
       context: IntegrationTestOrchestratorContext;
+      runnerRegistry: Record<string, Runner>;
       sessionSpecificOptions?: RunnerIntegrationSessionOptions;
     };
 

@@ -15,7 +15,7 @@ import type {
   AppStackIntegrationSessionOptions,
   RunnerIntegrationSessionOptions,
   TransformerIntegrationSessionOptions,
-} from "../../src/5_tests/IntegrationTestSessionOptions";
+} from "../../src/5_tests/IntegTestHostOptions";
 import type { MiroirConfigClient } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { RunnerTestSessionInterface } from "../../src/5_tests/MiroirTestTools";
 import type { TestbedUuids } from "../../src/5_tests/TestbedUuids";
@@ -146,10 +146,10 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
     expect(() => orchestrator.createSession({
       kind: "runner",
       context: baseContext(),
+      runnerRegistry: {},
       sessionSpecificOptions: {
         pageLabel: "test",
         runTarget: "test" as unknown as TestbedUuids,
-        runnerRegistry: {},
       } satisfies RunnerIntegrationSessionOptions,
     })).toThrow(
       /IntegrationTestSessionFactory not registered/,

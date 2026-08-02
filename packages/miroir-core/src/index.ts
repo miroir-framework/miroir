@@ -1249,7 +1249,7 @@ export {
   type IntegrationTestApplicationIdentity,
   type IntegrationTestBundledDeploymentData,
   type IntegrationTestBundledSectionData,
-  type IntegrationTestSessionOptionsByKind,
+  // type IntegrationTestSessionOptionsByKind,
   type RealServerTransformerIntegrationSessionOptions,
   type RunnerIntegrationSessionOptions,
   type RunnerLibraryPlayfieldSeed,

@@ -195,11 +195,11 @@ async function runRunnerIntegrationSuite(
       miroirEventService: trackerBundle.miroirEventService,
       hostMode,
     },
+    runnerRegistry: runnerEntry.runnerRegistry,
     sessionSpecificOptions: {
       pageLabel: "ui-integration-test",
       runTarget,
       suiteTestParams: request.suiteDefinition.testParams,
-      runnerRegistry: runnerEntry.runnerRegistry,
       ...(runnerEntry.libraryPlayfieldSeed
         ? { libraryPlayfieldSeed: runnerEntry.libraryPlayfieldSeed }
         : {}),

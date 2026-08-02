@@ -69,9 +69,10 @@ function resolveHostExecutionEnvironment(
  * @returns The session.  
  */
 function createStandaloneAppSession(params: IntegrationTestSessionFactoryCreateParams) {
-  const { kind, context, sessionSpecificOptions } = params;
+  const { kind, context } = params;
   switch (kind) {
     case "transformer": {
+      const { sessionSpecificOptions } = params;
       if (isRealServerTransformerSessionOptions(sessionSpecificOptions)) {
         const hostBootstrap = resolveBootstrapHostOptions(context, sessionSpecificOptions);
         const resolvedOptions: RealServerTransformerIntegrationSessionOptions & {
@@ -102,6 +103,7 @@ function createStandaloneAppSession(params: IntegrationTestSessionFactoryCreateP
       return new IntegrationTestSession(sessionSpecificOptions);
     }
     case "appStackPersistenceStoreController": {
+      const { sessionSpecificOptions } = params;
       return new AppStackIntegrationTestSession(context.miroirConfig, {
         ...sessionSpecificOptions,
         applicationDeploymentMap: resolveApplicationDeploymentMap(
@@ -116,6 +118,7 @@ function createStandaloneAppSession(params: IntegrationTestSessionFactoryCreateP
       });
     }
     case "domainController": {
+      const { sessionSpecificOptions } = params;
       const { profile, ...sessionOptions } = sessionSpecificOptions;
       return new DomainControllerIntegrationTestSession(
         context.miroirConfig,
@@ -135,6 +138,7 @@ function createStandaloneAppSession(params: IntegrationTestSessionFactoryCreateP
       );
     }
     case "runner": {
+      const { runnerRegistry, sessionSpecificOptions } = params;
       if (!context.miroirActivityTracker || !context.miroirEventService) {
         throw new Error(
           "StandaloneAppIntegrationOrchestrator: runner session requires miroirActivityTracker and miroirEventService in context",
@@ -143,11 +147,6 @@ function createStandaloneAppSession(params: IntegrationTestSessionFactoryCreateP
       if (!sessionSpecificOptions?.runTarget) {
         throw new Error(
           "StandaloneAppIntegrationOrchestrator: runner session requires runTarget in sessionSpecificOptions",
-        );
-      }
-      if (!sessionSpecificOptions.runnerRegistry) {
-        throw new Error(
-          "StandaloneAppIntegrationOrchestrator: runner session requires runnerRegistry in sessionSpecificOptions",
         );
       }
       const runnerOptions = sessionSpecificOptions;
@@ -159,7 +158,7 @@ function createStandaloneAppSession(params: IntegrationTestSessionFactoryCreateP
         miroirEventService: context.miroirEventService,
         customFetch: crossFetch as unknown as typeof fetch,
         ...hostBootstrap,
-        runnerRegistry: runnerOptions.runnerRegistry ?? {},
+        runnerRegistry,
         hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
       });
     }
