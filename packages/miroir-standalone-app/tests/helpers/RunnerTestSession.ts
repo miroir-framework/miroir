@@ -16,6 +16,7 @@ import {
   type MiroirEventService,
   type MiroirTestExecutionEnvironment,
   type Runner,
+  type RunnerLibraryPlayfieldSeed,
   type RunnerTestContext,
   type TestbedUuids,
   type RunnerTestSessionInterface,
@@ -56,11 +57,7 @@ export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
    * Optional playfield seed applied in `beforeEach` after reset
    * (Action Data.CRUD MiroirTest suites).
    */
-  libraryPlayfieldSeed?: {
-    libraryEntitiesAndInstances: import("miroir-core").ApplicationEntitiesAndInstances;
-    librarySeedInitParams: import("miroir-core").InitApplicationParameters;
-    librarySeedMetaModel: MetaModel;
-  };
+  libraryPlayfieldSeed?: RunnerLibraryPlayfieldSeed;
   /**
    * When true, `beforeEach` does **not** reset/seed the session runTarget with
    * remapped library model. Used by CreateEntity / DropEntity MiroirTests that

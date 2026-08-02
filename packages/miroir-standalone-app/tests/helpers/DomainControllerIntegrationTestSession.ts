@@ -1,48 +1,33 @@
 import crossFetch from "cross-fetch";
 
 import type {
-  ApplicationDeploymentMap,
   Deployment,
+  DomainControllerIntegrationSessionOptions,
   DomainControllerInterface,
   DomainControllerSessionProfile,
   IntegrationTestBootstrapPhase,
   IntegrationTestSessionDescriptor,
-  LibraryPlayfieldEnsureMode,
-  MiroirActivityTracker,
   MiroirConfigClient,
-  MiroirEventService,
   MiroirTestExecutionEnvironment,
-  RunnerTestSessionInterface,
-  StoreUnitConfiguration,
+  RunnerTestSessionInterface
 } from "miroir-core";
 import {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,
 } from "miroir-core";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
-import type { AppStackSessionOptions } from "./IntegrationTestSession.js";
 import {
   bootstrapHostOptionsFrom,
   runAppStackIntegrationBootstrap,
 } from "./appStackIntegrationBootstrap.js";
 
-export type DomainControllerIntegrationTestSessionOptions = AppStackSessionOptions & {
-  miroirDeploymentStorageConfiguration: StoreUnitConfiguration;
-  miroirActivityTracker?: MiroirActivityTracker;
-  miroirEventService?: MiroirEventService;
-  customFetch?: typeof fetch;
-  /**
-   * Model.CRUD resets miroir only in `beforeEach`, not in `beforeAll`.
-   * When true, `miroirPlatform` omits the `resetMiroirModel` bootstrap phase.
-   */
-  skipResetMiroirModelInInit?: boolean;
-  libraryPlayfieldEnsureMode?: LibraryPlayfieldEnsureMode;
-};
+export type DomainControllerIntegrationTestSessionOptions =
+  DomainControllerIntegrationSessionOptions;
 
 function resolveBootstrapPhases(
   profile: DomainControllerSessionProfile,

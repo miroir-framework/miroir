@@ -1239,6 +1239,26 @@ export {
   type MiroirTestIntegrationOrchestrator,
 } from "./5_tests/MiroirTestIntegrationOrchestrator.js";
 export {
+  bootstrapHostOptionsFrom,
+  isRealServerTransformerSessionOptions,
+  type AdminStoreOptions,
+  type AppStackBootstrapHostOptions,
+  type AppStackIntegrationSessionOptions,
+  type AppStackSessionOptions,
+  type DomainControllerIntegrationSessionOptions,
+  type DomainControllerOrchestratorSessionOptions,
+  type IntegrationTestApplicationIdentity,
+  type IntegrationTestBundledDeploymentData,
+  type IntegrationTestBundledSectionData,
+  type IntegrationTestSessionOptionsByKind,
+  type RealServerTransformerIntegrationSessionOptions,
+  type RunnerIntegrationSessionOptions,
+  type RunnerLibraryPlayfieldSeed,
+  type TestApplicationStoreOptions,
+  type TestSessionForIntegOptions,
+  type TransformerIntegrationSessionOptions,
+} from "./5_tests/IntegrationTestSessionOptions.js";
+export {
   runCompositeActionTestParams,
 } from "./5_tests/CompositeActionTestTools.js";
 export {

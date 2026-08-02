@@ -12,27 +12,18 @@ import {
   extendMiroirConfigWithExtraDeploymentConfiguration,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
-  type MiroirActivityTracker,
+  type IntegrationTestApplicationIdentity,
   type MiroirConfigClient,
-  type MiroirEventService,
   type MiroirTestExecutionEnvironment,
+  type RealServerTransformerIntegrationSessionOptions,
   type RunnerTestSessionInterface,
   type StoreUnitConfiguration,
+  isRealServerTransformerSessionOptions,
 } from "miroir-core";
 import {
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
-import {
-  type AppStackBootstrapHostOptions,
-  bootstrapHostOptionsFrom,
-} from "./appStackBootstrapHostOptions.js";
-import {
-  buildIntegrationTestModelEnvironment,
-  generateEphemeralIntegrationTestApplicationIdentity,
-  PINNED_INTEG_TEST_APPLICATION_IDENTITY,
-  type IntegrationTestApplicationIdentity,
-} from "./IntegrationTestSession.js";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
 import { buildTeardownTestApplicationStoresAction } from "./testApplicationStoreTeardown.js";
 import {
@@ -45,28 +36,18 @@ import {
 } from "./transformerTestApplicationPlayfield.js";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
-export type RealServerTransformerTestSessionOptions = AppStackBootstrapHostOptions & {
-  /** Discriminant — orchestrator routes on this (or `isRealServerTransformerSessionOptions`). */
-  transport: "realServer";
-  miroirConfig: MiroirConfigClient;
-  applicationIdentity?: IntegrationTestApplicationIdentity;
-  miroirActivityTracker?: MiroirActivityTracker;
-  miroirEventService?: MiroirEventService;
-  /**
-   * Fetch for REST transport. Browser must inject `window.fetch`; Node defaults to cross-fetch.
-   */
-  customFetch?: typeof fetch;
-};
+import { bootstrapHostOptionsFrom } from "./appStackBootstrapHostOptions.js";
+import {
+  buildIntegrationTestModelEnvironment,
+  generateEphemeralIntegrationTestApplicationIdentity,
+  PINNED_INTEG_TEST_APPLICATION_IDENTITY,
+} from "./IntegrationTestSession.js";
+export type RealServerTransformerTestSessionOptions =
+  RealServerTransformerIntegrationSessionOptions & {
+    miroirConfig: MiroirConfigClient;
+  };
 
-export function isRealServerTransformerSessionOptions(
-  options: unknown,
-): options is RealServerTransformerTestSessionOptions {
-  return (
-    typeof options === "object" &&
-    options !== null &&
-    (options as RealServerTransformerTestSessionOptions).transport === "realServer"
-  );
-}
+export { isRealServerTransformerSessionOptions };
 
 function resolveRuntimeFetch(explicit?: typeof fetch): typeof fetch {
   if (explicit) {

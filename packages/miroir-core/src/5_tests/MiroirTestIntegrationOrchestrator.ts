@@ -8,6 +8,13 @@ import {
   type IntegrationTestSessionDescriptor,
   type IntegrationTestSessionKind,
 } from "./IntegrationTestBootstrap.js";
+import type {
+  AppStackIntegrationSessionOptions,
+  DomainControllerOrchestratorSessionOptions,
+  IntegrationTestSessionOptionsByKind,
+  RunnerIntegrationSessionOptions,
+  TransformerIntegrationSessionOptions,
+} from "./IntegrationTestSessionOptions.js";
 import type { LibraryPlayfieldEnsureMode } from "./LibraryPlayfield.js";
 import type { MiroirPlatformEnsureMode } from "./MiroirPlatformPlayfield.js";
 import type { MiroirTestExecutionEnvironment, RunnerTestSessionInterface } from "./MiroirTestTools.js";
@@ -31,21 +38,61 @@ export type IntegrationTestOrchestratorContext = {
   hostApplicationDeploymentMap?: ApplicationDeploymentMap;
 };
 
-export type IntegrationTestSessionFactoryCreateParams = {
-  kind: IntegrationTestSessionKind;
-  context: IntegrationTestOrchestratorContext;
-  sessionSpecificOptions?: unknown;
-};
+export type IntegrationTestSessionFactoryCreateParams =
+  | {
+      kind: "transformer";
+      context: IntegrationTestOrchestratorContext;
+      sessionSpecificOptions?: TransformerIntegrationSessionOptions;
+    }
+  | {
+      kind: "appStackPersistenceStoreController";
+      context: IntegrationTestOrchestratorContext;
+      sessionSpecificOptions: AppStackIntegrationSessionOptions;
+    }
+  | {
+      kind: "domainController";
+      context: IntegrationTestOrchestratorContext;
+      sessionSpecificOptions: DomainControllerOrchestratorSessionOptions;
+    }
+  | {
+      kind: "runner";
+      context: IntegrationTestOrchestratorContext;
+      sessionSpecificOptions?: RunnerIntegrationSessionOptions;
+    };
 
 export interface IntegrationTestSessionFactory {
   createSession(params: IntegrationTestSessionFactoryCreateParams): RunnerTestSessionInterface;
 }
 
 export interface MiroirTestIntegrationOrchestrator {
+  // createSession(
+  //   kind: "transformer",
+  //   context: IntegrationTestOrchestratorContext,
+  //   sessionSpecificOptions?: TransformerIntegrationSessionOptions,
+  // ): RunnerTestSessionInterface;
+  // createSession(
+  //   kind: "appStackPersistenceStoreController",
+  //   context: IntegrationTestOrchestratorContext,
+  //   sessionSpecificOptions: AppStackIntegrationSessionOptions,
+  // ): RunnerTestSessionInterface;
+  // createSession(
+  //   kind: "domainController",
+  //   context: IntegrationTestOrchestratorContext,
+  //   sessionSpecificOptions: DomainControllerOrchestratorSessionOptions,
+  // ): RunnerTestSessionInterface;
+  // createSession(
+  //   kind: "runner",
+  //   context: IntegrationTestOrchestratorContext,
+  //   sessionSpecificOptions?: RunnerIntegrationSessionOptions,
+  // ): RunnerTestSessionInterface;
+  // // createSession<K extends IntegrationTestSessionKind>(
+  // createSession(
+  //   kind: IntegrationTestSessionKind,
+  //   context: IntegrationTestOrchestratorContext,
+  //   sessionSpecificOptions?: IntegrationTestSessionOptionsByKind,
+  // ): RunnerTestSessionInterface;
   createSession(
-    kind: IntegrationTestSessionKind,
-    context: IntegrationTestOrchestratorContext,
-    sessionSpecificOptions?: unknown,
+    params: IntegrationTestSessionFactoryCreateParams,
   ): RunnerTestSessionInterface;
 
   describeSession(kind: IntegrationTestSessionKind): IntegrationTestSessionDescriptor;
@@ -54,10 +101,14 @@ export interface MiroirTestIntegrationOrchestrator {
 export function createDefaultMiroirTestIntegrationOrchestrator(
   factory: IntegrationTestSessionFactory,
 ): MiroirTestIntegrationOrchestrator {
+  const createSession = (
+    params: IntegrationTestSessionFactoryCreateParams,
+  ): RunnerTestSessionInterface => {
+    return factory.createSession(params);
+  };
+
   return {
-    createSession(kind, context, sessionSpecificOptions) {
-      return factory.createSession({ kind, context, sessionSpecificOptions });
-    },
+    createSession,
     describeSession(kind) {
       return describeIntegrationTestSession(kind);
     },

@@ -11,25 +11,21 @@ import crossFetch from "cross-fetch";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { deployment_Admin } from "miroir-test-app_deployment-admin";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import type {
-  ApplicationDeploymentMap,
-  Deployment,
+  AppStackIntegrationSessionOptions,
   DomainControllerInterface,
-  LibraryPlayfieldEnsureMode,
   MiroirConfigClient,
   MiroirTestExecutionEnvironment,
   PersistenceStoreControllerManagerInterface,
-  RunnerTestSessionInterface,
-  StoreUnitConfiguration,
+  RunnerTestSessionInterface
 } from "miroir-core";
 import { getBootstrapPhasesForSessionKind } from "miroir-core";
+import { deployment_Admin } from "miroir-test-app_deployment-admin";
+import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 import {
   bootstrapHostOptionsFrom,
-  runAppStackIntegrationBootstrap,
-  type AppStackBootstrapHostOptions,
+  runAppStackIntegrationBootstrap
 } from "./appStackIntegrationBootstrap.js";
 
 import {
@@ -39,58 +35,28 @@ import {
   type TestSessionForIntegOptions,
 } from "../../src/miroir-fwk/4-tests/IntegrationTestSession.js";
 
-export type { AppStackBootstrapHostOptions };
-
-export type AppStackSessionOptions = AppStackBootstrapHostOptions & {
-  applicationDeploymentMap: ApplicationDeploymentMap;
-  adminDeployment: Deployment;
-  libraryDeploymentStorageConfiguration: StoreUnitConfiguration;
-  libraryPlayfieldEnsureMode?: LibraryPlayfieldEnsureMode;
-};
-
 // ################################################################################################
 // Browser-safe re-exports — kept in sync with src/miroir-fwk/4-tests/IntegrationTestSession.ts.
 // Node-only overrides (resolveDefaultFilesystemDeploymentRoot, resolveDefaultAdminAssetsRoot)
 // are defined below and take precedence over the src browser-emulated defaults.
 export {
-  INTEG_TEST_APPLICATION_NAME,
-  INTEG_TEST_SELF_APPLICATION_UUID,
-  INTEG_TEST_DEPLOYMENT_UUID,
-  INTEG_TEST_MODEL_BRANCH_UUID,
-  INTEG_TEST_VERSION_UUID,
-  INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES,
-  PINNED_INTEG_TEST_APPLICATION_IDENTITY,
-  generateEphemeralIntegrationTestApplicationIdentity,
-  buildIntegrationTestModelEnvironment,
-  buildCreateTestApplicationStoresAction,
-  buildTeardownTestApplicationStoresAction,
-  buildTestApplicationStoreUnitConfiguration,
-  buildAdminStoreUnitConfiguration,
-  buildTestPostgresStoreConfig,
-  buildAdminFilesystemStoreConfig,
-  collectStoreUnitConfigurationServerTypes,
-  buildMiroirConfigForInteg,
-  IntegrationTestSession,
-  IntegrationTestSessionForPostgres,
-  type IntegrationTestApplicationIdentity,
-  type TestApplicationStoreOptions,
-  type AdminStoreOptions,
-  type TestSessionForIntegOptions,
-  type PostgresIntegrationAdapterOptions,
+  buildAdminFilesystemStoreConfig, buildAdminStoreUnitConfiguration, buildCreateTestApplicationStoresAction, buildIntegrationTestModelEnvironment, buildMiroirConfigForInteg,
+  /** @deprecated use buildMiroirConfigForInteg */
+  buildMiroirConfigForPostgres, buildTeardownTestApplicationStoresAction,
+  buildTestApplicationStoreUnitConfiguration, buildTestPostgresStoreConfig, collectStoreUnitConfigurationServerTypes, generateEphemeralIntegrationTestApplicationIdentity, INTEG_TEST_APPLICATION_NAME, INTEG_TEST_DEPLOYMENT_UUID, INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES, INTEG_TEST_MODEL_BRANCH_UUID, INTEG_TEST_SELF_APPLICATION_UUID, INTEG_TEST_VERSION_UUID, IntegrationTestSession,
+  IntegrationTestSessionForPostgres, PINNED_INTEG_TEST_APPLICATION_IDENTITY,
   /** @deprecated use INTEG_TEST_* */
   POSTGRES_TEST_APPLICATION_NAME,
   /** @deprecated use INTEG_TEST_* */
-  POSTGRES_TEST_SELF_APPLICATION_UUID,
-  /** @deprecated use INTEG_TEST_* */
   POSTGRES_TEST_DEPLOYMENT_UUID,
+  /** @deprecated use INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES */
+  POSTGRES_TEST_LIBRARY_ENTITIES_AND_INSTANCES,
   /** @deprecated use INTEG_TEST_* */
   POSTGRES_TEST_MODEL_BRANCH_UUID,
   /** @deprecated use INTEG_TEST_* */
-  POSTGRES_TEST_VERSION_UUID,
-  /** @deprecated use INTEG_TEST_LIBRARY_ENTITIES_AND_INSTANCES */
-  POSTGRES_TEST_LIBRARY_ENTITIES_AND_INSTANCES,
-  /** @deprecated use buildMiroirConfigForInteg */
-  buildMiroirConfigForPostgres,
+  POSTGRES_TEST_SELF_APPLICATION_UUID,
+  /** @deprecated use INTEG_TEST_* */
+  POSTGRES_TEST_VERSION_UUID, type AdminStoreOptions, type IntegrationTestApplicationIdentity, type PostgresIntegrationAdapterOptions, type TestApplicationStoreOptions, type TestSessionForIntegOptions
 } from "../../src/miroir-fwk/4-tests/IntegrationTestSession.js";
 
 const DEFAULT_POSTGRES_HOST = "192.168.1.160";
@@ -214,7 +180,7 @@ export class AppStackIntegrationTestSession implements RunnerTestSessionInterfac
 
   constructor(
     private readonly miroirConfig: MiroirConfigClient,
-    private readonly appStackOptions: AppStackSessionOptions,
+    private readonly appStackOptions: AppStackIntegrationSessionOptions,
   ) {}
 
   async initSession(): Promise<MiroirTestExecutionEnvironment> {

@@ -72,64 +72,22 @@ import {
 } from "miroir-core";
 
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
-export type TestApplicationStoreOptions =
-  | { emulatedServerType: "sql"; postgresHostName?: string; connectionString?: string }
-  | {
-      emulatedServerType: "filesystem";
-      applicationRootDirectory: string;
-    }
-  | { emulatedServerType: "indexedDb"; rootIndexDbName: string }
-  | {
-      emulatedServerType: "mongodb";
-      connectionString?: string;
-      database?: string;
-    };
 
-export type AdminStoreOptions =
-  | {
-      emulatedServerType: "filesystem";
-      adminAssetsRootDirectory: string;
-      filesystemDeploymentRootDirectory: string;
-    }
-  | {
-      emulatedServerType: "sql";
-      postgresHostName?: string;
-      connectionString?: string;
-      schema?: string;
-    }
-  | { emulatedServerType: "indexedDb"; rootIndexDbName: string }
-  | {
-      emulatedServerType: "mongodb";
-      connectionString?: string;
-      database?: string;
-    }
-  | { emulatedServerType: "bundled"; deploymentUuid: Uuid };
+import type {
+  AdminStoreOptions,
+  IntegrationTestApplicationIdentity,
+  IntegrationTestBundledDeploymentData,
+  TestApplicationStoreOptions,
+  TestSessionForIntegOptions,
+} from "miroir-core";
 
-/**
- * Identifies a specific application/deployment/model-branch/version quadruplet
- * for an integration test run. Defaults to the pinned INTEG_TEST_* constants,
- * but callers running concurrent/isolated sessions (e.g. transformer UI integ,
- * Feature #197 B7) can generate an ephemeral identity instead so runs don't
- * collide on the same deployment key.
- */
-export type IntegrationTestApplicationIdentity = {
-  applicationName: string;
-  applicationUuid: Uuid;
-  deploymentUuid: Uuid;
-  modelBranchUuid: Uuid;
-  versionUuid: Uuid;
+export type {
+  AdminStoreOptions,
+  IntegrationTestApplicationIdentity,
+  IntegrationTestBundledDeploymentData,
+  TestApplicationStoreOptions,
+  TestSessionForIntegOptions,
 };
-
-export type TestSessionForIntegOptions = {
-  applicationName?: string;
-  testApplicationStore: TestApplicationStoreOptions;
-  adminStore: AdminStoreOptions;
-  filesystemDeploymentRootDirectory?: string;
-  bundledDeploymentData?: Record<string, BundledDeploymentData>;
-  /** Overrides the pinned INTEG_TEST_* identity, e.g. with an ephemeral one. */
-  applicationIdentity?: IntegrationTestApplicationIdentity;
-};
-
 export const INTEG_TEST_APPLICATION_NAME = "testApplication";
 export const INTEG_TEST_SELF_APPLICATION_UUID: Uuid = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 export const INTEG_TEST_DEPLOYMENT_UUID: Uuid = "bbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";

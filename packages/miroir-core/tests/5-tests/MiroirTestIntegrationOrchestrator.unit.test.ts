@@ -11,6 +11,10 @@ import {
   type IntegrationTestSessionFactory,
 } from "../../src/5_tests/MiroirTestIntegrationOrchestrator";
 import type { IntegrationTestSessionKind } from "../../src/5_tests/IntegrationTestBootstrap";
+import type {
+  AppStackIntegrationSessionOptions,
+  TransformerIntegrationSessionOptions,
+} from "../../src/5_tests/IntegrationTestSessionOptions";
 import type { MiroirConfigClient } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { RunnerTestSessionInterface } from "../../src/5_tests/MiroirTestTools";
 
@@ -42,9 +46,17 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
 
     const orchestrator = createDefaultMiroirTestIntegrationOrchestrator(factory);
     const context = baseContext();
-    const sessionSpecificOptions = { applicationName: "testApplication" };
+    const sessionSpecificOptions = {
+      applicationName: "testApplication",
+      testApplicationStore: { emulatedServerType: "indexedDb", rootIndexDbName: "test" },
+      adminStore: { emulatedServerType: "bundled", deploymentUuid: "00000000-0000-4000-8000-000000000001" },
+    } satisfies TransformerIntegrationSessionOptions;
 
-    const session = orchestrator.createSession("transformer", context, sessionSpecificOptions);
+    const session = orchestrator.createSession({
+      kind: "transformer",
+      context,
+      sessionSpecificOptions,
+    });
 
     expect(factory.createSession).toHaveBeenCalledWith({
       kind: "transformer",
@@ -105,12 +117,24 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
       skipBootstrapPhases: ["deployMiroir"] as const,
     };
 
-    orchestrator.createSession("appStackPersistenceStoreController", context, { adminDeployment: {} });
+    orchestrator.createSession({
+      kind: "appStackPersistenceStoreController",
+      context,
+      sessionSpecificOptions: {
+        applicationDeploymentMap: {},
+        adminDeployment: { uuid: "admin-uuid" },
+        libraryDeploymentStorageConfiguration: { model: {}, data: {}, admin: {} },
+      } satisfies AppStackIntegrationSessionOptions,
+    });
 
     expect(factory.createSession).toHaveBeenCalledWith({
       kind: "appStackPersistenceStoreController",
       context,
-      sessionSpecificOptions: { adminDeployment: {} },
+      sessionSpecificOptions: {
+        applicationDeploymentMap: {},
+        adminDeployment: { uuid: "admin-uuid" },
+        libraryDeploymentStorageConfiguration: { model: {}, data: {}, admin: {} },
+      },
     });
   });
 

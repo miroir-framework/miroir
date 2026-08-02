@@ -10,6 +10,7 @@ import {
   type MiroirConfigClient,
   type MiroirTestIntegrationOrchestrator,
   type MiroirTestSuite,
+  type RealServerTransformerIntegrationSessionOptions,
   type TestbedUuids,
   type TestSuiteResult,
 } from "miroir-core";
@@ -26,7 +27,6 @@ import {
   PINNED_INTEG_TEST_APPLICATION_IDENTITY,
   type TestSessionForIntegOptions,
 } from "./IntegrationTestSession.js";
-import type { RealServerTransformerTestSessionOptions } from "./RealServerTransformerTestSession.js";
 import { transformerIdentityToRunTarget } from "./resolveTransformerTestSessionOptions.js";
 import {
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
@@ -62,11 +62,11 @@ export type UiIntegrationTestLauncherEnvironment = {
     miroirConfig: MiroirConfigClient,
   ) =>
     | TestSessionForIntegOptions
-    | Omit<RealServerTransformerTestSessionOptions, "miroirActivityTracker" | "miroirEventService">
+    | Omit<RealServerTransformerIntegrationSessionOptions, "miroirActivityTracker" | "miroirEventService">
     | Promise<
         | TestSessionForIntegOptions
         | Omit<
-            RealServerTransformerTestSessionOptions,
+            RealServerTransformerIntegrationSessionOptions,
             "miroirActivityTracker" | "miroirEventService"
           >
       >;
@@ -187,15 +187,15 @@ async function runRunnerIntegrationSuite(
 
   const trackerBundle = await environment.createActivityTracker(logConfig);
   const orchestrator = environment.createOrchestrator();
-  const testSession = orchestrator.createSession(
-    "runner",
-    {
+  const testSession = orchestrator.createSession({
+    kind: "runner",
+    context: {
       miroirConfig,
       miroirActivityTracker: trackerBundle.miroirActivityTracker,
       miroirEventService: trackerBundle.miroirEventService,
       hostMode,
     },
-    {
+    sessionSpecificOptions: {
       pageLabel: "ui-integration-test",
       runTarget,
       suiteTestParams: request.suiteDefinition.testParams,
@@ -203,11 +203,9 @@ async function runRunnerIntegrationSuite(
       ...(runnerEntry.libraryPlayfieldSeed
         ? { libraryPlayfieldSeed: runnerEntry.libraryPlayfieldSeed }
         : {}),
-      ...(runnerEntry.skipRunTargetPlayfieldReset
-        ? { skipRunTargetPlayfieldReset: true }
-        : {}),
+      ...(runnerEntry.skipRunTargetPlayfieldReset ? { skipRunTargetPlayfieldReset: true } : {}),
     },
-  );
+  });
 
   let success = false;
   try {
@@ -280,19 +278,19 @@ async function runTransformerIntegrationSuite(
 
   const trackerBundle = await environment.createActivityTracker(logConfig);
   const orchestrator = environment.createOrchestrator();
-  const testSession = orchestrator.createSession(
-    "transformer",
-    {
+  const testSession = orchestrator.createSession({
+    kind: "transformer",
+    context: {
       miroirConfig,
       miroirActivityTracker: trackerBundle.miroirActivityTracker,
       miroirEventService: trackerBundle.miroirEventService,
       hostMode,
     },
-    {
+    sessionSpecificOptions: {
       ...sessionOptions,
       applicationIdentity,
     },
-  );
+  });
 
   let success = false;
   try {

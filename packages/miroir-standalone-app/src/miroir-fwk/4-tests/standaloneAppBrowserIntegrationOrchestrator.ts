@@ -1,21 +1,24 @@
 import type {
   IntegrationTestOrchestratorContext,
   IntegrationTestSessionFactory,
+  IntegrationTestSessionFactoryCreateParams,
   MiroirTestIntegrationOrchestrator,
+  RealServerTransformerIntegrationSessionOptions,
+  TestSessionForIntegOptions,
 } from "miroir-core";
-import { createDefaultMiroirTestIntegrationOrchestrator } from "miroir-core";
+import {
+  createDefaultMiroirTestIntegrationOrchestrator,
+  isRealServerTransformerSessionOptions,
+} from "miroir-core";
 
 import {
   RunnerTestSession,
-  type RunnerTestSessionOptions,
 } from "../../../tests/helpers/RunnerTestSession.js";
 import type { AppStackBootstrapHostOptions } from "./appStackBootstrapHostOptions.js";
 import {
   IntegrationTestSession,
-  type TestSessionForIntegOptions,
 } from "./IntegrationTestSession.js";
 import {
-  isRealServerTransformerSessionOptions,
   RealServerTransformerTestSession,
 } from "./RealServerTransformerTestSession.js";
 
@@ -66,11 +69,14 @@ function assertBrowserSafeTransformerOptions(options: TestSessionForIntegOptions
 }
 
 const browserSessionFactory: IntegrationTestSessionFactory = {
-  createSession({ kind, context, sessionSpecificOptions }) {
+  createSession(params: IntegrationTestSessionFactoryCreateParams) {
+    const { kind, context, sessionSpecificOptions } = params;
     if (kind === "transformer") {
       if (isRealServerTransformerSessionOptions(sessionSpecificOptions)) {
         const hostBootstrap = resolveBootstrapHostOptions(context, sessionSpecificOptions);
-        return new RealServerTransformerTestSession({
+        const resolvedOptions: RealServerTransformerIntegrationSessionOptions & {
+          miroirConfig: NonNullable<RealServerTransformerIntegrationSessionOptions["miroirConfig"]>;
+        } = {
           ...sessionSpecificOptions,
           miroirConfig: sessionSpecificOptions.miroirConfig ?? context.miroirConfig,
           miroirActivityTracker:
@@ -83,12 +89,15 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
               ? (window.fetch.bind(window) as typeof fetch)
               : undefined),
           ...hostBootstrap,
+        };
+        return new RealServerTransformerTestSession({
+          ...resolvedOptions,
           hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
           platformEnsureMode: hostBootstrap.platformEnsureMode ?? "skip",
         });
       }
-      const options = (sessionSpecificOptions ?? {}) as TestSessionForIntegOptions;
-      if (!options.testApplicationStore || !options.adminStore) {
+      const options = sessionSpecificOptions;
+      if (!options?.testApplicationStore || !options.adminStore) {
         throw new Error(
           "Browser integration orchestrator: transformer session requires testApplicationStore and adminStore (or transport: realServer)",
         );
@@ -107,44 +116,26 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
         "Browser integration orchestrator: runner session requires miroirActivityTracker and miroirEventService",
       );
     }
-    const runnerOptions = (sessionSpecificOptions ?? {}) as Partial<
-      Pick<
-        RunnerTestSessionOptions,
-        | "pageLabel"
-        | "runTarget"
-        | "suiteTestParams"
-        | "runnerRegistry"
-        | "libraryPlayfieldSeed"
-        | "skipRunTargetPlayfieldReset"
-      >
-    > &
-      Partial<AppStackBootstrapHostOptions>;
-    if (!runnerOptions.runTarget) {
+    if (!sessionSpecificOptions?.runTarget) {
       throw new Error("Browser integration orchestrator: runner session requires runTarget");
     }
-    if (!runnerOptions.runnerRegistry && !runnerOptions.libraryPlayfieldSeed) {
+    if (!sessionSpecificOptions.runnerRegistry && !sessionSpecificOptions.libraryPlayfieldSeed) {
       throw new Error(
         "Browser integration orchestrator: runner session requires runnerRegistry or libraryPlayfieldSeed",
       );
     }
+    const runnerOptions = sessionSpecificOptions;
     const hostBootstrap = resolveBootstrapHostOptions(context, runnerOptions);
     return new RunnerTestSession({
+      ...runnerOptions,
       miroirConfig: context.miroirConfig,
       miroirActivityTracker: context.miroirActivityTracker,
       miroirEventService: context.miroirEventService,
-      runTarget: runnerOptions.runTarget,
-      suiteTestParams: runnerOptions.suiteTestParams,
       runnerRegistry: runnerOptions.runnerRegistry ?? {},
-      ...(runnerOptions.libraryPlayfieldSeed
-        ? { libraryPlayfieldSeed: runnerOptions.libraryPlayfieldSeed }
-        : {}),
-      // Browser: use the native fetch. A Node polyfill (cross-fetch) fails in the
-      // browser before issuing a request, so the client never reaches the server.
       customFetch:
         typeof window !== "undefined" && typeof window.fetch === "function"
           ? (window.fetch.bind(window) as typeof fetch)
           : undefined,
-      ...runnerOptions,
       ...hostBootstrap,
       hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
     });
