@@ -34,11 +34,11 @@ assertMiroirCoreIntegTestLaunchReady({
 
 if (config.suiteKeys.length > 0) {
   const orchestrator = createStandaloneAppIntegrationOrchestrator();
-  const testSession = orchestrator.createSession(
-    "transformer",
-    { miroirConfig: { client: { emulateServer: true } } as MiroirConfigClient },
-    testSessionOptions,
-  );
+  const testSession = orchestrator.createSession({
+    kind: "transformer",
+    context: { miroirConfig: { client: { emulateServer: true } } as MiroirConfigClient },
+    sessionSpecificOptions: testSessionOptions,
+  });
   await runMiroirCoreTestsFromCLI(
     runMiroirTests, 
     vitest,

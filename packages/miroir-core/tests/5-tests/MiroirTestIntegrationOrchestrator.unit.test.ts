@@ -13,10 +13,12 @@ import {
 import type { IntegrationTestSessionKind } from "../../src/5_tests/IntegrationTestBootstrap";
 import type {
   AppStackIntegrationSessionOptions,
+  RunnerIntegrationSessionOptions,
   TransformerIntegrationSessionOptions,
 } from "../../src/5_tests/IntegrationTestSessionOptions";
 import type { MiroirConfigClient } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { RunnerTestSessionInterface } from "../../src/5_tests/MiroirTestTools";
+import type { TestbedUuids } from "../../src/5_tests/TestbedUuids";
 
 function baseContext(): { miroirConfig: MiroirConfigClient } {
   return {
@@ -124,7 +126,7 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
         applicationDeploymentMap: {},
         adminDeployment: { uuid: "admin-uuid" },
         libraryDeploymentStorageConfiguration: { model: {}, data: {}, admin: {} },
-      } satisfies AppStackIntegrationSessionOptions,
+      } as AppStackIntegrationSessionOptions,
     });
 
     expect(factory.createSession).toHaveBeenCalledWith({
@@ -141,7 +143,15 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
   it("unconfigured orchestrator throws on createSession", () => {
     const orchestrator = createUnconfiguredMiroirTestIntegrationOrchestrator();
 
-    expect(() => orchestrator.createSession("runner", baseContext())).toThrow(
+    expect(() => orchestrator.createSession({
+      kind: "runner",
+      context: baseContext(),
+      sessionSpecificOptions: {
+        pageLabel: "test",
+        runTarget: "test" as unknown as TestbedUuids,
+        runnerRegistry: {},
+      } satisfies RunnerIntegrationSessionOptions,
+    })).toThrow(
       /IntegrationTestSessionFactory not registered/,
     );
   });

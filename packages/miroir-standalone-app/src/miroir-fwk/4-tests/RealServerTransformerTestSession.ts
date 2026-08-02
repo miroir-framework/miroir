@@ -10,6 +10,7 @@ import crossFetch from "cross-fetch";
 import {
   ensureLibraryPlayfield,
   extendMiroirConfigWithExtraDeploymentConfiguration,
+  isRealServerTransformerSessionOptions,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type IntegrationTestApplicationIdentity,
@@ -18,12 +19,12 @@ import {
   type RealServerTransformerIntegrationSessionOptions,
   type RunnerTestSessionInterface,
   type StoreUnitConfiguration,
-  isRealServerTransformerSessionOptions,
 } from "miroir-core";
 import {
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
 import { buildTeardownTestApplicationStoresAction } from "./testApplicationStoreTeardown.js";
 import {
@@ -34,9 +35,7 @@ import {
   resolveMiroirStorageFromMiroirConfig,
   seedTransformerTestApplicationData,
 } from "./transformerTestApplicationPlayfield.js";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
-import { bootstrapHostOptionsFrom } from "./appStackBootstrapHostOptions.js";
 import {
   buildIntegrationTestModelEnvironment,
   generateEphemeralIntegrationTestApplicationIdentity,
@@ -110,11 +109,10 @@ export class RealServerTransformerTestSession implements RunnerTestSessionInterf
     );
 
     const customFetch = resolveRuntimeFetch(this.options.customFetch);
-    const hostBootstrap = bootstrapHostOptionsFrom(this.options);
+    const hostBootstrap = this.options;
 
     const { domainController, persistenceStoreControllerManager } =
       await runRealServerClientBootstrap({
-        miroirConfig: internalMiroirConfig,
         applicationDeploymentMap,
         adminDeployment,
         miroirDeploymentStorageConfiguration,

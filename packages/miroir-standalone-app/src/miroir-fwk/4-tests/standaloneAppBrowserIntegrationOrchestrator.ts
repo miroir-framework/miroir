@@ -2,6 +2,7 @@ import type {
   IntegrationTestOrchestratorContext,
   IntegrationTestSessionFactory,
   IntegrationTestSessionFactoryCreateParams,
+  IntegTestHostOptions,
   MiroirTestIntegrationOrchestrator,
   RealServerTransformerIntegrationSessionOptions,
   TestSessionForIntegOptions,
@@ -14,7 +15,6 @@ import {
 import {
   RunnerTestSession,
 } from "../../../tests/helpers/RunnerTestSession.js";
-import type { AppStackBootstrapHostOptions } from "./appStackBootstrapHostOptions.js";
 import {
   IntegrationTestSession,
 } from "./IntegrationTestSession.js";
@@ -24,8 +24,8 @@ import {
 
 function resolveBootstrapHostOptions(
   context: IntegrationTestOrchestratorContext,
-  sessionOptions: AppStackBootstrapHostOptions = {},
-): AppStackBootstrapHostOptions {
+  sessionOptions: IntegTestHostOptions = {},
+): IntegTestHostOptions {
   return {
     hostMode: sessionOptions.hostMode ?? context.hostMode,
     hostExecutionEnvironment:
@@ -37,8 +37,8 @@ function resolveBootstrapHostOptions(
 
 function resolveHostExecutionEnvironment(
   context: IntegrationTestOrchestratorContext,
-  hostBootstrap: AppStackBootstrapHostOptions,
-): AppStackBootstrapHostOptions["hostExecutionEnvironment"] {
+  hostBootstrap: IntegTestHostOptions,
+): IntegTestHostOptions["hostExecutionEnvironment"] {
   if (context.hostApplicationDeploymentMap === undefined) {
     return hostBootstrap.hostExecutionEnvironment;
   }

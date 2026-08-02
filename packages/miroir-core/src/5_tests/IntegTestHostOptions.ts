@@ -25,23 +25,12 @@ import type { TestbedUuids } from "./TestbedUuids.js";
 /**
  * Host-mode knobs shared by emulated app-stack bootstrap and realServer client bootstrap.
  */
-export type AppStackBootstrapHostOptions = {
+export type IntegTestHostOptions = {
   hostMode?: IntegrationTestHostMode;
   hostExecutionEnvironment?: Partial<MiroirTestExecutionEnvironment>;
   skipBootstrapPhases?: readonly IntegrationTestBootstrapPhase[];
   platformEnsureMode?: MiroirPlatformEnsureMode;
 };
-
-export function bootstrapHostOptionsFrom(
-  source: AppStackBootstrapHostOptions,
-): AppStackBootstrapHostOptions {
-  return {
-    hostMode: source.hostMode,
-    hostExecutionEnvironment: source.hostExecutionEnvironment,
-    skipBootstrapPhases: source.skipBootstrapPhases,
-    platformEnsureMode: source.platformEnsureMode,
-  };
-}
 
 export type TestApplicationStoreOptions =
   | { emulatedServerType: "sql"; postgresHostName?: string; connectionString?: string }
@@ -101,7 +90,7 @@ export type TestSessionForIntegOptions = {
   applicationIdentity?: IntegrationTestApplicationIdentity;
 };
 
-export type RealServerTransformerIntegrationSessionOptions = AppStackBootstrapHostOptions & {
+export type RealServerTransformerIntegrationSessionOptions = IntegTestHostOptions & {
   /** Discriminant — orchestrator routes on this (or `isRealServerTransformerSessionOptions`). */
   transport: "realServer";
   miroirConfig?: MiroirConfigClient;
@@ -131,7 +120,7 @@ export function isRealServerTransformerSessionOptions(
   );
 }
 
-export type AppStackIntegrationSessionOptions = AppStackBootstrapHostOptions & {
+export type AppStackIntegrationSessionOptions = IntegTestHostOptions & {
   applicationDeploymentMap: ApplicationDeploymentMap;
   adminDeployment: Deployment;
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration;
@@ -160,7 +149,7 @@ export type RunnerLibraryPlayfieldSeed = {
   librarySeedMetaModel: MetaModel;
 };
 
-type RunnerIntegrationSessionOptionsBase = AppStackBootstrapHostOptions & {
+type RunnerIntegrationSessionOptionsBase = IntegTestHostOptions & {
   pageLabel?: string;
   runTarget: TestbedUuids;
   suiteTestParams?: Record<string, unknown>;

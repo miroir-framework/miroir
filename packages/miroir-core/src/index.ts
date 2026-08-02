@@ -1239,10 +1239,9 @@ export {
   type MiroirTestIntegrationOrchestrator,
 } from "./5_tests/MiroirTestIntegrationOrchestrator.js";
 export {
-  bootstrapHostOptionsFrom,
   isRealServerTransformerSessionOptions,
   type AdminStoreOptions,
-  type AppStackBootstrapHostOptions,
+  type IntegTestHostOptions,
   type AppStackIntegrationSessionOptions,
   type AppStackSessionOptions,
   type DomainControllerIntegrationSessionOptions,
@@ -1257,7 +1256,7 @@ export {
   type TestApplicationStoreOptions,
   type TestSessionForIntegOptions,
   type TransformerIntegrationSessionOptions,
-} from "./5_tests/IntegrationTestSessionOptions.js";
+} from "./5_tests/IntegTestHostOptions.js";
 export {
   runCompositeActionTestParams,
 } from "./5_tests/CompositeActionTestTools.js";

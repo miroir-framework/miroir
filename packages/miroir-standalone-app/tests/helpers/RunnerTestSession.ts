@@ -10,6 +10,7 @@ import {
   type ApplicationDeploymentMap,
   type Deployment,
   type DomainControllerInterface,
+  type IntegTestHostOptions,
   type MetaModel,
   type MiroirActivityTracker,
   type MiroirConfigClient,
@@ -18,34 +19,30 @@ import {
   type Runner,
   type RunnerLibraryPlayfieldSeed,
   type RunnerTestContext,
-  type TestbedUuids,
   type RunnerTestSessionInterface,
   type StoreUnitConfiguration,
+  type TestbedUuids,
 } from "miroir-core";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { selfApplicationMiroir, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { runRealServerClientBootstrap } from "../../src/miroir-fwk/4-tests/runRealServerClientBootstrap.js";
+import {
+  buildTeardownTestApplicationStoresAction,
+} from "../../src/miroir-fwk/4-tests/testApplicationStoreTeardown.js";
 import {
   beforeEachTest,
   getTestConfig,
   testApplicationStorageConfiguration,
 } from "../4_view/RunnerIntegTestTools.js";
-import {
-  bootstrapHostOptionsFrom,
-  type AppStackBootstrapHostOptions,
-} from "../../src/miroir-fwk/4-tests/appStackBootstrapHostOptions.js";
-import { runRealServerClientBootstrap } from "../../src/miroir-fwk/4-tests/runRealServerClientBootstrap.js";
 import { runAppStackIntegrationBootstrap } from "./appStackIntegrationBootstrap.js";
-import {
-  buildTeardownTestApplicationStoresAction,
-} from "../../src/miroir-fwk/4-tests/testApplicationStoreTeardown.js";
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 
-export type RunnerTestSessionOptions = AppStackBootstrapHostOptions & {
+export type RunnerTestSessionOptions = IntegTestHostOptions & {
   miroirConfig: MiroirConfigClient;
   miroirActivityTracker: MiroirActivityTracker;
   miroirEventService: MiroirEventService;
@@ -179,35 +176,29 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     const { domainController, persistenceStoreControllerManager } =
       !internalMiroirConfig.client.emulateServer
         ? await runRealServerClientBootstrap({
-            miroirConfig: internalMiroirConfig,
             applicationDeploymentMap,
             adminDeployment,
             miroirDeploymentStorageConfiguration,
-            miroirActivityTracker,
-            miroirEventService,
             customFetch,
             testApplicationUuid: runTarget.applicationUuid,
             miroirDeploymentUuid: deployment_Miroir.uuid,
             miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-            ...bootstrapHostOptionsFrom(this.options),
+            ...this.options,
             // D9: shared miroir-server already has Miroir platform (after host options)
             platformEnsureMode: this.options.platformEnsureMode ?? "skip",
           })
         : await runAppStackIntegrationBootstrap({
-            miroirConfig: internalMiroirConfig,
             applicationDeploymentMap,
             adminDeployment,
             miroirDeploymentStorageConfiguration,
             phases: getBootstrapPhasesForSessionKind("runner"),
-            miroirActivityTracker,
-            miroirEventService,
             customFetch,
             testApplicationUuid: runTarget.applicationUuid,
             deployMiroirStrategy: "compositeAction",
             openAdminAndMiroirStoresOnServer: false,
             miroirDeploymentUuid: deployment_Miroir.uuid,
             miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-            ...bootstrapHostOptionsFrom(this.options),
+            ...this.options,
           });
 
     const testApplicationDeploymentMap = {

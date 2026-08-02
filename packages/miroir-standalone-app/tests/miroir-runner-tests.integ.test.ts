@@ -136,15 +136,15 @@ if (config.suiteKeys.length > 0) {
   const primarySuiteKey = config.suiteKeys[0];
   const primarySuite = loadRunnerOrActionMiroirTestSuite(primarySuiteKey);
   const orchestrator = createStandaloneAppIntegrationOrchestrator();
-  const testSession = orchestrator.createSession(
-    "runner",
-    {
+  const testSession = orchestrator.createSession({
+    kind: "runner",
+    context: {
       miroirConfig,
       miroirActivityTracker,
       miroirEventService,
     },
-    sessionOptionsForSuite(primarySuiteKey, primarySuite),
-  );
+    sessionSpecificOptions: sessionOptionsForSuite(primarySuiteKey, primarySuite),
+  });
 
   await runMiroirRunnerTestsFromCLI(
     runMiroirTests,

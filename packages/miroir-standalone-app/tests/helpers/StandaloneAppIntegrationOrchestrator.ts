@@ -14,7 +14,7 @@ import {
   isRealServerTransformerSessionOptions,
 } from "miroir-core";
 
-import type { AppStackBootstrapHostOptions } from "../../src/miroir-fwk/4-tests/appStackBootstrapHostOptions.js";
+import type { IntegTestHostOptions } from "miroir-core";
 import { RealServerTransformerTestSession } from "../../src/miroir-fwk/4-tests/RealServerTransformerTestSession.js";
 import {
   AppStackIntegrationTestSession,
@@ -32,8 +32,8 @@ function resolveLibraryPlayfieldEnsureMode(
 
 function resolveBootstrapHostOptions(
   context: IntegrationTestOrchestratorContext,
-  sessionOptions: AppStackBootstrapHostOptions = {},
-): AppStackBootstrapHostOptions {
+  sessionOptions: IntegTestHostOptions = {},
+): IntegTestHostOptions {
   return {
     hostMode: sessionOptions.hostMode ?? context.hostMode,
     hostExecutionEnvironment:
@@ -52,8 +52,8 @@ function resolveApplicationDeploymentMap(
 
 function resolveHostExecutionEnvironment(
   context: IntegrationTestOrchestratorContext,
-  hostBootstrap: AppStackBootstrapHostOptions,
-): AppStackBootstrapHostOptions["hostExecutionEnvironment"] {
+  hostBootstrap: IntegTestHostOptions,
+): IntegTestHostOptions["hostExecutionEnvironment"] {
   if (context.hostApplicationDeploymentMap === undefined) {
     return hostBootstrap.hostExecutionEnvironment;
   }

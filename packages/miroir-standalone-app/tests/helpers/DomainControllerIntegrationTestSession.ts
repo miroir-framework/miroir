@@ -1,7 +1,6 @@
 import crossFetch from "cross-fetch";
 
 import type {
-  Deployment,
   DomainControllerIntegrationSessionOptions,
   DomainControllerInterface,
   DomainControllerSessionProfile,
@@ -22,7 +21,6 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import {
-  bootstrapHostOptionsFrom,
   runAppStackIntegrationBootstrap,
 } from "./appStackIntegrationBootstrap.js";
 
@@ -55,12 +53,6 @@ export class DomainControllerIntegrationTestSession implements RunnerTestSession
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
     const executionEnvironment = await runAppStackIntegrationBootstrap({
       miroirConfig: this.miroirConfig,
-      applicationDeploymentMap: this.sessionOptions.applicationDeploymentMap,
-      adminDeployment: this.sessionOptions.adminDeployment as Deployment,
-      libraryDeploymentStorageConfiguration:
-        this.sessionOptions.libraryDeploymentStorageConfiguration,
-      miroirDeploymentStorageConfiguration:
-        this.sessionOptions.miroirDeploymentStorageConfiguration,
       phases: resolveBootstrapPhases(
         this.profile,
         this.sessionOptions.skipResetMiroirModelInInit,
@@ -74,7 +66,7 @@ export class DomainControllerIntegrationTestSession implements RunnerTestSession
       miroirDeploymentUuid: deployment_Miroir.uuid,
       miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
       libraryPlayfieldEnsureMode: this.sessionOptions.libraryPlayfieldEnsureMode,
-      ...bootstrapHostOptionsFrom(this.sessionOptions),
+      ...this.sessionOptions,
     });
 
     this.domainController = executionEnvironment.domainController;

@@ -24,7 +24,6 @@ import { deployment_Admin } from "miroir-test-app_deployment-admin";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 import {
-  bootstrapHostOptionsFrom,
   runAppStackIntegrationBootstrap
 } from "./appStackIntegrationBootstrap.js";
 
@@ -186,17 +185,13 @@ export class AppStackIntegrationTestSession implements RunnerTestSessionInterfac
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
     const executionEnvironment = await runAppStackIntegrationBootstrap({
       miroirConfig: this.miroirConfig,
-      applicationDeploymentMap: this.appStackOptions.applicationDeploymentMap,
-      adminDeployment: this.appStackOptions.adminDeployment,
-      libraryDeploymentStorageConfiguration:
-        this.appStackOptions.libraryDeploymentStorageConfiguration,
       phases: getBootstrapPhasesForSessionKind("appStackPersistenceStoreController"),
       testApplicationUuid: selfApplicationLibrary.uuid,
       deployMiroirStrategy: "persistenceStoreControllerHelper",
       openAdminAndMiroirStoresOnServer: false,
       customFetch: crossFetch,
       libraryPlayfieldEnsureMode: this.appStackOptions.libraryPlayfieldEnsureMode,
-      ...bootstrapHostOptionsFrom(this.appStackOptions),
+      ...this.appStackOptions,
     });
 
     this.domainController = executionEnvironment.domainController;

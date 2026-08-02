@@ -14,7 +14,7 @@ import type {
   IntegrationTestSessionOptionsByKind,
   RunnerIntegrationSessionOptions,
   TransformerIntegrationSessionOptions,
-} from "./IntegrationTestSessionOptions.js";
+} from "./IntegTestHostOptions.js";
 import type { LibraryPlayfieldEnsureMode } from "./LibraryPlayfield.js";
 import type { MiroirPlatformEnsureMode } from "./MiroirPlatformPlayfield.js";
 import type { MiroirTestExecutionEnvironment, RunnerTestSessionInterface } from "./MiroirTestTools.js";
@@ -65,32 +65,6 @@ export interface IntegrationTestSessionFactory {
 }
 
 export interface MiroirTestIntegrationOrchestrator {
-  // createSession(
-  //   kind: "transformer",
-  //   context: IntegrationTestOrchestratorContext,
-  //   sessionSpecificOptions?: TransformerIntegrationSessionOptions,
-  // ): RunnerTestSessionInterface;
-  // createSession(
-  //   kind: "appStackPersistenceStoreController",
-  //   context: IntegrationTestOrchestratorContext,
-  //   sessionSpecificOptions: AppStackIntegrationSessionOptions,
-  // ): RunnerTestSessionInterface;
-  // createSession(
-  //   kind: "domainController",
-  //   context: IntegrationTestOrchestratorContext,
-  //   sessionSpecificOptions: DomainControllerOrchestratorSessionOptions,
-  // ): RunnerTestSessionInterface;
-  // createSession(
-  //   kind: "runner",
-  //   context: IntegrationTestOrchestratorContext,
-  //   sessionSpecificOptions?: RunnerIntegrationSessionOptions,
-  // ): RunnerTestSessionInterface;
-  // // createSession<K extends IntegrationTestSessionKind>(
-  // createSession(
-  //   kind: IntegrationTestSessionKind,
-  //   context: IntegrationTestOrchestratorContext,
-  //   sessionSpecificOptions?: IntegrationTestSessionOptionsByKind,
-  // ): RunnerTestSessionInterface;
   createSession(
     params: IntegrationTestSessionFactoryCreateParams,
   ): RunnerTestSessionInterface;

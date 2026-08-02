@@ -35,10 +35,6 @@ import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js
 import { createMiroirDeploymentGetPersistenceStoreController } from "../../src/miroir-fwk/4-tests/tests-utils.js";
 
 export type { DeployMiroirStrategy };
-export {
-  bootstrapHostOptionsFrom,
-  type AppStackBootstrapHostOptions,
-} from "../../src/miroir-fwk/4-tests/appStackBootstrapHostOptions.js";
 
 export type AppStackBootstrapOptions = {
   miroirConfig: MiroirConfigClient;

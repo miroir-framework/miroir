@@ -20,11 +20,11 @@ import type {
 import { ensureMiroirPlatform } from "miroir-core";
 
 import {
-  type AppStackBootstrapHostOptions,
-} from "./appStackBootstrapHostOptions.js";
+  type IntegTestHostOptions,
+} from "./IntegTestHostOptions.js";
 import { setupMiroirTest } from "./setupMiroirTest.js";
 
-export type RealServerClientBootstrapOptions = AppStackBootstrapHostOptions & {
+export type RealServerClientBootstrapOptions = IntegTestHostOptions & {
   miroirConfig: MiroirConfigClient;
   applicationDeploymentMap: ApplicationDeploymentMap;
   adminDeployment: Deployment;
