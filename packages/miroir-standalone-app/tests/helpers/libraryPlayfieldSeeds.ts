@@ -39,19 +39,16 @@ import {
 } from "miroir-test-app_deployment-library";
 
 import {
+  miroirTest_domain_controller_application_version_freeze,
   miroirTest_domain_controller_composite_pk_crud,
   miroirTest_domain_controller_data_crud,
   miroirTest_domain_controller_model_crud,
   miroirTest_domain_controller_model_undo_redo,
-  miroirTest_domain_controller_application_version_freeze,
   miroirTest_domain_controller_no_parent_uuid_crud,
   miroirTest_domain_controller_non_uuid_pk_data_crud,
   miroirTest_domain_controller_non_uuid_pk_model_crud,
   miroirTest_evolutionTraceWP1,
-  miroirTest_runner_create_entity,
-  miroirTest_runner_drop_entity,
-  miroirTest_runner_freeze_application_version,
-  RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+  miroirTest_runner_freeze_application_version
 } from "miroir-test-app_deployment-miroir";
 
 
@@ -573,16 +570,16 @@ export const domainControllerModelUndoRedoLibraryPlayfieldSeed: TestbedSetupPara
   testbedModel: emptyLibraryPlayfieldMetaModel,
 };
 
-/**
- * Session playfield seed for `domain_controller_application_version_freeze`.
- * Same minimal Library as Model.CRUD (Publisher + Country).
- */
-export const domainControllerApplicationVersionFreezeLibraryPlayfieldSeed: TestbedSetupParameters =
-  {
-    testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
-    testbedModel: publisherAndCountryTestMetaModel,
-  };
+// /**
+//  * Session playfield seed for `domain_controller_application_version_freeze`.
+//  * Same minimal Library as Model.CRUD (Publisher + Country).
+//  */
+// export const domainControllerApplicationVersionFreezeLibraryPlayfieldSeed: TestbedSetupParameters =
+//   {
+//     testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
+//     testbedInitApplicationParameters: libraryTestbedInitParams,
+//     testbedModel: publisherAndCountryTestMetaModel,
+//   };
 
 export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
   return domainControllerIntegTestNames.includes(suiteKey);
@@ -688,6 +685,12 @@ export const DOMAIN_CONTROLLER_TESTBED_KEYMAP: Record<string, TestbedSetupParame
   },
   // ###############################################################################
   [miroirTest_domain_controller_application_version_freeze.name]: {
+    testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: publisherAndCountryTestMetaModel,
+  },
+  // ###############################################################################
+  [miroirTest_runner_freeze_application_version.name]: {
     testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
     testbedInitApplicationParameters: libraryTestbedInitParams,
     testbedModel: publisherAndCountryTestMetaModel,

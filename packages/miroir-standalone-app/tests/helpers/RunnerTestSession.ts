@@ -16,6 +16,7 @@ import {
   type MiroirConfigClient,
   type MiroirEventService,
   type MiroirTestExecutionEnvironment,
+  type PersistenceStoreControllerManagerInterface,
   type Runner,
   type RunnerLibraryPlayfieldSeed,
   type RunnerTestContext,
@@ -143,6 +144,9 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
   private applicationDeploymentMap: ApplicationDeploymentMap | undefined;
   private runnerTestContext: RunnerTestContext | undefined;
   private libraryModelForSession: MetaModel | undefined;
+  private persistenceStoreControllerManager:
+    | PersistenceStoreControllerManagerInterface
+    | undefined;
 
   constructor(private readonly options: RunnerTestSessionOptions) {}
 
@@ -249,6 +253,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     );
 
     this.domainController = domainController;
+    this.persistenceStoreControllerManager = persistenceStoreControllerManager;
     this.applicationDeploymentMap = testApplicationDeploymentMap;
     this.runnerTestContext = {
       pageLabel,
@@ -342,9 +347,22 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       {},
     );
 
+    // Release emulated-server persistence backends (Postgres pools, etc.) so the
+    // vitest worker can shut down without RPC timeouts.
+    if (this.persistenceStoreControllerManager) {
+      for (const deploymentUuid of [
+        ...this.persistenceStoreControllerManager.getPersistenceStoreControllers(),
+      ]) {
+        await this.persistenceStoreControllerManager.deletePersistenceStoreController(
+          deploymentUuid,
+        );
+      }
+    }
+
     this.domainController = undefined;
     this.applicationDeploymentMap = undefined;
     this.runnerTestContext = undefined;
     this.libraryModelForSession = undefined;
+    this.persistenceStoreControllerManager = undefined;
   }
 }

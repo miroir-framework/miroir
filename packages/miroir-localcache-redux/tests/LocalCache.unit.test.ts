@@ -9,7 +9,7 @@ import {
 
 import { LocalCache } from "../src/4_services/LocalCache";
 
-import { entityDefinitionEntityDefinition, entityEntityVersion } from "miroir-test-app_deployment-miroir";
+import { entityDefinitionEntityDefinition, entityEntity, entityEntityVersion } from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 // ################################################################################################
 //  TEST CONSTANTS
@@ -23,6 +23,8 @@ const testInstance2Uuid = "55555555-5555-5555-5555-555555555555";
 const testEntityUuidWithCustomPK = "66666666-6666-6666-6666-666666666666";
 const testCustomPKInstance1Name = "instance-alpha";
 const testCustomPKInstance2Name = "instance-beta";
+
+const testEntityUuidWithCompositePK = "77777777-7777-7777-7777-777777777777";
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   [testApplicationUuid]: testDeploymentUuid,
@@ -556,5 +558,70 @@ describe("LocalCache.unit.test - custom idAttribute", () => {
     expect(entityInstances?.[testCustomPKInstance1Name]).toEqual(inst1);
     expect(entityInstances?.[testCustomPKInstance2Name]).toEqual(inst2);
     expect(entityInstances?.["instance-gamma"]).toEqual(inst3);
+  });
+
+  // ##############################################################################################
+  // #217 Phase 11: Entity present-model (not EntityVersion) carries idAttribute for composite PK.
+  // DomainController refresh reloads data instances without re-fetching custom Entity rows.
+  it("composite PK: Entity present-model in state, data reload without Entity row in batch", () => {
+    const localCache = new LocalCache();
+
+    const entityPresentModel: EntityInstance = {
+      uuid: testEntityUuidWithCompositePK,
+      parentUuid: entityEntity.uuid,
+      name: "TestEntityCompositePK",
+      idAttribute: ["region", "code"],
+    } as any;
+
+    const loadEntityPresentModelAction: InstanceAction = {
+      actionType: "loadNewInstancesInLocalCache",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: testApplicationUuid,
+        objects: [
+          {
+            parentUuid: entityEntity.uuid,
+            applicationSection: "model",
+            instances: [entityPresentModel],
+          } as EntityInstanceCollection,
+        ],
+      },
+    };
+    localCache.handleLocalCacheAction(loadEntityPresentModelAction, applicationDeploymentMap);
+
+    const inst1: EntityInstance = {
+      region: "EU",
+      code: "A1",
+      parentUuid: testEntityUuidWithCompositePK,
+      name: "EU-A1",
+    } as any;
+    const inst2: EntityInstance = {
+      region: "EU",
+      code: "B2",
+      parentUuid: testEntityUuidWithCompositePK,
+      name: "EU-B2",
+    } as any;
+    const inst3: EntityInstance = {
+      region: "US",
+      code: "A1",
+      parentUuid: testEntityUuidWithCompositePK,
+      name: "US-A1",
+    } as any;
+
+    bootstrapLocalCache(
+      localCache,
+      [inst1, inst2, inst3],
+      testEntityUuidWithCompositePK,
+      "data",
+    );
+
+    const domainState = localCache.getDomainState();
+    const entityInstances =
+      domainState[testDeploymentUuid]?.data?.[testEntityUuidWithCompositePK];
+
+    expect(entityInstances?.["EU|A1"]).toEqual(inst1);
+    expect(entityInstances?.["EU|B2"]).toEqual(inst2);
+    expect(entityInstances?.["US|A1"]).toEqual(inst3);
+    expect(Object.keys(entityInstances ?? {}).length).toBe(3);
   });
 });

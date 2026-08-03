@@ -217,8 +217,22 @@ function getOrCreateEntityAdapter(
     idAttribute
   );
 
-  if (entityAdapterMap[entityInstancesLocationIndex]) {
-    return entityAdapterMap[entityInstancesLocationIndex];
+  const existingAdapter = entityAdapterMap[entityInstancesLocationIndex];
+  if (existingAdapter) {
+    if (idAttribute && idAttribute !== "uuid") {
+      const existingIdAttribute =
+        entityIdAttributeByIndex[entityInstancesLocationIndex] ?? "uuid";
+      if (existingIdAttribute === "uuid") {
+        // Data may have been loaded before the Entity present-model row registered
+        // a composite/custom PK adapter — replace the default uuid adapter.
+        delete entityAdapterMap[entityInstancesLocationIndex];
+        delete entityIdAttributeByIndex[entityInstancesLocationIndex];
+      } else {
+        return existingAdapter;
+      }
+    } else {
+      return existingAdapter;
+    }
   }
   if (idAttribute && idAttribute !== "uuid") {
     const pkAttrs = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
@@ -241,6 +255,42 @@ function getEntityIdAttribute(entityInstancesLocationIndex: string): string | st
  * #217 Phase 11: register non-UUID PK adapters from Entity present-model only.
  * EntityVersion is historical and no longer registers live PK adapters.
  */
+function findEntityPresentModelInState(
+  deploymentUuid: string,
+  targetEntityUuid: string,
+  state: LocalCacheSliceState,
+): EntityInstance | undefined {
+  const entityParentIndex = getReduxDeploymentsStateIndex(
+    deploymentUuid,
+    "model",
+    entityEntity.uuid,
+    "full",
+  );
+  for (const zone of ["current", "loading"] as LocalCacheSliceStateZone[]) {
+    const sliceState = (state as any)[zone]?.[entityParentIndex];
+    const row = sliceState?.entities?.[targetEntityUuid];
+    if (row) {
+      return row;
+    }
+  }
+  return undefined;
+}
+
+function ensureEntityAdapterFromPresentModelInState(
+  deploymentUuid: string,
+  targetEntityUuid: string,
+  state: LocalCacheSliceState,
+): void {
+  const presentModel = findEntityPresentModelInState(
+    deploymentUuid,
+    targetEntityUuid,
+    state,
+  );
+  if (presentModel) {
+    registerEntityAdapterFromPresentModelSource(deploymentUuid, presentModel);
+  }
+}
+
 function registerEntityAdapterFromPresentModelSource(
   deploymentUuid: string,
   source: EntityInstance,
@@ -370,6 +420,14 @@ function loadNewEntityInstancesInLocalCache(
     for (const entity of instanceCollection.instances ?? []) {
       registerEntityAdapterFromPresentModelSource(deploymentUuid, entity);
     }
+  } else {
+    // Refresh reloads may omit Entity present-model rows (metaModelEntities only)
+    // while still loading data instances — resolve idAttribute from cached Entity row.
+    ensureEntityAdapterFromPresentModelInState(
+      deploymentUuid,
+      instanceCollection.parentUuid,
+      state,
+    );
   }
   const { kind: segment, projection } = resolveLoadCacheSegment(instanceCollection);
   const segmentHeader = buildLocalCacheSegmentHeader(segment, "fresh", projection);
@@ -738,7 +796,12 @@ function handleInstanceAction(
       }
       case "loadNewInstancesInLocalCache": {
         // log.info("localCacheSlice handleInstanceAction loadNewInstancesInLocalCache called!");
-        for (const instanceCollection of instanceAction.payload.objects) {
+        const sortedCollections = [...instanceAction.payload.objects].sort((a, b) => {
+          const aIsEntityParent = a.parentUuid === entityEntity.uuid ? 0 : 1;
+          const bIsEntityParent = b.parentUuid === entityEntity.uuid ? 0 : 1;
+          return aIsEntityParent - bIsEntityParent;
+        });
+        for (const instanceCollection of sortedCollections) {
           loadNewEntityInstancesInLocalCache(
             deploymentUuid,
             instanceCollection.applicationSection,

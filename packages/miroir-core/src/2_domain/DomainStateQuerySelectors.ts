@@ -165,13 +165,17 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
 
   // log.info("selectEntityInstanceUuidIndexFromDomainState applying filter", extractorParams.extractor.select.filter);
   const localSelect = extractorParams.extractor.select;
+  const instanceToKey = new Map<EntityInstance, string>();
+  for (const [key, instance] of Object.entries(entityInstances)) {
+    instanceToKey.set(instance, key);
+  }
   const filteredInstancesArray = applyExtractorFilterAndOrderBy(
     Object.values(entityInstances),
     localSelect
   );
   // log.info("selectEntityInstanceUuidIndexFromDomainState filteredInstancesArray", filteredInstancesArray);
   const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
-    acc[instance.uuid!] = instance;
+    acc[instanceToKey.get(instance) ?? instance.uuid!] = instance;
     return acc;
   }, {});
   // log.info("selectEntityInstanceUuidIndexFromDomainState filtered result", result);

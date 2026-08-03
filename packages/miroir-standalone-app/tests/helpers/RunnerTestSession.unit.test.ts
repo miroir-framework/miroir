@@ -395,11 +395,15 @@ describe("RunnerTestSession (Gap E R)", () => {
     const domainController = {
       handleCompositeAction: vi.fn().mockResolvedValue({}),
     } as unknown as DomainControllerInterface;
+    const deletePersistenceStoreController = vi.fn().mockResolvedValue({});
     runAppStackIntegrationBootstrapMock.mockResolvedValueOnce({
       domainController,
       applicationDeploymentMap: {} as ApplicationDeploymentMap,
       testApplicationUuid: runTarget.applicationUuid,
-      persistenceStoreControllerManager: {},
+      persistenceStoreControllerManager: {
+        getPersistenceStoreControllers: () => ["admin-deployment", "miroir-deployment"],
+        deletePersistenceStoreController,
+      },
     });
 
     const session = new RunnerTestSession({
@@ -448,5 +452,8 @@ describe("RunnerTestSession (Gap E R)", () => {
       buildTestSessionModelEnvironment(runTarget.deploymentUuid, remappedLibraryModel),
     );
     expect(optionsArg).toEqual({});
+    expect(deletePersistenceStoreController).toHaveBeenCalledTimes(2);
+    expect(deletePersistenceStoreController).toHaveBeenCalledWith("admin-deployment");
+    expect(deletePersistenceStoreController).toHaveBeenCalledWith("miroir-deployment");
   });
 });
