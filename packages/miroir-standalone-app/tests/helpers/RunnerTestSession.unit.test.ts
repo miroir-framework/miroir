@@ -4,10 +4,10 @@ import {
   buildRunnerTestSessionParamBank,
   emptyApplicationModel,
   getBootstrapPhasesForSessionKind,
+  getTestbedUuidsForTestSuite,
   MiroirActivityTracker,
   MiroirEventService,
   remapLibraryAppModelForRunTarget,
-  getTestbedUuidsForTestSuite,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type MetaModel,
@@ -15,6 +15,7 @@ import {
   type MiroirTestDefinition,
   type MiroirTestSuite,
 } from "miroir-core";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
@@ -22,8 +23,7 @@ import {
   RUNNER_LIBRARY_RUNNER_REGISTRY,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
-import { selfApplicationMiroir, defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 const runRealServerClientBootstrapMock = vi.fn();
@@ -73,9 +73,9 @@ function runnerLibraryRunTarget() {
 
 function baseMiroirConfig(runTarget = runnerLibraryRunTarget()): MiroirConfigClient {
   const storeSection = {
-    admin: { emulatedServerType: "sql" },
-    model: { emulatedServerType: "sql" },
-    data: { emulatedServerType: "sql" },
+    admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+    model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+    data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
   };
   return {
     miroirConfigType: "client",
@@ -239,19 +239,19 @@ describe("RunnerTestSession (Gap E R)", () => {
           rootApiUrl: "https://localhost:3080",
           storeSectionConfiguration: {
             [runTarget.deploymentUuid]: {
-              admin: { emulatedServerType: "sql" },
-              model: { emulatedServerType: "sql" },
-              data: { emulatedServerType: "sql" },
+              admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
             },
             "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
-              admin: { emulatedServerType: "sql" },
-              model: { emulatedServerType: "sql" },
-              data: { emulatedServerType: "sql" },
+              admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
             },
             "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
-              admin: { emulatedServerType: "sql" },
-              model: { emulatedServerType: "sql" },
-              data: { emulatedServerType: "sql" },
+              admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
             },
           },
         },

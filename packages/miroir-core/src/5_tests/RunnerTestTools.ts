@@ -44,6 +44,8 @@ export type ResolveRunnerTestLeafParams = {
   runTarget: TestbedUuids;
   sessionTestParams: Record<string, unknown>;
   runnerRegistry: Record<string, Runner>;
+  /** When set, used instead of `runnerRegistry[leaf.runnerRef]`. */
+  resolvedRunner?: Runner;
 };
 
 // ################################################################################################
@@ -54,6 +56,7 @@ export function resolveRunnerTestLeaf({
   runTarget,
   sessionTestParams,
   runnerRegistry,
+  resolvedRunner,
 }: ResolveRunnerTestLeafParams): TestCompositeActionParams {
   if (leaf.initialModel === undefined) {
     throw new Error(
@@ -65,9 +68,16 @@ export function resolveRunnerTestLeaf({
     mergeRunnerTestParamBank(sessionTestParams, leaf),
   );
 
+  const runner = resolvedRunner ?? runnerRegistry[leaf.runnerRef];
+  if (!runner) {
+    throw new Error(
+      `resolveRunnerTestLeaf: no Runner for leaf "${leaf.miroirTestLabel}" (runnerRef=${leaf.runnerRef})`,
+    );
+  }
+
   return testBuildPlusRuntimeCompositeActionSuiteForRunner(
     pageLabel,
-    runnerRegistry[leaf.runnerRef],
+    runner,
     runTarget.applicationUuid,
     runTarget.deploymentUuid,
     runTarget.applicationName,
@@ -147,6 +157,7 @@ export async function runMiroirRunnerTest(
     runTarget: runnerContext.runTarget,
     sessionTestParams: runnerContext.testParams,
     runnerRegistry: runnerContext.runnerRegistry,
+    resolvedRunner: runnerContext.resolvedRunner,
   });
 
   const result = await runRunnerTestCompositeAction(

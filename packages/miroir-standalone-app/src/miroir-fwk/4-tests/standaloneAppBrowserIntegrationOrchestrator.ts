@@ -112,7 +112,7 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
         `Browser integration orchestrator supports runner and transformer sessions only (got "${kind}")`,
       );
     }
-    const { runnerRegistry, sessionSpecificOptions } = params;
+    const { runnerRegistry, resolvedRunner, sessionSpecificOptions } = params;
     if (!context.miroirActivityTracker || !context.miroirEventService) {
       throw new Error(
         "Browser integration orchestrator: runner session requires miroirActivityTracker and miroirEventService",
@@ -121,9 +121,9 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
     if (!sessionSpecificOptions?.runTarget) {
       throw new Error("Browser integration orchestrator: runner session requires runTarget");
     }
-    if (Object.keys(runnerRegistry).length === 0 && !sessionSpecificOptions.libraryPlayfieldSeed) {
+    if (Object.keys(runnerRegistry).length === 0 && !resolvedRunner && !sessionSpecificOptions.libraryPlayfieldSeed) {
       throw new Error(
-        "Browser integration orchestrator: runner session requires runnerRegistry or libraryPlayfieldSeed",
+        "Browser integration orchestrator: runner session requires runnerRegistry, resolvedRunner, or libraryPlayfieldSeed",
       );
     }
     const runnerOptions = sessionSpecificOptions;
@@ -134,6 +134,7 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
       miroirActivityTracker: context.miroirActivityTracker,
       miroirEventService: context.miroirEventService,
       runnerRegistry,
+      resolvedRunner,
       customFetch:
         typeof window !== "undefined" && typeof window.fetch === "function"
           ? (window.fetch.bind(window) as typeof fetch)

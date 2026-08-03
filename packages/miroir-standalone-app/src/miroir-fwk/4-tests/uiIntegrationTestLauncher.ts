@@ -196,6 +196,7 @@ async function runRunnerIntegrationSuite(
       hostMode,
     },
     runnerRegistry: runnerEntry.runnerRegistry,
+    ...(runnerEntry.resolvedRunner ? { resolvedRunner: runnerEntry.resolvedRunner } : {}),
     sessionSpecificOptions: {
       pageLabel: "ui-integration-test",
       runTarget,

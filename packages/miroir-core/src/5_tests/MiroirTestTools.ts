@@ -54,6 +54,8 @@ export type CompositeActionTestContext = {
 /** Runner context = composite-action context + Runner registry. */
 export type RunnerTestContext = CompositeActionTestContext & {
   runnerRegistry: Record<string, Runner>;
+  /** When set, `resolveRunnerTestLeaf` uses this instead of `runnerRegistry[leaf.runnerRef]`. */
+  resolvedRunner: Runner;
 };
 
 export type MiroirTestExecutionEnvironment = {

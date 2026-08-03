@@ -4,15 +4,6 @@ import {
   RUNNER_LIBRARY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-library";
 import {
-  miroirTest_domain_controller_composite_pk_crud,
-  miroirTest_domain_controller_data_crud,
-  miroirTest_domain_controller_model_crud,
-  miroirTest_domain_controller_model_undo_redo,
-  miroirTest_domain_controller_application_version_freeze,
-  miroirTest_domain_controller_no_parent_uuid_crud,
-  miroirTest_domain_controller_non_uuid_pk_data_crud,
-  miroirTest_domain_controller_non_uuid_pk_model_crud,
-  miroirTest_evolutionTraceWP1,
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
   miroirTest_runner_freeze_application_version,
@@ -20,8 +11,9 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import {
+  DOMAIN_CONTROLLER_TESTBED_KEYMAP,
   domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
-  libraryPlayfieldSeedForActionSuite,
+  domainControllerIntegTests,
   type TestbedSetupParameters,
 } from "../../../tests/helpers/libraryPlayfieldSeeds.js";
 
@@ -29,10 +21,19 @@ export const RUNNER_CREATE_ENTITY_SUITE_KEY = "runner_create_entity";
 export const RUNNER_DROP_ENTITY_SUITE_KEY = "runner_drop_entity";
 export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY = "runner_freeze_application_version";
 
+const RUNNER_REF_CREATE_ENTITY = "82f81a25-2366-4abf-8a97-83ca5e9a9c46";
+const RUNNER_REF_DROP_ENTITY = "44313751-b0e5-4132-bb12-a544806e759b";
+const RUNNER_REF_FREEZE_APPLICATION_VERSION = "20d51c4c-52e5-4077-baf3-5e87bd75e496";
+
 export type UiIntegrationRunnerSuiteEntry = {
   suiteDefinition: MiroirTestSuite;
   /** Empty for actionTest suites (no Runner entities). */
   runnerRegistry: Record<string, Runner>;
+  /**
+   * When set, `resolveRunnerTestLeaf` uses this Runner instead of
+   * `runnerRegistry[leaf.runnerRef]`. Omitted for multi-runner suites (e.g. runner_library).
+   */
+  resolvedRunner?: Runner;
   /** Required for DomainController action suites; omitted for runner_library. */
   libraryPlayfieldSeed?: TestbedSetupParameters;
   /**
@@ -44,23 +45,6 @@ export type UiIntegrationRunnerSuiteEntry = {
   defaultApplicationName?: string;
 };
 
-function actionSuiteEntry(
-  suiteKey: string,
-  instance: MiroirTestDefinition,
-): UiIntegrationRunnerSuiteEntry {
-  const seed = libraryPlayfieldSeedForActionSuite(suiteKey);
-  if (!seed) {
-    throw new Error(
-      `UI integration runner registry: missing libraryPlayfieldSeed for action suite "${suiteKey}"`,
-    );
-  }
-  return {
-    suiteDefinition: instance.definition as MiroirTestSuite,
-    runnerRegistry: {},
-    libraryPlayfieldSeed: seed,
-  };
-}
-
 export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationRunnerSuiteEntry> =
   {
     runner_library: {
@@ -68,44 +52,46 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
     },
-    ["runner_create_entity"]: {
+    [RUNNER_CREATE_ENTITY_SUITE_KEY]: {
       suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[RUNNER_REF_CREATE_ENTITY],
       skipRunTargetPlayfieldReset: true,
       defaultApplicationName: "testApplication_CreateEntity",
     },
-    ["runner_drop_entity"]: {
+    [RUNNER_DROP_ENTITY_SUITE_KEY]: {
       suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[RUNNER_REF_DROP_ENTITY],
       skipRunTargetPlayfieldReset: true,
       defaultApplicationName: "testApplication_CreateEntity",
     },
-    ["runner_freeze_application_version"]: {
+    [RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY]: {
       suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[RUNNER_REF_FREEZE_APPLICATION_VERSION],
       libraryPlayfieldSeed: domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
     },
-    ...(
-      Object.fromEntries(
-        [
-          miroirTest_domain_controller_data_crud,
-          miroirTest_domain_controller_model_crud,
-          miroirTest_domain_controller_composite_pk_crud,
-          miroirTest_domain_controller_non_uuid_pk_model_crud,
-          miroirTest_domain_controller_non_uuid_pk_data_crud,
-          miroirTest_domain_controller_no_parent_uuid_crud,
-          miroirTest_domain_controller_model_undo_redo,
-          miroirTest_domain_controller_application_version_freeze,
-          miroirTest_evolutionTraceWP1,
-        ].map(test => [test.name, actionSuiteEntry(test.name, test as MiroirTestDefinition)])
-      )
-    )
+    ...Object.fromEntries(
+      domainControllerIntegTests.map((test) => {
+        if (!test.name || !DOMAIN_CONTROLLER_TESTBED_KEYMAP[test.name]) {
+          throw new Error(`No playfield seed found for test ${test.name}`);
+        }
+        return [
+          test.name,
+          {
+            suiteDefinition: test.definition as MiroirTestSuite,
+            runnerRegistry: {},
+            libraryPlayfieldSeed: DOMAIN_CONTROLLER_TESTBED_KEYMAP[test.name],
+          },
+        ];
+      }),
+    ),
   };
 
 export function listUiIntegrationRunnerSuiteKeys(): string[] {
   return Object.keys(UI_INTEGRATION_RUNNER_SUITE_REGISTRY).sort();
 }
-

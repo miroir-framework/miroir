@@ -50,6 +50,8 @@ export type RunnerTestSessionOptions = IntegTestHostOptions & {
   runTarget: TestbedUuids;
   suiteTestParams?: Record<string, unknown>;
   runnerRegistry: Record<string, Runner>;
+  /** When set, `resolveRunnerTestLeaf` uses this instead of `runnerRegistry[leaf.runnerRef]`. */
+  resolvedRunner?: Runner;
   /**
    * Optional playfield seed applied in `beforeEach` after reset
    * (Action Data.CRUD MiroirTest suites).
@@ -155,8 +157,14 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
   // ##############################################################################################
   async initSession(): Promise<MiroirTestExecutionEnvironment> {
-    const { miroirConfig, miroirActivityTracker, miroirEventService, runTarget, runnerRegistry } =
-      this.options;
+    const {
+      miroirConfig,
+      miroirActivityTracker,
+      miroirEventService,
+      runTarget,
+      runnerRegistry,
+      resolvedRunner,
+    } = this.options;
     const pageLabel = this.options.pageLabel ?? "miroir-runner-tests.integ";
 
     const {
@@ -251,6 +259,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       testDeploymentStorageConfiguration,
       runTarget,
       runnerRegistry,
+      resolvedRunner,
       testParams: sessionTestParams,
       runtimeContext: {},
     };

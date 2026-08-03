@@ -16,9 +16,6 @@ import {
   parseMiroirRunnerTestCliConfig,
 } from "miroir-core";
 import { RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
-import {
-  RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
-} from "miroir-test-app_deployment-miroir";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -37,6 +34,7 @@ import {
   isDomainControllerActionCrudSuite,
   domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
 } from "./helpers/libraryPlayfieldSeeds.js";
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 
 const pageLabel = "miroir-runner-tests.integ";
 
@@ -90,16 +88,21 @@ if (config.filter?.testList) {
 }
 
 function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
+  const registryEntry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey];
   const runTarget = getTestbedUuidsForTestSuite({
     suite,
     defaultApplicationName: isMiroirEntityRunnerSuite(suiteKey)
       ? "testApplication_CreateEntity"
       : "Library",
   });
-  const playfieldSeed = libraryPlayfieldSeedForActionSuite(suiteKey);
-  if (isDomainControllerActionCrudSuite(suiteKey) && playfieldSeed) {
+  const runnerSessionBase = {
+    runnerRegistry: registryEntry?.runnerRegistry ?? RUNNER_LIBRARY_RUNNER_REGISTRY,
+    ...(registryEntry?.resolvedRunner ? { resolvedRunner: registryEntry.resolvedRunner } : {}),
+  };
+  if (isDomainControllerActionCrudSuite(suiteKey)) {
+    const playfieldSeed = libraryPlayfieldSeedForActionSuite(suiteKey);
     return {
-      runnerRegistry: {},
+      ...runnerSessionBase,
       sessionSpecificOptions: {
         pageLabel,
         runTarget,
@@ -110,7 +113,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   }
   if (isFreezeApplicationVersionRunnerSuite(suiteKey)) {
     return {
-      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      ...runnerSessionBase,
       sessionSpecificOptions: {
         pageLabel,
         runTarget,
@@ -121,7 +124,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   }
   if (isMiroirEntityRunnerSuite(suiteKey)) {
     return {
-      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      ...runnerSessionBase,
       sessionSpecificOptions: {
         pageLabel,
         runTarget,
@@ -131,7 +134,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
     };
   }
   return {
-    runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
+    ...runnerSessionBase,
     sessionSpecificOptions: {
       pageLabel,
       runTarget,
@@ -153,6 +156,7 @@ if (config.suiteKeys.length > 0) {
       miroirEventService,
     },
     runnerRegistry: sessionParams.runnerRegistry,
+    ...(sessionParams.resolvedRunner ? { resolvedRunner: sessionParams.resolvedRunner } : {}),
     sessionSpecificOptions: sessionParams.sessionSpecificOptions,
   });
 

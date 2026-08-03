@@ -1,10 +1,11 @@
 import type {
   ApplicationEntitiesAndInstances,
   Entity,
-  EntityVersion,
   EntityInstance,
+  EntityVersion,
   InitApplicationParameters,
   MetaModel,
+  MiroirTestDefinition,
   SelfApplication,
   Uuid,
 } from "miroir-core";
@@ -15,7 +16,6 @@ import {
   author3,
   book1,
   book2,
-  book3,
   book4,
   book5,
   book6,
@@ -26,52 +26,54 @@ import {
   entityAuthor,
   entityBook,
   entityCountry,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionCountry,
   entityDefinitionPublisher,
   entityPublisher,
+  entityVersionCountry,
+  entityVersionPublisher,
   folio as publisher1,
   penguin as publisher2,
   springer as publisher3,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
-  selfApplicationVersionLibraryInitialVersion,
+  selfApplicationVersionLibraryInitialVersion
 } from "miroir-test-app_deployment-library";
 
+import {
+  miroirTest_domain_controller_composite_pk_crud,
+  miroirTest_domain_controller_data_crud,
+  miroirTest_domain_controller_model_crud,
+  miroirTest_domain_controller_model_undo_redo,
+  miroirTest_domain_controller_application_version_freeze,
+  miroirTest_domain_controller_no_parent_uuid_crud,
+  miroirTest_domain_controller_non_uuid_pk_data_crud,
+  miroirTest_domain_controller_non_uuid_pk_model_crud,
+  miroirTest_evolutionTraceWP1,
+  miroirTest_runner_create_entity,
+  miroirTest_runner_drop_entity,
+  miroirTest_runner_freeze_application_version,
+  RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+} from "miroir-test-app_deployment-miroir";
+
+
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
-/** Suite registry key for DomainController Data CRUD action MiroirTest. */
-export const DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY = "domain_controller_data_crud";
 
-/** Suite registry key for DomainController Model CRUD action MiroirTest. */
-export const DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY = "domain_controller_model_crud";
 
-/** Suite registry key for DomainController composite-PK Data CRUD action MiroirTest. */
-export const DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY =
-  "domain_controller_composite_pk_crud";
+export const domainControllerIntegTests: MiroirTestDefinition[] = [
+  miroirTest_domain_controller_data_crud,
+  miroirTest_domain_controller_model_crud,
+  miroirTest_domain_controller_composite_pk_crud,
+  miroirTest_domain_controller_non_uuid_pk_model_crud,
+  miroirTest_domain_controller_non_uuid_pk_data_crud,
+  miroirTest_domain_controller_no_parent_uuid_crud,
+  miroirTest_domain_controller_model_undo_redo,
+  miroirTest_domain_controller_application_version_freeze,
+  miroirTest_evolutionTraceWP1,
+];
 
-/** Suite registry key for DomainController non-UUID PK Model CRUD action MiroirTest. */
-export const DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY =
-  "domain_controller_non_uuid_pk_model_crud";
-
-/** Suite registry key for DomainController non-UUID PK Data CRUD action MiroirTest. */
-export const DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY =
-  "domain_controller_non_uuid_pk_data_crud";
-
-/** Suite registry key for DomainController no-parentUuid CRUD action MiroirTest. */
-export const DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY =
-  "domain_controller_no_parent_uuid_crud";
-
-/** Suite registry key for DomainController Model undo/redo action MiroirTest. */
-export const DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY =
-  "domain_controller_model_undo_redo";
-
-/** Suite registry key for DomainController Application Version freeze action MiroirTest (#216). */
-export const DOMAIN_CONTROLLER_APPLICATION_VERSION_FREEZE_SUITE_KEY =
-  "domain_controller_application_version_freeze";
-
-/** Suite registry key for the Phase 8 evolution trace tracer bullet. */
-export const EVOLUTION_TRACE_WP1_SUITE_KEY = "evolutionTraceWP1";
+const domainControllerIntegTestNames: string[] = domainControllerIntegTests.map((test) => {
+  if (!test.name) throw new Error(`Test ${test.uuid} has no name`);
+  return test.name;
+});
 
 /**
  * Seed payload for `RunnerTestSessionOptions.libraryPlayfieldSeed` /
@@ -212,7 +214,6 @@ export const compositePKTestMetaModel: MetaModel = {
 export const libraryEntitiesAndInstancesCompositePK: ApplicationEntitiesAndInstances = [
   {
     entity: entityCompositePK,
-    // entityVersion: entityDefinitionCompositePK,
     instances: [compositeItem1, compositeItem2, compositeItem3],
   },
 ];
@@ -329,25 +330,7 @@ export const codeNumberTestMetaModel: MetaModel = {
   tests: [],
 };
 
-export const libraryEntitiesAndInstancesCodeNumber: ApplicationEntitiesAndInstances = [
-  {
-    entity: entityCodeNumber,
-    instances: [codeItem1, codeItem2, codeItem3],
-  },
-];
-
-/** Publisher only — non-UUID PK Model.CRUD beforeEach seed. */
-export const libraryEntitiesAndInstancesPublisherOnly: ApplicationEntitiesAndInstances = [
-  {
-    entity: entityPublisher as Entity,
-    instances: [
-      publisher1 as EntityInstance,
-      publisher2 as EntityInstance,
-      publisher3 as EntityInstance,
-    ],
-  },
-];
-
+// ###############################################################################
 export const publisherOnlyTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
@@ -452,7 +435,7 @@ export const noParentUuidTestMetaModel: MetaModel = {
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityNoParentUuid],
   entityVersions: [
-    entityDefinitionPublisher as EntityVersion,
+    entityVersionPublisher as EntityVersion,
     entityDefinitionNoParentUuid,
   ],
   endpoints: [],
@@ -468,21 +451,7 @@ export const noParentUuidTestMetaModel: MetaModel = {
   tests: [],
 };
 
-export const libraryEntitiesAndInstancesNoParentUuid: ApplicationEntitiesAndInstances = [
-  {
-    entity: entityPublisher as Entity,
-    instances: [
-      publisher1 as EntityInstance,
-      publisher2 as EntityInstance,
-      publisher3 as EntityInstance,
-    ],
-  },
-  {
-    entity: entityNoParentUuid,
-    instances: [noParentItem1, noParentItem2, noParentItem3],
-  },
-];
-
+// ###############################################################################
 export const libraryTestbedInitParams: InitApplicationParameters = {
   dataStoreType: "app",
   metaModel: defaultMiroirMetaModel,
@@ -490,33 +459,6 @@ export const libraryTestbedInitParams: InitApplicationParameters = {
   applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
   applicationVersion: selfApplicationVersionLibraryInitialVersion,
 };
-
-// /** Full library seed used by `4_storage` playfield resets (includes `book3`). */
-// export const defaultLibraryTestbedEntitiesAndInstances: ApplicationEntitiesAndInstances = [
-//   {
-//     entity: entityAuthor as Entity,
-//     instances: [author1, author2, author3 as EntityInstance],
-//   },
-//   {
-//     entity: entityBook as Entity,
-//     instances: [
-//       book1 as EntityInstance,
-//       book2 as EntityInstance,
-//       book3 as EntityInstance,
-//       book4 as EntityInstance,
-//       book5 as EntityInstance,
-//       book6 as EntityInstance,
-//     ],
-//   },
-//   {
-//     entity: entityPublisher as Entity,
-//     instances: [
-//       publisher1 as EntityInstance,
-//       publisher2 as EntityInstance,
-//       publisher3 as EntityInstance,
-//     ],
-//   },
-// ];
 
 /** Library seed without `book3` — used by DomainController Data CRUD composite-action hooks. */
 export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
@@ -554,21 +496,7 @@ export const domainControllerDataCrudFilterEntities: Uuid[] = [
   entityPublisher.uuid,
 ];
 
-/**
- * Session playfield seed for `domain_controller_data_crud` (MiroirTest path).
- * Library app model — not Miroir meta-model — matches Extractor / Data.CRUD seed.
- * Imperative Data.CRUD still builds hooks inline until Phase 4; both share
- * `libraryEntitiesAndInstancesWithoutBook3` + `libraryTestbedInitParams`.
- */
-export const domainControllerDataCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
-  testbedEntitiesAndInstances: libraryEntitiesAndInstancesWithoutBook3,
-  testbedInitApplicationParameters: libraryTestbedInitParams,
-  testbedModel: defaultLibraryAppModel as MetaModel,
-};
 
-export function isDomainControllerDataCrudSuite(suiteKey: string): boolean {
-  return suiteKey === DOMAIN_CONTROLLER_DATA_CRUD_SUITE_KEY;
-}
 
 /** Publisher + Country only — Model.CRUD beforeEach seed. */
 export const libraryEntitiesAndInstancesPublisherAndCountry: ApplicationEntitiesAndInstances = [
@@ -601,8 +529,8 @@ export const publisherAndCountryTestMetaModel: MetaModel = {
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityCountry as Entity],
   entityVersions: [
-    entityDefinitionPublisher as EntityVersion,
-    entityDefinitionCountry as EntityVersion,
+    entityVersionPublisher as EntityVersion,
+    entityVersionCountry as EntityVersion,
   ],
   endpoints: [],
   jzodSchemas: [],
@@ -616,81 +544,6 @@ export const publisherAndCountryTestMetaModel: MetaModel = {
   applications: [],
   tests: [],
 };
-
-/**
- * Session playfield seed for `domain_controller_model_crud`.
- * Matches imperative Model.CRUD beforeEach (Publisher + Country).
- */
-export const domainControllerModelCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
-  testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-  testbedInitApplicationParameters: libraryTestbedInitParams,
-  testbedModel: publisherAndCountryTestMetaModel,
-};
-
-export function isDomainControllerModelCrudSuite(suiteKey: string): boolean {
-  return suiteKey === DOMAIN_CONTROLLER_MODEL_CRUD_SUITE_KEY;
-}
-
-/** Evolution Trace WP1 starts from the Model.CRUD Publisher + Country playfield. */
-export function isEvolutionTraceWP1Suite(suiteKey: string): boolean {
-  return suiteKey === EVOLUTION_TRACE_WP1_SUITE_KEY;
-}
-
-/**
- * Session playfield seed for `domain_controller_composite_pk_crud`.
- * Custom TestEntityCompositePK (idAttribute region+code) + 3 instances.
- */
-export const domainControllerCompositePkCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
-  testbedEntitiesAndInstances: libraryEntitiesAndInstancesCompositePK,
-  testbedInitApplicationParameters: libraryTestbedInitParams,
-  testbedModel: compositePKTestMetaModel,
-};
-
-export function isDomainControllerCompositePkCrudSuite(suiteKey: string): boolean {
-  return suiteKey === DOMAIN_CONTROLLER_COMPOSITE_PK_CRUD_SUITE_KEY;
-}
-
-/**
- * Session playfield seed for `domain_controller_non_uuid_pk_model_crud`.
- * Publisher only — leaf creates TestEntityCodeNumber.
- */
-export const domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
-  testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherOnly,
-  testbedInitApplicationParameters: libraryTestbedInitParams,
-  testbedModel: publisherOnlyTestMetaModel,
-};
-
-export function isDomainControllerNonUuidPkModelCrudSuite(suiteKey: string): boolean {
-  return suiteKey === DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY;
-}
-
-/**
- * Session playfield seed for `domain_controller_non_uuid_pk_data_crud`.
- * TestEntityCodeNumber (idAttribute "code") + 3 instances.
- */
-export const domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
-  testbedEntitiesAndInstances: libraryEntitiesAndInstancesCodeNumber,
-  testbedInitApplicationParameters: libraryTestbedInitParams,
-  testbedModel: codeNumberTestMetaModel,
-};
-
-export function isDomainControllerNonUuidPkDataCrudSuite(suiteKey: string): boolean {
-  return suiteKey === DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY;
-}
-
-/**
- * Session playfield seed for `domain_controller_no_parent_uuid_crud`.
- * Publisher + TestEntityNoParentUuid (instances without parentUuid) + 3 items.
- */
-export const domainControllerNoParentUuidCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
-  testbedEntitiesAndInstances: libraryEntitiesAndInstancesNoParentUuid,
-  testbedInitApplicationParameters: libraryTestbedInitParams,
-  testbedModel: noParentUuidTestMetaModel,
-};
-
-export function isDomainControllerNoParentUuidCrudSuite(suiteKey: string): boolean {
-  return suiteKey === DOMAIN_CONTROLLER_NO_PARENT_UUID_CRUD_SUITE_KEY;
-}
 
 /**
  * Empty Library playfield — Model undo/redo starts with no Author/Book entities
@@ -720,64 +573,138 @@ export const domainControllerModelUndoRedoLibraryPlayfieldSeed: TestbedSetupPara
   testbedModel: emptyLibraryPlayfieldMetaModel,
 };
 
-export function isDomainControllerModelUndoRedoSuite(suiteKey: string): boolean {
-  return suiteKey === DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY;
-}
-
 /**
  * Session playfield seed for `domain_controller_application_version_freeze`.
  * Same minimal Library as Model.CRUD (Publisher + Country).
  */
 export const domainControllerApplicationVersionFreezeLibraryPlayfieldSeed: TestbedSetupParameters =
-  domainControllerModelCrudLibraryPlayfieldSeed;
-
-export function isDomainControllerApplicationVersionFreezeSuite(suiteKey: string): boolean {
-  return suiteKey === DOMAIN_CONTROLLER_APPLICATION_VERSION_FREEZE_SUITE_KEY;
-}
+  {
+    testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: publisherAndCountryTestMetaModel,
+  };
 
 export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
-  return (
-    isDomainControllerDataCrudSuite(suiteKey) ||
-    isDomainControllerModelCrudSuite(suiteKey) ||
-    isDomainControllerCompositePkCrudSuite(suiteKey) ||
-    isDomainControllerNonUuidPkModelCrudSuite(suiteKey) ||
-    isDomainControllerNonUuidPkDataCrudSuite(suiteKey) ||
-    isDomainControllerNoParentUuidCrudSuite(suiteKey) ||
-    isDomainControllerModelUndoRedoSuite(suiteKey) ||
-    isDomainControllerApplicationVersionFreezeSuite(suiteKey) ||
-    isEvolutionTraceWP1Suite(suiteKey)
-  );
+  return domainControllerIntegTestNames.includes(suiteKey);
 }
+
+export const DOMAIN_CONTROLLER_TESTBED_KEYMAP: Record<string, TestbedSetupParameters> = {
+  // ###############################################################################
+  [miroirTest_domain_controller_data_crud.name]: {
+    testbedEntitiesAndInstances: [
+      {
+        entity: entityAuthor as Entity,
+        instances: [author1, author2, author3 as EntityInstance],
+      },
+      {
+        entity: entityBook as Entity,
+        instances: [
+          book1 as EntityInstance,
+          book2 as EntityInstance,
+          book4 as EntityInstance,
+          book5 as EntityInstance,
+          book6 as EntityInstance,
+        ],
+      },
+      {
+        entity: entityPublisher as Entity,
+        instances: [
+          publisher1 as EntityInstance,
+          publisher2 as EntityInstance,
+          publisher3 as EntityInstance,
+        ],
+      },
+    ],
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: defaultLibraryAppModel as MetaModel,
+  },
+  // ###############################################################################
+  [miroirTest_domain_controller_model_crud.name]: {
+    testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: publisherAndCountryTestMetaModel,
+  },
+  // ###############################################################################
+  [miroirTest_domain_controller_composite_pk_crud.name]: {
+    testbedEntitiesAndInstances: [
+      {
+        entity: entityCompositePK,
+        instances: [compositeItem1, compositeItem2, compositeItem3],
+      },
+    ],
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: compositePKTestMetaModel,
+  },
+  // ###############################################################################
+  [miroirTest_domain_controller_non_uuid_pk_model_crud.name]: {
+    testbedEntitiesAndInstances: [
+      {
+        entity: entityPublisher as Entity,
+        instances: [
+          publisher1 as EntityInstance,
+          publisher2 as EntityInstance,
+          publisher3 as EntityInstance,
+        ],
+      },
+    ],
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: publisherOnlyTestMetaModel,
+  },
+  // ###############################################################################
+  [miroirTest_domain_controller_non_uuid_pk_data_crud.name]: {
+    testbedEntitiesAndInstances: [
+      {
+        entity: entityCodeNumber,
+        instances: [codeItem1, codeItem2, codeItem3],
+      },
+    ],
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: codeNumberTestMetaModel,
+  },
+  // ###############################################################################
+  [miroirTest_domain_controller_no_parent_uuid_crud.name]: {
+    testbedEntitiesAndInstances: [
+      {
+        entity: entityPublisher as Entity,
+        instances: [
+          publisher1 as EntityInstance,
+          publisher2 as EntityInstance,
+          publisher3 as EntityInstance,
+        ],
+      },
+      {
+        entity: entityNoParentUuid,
+        instances: [noParentItem1, noParentItem2, noParentItem3],
+      },
+    ],
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: noParentUuidTestMetaModel,
+  },
+  // ###############################################################################
+  [miroirTest_domain_controller_model_undo_redo.name]: {
+    testbedEntitiesAndInstances: [],
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: emptyLibraryPlayfieldMetaModel,
+  },
+  // ###############################################################################
+  [miroirTest_domain_controller_application_version_freeze.name]: {
+    testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: publisherAndCountryTestMetaModel,
+  },
+  // ###############################################################################
+  [miroirTest_evolutionTraceWP1.name]: {
+    testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: publisherAndCountryTestMetaModel,
+  },
+};
 
 export function libraryPlayfieldSeedForActionSuite(
   suiteKey: string,
 ): TestbedSetupParameters | undefined {
-  if (isDomainControllerDataCrudSuite(suiteKey)) {
-    return domainControllerDataCrudLibraryPlayfieldSeed;
+  if (!DOMAIN_CONTROLLER_TESTBED_KEYMAP[suiteKey]) {
+    throw new Error(`Library playfield seed not found for suite key: ${suiteKey}`);
   }
-  if (isDomainControllerModelCrudSuite(suiteKey)) {
-    return domainControllerModelCrudLibraryPlayfieldSeed;
-  }
-  if (isDomainControllerCompositePkCrudSuite(suiteKey)) {
-    return domainControllerCompositePkCrudLibraryPlayfieldSeed;
-  }
-  if (isDomainControllerNonUuidPkModelCrudSuite(suiteKey)) {
-    return domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed;
-  }
-  if (isDomainControllerNonUuidPkDataCrudSuite(suiteKey)) {
-    return domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed;
-  }
-  if (isDomainControllerNoParentUuidCrudSuite(suiteKey)) {
-    return domainControllerNoParentUuidCrudLibraryPlayfieldSeed;
-  }
-  if (isDomainControllerModelUndoRedoSuite(suiteKey)) {
-    return domainControllerModelUndoRedoLibraryPlayfieldSeed;
-  }
-  if (isDomainControllerApplicationVersionFreezeSuite(suiteKey)) {
-    return domainControllerApplicationVersionFreezeLibraryPlayfieldSeed;
-  }
-  if (isEvolutionTraceWP1Suite(suiteKey)) {
-    return domainControllerModelCrudLibraryPlayfieldSeed;
-  }
-  return undefined;
+  return DOMAIN_CONTROLLER_TESTBED_KEYMAP[suiteKey];
 }

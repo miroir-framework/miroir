@@ -195,6 +195,41 @@ describe("runnerTest tools", () => {
     );
   });
 
+  it("resolveRunnerTestLeaf prefers resolvedRunner over runnerRegistry lookup", () => {
+    const leaf = runnerLibraryLeaf(0);
+    const { runTarget, sessionTestParams } = runnerLibrarySessionContext();
+    const resolvedRunner = RUNNER_LIBRARY_RUNNER_REGISTRY[leaf.runnerRef];
+
+    const resolved = resolveRunnerTestLeaf({
+      leaf,
+      pageLabel: "Runner_Miroir.integ.test",
+      buildContext,
+      runTarget,
+      sessionTestParams,
+      runnerRegistry: {},
+      resolvedRunner,
+    });
+
+    expect(resolved.testActionType).toBe("testBuildPlusRuntimeCompositeActionSuite");
+    expect(resolved.application).toBe(runTarget.applicationUuid);
+  });
+
+  it("resolveRunnerTestLeaf throws when runner is missing from registry and resolvedRunner is absent", () => {
+    const leaf = runnerLibraryLeaf(0);
+    const { runTarget, sessionTestParams } = runnerLibrarySessionContext();
+
+    expect(() =>
+      resolveRunnerTestLeaf({
+        leaf,
+        pageLabel: "Runner_Miroir.integ.test",
+        buildContext,
+        runTarget,
+        sessionTestParams,
+        runnerRegistry: {},
+      }),
+    ).toThrow(/no Runner for leaf/);
+  });
+
   it.each([
     ["Lend Book Test Composite Action", 0],
     ["Return Book Test Composite Action", 1],
