@@ -31,7 +31,6 @@ import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../src/miroir-fwk/4-tests/
 import { miroirAppStartup } from "../src/startup.js";
 import {
   isDomainControllerActionCrudSuite,
-  libraryPlayfieldSeedForActionSuite,
 } from "./helpers/libraryPlayfieldSeeds.js";
 import {
   loadRunnerOrActionMiroirTestSuite,
@@ -99,14 +98,18 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
       ? "testApplication_CreateEntity"
       : "Library",
   });
-  const runnerSessionBase = {
-    runnerRegistry: registryEntry?.runnerRegistry ?? RUNNER_LIBRARY_RUNNER_REGISTRY,
-    ...(registryEntry?.resolvedRunner ? { resolvedRunner: registryEntry.resolvedRunner } : {}),
-  };
+  // const runnerSessionBase = {
+  //   runnerRegistry: registryEntry?.runnerRegistry ?? RUNNER_LIBRARY_RUNNER_REGISTRY,
+  //   ...(registryEntry?.resolvedRunner ? { resolvedRunner: registryEntry.resolvedRunner } : {}),
+  // };
   if (isDomainControllerActionCrudSuite(suiteKey)) {
-    const playfieldSeed = libraryPlayfieldSeedForActionSuite(suiteKey);
+    const playfieldSeed = registryEntry?.libraryPlayfieldSeed;
+    if (!playfieldSeed) {
+      throw new Error(`Playfield seed not found for suite key: ${suiteKey}`);
+    }
     return {
-      ...runnerSessionBase,
+      runnerRegistry: registryEntry?.runnerRegistry,
+      resolvedRunner: registryEntry?.resolvedRunner,
       sessionSpecificOptions: {
         pageLabel,
         runTarget,
@@ -117,7 +120,8 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   }
   if (isFreezeApplicationVersionRunnerSuite(suiteKey)) {
     return {
-      ...runnerSessionBase,
+      runnerRegistry: registryEntry?.runnerRegistry,
+      resolvedRunner: registryEntry?.resolvedRunner,
       sessionSpecificOptions: {
         pageLabel,
         runTarget,
@@ -128,7 +132,8 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   }
   if (isMiroirEntityRunnerSuite(suiteKey)) {
     return {
-      ...runnerSessionBase,
+      runnerRegistry: registryEntry?.runnerRegistry,
+      resolvedRunner: registryEntry?.resolvedRunner,
       sessionSpecificOptions: {
         pageLabel,
         runTarget,
@@ -138,7 +143,8 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
     };
   }
   return {
-    ...runnerSessionBase,
+    runnerRegistry: registryEntry?.runnerRegistry,
+    resolvedRunner: registryEntry?.resolvedRunner,
     sessionSpecificOptions: {
       pageLabel,
       runTarget,
