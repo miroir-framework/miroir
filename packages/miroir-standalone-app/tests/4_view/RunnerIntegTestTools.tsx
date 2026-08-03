@@ -9,14 +9,14 @@ import {
   type DomainControllerInterface,
   type InitApplicationParameters,
   type MetaModel,
-  type MiroirActivityTracker,
+  MiroirActivityTracker,
   type MiroirConfigClient,
-  type Runner,
+  Runner,
   type StoreUnitConfiguration,
   type Uuid,
   defaultSelfApplicationDeploymentMap,
   displayTestSuiteResultsDetails,
-  resetLibraryPlayfield
+  resetIntegTestbed
 } from "miroir-core";
 import {
   deployment_Admin,
@@ -70,12 +70,12 @@ export async function beforeEachTest(
      */
     resetMiroirPlatform?: boolean;
     /** Optional library seed applied after reset (Action Data.CRUD playfield). */
-    libraryEntitiesAndInstances?: ApplicationEntitiesAndInstances;
-    librarySeedInitParams?: InitApplicationParameters;
-    librarySeedMetaModel?: MetaModel;
+    testbedEntitiesAndInstances?: ApplicationEntitiesAndInstances;
+    testbedInitApplicationParameters?: InitApplicationParameters;
+    testbedModel?: MetaModel;
   },
 ): Promise<void>  {
-  await resetLibraryPlayfield({
+  await resetIntegTestbed({
     domainController,
     applicationDeploymentMap,
     libraryDeploymentUuid:
@@ -85,9 +85,9 @@ export async function beforeEachTest(
     miroirDeploymentUuid: deployment_Miroir.uuid,
     miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
     resetMiroirPlatform: options?.resetMiroirPlatform ?? true,
-    libraryEntitiesAndInstances: options?.libraryEntitiesAndInstances,
-    librarySeedInitParams: options?.librarySeedInitParams,
-    librarySeedMetaModel: options?.librarySeedMetaModel,
+    testbedEntitiesAndInstances: options?.testbedEntitiesAndInstances,
+    testbedInitApplicationParameters: options?.testbedInitApplicationParameters,
+    testbedModel: options?.testbedModel,
   });
   if (options?.clearDocumentBody !== false) {
     document.body.innerHTML = "";

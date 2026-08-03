@@ -75,12 +75,12 @@ export const EVOLUTION_TRACE_WP1_SUITE_KEY = "evolutionTraceWP1";
 
 /**
  * Seed payload for `RunnerTestSessionOptions.libraryPlayfieldSeed` /
- * `resetLibraryPlayfield` (Action Data.CRUD playfield).
+ * `resetIntegTestbed` (Action Data.CRUD playfield).
  */
-export type LibraryPlayfieldSeed = {
-  libraryEntitiesAndInstances: ApplicationEntitiesAndInstances;
-  librarySeedInitParams: InitApplicationParameters;
-  librarySeedMetaModel: MetaModel;
+export type TestbedSetupParameters = {
+  testbedEntitiesAndInstances: ApplicationEntitiesAndInstances;
+  testbedInitApplicationParameters: InitApplicationParameters;
+  testbedModel: MetaModel;
 };
 
 /** Composite-PK test entity — PK is `["region", "code"]` (matches legacy integ file). */
@@ -483,7 +483,7 @@ export const libraryEntitiesAndInstancesNoParentUuid: ApplicationEntitiesAndInst
   },
 ];
 
-export const libraryPlayfieldSeedInitParams: InitApplicationParameters = {
+export const libraryTestbedInitParams: InitApplicationParameters = {
   dataStoreType: "app",
   metaModel: defaultMiroirMetaModel,
   selfApplication: selfApplicationLibrary as SelfApplication,
@@ -491,32 +491,32 @@ export const libraryPlayfieldSeedInitParams: InitApplicationParameters = {
   applicationVersion: selfApplicationVersionLibraryInitialVersion,
 };
 
-/** Full library seed used by `4_storage` playfield resets (includes `book3`). */
-export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
-  {
-    entity: entityAuthor as Entity,
-    instances: [author1, author2, author3 as EntityInstance],
-  },
-  {
-    entity: entityBook as Entity,
-    instances: [
-      book1 as EntityInstance,
-      book2 as EntityInstance,
-      book3 as EntityInstance,
-      book4 as EntityInstance,
-      book5 as EntityInstance,
-      book6 as EntityInstance,
-    ],
-  },
-  {
-    entity: entityPublisher as Entity,
-    instances: [
-      publisher1 as EntityInstance,
-      publisher2 as EntityInstance,
-      publisher3 as EntityInstance,
-    ],
-  },
-];
+// /** Full library seed used by `4_storage` playfield resets (includes `book3`). */
+// export const defaultLibraryTestbedEntitiesAndInstances: ApplicationEntitiesAndInstances = [
+//   {
+//     entity: entityAuthor as Entity,
+//     instances: [author1, author2, author3 as EntityInstance],
+//   },
+//   {
+//     entity: entityBook as Entity,
+//     instances: [
+//       book1 as EntityInstance,
+//       book2 as EntityInstance,
+//       book3 as EntityInstance,
+//       book4 as EntityInstance,
+//       book5 as EntityInstance,
+//       book6 as EntityInstance,
+//     ],
+//   },
+//   {
+//     entity: entityPublisher as Entity,
+//     instances: [
+//       publisher1 as EntityInstance,
+//       publisher2 as EntityInstance,
+//       publisher3 as EntityInstance,
+//     ],
+//   },
+// ];
 
 /** Library seed without `book3` — used by DomainController Data CRUD composite-action hooks. */
 export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
@@ -558,12 +558,12 @@ export const domainControllerDataCrudFilterEntities: Uuid[] = [
  * Session playfield seed for `domain_controller_data_crud` (MiroirTest path).
  * Library app model — not Miroir meta-model — matches Extractor / Data.CRUD seed.
  * Imperative Data.CRUD still builds hooks inline until Phase 4; both share
- * `libraryEntitiesAndInstancesWithoutBook3` + `libraryPlayfieldSeedInitParams`.
+ * `libraryEntitiesAndInstancesWithoutBook3` + `libraryTestbedInitParams`.
  */
-export const domainControllerDataCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
-  libraryEntitiesAndInstances: libraryEntitiesAndInstancesWithoutBook3,
-  librarySeedInitParams: libraryPlayfieldSeedInitParams,
-  librarySeedMetaModel: defaultLibraryAppModel as MetaModel,
+export const domainControllerDataCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
+  testbedEntitiesAndInstances: libraryEntitiesAndInstancesWithoutBook3,
+  testbedInitApplicationParameters: libraryTestbedInitParams,
+  testbedModel: defaultLibraryAppModel as MetaModel,
 };
 
 export function isDomainControllerDataCrudSuite(suiteKey: string): boolean {
@@ -621,10 +621,10 @@ export const publisherAndCountryTestMetaModel: MetaModel = {
  * Session playfield seed for `domain_controller_model_crud`.
  * Matches imperative Model.CRUD beforeEach (Publisher + Country).
  */
-export const domainControllerModelCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
-  libraryEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-  librarySeedInitParams: libraryPlayfieldSeedInitParams,
-  librarySeedMetaModel: publisherAndCountryTestMetaModel,
+export const domainControllerModelCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
+  testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
+  testbedInitApplicationParameters: libraryTestbedInitParams,
+  testbedModel: publisherAndCountryTestMetaModel,
 };
 
 export function isDomainControllerModelCrudSuite(suiteKey: string): boolean {
@@ -640,10 +640,10 @@ export function isEvolutionTraceWP1Suite(suiteKey: string): boolean {
  * Session playfield seed for `domain_controller_composite_pk_crud`.
  * Custom TestEntityCompositePK (idAttribute region+code) + 3 instances.
  */
-export const domainControllerCompositePkCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
-  libraryEntitiesAndInstances: libraryEntitiesAndInstancesCompositePK,
-  librarySeedInitParams: libraryPlayfieldSeedInitParams,
-  librarySeedMetaModel: compositePKTestMetaModel,
+export const domainControllerCompositePkCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
+  testbedEntitiesAndInstances: libraryEntitiesAndInstancesCompositePK,
+  testbedInitApplicationParameters: libraryTestbedInitParams,
+  testbedModel: compositePKTestMetaModel,
 };
 
 export function isDomainControllerCompositePkCrudSuite(suiteKey: string): boolean {
@@ -654,10 +654,10 @@ export function isDomainControllerCompositePkCrudSuite(suiteKey: string): boolea
  * Session playfield seed for `domain_controller_non_uuid_pk_model_crud`.
  * Publisher only — leaf creates TestEntityCodeNumber.
  */
-export const domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
-  libraryEntitiesAndInstances: libraryEntitiesAndInstancesPublisherOnly,
-  librarySeedInitParams: libraryPlayfieldSeedInitParams,
-  librarySeedMetaModel: publisherOnlyTestMetaModel,
+export const domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
+  testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherOnly,
+  testbedInitApplicationParameters: libraryTestbedInitParams,
+  testbedModel: publisherOnlyTestMetaModel,
 };
 
 export function isDomainControllerNonUuidPkModelCrudSuite(suiteKey: string): boolean {
@@ -668,10 +668,10 @@ export function isDomainControllerNonUuidPkModelCrudSuite(suiteKey: string): boo
  * Session playfield seed for `domain_controller_non_uuid_pk_data_crud`.
  * TestEntityCodeNumber (idAttribute "code") + 3 instances.
  */
-export const domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
-  libraryEntitiesAndInstances: libraryEntitiesAndInstancesCodeNumber,
-  librarySeedInitParams: libraryPlayfieldSeedInitParams,
-  librarySeedMetaModel: codeNumberTestMetaModel,
+export const domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
+  testbedEntitiesAndInstances: libraryEntitiesAndInstancesCodeNumber,
+  testbedInitApplicationParameters: libraryTestbedInitParams,
+  testbedModel: codeNumberTestMetaModel,
 };
 
 export function isDomainControllerNonUuidPkDataCrudSuite(suiteKey: string): boolean {
@@ -682,10 +682,10 @@ export function isDomainControllerNonUuidPkDataCrudSuite(suiteKey: string): bool
  * Session playfield seed for `domain_controller_no_parent_uuid_crud`.
  * Publisher + TestEntityNoParentUuid (instances without parentUuid) + 3 items.
  */
-export const domainControllerNoParentUuidCrudLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
-  libraryEntitiesAndInstances: libraryEntitiesAndInstancesNoParentUuid,
-  librarySeedInitParams: libraryPlayfieldSeedInitParams,
-  librarySeedMetaModel: noParentUuidTestMetaModel,
+export const domainControllerNoParentUuidCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
+  testbedEntitiesAndInstances: libraryEntitiesAndInstancesNoParentUuid,
+  testbedInitApplicationParameters: libraryTestbedInitParams,
+  testbedModel: noParentUuidTestMetaModel,
 };
 
 export function isDomainControllerNoParentUuidCrudSuite(suiteKey: string): boolean {
@@ -694,7 +694,7 @@ export function isDomainControllerNoParentUuidCrudSuite(suiteKey: string): boole
 
 /**
  * Empty Library playfield — Model undo/redo starts with no Author/Book entities
- * (matches imperative undo-redo `resetLibraryPlayfield` without seed instances).
+ * (matches imperative undo-redo `resetIntegTestbed` without seed instances).
  */
 export const emptyLibraryPlayfieldMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
@@ -714,10 +714,10 @@ export const emptyLibraryPlayfieldMetaModel: MetaModel = {
   tests: [],
 };
 
-export const domainControllerModelUndoRedoLibraryPlayfieldSeed: LibraryPlayfieldSeed = {
-  libraryEntitiesAndInstances: [],
-  librarySeedInitParams: libraryPlayfieldSeedInitParams,
-  librarySeedMetaModel: emptyLibraryPlayfieldMetaModel,
+export const domainControllerModelUndoRedoLibraryPlayfieldSeed: TestbedSetupParameters = {
+  testbedEntitiesAndInstances: [],
+  testbedInitApplicationParameters: libraryTestbedInitParams,
+  testbedModel: emptyLibraryPlayfieldMetaModel,
 };
 
 export function isDomainControllerModelUndoRedoSuite(suiteKey: string): boolean {
@@ -728,7 +728,7 @@ export function isDomainControllerModelUndoRedoSuite(suiteKey: string): boolean 
  * Session playfield seed for `domain_controller_application_version_freeze`.
  * Same minimal Library as Model.CRUD (Publisher + Country).
  */
-export const domainControllerApplicationVersionFreezeLibraryPlayfieldSeed: LibraryPlayfieldSeed =
+export const domainControllerApplicationVersionFreezeLibraryPlayfieldSeed: TestbedSetupParameters =
   domainControllerModelCrudLibraryPlayfieldSeed;
 
 export function isDomainControllerApplicationVersionFreezeSuite(suiteKey: string): boolean {
@@ -751,7 +751,7 @@ export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
 
 export function libraryPlayfieldSeedForActionSuite(
   suiteKey: string,
-): LibraryPlayfieldSeed | undefined {
+): TestbedSetupParameters | undefined {
   if (isDomainControllerDataCrudSuite(suiteKey)) {
     return domainControllerDataCrudLibraryPlayfieldSeed;
   }

@@ -26,16 +26,16 @@ import {
   isDomainControllerModelCrudSuite,
   libraryEntitiesAndInstancesWithoutBook3,
   libraryPlayfieldSeedForActionSuite,
-  libraryPlayfieldSeedInitParams,
+  libraryTestbedInitParams,
 } from "./libraryPlayfieldSeeds.js";
 
 describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
   it("domainControllerDataCrudLibraryPlayfieldSeed uses without-book3 entities + library app model", () => {
     const seed = domainControllerDataCrudLibraryPlayfieldSeed;
-    expect(seed.libraryEntitiesAndInstances).toBe(libraryEntitiesAndInstancesWithoutBook3);
-    expect(seed.librarySeedInitParams).toBe(libraryPlayfieldSeedInitParams);
-    expect(seed.librarySeedMetaModel).toBe(defaultLibraryAppModel);
-    const bookBucket = seed.libraryEntitiesAndInstances.find(
+    expect(seed.testbedEntitiesAndInstances).toBe(libraryEntitiesAndInstancesWithoutBook3);
+    expect(seed.testbedInitApplicationParameters).toBe(libraryTestbedInitParams);
+    expect(seed.testbedModel).toBe(defaultLibraryAppModel);
+    const bookBucket = seed.testbedEntitiesAndInstances.find(
       (b) => b.entity.uuid === entityBook.uuid,
     );
     expect(bookBucket?.instances).toHaveLength(5);
@@ -56,12 +56,12 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
 
   it("domainControllerModelCrudLibraryPlayfieldSeed uses Publisher+Country only", () => {
     const seed = domainControllerModelCrudLibraryPlayfieldSeed;
-    expect(seed.libraryEntitiesAndInstances).toHaveLength(2);
-    expect(seed.libraryEntitiesAndInstances.map((b) => b.entity.name).sort()).toEqual([
+    expect(seed.testbedEntitiesAndInstances).toHaveLength(2);
+    expect(seed.testbedEntitiesAndInstances.map((b) => b.entity.name).sort()).toEqual([
       "Country",
       "Publisher",
     ]);
-    expect(seed.librarySeedMetaModel.entities.map((e) => e.name).sort()).toEqual([
+    expect(seed.testbedModel.entities.map((e) => e.name).sort()).toEqual([
       "Country",
       "Publisher",
     ]);
@@ -77,10 +77,10 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
 
   it("domainControllerCompositePkCrudLibraryPlayfieldSeed seeds TestEntityCompositePK only", () => {
     const seed = domainControllerCompositePkCrudLibraryPlayfieldSeed;
-    expect(seed.libraryEntitiesAndInstances).toHaveLength(1);
-    expect(seed.libraryEntitiesAndInstances[0].entity.uuid).toBe(ENTITY_COMPOSITE_PK_UUID);
-    expect(seed.libraryEntitiesAndInstances[0].instances).toHaveLength(3);
-    expect(seed.librarySeedMetaModel.entities.map((e) => e.uuid)).toEqual([
+    expect(seed.testbedEntitiesAndInstances).toHaveLength(1);
+    expect(seed.testbedEntitiesAndInstances[0].entity.uuid).toBe(ENTITY_COMPOSITE_PK_UUID);
+    expect(seed.testbedEntitiesAndInstances[0].instances).toHaveLength(3);
+    expect(seed.testbedModel.entities.map((e) => e.uuid)).toEqual([
       ENTITY_COMPOSITE_PK_UUID,
     ]);
     expect(
@@ -93,15 +93,15 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
 
   it("nonUuidPK model/data seeds use Publisher-only vs CodeNumber playfields", () => {
     const modelSeed = domainControllerNonUuidPkModelCrudLibraryPlayfieldSeed;
-    expect(modelSeed.libraryEntitiesAndInstances).toHaveLength(1);
-    expect(modelSeed.libraryEntitiesAndInstances[0].entity.name).toBe("Publisher");
+    expect(modelSeed.testbedEntitiesAndInstances).toHaveLength(1);
+    expect(modelSeed.testbedEntitiesAndInstances[0].entity.name).toBe("Publisher");
     expect(
       libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_NON_UUID_PK_MODEL_CRUD_SUITE_KEY),
     ).toBe(modelSeed);
 
     const dataSeed = domainControllerNonUuidPkDataCrudLibraryPlayfieldSeed;
-    expect(dataSeed.libraryEntitiesAndInstances[0].entity.uuid).toBe(ENTITY_CODE_NUMBER_UUID);
-    expect(dataSeed.libraryEntitiesAndInstances[0].instances).toHaveLength(3);
+    expect(dataSeed.testbedEntitiesAndInstances[0].entity.uuid).toBe(ENTITY_CODE_NUMBER_UUID);
+    expect(dataSeed.testbedEntitiesAndInstances[0].instances).toHaveLength(3);
     expect(
       libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_NON_UUID_PK_DATA_CRUD_SUITE_KEY),
     ).toBe(dataSeed);
@@ -109,11 +109,11 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
 
   it("domainControllerNoParentUuidCrudLibraryPlayfieldSeed seeds Publisher + NoParentUuid", () => {
     const seed = domainControllerNoParentUuidCrudLibraryPlayfieldSeed;
-    expect(seed.libraryEntitiesAndInstances.map((b) => b.entity.name).sort()).toEqual([
+    expect(seed.testbedEntitiesAndInstances.map((b) => b.entity.name).sort()).toEqual([
       "Publisher",
       "TestEntityNoParentUuid",
     ]);
-    const noParent = seed.libraryEntitiesAndInstances.find(
+    const noParent = seed.testbedEntitiesAndInstances.find(
       (b) => b.entity.uuid === ENTITY_NO_PARENT_UUID_UUID,
     );
     expect(noParent?.instances).toHaveLength(3);
@@ -124,8 +124,8 @@ describe("libraryPlayfieldSeeds (Phase 3 Action Data.CRUD)", () => {
 
   it("domainControllerModelUndoRedoLibraryPlayfieldSeed starts empty", () => {
     const seed = domainControllerModelUndoRedoLibraryPlayfieldSeed;
-    expect(seed.libraryEntitiesAndInstances).toEqual([]);
-    expect(seed.librarySeedMetaModel.entities).toEqual([]);
+    expect(seed.testbedEntitiesAndInstances).toEqual([]);
+    expect(seed.testbedModel.entities).toEqual([]);
     expect(
       libraryPlayfieldSeedForActionSuite(DOMAIN_CONTROLLER_MODEL_UNDO_REDO_SUITE_KEY),
     ).toBe(seed);

@@ -143,9 +143,9 @@ export type DomainControllerOrchestratorSessionOptions =
   };
 
 export type RunnerLibraryPlayfieldSeed = {
-  libraryEntitiesAndInstances: ApplicationEntitiesAndInstances;
-  librarySeedInitParams: InitApplicationParameters;
-  librarySeedMetaModel: MetaModel;
+  testbedEntitiesAndInstances: ApplicationEntitiesAndInstances;
+  testbedInitApplicationParameters: InitApplicationParameters;
+  testbedModel: MetaModel;
 };
 
 export type RunnerIntegrationSessionOptions = IntegTestHostOptions & {

@@ -8,7 +8,7 @@ import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
 import {
   ensureLibraryPlayfield,
-  resetLibraryPlayfield,
+  resetIntegTestbed,
   type EnsureLibraryPlayfieldParams,
 } from "../../src/5_tests/LibraryPlayfield";
 
@@ -111,8 +111,8 @@ describe("LibraryPlayfield (Gap B L1/L2)", () => {
     });
   });
 
-  describe("resetLibraryPlayfield", () => {
-    it("with libraryEntitiesAndInstances resets then seeds library", async () => {
+  describe("resetIntegTestbed", () => {
+    it("with testbedEntitiesAndInstances resets then seeds library", async () => {
       const handleAction = vi.fn().mockResolvedValue(undefined);
       const handleCompositeAction = vi.fn().mockResolvedValue({ status: "ok" });
       const domainController = {
@@ -120,14 +120,14 @@ describe("LibraryPlayfield (Gap B L1/L2)", () => {
         handleCompositeAction,
       } as unknown as DomainControllerInterface;
 
-      await resetLibraryPlayfield({
+      await resetIntegTestbed({
         domainController,
         applicationDeploymentMap: {} as ApplicationDeploymentMap,
         libraryDeploymentUuid: LIBRARY_DEPLOYMENT_UUID,
         librarySelfApplicationUuid: LIBRARY_APP_UUID,
-        libraryEntitiesAndInstances: [],
-        librarySeedInitParams: { dataStoreType: "app" } as never,
-        librarySeedMetaModel: defaultMiroirMetaModel,
+        testbedEntitiesAndInstances: [],
+        testbedInitApplicationParameters: { dataStoreType: "app" } as never,
+        testbedModel: defaultMiroirMetaModel,
       });
 
       expect(handleAction).toHaveBeenCalled();
@@ -142,7 +142,7 @@ describe("LibraryPlayfield (Gap B L1/L2)", () => {
         handleCompositeAction,
       } as unknown as DomainControllerInterface;
 
-      await resetLibraryPlayfield({
+      await resetIntegTestbed({
         domainController,
         applicationDeploymentMap: {} as ApplicationDeploymentMap,
         libraryDeploymentUuid: LIBRARY_DEPLOYMENT_UUID,
@@ -164,7 +164,7 @@ describe("LibraryPlayfield (Gap B L1/L2)", () => {
         handleCompositeAction,
       } as unknown as DomainControllerInterface;
 
-      await resetLibraryPlayfield({
+      await resetIntegTestbed({
         domainController,
         applicationDeploymentMap: {} as ApplicationDeploymentMap,
         libraryDeploymentUuid: LIBRARY_DEPLOYMENT_UUID,

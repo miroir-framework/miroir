@@ -27,11 +27,13 @@ const vitestArgs = [
   `${vitestEntry}.ts`,
 ];
 
+console.log("launching vitest with args:", vitestArgs);
+console.log("in package root:", packageRoot);
+console.log("with environment:", launchEnv);
 const result = spawnSync("npx", vitestArgs, {
   cwd: packageRoot,
   env: launchEnv,
   stdio: "inherit",
   shell: true,
 });
-
 process.exit(result.status ?? 1);

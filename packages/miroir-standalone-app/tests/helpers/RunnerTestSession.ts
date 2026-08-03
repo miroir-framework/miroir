@@ -207,7 +207,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     };
 
     // The ephemeral run-target deployment must have a store on the persistence
-    // backend before the per-leaf `beforeEach` reset (resetLibraryPlayfield)
+    // backend before the per-leaf `beforeEach` reset (resetIntegTestbed)
     // touches it. In the emulated stack `wireEmulatedStack` already opens every
     // configured deployment locally (including this ephemeral one). Against a real
     // miroir-server nothing has opened/created it yet, so we send the createDeployment
@@ -287,8 +287,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
             // Remap the *provided* seed metaModel for ephemeral runTargets.
             // Do not replace with defaultLibraryAppModel — Action suites may seed
             // custom entities (e.g. composite-PK TestEntityCompositePK).
-            librarySeedMetaModel: remapLibraryAppModelForRunTarget(
-              playfieldSeed.librarySeedMetaModel,
+            testbedModel: remapLibraryAppModelForRunTarget(
+              playfieldSeed.testbedModel,
               selfApplicationLibrary.uuid as string,
               deployment_Library_DO_NO_USE.uuid,
               this.runnerTestContext.runTarget,

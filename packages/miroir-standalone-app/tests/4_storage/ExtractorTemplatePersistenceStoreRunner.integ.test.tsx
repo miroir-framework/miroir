@@ -22,7 +22,7 @@ import {
   PersistenceStoreControllerManagerInterface,
   removeUndefinedProperties,
   Report,
-  resetLibraryPlayfield,
+  resetIntegTestbed,
   StoreUnitConfiguration,
   unNullify,
   type ApplicationDeploymentMap,
@@ -192,7 +192,7 @@ beforeAll(async () => {
 // ################################################################################################
 beforeEach(
   async  () => {
-    await resetLibraryPlayfield({
+    await resetIntegTestbed({
       domainController,
       applicationDeploymentMap,
       libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,

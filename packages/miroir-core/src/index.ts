@@ -1219,10 +1219,10 @@ export {
 } from "./5_tests/IntegrationTestBootstrap.js";
 export {
   ensureLibraryPlayfield,
-  resetLibraryPlayfield,
+  resetIntegTestbed,
   type EnsureLibraryPlayfieldParams,
   type LibraryPlayfieldEnsureMode,
-  type ResetLibraryPlayfieldParams,
+  type ResetIntegTestbedParams,
 } from "./5_tests/LibraryPlayfield.js";
 export {
   ensureMiroirPlatform,

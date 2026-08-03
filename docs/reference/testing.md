@@ -868,7 +868,7 @@ bootstrap. Use `requireExisting` with `hostMode: "embedded"` when the UI host al
 | Helper | Role |
 |--------|------|
 | `ensureLibraryPlayfield` | Called from `deployLibrary` bootstrap phase — create library deployment if absent (`createIfAbsent`) or assert it exists (`requireExisting`) |
-| `resetLibraryPlayfield` | Per-test reset + optional seed — used in `4_storage` `beforeEach`, runner `beforeEachTest`, undo-redo |
+| `resetIntegTestbed` | Per-test reset + optional seed — used in `4_storage` `beforeEach`, runner `beforeEachTest`, undo-redo |
 
 `LibraryPlayfieldEnsureMode`: `"createIfAbsent"` (CLI default) | `"requireExisting"` | `"skip"`.
 
@@ -878,7 +878,7 @@ host already deployed the library.
 
 Shared seed constants for standalone-app tests:
 `packages/miroir-standalone-app/tests/helpers/libraryPlayfieldSeeds.ts`
-(`libraryPlayfieldSeedInitParams`, `libraryEntitiesAndInstances`, `libraryEntitiesAndInstancesWithoutBook3`).
+(`libraryTestbedInitParams`, `testbedEntitiesAndInstances`, `libraryEntitiesAndInstancesWithoutBook3`).
 
 Transformer integ intentionally keeps the synthetic `testApplication` playfield — it does **not**
 share library deployment UUIDs with app-stack tests.
@@ -1023,7 +1023,7 @@ npm run testMiroir -w miroir-core
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |
 | `src/5_tests/MiroirTransformerTestTools.ts` | Transformer/function-call execution and SQL path |
 | `src/5_tests/IntegrationTestBootstrap.ts` | Bootstrap phase descriptors + `IntegrationTestPlayfield` + host mode metadata |
-| `src/5_tests/LibraryPlayfield.ts` | `ensureLibraryPlayfield`, `resetLibraryPlayfield`, `LibraryPlayfieldEnsureMode` |
+| `src/5_tests/LibraryPlayfield.ts` | `ensureLibraryPlayfield`, `resetIntegTestbed`, `LibraryPlayfieldEnsureMode` |
 | `src/5_tests/MiroirPlatformPlayfield.ts` | `ensureMiroirPlatform`, `MiroirPlatformEnsureMode` |
 | `src/5_tests/MiroirTestIntegrationOrchestrator.ts` | Orchestrator port + host/playfield context |
 | `tests/miroir-core-tests.unit.test.ts` | Vitest unit entry |

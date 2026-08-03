@@ -39,16 +39,16 @@ export type EnsureLibraryPlayfieldParams = {
   skipOpenAdminStore?: boolean;
 };
 
-export type ResetLibraryPlayfieldParams = {
+export type ResetIntegTestbedParams = {
   domainController: DomainControllerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
   libraryDeploymentUuid: Uuid;
   librarySelfApplicationUuid: Uuid;
   miroirDeploymentUuid?: Uuid;
   miroirSelfApplicationUuid?: Uuid;
-  libraryEntitiesAndInstances?: ApplicationEntitiesAndInstances;
-  librarySeedInitParams?: InitApplicationParameters;
-  librarySeedMetaModel?: MetaModel;
+  testbedEntitiesAndInstances?: ApplicationEntitiesAndInstances;
+  testbedInitApplicationParameters?: InitApplicationParameters;
+  testbedModel?: MetaModel;
   resetMiroirPlatform?: boolean;
   /** When set, used for resetAndInitApplicationDeployment instead of library/miroir defaults */
   deploymentsToReset?: Deployment[];
@@ -121,20 +121,20 @@ export async function ensureLibraryPlayfield(
 // ################################################################################################
 /**
  * Reset the library playfield.
- * @param params - The parameters for the resetLibraryPlayfield function.
+ * @param params - The parameters for the resetIntegTestbed function.
  * @returns A promise that resolves when the library playfield is reset.
  */
-export async function resetLibraryPlayfield(
-  params: ResetLibraryPlayfieldParams,
+export async function resetIntegTestbed(
+  params: ResetIntegTestbedParams,
 ): Promise<void> {
   const {
     domainController,
     applicationDeploymentMap,
     libraryDeploymentUuid,
     librarySelfApplicationUuid,
-    libraryEntitiesAndInstances,
-    librarySeedInitParams,
-    librarySeedMetaModel,
+    testbedEntitiesAndInstances,
+    testbedInitApplicationParameters,
+    testbedModel,
     resetMiroirPlatform,
     miroirDeploymentUuid,
     miroirSelfApplicationUuid,
@@ -150,13 +150,13 @@ export async function resetLibraryPlayfield(
     if (resetMiroirPlatform) {
       if (!miroirDeploymentUuid || !miroirSelfApplicationUuid) {
         throw new Error(
-          "resetLibraryPlayfield: miroirDeploymentUuid and miroirSelfApplicationUuid required when resetMiroirPlatform is true",
+          "resetIntegTestbed: miroirDeploymentUuid and miroirSelfApplicationUuid required when resetMiroirPlatform is true",
         );
       }
       deploymentsToReset.push(asDeployment(miroirDeploymentUuid, miroirSelfApplicationUuid));
     }
 
-    if (libraryEntitiesAndInstances || !resetMiroirPlatform) {
+    if (testbedEntitiesAndInstances || !resetMiroirPlatform) {
       deploymentsToReset.push(
         asDeployment(libraryDeploymentUuid, librarySelfApplicationUuid),
       );
@@ -171,10 +171,10 @@ export async function resetLibraryPlayfield(
     );
   }
 
-  if (libraryEntitiesAndInstances) {
-    if (!librarySeedInitParams || !librarySeedMetaModel) {
+  if (testbedEntitiesAndInstances) {
+    if (!testbedInitApplicationParameters || !testbedModel) {
       throw new Error(
-        "resetLibraryPlayfield: librarySeedInitParams and librarySeedMetaModel required when libraryEntitiesAndInstances is set",
+        "resetIntegTestbed: testbedInitApplicationParameters and testbedModel required when testbedEntitiesAndInstances is set",
       );
     }
 
@@ -182,9 +182,9 @@ export async function resetLibraryPlayfield(
       resetAndinitializeDeploymentCompositeAction(
         librarySelfApplicationUuid, // applicationUuid
         libraryDeploymentUuid, // deploymentUuid
-        librarySeedInitParams, // initApplicationParameters
-        libraryEntitiesAndInstances, // appEntitesAndInstances
-        librarySeedMetaModel, // appMetaModel
+        testbedInitApplicationParameters, // initApplicationParameters
+        testbedEntitiesAndInstances, // appEntitesAndInstances
+        testbedModel, // appMetaModel
       ),
       applicationDeploymentMap,
       defaultMiroirModelEnvironment,
@@ -192,7 +192,7 @@ export async function resetLibraryPlayfield(
     );
     if (initResult.status !== "ok") {
       throw new Error(
-        "resetLibraryPlayfield: library seed failed: " + JSON.stringify(initResult),
+        "resetIntegTestbed: library seed failed: " + JSON.stringify(initResult),
       );
     }
   }

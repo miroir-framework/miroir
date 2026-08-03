@@ -22,7 +22,7 @@ import {
 import {
   domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
   libraryPlayfieldSeedForActionSuite,
-  type LibraryPlayfieldSeed,
+  type TestbedSetupParameters,
 } from "../../../tests/helpers/libraryPlayfieldSeeds.js";
 
 export const RUNNER_CREATE_ENTITY_SUITE_KEY = "runner_create_entity";
@@ -34,7 +34,7 @@ export type UiIntegrationRunnerSuiteEntry = {
   /** Empty for actionTest suites (no Runner entities). */
   runnerRegistry: Record<string, Runner>;
   /** Required for DomainController action suites; omitted for runner_library. */
-  libraryPlayfieldSeed?: LibraryPlayfieldSeed;
+  libraryPlayfieldSeed?: TestbedSetupParameters;
   /**
    * Create/drop entity suites: ephemeral empty playfield — do not remount library
    * seed onto the runTarget (same as CLI `skipRunTargetPlayfieldReset`).

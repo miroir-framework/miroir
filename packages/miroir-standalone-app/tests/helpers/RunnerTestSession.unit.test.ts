@@ -328,11 +328,11 @@ describe("RunnerTestSession (Gap E R)", () => {
       expect.objectContaining({
         clearDocumentBody: false,
         resetMiroirPlatform: true,
-        libraryEntitiesAndInstances:
-          domainControllerDataCrudLibraryPlayfieldSeed.libraryEntitiesAndInstances,
-        librarySeedInitParams:
-          domainControllerDataCrudLibraryPlayfieldSeed.librarySeedInitParams,
-        librarySeedMetaModel: expect.objectContaining({
+        testbedEntitiesAndInstances:
+          domainControllerDataCrudLibraryPlayfieldSeed.testbedEntitiesAndInstances,
+        testbedInitApplicationParameters:
+          domainControllerDataCrudLibraryPlayfieldSeed.testbedInitApplicationParameters,
+        testbedModel: expect.objectContaining({
           applicationUuid: runTarget.applicationUuid,
         }),
       }),
@@ -340,7 +340,7 @@ describe("RunnerTestSession (Gap E R)", () => {
   });
 
   it("beforeEach preserves custom seed metaModel entities (not defaultLibraryAppModel)", async () => {
-    const { libraryPlayfieldSeedInitParams } = await import("./libraryPlayfieldSeeds.js");
+    const { libraryTestbedInitParams } = await import("./libraryPlayfieldSeeds.js");
     const tracker = new MiroirActivityTracker();
     const eventService = new MiroirEventService(tracker);
     const runTarget = runnerLibraryRunTarget();
@@ -371,9 +371,9 @@ describe("RunnerTestSession (Gap E R)", () => {
       suiteTestParams: runnerLibrarySuite().testParams,
       runnerRegistry: {},
       libraryPlayfieldSeed: {
-        libraryEntitiesAndInstances: [],
-        librarySeedInitParams: libraryPlayfieldSeedInitParams,
-        librarySeedMetaModel: customMetaModel,
+        testbedEntitiesAndInstances: [],
+        testbedInitApplicationParameters: libraryTestbedInitParams,
+        testbedModel: customMetaModel,
       },
     });
 
@@ -381,9 +381,9 @@ describe("RunnerTestSession (Gap E R)", () => {
     await session.beforeEach();
 
     const forwarded = beforeEachTestMock.mock.calls[0][3] as {
-      librarySeedMetaModel: MetaModel;
+      testbedModel: MetaModel;
     };
-    expect(forwarded.librarySeedMetaModel.entities.map((e) => e.uuid)).toEqual([
+    expect(forwarded.testbedModel.entities.map((e) => e.uuid)).toEqual([
       customEntityUuid,
     ]);
   });

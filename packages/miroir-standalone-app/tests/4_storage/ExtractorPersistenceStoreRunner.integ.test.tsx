@@ -17,7 +17,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
-  resetLibraryPlayfield,
+  resetIntegTestbed,
   StoreUnitConfiguration
 } from "miroir-core";
 import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -57,7 +57,7 @@ import { chainVitestSteps } from "../../src/miroir-fwk/4-tests/vitest-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
-import { libraryEntitiesAndInstances, libraryPlayfieldSeedInitParams } from "../helpers/libraryPlayfieldSeeds.js";
+import { testbedEntitiesAndInstances, libraryTestbedInitParams } from "../helpers/libraryPlayfieldSeeds.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 import {
@@ -205,15 +205,15 @@ beforeEach(async () => {
     "################################################### beforeEach start",
     beforEachCount,
   );
-  await resetLibraryPlayfield({
+  await resetIntegTestbed({
     domainController,
     applicationDeploymentMap,
     libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
     librarySelfApplicationUuid: selfApplicationLibrary.uuid,
     deploymentsToReset: selfApplicationDeploymentConfigurationsTO_REMOVE,
-    libraryEntitiesAndInstances,
-    librarySeedInitParams: libraryPlayfieldSeedInitParams,
-    librarySeedMetaModel: defaultLibraryModelEnvironment.currentModel as any,
+    testbedEntitiesAndInstances,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
+    testbedModel: defaultLibraryModelEnvironment.currentModel as any,
   });
   document.body.innerHTML = "";
   console.log(
