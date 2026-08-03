@@ -21,7 +21,6 @@ import {
   selfApplicationLibrary,
   user1,
 } from "miroir-test-app_deployment-library";
-import { defaultGetMcpRequestHandlersFromEndpointParams, getMcpRequestHandlers } from "../../src/index.js";
 
 
 const packageName = "miroir-mcp";
@@ -55,12 +54,9 @@ MiroirLoggerFactory.registerLoggerToStart(
 export interface McpToolTest {
   testName: string;
   toolName: string;
-  handler: any;
   params: any;
   tests: (expect: any, result: any) => void;
 }
-
-const mcpRequestHandlers = getMcpRequestHandlers(defaultGetMcpRequestHandlersFromEndpointParams);
 
 // ################################################################################################
 const testEntity = entityBook; // Book entity
@@ -72,8 +68,7 @@ const testBookUuid = (noValue as any).uuid; // A book UUID to be used in tests
 export const mcpInstanceActionTests: McpToolTest[] = [
   {
     testName: "should execute createInstance action",
-    toolName: "miroir_createInstance",
-    handler: mcpRequestHandlers.miroir_createInstance,
+    toolName: "Miroir_createInstance",
     params: {
       application: selfApplicationLibrary.uuid,
       applicationSection: "data" as const,
@@ -105,8 +100,7 @@ export const mcpInstanceActionTests: McpToolTest[] = [
   },
   {
     testName: "should execute getInstance action",
-    toolName: "miroir_getInstance",
-    handler: mcpRequestHandlers.miroir_getInstance,
+    toolName: "Miroir_getInstance",
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -123,8 +117,7 @@ export const mcpInstanceActionTests: McpToolTest[] = [
   },
   {
     testName: "should execute getInstances action",
-    toolName: "miroir_getInstances",
-    handler: mcpRequestHandlers.miroir_getInstances,
+    toolName: "Miroir_getInstances",
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -140,8 +133,7 @@ export const mcpInstanceActionTests: McpToolTest[] = [
   },
   {
     testName: "should execute updateInstance action",
-    toolName: "miroir_updateInstance",
-    handler: mcpRequestHandlers.miroir_updateInstance,
+    toolName: "Miroir_updateInstance",
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -170,8 +162,7 @@ export const mcpInstanceActionTests: McpToolTest[] = [
   },
   {
     testName: "should execute deleteInstance action",
-    toolName: "miroir_deleteInstance",
-    handler: mcpRequestHandlers.miroir_deleteInstance,
+    toolName: "Miroir_deleteInstance",
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -189,8 +180,7 @@ export const mcpInstanceActionTests: McpToolTest[] = [
   },
   {
     testName: "calling deleteInstance action on non-existing instance should return error in content",
-    toolName: "miroir_deleteInstance",
-    handler: mcpRequestHandlers.miroir_deleteInstance,
+    toolName: "Miroir_deleteInstance",
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -207,8 +197,7 @@ export const mcpInstanceActionTests: McpToolTest[] = [
   },
   {
     testName: "calling getInstance action on non-existing instance should return error in content",
-    toolName: "miroir_getInstance",
-    handler: mcpRequestHandlers.miroir_getInstance,
+    toolName: "Miroir_getInstance",
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -228,8 +217,7 @@ export const mcpInstanceActionTests: McpToolTest[] = [
 export const mcpLibraryEndpointTests: McpToolTest[] = [
   {
     testName: "should execute lendDocument action",
-    toolName: "library_lendDocument",
-    handler: mcpRequestHandlers.library_lendDocument,
+    toolName: "Library_lendDocument",
     params: {
       book: book1.uuid,
       user: user1.uuid,
@@ -244,11 +232,6 @@ export const mcpLibraryEndpointTests: McpToolTest[] = [
     },
   },
 ];
-
-if (!mcpLibraryEndpointTests) {
-  // console.warn("lendDocument handler not found in mcpRequestHandlers, library endpoint tests will be skipped");
-  throw new Error("lendDocument handler not found in mcpRequestHandlers, library endpoint tests cannot be executed");
-}
 
 export const ALL_MCP_TEST_CASES: McpToolTest[] = [
   ...mcpInstanceActionTests,

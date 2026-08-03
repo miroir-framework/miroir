@@ -36,10 +36,6 @@ import {
   templateEvaluationParams,
 } from "miroir-core";
 import {
-  getMcpRequestHandlers,
-  setupMcpServer
-} from "miroir-mcp";
-import {
   adminSelfApplication,
   deployment_Admin,
   deployment_Miroir,

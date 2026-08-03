@@ -136,6 +136,14 @@ describe('mcpToolDescriptionFromActionDefinition', () => {
             type: "string",
             description: "Entity UUID to get all instances for",
           },
+          attributes: {
+            type: "array",
+            description: "Optional attribute allow-list for partial fetch (#214)",
+            items: {
+              type: "string",
+              description: "",
+            },
+          },
         },
         required: ["application", "applicationSection", "parentUuid"],
       },

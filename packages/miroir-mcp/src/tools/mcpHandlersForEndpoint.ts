@@ -155,6 +155,7 @@ export async function handleMcpAction(
   actionBuilder: (validatedParams: any) => InstanceAction,
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
+  modelEnvironmentOverride?: MiroirModelEnvironment,
 ): Promise<{ content: Array<{ type: string; text: string; parsed: Record<string, any> }> }> {
   try {
     log.info(`${toolName} - received params:`, JSON.stringify(params, null, 2));
@@ -172,7 +173,7 @@ export async function handleMcpAction(
     log.info(`${toolName} - constructed action:`, JSON.stringify(action, null, 2));
 
     const libraryDeploymentUuid = resolveLibraryDeploymentUuid(applicationDeploymentMap);
-    const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
+    const defaultLibraryModelEnvironment = modelEnvironmentOverride ?? getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
       undefined as any, // not used
       libraryDeploymentUuid,
@@ -355,7 +356,7 @@ export function mcpToolHandler(
 export function mcpToolEntry(
   endpoint: EndpointDefinition,
   actionType: string,
-  toolPrefix: string,
+  toolName: string,
 ): McpRequestHandler<any> {
   const actionDef = endpoint.definition.actions.find(
     (action: any) => action.actionParameters.actionType.definition === actionType
@@ -367,7 +368,6 @@ export function mcpToolEntry(
     throw new Error(`Payload definition not found for action type: ${actionType}`);
   }
   const jzodPayload = actionDef.actionParameters.payload;
-  const toolName = `${toolPrefix}${actionType}`;
   const actionDescription = actionDef.actionParameters.actionType.tag?.value?.description 
     || actionDef.actionParameters.actionType.tag?.value?.defaultLabel
     || `Execute ${actionType} action on ${endpoint.name || endpoint.uuid}`;

@@ -43,20 +43,20 @@ MiroirLoggerFactory.registerLoggerToStart(
 // ################################################################################################
 
 /**
- * Makes an MCP tool call via HTTP to a running MCP server
+ * Sends a JSON-RPC request to a running MCP server over SSE + HTTP POST
  * @param serverUrl - Base URL of the MCP server (e.g., 'http://localhost:3080')
- * @param toolName - Name of the tool to call
- * @param params - Tool parameters
- * @returns MCP response with content array
+ * @param method - JSON-RPC method (e.g., 'tools/call', 'tools/list')
+ * @param params - Method parameters
+ * @returns The JSON-RPC result
  */
-export async function callMcpToolViaHttp(
+export async function sendMcpRequestViaHttp(
   serverUrl: string,
-  toolName: string,
-  params: unknown
-): Promise<{ content: Array<{ type: string; text: string, parsed: Record<string, any> }> }> {
+  method: string,
+  params: unknown,
+): Promise<any> {
   try {
-    log.info(`callMcpToolViaHttp - calling tool: ${toolName} at ${serverUrl} with params:`, params);
-    
+    log.info(`sendMcpRequestViaHttp - ${method} at ${serverUrl} with params:`, params);
+
     // First, establish SSE connection to get session
     const sseResponse = await fetch(`${serverUrl}/sse`, {
       method: 'GET',
@@ -75,7 +75,7 @@ export async function callMcpToolViaHttp(
     // Use a timeout to avoid hanging forever
     const { sessionId, reader } = await Promise.race([
       readSessionIdFromSSE(sseResponse),
-      new Promise<never>((_, reject) => 
+      new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Timeout reading session ID from SSE stream')), 5000)
       )
     ]);
@@ -87,7 +87,7 @@ export async function callMcpToolViaHttp(
     // Setup a promise to read the response from SSE stream
     const responsePromise = readJsonRpcResponseFromSSE(reader, requestId);
 
-    // Now make the tool call via POST /message with sessionId as query parameter
+    // Now make the request via POST /message with sessionId as query parameter
     const messageResponse = await fetch(`${serverUrl}/message?sessionId=${sessionId}`, {
       method: 'POST',
       headers: {
@@ -96,11 +96,8 @@ export async function callMcpToolViaHttp(
       body: JSON.stringify({
         jsonrpc: '2.0',
         id: requestId,
-        method: 'tools/call',
-        params: {
-          name: toolName,
-          arguments: params,
-        },
+        method,
+        params,
       }),
     });
 
@@ -113,7 +110,7 @@ export async function callMcpToolViaHttp(
     // Wait for the JSON-RPC response from SSE stream
     const response = await Promise.race([
       responsePromise,
-      new Promise<never>((_, reject) => 
+      new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error('Timeout waiting for response from SSE stream')), 10000)
       )
     ]);
@@ -160,9 +157,36 @@ export async function callMcpToolViaHttp(
     // Return the result in the expected format
     return response.result;
   } catch (error) {
-    log.error(`Error calling MCP tool via HTTP:`, error);
+    log.error(`Error in MCP request via HTTP (${method}):`, error);
     throw error;
   }
+}
+
+/**
+ * Makes an MCP tool call via HTTP to a running MCP server
+ * @param serverUrl - Base URL of the MCP server (e.g., 'http://localhost:3080')
+ * @param toolName - Name of the tool to call
+ * @param params - Tool parameters
+ * @returns MCP response with content array
+ */
+export async function callMcpToolViaHttp(
+  serverUrl: string,
+  toolName: string,
+  params: unknown
+): Promise<{ content: Array<{ type: string; text: string, parsed: Record<string, any> }> }> {
+  return sendMcpRequestViaHttp(serverUrl, 'tools/call', { name: toolName, arguments: params });
+}
+
+/**
+ * Lists the tools of a running MCP server via HTTP
+ * @param serverUrl - Base URL of the MCP server (e.g., 'http://localhost:3080')
+ * @returns Array of MCP tool descriptions
+ */
+export async function listMcpToolsViaHttp(
+  serverUrl: string,
+): Promise<Array<{ name: string; description?: string; inputSchema: unknown }>> {
+  const result = await sendMcpRequestViaHttp(serverUrl, 'tools/list', {});
+  return result?.tools ?? [];
 }
 
 /**
