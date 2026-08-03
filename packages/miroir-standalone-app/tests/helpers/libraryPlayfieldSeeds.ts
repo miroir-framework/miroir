@@ -16,6 +16,7 @@ import {
   author3,
   book1,
   book2,
+  book3,
   book4,
   book5,
   book6,
@@ -456,6 +457,33 @@ export const libraryTestbedInitParams: InitApplicationParameters = {
   applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
   applicationVersion: selfApplicationVersionLibraryInitialVersion,
 };
+
+/** Library seed without `book3` — used by DomainController Data CRUD composite-action hooks. */
+export const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
+  {
+    entity: entityAuthor as Entity,
+    instances: [author1, author2, author3 as EntityInstance],
+  },
+  {
+    entity: entityBook as Entity,
+    instances: [
+      book1 as EntityInstance,
+      book2 as EntityInstance,
+      book3 as EntityInstance,
+      book4 as EntityInstance,
+      book5 as EntityInstance,
+      book6 as EntityInstance,
+    ],
+  },
+  {
+    entity: entityPublisher as Entity,
+    instances: [
+      publisher1 as EntityInstance,
+      publisher2 as EntityInstance,
+      publisher3 as EntityInstance,
+    ],
+  },
+];
 
 /** Library seed without `book3` — used by DomainController Data CRUD composite-action hooks. */
 export const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [

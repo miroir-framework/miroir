@@ -264,7 +264,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       testDeploymentStorageConfiguration,
       runTarget,
       runnerRegistry,
-      resolvedRunner,
+      resolvedRunner: resolvedRunner ?? runnerRegistry[Object.keys(runnerRegistry)[0]] as Runner,
       testParams: sessionTestParams,
       runtimeContext: {},
     };

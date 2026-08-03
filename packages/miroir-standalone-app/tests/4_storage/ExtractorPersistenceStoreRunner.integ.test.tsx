@@ -57,7 +57,7 @@ import { chainVitestSteps } from "../../src/miroir-fwk/4-tests/vitest-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
-import { testbedEntitiesAndInstances, libraryTestbedInitParams } from "../helpers/libraryPlayfieldSeeds.js";
+import { libraryTestbedInitParams, libraryEntitiesAndInstancesPublisherAndCountry, libraryEntitiesAndInstances } from "../helpers/libraryPlayfieldSeeds.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 import {
@@ -211,7 +211,8 @@ beforeEach(async () => {
     libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
     librarySelfApplicationUuid: selfApplicationLibrary.uuid,
     deploymentsToReset: selfApplicationDeploymentConfigurationsTO_REMOVE,
-    testbedEntitiesAndInstances,
+    // testbedEntitiesAndInstances:libraryEntitiesAndInstancesPublisherAndCountry,
+    testbedEntitiesAndInstances:libraryEntitiesAndInstances,
     testbedInitApplicationParameters: libraryTestbedInitParams,
     testbedModel: defaultLibraryModelEnvironment.currentModel as any,
   });

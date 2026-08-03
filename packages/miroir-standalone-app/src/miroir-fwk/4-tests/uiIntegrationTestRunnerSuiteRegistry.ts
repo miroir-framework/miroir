@@ -8,22 +8,23 @@ import {
   miroirTest_runner_drop_entity,
   miroirTest_runner_freeze_application_version,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+  runnerCreateEntity,
+  runnerDropEntity,
+  runnerFreezeApplicationVersion,
 } from "miroir-test-app_deployment-miroir";
 
 import {
   DOMAIN_CONTROLLER_TESTBED_KEYMAP,
-  domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
   domainControllerIntegTests,
   type TestbedSetupParameters,
 } from "../../../tests/helpers/libraryPlayfieldSeeds.js";
 
-export const RUNNER_CREATE_ENTITY_SUITE_KEY = "runner_create_entity";
-export const RUNNER_DROP_ENTITY_SUITE_KEY = "runner_drop_entity";
-export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY = "runner_freeze_application_version";
+export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
+export const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_drop_entity.name;
+export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY = miroirTest_runner_freeze_application_version.name;
 
-const RUNNER_REF_CREATE_ENTITY = "82f81a25-2366-4abf-8a97-83ca5e9a9c46";
-const RUNNER_REF_DROP_ENTITY = "44313751-b0e5-4132-bb12-a544806e759b";
-const RUNNER_REF_FREEZE_APPLICATION_VERSION = "20d51c4c-52e5-4077-baf3-5e87bd75e496";
+const RUNNER_REF_CREATE_ENTITY = runnerCreateEntity.uuid;
+const RUNNER_REF_DROP_ENTITY = runnerDropEntity.uuid;
 
 export type UiIntegrationRunnerSuiteEntry = {
   suiteDefinition: MiroirTestSuite;
@@ -52,7 +53,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
     },
-    [RUNNER_CREATE_ENTITY_SUITE_KEY]: {
+    [miroirTest_runner_create_entity.name]: {
       suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
@@ -68,12 +69,12 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
       skipRunTargetPlayfieldReset: true,
       defaultApplicationName: "testApplication_CreateEntity",
     },
-    [RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY]: {
+    [miroirTest_runner_freeze_application_version.name]: {
       suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
         .definition as MiroirTestSuite,
       runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
-      resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[RUNNER_REF_FREEZE_APPLICATION_VERSION],
-      libraryPlayfieldSeed: domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
+      resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[runnerFreezeApplicationVersion.uuid],
+      libraryPlayfieldSeed: DOMAIN_CONTROLLER_TESTBED_KEYMAP[miroirTest_runner_freeze_application_version.name],
     },
     ...Object.fromEntries(
       domainControllerIntegTests.map((test) => {

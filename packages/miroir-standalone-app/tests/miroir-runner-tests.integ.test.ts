@@ -7,49 +7,53 @@ import {
   MiroirActivityTracker,
   MiroirEventService,
   MiroirLoggerFactory,
-  miroirCoreStartup,
-  runMiroirTests,
   getTestbedUuidsForTestSuite,
+  miroirCoreStartup,
+  parseMiroirRunnerTestCliConfig,
+  runMiroirTests,
   type LoggerInterface,
   type LoggerOptions,
   type MiroirTestSuite,
-  parseMiroirRunnerTestCliConfig,
 } from "miroir-core";
-import { RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
+import {
+  miroirTest_runner_create_entity,
+  miroirTest_runner_drop_entity,
+  miroirTest_runner_freeze_application_version,
+} from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { miroirAppStartup } from "../src/startup.js";
-import { loadTestConfigFiles } from "./utils/fileTools.js";
+import {
+  isDomainControllerActionCrudSuite,
+  libraryPlayfieldSeedForActionSuite,
+} from "./helpers/libraryPlayfieldSeeds.js";
 import {
   loadRunnerOrActionMiroirTestSuite,
   runMiroirRunnerTestsFromCLI,
 } from "./helpers/runMiroirRunnerTestsFromCLI.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
-import {
-  libraryPlayfieldSeedForActionSuite,
-  isDomainControllerActionCrudSuite,
-  domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
-} from "./helpers/libraryPlayfieldSeeds.js";
-import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import { loadTestConfigFiles } from "./utils/fileTools.js";
 
 const pageLabel = "miroir-runner-tests.integ";
 
-const RUNNER_CREATE_ENTITY_SUITE_KEY = "runner_create_entity";
-const RUNNER_DROP_ENTITY_SUITE_KEY = "runner_drop_entity";
-const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY = "runner_freeze_application_version";
+// const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
+// const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_drop_entity.name;
+// const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY = miroirTest_runner_freeze_application_version.name;
 
 function isMiroirEntityRunnerSuite(suiteKey: string): boolean {
   return (
-    suiteKey === RUNNER_CREATE_ENTITY_SUITE_KEY || suiteKey === RUNNER_DROP_ENTITY_SUITE_KEY
+    suiteKey === miroirTest_runner_create_entity.name || suiteKey === miroirTest_runner_drop_entity.name
   );
 }
 
 function isFreezeApplicationVersionRunnerSuite(suiteKey: string): boolean {
-  return suiteKey === RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY;
+  return suiteKey === miroirTest_runner_freeze_application_version.name;
 }
 
 let log: LoggerInterface = console as unknown as LoggerInterface;
@@ -118,7 +122,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
         pageLabel,
         runTarget,
         suiteTestParams: suite.testParams,
-        libraryPlayfieldSeed: domainControllerApplicationVersionFreezeLibraryPlayfieldSeed,
+        libraryPlayfieldSeed: registryEntry?.libraryPlayfieldSeed,
       },
     };
   }
