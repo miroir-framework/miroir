@@ -4,6 +4,7 @@ import {
   createReportQueryLoadExecutor,
   parentUuidsFromResolvedReportQuery,
 } from "../../src/2_domain/createReportQueryLoadExecutor.js";
+import { reportQueryLoadTargetsFromResolvedReportQuery } from "../../src/1_core/localCache/reportQueryLoadSegment.js";
 import type { ReportQueryLoadRequest } from "../../src/2_domain/ReportQueryLoadService.js";
 
 const BLOB_UUID = "62209e4a-e429-4d7d-9b28-dcc1da6b51a2";
@@ -37,9 +38,47 @@ function firstCallArg<T>(fn: { mock: { calls: unknown[][] } }): T {
   return args[0] as T;
 }
 
+const INSTANCE = "f7f2fe87-df2e-4467-9a6c-ed11f8b6c34c";
+
+function blobDetailsRequest(): ReportQueryLoadRequest {
+  return {
+    application: APP,
+    deploymentUuid: DEPLOY,
+    reportUuid: "5a90a36c-f167-44f3-812f-3a70772e0a58",
+    applicationSection: "data",
+    resolvedQuery: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: APP,
+      extractors: {
+        blob: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentUuid: BLOB_UUID,
+          instanceUuid: INSTANCE,
+        },
+      },
+    },
+    queryParams: {},
+  };
+}
+
 describe("createReportQueryLoadExecutor (Phase 4)", () => {
   it("extracts parentUuids from extractorInstancesByEntity", () => {
     expect(parentUuidsFromResolvedReportQuery(blobListRequest().resolvedQuery)).toEqual([
+      BLOB_UUID,
+    ]);
+  });
+
+  it("extracts load targets from extractorByPrimaryKey (#214 BlobDetails)", () => {
+    expect(
+      reportQueryLoadTargetsFromResolvedReportQuery(blobDetailsRequest().resolvedQuery)
+    ).toEqual([
+      {
+        parentUuid: BLOB_UUID,
+        instanceUuid: INSTANCE,
+        extractorKey: "blob",
+      },
+    ]);
+    expect(parentUuidsFromResolvedReportQuery(blobDetailsRequest().resolvedQuery)).toEqual([
       BLOB_UUID,
     ]);
   });
@@ -252,5 +291,62 @@ describe("createReportQueryLoadExecutor (Phase 4)", () => {
     }>(handleLocalCacheAction).payload.objects;
     expect(loadObjects[0]).toMatchObject({ cacheSegment: "full" });
     expect(loadObjects[0]?.attributes).toBeUndefined();
+  });
+
+  it("extractorByPrimaryKey uses runBoxedQueryAction storage (#214 BlobDetails)", async () => {
+    const handlePersistenceAction = vi.fn(async (action: any) => {
+      if (action.actionType === "runBoxedQueryAction") {
+        return {
+          status: "ok" as const,
+          returnedDomainElement: {
+            blob: {
+              uuid: INSTANCE,
+              parentUuid: BLOB_UUID,
+              name: "MiroirLogo",
+              contents: { encoding: "base64", data: "AAAA" },
+            },
+          },
+        };
+      }
+      return { status: "ok" as const, returnedDomainElement: { instances: [] } };
+    });
+    const handleLocalCacheAction = vi.fn((_action: unknown, _map?: unknown) => ({
+      status: "ok" as const,
+      returnedDomainElement: undefined,
+    }));
+    const domainController = {
+      getRemoteStore: () => ({ handlePersistenceAction, handleLocalCacheAction }),
+    } as any;
+
+    const executor = createReportQueryLoadExecutor(domainController, { [APP]: DEPLOY });
+    await executor(blobDetailsRequest());
+
+    expect(handlePersistenceAction).toHaveBeenCalledTimes(1);
+    expect(firstCallArg(handlePersistenceAction)).toMatchObject({
+      actionType: "runBoxedQueryAction",
+      payload: {
+        queryExecutionStrategy: "storage",
+        query: {
+          extractors: {
+            blob: {
+              extractorOrCombinerType: "extractorByPrimaryKey",
+              parentUuid: BLOB_UUID,
+              instanceUuid: INSTANCE,
+            },
+          },
+        },
+      },
+    });
+    expect(firstCallArg(handleLocalCacheAction)).toMatchObject({
+      payload: {
+        objects: [
+          {
+            parentUuid: BLOB_UUID,
+            cacheSegment: "full",
+            instances: [{ uuid: INSTANCE, name: "MiroirLogo" }],
+          },
+        ],
+      },
+    });
   });
 });

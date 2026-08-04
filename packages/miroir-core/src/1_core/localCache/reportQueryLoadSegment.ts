@@ -13,27 +13,76 @@ import {
 import { getReduxDeploymentsStateIndex } from "../../2_domain/ReduxDeploymentsState.js";
 import type { ReportQueryLoadRequest } from "../../2_domain/ReportQueryLoadService.js";
 
+/** One persistence read target derived from a resolved report query. */
+export type ReportQueryLoadTarget = {
+  parentUuid: string;
+  /** Set for extractorByPrimaryKey — fetch via runBoxedQueryAction (storage), not CRUD /all. */
+  instanceUuid?: string;
+  /** Extractor label in resolvedQuery.extractors (required when instanceUuid is set). */
+  extractorKey?: string;
+};
+
+function loadTargetKey(target: ReportQueryLoadTarget): string {
+  return `${target.parentUuid}:${target.instanceUuid ?? ""}:${target.extractorKey ?? ""}`;
+}
+
 /**
- * Collects entity UUIDs referenced by extractorInstancesByEntity extractors
- * in a resolved report query (report-triggered cache fill).
+ * Collects load targets from extractors in a resolved report query.
+ * Supports extractorInstancesByEntity (all instances) and extractorByPrimaryKey
+ * (single instance — e.g. BlobDetails when cacheAllInstancesOnRefresh is false).
  */
-export function parentUuidsFromResolvedReportQuery(
+export function reportQueryLoadTargetsFromResolvedReportQuery(
   resolvedQuery: ReportQueryLoadRequest["resolvedQuery"],
-): string[] {
+): ReportQueryLoadTarget[] {
   const extractors = (resolvedQuery as { extractors?: Record<string, any> })
     ?.extractors;
   if (!extractors) {
     return [];
   }
-  const uuids = new Set<string>();
-  for (const extractor of Object.values(extractors)) {
-    if (
-      extractor &&
-      extractor.extractorOrCombinerType === "extractorInstancesByEntity" &&
-      typeof extractor.parentUuid === "string"
-    ) {
-      uuids.add(extractor.parentUuid);
+  const targets: ReportQueryLoadTarget[] = [];
+  const seen = new Set<string>();
+  for (const [extractorKey, extractor] of Object.entries(extractors)) {
+    if (!extractor || typeof extractor.parentUuid !== "string") {
+      continue;
     }
+    if (extractor.extractorOrCombinerType === "extractorInstancesByEntity") {
+      const target: ReportQueryLoadTarget = { parentUuid: extractor.parentUuid };
+      const key = loadTargetKey(target);
+      if (!seen.has(key)) {
+        seen.add(key);
+        targets.push(target);
+      }
+      continue;
+    }
+    if (extractor.extractorOrCombinerType === "extractorByPrimaryKey") {
+      const instanceUuid =
+        typeof extractor.instanceUuid === "string"
+          ? extractor.instanceUuid
+          : undefined;
+      const target: ReportQueryLoadTarget = {
+        parentUuid: extractor.parentUuid,
+        extractorKey,
+        ...(instanceUuid ? { instanceUuid } : {}),
+      };
+      const key = loadTargetKey(target);
+      if (!seen.has(key)) {
+        seen.add(key);
+        targets.push(target);
+      }
+    }
+  }
+  return targets;
+}
+
+/**
+ * Collects entity UUIDs referenced by report extractors (report-triggered cache fill).
+ */
+export function parentUuidsFromResolvedReportQuery(
+  resolvedQuery: ReportQueryLoadRequest["resolvedQuery"],
+): string[] {
+  const uuids = new Set<string>();
+  for (const target of reportQueryLoadTargetsFromResolvedReportQuery(resolvedQuery)) {
+    uuids.add(target.parentUuid);
   }
   return [...uuids];
 }
@@ -52,9 +101,11 @@ export function attributesFromResolvedReportQueryExtractors(
 
   let agreed: string[] | undefined;
   for (const extractor of Object.values(extractors)) {
+    const extractorType = extractor?.extractorOrCombinerType;
     if (
       !extractor ||
-      extractor.extractorOrCombinerType !== "extractorInstancesByEntity" ||
+      (extractorType !== "extractorInstancesByEntity" &&
+        extractorType !== "extractorByPrimaryKey") ||
       !Array.isArray(extractor.attributes) ||
       extractor.attributes.length === 0
     ) {
@@ -115,32 +166,71 @@ export function isLocalCacheSegmentHeaderSufficient(
   return true;
 }
 
+export type LocalCacheSegmentSlice = {
+  segment?: LocalCacheSegmentHeader;
+  entities?: Record<string, unknown>;
+};
+
 export type LocalCacheSegmentHeaderLookup = (
   deploymentUuid: string,
   applicationSection: "data" | "model",
   entityUuid: string,
   kind: CacheSegmentKind
-) => LocalCacheSegmentHeader | undefined;
+) => LocalCacheSegmentHeader | LocalCacheSegmentSlice | undefined;
+
+function segmentHeaderFromLookupResult(
+  result: LocalCacheSegmentHeader | LocalCacheSegmentSlice | undefined
+): LocalCacheSegmentHeader | undefined {
+  if (!result) return undefined;
+  if ("freshness" in result && "kind" in result) {
+    return result as LocalCacheSegmentHeader;
+  }
+  return (result as LocalCacheSegmentSlice).segment;
+}
+
+function segmentEntitiesFromLookupResult(
+  result: LocalCacheSegmentHeader | LocalCacheSegmentSlice | undefined
+): Record<string, unknown> | undefined {
+  if (!result || ("freshness" in result && "kind" in result)) {
+    return undefined;
+  }
+  return (result as LocalCacheSegmentSlice).entities;
+}
 
 /**
- * All entity parents referenced by the report must have a sufficient segment.
- * No parents ⇒ vacuously sufficient (nothing to load).
+ * All load targets referenced by the report must have a sufficient segment.
+ * No targets ⇒ vacuously sufficient (nothing to load).
+ * extractorByPrimaryKey targets also require the instance row in the segment.
  */
 export function isReportQueryLoadSegmentSufficient(
   request: ReportQueryLoadRequest,
   lookup: LocalCacheSegmentHeaderLookup
 ): boolean {
-  const parentUuids = parentUuidsFromResolvedReportQuery(request.resolvedQuery);
-  if (parentUuids.length === 0) return true;
+  const targets = reportQueryLoadTargetsFromResolvedReportQuery(
+    request.resolvedQuery
+  );
+  if (targets.length === 0) return true;
 
   const section = request.applicationSection ?? "data";
   const kind = resolveReportQueryLoadSegmentKind(request);
   const projection = resolveReportQueryLoadAttributes(request);
 
-  for (const entityUuid of parentUuids) {
-    const header = lookup(request.deploymentUuid, section, entityUuid, kind);
+  for (const target of targets) {
+    const lookupResult = lookup(
+      request.deploymentUuid,
+      section,
+      target.parentUuid,
+      kind
+    );
+    const header = segmentHeaderFromLookupResult(lookupResult);
     if (!isLocalCacheSegmentHeaderSufficient(header, kind, projection)) {
       return false;
+    }
+    if (target.instanceUuid) {
+      const entities = segmentEntitiesFromLookupResult(lookupResult);
+      if (!entities?.[target.instanceUuid]) {
+        return false;
+      }
     }
   }
   return true;
@@ -148,7 +238,10 @@ export function isReportQueryLoadSegmentSufficient(
 
 /** Build a lookup over LocalCache presentModelSnapshot.current. */
 export function createSegmentHeaderLookupFromLocalCacheSnapshot(snapshot: {
-  current?: Record<string, { segment?: LocalCacheSegmentHeader } | undefined>;
+  current?: Record<
+    string,
+    { segment?: LocalCacheSegmentHeader; entities?: Record<string, unknown> } | undefined
+  >;
 }): LocalCacheSegmentHeaderLookup {
   return (deploymentUuid, applicationSection, entityUuid, kind) => {
     const index = getReduxDeploymentsStateIndex(
@@ -157,6 +250,8 @@ export function createSegmentHeaderLookupFromLocalCacheSnapshot(snapshot: {
       entityUuid,
       kind
     );
-    return snapshot.current?.[index]?.segment;
+    const slice = snapshot.current?.[index];
+    if (!slice) return undefined;
+    return { segment: slice.segment, entities: slice.entities };
   };
 }

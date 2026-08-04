@@ -25,6 +25,7 @@ import {
 import {
   entityBlob,
   entityDefinitionBlob,
+  reportBlobDetails,
   reportBlobList,
 } from "miroir-test-app_deployment-miroir";
 
@@ -34,6 +35,7 @@ const APP = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 const DEPLOY = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
 const BLOB = entityBlob.uuid as string;
 const BLOB_PROJECTION = ["defaultLabel", "name", "uuid"]; // canonical sort
+const BLOB_INSTANCE = "f7f2fe87-df2e-4467-9a6c-ed11f8b6c34c";
 
 const applicationDeploymentMap: ApplicationDeploymentMap = {
   [APP]: DEPLOY,
@@ -55,6 +57,30 @@ function blobListResolvedQuery(withProjection: boolean) {
           : {}),
       },
     },
+  };
+}
+
+function blobDetailsRequest(
+  overrides: Partial<ReportQueryLoadRequest> = {}
+): ReportQueryLoadRequest {
+  return {
+    application: APP,
+    deploymentUuid: DEPLOY,
+    reportUuid: reportBlobDetails?.uuid ?? "5a90a36c-f167-44f3-812f-3a70772e0a58",
+    applicationSection: "data",
+    resolvedQuery: {
+      queryType: "boxedQueryWithExtractorCombinerTransformer",
+      application: APP,
+      extractors: {
+        blob: {
+          extractorOrCombinerType: "extractorByPrimaryKey",
+          parentUuid: BLOB,
+          instanceUuid: BLOB_INSTANCE,
+        },
+      },
+    },
+    queryParams: {},
+    ...overrides,
   };
 }
 
@@ -298,5 +324,106 @@ describe("214 Phase 5 — Blob partial-fetch tracer", () => {
       errorMessage: PARTIAL_MUTATION_REJECTED_MESSAGE,
     });
     expect(result).toBeInstanceOf(Action2Error);
+  });
+
+  it("5.3 BlobDetails (extractorByPrimaryKey) loads full instance after partial list", async () => {
+    const localCache = new LocalCache();
+    const handlePersistenceAction = vi.fn(async (action: any) => {
+      if (action.actionType === "runBoxedQueryAction") {
+        return {
+          status: "ok" as const,
+          returnedDomainElement: {
+            blob: {
+              uuid: BLOB_INSTANCE,
+              parentUuid: BLOB,
+              name: "MiroirLogo",
+              defaultLabel: "Miroir Logo",
+              contents: { encoding: "base64", data: "AAAA" },
+            },
+          },
+        };
+      }
+      return {
+        status: "ok" as const,
+        returnedDomainElement: {
+          parentUuid: BLOB,
+          applicationSection: "data",
+          instances: [
+            {
+              uuid: BLOB_INSTANCE,
+              parentUuid: BLOB,
+              name: "MiroirLogo",
+              defaultLabel: "Miroir Logo",
+            },
+          ],
+        },
+      };
+    });
+    const domainController = {
+      getRemoteStore: () => ({
+        handlePersistenceAction,
+        handleLocalCacheAction: (action: any, map: any) =>
+          localCache.handleLocalCacheAction(action, map),
+      }),
+      getLocalCache: () => localCache,
+    } as any;
+
+    const executor = createReportQueryLoadExecutor(
+      domainController,
+      applicationDeploymentMap
+    );
+    const service = new ReportQueryLoadService(executor, {
+      isSegmentSufficient: (request) =>
+        isReportQueryLoadSegmentSufficient(
+          request,
+          createSegmentHeaderLookupFromLocalCacheSnapshot(
+            localCache.getState().presentModelSnapshot
+          )
+        ),
+    });
+
+    // List first — partial segment only
+    await service.ensureLoaded(blobListRequest());
+    expect(localCache.getState().presentModelSnapshot.current[fullIndex]).toBeUndefined();
+
+    // Details — must fetch single full instance
+    const detailsRequest = blobDetailsRequest();
+    await expect(service.ensureLoaded(detailsRequest)).resolves.toBe("ready");
+    expect(handlePersistenceAction).toHaveBeenCalledTimes(2);
+    expect(handlePersistenceAction.mock.calls[1][0]).toMatchObject({
+      actionType: "runBoxedQueryAction",
+      payload: {
+        queryExecutionStrategy: "storage",
+        query: {
+          extractors: {
+            blob: {
+              extractorOrCombinerType: "extractorByPrimaryKey",
+              parentUuid: BLOB,
+              instanceUuid: BLOB_INSTANCE,
+            },
+          },
+        },
+      },
+    });
+
+    const snap = localCache.getState().presentModelSnapshot;
+    expect(snap.current[fullIndex]?.segment).toEqual({
+      kind: "full",
+      freshness: "fresh",
+    });
+    expect(snap.current[fullIndex]?.entities?.[BLOB_INSTANCE]).toMatchObject({
+      name: "MiroirLogo",
+      contents: expect.anything(),
+    });
+    expect(snap.current[partialIndex]?.entities?.[BLOB_INSTANCE]).toMatchObject({
+      name: "MiroirLogo",
+    });
+    expect(
+      snap.current[partialIndex]?.entities?.[BLOB_INSTANCE]
+    ).not.toHaveProperty("contents");
+
+    // Remount details — no third network call
+    await expect(service.ensureLoaded(detailsRequest)).resolves.toBe("ready");
+    expect(handlePersistenceAction).toHaveBeenCalledTimes(2);
   });
 });

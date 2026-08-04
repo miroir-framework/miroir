@@ -1043,7 +1043,10 @@ export {
   attributesFromResolvedReportQueryExtractors,
   resolveReportQueryLoadAttributes,
   resolveReportQueryLoadSegmentKind,
+  reportQueryLoadTargetsFromResolvedReportQuery,
   type LocalCacheSegmentHeaderLookup,
+  type LocalCacheSegmentSlice,
+  type ReportQueryLoadTarget,
 } from "./1_core/localCache/reportQueryLoadSegment.js";
 export { ExtractorTemplateRunnerInMemory } from "./2_domain/ExtractorTemplateRunnerInMemory.js";
 export {

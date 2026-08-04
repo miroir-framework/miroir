@@ -1,3 +1,4 @@
+import { useFormikContext } from 'formik';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
@@ -27,39 +28,35 @@ import {
 import {
   JsonDisplayHelper,
   ThemedOnScreenHelper,
+  getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
   useMiroirContextService,
   type DebugElements,
   type FoldedStateTree
 } from "miroir-react";
 
-import { useFormikContext } from 'formik';
-import {
-  getMemoizedReduxDeploymentsStateSelectorForTemplateMap
-} from "miroir-react";
+import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import { entityQueryVersion } from "miroir-test-app_deployment-miroir";
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {
   useCurrentModel,
   useReduxDeploymentsStateQueryTemplateSelector
 } from "../../ReduxHooks.js";
-import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
+import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import {
   ThemedCodeBlock,
   ThemedContainer,
   ThemedHeaderSection,
   ThemedLabel,
   ThemedPreformattedText,
-  ThemedText,
   ThemedTitle
 } from "../Themes/index";
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { useReportPageContext } from './ReportPageContext.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
-import { entityQueryVersion } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance"), "UI",

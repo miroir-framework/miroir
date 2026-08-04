@@ -100,12 +100,10 @@ const applicationDeploymentMapWithLibrary: ApplicationDeploymentMap = {
 const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as Entity,
-    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
@@ -116,12 +114,10 @@ const libraryEntitiesAndInstances: ApplicationEntitiesAndInstances = [
   },
   {
     entity: entityPublisher as Entity,
-    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
   {
     entity: entityUser as Entity,
-    entityVersion: entityDefinitionUser as EntityVersion,
     instances: [user1 as EntityInstance, user2 as EntityInstance, user3 as EntityInstance],
   },
 ];

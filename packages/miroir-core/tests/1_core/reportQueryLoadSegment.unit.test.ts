@@ -4,9 +4,10 @@ import {
   createSegmentHeaderLookupFromLocalCacheSnapshot,
   isLocalCacheSegmentHeaderSufficient,
   isReportQueryLoadSegmentSufficient,
+  reportQueryLoadTargetsFromResolvedReportQuery,
   resolveReportQueryLoadAttributes,
   resolveReportQueryLoadSegmentKind,
-} from "../../src/1_core/reportQueryLoadSegment.js";
+} from "../../src/1_core/localCache/reportQueryLoadSegment.js";
 import { getReduxDeploymentsStateIndex } from "../../src/2_domain/ReduxDeploymentsState.js";
 import type { ReportQueryLoadRequest } from "../../src/2_domain/ReportQueryLoadService.js";
 
@@ -193,5 +194,58 @@ describe("isReportQueryLoadSegmentSufficient (3.3)", () => {
         createSegmentHeaderLookupFromLocalCacheSnapshot(snap)
       )
     ).toBe(false);
+  });
+
+  it("extractorByPrimaryKey requires the instance row in full segment", () => {
+    const instanceUuid = "f7f2fe87-df2e-4467-9a6c-ed11f8b6c34c";
+    const fullIndex = getReduxDeploymentsStateIndex(DEPLOY, "data", ENT, "full");
+    const detailRequest = request({
+      resolvedQuery: {
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        application: APP,
+        extractors: {
+          blob: {
+            extractorOrCombinerType: "extractorByPrimaryKey",
+            parentUuid: ENT,
+            instanceUuid,
+          },
+        },
+      },
+    });
+    expect(
+      reportQueryLoadTargetsFromResolvedReportQuery(detailRequest.resolvedQuery)
+    ).toEqual([{ parentUuid: ENT, instanceUuid, extractorKey: "blob" }]);
+
+    const freshEmptyFull = {
+      current: {
+        [fullIndex]: {
+          segment: { kind: "full" as const, freshness: "fresh" as const },
+          entities: {},
+        },
+      },
+    };
+    expect(
+      isReportQueryLoadSegmentSufficient(
+        detailRequest,
+        createSegmentHeaderLookupFromLocalCacheSnapshot(freshEmptyFull)
+      )
+    ).toBe(false);
+
+    const freshWithInstance = {
+      current: {
+        [fullIndex]: {
+          segment: { kind: "full" as const, freshness: "fresh" as const },
+          entities: {
+            [instanceUuid]: { uuid: instanceUuid, name: "MiroirLogo" },
+          },
+        },
+      },
+    };
+    expect(
+      isReportQueryLoadSegmentSufficient(
+        detailRequest,
+        createSegmentHeaderLookupFromLocalCacheSnapshot(freshWithInstance)
+      )
+    ).toBe(true);
   });
 });

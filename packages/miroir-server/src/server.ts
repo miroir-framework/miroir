@@ -281,41 +281,6 @@ const domainController = await setupMiroirDomainController(
 const configurations: Record<string, Deployment> = {
   [deployment_Admin.uuid]: deployment_Admin as Deployment,
   [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
-  // // for mcp server tests
-  // [deployment_Admin.uuid]: {
-  //   ...deployment_Admin,
-  //   configuration: {
-  //     admin: {
-  //       emulatedServerType: "filesystem",
-  //       directory: "miroir-mcp/tests/assets/miroir_admin",
-  //     },
-  //     model: {
-  //       emulatedServerType: "filesystem",
-  //       directory: "miroir-mcp/tests/assets/admin_model",
-  //     },
-  //     data: {
-  //       emulatedServerType: "filesystem",
-  //       directory: "miroir-mcp/tests/assets/admin_data",
-  //     },
-  //   } as any as StoreUnitConfiguration,
-  // } as Deployment,
-  // [deployment_Miroir.uuid]: {
-  //   ...deployment_Miroir,
-  //   configuration: {
-  //     admin: {
-  //       emulatedServerType: "filesystem",
-  //       directory: "miroir-mcp/tests/tmp/miroir_admin",
-  //     },
-  //     model: {
-  //       emulatedServerType: "filesystem",
-  //       directory: "miroir-mcp/tests/tmp/miroir_model",
-  //     },
-  //     data: {
-  //       emulatedServerType: "filesystem",
-  //       directory: "miroir-mcp/tests/tmp/miroir_data",
-  //     },
-  //   } as any as StoreUnitConfiguration,
-  // } as Deployment,
 };
 
 myLogger.info(`Initial deployments to open: ${JSON.stringify(configurations, circularReplacer(), 2)}`);
