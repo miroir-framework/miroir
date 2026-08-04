@@ -211,7 +211,7 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     );
     expect(
       report.definition.extractorTemplates.applicationVersions.filter?.value?.referenceName,
-    ).toBe("application");
+    ).toBe("applicationSelector");
   });
 
   it("AppBar commit icon links to Versioning as Miroir scaffolding report (Phase 5)", () => {
