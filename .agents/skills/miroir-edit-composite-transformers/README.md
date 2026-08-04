@@ -11,7 +11,7 @@ A specialized skill for creating and updating **Composite** Miroir Transformers 
 - Need reusable business logic combinations
 
 ❌ **Don't use this skill when:**
-- Need TypeScript implementation (use `edit-library-transformers` instead)
+- Need TypeScript implementation (use `miroir-edit-transformers` instead)
 - Require imperative logic or external system interactions
 - Want SQL execution support
 
@@ -26,8 +26,8 @@ A specialized skill for creating and updating **Composite** Miroir Transformers 
 
 ### Direct invocation:
 ```
-/edit-composite-transformers create myCompositeTransformer
-/edit-composite-transformers update existingCompositeTransformer
+/miroir-edit-composite-transformers create myCompositeTransformer
+/miroir-edit-composite-transformers update existingCompositeTransformer
 ```
 
 ## What This Skill Does
@@ -99,7 +99,7 @@ Composite transformers are built using these core transformers:
 ## Directory Structure
 
 ```
-edit-composite-transformers/
+miroir-edit-composite-transformers/
 ├── SKILL.md                          # Main skill instructions
 ├── README.md                         # This file
 ├── examples.md                       # Complete examples
@@ -172,10 +172,10 @@ Use `ifThenElse` for different logic paths. The condition goes in the `if` attri
 ❌ **Performance** - May be slower than optimized TypeScript  
 ❌ **External Systems** - Can't call external APIs or services  
 
-For these cases, use `edit-library-transformers` instead.
+For these cases, use `miroir-edit-transformers` instead.
 
 ## See Also
 
 - [SKILL.md](SKILL.md) - Complete step-by-step instructions
 - [examples.md](examples.md) - Working examples with full compositions
-- `edit-library-transformers` skill - For transformers with TypeScript
+- `miroir-edit-transformers` skill - For transformers with TypeScript

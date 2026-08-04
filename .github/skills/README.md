@@ -1,12 +1,12 @@
 # Miroir Skills Directory
 
-This directory contains AI Copilot skills for working with the Miroir Framework.
+This directory indexes Miroir Framework agent skills. Skill files live under [`.agents/skills/`](../../.agents/skills/).
 
 ## Available Skills
 
 ### Transformer Skills
 
-#### 📦 [edit-library-transformers](edit-library-transformers/)
+#### 📦 [miroir-edit-transformers](../../.agents/skills/miroir-edit-transformers/)
 Create and update **library-implemented** transformers - those requiring TypeScript handler functions.
 
 **Use when:**
@@ -19,7 +19,7 @@ Create and update **library-implemented** transformers - those requiring TypeScr
 
 ---
 
-#### 🔗 [edit-composite-transformers](edit-composite-transformers/)
+#### 🔗 [miroir-edit-composite-transformers](../../.agents/skills/miroir-edit-composite-transformers/)
 Create and update **composite** transformers - those composed entirely of other transformers.
 
 **Use when:**
@@ -34,7 +34,7 @@ Create and update **composite** transformers - those composed entirely of other 
 
 ### Query Skills
 
-#### 🔍 [edit-queries](edit-queries/)
+#### 🔍 [miroir-edit-queries](../../.agents/skills/miroir-edit-queries/)
 Create and update **Miroir Queries** (with Extractors, Combiners, and Transformers) using TDD practices.
 
 **Use when:**
@@ -50,7 +50,7 @@ Create and update **Miroir Queries** (with Extractors, Combiners, and Transforme
 
 ### Process & Quality Skills
 
-#### 📊 [assess-evolution-quality](assess-evolution-quality/)
+#### 📊 [assess-evolution-quality](../../.agents/skills/assess-evolution-quality/)
 Assess the quality of a software project **evolution** from its git history and GitHub issue history.
 
 **Use when:**
@@ -68,11 +68,11 @@ counter-examples, and a "Mistakes" catalogue of reversed decisions.
 
 ### Other Skills
 
-#### [create-skill](create-skill/)
+#### [create-skill](../../.agents/skills/create-skill/)
 Tools for creating new Copilot skills.
 
-#### [query-editor](query-editor/)
-Legacy query/transformer workflow (see [edit-queries](edit-queries/) for TDD-focused query work).
+#### [query-editor](../../.agents/skills/query-editor/)
+Legacy query/transformer workflow (see [miroir-edit-queries](../../.agents/skills/miroir-edit-queries/) for TDD-focused query work).
 
 ---
 
@@ -92,24 +92,24 @@ Comprehensive guide explaining:
 ### "I want to create a query..."
 
 **→ With extractors, combiners, or filters?**
-  - Yes → Use [edit-queries](edit-queries/)
+  - Yes → Use [miroir-edit-queries](../../.agents/skills/miroir-edit-queries/)
 
 **→ Following TDD practices?**
-  - Yes → Use [edit-queries](edit-queries/)
+  - Yes → Use [miroir-edit-queries](../../.agents/skills/miroir-edit-queries/)
 
 ### "I want to create a transformer..."
 
 **→ With TypeScript code?**
-  - Yes → Use [edit-library-transformers](edit-library-transformers/)
-  - No → Use [edit-composite-transformers](edit-composite-transformers/)
+  - Yes → Use [miroir-edit-transformers](../../.agents/skills/miroir-edit-transformers/)
+  - No → Use [miroir-edit-composite-transformers](../../.agents/skills/miroir-edit-composite-transformers/)
 
 **→ By composing existing transformers?**
-  - Yes → Use [edit-composite-transformers](edit-composite-transformers/)
-  - No, I need custom logic → Use [edit-library-transformers](edit-library-transformers/)
+  - Yes → Use [miroir-edit-composite-transformers](../../.agents/skills/miroir-edit-composite-transformers/)
+  - No, I need custom logic → Use [miroir-edit-transformers](../../.agents/skills/miroir-edit-transformers/)
 
 **→ For fundamental operations?**
-  - Yes → Use [edit-library-transformers](edit-library-transformers/)
-  - No, for domain-specific logic → Use [edit-composite-transformers](edit-composite-transformers/)
+  - Yes → Use [miroir-edit-transformers](../../.agents/skills/miroir-edit-transformers/)
+  - No, for domain-specific logic → Use [miroir-edit-composite-transformers](../../.agents/skills/miroir-edit-composite-transformers/)
 
 ---
 
@@ -118,7 +118,7 @@ Comprehensive guide explaining:
 ### Library Transformer
 ```bash
 # Invoke skill
-/edit-library-transformers create myTransformer
+/miroir-edit-transformers create myTransformer
 
 # Or natural language
 "Create a library transformer called stringConcat with TypeScript implementation"
@@ -127,7 +127,7 @@ Comprehensive guide explaining:
 ### Composite Transformer
 ```bash
 # Invoke skill
-/edit-composite-transformers create myCompositeTransformer
+/miroir-edit-composite-transformers create myCompositeTransformer
 
 # Or natural language
 "Create a composite transformer that filters active users and formats their data"
@@ -202,7 +202,7 @@ This is the original unified transformer skill that handled both library and com
 ## Contributing
 
 When creating new skills:
-1. Use [create-skill](create-skill/) as a template
+1. Use [create-skill](../../.agents/skills/create-skill/) as a template
 2. Follow the established pattern (SKILL.md, README.md, examples.md)
 3. Include JSON templates where applicable
 4. Add comprehensive examples

@@ -117,5 +117,5 @@ npm run vitest -w miroir-core -- queries.unit -t "values filter"
 ## Related Skills
 
 - [query-editor](../query-editor/) - Transformer-focused query work
-- [edit-library-transformers](../edit-library-transformers/) - Library transformer development
-- [edit-composite-transformers](../edit-composite-transformers/) - Composite transformer development
+- [miroir-edit-transformers](../miroir-edit-transformers/) - Library transformer development
+- [miroir-edit-composite-transformers](../miroir-edit-composite-transformers/) - Composite transformer development

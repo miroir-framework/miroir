@@ -1,5 +1,5 @@
 ---
-name: edit-queries
+name: miroir-edit-queries
 description: Create or update Miroir Queries (with Extractors, Combiners, and Transformers) in a TDD style. Use when defining data access patterns, query templates, or working with boxedQueryWithExtractorCombinerTransformer.
 allowed-tools: Read, Grep, Glob, Bash(npm *), Edit, Create
 ---

@@ -11,7 +11,7 @@ A specialized skill for creating and updating **Library-Implemented** Miroir Tra
 - Want in-memory AND/OR database (SQL) execution support
 
 ❌ **Don't use this skill when:**
-- Creating composite transformers (use `edit-composite-transformers` instead)
+- Creating composite transformers (use `miroir-edit-composite-transformers` instead)
 - Working with transformers composed of other transformers only
 
 ## Quick Start
@@ -25,8 +25,8 @@ A specialized skill for creating and updating **Library-Implemented** Miroir Tra
 
 ### Direct invocation:
 ```
-/edit-library-transformers create myTransformer
-/edit-library-transformers update existingTransformer
+/miroir-edit-transformers create myTransformer
+/miroir-edit-transformers update existingTransformer
 ```
 
 ## What This Skill Does
@@ -87,7 +87,7 @@ npm run devBuild -w miroir-core
 ## Directory Structure
 
 ```
-edit-library-transformers/
+miroir-edit-transformers/
 ├── SKILL.md                          # Main skill instructions
 ├── README.md                         # This file
 ├── examples.md                       # Complete examples
@@ -120,4 +120,4 @@ edit-library-transformers/
 
 - [SKILL.md](SKILL.md) - Complete step-by-step instructions
 - [examples.md](examples.md) - Working examples with full code
-- `edit-composite-transformers` skill - For transformers without TypeScript
+- `miroir-edit-composite-transformers` skill - For transformers without TypeScript

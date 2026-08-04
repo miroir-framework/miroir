@@ -1,5 +1,5 @@
 ---
-name: edit-library-transformers
+name: miroir-edit-transformers
 description: Create or update Library-Implemented Miroir Transformers (those with TypeScript handler functions). Use when creating transformers with transformerImplementationType libraryImplementation, or when editing transformer handler code in TransformersForRuntime.ts.
 allowed-tools: Read, Grep, Glob, Bash(npm *), Edit, Create
 ---
@@ -11,7 +11,7 @@ This skill guides the creation and modification of **Library-Implemented** Miroi
 **Use this skill for**: Transformers with `transformerImplementationType: "libraryImplementation"`  
 **Examples**: `ifThenElse`, `mapList`, `createObject`, `dataflowObject`, `aggregate`
 
-**For composite transformers** (no TypeScript code), use the `edit-composite-transformers` skill instead.
+**For composite transformers** (no TypeScript code), use the `miroir-edit-composite-transformers` skill instead.
 
 ---
 
@@ -405,4 +405,4 @@ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificL
 - [examples.md](examples.md) - Complete examples with code
 - [template-library-transformer.json](template-library-transformer.json) - Starter template
 - [template-test-case.json](template-test-case.json) - Test case template
-- `edit-composite-transformers` skill - For transformers without TypeScript code
+- `miroir-edit-composite-transformers` skill - For transformers without TypeScript code

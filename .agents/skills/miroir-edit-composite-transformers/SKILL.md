@@ -1,5 +1,5 @@
 ---
-name: edit-composite-transformers
+name: miroir-edit-composite-transformers
 description: Create or update Composite Miroir Transformers (those composed of other transformers, no TypeScript code). Use when creating transformers with transformerImplementationType transformer, or when composing existing transformers into new domain-specific transformations.
 allowed-tools: Read, Grep, Glob, Bash(npm *), Edit, Create
 ---
@@ -11,7 +11,7 @@ This skill guides the creation and modification of **Composite** Miroir Transfor
 **Use this skill for**: Transformers with `transformerImplementationType: "transformer"`  
 **Examples**: `spreadSheetToJzodSchema`, domain-specific transformations
 
-**For library transformers** (with TypeScript handler functions), use the `edit-library-transformers` skill instead.
+**For library transformers** (with TypeScript handler functions), use the `miroir-edit-transformers` skill instead.
 
 ---
 
@@ -519,4 +519,4 @@ VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificL
 - [examples.md](examples.md) - Complete examples
 - [template-composite-transformer.json](template-composite-transformer.json) - Starter template
 - [template-test-case.json](template-test-case.json) - Test case template
-- `edit-library-transformers` skill - For transformers with TypeScript code
+- `miroir-edit-transformers` skill - For transformers with TypeScript code

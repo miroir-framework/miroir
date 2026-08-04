@@ -4,8 +4,8 @@
 
 The Miroir transformer editing capabilities are now split into **two specialized skills** instead of one monolithic skill:
 
-1. **`edit-library-transformers`** - For transformers with TypeScript implementation
-2. **`edit-composite-transformers`** - For transformers composed of other transformers
+1. **`miroir-edit-transformers`** - For transformers with TypeScript implementation
+2. **`miroir-edit-composite-transformers`** - For transformers composed of other transformers
 
 ## Architecture Decision
 
@@ -32,7 +32,7 @@ The workflows are **fundamentally different** enough that maintaining separate s
 
 ## How to Choose Which Skill to Use
 
-### Use `edit-library-transformers` when:
+### Use `miroir-edit-transformers` when:
 
 - ✅ Need imperative logic (loops, complex algorithms)
 - ✅ Building fundamental, reusable primitives
@@ -43,7 +43,7 @@ The workflows are **fundamentally different** enough that maintaining separate s
 
 **Examples**: `ifThenElse`, `mapList`, `aggregate`, `createObject`, `dataflowObject`
 
-### Use `edit-composite-transformers` when:
+### Use `miroir-edit-composite-transformers` when:
 
 - ✅ Can express logic as transformer composition
 - ✅ Building domain-specific transformations
@@ -110,8 +110,8 @@ The workflows are **fundamentally different** enough that maintaining separate s
 ### Direct Invocation
 
 ```bash
-/edit-library-transformers create myLibraryTransformer
-/edit-composite-transformers create myCompositeTransformer
+/miroir-edit-transformers create myLibraryTransformer
+/miroir-edit-composite-transformers create myCompositeTransformer
 ```
 
 ## Skill Contents
@@ -172,8 +172,8 @@ npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers -
 
 ## See Also
 
-- [edit-library-transformers/SKILL.md](edit-library-transformers/SKILL.md)
-- [edit-library-transformers/README.md](edit-library-transformers/README.md)
-- [edit-composite-transformers/SKILL.md](edit-composite-transformers/SKILL.md)
-- [edit-composite-transformers/README.md](edit-composite-transformers/README.md)
+- [miroir-edit-transformers/SKILL.md](../../.agents/skills/miroir-edit-transformers/SKILL.md)
+- [miroir-edit-transformers/README.md](../../.agents/skills/miroir-edit-transformers/README.md)
+- [miroir-edit-composite-transformers/SKILL.md](../../.agents/skills/miroir-edit-composite-transformers/SKILL.md)
+- [miroir-edit-composite-transformers/README.md](../../.agents/skills/miroir-edit-composite-transformers/README.md)
 - [edit-transformers-OLD/](edit-transformers-OLD/) - Original skill (for reference only)
