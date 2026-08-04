@@ -1,4 +1,5 @@
 import loglevelNextLog from 'loglevelnext';
+import express, { type Express } from "express";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import {
@@ -73,6 +74,8 @@ import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
 } from "miroir-test-app_deployment-library";
 import { callMcpToolViaHttp } from './mcpClient.js';
+import { MiroirMcpServer, setupMcpServer } from "../../src/mcpServer.js";
+import { EndpointToolRegistry } from "../../src/tools/EndpointToolRegistry.js";
 
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
@@ -148,6 +151,9 @@ let miroirConfig: MiroirMcpConfig;
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let applicationDeploymentMap: ApplicationDeploymentMap;
+let mcpServer: MiroirMcpServer;
+let httpServer: any;
+let mcpServerUrl: string;
 
 const globalTimeOut = 60000;
 
@@ -177,23 +183,6 @@ export async function runMcpTestsViaHttp(
   log.info(`Test suite '${mcpTest.testName}' results: ${JSON.stringify(result, null, 2)}`);
   // expect(JSON.stringify(result.content[0]?.parsed?.status)).toContain("success");
   
-  return result;
-}
-
-export async function runMcpTestsViaHandler(
-  mcpTest: McpToolTest,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  // timeout = 30000,
-) {
-  const result = await mcpTest.handler.actionHandler(
-    mcpTest.params,
-    domainController,
-    applicationDeploymentMap,
-  );
-  log.info(`${mcpTest.testName} result:`, JSON.stringify(result, null, 2));
-  // Verify the MCP layer processed the action correctly
-  mcpTest.tests(expect, result);
   return result;
 }
 
@@ -303,7 +292,17 @@ describe("MCP Tools Integration Tests", () => {
       }
     }
 
-    log.info("MCP test setup completed");
+    // Self-contained MCP server: the registry-backed server runs in-process on an
+    // ephemeral port, no external MCP server needs to be running for these tests.
+    const app: Express = express();
+    const registry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
+    mcpServer = await setupMcpServer(app, applicationDeploymentMap, registry, domainController);
+    await new Promise<void>((resolve) => {
+      httpServer = app.listen(0, () => resolve());
+    });
+    mcpServerUrl = `http://localhost:${httpServer.address().port}`;
+
+    log.info(`MCP test setup completed, in-process MCP server listening on ${mcpServerUrl}`);
   }, globalTimeOut);
 
   // ##############################################################################################
@@ -358,6 +357,9 @@ describe("MCP Tools Integration Tests", () => {
 
   // ##############################################################################################
   afterAll(async () => {
+    if (httpServer) {
+      await new Promise<void>((resolve) => httpServer.close(() => resolve()));
+    }
     // Close all stores
     for (const deploymentUuid of Object.keys(miroirConfig.client.deploymentStorageConfig)) {
       const closeStoreAction: StoreOrBundleAction = {
@@ -379,24 +381,6 @@ describe("MCP Tools Integration Tests", () => {
     log.info("MCP test teardown completed");
   });
 
-  // describe.sequential(
-  //   "MCP Tool Handlers - All Tests",
-  //   () => {
-  
-  //     it.each(ALL_MCP_TEST_CASES.map(test => [test.testName, test]))(
-  //       "test %s",
-  //       async (currentTestSuiteName, testAction: McpToolTest) => {
-  //         const testSuiteResults = await runMcpTestsViaHandler(
-  //           testAction,
-  //           domainController,
-  //           applicationDeploymentMap,
-  //         );
-  //       },
-  //       globalTimeOut
-  //     );
-  //   } //  end describe('MCP Tool Handlers - All Tests',
-  // );
-
   describe.sequential(
     "MCP Tool Handlers via HTTP - All Tests",
     () => {
@@ -405,7 +389,7 @@ describe("MCP Tools Integration Tests", () => {
         async (currentTestSuiteName, testAction: McpToolTest) => {
           const testSuiteResults = await runMcpTestsViaHttp(
             testAction,
-            miroirConfig.client.mcpUrl,
+            mcpServerUrl,
           );
         },
         globalTimeOut

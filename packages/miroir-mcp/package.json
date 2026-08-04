@@ -34,6 +34,7 @@
     "loglevelnext": "^6.0.0",
     "miroir-core": "*",
     "miroir-localcache-redux": "*",
+    "miroir-test-app_deployment-admin": "*",
     "miroir-test-app_deployment-library": "*",
     "miroir-test-app_deployment-miroir": "*",
     "uuid": "^11.0.0",
