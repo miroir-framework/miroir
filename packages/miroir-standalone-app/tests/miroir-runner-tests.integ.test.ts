@@ -19,7 +19,6 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
 import {
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
@@ -30,7 +29,7 @@ import { loglevelnext } from "../src/loglevelnextImporter.js";
 import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { miroirAppStartup } from "../src/startup.js";
 import {
-  isDomainControllerActionCrudSuite,
+  domainControllerIntegTestNames
 } from "./helpers/libraryPlayfieldSeeds.js";
 import {
   loadRunnerOrActionMiroirTestSuite,
@@ -41,18 +40,10 @@ import { loadTestConfigFiles } from "./utils/fileTools.js";
 
 const pageLabel = "miroir-runner-tests.integ";
 
-// const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
-// const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_drop_entity.name;
-// const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY = miroirTest_runner_freeze_application_version.name;
-
 function isMiroirEntityRunnerSuite(suiteKey: string): boolean {
   return (
     suiteKey === miroirTest_runner_create_entity.name || suiteKey === miroirTest_runner_drop_entity.name
   );
-}
-
-function isFreezeApplicationVersionRunnerSuite(suiteKey: string): boolean {
-  return suiteKey === miroirTest_runner_freeze_application_version.name;
 }
 
 let log: LoggerInterface = console as unknown as LoggerInterface;
@@ -98,11 +89,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
       ? "testApplication_CreateEntity"
       : "Library",
   });
-  // const runnerSessionBase = {
-  //   runnerRegistry: registryEntry?.runnerRegistry ?? RUNNER_LIBRARY_RUNNER_REGISTRY,
-  //   ...(registryEntry?.resolvedRunner ? { resolvedRunner: registryEntry.resolvedRunner } : {}),
-  // };
-  if (isDomainControllerActionCrudSuite(suiteKey)) {
+  if (domainControllerIntegTestNames.includes(suiteKey)) {
     const playfieldSeed = registryEntry?.libraryPlayfieldSeed;
     if (!playfieldSeed) {
       throw new Error(`Playfield seed not found for suite key: ${suiteKey}`);
@@ -118,7 +105,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
       },
     };
   }
-  if (isFreezeApplicationVersionRunnerSuite(suiteKey)) {
+  if (suiteKey === miroirTest_runner_freeze_application_version.name) {
     return {
       runnerRegistry: registryEntry?.runnerRegistry,
       resolvedRunner: registryEntry?.resolvedRunner,

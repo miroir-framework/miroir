@@ -23,7 +23,6 @@ import {
   Country1,
   Country2,
   Country3,
-  defaultLibraryAppModel,
   entityAuthor,
   entityBook,
   entityCountry,
@@ -48,8 +47,7 @@ import {
   miroirTest_domain_controller_no_parent_uuid_crud,
   miroirTest_domain_controller_non_uuid_pk_data_crud,
   miroirTest_domain_controller_non_uuid_pk_model_crud,
-  miroirTest_evolutionTraceWP1,
-  miroirTest_runner_freeze_application_version
+  miroirTest_evolutionTraceWP1
 } from "miroir-test-app_deployment-miroir";
 
 
@@ -68,7 +66,7 @@ export const domainControllerIntegTests: MiroirTestDefinition[] = [
   miroirTest_evolutionTraceWP1,
 ];
 
-const domainControllerIntegTestNames: string[] = domainControllerIntegTests.map((test) => {
+export const domainControllerIntegTestNames: string[] = domainControllerIntegTests.map((test) => {
   if (!test.name) throw new Error(`Test ${test.uuid} has no name`);
   return test.name;
 });
@@ -598,144 +596,6 @@ export const domainControllerModelUndoRedoLibraryPlayfieldSeed: TestbedSetupPara
   testbedModel: emptyLibraryPlayfieldMetaModel,
 };
 
-// /**
-//  * Session playfield seed for `domain_controller_application_version_freeze`.
-//  * Same minimal Library as Model.CRUD (Publisher + Country).
-//  */
-// export const domainControllerApplicationVersionFreezeLibraryPlayfieldSeed: TestbedSetupParameters =
-//   {
-//     testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: publisherAndCountryTestMetaModel,
-//   };
-
 export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {
   return domainControllerIntegTestNames.includes(suiteKey);
 }
-
-// export const DOMAIN_CONTROLLER_TESTBED_KEYMAP: Record<string, TestbedSetupParameters> = {
-//   // ###############################################################################
-//   [miroirTest_domain_controller_data_crud.name]: {
-//     testbedEntitiesAndInstances: [
-//       {
-//         entity: entityAuthor as Entity,
-//         instances: [author1, author2, author3 as EntityInstance],
-//       },
-//       {
-//         entity: entityBook as Entity,
-//         instances: [
-//           book1 as EntityInstance,
-//           book2 as EntityInstance,
-//           book4 as EntityInstance,
-//           book5 as EntityInstance,
-//           book6 as EntityInstance,
-//         ],
-//       },
-//       {
-//         entity: entityPublisher as Entity,
-//         instances: [
-//           publisher1 as EntityInstance,
-//           publisher2 as EntityInstance,
-//           publisher3 as EntityInstance,
-//         ],
-//       },
-//     ],
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: defaultLibraryAppModel as MetaModel,
-//   },
-//   // ###############################################################################
-//   [miroirTest_domain_controller_model_crud.name]: {
-//     testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: publisherAndCountryTestMetaModel,
-//   },
-//   // ###############################################################################
-//   [miroirTest_domain_controller_composite_pk_crud.name]: {
-//     testbedEntitiesAndInstances: [
-//       {
-//         entity: entityCompositePK,
-//         instances: [compositeItem1, compositeItem2, compositeItem3],
-//       },
-//     ],
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: compositePKTestMetaModel,
-//   },
-//   // ###############################################################################
-//   [miroirTest_domain_controller_non_uuid_pk_model_crud.name]: {
-//     testbedEntitiesAndInstances: [
-//       {
-//         entity: entityPublisher as Entity,
-//         instances: [
-//           publisher1 as EntityInstance,
-//           publisher2 as EntityInstance,
-//           publisher3 as EntityInstance,
-//         ],
-//       },
-//     ],
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: publisherOnlyTestMetaModel,
-//   },
-//   // ###############################################################################
-//   [miroirTest_domain_controller_non_uuid_pk_data_crud.name]: {
-//     testbedEntitiesAndInstances: [
-//       {
-//         entity: entityCodeNumber,
-//         instances: [codeItem1, codeItem2, codeItem3],
-//       },
-//     ],
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: codeNumberTestMetaModel,
-//   },
-//   // ###############################################################################
-//   [miroirTest_domain_controller_no_parent_uuid_crud.name]: {
-//     testbedEntitiesAndInstances: [
-//       {
-//         entity: entityPublisher as Entity,
-//         instances: [
-//           publisher1 as EntityInstance,
-//           publisher2 as EntityInstance,
-//           publisher3 as EntityInstance,
-//         ],
-//       },
-//       {
-//         entity: entityNoParentUuid,
-//         instances: [noParentItem1, noParentItem2, noParentItem3],
-//       },
-//     ],
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: noParentUuidTestMetaModel,
-//   },
-//   // ###############################################################################
-//   [miroirTest_domain_controller_model_undo_redo.name]: {
-//     testbedEntitiesAndInstances: [],
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: emptyLibraryPlayfieldMetaModel,
-//   },
-//   // ###############################################################################
-//   [miroirTest_domain_controller_application_version_freeze.name]: {
-//     testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: publisherAndCountryTestMetaModel,
-//   },
-//   // ###############################################################################
-//   [miroirTest_runner_freeze_application_version.name]: {
-//     testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: publisherAndCountryTestMetaModel,
-//   },
-//   // ###############################################################################
-//   [miroirTest_evolutionTraceWP1.name]: {
-//     testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-//     testbedInitApplicationParameters: libraryTestbedInitParams,
-//     testbedModel: publisherAndCountryTestMetaModel,
-//   },
-// };
-
-// export function libraryPlayfieldSeedForActionSuite(
-//   suiteKey: string,
-// ): TestbedSetupParameters | undefined {
-//   if (!DOMAIN_CONTROLLER_TESTBED_KEYMAP[suiteKey]) {
-//     throw new Error(`Library playfield seed not found for suite key: ${suiteKey}`);
-//   }
-//   return DOMAIN_CONTROLLER_TESTBED_KEYMAP[suiteKey];
-// }
