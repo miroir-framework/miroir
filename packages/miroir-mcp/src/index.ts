@@ -14,7 +14,7 @@ import {
   type MiroirConfigClient,
 } from "miroir-core";
 import { loadMiroirMcpConfig } from "./config/configLoader.js";
-import { MiroirMcpServer, openStores, setupLogging, setupMcpServer } from "./mcpServer.js";
+import { MiroirMcpServer, openStores, setupLogging, setupMcpServer, refreshLocalCachesForDeployedApplications } from "./mcpServer.js";
 import { setupMiroirPlatform } from "./startup/setup.js";
 import { initializeStoreStartup } from "./startup/storeStartup.js";
 import { EndpointToolRegistry } from "./tools/EndpointToolRegistry.js";
@@ -120,6 +120,6 @@ console.warn("[miroir-mcp] Miroir MCP is in library mode, not starting server au
 // Export for programmatic use
 export * from "./config/configLoader.js";
 export * from "./config/configSchema.js";
-export { MiroirMcpServer, setupMcpServer };
+export { MiroirMcpServer, setupMcpServer, refreshLocalCachesForDeployedApplications };
 export { EndpointToolRegistry };
 

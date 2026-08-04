@@ -458,10 +458,16 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           update: "updateInstance",
           delete: "deleteInstance",
         };
-        const newActionType = actionMap[action.actionType.split("_")[1]];
+        const persistenceVerb = action.actionType.split("_").at(-1)!;
+        const newActionType = actionMap[persistenceVerb];
+        if (!newActionType) {
+          throw new Error(
+            `innerHandlePersistenceActionForLocalPersistenceStore unsupported LocalPersistenceAction verb ${persistenceVerb} on ${action.actionType}`,
+          );
+        }
         const localStoreAction: PersistenceStoreControllerAction = {
           // actionType: "instanceAction",
-          actionType: actionMap[newActionType],
+          actionType: newActionType,
           parentName: action.payload.parentName ?? "",
           parentUuid: action.payload.parentUuid ?? "",
           // deploymentUuid: action.deploymentUuid, // NOT for createInstance

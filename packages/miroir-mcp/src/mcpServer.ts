@@ -9,6 +9,7 @@ import * as logger from 'loglevelnext';
 
 import {
   ApplicationDeploymentMap,
+  defaultMetaModelEnvironment,
   DomainControllerInterface,
   LoggerFactoryInterface,
   LoggerInterface,
@@ -25,6 +26,54 @@ import { type EndpointToolRegistry } from "./tools/EndpointToolRegistry.js";
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;
+
+/** ModelEndpoint uuid — rollback reloads persisted model/data into the local cache. */
+const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
+
+/**
+ * openStore wires persistence backends but does not populate instance rows (including
+ * Endpoint definitions) into the local cache. Roll back each deployed application so
+ * currentModel().endpoints is available to the MCP tool registry.
+ */
+export async function refreshLocalCachesForDeployedApplications(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<void> {
+  for (const applicationUuid of Object.keys(applicationDeploymentMap).sort()) {
+    const result = await domainController.handleAction(
+      {
+        actionType: "rollback",
+        actionLabel: `Load persisted state into local cache (${applicationUuid})`,
+        endpoint: MODEL_ENDPOINT_UUID,
+        payload: {
+          application: applicationUuid,
+        },
+      },
+      applicationDeploymentMap,
+      defaultMetaModelEnvironment,
+    );
+    if (result.status !== "ok") {
+      log.warn(
+        `refreshLocalCachesForDeployedApplications: rollback failed for ${applicationUuid}: ${JSON.stringify(result)}`,
+      );
+    }
+  }
+}
+
+async function logAvailableMcpTools(
+  endpointToolRegistry: EndpointToolRegistry,
+  reason: "initial" | "updated",
+): Promise<void> {
+  try {
+    const tools = await endpointToolRegistry.listTools();
+    const toolNames = tools.map((tool) => tool.name).sort();
+    log.info(
+      `MCP tools ${reason} (${toolNames.length}): ${toolNames.join(", ") || "(none)"}`,
+    );
+  } catch (error) {
+    log.error(`Failed to list MCP tools (${reason}):`, error);
+  }
+}
 
 // ################################################################################################
 // ################################################################################################
@@ -85,16 +134,23 @@ export class MiroirMcpServer {
   async setup(): Promise<void> {
     this.app.use(express.json());
 
+    await refreshLocalCachesForDeployedApplications(
+      this.domainController,
+      this.applicationDeploymentMap,
+    );
+
     // Notify all connected clients whenever the tool surface changes (endpoints /
     // deployments added or removed). A session whose transport is gone throws
     // "Not connected", which is expected and logged at debug level.
     this.endpointToolRegistry.start(() => {
+      void logAvailableMcpTools(this.endpointToolRegistry, "updated");
       for (const [sessionId, session] of this.sessions.entries()) {
         session.server.sendToolListChanged().catch((error) => {
           log.debug(`sendToolListChanged for session ${sessionId}: ${error}`);
         });
       }
     });
+    await logAvailableMcpTools(this.endpointToolRegistry, "initial");
 
     // SSE endpoint for MCP protocol - establishes the event stream
     this.app.get("/sse", async (req, res) => {

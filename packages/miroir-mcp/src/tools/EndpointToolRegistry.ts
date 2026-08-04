@@ -216,6 +216,9 @@ export class EndpointToolRegistry {
         continue;
       }
       const applicationName = applicationNames[applicationUuid] ?? applicationUuid;
+      log.info(
+        `listTools: application ${applicationName} (${applicationUuid}) exposes ${endpoints.length} endpoint(s)`,
+      );
       const wellFormedEndpoints = endpoints.filter((endpoint) => {
         const wellFormed = endpoint?.uuid && endpoint?.name && endpoint?.definition?.actions;
         if (!wellFormed) {

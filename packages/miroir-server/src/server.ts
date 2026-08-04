@@ -17,7 +17,6 @@ import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   type Deployment,
-  type EndpointDefinition,
   getMiroirEnvironmentMode,
   LoggerFactoryInterface,
   LoggerInterface,
@@ -42,18 +41,13 @@ import {
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
 
-import {
-  deployment_Library_DO_NO_USE,
-  getDefaultLibraryModelEnvironmentDEFUNCT,
-} from "miroir-test-app_deployment-library";
-
+import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
 import { setupMiroirDomainController } from 'miroir-localcache-redux';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
 import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
-import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
 const packageName = "server"
 const cleanLevel = "5"
 
@@ -489,59 +483,25 @@ for (const op of restServerDefaultHandlers) {
   );
 }
 
-const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
-  defaultMiroirMetaModel,
-  instanceEndpointV1 as any as EndpointDefinition,
-  deployment_Library_DO_NO_USE.uuid,
+const endpointToolRegistry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
+myLogger.info("Setting up MCP server with dynamic EndpointToolRegistry");
+const mcpApp = express();
+mcpApp.use(cors({
+  origin: corsAllowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+mcpApp.use(bodyParser.json({limit: '50mb'}));
+
+myLogger.info(`MCP Server being set-up, going to execute on the port::${mcpPortFromConfig}`);
+const mcpServer = await setupMcpServer(
+  mcpApp,
+  applicationDeploymentMap,
+  endpointToolRegistry,
+  domainController,
 );
-
-const endpointDefinition: EndpointDefinition[] | undefined =
-    defaultLibraryAppModel.currentModel.endpoints.filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") as EndpointDefinition[]; // lendingEndpoint UUID
-  
-if (!endpointDefinition || endpointDefinition.length === 0) {
-  throw new Error("Lending endpoint definition not found: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
-}
-
-// const mcpRequestHandlers = getMcpRequestHandlers(
-//   [
-//     {
-//       instanceEndpoint: instanceEndpointV1 as any as EndpointDefinition,
-//       endpointActions: [
-//         "createInstance",
-//         "getInstance",
-//         "getInstances",
-//         "updateInstance",
-//         "deleteInstance",
-//         "deleteInstanceWithCascade",
-//         "loadNewInstancesInLocalCache",
-//       ],
-//       toolPrefix: "miroir_",
-//     },
-//     {
-//       instanceEndpoint: endpointDefinition[0],
-//       endpointActions: ["lendDocument"],
-//       toolPrefix: "library_",
-//     }, // Pass the existing handlers to allow for composition};
-//   ]
-// );
-// myLogger.info(`SETTING UP MCP SERVER NOW...`, JSON.stringify(Object.keys(mcpRequestHandlers), null, 2));
-// const mcpApp = express();
-// mcpApp.use(cors({
-//   origin: corsAllowedOrigins,
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization']
-// }));
-
-// mcpApp.use(bodyParser.json({limit: '50mb'}));
-
-// myLogger.info(`MCP Server being set-up, going to execute on the port::${mcpPortFromConfig}`);
-// const mcpServer = await setupMcpServer(
-//   mcpApp,
-//   applicationDeploymentMap,
-//   mcpRequestHandlers,
-//   domainController,
-// );
 
 // AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
 app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap));
@@ -628,11 +588,11 @@ if (existsSync(certFile) && existsSync(keyFile)) {
     myLogger.info(`HTTP server listening on port ${restPortFromConfig} (no TLS — run setup-https to enable HTTPS)`);
   });
 }
-// if ( mcpPortFromConfig) {
-//   mcpServer.run(mcpPortFromConfig);
-// } else {
-//   myLogger.warn(`MCP port not configured, skipping MCP server startup`);
-// }
+if ( mcpPortFromConfig) {
+  mcpServer.run(mcpPortFromConfig);
+} else {
+  myLogger.warn(`MCP port not configured, skipping MCP server startup`);
+}
 
 // Adjust Request type
 interface CustomRequest extends Request {

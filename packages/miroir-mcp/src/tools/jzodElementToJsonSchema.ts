@@ -1,66 +1,104 @@
-import { 
+import {
   type JzodElement,
   resolveJzodSchemaReferenceInContext,
   type JzodReference,
   defaultMiroirModelEnvironment,
 } from "miroir-core";
 import type { McpToolDescriptionProperty } from "./mcpHandlersForEndpoint.js";
+import {
+  isJzodConversionLimitReached,
+  normalizeJzodConversionOptions,
+  schemaReferenceKey,
+  type JzodConversionOptions,
+} from "./jzodConversionContext.js";
+
+function looseObject(description: string): McpToolDescriptionProperty {
+  return {
+    type: "object",
+    description: description || "Open object (recursive or opaque Miroir schema)",
+    properties: {},
+    required: [],
+    additionalProperties: true,
+  };
+}
 
 /**
  * Recursively converts a JzodElement to an MCP tool description property.
- * 
- * @param jzodElement - The Jzod schema element to convert
- * @param propertyName - Optional property name for context-specific handling
- * @param propertyNameMapping - Optional mapping of property names for renaming
- * @returns An MCP tool description property
+ *
+ * Schema references are resolved against the Miroir fundamental model environment.
+ * Cyclic references (jzodElement ↔ jzodObject, compositeAction ↔ domainAction, …)
+ * degrade to a generic object rather than overflowing the stack.
  */
 export function jzodElementToJsonSchema(
   jzodElement: JzodElement,
   propertyName?: string,
-  propertyNameMapping?: Record<string, string>
+  propertyNameMapping?: Record<string, string>,
+  conversionOptions?: JzodConversionOptions,
 ): McpToolDescriptionProperty | any {
-  // const jzodElement = jzodElement as any;
+  const options = normalizeJzodConversionOptions(conversionOptions);
+  if (options.depth >= options.maxDepth) {
+    return looseObject("");
+  }
 
-  // Extract description from tag
-  const description = jzodElement.tag?.value?.description || jzodElement.tag?.value?.defaultLabel || '';
+  const description =
+    jzodElement.tag?.value?.description || jzodElement.tag?.value?.defaultLabel || "";
 
   switch (jzodElement.type) {
-    case 'uuid':
-    case 'string':
+    case "uuid":
+    case "string":
       return {
-        type: 'string',
+        type: "string",
         description,
       };
 
-    case 'boolean':
+    case "boolean":
       return {
-        type: 'boolean',
+        type: "boolean",
         description,
       };
 
-    case 'schemaReference': {
-      // Resolve the schema reference using the miroir context
-      const resolvedSchema = resolveJzodSchemaReferenceInContext(
-        jzodElement as JzodReference,
-        (jzodElement as JzodReference).context || {},
-        defaultMiroirModelEnvironment
-        // { 
-        //   miroirFundamentalJzodSchema: miroirFundamentalJzodSchema as MlSchema,
-        //   endpointsByUuid: {}
-        // }
-      );
-      
-      // Recursively convert the resolved schema
-      return jzodElementToJsonSchema(resolvedSchema, propertyName, propertyNameMapping);
+    case "schemaReference": {
+      const ref = jzodElement as JzodReference;
+      const refKey = schemaReferenceKey(ref);
+      if (isJzodConversionLimitReached(options, refKey)) {
+        return looseObject(description);
+      }
+
+      options.resolvingRefs.add(refKey);
+      const childOptions: JzodConversionOptions = {
+        ...options,
+        depth: options.depth + 1,
+      };
+
+      try {
+        const resolvedSchema = resolveJzodSchemaReferenceInContext(
+          ref,
+          ref.context || {},
+          defaultMiroirModelEnvironment,
+        );
+        return jzodElementToJsonSchema(
+          resolvedSchema,
+          propertyName,
+          propertyNameMapping,
+          childOptions,
+        );
+      } finally {
+        options.resolvingRefs.delete(refKey);
+      }
     }
 
-    case 'object': {
+    case "object": {
       const properties: Record<string, any> = {};
       const required: string[] = [];
 
       if (jzodElement.definition) {
         for (const [key, value] of Object.entries(jzodElement.definition)) {
-          properties[key] = jzodElementToJsonSchema(value as any, key, propertyNameMapping);
+          properties[key] = jzodElementToJsonSchema(
+            value as any,
+            key,
+            propertyNameMapping,
+            { ...options, depth: options.depth + 1 },
+          );
           if (!(value as any).optional && !(value as any).nullable) {
             required.push(key);
           }
@@ -68,48 +106,51 @@ export function jzodElementToJsonSchema(
       }
 
       return {
-        type: 'object',
+        type: "object",
         properties,
         required,
         additionalProperties: true,
       };
     }
 
-    case 'array': {
-      // const arrayItemDef = jzodElement.definition;
-      
+    case "array": {
       if (!jzodElement.definition) {
-        throw new Error('Array definition missing item type');
+        throw new Error("Array definition missing item type");
       }
       return {
-        type: 'array',
+        type: "array",
         description,
-        items: jzodElementToJsonSchema(jzodElement.definition, undefined, propertyNameMapping),
+        items: jzodElementToJsonSchema(
+          jzodElement.definition,
+          undefined,
+          propertyNameMapping,
+          { ...options, depth: options.depth + 1 },
+        ),
       };
     }
-    case 'enum': {
+    case "enum": {
       return {
-        type: 'string',
+        type: "string",
         description,
         enum: jzodElement.definition,
       };
     }
     case "number": {
       return {
-        type: 'number',
+        type: "number",
         description,
       };
     }
     case "date": {
       return {
-        type: 'string',
-        format: 'date-time',
+        type: "string",
+        format: "date-time",
         description,
       };
     }
     case "literal": {
       const literalValue = jzodElement.definition;
-      const literalType = typeof literalValue === 'number' ? 'number' : 'string';
+      const literalType = typeof literalValue === "number" ? "number" : "string";
       return {
         type: literalType,
         const: literalValue,
@@ -118,23 +159,31 @@ export function jzodElementToJsonSchema(
     }
     case "record": {
       if (!jzodElement.definition) {
-        throw new Error('Record definition missing value type');
+        throw new Error("Record definition missing value type");
       }
       return {
-        type: 'object',
+        type: "object",
         description,
-        additionalProperties: jzodElementToJsonSchema(jzodElement.definition, undefined, propertyNameMapping),
+        additionalProperties: jzodElementToJsonSchema(
+          jzodElement.definition,
+          undefined,
+          propertyNameMapping,
+          { ...options, depth: options.depth + 1 },
+        ),
       };
     }
     case "tuple": {
       if (!jzodElement.definition || !Array.isArray(jzodElement.definition)) {
-        throw new Error('Tuple definition missing or invalid');
+        throw new Error("Tuple definition missing or invalid");
       }
-      const prefixItems = jzodElement.definition.map(item => 
-        jzodElementToJsonSchema(item as any, undefined, propertyNameMapping)
+      const prefixItems = jzodElement.definition.map((item) =>
+        jzodElementToJsonSchema(item as any, undefined, propertyNameMapping, {
+          ...options,
+          depth: options.depth + 1,
+        }),
       );
       return {
-        type: 'array',
+        type: "array",
         description,
         prefixItems,
         minItems: prefixItems.length,
@@ -143,19 +192,19 @@ export function jzodElementToJsonSchema(
     }
     case "union": {
       if (!jzodElement.definition || !Array.isArray(jzodElement.definition)) {
-        throw new Error('Union definition missing or invalid');
+        throw new Error("Union definition missing or invalid");
       }
-      
-      // Convert all union members recursively
-      const convertedMembers = jzodElement.definition.map(member => 
-        jzodElementToJsonSchema(member as any, undefined, propertyNameMapping)
+
+      const convertedMembers = jzodElement.definition.map((member) =>
+        jzodElementToJsonSchema(member as any, undefined, propertyNameMapping, {
+          ...options,
+          depth: options.depth + 1,
+        }),
       );
-      
-      // Check if this is a discriminated union
+
       const isDiscriminated = !!(jzodElement as any).discriminator;
-      
+
       if (isDiscriminated) {
-        // Use oneOf for discriminated unions with discriminator info
         return {
           oneOf: convertedMembers,
           discriminator: {
@@ -163,23 +212,61 @@ export function jzodElementToJsonSchema(
           },
           description,
         };
-      } else {
-        // Use anyOf for general unions
-        return {
-          anyOf: convertedMembers,
-          description,
-        };
       }
+      return {
+        anyOf: convertedMembers,
+        description,
+      };
     }
-    case "bigint":
-    case "undefined":
-    case "function":
+    case "intersection": {
+      const intersection = jzodElement.definition as { left?: JzodElement; right?: JzodElement };
+      if (!intersection?.left || !intersection?.right) {
+        return looseObject(description);
+      }
+      return {
+        allOf: [
+          jzodElementToJsonSchema(intersection.left, propertyName, propertyNameMapping, {
+            ...options,
+            depth: options.depth + 1,
+          }),
+          jzodElementToJsonSchema(intersection.right, propertyName, propertyNameMapping, {
+            ...options,
+            depth: options.depth + 1,
+          }),
+        ],
+        description,
+      };
+    }
+    case "lazy": {
+      if (!jzodElement.definition) {
+        return looseObject(description);
+      }
+      return jzodElementToJsonSchema(
+        jzodElement.definition,
+        propertyName,
+        propertyNameMapping,
+        { ...options, depth: options.depth + 1 },
+      );
+    }
     case "any":
-    case "never":
     case "unknown":
     case "void":
-    case "lazy":
-    case "intersection":
+    case "undefined":
+      return looseObject(description);
+    case "bigint":
+      return {
+        type: "string",
+        description: description || "BigInt (serialized as string)",
+      };
+    case "never":
+      return {
+        type: "object",
+        description: description || "Never",
+        properties: {},
+        required: [],
+        additionalProperties: false,
+      };
+    case "function":
     case "map":
     case "promise":
     case "set": {
@@ -187,7 +274,6 @@ export function jzodElementToJsonSchema(
     }
 
     default:
-      // Unknown type - return any
-      return undefined;
+      return looseObject(description);
   }
 }

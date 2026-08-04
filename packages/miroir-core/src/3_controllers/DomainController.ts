@@ -375,6 +375,11 @@ export class DomainController implements DomainControllerInterface {
     //   applicationDeploymentMap,
     // );
     try {
+      const persistenceReadActionType =
+        this.persistenceStoreAccessMode === "local"
+          ? ("LocalPersistenceAction_read" as const)
+          : ("RestPersistenceAction_read" as const);
+
       const result = await this.callUtil
         .callPersistenceAction(
           {}, // context
@@ -384,7 +389,7 @@ export class DomainController implements DomainControllerInterface {
           }, // continuation
           applicationDeploymentMap,
           {
-            actionType: "RestPersistenceAction_read",
+            actionType: persistenceReadActionType,
             endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
             payload: {
               application: applicationUuid,
@@ -487,7 +492,7 @@ export class DomainController implements DomainControllerInterface {
                 }, // continuation
                 applicationDeploymentMap,
                 {
-                  actionType: "RestPersistenceAction_read",
+                  actionType: persistenceReadActionType,
                   endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
                   payload: {
                     application: applicationUuid,

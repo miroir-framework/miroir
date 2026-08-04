@@ -25,6 +25,12 @@ import {
   resolveLibraryDeploymentUuid,
 } from "miroir-test-app_deployment-library";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
+import {
+  isJzodConversionLimitReached,
+  normalizeJzodConversionOptions,
+  schemaReferenceKey,
+  type JzodConversionOptions,
+} from "./jzodConversionContext.js";
 
 
 const packageName = "miroir-mcp";
@@ -50,94 +56,141 @@ export type ToolHandler = (
  */
 // function jzodPayloadToZodSchema(jzodPayload: JzodObject): ZodTypeAny {
 function jzodPayloadToZodSchema(jzodPayload: JzodElement): ZodTypeAny {
-  // Recursively resolve all schema references in the Jzod schema
-  // schemaReferences in jzodToZodTextAndZodSchema are not closures, they depend on the resolved schema names
-  // that are found in miroirFundamentalType.ts.
-  // with eager resolution here, we avoid issues with unresolved references during conversion
-  // this leads to problems with recursive references, but those are not used in MCP tool payloads currently.
+  // Resolve references for Zod conversion, but stop on cycles / depth — the meta-model is
+  // recursive (jzodElement, compositeAction, coreTransformerForBuildPlusRuntime, …).
   const resolvedJzodSchema = resolveAllReferences(jzodPayload);
-  
-  log.info(
-    "jzodPayloadToZodSchema - resolved Jzod schema with all references resolved:",
-    JSON.stringify(resolvedJzodSchema, null, 2)
-  );
-  // Convert the resolved Jzod schema to Zod
+
+  log.debug("jzodPayloadToZodSchema resolved schema for MCP payload conversion");
+
   const zodTextAndSchema: ZodTextAndZodSchema = jzodToZodTextAndZodSchema(
     resolvedJzodSchema as any,
-    () => ({}), // getSchemaEagerReferences
-    () => ({}), // getLazyReferences
-    {datesAsString: true} // options
+    () => ({}),
+    () => ({}),
+    { datesAsString: true },
   );
   return zodTextAndSchema.zodSchema as any;
 }
 
+function unresolvedJzodAny(): JzodElement {
+  return { type: "any" } as JzodElement;
+}
+
 /**
- * Recursively resolves all schema references in a Jzod schema element
- * @param element - The Jzod element to resolve
- * @returns A Jzod element with all references resolved
+ * Recursively resolves schema references in a Jzod element for Zod validation.
+ * Cyclic references degrade to `any` instead of overflowing the stack.
  */
-function resolveAllReferences(element: JzodElement): JzodElement {
-  if (!element || typeof element !== 'object') {
+function resolveAllReferences(
+  element: JzodElement,
+  conversionOptions?: JzodConversionOptions,
+): JzodElement {
+  if (!element || typeof element !== "object") {
     return element;
   }
 
-  // Handle schema references
-  if (element.type === 'schemaReference') {
-    const resolvedSchema = resolveJzodSchemaReferenceInContext(
-      element as JzodReference,
-      element.context || {},
-      {
-        miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
-          deployment_Miroir.uuid,
-          defaultMiroirMetaModel as any as MetaModel, // TODO: fix type
-          "static",
-        ),
-        endpointsByUuid: {},
-        currentModel: defaultMiroirMetaModel as any as MetaModel, // TODO: fix type
-      }
-    );
-    // Recursively resolve the resolved schema (it might contain more references)
-    return resolveAllReferences(resolvedSchema);
+  const options = normalizeJzodConversionOptions(conversionOptions);
+  if (options.depth >= options.maxDepth) {
+    return unresolvedJzodAny();
   }
 
-  // Handle objects - recursively resolve all properties
-  if (element.type === 'object' && element.definition) {
+  const childOptions: JzodConversionOptions = {
+    ...options,
+    depth: options.depth + 1,
+  };
+
+  if (element.type === "schemaReference") {
+    const ref = element as JzodReference;
+    const refKey = schemaReferenceKey(ref);
+    if (isJzodConversionLimitReached(options, refKey)) {
+      return unresolvedJzodAny();
+    }
+
+    options.resolvingRefs.add(refKey);
+    try {
+      const resolvedSchema = resolveJzodSchemaReferenceInContext(
+        ref,
+        ref.context || {},
+        {
+          miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+            deployment_Miroir.uuid,
+            defaultMiroirMetaModel as any as MetaModel,
+            "static",
+          ),
+          endpointsByUuid: {},
+          currentModel: defaultMiroirMetaModel as any as MetaModel,
+        },
+      );
+      return resolveAllReferences(resolvedSchema, childOptions);
+    } finally {
+      options.resolvingRefs.delete(refKey);
+    }
+  }
+
+  if (element.type === "object" && element.definition) {
     return {
       ...element,
       definition: Object.fromEntries(
         Object.entries(element.definition).map(([key, value]) => [
           key,
-          resolveAllReferences(value as any)
-        ])
-      )
+          resolveAllReferences(value as any, childOptions),
+        ]),
+      ),
     };
   }
 
-  // Handle arrays - recursively resolve the item schema
-  if (element.type === 'array' && element.definition) {
+  if (element.type === "array" && element.definition) {
     return {
       ...element,
-      definition: resolveAllReferences(element.definition)
+      definition: resolveAllReferences(element.definition, childOptions),
     };
   }
 
-  // Handle unions - recursively resolve all union members
-  if (element.type === 'union' && element.definition && Array.isArray(element.definition)) {
+  if (element.type === "union" && element.definition && Array.isArray(element.definition)) {
     return {
       ...element,
-      definition: element.definition.map((member: any) => resolveAllReferences(member))
+      definition: element.definition.map((member: any) =>
+        resolveAllReferences(member, childOptions),
+      ),
     };
   }
 
-  // Handle records - recursively resolve the value schema
-  if (element.type === 'record' && element.definition) {
+  if (element.type === "record" && element.definition) {
     return {
       ...element,
-      definition: resolveAllReferences(element.definition)
+      definition: resolveAllReferences(element.definition, childOptions),
     };
   }
 
-  // For other types, return as is
+  if (element.type === "tuple" && element.definition && Array.isArray(element.definition)) {
+    return {
+      ...element,
+      definition: element.definition.map((member: any) =>
+        resolveAllReferences(member, childOptions),
+      ),
+    };
+  }
+
+  if (element.type === "intersection" && element.definition) {
+    const intersection = element.definition as { left?: JzodElement; right?: JzodElement };
+    return {
+      ...element,
+      definition: {
+        left: intersection.left
+          ? resolveAllReferences(intersection.left, childOptions)
+          : unresolvedJzodAny(),
+        right: intersection.right
+          ? resolveAllReferences(intersection.right, childOptions)
+          : unresolvedJzodAny(),
+      },
+    } as JzodElement;
+  }
+
+  if (element.type === "lazy" && element.definition) {
+    return {
+      ...element,
+      definition: resolveAllReferences(element.definition as JzodElement, childOptions),
+    } as JzodElement;
+  }
+
   return element;
 }
 
@@ -372,16 +425,15 @@ export function mcpToolEntry(
     || actionDef.actionParameters.actionType.tag?.value?.defaultLabel
     || `Execute ${actionType} action on ${endpoint.name || endpoint.uuid}`;
   
-  log.info(
-    "Creating tool entry for actionType: ",
-    actionType,
-    ", toolName: ",
-    toolName,
-    ", actionDescription: ",
-    actionDescription,
-    "jzodPayload", JSON.stringify(jzodPayload, null, 2)
-  );
-  const schema = jzodPayloadToZodSchema(jzodPayload);
+  log.debug(`Creating MCP tool ${toolName} for action ${actionType} on endpoint ${endpoint.name}`);
+
+  let payloadZodSchema: ZodTypeAny | undefined;
+  const getPayloadZodSchema = (): ZodTypeAny => {
+    if (!payloadZodSchema) {
+      payloadZodSchema = jzodPayloadToZodSchema(jzodPayload);
+    }
+    return payloadZodSchema;
+  };
 
   const actionEnvelope = {
     actionType,
@@ -394,9 +446,20 @@ export function mcpToolEntry(
       description: actionDescription,
       inputSchema: jzodElementToJsonSchema(jzodPayload) as McpToolDescriptionPropertyObject,
     },
-    payloadZodSchema: schema,
+    get payloadZodSchema() {
+      return getPayloadZodSchema();
+    },
     actionEnvelope,
-    actionHandler: mcpToolHandler(toolName, schema, actionEnvelope),
+    actionHandler: (
+      payload: unknown,
+      domainController: DomainControllerInterface,
+      applicationDeploymentMap: ApplicationDeploymentMap,
+    ) =>
+      mcpToolHandler(toolName, getPayloadZodSchema(), actionEnvelope)(
+        payload,
+        domainController,
+        applicationDeploymentMap,
+      ),
   };
 }
 

@@ -993,4 +993,48 @@ describe('jzodElementToJsonSchema', () => {
     });
   });
 
+  describe("cycle-safe conversion", () => {
+    it("does not stack overflow on self-referential meta-schema references (jzodElement)", () => {
+      const jzodElement = {
+        type: "schemaReference",
+        definition: {
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          relativePath: "jzodElement",
+        },
+      };
+
+      expect(() => jzodElementToJsonSchema(jzodElement as any)).not.toThrow();
+      const result = jzodElementToJsonSchema(jzodElement as any);
+      expect(result).toBeDefined();
+    });
+
+    it("does not stack overflow on compositeActionSequence payload shape", () => {
+      const jzodElement = {
+        type: "schemaReference",
+        definition: {
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          relativePath: "compositeActionSequence",
+        },
+      };
+
+      expect(() => jzodElementToJsonSchema(jzodElement as any)).not.toThrow();
+    });
+
+    it("converts Jzod any type to a generic object instead of throwing", () => {
+      const jzodElement = {
+        type: "any",
+        tag: {
+          value: {
+            description: "Opaque model payload",
+          },
+        },
+      };
+
+      const result = jzodElementToJsonSchema(jzodElement as any);
+
+      expect(result.type).toBe("object");
+      expect(result.description).toBe("Opaque model payload");
+    });
+  });
+
 });
