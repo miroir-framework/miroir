@@ -48,7 +48,6 @@ import {
   reportEntityVersionDetails,
   reportReportDetails,
 } from "miroir-test-app_deployment-miroir";
-import { resolveRunnerDefinitionApplication } from "../Runners/runnerDefinitionApplication.js";
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
   MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionViewWithEditor"), "UI",
@@ -532,8 +531,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             {reportSectionDefinitionFromFormik.definition.runnerReportSectionType ===
             "storedRunner" ? (
               <StoredRunnerView
-                // Runner definitions live in Miroir; page application may be Library (Versioning).
-                applicationUuid={resolveRunnerDefinitionApplication(props.application)}
+                applicationUuid={props.application}
                 applicationDeploymentMap={
                   props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
                 }

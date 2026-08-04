@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { Params } from 'react-router-dom';
 
 import {
@@ -25,22 +25,21 @@ import {
   type Runner,
 } from "miroir-core";
 import {
-  deployment_Admin,
   adminSelfApplication,
+  deployment_Admin,
   entityDeployment,
 } from "miroir-test-app_deployment-admin";
 
 import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 
 import type { RunStoredQuery, TransformerDefinition } from 'miroir-core';
-import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import {
   getMemoizedReduxDeploymentsStateSelectorMap
 } from "miroir-react";
+import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 
 import { entityRunner, entityTransformerDefinition } from "miroir-test-app_deployment-miroir";
-import { resolveRunnerDefinitionApplication } from "../Runners/runnerDefinitionApplication.js";
 // Entity constants
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -399,20 +398,19 @@ export function useRunner(
   runnerUuid: Uuid | undefined
 ): Domain2QueryReturnType<Runner | undefined>  {
   // Runner instances live in Miroir data; page `application` may be Library (Versioning).
-  const runnerStorageApplication = resolveRunnerDefinitionApplication(application);
   const runnerApplicationSection = getApplicationSection(
-    runnerStorageApplication,
+    application,
     entityRunner.uuid
   );
-
+  // log.info("useRunner runnerApplicationSection", runnerApplicationSection, application, entityRunner.uuid);
   const runnerQuery:
     | BoxedQueryWithExtractorCombinerTransformer
     | undefined = useMemo(
     () =>
-      runnerStorageApplication && runnerStorageApplication !== noValue.uuid
+      application && application !== noValue.uuid
         ? ({
             queryType: "boxedQueryWithExtractorCombinerTransformer",
-            application: runnerStorageApplication,
+            application: application,
             extractors: {
               runners: {
                 label: "runners of the given application",
@@ -429,7 +427,7 @@ export function useRunner(
             application: "",
             extractors: {},
           },
-    [runnerStorageApplication, runnerApplicationSection, runnerUuid]
+    [application, runnerApplicationSection, runnerUuid]
   );
 
   log.info("useRunner runnerQuery", runnerQuery);

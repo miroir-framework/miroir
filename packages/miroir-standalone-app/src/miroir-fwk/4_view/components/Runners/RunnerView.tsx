@@ -68,7 +68,8 @@ export function StoredRunnerView(props: {
   // Runner instances are stored on Miroir; callers may still pass a page application
   // (e.g. Versioning for Library). Resolve storage application for definition lookup.
   const runnerDefinitionApplicationUuid: Uuid = resolveRunnerDefinitionApplication(
-    props.applicationUuid
+    props.applicationUuid,
+    props.runnerUuid,
   );
   const runnerDeploymentUuid: Uuid = applicationDeploymentMap[runnerDefinitionApplicationUuid];
   const context = useMiroirContextService();
