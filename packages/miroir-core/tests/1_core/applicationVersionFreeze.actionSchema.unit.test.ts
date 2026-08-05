@@ -36,6 +36,8 @@ function emptyMeta(overrides?: Partial<FreezeMetaModelSlice>): FreezeMetaModelSl
     applicationVersions: [],
     entityVersions: [],
     applicationVersionCrossEntityVersion: [],
+    applicationVersionCrossQueryVersion: [],
+    queryVersions: [],
     ...overrides,
   };
 }

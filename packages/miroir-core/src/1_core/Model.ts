@@ -6,6 +6,7 @@ import {
   entityMenu,
   entityMiroirTest,
   entityQueryVersion,
+  entityHistoricalQueryVersion,
   entityReport,
   entityRunner,
   entitySelfApplication,
@@ -137,6 +138,11 @@ export function getApplicationSection(
 export function getEntityVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
   return getApplicationSection(applicationUuid, entityEntityVersion.uuid);
 }
+
+/** #227 — section for writing QueryVersion snapshots (Miroir → data, Library → model). */
+export function getQueryVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
+  return getApplicationSection(applicationUuid, entityHistoricalQueryVersion.uuid);
+}
 // ################################################################################################
 /**
  * just filters the model / meta-model reports in the Miroir app for now
@@ -191,6 +197,8 @@ export const emptyApplicationModel: MetaModel = {
   applications: [],
   applicationVersions: [],
   applicationVersionCrossEntityVersion: [],
+  applicationVersionCrossQueryVersion: [],
+  queryVersions: [],
   endpoints: [],
   entities: [],
   entityVersions: [],
@@ -314,7 +322,9 @@ export async function extractApplicationModel(
       storedQueries: queries as Query[],
       jzodSchemas: jzodSchemas as MlSchema[],
       applicationVersions: applicationVersions as ApplicationVersion[],
-      applicationVersionCrossEntityVersion: [], // These would need to be read separately if needed
+      applicationVersionCrossEntityVersion: [],
+      applicationVersionCrossQueryVersion: [],
+      queryVersions: [], // These would need to be read separately if needed
       runners: runners as Runner[], 
       tests: tests as MiroirTestDefinition[],
       themes: themes as StoredMiroirTheme[], // Themes are now included in the model extraction

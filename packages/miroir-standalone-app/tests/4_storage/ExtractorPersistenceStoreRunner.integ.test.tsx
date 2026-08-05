@@ -17,6 +17,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
+  resetAndInitApplicationDeployment,
   resetIntegTestbed,
   StoreUnitConfiguration
 } from "miroir-core";
@@ -193,6 +194,11 @@ beforeAll(async () => {
     throw new Error("beforeAll failed localAppPersistenceStoreController initialization!");
   }
   localAppPersistenceStoreController = localAppPsc;
+
+  // Postgres miroir schema may predate meta-model changes; refresh from defaultMiroirMetaModel.
+  await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
+    deployment_Miroir as Deployment,
+  ]);
 
   return Promise.resolve();
 });

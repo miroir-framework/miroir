@@ -9,6 +9,8 @@
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import process from "process";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 import type {
   ApplicationDeploymentMap,
@@ -62,12 +64,28 @@ import {
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
+
+const REPO_ROOT = join(import.meta.dirname, "../../../..");
+const bookCountByPublisherQuery = JSON.parse(
+  readFileSync(
+    join(
+      REPO_ROOT,
+      "packages/miroir-test-app_deployment-library/assets/library_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/6176dcdf-39a6-4805-8dc5-3c2366a31a11.json",
+    ),
+    "utf8",
+  ),
+) as EntityInstance & { uuid: string; name: string; definition: Record<string, unknown> };
 import {
   defaultMiroirMetaModel,
   entityApplicationVersionCrossEntityVersion,
   entityEntityVersion,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
+import {
+  QUERY_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
+  resolveFreezeQueryVersionApplicationSection,
+} from "miroir-core";
 
 const env: any = process.env;
 const fileName = "applicationVersionFreeze.integ.test";
@@ -230,6 +248,35 @@ function presentModelSlice(entity: Entity | EntityVersion) {
   return slice;
 }
 
+function queryVersionSlice(queryVersion: {
+  name: string;
+  queryUuid: string;
+  definition: unknown;
+}) {
+  return {
+    name: queryVersion.name,
+    queryUuid: queryVersion.queryUuid,
+    definition: queryVersion.definition,
+  };
+}
+
+async function seedLibraryStoredQuery() {
+  const result = await domainController.handleAction(
+    {
+      actionType: "createInstance",
+      endpoint: INSTANCE_ENDPOINT,
+      payload: {
+        application: testApplicationUuid,
+        applicationSection: "model",
+        objects: [bookCountByPublisherQuery as EntityInstance],
+      },
+    },
+    applicationDeploymentMap,
+    libraryModelEnv(),
+  );
+  expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
+}
+
 beforeAll(async () => {
   myConsoleLog("beforeAll");
   const session = new DomainControllerIntegrationTestSession(
@@ -327,9 +374,11 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
       const crosses = model.applicationVersionCrossEntityVersion.filter(
         (c) => c.applicationVersion === sav!.uuid,
       );
-      // Freeze snapshots application Entities only — not Cross Entity itself if ensure-created.
+      // Freeze snapshots application Entities only — exclude MetaModel bootstrap Entities.
+      const metaBootstrapUuids = new Set(defaultMiroirMetaModel.entities.map((e) => e.uuid));
+      metaBootstrapUuids.add(entityApplicationVersionCrossEntityVersion.uuid);
       const freezeTargetEntities = model.entities.filter(
-        (e) => e.uuid !== entityApplicationVersionCrossEntityVersion.uuid,
+        (e) => !metaBootstrapUuids.has(e.uuid),
       );
       expect(crosses.length).toBe(freezeTargetEntities.length);
       expect(crosses.length).toBeGreaterThan(0);
@@ -477,15 +526,8 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
   );
 
   it(
-    "rejects freeze for unversioned SelfApplication",
+    "omitted branch reuses Library master branch from existing SAV (#216 branch inference)",
     async () => {
-      // Gate is pure; exercise Action path with a synthetic MetaModel SelfApplication
-      // by temporarily planning is unit-covered — here assert Action rejects when
-      // applications[0].versioningEnabled is false via direct Action after patching cache
-      // is impractical (immutable flag). Assert via plan-equivalent: Action on Library
-      // with versioningEnabled true succeeds above; unversioned rejection locked in
-      // applicationVersionFreeze.actionSchema.unit.test.ts.
-      // Integ smoke: wrong/missing branch on first freeze still returns Action2Error.
       const result = await domainController.handleAction(
         {
           actionType: "freezeApplicationVersion",
@@ -493,13 +535,12 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
           payload: {
             application: testApplicationUuid,
             versionName: "NoBranch",
-            // branch omitted + no freeze tip → planner requires branch
           },
         },
         applicationDeploymentMap,
         libraryModelEnv(),
       );
-      expect(result instanceof Action2Error).toBe(true);
+      expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
     },
     globalTimeOut,
   );
@@ -583,6 +624,128 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
           freezeProducedVersionUuids: freezeProduced,
         }),
       ).toBeUndefined();
+    },
+    globalTimeOut,
+  );
+});
+
+describe.sequential("227 — QueryVersion freeze persistence", () => {
+  it(
+    "first freeze persists QueryVersions + CrossQuery (Library model section)",
+    async () => {
+      expect(resolveFreezeQueryVersionApplicationSection(testApplicationUuid)).toBe("model");
+      await seedLibraryStoredQuery();
+
+      const freezeResult = await freezeLibrary("V1-Queries");
+      expect(
+        freezeResult instanceof Action2Error,
+        `freeze failed: ${JSON.stringify(freezeResult)}`,
+      ).toBe(false);
+
+      await refreshLibraryCache();
+      const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const sav = model.applicationVersions.find((v) => v.name === "V1-Queries");
+      expect(sav, "SAV V1-Queries missing after reload").toBeDefined();
+
+      const liveQueries = model.storedQueries.filter(
+        (q) => (q as { uuid?: string }).uuid === bookCountByPublisherQuery.uuid,
+      );
+      expect(liveQueries.length).toBe(1);
+
+      const crossQueries = (model.applicationVersionCrossQueryVersion ?? []).filter(
+        (c) => c.applicationVersion === sav!.uuid,
+      );
+      expect(crossQueries.length).toBe(liveQueries.length);
+      expect(crossQueries.length).toBeGreaterThan(0);
+
+      for (const cross of crossQueries) {
+        expect(cross.parentUuid).toBe(APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID);
+        const qv = (model.queryVersions ?? []).find((q) => q.uuid === cross.queryVersion);
+        expect(qv, `QueryVersion ${cross.queryVersion} missing`).toBeDefined();
+        expect(qv!.uuid).not.toBe(qv!.queryUuid);
+        expect(qv!.parentUuid).toBe(QUERY_VERSION_ENTITY_UUID);
+        expect(qv!.parentName).toBe("QueryVersion");
+
+        const live = liveQueries.find((q) => (q as { uuid?: string }).uuid === qv!.queryUuid) as {
+          uuid: string;
+          name: string;
+          definition: unknown;
+        };
+        expect(live, `live Query ${qv!.queryUuid} missing`).toBeDefined();
+        expect(queryVersionSlice(qv!)).toEqual({
+          name: live!.name,
+          queryUuid: (live as { uuid: string }).uuid,
+          definition: (live as { definition: unknown }).definition,
+        });
+      }
+
+      const freezeQvUuids = new Set(crossQueries.map((c) => c.queryVersion));
+      for (const live of liveQueries) {
+        expect(freezeQvUuids.has((live as { uuid: string }).uuid)).toBe(false);
+      }
+    },
+    globalTimeOut,
+  );
+
+  it(
+    "live Query edit after freeze leaves historical QueryVersion unchanged",
+    async () => {
+      await seedLibraryStoredQuery();
+      expect((await freezeLibrary("V1-Query-Isolation")) instanceof Action2Error).toBe(false);
+
+      await refreshLibraryCache();
+      let model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const sav = model.applicationVersions.find((v) => v.name === "V1-Query-Isolation")!;
+      const queryCross = (model.applicationVersionCrossQueryVersion ?? []).find((c) => {
+        if (c.applicationVersion !== sav.uuid) return false;
+        const qv = (model.queryVersions ?? []).find((q) => q.uuid === c.queryVersion);
+        return qv?.queryUuid === bookCountByPublisherQuery.uuid;
+      });
+      expect(queryCross).toBeDefined();
+      const frozenQueryBefore = structuredClone(
+        (model.queryVersions ?? []).find((q) => q.uuid === queryCross!.queryVersion)!,
+      );
+
+      const liveQuery = model.storedQueries.find(
+        (q) => (q as { uuid?: string }).uuid === bookCountByPublisherQuery.uuid,
+      ) as EntityInstance & { name: string; definition: Record<string, unknown> };
+      expect(liveQuery).toBeDefined();
+      const updatedQuery = {
+        ...liveQuery,
+        name: "BookCountRenamedAfterFreeze",
+        definition: {
+          ...liveQuery.definition,
+          afterFreezeMarker: { transformerType: "returnValue", value: true },
+        },
+      };
+
+      const updateResult = await domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: testApplicationUuid,
+            applicationSection: "model",
+            objects: [updatedQuery as EntityInstance],
+          },
+        },
+        applicationDeploymentMap,
+        libraryModelEnv(),
+      );
+      expect(updateResult instanceof Action2Error, JSON.stringify(updateResult)).toBe(false);
+
+      await refreshLibraryCache();
+      model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const liveAfter = model.storedQueries.find(
+        (q) => (q as { uuid?: string }).uuid === bookCountByPublisherQuery.uuid,
+      ) as { name: string; definition: Record<string, unknown> };
+      expect(liveAfter.name).toBe("BookCountRenamedAfterFreeze");
+
+      const frozenQueryAfter = (model.queryVersions ?? []).find(
+        (q) => q.uuid === queryCross!.queryVersion,
+      )!;
+      expect(frozenQueryAfter.name).toBe(frozenQueryBefore.name);
+      expect(frozenQueryAfter.definition).toEqual(frozenQueryBefore.definition);
     },
     globalTimeOut,
   );

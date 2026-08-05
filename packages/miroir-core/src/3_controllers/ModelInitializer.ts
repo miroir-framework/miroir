@@ -35,7 +35,11 @@ import {
   entityApplicationEvolutionTrace,
   entityApplicationEvolutionTraceEvent,
   entityApplicationVersionCrossEntityVersion,
+  entityApplicationVersionCrossQueryVersion,
   entityDefinitionApplicationVersionCrossEntityDefinition,
+  entityHistoricalQueryVersion,
+  entityVersionApplicationVersionCrossQueryVersion,
+  entityVersionHistoricalQueryVersion,
   instanceEndpointV1,
   materialStoredMiroirTheme,
   menuDefaultMiroir,
@@ -262,7 +266,7 @@ export async function modelInitialize(
     }
     log.info(logHeader, "created entity EntityTheme", persistenceStoreController.getEntityUuids());
 
-    // bootstrap EntityQuery
+    // bootstrap present-model Query entity
     result = await persistenceStoreController.createEntity(
       entityQueryVersion as Entity,
     );
@@ -271,14 +275,21 @@ export async function modelInitialize(
     }
     log.info(logHeader, "created entity Query", persistenceStoreController.getEntityUuids());
 
-    // bootstrap EntityQueryVersion
+    // bootstrap historical QueryVersion (#227)
     result = await persistenceStoreController.createEntity(
-      entityQueryVersion as Entity,
+      entityHistoricalQueryVersion as Entity,
     );
     if (result instanceof Action2Error) {
       return result;
     }
-    log.info(logHeader, "created entity Query", persistenceStoreController.getEntityUuids());
+    log.info(logHeader, "created entity QueryVersion", persistenceStoreController.getEntityUuids());
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityVersionHistoricalQueryVersion as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
 
     // bootstrap ApplicationEvolutionTrace (WP1)
     result = await persistenceStoreController.createEntity(
@@ -321,6 +332,26 @@ export async function modelInitialize(
     result = await persistenceStoreController.upsertInstance(
       "data",
       entityDefinitionApplicationVersionCrossEntityDefinition as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+
+    // bootstrap ApplicationVersionCrossQueryVersion (#227)
+    result = await persistenceStoreController.createEntity(
+      entityApplicationVersionCrossQueryVersion as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(
+      logHeader,
+      "created entity ApplicationVersionCrossQueryVersion",
+      persistenceStoreController.getEntityUuids(),
+    );
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityVersionApplicationVersionCrossQueryVersion as EntityInstance,
     );
     if (result instanceof Action2Error) {
       return result;

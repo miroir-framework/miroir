@@ -26,9 +26,12 @@ import {
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   defaultMiroirMetaModel,
+  entityApplicationVersionCrossEntityVersion,
+  entityApplicationVersionCrossQueryVersion,
   entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
+  entityHistoricalQueryVersion,
   entityJzodSchema,
   entityMenu,
   entityQueryVersion,
@@ -63,12 +66,44 @@ export function currentModel(
       application,
       entityEntityVersion.uuid
     );
+    const crossEntityVersionSection = getApplicationSection(
+      application,
+      entitySelfApplicationVersion.uuid,
+    );
     const applicationVersions =
       state.current[
         getReduxDeploymentsStateIndex(
           deploymentUuid,
           modelSection,
           entitySelfApplicationVersion.uuid
+        )
+      ];
+    const applicationVersionCross =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossEntityVersion.uuid,
+        )
+      ];
+    const applicationVersionCrossQuery =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossQueryVersion.uuid,
+        )
+      ];
+    const queryVersionSection = getApplicationSection(
+      application,
+      entityHistoricalQueryVersion.uuid,
+    );
+    const historicalQueryVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          queryVersionSection,
+          entityHistoricalQueryVersion.uuid,
         )
       ];
     const endpoints =
@@ -124,7 +159,15 @@ export function currentModel(
       applicationVersions: (applicationVersions && applicationVersions.entities
         ? Object.values(applicationVersions.entities)
         : []) as ApplicationVersion[],
-      applicationVersionCrossEntityVersion: [],
+      applicationVersionCrossEntityVersion: (applicationVersionCross?.entities
+        ? Object.values(applicationVersionCross.entities)
+        : []) as MetaModel["applicationVersionCrossEntityVersion"],
+      applicationVersionCrossQueryVersion: (applicationVersionCrossQuery?.entities
+        ? Object.values(applicationVersionCrossQuery.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossQueryVersion"]>,
+      queryVersions: (historicalQueryVersions?.entities
+        ? Object.values(historicalQueryVersions.entities)
+        : []) as NonNullable<MetaModel["queryVersions"]>,
       // configuration: (configuration && configuration.entities
       //   ? Object.values(configuration.entities)
       //   : []) as StoreBasedConfiguration[],

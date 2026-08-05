@@ -1,6 +1,7 @@
 /**
  * #216 — Application Version freeze (Entities only, linear history, Option A diff).
  * #220 — Freeze-adjacent vocabulary uses EntityVersion only.
+ * #227 — QueryVersion tracer (first non-Entity model element).
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -10,9 +11,11 @@ import type {
   ApplicationVersion,
   Entity,
   EntityVersion,
+  MetaModel,
+  Query,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { noValue } from "../Instance.js";
-import { getEntityVersionWriteSection } from "../Model.js";
+import { getEntityVersionWriteSection, getQueryVersionWriteSection } from "../Model.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   type EntityPresentModelDefinitionField,
@@ -65,6 +68,11 @@ const APPLICATION_VERSION_ENTITY_UUID = "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24";
 /** ApplicationVersionCrossEntityVersion Entity UUID. */
 const APPLICATION_VERSION_CROSS_ENTITY_VERSION_UUID =
   "8bec933d-6287-4de7-8a88-5c24216de9f4";
+/** Historical QueryVersion Entity UUID (#227). */
+export const QUERY_VERSION_ENTITY_UUID = "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c";
+/** ApplicationVersionCrossQueryVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID =
+  "9e4c6d8a-2b5f-4a1c-9d7e-3f6b8a2c4e1d";
 
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
@@ -79,6 +87,70 @@ export function resolveFreezeEntityVersionApplicationSection(
   applicationUuid: string,
 ): ApplicationSection {
   return getEntityVersionWriteSection(applicationUuid);
+}
+
+/**
+ * #227 — section for persisting freeze-minted QueryVersion snapshots.
+ */
+export function resolveFreezeQueryVersionApplicationSection(
+  applicationUuid: string,
+): ApplicationSection {
+  return getQueryVersionWriteSection(applicationUuid);
+}
+
+/** Live Query instance shape in MetaModel.storedQueries. */
+export type StoredQueryForFreeze = {
+  uuid: string;
+  name: string;
+  definition: Query;
+  description?: string;
+  defaultLabel?: string;
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Query snapshot minted at freeze. */
+export type QueryVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "QueryVersion";
+  name: string;
+  queryUuid: string;
+  definition: Query;
+  description?: string;
+  defaultLabel?: string;
+};
+
+/**
+ * Deep-copy present-model Queries into new immutable QueryVersion instances.
+ * Each output has a **new** UUID; `queryUuid` references the live Query.
+ */
+export function snapshotQueriesAsHistoricalQueryVersions(
+  queries: StoredQueryForFreeze[],
+  options?: SnapshotOptions,
+): QueryVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return queries.map((query) => {
+    if (query.definition === undefined || query.definition === null) {
+      throw new Error(
+        `Cannot snapshot Query ${query.uuid} (${query.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: QueryVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: QUERY_VERSION_ENTITY_UUID,
+      parentName: "QueryVersion",
+      name: query.name,
+      queryUuid: query.uuid,
+      definition: structuredClone(query.definition),
+      ...(query.description !== undefined ? { description: query.description } : {}),
+      ...(query.defaultLabel !== undefined ? { defaultLabel: query.defaultLabel } : {}),
+    };
+
+    return snapshot;
+  });
 }
 
 /**
@@ -145,12 +217,25 @@ export type ApplicationVersionCrossEntityVersionRow = {
   entityVersion: string;
 };
 
+/** Cross row linking an Application Version to a historical QueryVersion. */
+export type ApplicationVersionCrossQueryVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  queryVersion: string;
+};
+
 export type FreezeApplicationVersionPlan = {
   selfApplicationVersion: ApplicationVersion;
   entityVersions: EntityVersion[];
   crossEntityVersions: ApplicationVersionCrossEntityVersionRow[];
   /** Persist section for EntityVersion rows (Miroir data / Library model). */
   entityVersionApplicationSection: ApplicationSection;
+  queryVersions: QueryVersionSnapshot[];
+  crossQueryVersions: ApplicationVersionCrossQueryVersionRow[];
+  /** Persist section for QueryVersion rows (#227). */
+  queryVersionApplicationSection: ApplicationSection;
 };
 
 export type BuildFreezeApplicationVersionPlanInput = {
@@ -158,6 +243,8 @@ export type BuildFreezeApplicationVersionPlanInput = {
   branchUuid: string;
   versionName: string;
   entities: Entity[];
+  /** Present-model Queries to snapshot (#227). Defaults to empty. */
+  storedQueries?: StoredQueryForFreeze[];
   /** Existing SAVs for this app+branch — used for duplicate label detection and tip resolution. */
   existingApplicationVersions?: ApplicationVersion[];
   /**
@@ -394,6 +481,9 @@ export function buildFreezeApplicationVersionPlan(
   const entityVersions = snapshotEntitiesAsHistoricalEntityVersions(input.entities, {
     newUuid: mintUuid,
   });
+  const queryVersions = snapshotQueriesAsHistoricalQueryVersions(input.storedQueries ?? [], {
+    newUuid: mintUuid,
+  });
 
   const modelCUDMigration =
     input.previousEntityVersions !== undefined
@@ -423,11 +513,26 @@ export function buildFreezeApplicationVersionPlan(
     }),
   );
 
+  const crossQueryVersions: ApplicationVersionCrossQueryVersionRow[] = queryVersions.map(
+    (qv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
+      parentName: "ApplicationVersionCrossQueryVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      queryVersion: qv.uuid,
+    }),
+  );
+
   return {
     selfApplicationVersion,
     entityVersions,
     crossEntityVersions,
     entityVersionApplicationSection: resolveFreezeEntityVersionApplicationSection(
+      input.selfApplicationUuid,
+    ),
+    queryVersions,
+    crossQueryVersions,
+    queryVersionApplicationSection: resolveFreezeQueryVersionApplicationSection(
       input.selfApplicationUuid,
     ),
   };
@@ -463,12 +568,15 @@ export type FreezeApplicationVersionActionPayload = {
 export type FreezeMetaModelSlice = {
   applications: Array<{ uuid: string; versioningEnabled?: boolean | undefined }>;
   entities: Entity[];
+  storedQueries?: StoredQueryForFreeze[];
   applicationVersions: ApplicationVersion[];
   entityVersions: EntityVersion[];
   applicationVersionCrossEntityVersion: Array<{
     applicationVersion: string;
     entityVersion: string;
   }>;
+  applicationVersionCrossQueryVersion?: MetaModel["applicationVersionCrossQueryVersion"];
+  queryVersions?: MetaModel["queryVersions"];
 };
 
 /**
@@ -555,6 +663,7 @@ export function planFreezeApplicationVersionFromMetaModel(
     versionName: payload.versionName,
     description: payload.description,
     entities: metaModel.entities,
+    storedQueries: metaModel.storedQueries,
     existingApplicationVersions: metaModel.applicationVersions,
     freezeProducedVersionUuids,
     previousEntityVersions,

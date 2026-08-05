@@ -27,6 +27,8 @@ import {
   entityRunner,
   entitySelfApplicationVersion,
   entityApplicationVersionCrossEntityVersion,
+  entityApplicationVersionCrossQueryVersion,
+  entityHistoricalQueryVersion,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationVersionInitialMiroirVersion
@@ -79,6 +81,7 @@ import {
 import {
   planFreezeApplicationVersionFromMetaModel,
   type FreezeApplicationVersionPlan,
+  type StoredQueryForFreeze,
 } from "../1_core/versioning/applicationVersionFreeze.js";
 import {
   defaultMiroirModelEnvironment,
@@ -1150,10 +1153,30 @@ export class DomainController implements DomainControllerInterface {
       return evResult;
     }
 
-    return persistBatch(
+    const qvResult = await persistBatch(
+      "freezeQueryVersions",
+      plan.queryVersions as EntityInstance[],
+      entityHistoricalQueryVersion.uuid,
+      plan.queryVersionApplicationSection,
+    );
+    if (qvResult instanceof Action2Error) {
+      return qvResult;
+    }
+
+    const crossEvResult = await persistBatch(
       "freezeCrossEntityVersions",
       plan.crossEntityVersions as EntityInstance[],
       entityApplicationVersionCrossEntityVersion.uuid,
+      versioningHistorySection,
+    );
+    if (crossEvResult instanceof Action2Error) {
+      return crossEvResult;
+    }
+
+    return persistBatch(
+      "freezeCrossQueryVersions",
+      plan.crossQueryVersions as EntityInstance[],
+      entityApplicationVersionCrossQueryVersion.uuid,
       versioningHistorySection,
     );
   }
@@ -1794,19 +1817,85 @@ export class DomainController implements DomainControllerInterface {
             }
           }
 
+          const crossQueryEntityUuid = entityApplicationVersionCrossQueryVersion.uuid;
+          const crossQueryEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === crossQueryEntityUuid,
+          );
+          if (!crossQueryEntityPresent) {
+            const ensureCrossQuery = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureApplicationVersionCrossQueryVersion",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityApplicationVersionCrossQueryVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureCrossQuery instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure Cross Query Entity exists",
+                [],
+                ensureCrossQuery,
+              );
+            }
+          }
+
+          const queryVersionEntityUuid = entityHistoricalQueryVersion.uuid;
+          const queryVersionEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === queryVersionEntityUuid,
+          );
+          if (!queryVersionEntityPresent) {
+            const ensureQueryVersionEntity = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureHistoricalQueryVersionEntity",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityHistoricalQueryVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureQueryVersionEntity instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure QueryVersion Entity exists",
+                [],
+                ensureQueryVersionEntity,
+              );
+            }
+          }
+
           // Freeze application Entities only — exclude MetaModel bootstrap Entities
           // (Entity, Report, Cross, …) that may appear in currentModel.entities.
           const metaBootstrapUuids = new Set(
             (targetModelEnvironment.miroirMetaModel?.entities ?? []).map((e) => e.uuid),
           );
           metaBootstrapUuids.add(crossEntityUuid);
+          metaBootstrapUuids.add(crossQueryEntityUuid);
+          metaBootstrapUuids.add(queryVersionEntityUuid);
           const applicationEntities = metaModel.entities.filter(
             (e) => !metaBootstrapUuids.has(e.uuid),
           );
 
           const plan = planFreezeApplicationVersionFromMetaModel(payload, {
-            ...metaModel,
+            applications: metaModel.applications,
             entities: applicationEntities,
+            storedQueries: metaModel.storedQueries as StoredQueryForFreeze[],
+            applicationVersions: metaModel.applicationVersions,
+            entityVersions: metaModel.entityVersions,
+            applicationVersionCrossEntityVersion: metaModel.applicationVersionCrossEntityVersion,
+            applicationVersionCrossQueryVersion: metaModel.applicationVersionCrossQueryVersion,
+            queryVersions: metaModel.queryVersions,
           });
 
           const persistResult = await this.persistFreezeApplicationVersionPlan(

@@ -40,6 +40,8 @@ import {
   entitySelfApplication,
   entitySelfApplicationVersion,
   entityApplicationVersionCrossEntityVersion,
+  entityApplicationVersionCrossQueryVersion,
+  entityHistoricalQueryVersion,
 } from "miroir-test-app_deployment-miroir";
 import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 
@@ -99,6 +101,26 @@ export function currentModel(
           entityApplicationVersionCrossEntityVersion.uuid,
         )
       ];
+    const applicationVersionCrossQuery =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossQueryVersion.uuid,
+        )
+      ];
+    const queryVersionSection = getApplicationSection(
+      application,
+      entityHistoricalQueryVersion.uuid,
+    );
+    const historicalQueryVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          queryVersionSection,
+          entityHistoricalQueryVersion.uuid,
+        )
+      ];
     const endpoints =
       state.current[
         getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityEndpointVersion.uuid)
@@ -154,6 +176,9 @@ export function currentModel(
       applicationVersionCrossEntityVersion: (applicationVersionCross?.entities
         ? Object.values(applicationVersionCross.entities)
         : []) as MetaModel["applicationVersionCrossEntityVersion"],
+      applicationVersionCrossQueryVersion: (applicationVersionCrossQuery?.entities
+        ? Object.values(applicationVersionCrossQuery.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossQueryVersion"]>,
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],
@@ -173,6 +198,9 @@ export function currentModel(
       storedQueries: (queries && queries.entities
         ? Object.values(queries.entities)
         : []) as Query[],
+      queryVersions: (historicalQueryVersions?.entities
+        ? Object.values(historicalQueryVersions.entities)
+        : []) as NonNullable<MetaModel["queryVersions"]>,
       tests: (tests && tests.entities ? Object.values(tests.entities) : []) as MiroirTestDefinition[],
       themes: (themes && themes.entities ? Object.values(themes.entities) : []) as StoredMiroirTheme[],
     };

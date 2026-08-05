@@ -1,0 +1,82 @@
+{
+  "uuid": "b1c2d3e4-f5a6-4b7c-8d9e-0f1a2b3c4d5e",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c",
+  "name": "QueryVersion",
+  "conceptLevel": "Model",
+  "description": "Historical snapshot of a Query at freeze time.",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "name",
+    "queryUuid",
+    "description",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "queryUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Query Uuid",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label"
+          }
+        }
+      },
+      "definition": {
+        "type": "any",
+        "tag": {
+          "value": {
+            "defaultLabel": "Query definition at freeze time"
+          }
+        }
+      }
+    }
+  }
+}

@@ -100,6 +100,8 @@ const adminMetaModel: MetaModel = {
   runners: [],
   storedQueries: [],
   applicationVersionCrossEntityVersion: [],
+  applicationVersionCrossQueryVersion: [],
+  queryVersions: [],
   tests: [],
   themes: [],
   applications: [],

@@ -33,6 +33,21 @@
         "objectListReference": "00_crossEntityVersions",
         "objectListReferenceAttribute": "entityVersion",
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "uuid"
+      },
+      "02_crossQueryVersions": {
+        "extractorOrCombinerType": "combinerOneToMany",
+        "parentName": "ApplicationVersionCrossQueryVersion",
+        "parentUuid": "9e4c6d8a-2b5f-4a1c-9d7e-3f6b8a2c4e1d",
+        "objectReference": "applicationVersion",
+        "AttributeOfListObjectToCompareToReferenceUuid": "applicationVersion"
+      },
+      "03_queryVersions": {
+        "extractorOrCombinerType": "combinerManyToMany",
+        "parentName": "QueryVersion",
+        "parentUuid": "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c",
+        "objectListReference": "02_crossQueryVersions",
+        "objectListReferenceAttribute": "queryVersion",
+        "AttributeOfRootListObjectToCompareToListReferenceUuid": "uuid"
       }
     },
     "section": {
@@ -52,6 +67,16 @@
             "parentName": "EntityVersion",
             "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
             "fetchedDataReference": "01_entityVersions",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Query Versions",
+            "parentName": "QueryVersion",
+            "parentUuid": "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c",
+            "fetchedDataReference": "03_queryVersions",
             "sortByAttribute": "name"
           }
         },

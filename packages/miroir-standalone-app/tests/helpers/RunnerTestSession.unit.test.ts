@@ -361,6 +361,8 @@ describe("RunnerTestSession (Gap E R)", () => {
       reports: [],
       storedQueries: [],
       applicationVersionCrossEntityVersion: [],
+      applicationVersionCrossQueryVersion: [],
+      queryVersions: [],
       applications: [],
     } as unknown as MetaModel;
     const session = new RunnerTestSession({

@@ -14,6 +14,9 @@ export declare const entitySelfApplication: any;
 export declare const entitySelfApplicationVersion: any;
 export declare const entitySelfApplicationModelBranch: any;
 export declare const entityQueryVersion: any;
+/** #227 — historical QueryVersion Entity (freeze snapshots). */
+export declare const entityHistoricalQueryVersion: any;
+export declare const entityApplicationVersionCrossQueryVersion: any;
 export declare const entityTest: any;
 export declare const entityTransformerDefinition: any;
 export declare const entityMiroirTest: any;
@@ -76,6 +79,9 @@ export declare const entityVersionCommit: any;
 /** @deprecated Use entityVersionCommit */
 export declare const entityDefinitionCommit: any;
 export declare const entityVersionQueryVersionV1: any;
+/** #227 — bootstrap EntityVersion row for historical QueryVersion Entity. */
+export declare const entityVersionHistoricalQueryVersion: any;
+export declare const entityVersionApplicationVersionCrossQueryVersion: any;
 /** @deprecated Use entityVersionQueryVersionV1 */
 export declare const entityDefinitionQueryVersionV1: any;
 export declare const entityVersionBlob: any;

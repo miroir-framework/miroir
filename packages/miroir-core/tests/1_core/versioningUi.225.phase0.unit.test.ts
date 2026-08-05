@@ -158,6 +158,25 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(
       (diagramSection?.definition.entityDefinitions as { referenceName?: string })?.referenceName,
     ).toBe("01_entityVersions");
+    // #227 — QueryVersions linked via ApplicationVersionCrossQueryVersion.
+    expect(details.definition.combinerTemplates?.["02_crossQueryVersions"]?.parentUuid).toBe(
+      "9e4c6d8a-2b5f-4a1c-9d7e-3f6b8a2c4e1d",
+    );
+    expect(details.definition.combinerTemplates?.["03_queryVersions"]?.extractorOrCombinerType).toBe(
+      "combinerManyToMany",
+    );
+    expect(
+      details.definition.combinerTemplates?.["03_queryVersions"]?.objectListReferenceAttribute,
+    ).toBe("queryVersion");
+    const queryVersionsSection = details.definition.section.definition.find(
+      (s) =>
+        s.type === "objectListReportSection" &&
+        s.definition.fetchedDataReference === "03_queryVersions",
+    );
+    expect(queryVersionsSection?.definition.label).toBe("Query Versions");
+    expect(queryVersionsSection?.definition.parentUuid).toBe(
+      "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c",
+    );
   });
 
   it("Versioning report embeds freeze Runner and filters SAV by application (Phase 4)", () => {

@@ -241,6 +241,8 @@ export const emptyMetaModel: MetaModel = {
   entities: [],
   entityVersions: [],
   applicationVersionCrossEntityVersion: [],
+  applicationVersionCrossQueryVersion: [],
+  queryVersions: [],
   applicationVersions: [],
   endpoints: [],
   jzodSchemas: [],
