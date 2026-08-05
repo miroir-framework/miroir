@@ -55,6 +55,7 @@ describe("Entity meta scope and logicalDataModel", () => {
       "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7.json", // ReportVersion
       "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7.json", // MenuVersion
       "c2d3e4f5-a6b7-4789-a0b1-d2e3f4a5b6c7.json", // EndpointVersion
+      "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0.json", // RunnerVersion
       "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json", // SelfApplicationVersion
     ];
     for (const file of versioningOnly) {
@@ -69,6 +70,7 @@ describe("Entity meta scope and logicalDataModel", () => {
       "f2b3c4d5-e6f7-4890-a1b2-c3d4e5f6a7b8.json",
       "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8.json",
       "d3e4f5a6-b7c8-4890-b1c2-e3f4a5b6c7d8.json",
+      "f6a7b8c9-d0e1-4123-a4b5-c6d7e8f9a0b1.json",
     ]) {
       const entity = readEntity(file);
       expect(entity.scope, file).toBe("versioning");
@@ -139,6 +141,21 @@ describe("Entity meta scope and logicalDataModel", () => {
       entitySchema as any,
       endpointVersionEntity,
       "EndpointVersion",
+      defaultMiroirModelEnvironment,
+    );
+    expect(check.status, JSON.stringify(check.innermostError, null, 2)).toBe("ok");
+  });
+
+  it("model validation accepts RunnerVersion entity row against Entity schema", () => {
+    const entitySchema = entityDefinitionsByEntityName(defaultMiroirMetaModel).Entity?.mlSchema;
+    const runnerVersionEntity = defaultMiroirMetaModel.entities.find(
+      (e) => e.uuid === "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0",
+    );
+    expect(runnerVersionEntity).toBeDefined();
+    const check = checkModelValidationInstance(
+      entitySchema as any,
+      runnerVersionEntity,
+      "RunnerVersion",
       defaultMiroirModelEnvironment,
     );
     expect(check.status, JSON.stringify(check.innermostError, null, 2)).toBe("ok");

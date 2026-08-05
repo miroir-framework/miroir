@@ -80,6 +80,8 @@ describe("216 Phase 2 — first freeze plan", () => {
     expect(plan.crossMenuVersions).toEqual([]);
     expect(plan.endpointVersions).toEqual([]);
     expect(plan.crossEndpointVersions).toEqual([]);
+    expect(plan.runnerVersions).toEqual([]);
+    expect(plan.crossRunnerVersions).toEqual([]);
     const coveredLive = plan.entityVersions.map((ev) => ev.entityUuid).sort();
     expect(coveredLive).toEqual(entities.map((e) => e.uuid).sort());
   });

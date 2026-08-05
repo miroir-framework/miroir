@@ -36,6 +36,8 @@ import {
   entityApplicationVersionCrossMenuVersion,
   entityHistoricalEndpointVersion,
   entityApplicationVersionCrossEndpointVersion,
+  entityHistoricalRunnerVersion,
+  entityApplicationVersionCrossRunnerVersion,
   entityDefinitionApplicationEvolutionTrace,
   entityDefinitionApplicationEvolutionTraceEvent,
   entityDefinitionApplicationVersionCrossEntityDefinition,
@@ -74,6 +76,8 @@ import {
   entityVersionApplicationVersionCrossMenuVersion,
   entityVersionHistoricalEndpointVersion,
   entityVersionApplicationVersionCrossEndpointVersion,
+  entityVersionHistoricalRunnerVersion,
+  entityVersionApplicationVersionCrossRunnerVersion,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
@@ -180,6 +184,8 @@ export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, str
   MenuVersion: "menuVersions",
   ApplicationVersionCrossEndpointVersion: "applicationVersionCrossEndpointVersion",
   EndpointVersion: "endpointVersions",
+  ApplicationVersionCrossRunnerVersion: "applicationVersionCrossRunnerVersion",
+  RunnerVersion: "runnerVersions",
 };
 export const defaultMiroirMetaModel: MetaModel = {
   applicationUuid: selfApplicationMiroir.uuid,
@@ -215,6 +221,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityHistoricalMenuVersion as Entity,
     entityApplicationVersionCrossEndpointVersion as Entity,
     entityHistoricalEndpointVersion as Entity,
+    entityApplicationVersionCrossRunnerVersion as Entity,
+    entityHistoricalRunnerVersion as Entity,
   ],
   entityVersions: [
     // bootstrap entities have to come first
@@ -243,6 +251,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityVersionApplicationVersionCrossMenuVersion as EntityVersion,
     entityVersionHistoricalEndpointVersion as EntityVersion,
     entityVersionApplicationVersionCrossEndpointVersion as EntityVersion,
+    entityVersionHistoricalRunnerVersion as EntityVersion,
+    entityVersionApplicationVersionCrossRunnerVersion as EntityVersion,
   ],
   endpoints: [
     applicationEndpointV1 as any as EndpointDefinition,
@@ -303,6 +313,8 @@ export const defaultMiroirMetaModel: MetaModel = {
   menuVersions: [],
   applicationVersionCrossEndpointVersion: [],
   endpointVersions: [],
+  applicationVersionCrossRunnerVersion: [],
+  runnerVersions: [],
   tests: [
     miroirTest_adminTransformers as MiroirTestDefinition,
     miroirTest_alterObject as MiroirTestDefinition,
@@ -385,6 +397,8 @@ export const miroirModelInitializeEntityVersionInstances: EntityVersion[] = [
   entityVersionHistoricalMenuVersion as EntityVersion,
   entityVersionApplicationVersionCrossEndpointVersion as EntityVersion,
   entityVersionHistoricalEndpointVersion as EntityVersion,
+  entityVersionApplicationVersionCrossRunnerVersion as EntityVersion,
+  entityVersionHistoricalRunnerVersion as EntityVersion,
 ];
 
 /** EntityVersion rows upserted immediately after createEntity(entityEntityVersion). */
@@ -430,6 +444,8 @@ export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootst
   entityHistoricalMenuVersion.uuid!,
   entityApplicationVersionCrossEndpointVersion.uuid!,
   entityHistoricalEndpointVersion.uuid!,
+  entityApplicationVersionCrossRunnerVersion.uuid!,
+  entityHistoricalRunnerVersion.uuid!,
 ]);
 
 /** Non-entity instances upserted to Miroir data during bootstrap. */

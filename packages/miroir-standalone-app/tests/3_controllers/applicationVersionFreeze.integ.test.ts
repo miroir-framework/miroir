@@ -102,6 +102,22 @@ const libraryBooksEndpoint = JSON.parse(
     "utf8",
   ),
 ) as EndpointDefinition & { uuid: string; name: string; version: string; application: string; definition: Record<string, unknown> };
+const libraryReturnDocumentRunner = JSON.parse(
+  readFileSync(
+    join(
+      REPO_ROOT,
+      "packages/miroir-test-app_deployment-library/assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/98a38a84-e702-4540-a056-c7676a193a2b.json",
+    ),
+    "utf8",
+  ),
+) as EntityInstance & {
+  uuid: string;
+  name: string;
+  application: string;
+  defaultLabel: string;
+  description?: string;
+  definition: Record<string, unknown>;
+};
 import {
   defaultMiroirMetaModel,
   entityApplicationVersionCrossEntityVersion,
@@ -117,10 +133,13 @@ import {
   APPLICATION_VERSION_CROSS_MENU_VERSION_UUID,
   ENDPOINT_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
+  RUNNER_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID,
   resolveFreezeQueryVersionApplicationSection,
   resolveFreezeReportVersionApplicationSection,
   resolveFreezeMenuVersionApplicationSection,
   resolveFreezeEndpointVersionApplicationSection,
+  resolveFreezeRunnerVersionApplicationSection,
 } from "miroir-core";
 
 const env: any = process.env;
@@ -377,6 +396,24 @@ function endpointVersionSlice(endpointVersion: {
     description: endpointVersion.description,
     transactionalEndpoint: endpointVersion.transactionalEndpoint,
     definition: endpointVersion.definition,
+  };
+}
+
+function runnerVersionSlice(runnerVersion: {
+  name: string;
+  runnerUuid: string;
+  application: string;
+  defaultLabel: string;
+  description?: string;
+  definition: unknown;
+}) {
+  return {
+    name: runnerVersion.name,
+    runnerUuid: runnerVersion.runnerUuid,
+    application: runnerVersion.application,
+    defaultLabel: runnerVersion.defaultLabel,
+    description: runnerVersion.description,
+    definition: runnerVersion.definition,
   };
 }
 
@@ -1057,6 +1094,76 @@ describe.sequential("227 — EndpointVersion freeze persistence", () => {
 
       const freezeEvUuids = new Set(crossEndpoints.map((c) => c.endpointVersion));
       expect(freezeEvUuids.has(libraryBooksEndpoint.uuid)).toBe(false);
+    },
+    globalTimeOut,
+  );
+});
+
+describe.sequential("227 — RunnerVersion freeze persistence", () => {
+  it(
+    "first freeze persists RunnerVersions + CrossRunner (Library model section)",
+    async () => {
+      expect(resolveFreezeRunnerVersionApplicationSection(testApplicationUuid)).toBe("model");
+
+      const freezeResult = await freezeLibrary("V1-Runners");
+      expect(
+        freezeResult instanceof Action2Error,
+        `freeze failed: ${JSON.stringify(freezeResult)}`,
+      ).toBe(false);
+
+      await refreshLibraryCache();
+      const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const sav = model.applicationVersions.find((v) => v.name === "V1-Runners");
+      expect(sav, "SAV V1-Runners missing after reload").toBeDefined();
+
+      expect(
+        model.runners.some((r) => (r as { uuid?: string }).uuid === libraryReturnDocumentRunner.uuid),
+        "returnDocument runner missing from present model",
+      ).toBe(true);
+
+      const crossRunners = (model.applicationVersionCrossRunnerVersion ?? []).filter(
+        (c) => c.applicationVersion === sav!.uuid,
+      );
+      expect(crossRunners.length).toBe(model.runners.length);
+      expect(crossRunners.length).toBeGreaterThan(0);
+
+      for (const cross of crossRunners) {
+        expect(cross.parentUuid).toBe(APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID);
+        const rv = (model.runnerVersions ?? []).find((r) => r.uuid === cross.runnerVersion);
+        expect(rv, `RunnerVersion ${cross.runnerVersion} missing`).toBeDefined();
+        expect(rv!.uuid).not.toBe(rv!.runnerUuid);
+        expect(rv!.parentUuid).toBe(RUNNER_VERSION_ENTITY_UUID);
+        expect(rv!.parentName).toBe("RunnerVersion");
+
+        const live = model.runners.find(
+          (r) => (r as { uuid?: string }).uuid === rv!.runnerUuid,
+        ) as {
+          uuid: string;
+          name: string;
+          application: string;
+          defaultLabel: string;
+          description?: string;
+          definition: unknown;
+        };
+        expect(live, `live Runner ${rv!.runnerUuid} missing`).toBeDefined();
+        expect(runnerVersionSlice(rv!)).toEqual({
+          name: live!.name,
+          runnerUuid: (live as { uuid: string }).uuid,
+          application: (live as { application: string }).application,
+          defaultLabel: (live as { defaultLabel: string }).defaultLabel,
+          description: (live as { description?: string }).description,
+          definition: (live as { definition: unknown }).definition,
+        });
+      }
+
+      const returnCross = crossRunners.find((c) => {
+        const rv = (model.runnerVersions ?? []).find((r) => r.uuid === c.runnerVersion);
+        return rv?.runnerUuid === libraryReturnDocumentRunner.uuid;
+      });
+      expect(returnCross, "returnDocument RunnerVersion cross row missing").toBeDefined();
+
+      const freezeRvUuids = new Set(crossRunners.map((c) => c.runnerVersion));
+      expect(freezeRvUuids.has(libraryReturnDocumentRunner.uuid)).toBe(false);
     },
     globalTimeOut,
   );

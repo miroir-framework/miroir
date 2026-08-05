@@ -5,6 +5,7 @@
  * #227 — ReportVersion (second non-Entity model element).
  * #227 — MenuVersion (third non-Entity model element).
  * #227 — EndpointVersion (fourth non-Entity model element).
+ * #227 — RunnerVersion (fifth non-Entity model element).
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -20,6 +21,7 @@ import type {
   Query,
   Report,
   RootReport,
+  Runner,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { noValue } from "../Instance.js";
 import {
@@ -28,6 +30,7 @@ import {
   getReportVersionWriteSection,
   getMenuVersionWriteSection,
   getEndpointVersionWriteSection,
+  getRunnerVersionWriteSection,
 } from "../Model.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
@@ -101,6 +104,11 @@ export const ENDPOINT_VERSION_ENTITY_UUID = "c2d3e4f5-a6b7-4789-a0b1-d2e3f4a5b6c
 /** ApplicationVersionCrossEndpointVersion Entity UUID (#227). */
 export const APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID =
   "d3e4f5a6-b7c8-4890-b1c2-e3f4a5b6c7d8";
+/** Historical RunnerVersion Entity UUID (#227). */
+export const RUNNER_VERSION_ENTITY_UUID = "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0";
+/** ApplicationVersionCrossRunnerVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID =
+  "f6a7b8c9-d0e1-4123-a4b5-c6d7e8f9a0b1";
 
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
@@ -151,6 +159,15 @@ export function resolveFreezeEndpointVersionApplicationSection(
   applicationUuid: string,
 ): ApplicationSection {
   return getEndpointVersionWriteSection(applicationUuid);
+}
+
+/**
+ * #227 — section for persisting freeze-minted RunnerVersion snapshots.
+ */
+export function resolveFreezeRunnerVersionApplicationSection(
+  applicationUuid: string,
+): ApplicationSection {
+  return getRunnerVersionWriteSection(applicationUuid);
 }
 
 /** Live Query instance shape in MetaModel.storedQueries. */
@@ -381,6 +398,64 @@ export function snapshotEndpointsAsHistoricalEndpointVersions(
   });
 }
 
+/** Live Runner instance shape in MetaModel.runners. */
+export type StoredRunnerForFreeze = {
+  uuid: string;
+  name: string;
+  application: string;
+  defaultLabel: string;
+  description?: string;
+  definition: Runner["definition"];
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Runner snapshot minted at freeze. */
+export type RunnerVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "RunnerVersion";
+  name: string;
+  runnerUuid: string;
+  application: string;
+  defaultLabel: string;
+  description?: string;
+  definition: Runner["definition"];
+};
+
+/**
+ * Deep-copy present-model Runners into new immutable RunnerVersion instances.
+ * Each output has a **new** UUID; `runnerUuid` references the live Runner.
+ */
+export function snapshotRunnersAsHistoricalRunnerVersions(
+  runners: StoredRunnerForFreeze[],
+  options?: SnapshotOptions,
+): RunnerVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return runners.map((runner) => {
+    if (runner.definition === undefined || runner.definition === null) {
+      throw new Error(
+        `Cannot snapshot Runner ${runner.uuid} (${runner.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: RunnerVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: RUNNER_VERSION_ENTITY_UUID,
+      parentName: "RunnerVersion",
+      name: runner.name,
+      runnerUuid: runner.uuid,
+      application: runner.application,
+      defaultLabel: runner.defaultLabel,
+      definition: structuredClone(runner.definition),
+      ...(runner.description !== undefined ? { description: runner.description } : {}),
+    };
+
+    return snapshot;
+  });
+}
+
 /**
  * Deep-copy present-model Entity fields into new immutable EntityVersion instances.
  * Each output has a **new** UUID; `entityUuid` references the live Entity.
@@ -481,6 +556,15 @@ export type ApplicationVersionCrossEndpointVersionRow = {
   endpointVersion: string;
 };
 
+/** Cross row linking an Application Version to a historical RunnerVersion. */
+export type ApplicationVersionCrossRunnerVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  runnerVersion: string;
+};
+
 export type FreezeApplicationVersionPlan = {
   selfApplicationVersion: ApplicationVersion;
   entityVersions: EntityVersion[];
@@ -503,6 +587,10 @@ export type FreezeApplicationVersionPlan = {
   crossEndpointVersions: ApplicationVersionCrossEndpointVersionRow[];
   /** Persist section for EndpointVersion rows (#227). */
   endpointVersionApplicationSection: ApplicationSection;
+  runnerVersions: RunnerVersionSnapshot[];
+  crossRunnerVersions: ApplicationVersionCrossRunnerVersionRow[];
+  /** Persist section for RunnerVersion rows (#227). */
+  runnerVersionApplicationSection: ApplicationSection;
 };
 
 export type BuildFreezeApplicationVersionPlanInput = {
@@ -518,6 +606,8 @@ export type BuildFreezeApplicationVersionPlanInput = {
   menus?: StoredMenuForFreeze[];
   /** Present-model Endpoints to snapshot (#227). Defaults to empty. */
   endpoints?: StoredEndpointForFreeze[];
+  /** Present-model Runners to snapshot (#227). Defaults to empty. */
+  runners?: StoredRunnerForFreeze[];
   /** Existing SAVs for this app+branch — used for duplicate label detection and tip resolution. */
   existingApplicationVersions?: ApplicationVersion[];
   /**
@@ -766,6 +856,9 @@ export function buildFreezeApplicationVersionPlan(
   const endpointVersions = snapshotEndpointsAsHistoricalEndpointVersions(input.endpoints ?? [], {
     newUuid: mintUuid,
   });
+  const runnerVersions = snapshotRunnersAsHistoricalRunnerVersions(input.runners ?? [], {
+    newUuid: mintUuid,
+  });
 
   const modelCUDMigration =
     input.previousEntityVersions !== undefined
@@ -834,6 +927,16 @@ export function buildFreezeApplicationVersionPlan(
       endpointVersion: ev.uuid,
     }));
 
+  const crossRunnerVersions: ApplicationVersionCrossRunnerVersionRow[] = runnerVersions.map(
+    (rv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID,
+      parentName: "ApplicationVersionCrossRunnerVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      runnerVersion: rv.uuid,
+    }),
+  );
+
   return {
     selfApplicationVersion,
     entityVersions,
@@ -859,6 +962,11 @@ export function buildFreezeApplicationVersionPlan(
     endpointVersions,
     crossEndpointVersions,
     endpointVersionApplicationSection: resolveFreezeEndpointVersionApplicationSection(
+      input.selfApplicationUuid,
+    ),
+    runnerVersions,
+    crossRunnerVersions,
+    runnerVersionApplicationSection: resolveFreezeRunnerVersionApplicationSection(
       input.selfApplicationUuid,
     ),
   };
@@ -898,6 +1006,7 @@ export type FreezeMetaModelSlice = {
   reports?: StoredReportForFreeze[];
   menus?: StoredMenuForFreeze[];
   endpoints?: StoredEndpointForFreeze[];
+  runners?: StoredRunnerForFreeze[];
   applicationVersions: ApplicationVersion[];
   entityVersions: EntityVersion[];
   applicationVersionCrossEntityVersion: Array<{
@@ -912,6 +1021,8 @@ export type FreezeMetaModelSlice = {
   menuVersions?: MetaModel["menuVersions"];
   applicationVersionCrossEndpointVersion?: MetaModel["applicationVersionCrossEndpointVersion"];
   endpointVersions?: MetaModel["endpointVersions"];
+  applicationVersionCrossRunnerVersion?: MetaModel["applicationVersionCrossRunnerVersion"];
+  runnerVersions?: MetaModel["runnerVersions"];
 };
 
 /**
@@ -1002,6 +1113,7 @@ export function planFreezeApplicationVersionFromMetaModel(
     reports: metaModel.reports,
     menus: metaModel.menus,
     endpoints: metaModel.endpoints,
+    runners: metaModel.runners,
     existingApplicationVersions: metaModel.applicationVersions,
     freezeProducedVersionUuids,
     previousEntityVersions,
