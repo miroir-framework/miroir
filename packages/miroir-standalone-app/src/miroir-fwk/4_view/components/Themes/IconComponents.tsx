@@ -8,6 +8,8 @@ import { cleanLevel } from '../../constants';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from 'miroir-react';
 import { SymbolWithLetter } from './SymbolWithLetter';
+import { SvgWithLetter } from './SvgWithLetter';
+import { resolveMiroirIconColor } from './resolveMiroirIconColor';
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -651,35 +653,13 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
         if (iconSource.iconType === 'mui') {
           const mappedName = muiIconNameMap[iconSource.name] || iconSource.name;
           const symbolName = materialSymbolsIconMap[mappedName] || mappedName;
-          
-          // Resolve color
-          let resolvedColor: string | undefined = undefined;
-          if (iconSource.color) {
-            if (typeof iconSource.color === 'string') {
-              // Direct color string (name or code)
-              resolvedColor = iconSource.color;
-            } else if (iconSource.color.colorType === 'themeColor') {
-              // Resolve from theme using dot notation path
-              const pathParts = iconSource.color.currentThemeColorPath.split('.');
-              let colorValue: any = currentTheme;
-              
-              for (const part of pathParts) {
-                if (colorValue && typeof colorValue === 'object' && part in colorValue) {
-                  colorValue = colorValue[part];
-                } else {
-                  log.warn(`Theme color path not found: ${iconSource.color.currentThemeColorPath}`);
-                  colorValue = undefined;
-                  break;
-                }
-              }
-              
-              if (typeof colorValue === 'string') {
-                resolvedColor = colorValue;
-              }
-            }
-          }
-          
+          const resolvedColor = resolveMiroirIconColor(iconSource.color, currentTheme, log);
           return { type: 'symbol', content: symbolName, error: null, color: resolvedColor, superImpose: iconSource.superImpose };
+        }
+
+        if (iconSource.iconType === 'svg') {
+          const resolvedColor = resolveMiroirIconColor(iconSource.color, currentTheme, log);
+          return { type: 'svg', content: iconSource.name, error: null, color: resolvedColor, superImpose: iconSource.superImpose };
         }
       }
 
@@ -732,6 +712,22 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
     minWidth: sizeMap[size],
   });
 
+  const svgIconStyles = css({
+    ...baseIconStyles,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: sizeMap[size],
+    height: sizeMap[size],
+    minWidth: sizeMap[size],
+    '& svg': {
+      width: '100%',
+      height: '100%',
+      display: 'block',
+      fill: 'currentColor',
+    },
+  });
+
   // Error styles
   const errorIconStyles = css({
     ...baseIconStyles,
@@ -754,6 +750,10 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
       // Try to find a name for the emoji
       const emojiName = Object.entries(EMOJI_MAP).find(([_, emoji]) => emoji === resolvedIcon.content)?.[0];
       return emojiName ? `${emojiName} emoji` : 'emoji';
+    }
+
+    if (resolvedIcon.type === 'svg') {
+      return 'Custom svg icon';
     }
     
     if (resolvedIcon.error) {
@@ -821,6 +821,39 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
           >
             {resolvedIcon.content}
           </span>
+        );
+
+      case 'svg':
+        if (resolvedIcon.superImpose?.letter) {
+          return (
+            <SvgWithLetter
+              svgMarkup={resolvedIcon.content}
+              letter={resolvedIcon.superImpose.letter}
+              size={sizeMap[size]}
+              svgColor={resolvedIcon.color}
+              letterColor={resolvedIcon.superImpose.color}
+              className={className}
+              style={style}
+              aria-label={accessibilityLabel}
+              role="img"
+              {...rest}
+            />
+          );
+        }
+
+        return (
+          <span
+            css={svgIconStyles}
+            className={className}
+            style={{
+              color: resolvedIcon.color || 'inherit',
+              ...style,
+            }}
+            aria-label={accessibilityLabel}
+            role="img"
+            dangerouslySetInnerHTML={{ __html: resolvedIcon.content }}
+            {...rest}
+          />
         );
       
       case 'error':

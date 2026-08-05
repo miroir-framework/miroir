@@ -341,7 +341,11 @@ export function AppBar(props:AppBarProps) {
       section: "data",
       selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
       reportUuid: reportVersioning.uuid,
-      icon: "commit",
+      // icon: "commit",
+      icon: {
+        iconType: "svg",
+        name: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="160" cy="96" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="160" cy="416" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><line x1="160" y1="368" x2="160" y2="144" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="352" cy="160" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M352,208c0,128-192,48-192,160" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>',
+      },
     },
     {
       miroirMenuItemType: "miroirMenuPageLink",

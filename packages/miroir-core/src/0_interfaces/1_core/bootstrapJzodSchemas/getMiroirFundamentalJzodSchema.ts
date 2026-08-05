@@ -688,6 +688,82 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
+            {
+              type: "object",
+              definition: {
+                iconType: {
+                  type: "literal",
+                  definition: "svg",
+                  tag: {
+                    value: {
+                      defaultLabel: "Icon Type",
+                      editable: false,
+                    },
+                  },
+                },
+                name: {
+                  type: "string",
+                  tag: {
+                    value: {
+                      defaultLabel: "SVG Markup",
+                      editable: true,
+                    },
+                  },
+                },
+                superImpose: {
+                  type: "object",
+                  optional: true,
+                  definition: {
+                    letter: {
+                      type: "string",
+                      optional: true,
+                      tag: {
+                        value: {
+                          defaultLabel: "Letter Superimposed on Icon",
+                          editable: true,
+                        },
+                      },
+                    },
+                    color: {
+                      type: "string",
+                      optional: true,
+                      tag: {
+                        value: {
+                          defaultLabel: "Color of Superimposed Letter",
+                          editable: true,
+                        },
+                      },
+                    },
+                  },
+                },
+                color: {
+                  type: "union",
+                  discriminator: "colorType",
+                  optional: true,
+                  tag: {
+                    value: {
+                      defaultLabel: "Icon Color",
+                      editable: true,
+                    },
+                  },
+                  definition: [
+                    { type: "string" },
+                    {
+                      type: "object",
+                      definition: {
+                        colorType: {
+                          type: "literal",
+                          definition: "themeColor",
+                        },
+                        currentThemeColorPath: {
+                          type: "string",
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
           ],
         },
         reportLink: {

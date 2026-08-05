@@ -45,6 +45,8 @@ export {
 // Symbol with letter overlay
 export { SymbolWithLetter } from './SymbolWithLetter';
 export type { SymbolWithLetterProps } from './SymbolWithLetter';
+export { SvgWithLetter } from './SvgWithLetter';
+export type { SvgWithLetterProps } from './SvgWithLetter';
 
 // Layout components
 export {
