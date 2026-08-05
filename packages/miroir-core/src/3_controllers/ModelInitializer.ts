@@ -42,12 +42,16 @@ import {
   entityApplicationVersionCrossReportVersion,
   entityHistoricalMenuVersion,
   entityApplicationVersionCrossMenuVersion,
+  entityHistoricalEndpointVersion,
+  entityApplicationVersionCrossEndpointVersion,
   entityVersionApplicationVersionCrossQueryVersion,
   entityVersionHistoricalQueryVersion,
   entityVersionApplicationVersionCrossReportVersion,
   entityVersionHistoricalReportVersion,
   entityVersionApplicationVersionCrossMenuVersion,
   entityVersionHistoricalMenuVersion,
+  entityVersionApplicationVersionCrossEndpointVersion,
+  entityVersionHistoricalEndpointVersion,
   instanceEndpointV1,
   materialStoredMiroirTheme,
   menuDefaultMiroir,
@@ -432,6 +436,42 @@ export async function modelInitialize(
     result = await persistenceStoreController.upsertInstance(
       "data",
       entityVersionHistoricalMenuVersion as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+
+    // bootstrap ApplicationVersionCrossEndpointVersion (#227)
+    result = await persistenceStoreController.createEntity(
+      entityApplicationVersionCrossEndpointVersion as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(
+      logHeader,
+      "created entity ApplicationVersionCrossEndpointVersion",
+      persistenceStoreController.getEntityUuids(),
+    );
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityVersionApplicationVersionCrossEndpointVersion as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+
+    // bootstrap historical EndpointVersion (#227)
+    result = await persistenceStoreController.createEntity(
+      entityHistoricalEndpointVersion as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(logHeader, "created entity EndpointVersion", persistenceStoreController.getEntityUuids());
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityVersionHistoricalEndpointVersion as EntityInstance,
     );
     if (result instanceof Action2Error) {
       return result;

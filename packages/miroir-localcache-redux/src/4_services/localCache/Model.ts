@@ -46,6 +46,8 @@ import {
   entityHistoricalReportVersion,
   entityApplicationVersionCrossMenuVersion,
   entityHistoricalMenuVersion,
+  entityApplicationVersionCrossEndpointVersion,
+  entityHistoricalEndpointVersion,
 } from "miroir-test-app_deployment-miroir";
 import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 
@@ -133,6 +135,10 @@ export function currentModel(
       application,
       entityHistoricalMenuVersion.uuid,
     );
+    const endpointVersionSection = getApplicationSection(
+      application,
+      entityHistoricalEndpointVersion.uuid,
+    );
     const applicationVersionCrossReport =
       state.current[
         getReduxDeploymentsStateIndex(
@@ -163,6 +169,22 @@ export function currentModel(
           deploymentUuid,
           menuVersionSection,
           entityHistoricalMenuVersion.uuid,
+        )
+      ];
+    const applicationVersionCrossEndpoint =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossEndpointVersion.uuid,
+        )
+      ];
+    const historicalEndpointVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          endpointVersionSection,
+          entityHistoricalEndpointVersion.uuid,
         )
       ];
     const endpoints =
@@ -257,6 +279,12 @@ export function currentModel(
       menuVersions: (historicalMenuVersions?.entities
         ? Object.values(historicalMenuVersions.entities)
         : []) as NonNullable<MetaModel["menuVersions"]>,
+      applicationVersionCrossEndpointVersion: (applicationVersionCrossEndpoint?.entities
+        ? Object.values(applicationVersionCrossEndpoint.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossEndpointVersion"]>,
+      endpointVersions: (historicalEndpointVersions?.entities
+        ? Object.values(historicalEndpointVersions.entities)
+        : []) as NonNullable<MetaModel["endpointVersions"]>,
       tests: (tests && tests.entities ? Object.values(tests.entities) : []) as MiroirTestDefinition[],
       themes: (themes && themes.entities ? Object.values(themes.entities) : []) as StoredMiroirTheme[],
     };

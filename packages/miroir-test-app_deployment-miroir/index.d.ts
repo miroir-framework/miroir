@@ -22,6 +22,8 @@ export declare const entityHistoricalReportVersion: any;
 export declare const entityApplicationVersionCrossReportVersion: any;
 export declare const entityHistoricalMenuVersion: any;
 export declare const entityApplicationVersionCrossMenuVersion: any;
+export declare const entityHistoricalEndpointVersion: any;
+export declare const entityApplicationVersionCrossEndpointVersion: any;
 export declare const entityTest: any;
 export declare const entityTransformerDefinition: any;
 export declare const entityMiroirTest: any;
@@ -92,6 +94,8 @@ export declare const entityVersionHistoricalReportVersion: any;
 export declare const entityVersionApplicationVersionCrossReportVersion: any;
 export declare const entityVersionHistoricalMenuVersion: any;
 export declare const entityVersionApplicationVersionCrossMenuVersion: any;
+export declare const entityVersionHistoricalEndpointVersion: any;
+export declare const entityVersionApplicationVersionCrossEndpointVersion: any;
 /** @deprecated Use entityVersionQueryVersionV1 */
 export declare const entityDefinitionQueryVersionV1: any;
 export declare const entityVersionBlob: any;

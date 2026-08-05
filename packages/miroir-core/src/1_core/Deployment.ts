@@ -247,6 +247,8 @@ export const emptyMetaModel: MetaModel = {
   reportVersions: [],
   applicationVersionCrossMenuVersion: [],
   menuVersions: [],
+  applicationVersionCrossEndpointVersion: [],
+  endpointVersions: [],
   applicationVersions: [],
   endpoints: [],
   jzodSchemas: [],

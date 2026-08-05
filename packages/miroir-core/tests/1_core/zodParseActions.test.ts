@@ -142,6 +142,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             reportVersions: [],
             applicationVersionCrossMenuVersion: [],
             menuVersions: [],
+            applicationVersionCrossEndpointVersion: [],
+            endpointVersions: [],
             storedQueries: [],
             runners: [],
             tests: [],

@@ -33,6 +33,8 @@ import {
   entityHistoricalReportVersion,
   entityApplicationVersionCrossMenuVersion,
   entityHistoricalMenuVersion,
+  entityApplicationVersionCrossEndpointVersion,
+  entityHistoricalEndpointVersion,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationVersionInitialMiroirVersion
@@ -1187,6 +1189,16 @@ export class DomainController implements DomainControllerInterface {
       return mvResult;
     }
 
+    const epvResult = await persistBatch(
+      "freezeEndpointVersions",
+      plan.endpointVersions as EntityInstance[],
+      entityHistoricalEndpointVersion.uuid,
+      plan.endpointVersionApplicationSection,
+    );
+    if (epvResult instanceof Action2Error) {
+      return epvResult;
+    }
+
     const crossEvResult = await persistBatch(
       "freezeCrossEntityVersions",
       plan.crossEntityVersions as EntityInstance[],
@@ -1217,10 +1229,20 @@ export class DomainController implements DomainControllerInterface {
       return crossRvResult;
     }
 
-    return persistBatch(
+    const crossMvResult = await persistBatch(
       "freezeCrossMenuVersions",
       plan.crossMenuVersions as EntityInstance[],
       entityApplicationVersionCrossMenuVersion.uuid,
+      versioningHistorySection,
+    );
+    if (crossMvResult instanceof Action2Error) {
+      return crossMvResult;
+    }
+
+    return persistBatch(
+      "freezeCrossEndpointVersions",
+      plan.crossEndpointVersions as EntityInstance[],
+      entityApplicationVersionCrossEndpointVersion.uuid,
       versioningHistorySection,
     );
   }
@@ -2035,6 +2057,64 @@ export class DomainController implements DomainControllerInterface {
             }
           }
 
+          const crossEndpointEntityUuid = entityApplicationVersionCrossEndpointVersion.uuid;
+          const crossEndpointEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === crossEndpointEntityUuid,
+          );
+          if (!crossEndpointEntityPresent) {
+            const ensureCrossEndpoint = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureApplicationVersionCrossEndpointVersion",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityApplicationVersionCrossEndpointVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureCrossEndpoint instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure Cross Endpoint Entity exists",
+                [],
+                ensureCrossEndpoint,
+              );
+            }
+          }
+
+          const endpointVersionEntityUuid = entityHistoricalEndpointVersion.uuid;
+          const endpointVersionEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === endpointVersionEntityUuid,
+          );
+          if (!endpointVersionEntityPresent) {
+            const ensureEndpointVersionEntity = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureHistoricalEndpointVersionEntity",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityHistoricalEndpointVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureEndpointVersionEntity instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure EndpointVersion Entity exists",
+                [],
+                ensureEndpointVersionEntity,
+              );
+            }
+          }
+
           // Freeze application Entities only — exclude MetaModel bootstrap Entities
           // (Entity, Report, Cross, …) that may appear in currentModel.entities.
           const metaBootstrapUuids = new Set(
@@ -2047,6 +2127,8 @@ export class DomainController implements DomainControllerInterface {
           metaBootstrapUuids.add(reportVersionEntityUuid);
           metaBootstrapUuids.add(crossMenuEntityUuid);
           metaBootstrapUuids.add(menuVersionEntityUuid);
+          metaBootstrapUuids.add(crossEndpointEntityUuid);
+          metaBootstrapUuids.add(endpointVersionEntityUuid);
           const applicationEntities = metaModel.entities.filter(
             (e) => !metaBootstrapUuids.has(e.uuid),
           );
@@ -2066,6 +2148,10 @@ export class DomainController implements DomainControllerInterface {
             applicationVersionCrossMenuVersion: metaModel.applicationVersionCrossMenuVersion,
             menuVersions: metaModel.menuVersions,
             menus: metaModel.menus,
+            applicationVersionCrossEndpointVersion:
+              metaModel.applicationVersionCrossEndpointVersion,
+            endpointVersions: metaModel.endpointVersions,
+            endpoints: metaModel.endpoints,
           });
 
           const persistResult = await this.persistFreezeApplicationVersionPlan(

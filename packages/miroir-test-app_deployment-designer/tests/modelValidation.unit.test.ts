@@ -106,6 +106,8 @@ const adminMetaModel: MetaModel = {
   reportVersions: [],
   applicationVersionCrossMenuVersion: [],
   menuVersions: [],
+  applicationVersionCrossEndpointVersion: [],
+  endpointVersions: [],
   tests: [],
   themes: [],
   applications: [],

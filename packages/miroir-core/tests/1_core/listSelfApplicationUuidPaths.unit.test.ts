@@ -160,6 +160,8 @@ describe("listSelfApplicationUuidPaths (T1)", () => {
         reportVersions: [],
         applicationVersionCrossMenuVersion: [],
         menuVersions: [],
+        applicationVersionCrossEndpointVersion: [],
+        endpointVersions: [],
         applications: [],
         entities: [],
         entityVersions: [],

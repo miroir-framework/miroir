@@ -174,8 +174,10 @@ export const defaultLibraryAppModel: MetaModel = {
       queryVersions: [],
       applicationVersionCrossReportVersion: [],
       reportVersions: [],
-      applicationVersionCrossMenuVersion: [],
-      menuVersions: [],
+    applicationVersionCrossMenuVersion: [],
+    menuVersions: [],
+    applicationVersionCrossEndpointVersion: [],
+    endpointVersions: [],
       storedQueries: [],
       jzodSchemas: [],
       applicationVersions: [

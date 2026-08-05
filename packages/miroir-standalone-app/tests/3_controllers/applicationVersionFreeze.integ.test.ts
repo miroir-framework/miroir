@@ -93,6 +93,15 @@ const libraryMenu = JSON.parse(
     "utf8",
   ),
 ) as EntityInstance & { uuid: string; name: string; defaultLabel: string; definition: Record<string, unknown> };
+const libraryBooksEndpoint = JSON.parse(
+  readFileSync(
+    join(
+      REPO_ROOT,
+      "packages/miroir-test-app_deployment-library/assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9884c1a4-5122-488a-85db-a99fbc02e678.json",
+    ),
+    "utf8",
+  ),
+) as EndpointDefinition & { uuid: string; name: string; version: string; application: string; definition: Record<string, unknown> };
 import {
   defaultMiroirMetaModel,
   entityApplicationVersionCrossEntityVersion,
@@ -106,9 +115,12 @@ import {
   APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID,
   MENU_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_MENU_VERSION_UUID,
+  ENDPOINT_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
   resolveFreezeQueryVersionApplicationSection,
   resolveFreezeReportVersionApplicationSection,
   resolveFreezeMenuVersionApplicationSection,
+  resolveFreezeEndpointVersionApplicationSection,
 } from "miroir-core";
 
 const env: any = process.env;
@@ -345,6 +357,26 @@ function menuVersionSlice(menuVersion: {
     defaultLabel: menuVersion.defaultLabel,
     description: menuVersion.description,
     definition: menuVersion.definition,
+  };
+}
+
+function endpointVersionSlice(endpointVersion: {
+  name: string;
+  endpointUuid: string;
+  version: string;
+  application: string;
+  description?: string;
+  transactionalEndpoint?: boolean;
+  definition: unknown;
+}) {
+  return {
+    name: endpointVersion.name,
+    endpointUuid: endpointVersion.endpointUuid,
+    version: endpointVersion.version,
+    application: endpointVersion.application,
+    description: endpointVersion.description,
+    transactionalEndpoint: endpointVersion.transactionalEndpoint,
+    definition: endpointVersion.definition,
   };
 }
 
@@ -953,6 +985,78 @@ describe.sequential("227 — MenuVersion freeze persistence", () => {
 
       const freezeMvUuids = new Set(crossMenus.map((c) => c.menuVersion));
       expect(freezeMvUuids.has(libraryMenu.uuid)).toBe(false);
+    },
+    globalTimeOut,
+  );
+});
+
+describe.sequential("227 — EndpointVersion freeze persistence", () => {
+  it(
+    "first freeze persists EndpointVersions + CrossEndpoint (Library model section)",
+    async () => {
+      expect(resolveFreezeEndpointVersionApplicationSection(testApplicationUuid)).toBe("model");
+
+      const freezeResult = await freezeLibrary("V1-Endpoints");
+      expect(
+        freezeResult instanceof Action2Error,
+        `freeze failed: ${JSON.stringify(freezeResult)}`,
+      ).toBe(false);
+
+      await refreshLibraryCache();
+      const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const sav = model.applicationVersions.find((v) => v.name === "V1-Endpoints");
+      expect(sav, "SAV V1-Endpoints missing after reload").toBeDefined();
+
+      expect(
+        model.endpoints.some((e) => (e as { uuid?: string }).uuid === libraryBooksEndpoint.uuid),
+        "Books endpoint missing from present model",
+      ).toBe(true);
+
+      const crossEndpoints = (model.applicationVersionCrossEndpointVersion ?? []).filter(
+        (c) => c.applicationVersion === sav!.uuid,
+      );
+      expect(crossEndpoints.length).toBe(model.endpoints.length);
+      expect(crossEndpoints.length).toBeGreaterThan(0);
+
+      for (const cross of crossEndpoints) {
+        expect(cross.parentUuid).toBe(APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID);
+        const ev = (model.endpointVersions ?? []).find((e) => e.uuid === cross.endpointVersion);
+        expect(ev, `EndpointVersion ${cross.endpointVersion} missing`).toBeDefined();
+        expect(ev!.uuid).not.toBe(ev!.endpointUuid);
+        expect(ev!.parentUuid).toBe(ENDPOINT_VERSION_ENTITY_UUID);
+        expect(ev!.parentName).toBe("EndpointVersion");
+
+        const live = model.endpoints.find(
+          (e) => (e as { uuid?: string }).uuid === ev!.endpointUuid,
+        ) as {
+          uuid: string;
+          name: string;
+          version: string;
+          application: string;
+          description?: string;
+          transactionalEndpoint?: boolean;
+          definition: unknown;
+        };
+        expect(live, `live Endpoint ${ev!.endpointUuid} missing`).toBeDefined();
+        expect(endpointVersionSlice(ev!)).toEqual({
+          name: live!.name,
+          endpointUuid: (live as { uuid: string }).uuid,
+          version: (live as { version: string }).version,
+          application: (live as { application: string }).application,
+          description: (live as { description?: string }).description,
+          transactionalEndpoint: (live as { transactionalEndpoint?: boolean }).transactionalEndpoint,
+          definition: (live as { definition: unknown }).definition,
+        });
+      }
+
+      const booksCross = crossEndpoints.find((c) => {
+        const ev = (model.endpointVersions ?? []).find((e) => e.uuid === c.endpointVersion);
+        return ev?.endpointUuid === libraryBooksEndpoint.uuid;
+      });
+      expect(booksCross, "Books EndpointVersion cross row missing").toBeDefined();
+
+      const freezeEvUuids = new Set(crossEndpoints.map((c) => c.endpointVersion));
+      expect(freezeEvUuids.has(libraryBooksEndpoint.uuid)).toBe(false);
     },
     globalTimeOut,
   );

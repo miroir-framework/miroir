@@ -42,6 +42,8 @@ function emptyMeta(overrides?: Partial<FreezeMetaModelSlice>): FreezeMetaModelSl
     reportVersions: [],
     applicationVersionCrossMenuVersion: [],
     menuVersions: [],
+    applicationVersionCrossEndpointVersion: [],
+    endpointVersions: [],
     ...overrides,
   };
 }
