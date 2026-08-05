@@ -20,6 +20,8 @@ export declare const entityApplicationVersionCrossQueryVersion: any;
 /** #227 — historical ReportVersion Entity (freeze snapshots). */
 export declare const entityHistoricalReportVersion: any;
 export declare const entityApplicationVersionCrossReportVersion: any;
+export declare const entityHistoricalMenuVersion: any;
+export declare const entityApplicationVersionCrossMenuVersion: any;
 export declare const entityTest: any;
 export declare const entityTransformerDefinition: any;
 export declare const entityMiroirTest: any;
@@ -88,6 +90,8 @@ export declare const entityVersionApplicationVersionCrossQueryVersion: any;
 /** #227 — bootstrap EntityVersion row for historical ReportVersion Entity. */
 export declare const entityVersionHistoricalReportVersion: any;
 export declare const entityVersionApplicationVersionCrossReportVersion: any;
+export declare const entityVersionHistoricalMenuVersion: any;
+export declare const entityVersionApplicationVersionCrossMenuVersion: any;
 /** @deprecated Use entityVersionQueryVersionV1 */
 export declare const entityDefinitionQueryVersionV1: any;
 export declare const entityVersionBlob: any;

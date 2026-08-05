@@ -1,0 +1,86 @@
+{
+  "uuid": "d3e4f5a6-b7c8-4901-a2e3-f4a5b6c7d8e9",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7",
+  "name": "ReportVersion",
+  "conceptLevel": "Model",
+  "description": "Historical snapshot of a Report at freeze time.",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "name",
+    "reportUuid",
+    "defaultLabel",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "reportUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Report Uuid",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label"
+          }
+        }
+      },
+      "type": {
+        "type": "enum",
+        "definition": [
+          "list",
+          "grid"
+        ],
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Type of Report"
+          }
+        }
+      },
+      "definition": {
+        "type": "any",
+        "tag": {
+          "value": {
+            "defaultLabel": "Report definition at freeze time"
+          }
+        }
+      }
+    }
+  }
+}

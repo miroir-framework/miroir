@@ -3,6 +3,7 @@
  * #220 — Freeze-adjacent vocabulary uses EntityVersion only.
  * #227 — QueryVersion tracer (first non-Entity model element).
  * #227 — ReportVersion (second non-Entity model element).
+ * #227 — MenuVersion (third non-Entity model element).
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -13,6 +14,7 @@ import type {
   Entity,
   EntityVersion,
   MetaModel,
+  MenuDefinition,
   Query,
   Report,
   RootReport,
@@ -22,6 +24,7 @@ import {
   getEntityVersionWriteSection,
   getQueryVersionWriteSection,
   getReportVersionWriteSection,
+  getMenuVersionWriteSection,
 } from "../Model.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
@@ -85,6 +88,11 @@ export const REPORT_VERSION_ENTITY_UUID = "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7"
 /** ApplicationVersionCrossReportVersion Entity UUID (#227). */
 export const APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID =
   "f2b3c4d5-e6f7-4890-a1b2-c3d4e5f6a7b8";
+/** Historical MenuVersion Entity UUID (#227). */
+export const MENU_VERSION_ENTITY_UUID = "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7";
+/** ApplicationVersionCrossMenuVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_MENU_VERSION_UUID =
+  "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8";
 
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
@@ -117,6 +125,15 @@ export function resolveFreezeReportVersionApplicationSection(
   applicationUuid: string,
 ): ApplicationSection {
   return getReportVersionWriteSection(applicationUuid);
+}
+
+/**
+ * #227 — section for persisting freeze-minted MenuVersion snapshots.
+ */
+export function resolveFreezeMenuVersionApplicationSection(
+  applicationUuid: string,
+): ApplicationSection {
+  return getMenuVersionWriteSection(applicationUuid);
 }
 
 /** Live Query instance shape in MetaModel.storedQueries. */
@@ -229,6 +246,61 @@ export function snapshotReportsAsHistoricalReportVersions(
   });
 }
 
+/** Live Menu instance shape in MetaModel.menus. */
+export type StoredMenuForFreeze = {
+  uuid: string;
+  name: string;
+  definition: MenuDefinition;
+  defaultLabel?: string;
+  description?: string;
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Menu snapshot minted at freeze. */
+export type MenuVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "MenuVersion";
+  name: string;
+  menuUuid: string;
+  definition: MenuDefinition;
+  defaultLabel?: string;
+  description?: string;
+};
+
+/**
+ * Deep-copy present-model Menus into new immutable MenuVersion instances.
+ * Each output has a **new** UUID; `menuUuid` references the live Menu.
+ */
+export function snapshotMenusAsHistoricalMenuVersions(
+  menus: StoredMenuForFreeze[],
+  options?: SnapshotOptions,
+): MenuVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return menus.map((menu) => {
+    if (menu.definition === undefined || menu.definition === null) {
+      throw new Error(
+        `Cannot snapshot Menu ${menu.uuid} (${menu.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: MenuVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: MENU_VERSION_ENTITY_UUID,
+      parentName: "MenuVersion",
+      name: menu.name,
+      menuUuid: menu.uuid,
+      definition: structuredClone(menu.definition),
+      ...(menu.defaultLabel !== undefined ? { defaultLabel: menu.defaultLabel } : {}),
+      ...(menu.description !== undefined ? { description: menu.description } : {}),
+    };
+
+    return snapshot;
+  });
+}
+
 /**
  * Deep-copy present-model Entity fields into new immutable EntityVersion instances.
  * Each output has a **new** UUID; `entityUuid` references the live Entity.
@@ -311,6 +383,15 @@ export type ApplicationVersionCrossReportVersionRow = {
   reportVersion: string;
 };
 
+/** Cross row linking an Application Version to a historical MenuVersion. */
+export type ApplicationVersionCrossMenuVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  menuVersion: string;
+};
+
 export type FreezeApplicationVersionPlan = {
   selfApplicationVersion: ApplicationVersion;
   entityVersions: EntityVersion[];
@@ -325,6 +406,10 @@ export type FreezeApplicationVersionPlan = {
   crossReportVersions: ApplicationVersionCrossReportVersionRow[];
   /** Persist section for ReportVersion rows (#227). */
   reportVersionApplicationSection: ApplicationSection;
+  menuVersions: MenuVersionSnapshot[];
+  crossMenuVersions: ApplicationVersionCrossMenuVersionRow[];
+  /** Persist section for MenuVersion rows (#227). */
+  menuVersionApplicationSection: ApplicationSection;
 };
 
 export type BuildFreezeApplicationVersionPlanInput = {
@@ -336,6 +421,8 @@ export type BuildFreezeApplicationVersionPlanInput = {
   storedQueries?: StoredQueryForFreeze[];
   /** Present-model Reports to snapshot (#227). Defaults to empty. */
   reports?: StoredReportForFreeze[];
+  /** Present-model Menus to snapshot (#227). Defaults to empty. */
+  menus?: StoredMenuForFreeze[];
   /** Existing SAVs for this app+branch — used for duplicate label detection and tip resolution. */
   existingApplicationVersions?: ApplicationVersion[];
   /**
@@ -578,6 +665,9 @@ export function buildFreezeApplicationVersionPlan(
   const reportVersions = snapshotReportsAsHistoricalReportVersions(input.reports ?? [], {
     newUuid: mintUuid,
   });
+  const menuVersions = snapshotMenusAsHistoricalMenuVersions(input.menus ?? [], {
+    newUuid: mintUuid,
+  });
 
   const modelCUDMigration =
     input.previousEntityVersions !== undefined
@@ -627,6 +717,16 @@ export function buildFreezeApplicationVersionPlan(
     }),
   );
 
+  const crossMenuVersions: ApplicationVersionCrossMenuVersionRow[] = menuVersions.map(
+    (mv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_MENU_VERSION_UUID,
+      parentName: "ApplicationVersionCrossMenuVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      menuVersion: mv.uuid,
+    }),
+  );
+
   return {
     selfApplicationVersion,
     entityVersions,
@@ -642,6 +742,11 @@ export function buildFreezeApplicationVersionPlan(
     reportVersions,
     crossReportVersions,
     reportVersionApplicationSection: resolveFreezeReportVersionApplicationSection(
+      input.selfApplicationUuid,
+    ),
+    menuVersions,
+    crossMenuVersions,
+    menuVersionApplicationSection: resolveFreezeMenuVersionApplicationSection(
       input.selfApplicationUuid,
     ),
   };
@@ -679,6 +784,7 @@ export type FreezeMetaModelSlice = {
   entities: Entity[];
   storedQueries?: StoredQueryForFreeze[];
   reports?: StoredReportForFreeze[];
+  menus?: StoredMenuForFreeze[];
   applicationVersions: ApplicationVersion[];
   entityVersions: EntityVersion[];
   applicationVersionCrossEntityVersion: Array<{
@@ -689,6 +795,8 @@ export type FreezeMetaModelSlice = {
   queryVersions?: MetaModel["queryVersions"];
   applicationVersionCrossReportVersion?: MetaModel["applicationVersionCrossReportVersion"];
   reportVersions?: MetaModel["reportVersions"];
+  applicationVersionCrossMenuVersion?: MetaModel["applicationVersionCrossMenuVersion"];
+  menuVersions?: MetaModel["menuVersions"];
 };
 
 /**
@@ -777,6 +885,7 @@ export function planFreezeApplicationVersionFromMetaModel(
     entities: metaModel.entities,
     storedQueries: metaModel.storedQueries,
     reports: metaModel.reports,
+    menus: metaModel.menus,
     existingApplicationVersions: metaModel.applicationVersions,
     freezeProducedVersionUuids,
     previousEntityVersions,

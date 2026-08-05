@@ -140,6 +140,8 @@ const actionsZodParseTests: Record<string, ZodParseTest<ZodParseTestActionType>>
             queryVersions: [],
             applicationVersionCrossReportVersion: [],
             reportVersions: [],
+            applicationVersionCrossMenuVersion: [],
+            menuVersions: [],
             storedQueries: [],
             runners: [],
             tests: [],

@@ -40,10 +40,14 @@ import {
   entityHistoricalQueryVersion,
   entityHistoricalReportVersion,
   entityApplicationVersionCrossReportVersion,
+  entityHistoricalMenuVersion,
+  entityApplicationVersionCrossMenuVersion,
   entityVersionApplicationVersionCrossQueryVersion,
   entityVersionHistoricalQueryVersion,
   entityVersionApplicationVersionCrossReportVersion,
   entityVersionHistoricalReportVersion,
+  entityVersionApplicationVersionCrossMenuVersion,
+  entityVersionHistoricalMenuVersion,
   instanceEndpointV1,
   materialStoredMiroirTheme,
   menuDefaultMiroir,
@@ -392,6 +396,42 @@ export async function modelInitialize(
     result = await persistenceStoreController.upsertInstance(
       "data",
       entityVersionHistoricalReportVersion as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+
+    // bootstrap ApplicationVersionCrossMenuVersion (#227)
+    result = await persistenceStoreController.createEntity(
+      entityApplicationVersionCrossMenuVersion as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(
+      logHeader,
+      "created entity ApplicationVersionCrossMenuVersion",
+      persistenceStoreController.getEntityUuids(),
+    );
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityVersionApplicationVersionCrossMenuVersion as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+
+    // bootstrap historical MenuVersion (#227)
+    result = await persistenceStoreController.createEntity(
+      entityHistoricalMenuVersion as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(logHeader, "created entity MenuVersion", persistenceStoreController.getEntityUuids());
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityVersionHistoricalMenuVersion as EntityInstance,
     );
     if (result instanceof Action2Error) {
       return result;

@@ -8755,6 +8755,69 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "menuVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "menuUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu definition at freeze time"
+              }
+            }
+          }
+        }
+      },
       "testCompositeAction": {
         "type": "object",
         "definition": {
@@ -39734,6 +39797,81 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "applicationVersionCrossMenuVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "menuVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "Menu Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
           "applications": {
             "type": "array",
             "definition": {
@@ -39831,6 +39969,16 @@ export const miroirFundamentalJzodSchema = {
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "reportVersion"
+              }
+            }
+          },
+          "menuVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "menuVersion"
               }
             }
           },

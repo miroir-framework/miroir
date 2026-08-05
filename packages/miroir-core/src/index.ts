@@ -782,19 +782,24 @@ export {
   resolveFreezeEntityVersionApplicationSection,
   resolveFreezeQueryVersionApplicationSection,
   resolveFreezeReportVersionApplicationSection,
+  resolveFreezeMenuVersionApplicationSection,
   resolvePreviousApplicationVersion,
   snapshotEntitiesAsHistoricalEntityVersions,
   snapshotQueriesAsHistoricalQueryVersions,
   snapshotReportsAsHistoricalReportVersions,
+  snapshotMenusAsHistoricalMenuVersions,
   QUERY_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
   REPORT_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID,
+  MENU_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_MENU_VERSION_UUID,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
   ApplicationVersionCrossEntityVersionRow,
   ApplicationVersionCrossQueryVersionRow,
   ApplicationVersionCrossReportVersionRow,
+  ApplicationVersionCrossMenuVersionRow,
   BuildFreezeApplicationVersionPlanInput,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
@@ -804,10 +809,12 @@ export type {
   PlanFreezeApplicationVersionInput,
   QueryVersionSnapshot,
   ReportVersionSnapshot,
+  MenuVersionSnapshot,
   ResolvePreviousApplicationVersionOptions,
   SnapshotOptions,
   StoredQueryForFreeze,
   StoredReportForFreeze,
+  StoredMenuForFreeze,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export {
   actionsWithDeploymentInPayload, noValue

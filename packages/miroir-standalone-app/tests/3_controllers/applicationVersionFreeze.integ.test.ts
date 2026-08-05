@@ -84,6 +84,15 @@ const countryListReport = JSON.parse(
     "utf8",
   ),
 ) as EntityInstance & { uuid: string; name: string; defaultLabel: string; definition: Record<string, unknown> };
+const libraryMenu = JSON.parse(
+  readFileSync(
+    join(
+      REPO_ROOT,
+      "packages/miroir-test-app_deployment-library/assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json",
+    ),
+    "utf8",
+  ),
+) as EntityInstance & { uuid: string; name: string; defaultLabel: string; definition: Record<string, unknown> };
 import {
   defaultMiroirMetaModel,
   entityApplicationVersionCrossEntityVersion,
@@ -95,8 +104,11 @@ import {
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
   REPORT_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID,
+  MENU_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_MENU_VERSION_UUID,
   resolveFreezeQueryVersionApplicationSection,
   resolveFreezeReportVersionApplicationSection,
+  resolveFreezeMenuVersionApplicationSection,
 } from "miroir-core";
 
 const env: any = process.env;
@@ -317,6 +329,22 @@ function reportVersionSlice(reportVersion: {
     reportUuid: reportVersion.reportUuid,
     defaultLabel: reportVersion.defaultLabel,
     definition: reportVersion.definition,
+  };
+}
+
+function menuVersionSlice(menuVersion: {
+  name: string;
+  menuUuid: string;
+  defaultLabel?: string;
+  description?: string;
+  definition: unknown;
+}) {
+  return {
+    name: menuVersion.name,
+    menuUuid: menuVersion.menuUuid,
+    defaultLabel: menuVersion.defaultLabel,
+    description: menuVersion.description,
+    definition: menuVersion.definition,
   };
 }
 
@@ -857,6 +885,74 @@ describe.sequential("227 — ReportVersion freeze persistence", () => {
 
       const freezeRvUuids = new Set(crossReports.map((c) => c.reportVersion));
       expect(freezeRvUuids.has(countryListReport.uuid)).toBe(false);
+    },
+    globalTimeOut,
+  );
+});
+
+describe.sequential("227 — MenuVersion freeze persistence", () => {
+  it(
+    "first freeze persists MenuVersions + CrossMenu (Library model section)",
+    async () => {
+      expect(resolveFreezeMenuVersionApplicationSection(testApplicationUuid)).toBe("model");
+
+      const freezeResult = await freezeLibrary("V1-Menus");
+      expect(
+        freezeResult instanceof Action2Error,
+        `freeze failed: ${JSON.stringify(freezeResult)}`,
+      ).toBe(false);
+
+      await refreshLibraryCache();
+      const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const sav = model.applicationVersions.find((v) => v.name === "V1-Menus");
+      expect(sav, "SAV V1-Menus missing after reload").toBeDefined();
+
+      expect(
+        model.menus.some((m) => (m as { uuid?: string }).uuid === libraryMenu.uuid),
+        "LibraryMenu missing from present model",
+      ).toBe(true);
+
+      const crossMenus = (model.applicationVersionCrossMenuVersion ?? []).filter(
+        (c) => c.applicationVersion === sav!.uuid,
+      );
+      expect(crossMenus.length).toBe(model.menus.length);
+      expect(crossMenus.length).toBeGreaterThan(0);
+
+      for (const cross of crossMenus) {
+        expect(cross.parentUuid).toBe(APPLICATION_VERSION_CROSS_MENU_VERSION_UUID);
+        const mv = (model.menuVersions ?? []).find((m) => m.uuid === cross.menuVersion);
+        expect(mv, `MenuVersion ${cross.menuVersion} missing`).toBeDefined();
+        expect(mv!.uuid).not.toBe(mv!.menuUuid);
+        expect(mv!.parentUuid).toBe(MENU_VERSION_ENTITY_UUID);
+        expect(mv!.parentName).toBe("MenuVersion");
+
+        const live = model.menus.find(
+          (m) => (m as { uuid?: string }).uuid === mv!.menuUuid,
+        ) as {
+          uuid: string;
+          name: string;
+          defaultLabel: string;
+          description?: string;
+          definition: unknown;
+        };
+        expect(live, `live Menu ${mv!.menuUuid} missing`).toBeDefined();
+        expect(menuVersionSlice(mv!)).toEqual({
+          name: live!.name,
+          menuUuid: (live as { uuid: string }).uuid,
+          defaultLabel: (live as { defaultLabel: string }).defaultLabel,
+          description: (live as { description?: string }).description,
+          definition: (live as { definition: unknown }).definition,
+        });
+      }
+
+      const libraryMenuCross = crossMenus.find((c) => {
+        const mv = (model.menuVersions ?? []).find((m) => m.uuid === c.menuVersion);
+        return mv?.menuUuid === libraryMenu.uuid;
+      });
+      expect(libraryMenuCross, "LibraryMenu MenuVersion cross row missing").toBeDefined();
+
+      const freezeMvUuids = new Set(crossMenus.map((c) => c.menuVersion));
+      expect(freezeMvUuids.has(libraryMenu.uuid)).toBe(false);
     },
     globalTimeOut,
   );

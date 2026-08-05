@@ -31,6 +31,8 @@ import {
   entityHistoricalQueryVersion,
   entityHistoricalReportVersion,
   entityApplicationVersionCrossReportVersion,
+  entityHistoricalMenuVersion,
+  entityApplicationVersionCrossMenuVersion,
   entityDefinitionApplicationEvolutionTrace,
   entityDefinitionApplicationEvolutionTraceEvent,
   entityDefinitionApplicationVersionCrossEntityDefinition,
@@ -64,6 +66,8 @@ import {
   entityVersionApplicationVersionCrossQueryVersion,
   entityVersionHistoricalReportVersion,
   entityVersionApplicationVersionCrossReportVersion,
+  entityVersionHistoricalMenuVersion,
+  entityVersionApplicationVersionCrossMenuVersion,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   jzodSchemajzodMiroirBootstrapSchema,
@@ -162,6 +166,8 @@ export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, str
   QueryVersion: "queryVersions",
   ApplicationVersionCrossReportVersion: "applicationVersionCrossReportVersion",
   ReportVersion: "reportVersions",
+  ApplicationVersionCrossMenuVersion: "applicationVersionCrossMenuVersion",
+  MenuVersion: "menuVersions",
 };
 export const defaultMiroirMetaModel: MetaModel = {
   applicationUuid: selfApplicationMiroir.uuid,
@@ -193,6 +199,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityHistoricalQueryVersion as Entity,
     entityApplicationVersionCrossReportVersion as Entity,
     entityHistoricalReportVersion as Entity,
+    entityApplicationVersionCrossMenuVersion as Entity,
+    entityHistoricalMenuVersion as Entity,
   ],
   entityVersions: [
     // bootstrap entities have to come first
@@ -217,6 +225,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityVersionApplicationVersionCrossQueryVersion as EntityVersion,
     entityVersionHistoricalReportVersion as EntityVersion,
     entityVersionApplicationVersionCrossReportVersion as EntityVersion,
+    entityVersionHistoricalMenuVersion as EntityVersion,
+    entityVersionApplicationVersionCrossMenuVersion as EntityVersion,
   ],
   endpoints: [
     applicationEndpointV1 as any as EndpointDefinition,
@@ -273,6 +283,8 @@ export const defaultMiroirMetaModel: MetaModel = {
   queryVersions: [],
   applicationVersionCrossReportVersion: [],
   reportVersions: [],
+  applicationVersionCrossMenuVersion: [],
+  menuVersions: [],
   tests: [
     miroirTest_adminTransformers as MiroirTestDefinition,
     miroirTest_alterObject as MiroirTestDefinition,

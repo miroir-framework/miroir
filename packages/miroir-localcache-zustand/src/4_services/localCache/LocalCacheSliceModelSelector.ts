@@ -491,6 +491,8 @@ export const selectModelForDeploymentFromReduxState: () => (
         queryVersions: [],
         applicationVersionCrossReportVersion: [],
         reportVersions: [],
+        applicationVersionCrossMenuVersion: [],
+        menuVersions: [],
         entities: (entities ? Object.values(entities) : []) as Entity[],
         entityVersions: (entityVersions ? Object.values(entityVersions) : []) as EntityVersion[],
         endpoints: (endpoints ? Object.values(endpoints) : []) as EndpointDefinition[],

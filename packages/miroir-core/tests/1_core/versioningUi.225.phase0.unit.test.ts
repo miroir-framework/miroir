@@ -177,6 +177,44 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     expect(queryVersionsSection?.definition.parentUuid).toBe(
       "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c",
     );
+    // #227 — ReportVersions linked via ApplicationVersionCrossReportVersion.
+    expect(details.definition.combinerTemplates?.["04_crossReportVersions"]?.parentUuid).toBe(
+      "f2b3c4d5-e6f7-4890-a1b2-c3d4e5f6a7b8",
+    );
+    expect(details.definition.combinerTemplates?.["05_reportVersions"]?.extractorOrCombinerType).toBe(
+      "combinerManyToMany",
+    );
+    expect(
+      details.definition.combinerTemplates?.["05_reportVersions"]?.objectListReferenceAttribute,
+    ).toBe("reportVersion");
+    const reportVersionsSection = details.definition.section.definition.find(
+      (s) =>
+        s.type === "objectListReportSection" &&
+        s.definition.fetchedDataReference === "05_reportVersions",
+    );
+    expect(reportVersionsSection?.definition.label).toBe("Report Versions");
+    expect(reportVersionsSection?.definition.parentUuid).toBe(
+      "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7",
+    );
+    // #227 — MenuVersions linked via ApplicationVersionCrossMenuVersion.
+    expect(details.definition.combinerTemplates?.["06_crossMenuVersions"]?.parentUuid).toBe(
+      "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+    );
+    expect(details.definition.combinerTemplates?.["07_menuVersions"]?.extractorOrCombinerType).toBe(
+      "combinerManyToMany",
+    );
+    expect(
+      details.definition.combinerTemplates?.["07_menuVersions"]?.objectListReferenceAttribute,
+    ).toBe("menuVersion");
+    const menuVersionsSection = details.definition.section.definition.find(
+      (s) =>
+        s.type === "objectListReportSection" &&
+        s.definition.fetchedDataReference === "07_menuVersions",
+    );
+    expect(menuVersionsSection?.definition.label).toBe("Menu Versions");
+    expect(menuVersionsSection?.definition.parentUuid).toBe(
+      "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+    );
   });
 
   it("Versioning report embeds freeze Runner and filters SAV by application (Phase 4)", () => {
@@ -230,7 +268,7 @@ describe("225 Phase 0 — Versioning UI contracts", () => {
     );
     expect(
       report.definition.extractorTemplates.applicationVersions.filter?.value?.referenceName,
-    ).toBe("applicationSelector");
+    ).toBe("application");
   });
 
   it("AppBar commit icon links to Versioning as Miroir scaffolding report (Phase 5)", () => {
