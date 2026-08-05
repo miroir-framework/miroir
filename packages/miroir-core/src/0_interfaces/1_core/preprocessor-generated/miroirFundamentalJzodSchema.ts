@@ -8355,6 +8355,42 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "scope": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "versioning",
+              "modeling"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Scope",
+                "description": "Classifies meta-model entities. Absent is equivalent to modeling.",
+                "display": {
+                  "editable": false
+                },
+                "id": 19
+              }
+            }
+          },
+          "logicalDataModel": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "manyToMany",
+              "entity"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Logical Data Model",
+                "description": "Logical persistence shape for this entity. Absent is equivalent to entity.",
+                "display": {
+                  "editable": false
+                },
+                "id": 20
+              }
+            }
+          },
           "mlSchema": {
             "type": "schemaReference",
             "definition": {
@@ -36221,6 +36257,42 @@ export const miroirFundamentalJzodSchema = {
                     "description": "The physical table name in the external storage. Defaults to the entity name when absent."
                   }
                 }
+              }
+            }
+          },
+          "scope": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "versioning",
+              "modeling"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Scope",
+                "description": "Classifies meta-model entities. Absent is equivalent to modeling.",
+                "display": {
+                  "editable": false
+                },
+                "id": 19
+              }
+            }
+          },
+          "logicalDataModel": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "manyToMany",
+              "entity"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Logical Data Model",
+                "description": "Logical persistence shape for this entity. Absent is equivalent to entity.",
+                "display": {
+                  "editable": false
+                },
+                "id": 20
               }
             }
           },

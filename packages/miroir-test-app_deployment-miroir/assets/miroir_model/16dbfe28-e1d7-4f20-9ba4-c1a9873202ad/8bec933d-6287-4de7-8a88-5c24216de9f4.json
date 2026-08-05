@@ -6,6 +6,8 @@
   "name": "ApplicationVersionCrossEntityVersion",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
+  "scope": "versioning",
+  "logicalDataModel": "manyToMany",
   "description": "The (many-to-many) association among ApplicationVersions and EntityVersions.",
   "icon": "Interests",
   "cache": {

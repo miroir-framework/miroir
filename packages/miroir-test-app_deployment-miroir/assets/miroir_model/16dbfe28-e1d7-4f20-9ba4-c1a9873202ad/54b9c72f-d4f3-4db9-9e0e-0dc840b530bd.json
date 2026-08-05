@@ -6,6 +6,7 @@
   "name": "EntityVersion",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
+  "scope": "versioning",
   "description": "The Metaclass for the version (historical snapshot) of entities.",
   "defaultInstanceDetailsReportUuid": "acd55b04-84df-427e-b219-cf0e01a6881b",
   "viewAttributes": [
