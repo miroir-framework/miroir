@@ -396,5 +396,13 @@ export { default as materialStoredMiroirTheme } from "./assets/miroir_data/bdcf9
 
 export { defaultMiroirMetaModel } from "./src/Model";
 export {
+  appModelInitializeCreateEntityOrder,
+  miroirModelInitializeCreateEntityOrder,
+  miroirModelInitializeDataInstances,
+  miroirModelInitializeEntityVersionInstances,
+  miroirModelInitializeEntityVersionsAfterEntityEntityVersion,
+  miroirModelInitializeEntityVersionsByEntityUuid,
+} from "./src/Model";
+export {
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "./src/runnerMiroirEntityTestRegistry";

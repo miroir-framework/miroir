@@ -6,6 +6,12 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+  entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
+  miroirModelInitializeEntityVersionsAfterEntityEntityVersion,
+} from "miroir-test-app_deployment-miroir";
+
 const modelInitializerTs = join(
   dirname(fileURLToPath(import.meta.url)),
   "../../../src/3_controllers/ModelInitializer.ts",
@@ -14,27 +20,22 @@ const modelInitializerTs = join(
 describe("222 Phase 3 — ModelInitializer EV instance section", () => {
   it("Miroir path createEntity(entityEntityVersion) then upserts EV instances to data", () => {
     const src = readFileSync(modelInitializerTs, "utf8");
-    const miroirBlock = src.slice(
-      src.indexOf('if (dataStoreType == "miroir")'),
-      src.indexOf('if (dataStoreType == "app")'),
-    );
-    expect(miroirBlock).toMatch(/createEntity\(\s*entityEntityVersion/);
-    expect(miroirBlock).toMatch(
-      /upsertInstance\(\s*"data"\s*,\s*entityDefinitionEntity/,
-    );
-    expect(miroirBlock).toMatch(
-      /upsertInstance\(\s*"data"\s*,\s*entityDefinitionEntityDefinition/,
-    );
-    expect(miroirBlock).not.toMatch(
-      /upsertInstance\(\s*"model"\s*,\s*entityDefinitionEntity/,
+    expect(src).toMatch(/createEntityAndBootstrapVersions/);
+    expect(src).toMatch(/miroirModelInitializeEntityVersionsAfterEntityEntityVersion/);
+    expect(src).toMatch(/upsertInstances\(\s*[\s\S]*"data"/);
+    expect(miroirModelInitializeEntityVersionsAfterEntityEntityVersion).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ uuid: entityDefinitionEntity.uuid }),
+        expect.objectContaining({ uuid: entityDefinitionEntityDefinition.uuid }),
+      ]),
     );
   });
 
   it("app path still creates EntityVersion model storage", () => {
     const src = readFileSync(modelInitializerTs, "utf8");
-    const appBlock = src.slice(src.indexOf('if (dataStoreType == "app")'));
-    expect(appBlock).toMatch(
-      /createModelStorageSpaceForInstancesOfEntity\(\s*entityEntityVersion/,
+    expect(src).toMatch(/appModelInitializeCreateEntityOrder/);
+    expect(src).toMatch(
+      /createModelStorageSpaceForInstancesOfEntity\(/,
     );
   });
 });

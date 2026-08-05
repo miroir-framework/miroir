@@ -63,25 +63,15 @@ import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSessio
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 import {
-  entityApplicationEvolutionTrace,
-  entityApplicationEvolutionTraceEvent,
-  entityApplicationVersionCrossEntityVersion,
-  entityCommit,
-  entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
-  entityJzodSchema,
-  entityMenu,
-  entityMiroirTest,
-  entityQueryVersion,
-  entityReport,
-  entityRunner,
-  entitySelfApplication,
-  // entitySelfApplicationDeploymentConfiguration,
-  entitySelfApplicationModelBranch,
-  entitySelfApplicationVersion,
-  entityTheme,
+  miroirModelInitializeCreateEntityOrder,
 } from "miroir-test-app_deployment-miroir";
+
+const expectedMiroirBootstrapEntityUuids = [
+  entityEntity.uuid!,
+  ...miroirModelInitializeCreateEntityOrder.map((entity) => entity.uuid!),
+].sort();
 let domainController: DomainControllerInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
 let localAppPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -416,26 +406,7 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
       undefined, // name to give to result
       // "entityInstanceCollection",
       undefined,
-      [
-        // UUIDs match ModelInitializer bootstrap (sorted — same as result handler).
-        entityEntity.uuid,
-        entityEndpointVersion.uuid,
-        entityReport.uuid,
-        entityEntityVersion.uuid,
-        entityJzodSchema.uuid,
-        entityCommit.uuid,
-        entityApplicationVersionCrossEntityVersion.uuid,
-        entityMiroirTest.uuid,
-        entitySelfApplication.uuid,
-        entityTheme.uuid,
-        entitySelfApplicationVersion.uuid,
-        entitySelfApplicationModelBranch.uuid,
-        entityMenu.uuid,
-        entityApplicationEvolutionTrace.uuid,
-        entityQueryVersion.uuid,
-        entityRunner.uuid,
-        entityApplicationEvolutionTraceEvent.uuid,
-      ].sort(),
+      expectedMiroirBootstrapEntityUuids,
     );
   });
 

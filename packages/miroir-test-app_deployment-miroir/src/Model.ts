@@ -1,6 +1,7 @@
 import type {
   EndpointDefinition,
   Entity,
+  EntityInstance,
   EntityVersion,
   Menu,
   MetaModel,
@@ -40,6 +41,7 @@ import {
   entityDefinitionApplicationVersionCrossEntityDefinition,
   entityDefinitionEndpoint,
   entityDefinitionEntity,
+  entityDefinitionEntityDefinition,
   entityDefinitionJzodSchema,
   entityDefinitionMenu,
   entityDefinitionMiroirTest,
@@ -78,6 +80,7 @@ import {
   localCacheEndpointVersionV1,
   materialStoredMiroirTheme,
   menuDefaultMiroir,
+  miroirJzodSchemaBootstrap,
   miroirTest_adminTransformers,
   miroirTest_alterObject,
   miroirTest_ansiColumnsToJzodSchema,
@@ -124,6 +127,7 @@ import {
   miroirTest_tools,
   miroirTest_unfoldSchemaOnce,
   modelEndpointV1,
+  queryVersionBundleProducerV1,
   persistenceEndpointVersionV1,
   queryEndpointVersionV1,
   reportApplicationEvolutionTraceDetails,
@@ -135,10 +139,12 @@ import {
   reportApplicationVersionDetails,
   reportVersioning,
   reportEndpointVersionList,
+  reportEntityDefinitionList,
   reportEntityList,
   reportEntityVersionList,
   reportJzodSchemaList,
   reportMenuList,
+  reportQueryList,
   reportReportList,
   reportRunnerDetails,
   reportRunnerList,
@@ -352,3 +358,123 @@ export const defaultMiroirMetaModel: MetaModel = {
     materialStoredMiroirTheme,
   ],
 };
+
+function entitiesInBootstrapOrder(uuids: readonly string[]): Entity[] {
+  const entityByUuid = new Map(
+    defaultMiroirMetaModel.entities.map((entity) => [entity.uuid, entity as Entity]),
+  );
+  return uuids.map((uuid) => {
+    const entity = entityByUuid.get(uuid);
+    if (!entity) {
+      throw new Error(`defaultMiroirMetaModel bootstrap: unknown entity uuid ${uuid}`);
+    }
+    return entity;
+  });
+}
+
+/** EntityVersion rows upserted to Miroir data during modelInitialize. */
+export const miroirModelInitializeEntityVersionInstances: EntityVersion[] = [
+  entityDefinitionEntity as EntityVersion,
+  entityDefinitionEntityDefinition as EntityVersion,
+  entityDefinitionApplicationVersionCrossEntityDefinition as EntityVersion,
+  entityVersionApplicationVersionCrossQueryVersion as EntityVersion,
+  entityVersionHistoricalQueryVersion as EntityVersion,
+  entityVersionApplicationVersionCrossReportVersion as EntityVersion,
+  entityVersionHistoricalReportVersion as EntityVersion,
+  entityVersionApplicationVersionCrossMenuVersion as EntityVersion,
+  entityVersionHistoricalMenuVersion as EntityVersion,
+  entityVersionApplicationVersionCrossEndpointVersion as EntityVersion,
+  entityVersionHistoricalEndpointVersion as EntityVersion,
+];
+
+/** EntityVersion rows upserted immediately after createEntity(entityEntityVersion). */
+export const miroirModelInitializeEntityVersionsAfterEntityEntityVersion: EntityVersion[] =
+  miroirModelInitializeEntityVersionInstances.filter(
+    (ev) => ev.entityUuid === entityEntity.uuid || ev.entityUuid === entityEntityVersion.uuid,
+  );
+
+/** EntityVersion rows keyed by Entity.uuid — upsert after matching createEntity. */
+export const miroirModelInitializeEntityVersionsByEntityUuid: ReadonlyMap<
+  string,
+  readonly EntityVersion[]
+> = new Map(
+  defaultMiroirMetaModel.entities.map((entity) => [
+    entity.uuid,
+    miroirModelInitializeEntityVersionInstances.filter((ev) => ev.entityUuid === entity.uuid),
+  ]),
+);
+
+/** createEntity order for Miroir bootstrap (excludes meta Entity row). */
+export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootstrapOrder([
+  entityEntityVersion.uuid!,
+  entitySelfApplication.uuid!,
+  entitySelfApplicationModelBranch.uuid!,
+  entitySelfApplicationVersion.uuid!,
+  entityEndpointVersion.uuid!,
+  entityCommit.uuid!,
+  entityMenu.uuid!,
+  entityJzodSchema.uuid!,
+  entityReport.uuid!,
+  entityRunner.uuid!,
+  entityMiroirTest.uuid!,
+  entityTheme.uuid!,
+  entityQueryVersion.uuid!,
+  entityHistoricalQueryVersion.uuid!,
+  entityApplicationEvolutionTrace.uuid!,
+  entityApplicationEvolutionTraceEvent.uuid!,
+  entityApplicationVersionCrossEntityVersion.uuid!,
+  entityApplicationVersionCrossQueryVersion.uuid!,
+  entityApplicationVersionCrossReportVersion.uuid!,
+  entityHistoricalReportVersion.uuid!,
+  entityApplicationVersionCrossMenuVersion.uuid!,
+  entityHistoricalMenuVersion.uuid!,
+  entityApplicationVersionCrossEndpointVersion.uuid!,
+  entityHistoricalEndpointVersion.uuid!,
+]);
+
+/** Non-entity instances upserted to Miroir data during bootstrap. */
+export const miroirModelInitializeDataInstances: EntityInstance[] = [
+  reportEndpointVersionList as EntityInstance,
+  reportEntityDefinitionList as EntityInstance,
+  reportEntityList as EntityInstance,
+  reportApplicationList as EntityInstance,
+  reportApplicationModelBranchList as EntityInstance,
+  reportApplicationVersionList as EntityInstance,
+  reportMenuList as EntityInstance,
+  reportReportList as EntityInstance,
+  reportJzodSchemaList as EntityInstance,
+  reportApplicationEvolutionTraceList as EntityInstance,
+  reportApplicationEvolutionTraceHistory as EntityInstance,
+  reportQueryList as EntityInstance,
+  menuDefaultMiroir as EntityInstance,
+  miroirJzodSchemaBootstrap as EntityInstance,
+  applicationEndpointV1 as EntityInstance,
+  deploymentEndpointV1 as EntityInstance,
+  instanceEndpointV1 as EntityInstance,
+  modelEndpointV1 as EntityInstance,
+  queryVersionBundleProducerV1 as EntityInstance,
+  defaultStoredMiroirTheme as EntityInstance,
+  darkStoredMiroirTheme as EntityInstance,
+  compactStoredMiroirTheme as EntityInstance,
+  materialStoredMiroirTheme as EntityInstance,
+];
+
+/** createModelStorageSpace order for application (app) bootstrap. */
+export const appModelInitializeCreateEntityOrder: Entity[] = entitiesInBootstrapOrder([
+  entityEntity.uuid!,
+  entityEntityVersion.uuid!,
+  entitySelfApplication.uuid!,
+  entitySelfApplicationModelBranch.uuid!,
+  entitySelfApplicationVersion.uuid!,
+  entityMenu.uuid!,
+  entityEndpointVersion.uuid!,
+  entityJzodSchema.uuid!,
+  entityQueryVersion.uuid!,
+  entityReport.uuid!,
+  entityRunner.uuid!,
+  entityMiroirTest.uuid!,
+  entityTheme.uuid!,
+  entityApplicationEvolutionTrace.uuid!,
+  entityApplicationEvolutionTraceEvent.uuid!,
+  entityApplicationVersionCrossEntityVersion.uuid!,
+]);

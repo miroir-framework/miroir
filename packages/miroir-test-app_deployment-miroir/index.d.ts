@@ -316,9 +316,15 @@ export declare const materialStoredMiroirTheme: any;
 export declare const entityVersionTheme: any;
 /** @deprecated Use entityVersionTheme */
 export declare const entityDefinitionTheme: any;
-import type { MetaModel } from "miroir-core";
+import type { Entity, MetaModel } from "miroir-core";
 
 export declare const defaultMiroirMetaModel: MetaModel;
+export declare const miroirModelInitializeCreateEntityOrder: Entity[];
+export declare const miroirModelInitializeDataInstances: any[];
+export declare const miroirModelInitializeEntityVersionInstances: any[];
+export declare const miroirModelInitializeEntityVersionsAfterEntityEntityVersion: any[];
+export declare const miroirModelInitializeEntityVersionsByEntityUuid: ReadonlyMap<string, readonly any[]>;
+export declare const appModelInitializeCreateEntityOrder: Entity[];
 export declare const RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY: any;
 export declare const miroirThemeSchemaJson: any;
 export declare const tableThemeSchemaJson: any;
