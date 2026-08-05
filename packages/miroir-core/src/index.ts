@@ -781,15 +781,20 @@ export {
   planFreezeApplicationVersionFromMetaModel,
   resolveFreezeEntityVersionApplicationSection,
   resolveFreezeQueryVersionApplicationSection,
+  resolveFreezeReportVersionApplicationSection,
   resolvePreviousApplicationVersion,
   snapshotEntitiesAsHistoricalEntityVersions,
   snapshotQueriesAsHistoricalQueryVersions,
+  snapshotReportsAsHistoricalReportVersions,
   QUERY_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
+  REPORT_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
   ApplicationVersionCrossEntityVersionRow,
   ApplicationVersionCrossQueryVersionRow,
+  ApplicationVersionCrossReportVersionRow,
   BuildFreezeApplicationVersionPlanInput,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
@@ -798,9 +803,11 @@ export type {
   ModelCudMigrationCandidate,
   PlanFreezeApplicationVersionInput,
   QueryVersionSnapshot,
+  ReportVersionSnapshot,
   ResolvePreviousApplicationVersionOptions,
   SnapshotOptions,
   StoredQueryForFreeze,
+  StoredReportForFreeze,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export {
   actionsWithDeploymentInPayload, noValue

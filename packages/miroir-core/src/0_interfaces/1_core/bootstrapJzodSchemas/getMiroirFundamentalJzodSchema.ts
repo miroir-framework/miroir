@@ -1,5 +1,5 @@
 import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
-import { entityVersionHistoricalQueryVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
+import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 
 import { cleanLevel } from "../../../1_core/constants";
 import { jzodTransitiveDependencySet } from "../../../1_core/jzod/JzodSchemaReferences";
@@ -1308,6 +1308,8 @@ export function getMiroirFundamentalJzodSchema(
         entityVersion: entityDefinitionEntityDefinitionV1.mlSchema as any, // param also exported as entityVersionEntityVersionV1
         /** #227 — historical Query snapshot at freeze (EntityVersion row for QueryVersion Entity). */
         queryVersion: entityVersionHistoricalQueryVersion.mlSchema as any,
+        /** #227 — historical Report snapshot at freeze (EntityVersion row for ReportVersion Entity). */
+        reportVersion: entityVersionHistoricalReportVersion.mlSchema as any,
 
         testCompositeAction: (
           entityDefinitionTest.mlSchema as any
@@ -3506,6 +3508,44 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
+            /** #227 — Cross rows linking SAV to historical ReportVersion snapshots. */
+            applicationVersionCrossReportVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  reportVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 6, defaultLabel: "Report Version", editable: false } },
+                  },
+                },
+              },
+            },
             // configuration: {
             //   type: "array",
             //   definition: {
@@ -3606,6 +3646,17 @@ export function getMiroirFundamentalJzodSchema(
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "queryVersion",
+                },
+              },
+            },
+            /** #227 — historical Report snapshots minted at freeze. */
+            reportVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "reportVersion",
                 },
               },
             },

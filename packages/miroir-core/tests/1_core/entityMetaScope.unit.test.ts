@@ -52,6 +52,7 @@ describe("Entity meta scope and logicalDataModel", () => {
     const versioningOnly = [
       "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json", // EntityVersion
       "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c.json", // QueryVersion
+      "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7.json", // ReportVersion
       "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json", // SelfApplicationVersion
     ];
     for (const file of versioningOnly) {
@@ -63,6 +64,7 @@ describe("Entity meta scope and logicalDataModel", () => {
     for (const file of [
       "8bec933d-6287-4de7-8a88-5c24216de9f4.json",
       "9e4c6d8a-2b5f-4a1c-9d7e-3f6b8a2c4e1d.json",
+      "f2b3c4d5-e6f7-4890-a1b2-c3d4e5f6a7b8.json",
     ]) {
       const entity = readEntity(file);
       expect(entity.scope, file).toBe("versioning");
@@ -88,6 +90,21 @@ describe("Entity meta scope and logicalDataModel", () => {
       entitySchema as any,
       entityVersionRow,
       "EntityVersion",
+      defaultMiroirModelEnvironment,
+    );
+    expect(check.status, JSON.stringify(check.innermostError, null, 2)).toBe("ok");
+  });
+
+  it("model validation accepts ReportVersion entity row against Entity schema", () => {
+    const entitySchema = entityDefinitionsByEntityName(defaultMiroirMetaModel).Entity?.mlSchema;
+    const reportVersionEntity = defaultMiroirMetaModel.entities.find(
+      (e) => e.uuid === "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7",
+    );
+    expect(reportVersionEntity).toBeDefined();
+    const check = checkModelValidationInstance(
+      entitySchema as any,
+      reportVersionEntity,
+      "ReportVersion",
       defaultMiroirModelEnvironment,
     );
     expect(check.status, JSON.stringify(check.innermostError, null, 2)).toBe("ok");

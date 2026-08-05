@@ -102,6 +102,8 @@ const adminMetaModel: MetaModel = {
   applicationVersionCrossEntityVersion: [],
   applicationVersionCrossQueryVersion: [],
   queryVersions: [],
+  applicationVersionCrossReportVersion: [],
+  reportVersions: [],
   tests: [],
   themes: [],
   applications: [],

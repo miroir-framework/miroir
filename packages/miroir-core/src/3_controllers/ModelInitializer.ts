@@ -38,8 +38,12 @@ import {
   entityApplicationVersionCrossQueryVersion,
   entityDefinitionApplicationVersionCrossEntityDefinition,
   entityHistoricalQueryVersion,
+  entityHistoricalReportVersion,
+  entityApplicationVersionCrossReportVersion,
   entityVersionApplicationVersionCrossQueryVersion,
   entityVersionHistoricalQueryVersion,
+  entityVersionApplicationVersionCrossReportVersion,
+  entityVersionHistoricalReportVersion,
   instanceEndpointV1,
   materialStoredMiroirTheme,
   menuDefaultMiroir,
@@ -352,6 +356,42 @@ export async function modelInitialize(
     result = await persistenceStoreController.upsertInstance(
       "data",
       entityVersionApplicationVersionCrossQueryVersion as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+
+    // bootstrap ApplicationVersionCrossReportVersion (#227)
+    result = await persistenceStoreController.createEntity(
+      entityApplicationVersionCrossReportVersion as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(
+      logHeader,
+      "created entity ApplicationVersionCrossReportVersion",
+      persistenceStoreController.getEntityUuids(),
+    );
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityVersionApplicationVersionCrossReportVersion as EntityInstance,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+
+    // bootstrap historical ReportVersion (#227)
+    result = await persistenceStoreController.createEntity(
+      entityHistoricalReportVersion as Entity,
+    );
+    if (result instanceof Action2Error) {
+      return result;
+    }
+    log.info(logHeader, "created entity ReportVersion", persistenceStoreController.getEntityUuids());
+    result = await persistenceStoreController.upsertInstance(
+      "data",
+      entityVersionHistoricalReportVersion as EntityInstance,
     );
     if (result instanceof Action2Error) {
       return result;

@@ -29,6 +29,8 @@ import {
   entityApplicationVersionCrossEntityVersion,
   entityApplicationVersionCrossQueryVersion,
   entityHistoricalQueryVersion,
+  entityApplicationVersionCrossReportVersion,
+  entityHistoricalReportVersion,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationVersionInitialMiroirVersion
@@ -1163,6 +1165,16 @@ export class DomainController implements DomainControllerInterface {
       return qvResult;
     }
 
+    const rvResult = await persistBatch(
+      "freezeReportVersions",
+      plan.reportVersions as EntityInstance[],
+      entityHistoricalReportVersion.uuid,
+      plan.reportVersionApplicationSection,
+    );
+    if (rvResult instanceof Action2Error) {
+      return rvResult;
+    }
+
     const crossEvResult = await persistBatch(
       "freezeCrossEntityVersions",
       plan.crossEntityVersions as EntityInstance[],
@@ -1173,10 +1185,20 @@ export class DomainController implements DomainControllerInterface {
       return crossEvResult;
     }
 
-    return persistBatch(
+    const crossQvResult = await persistBatch(
       "freezeCrossQueryVersions",
       plan.crossQueryVersions as EntityInstance[],
       entityApplicationVersionCrossQueryVersion.uuid,
+      versioningHistorySection,
+    );
+    if (crossQvResult instanceof Action2Error) {
+      return crossQvResult;
+    }
+
+    return persistBatch(
+      "freezeCrossReportVersions",
+      plan.crossReportVersions as EntityInstance[],
+      entityApplicationVersionCrossReportVersion.uuid,
       versioningHistorySection,
     );
   }
@@ -1875,6 +1897,64 @@ export class DomainController implements DomainControllerInterface {
             }
           }
 
+          const crossReportEntityUuid = entityApplicationVersionCrossReportVersion.uuid;
+          const crossReportEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === crossReportEntityUuid,
+          );
+          if (!crossReportEntityPresent) {
+            const ensureCrossReport = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureApplicationVersionCrossReportVersion",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityApplicationVersionCrossReportVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureCrossReport instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure Cross Report Entity exists",
+                [],
+                ensureCrossReport,
+              );
+            }
+          }
+
+          const reportVersionEntityUuid = entityHistoricalReportVersion.uuid;
+          const reportVersionEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === reportVersionEntityUuid,
+          );
+          if (!reportVersionEntityPresent) {
+            const ensureReportVersionEntity = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureHistoricalReportVersionEntity",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityHistoricalReportVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureReportVersionEntity instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure ReportVersion Entity exists",
+                [],
+                ensureReportVersionEntity,
+              );
+            }
+          }
+
           // Freeze application Entities only — exclude MetaModel bootstrap Entities
           // (Entity, Report, Cross, …) that may appear in currentModel.entities.
           const metaBootstrapUuids = new Set(
@@ -1883,6 +1963,8 @@ export class DomainController implements DomainControllerInterface {
           metaBootstrapUuids.add(crossEntityUuid);
           metaBootstrapUuids.add(crossQueryEntityUuid);
           metaBootstrapUuids.add(queryVersionEntityUuid);
+          metaBootstrapUuids.add(crossReportEntityUuid);
+          metaBootstrapUuids.add(reportVersionEntityUuid);
           const applicationEntities = metaModel.entities.filter(
             (e) => !metaBootstrapUuids.has(e.uuid),
           );
@@ -1896,6 +1978,9 @@ export class DomainController implements DomainControllerInterface {
             applicationVersionCrossEntityVersion: metaModel.applicationVersionCrossEntityVersion,
             applicationVersionCrossQueryVersion: metaModel.applicationVersionCrossQueryVersion,
             queryVersions: metaModel.queryVersions,
+            applicationVersionCrossReportVersion: metaModel.applicationVersionCrossReportVersion,
+            reportVersions: metaModel.reportVersions,
+            reports: metaModel.reports,
           });
 
           const persistResult = await this.persistFreezeApplicationVersionPlan(

@@ -75,6 +75,15 @@ const bookCountByPublisherQuery = JSON.parse(
     "utf8",
   ),
 ) as EntityInstance & { uuid: string; name: string; definition: Record<string, unknown> };
+const countryListReport = JSON.parse(
+  readFileSync(
+    join(
+      REPO_ROOT,
+      "packages/miroir-test-app_deployment-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/08176cc7-43ae-4fca-91b7-bf869d19e4b9.json",
+    ),
+    "utf8",
+  ),
+) as EntityInstance & { uuid: string; name: string; defaultLabel: string; definition: Record<string, unknown> };
 import {
   defaultMiroirMetaModel,
   entityApplicationVersionCrossEntityVersion,
@@ -84,7 +93,10 @@ import {
 import {
   QUERY_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
+  REPORT_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID,
   resolveFreezeQueryVersionApplicationSection,
+  resolveFreezeReportVersionApplicationSection,
 } from "miroir-core";
 
 const env: any = process.env;
@@ -275,6 +287,37 @@ async function seedLibraryStoredQuery() {
     libraryModelEnv(),
   );
   expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
+}
+
+async function seedLibraryReport() {
+  const result = await domainController.handleAction(
+    {
+      actionType: "createInstance",
+      endpoint: INSTANCE_ENDPOINT,
+      payload: {
+        application: testApplicationUuid,
+        applicationSection: "model",
+        objects: [countryListReport as EntityInstance],
+      },
+    },
+    applicationDeploymentMap,
+    libraryModelEnv(),
+  );
+  expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
+}
+
+function reportVersionSlice(reportVersion: {
+  name: string;
+  reportUuid: string;
+  defaultLabel?: string;
+  definition: unknown;
+}) {
+  return {
+    name: reportVersion.name,
+    reportUuid: reportVersion.reportUuid,
+    defaultLabel: reportVersion.defaultLabel,
+    definition: reportVersion.definition,
+  };
 }
 
 beforeAll(async () => {
@@ -746,6 +789,74 @@ describe.sequential("227 — QueryVersion freeze persistence", () => {
       )!;
       expect(frozenQueryAfter.name).toBe(frozenQueryBefore.name);
       expect(frozenQueryAfter.definition).toEqual(frozenQueryBefore.definition);
+    },
+    globalTimeOut,
+  );
+});
+
+describe.sequential("227 — ReportVersion freeze persistence", () => {
+  it(
+    "first freeze persists ReportVersions + CrossReport (Library model section)",
+    async () => {
+      expect(resolveFreezeReportVersionApplicationSection(testApplicationUuid)).toBe("model");
+      await seedLibraryReport();
+
+      const freezeResult = await freezeLibrary("V1-Reports");
+      expect(
+        freezeResult instanceof Action2Error,
+        `freeze failed: ${JSON.stringify(freezeResult)}`,
+      ).toBe(false);
+
+      await refreshLibraryCache();
+      const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const sav = model.applicationVersions.find((v) => v.name === "V1-Reports");
+      expect(sav, "SAV V1-Reports missing after reload").toBeDefined();
+
+      expect(
+        model.reports.some((r) => (r as { uuid?: string }).uuid === countryListReport.uuid),
+        "seeded CountryList report missing from present model",
+      ).toBe(true);
+
+      const crossReports = (model.applicationVersionCrossReportVersion ?? []).filter(
+        (c) => c.applicationVersion === sav!.uuid,
+      );
+      // Library deployment ships many Reports from assets; freeze snapshots all present-model Reports.
+      expect(crossReports.length).toBe(model.reports.length);
+      expect(crossReports.length).toBeGreaterThan(0);
+
+      for (const cross of crossReports) {
+        expect(cross.parentUuid).toBe(APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID);
+        const rv = (model.reportVersions ?? []).find((r) => r.uuid === cross.reportVersion);
+        expect(rv, `ReportVersion ${cross.reportVersion} missing`).toBeDefined();
+        expect(rv!.uuid).not.toBe(rv!.reportUuid);
+        expect(rv!.parentUuid).toBe(REPORT_VERSION_ENTITY_UUID);
+        expect(rv!.parentName).toBe("ReportVersion");
+
+        const live = model.reports.find(
+          (r) => (r as { uuid?: string }).uuid === rv!.reportUuid,
+        ) as {
+          uuid: string;
+          name: string;
+          defaultLabel: string;
+          definition: unknown;
+        };
+        expect(live, `live Report ${rv!.reportUuid} missing`).toBeDefined();
+        expect(reportVersionSlice(rv!)).toEqual({
+          name: live!.name,
+          reportUuid: (live as { uuid: string }).uuid,
+          defaultLabel: (live as { defaultLabel: string }).defaultLabel,
+          definition: (live as { definition: unknown }).definition,
+        });
+      }
+
+      const countryCross = crossReports.find((c) => {
+        const rv = (model.reportVersions ?? []).find((r) => r.uuid === c.reportVersion);
+        return rv?.reportUuid === countryListReport.uuid;
+      });
+      expect(countryCross, "CountryList ReportVersion cross row missing").toBeDefined();
+
+      const freezeRvUuids = new Set(crossReports.map((c) => c.reportVersion));
+      expect(freezeRvUuids.has(countryListReport.uuid)).toBe(false);
     },
     globalTimeOut,
   );
