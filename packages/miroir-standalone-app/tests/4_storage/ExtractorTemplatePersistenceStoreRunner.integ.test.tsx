@@ -73,12 +73,8 @@ import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { AppStackIntegrationTestSession } from '../helpers/IntegrationTestSession.js';
 
 import {
-  entityApplicationEvolutionTraceEvent,
-  entityApplicationVersionCrossEntityVersion,
-  entityEndpointVersion,
+  defaultMiroirMetaModel,
   entityEntity,
-  entityEntityVersion,
-  entityMenu,
 } from "miroir-test-app_deployment-miroir";
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -273,6 +269,11 @@ const resultHandler = (a: any, ignoreAttributes?: string[]) =>
       ])
     )
   );
+
+const expectedMiroirEntitiesWithEnInName = defaultMiroirMetaModel.entities
+  .filter((entity) => entity.name.toLowerCase().includes("en"))
+  .map((entity) => resultHandler(entity, ["author"]))
+  .sort((a, b) => a.name.localeCompare(b.name));
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
@@ -462,14 +463,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       //   ),
       undefined, // name to give to result
       undefined,
-      [
-        entityApplicationEvolutionTraceEvent,
-        entityApplicationVersionCrossEntityVersion,
-        entityEndpointVersion,
-        entityEntity,
-        entityEntityVersion,
-        entityMenu,
-      ].sort((a, b) => a.name.localeCompare(b.name))
+      expectedMiroirEntitiesWithEnInName,
       // [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
     );
   });
