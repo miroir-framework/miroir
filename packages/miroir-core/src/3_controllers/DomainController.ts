@@ -37,6 +37,8 @@ import {
   entityHistoricalEndpointVersion,
   entityApplicationVersionCrossRunnerVersion,
   entityHistoricalRunnerVersion,
+  entityApplicationVersionCrossThemeVersion,
+  entityHistoricalThemeVersion,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationVersionInitialMiroirVersion
@@ -1211,6 +1213,16 @@ export class DomainController implements DomainControllerInterface {
       return ruvResult;
     }
 
+    const tuvResult = await persistBatch(
+      "freezeThemeVersions",
+      plan.themeVersions as EntityInstance[],
+      entityHistoricalThemeVersion.uuid,
+      plan.themeVersionApplicationSection,
+    );
+    if (tuvResult instanceof Action2Error) {
+      return tuvResult;
+    }
+
     const crossEvResult = await persistBatch(
       "freezeCrossEntityVersions",
       plan.crossEntityVersions as EntityInstance[],
@@ -1261,10 +1273,20 @@ export class DomainController implements DomainControllerInterface {
       return crossEpResult;
     }
 
-    return persistBatch(
+    const crossRuResult = await persistBatch(
       "freezeCrossRunnerVersions",
       plan.crossRunnerVersions as EntityInstance[],
       entityApplicationVersionCrossRunnerVersion.uuid,
+      versioningHistorySection,
+    );
+    if (crossRuResult instanceof Action2Error) {
+      return crossRuResult;
+    }
+
+    return persistBatch(
+      "freezeCrossThemeVersions",
+      plan.crossThemeVersions as EntityInstance[],
+      entityApplicationVersionCrossThemeVersion.uuid,
       versioningHistorySection,
     );
   }
@@ -2195,6 +2217,64 @@ export class DomainController implements DomainControllerInterface {
             }
           }
 
+          const crossThemeEntityUuid = entityApplicationVersionCrossThemeVersion.uuid;
+          const crossThemeEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === crossThemeEntityUuid,
+          );
+          if (!crossThemeEntityPresent) {
+            const ensureCrossTheme = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureApplicationVersionCrossThemeVersion",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityApplicationVersionCrossThemeVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureCrossTheme instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure Cross Theme Entity exists",
+                [],
+                ensureCrossTheme,
+              );
+            }
+          }
+
+          const themeVersionEntityUuid = entityHistoricalThemeVersion.uuid;
+          const themeVersionEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === themeVersionEntityUuid,
+          );
+          if (!themeVersionEntityPresent) {
+            const ensureThemeVersionEntity = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureHistoricalThemeVersionEntity",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityHistoricalThemeVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureThemeVersionEntity instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure ThemeVersion Entity exists",
+                [],
+                ensureThemeVersionEntity,
+              );
+            }
+          }
+
           // Freeze application Entities only — exclude MetaModel bootstrap Entities
           // (Entity, Report, Cross, …) that may appear in currentModel.entities.
           const metaBootstrapUuids = new Set(
@@ -2211,6 +2291,8 @@ export class DomainController implements DomainControllerInterface {
           metaBootstrapUuids.add(endpointVersionEntityUuid);
           metaBootstrapUuids.add(crossRunnerEntityUuid);
           metaBootstrapUuids.add(runnerVersionEntityUuid);
+          metaBootstrapUuids.add(crossThemeEntityUuid);
+          metaBootstrapUuids.add(themeVersionEntityUuid);
           const applicationEntities = metaModel.entities.filter(
             (e) => !metaBootstrapUuids.has(e.uuid),
           );
@@ -2238,6 +2320,10 @@ export class DomainController implements DomainControllerInterface {
               metaModel.applicationVersionCrossRunnerVersion,
             runnerVersions: metaModel.runnerVersions,
             runners: metaModel.runners,
+            applicationVersionCrossThemeVersion:
+              metaModel.applicationVersionCrossThemeVersion,
+            themeVersions: metaModel.themeVersions,
+            themes: metaModel.themes,
           });
 
           const persistResult = await this.persistFreezeApplicationVersionPlan(

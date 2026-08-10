@@ -110,6 +110,8 @@ const adminMetaModel: MetaModel = {
   endpointVersions: [],
   applicationVersionCrossRunnerVersion: [],
   runnerVersions: [],
+  applicationVersionCrossThemeVersion: [],
+  themeVersions: [],
   tests: [],
   themes: [],
   applications: [],

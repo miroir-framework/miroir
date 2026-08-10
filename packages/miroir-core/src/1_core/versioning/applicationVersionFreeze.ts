@@ -6,6 +6,7 @@
  * #227 — MenuVersion (third non-Entity model element).
  * #227 — EndpointVersion (fourth non-Entity model element).
  * #227 — RunnerVersion (fifth non-Entity model element).
+ * #227 — ThemeVersion (sixth non-Entity model element).
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -22,6 +23,7 @@ import type {
   Report,
   RootReport,
   Runner,
+  StoredMiroirTheme,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { noValue } from "../Instance.js";
 import {
@@ -31,6 +33,7 @@ import {
   getMenuVersionWriteSection,
   getEndpointVersionWriteSection,
   getRunnerVersionWriteSection,
+  getThemeVersionWriteSection,
 } from "../Model.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
@@ -109,6 +112,11 @@ export const RUNNER_VERSION_ENTITY_UUID = "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0"
 /** ApplicationVersionCrossRunnerVersion Entity UUID (#227). */
 export const APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID =
   "f6a7b8c9-d0e1-4123-a4b5-c6d7e8f9a0b1";
+/** Historical ThemeVersion Entity UUID (#227). */
+export const THEME_VERSION_ENTITY_UUID = "a7b8c9d0-e1f2-4012-a3b4-c5d6e7f8a9c0";
+/** ApplicationVersionCrossThemeVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_THEME_VERSION_UUID =
+  "b8c9d0e1-f2a3-4123-a4b5-c6d7e8f9a0c1";
 
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
@@ -168,6 +176,15 @@ export function resolveFreezeRunnerVersionApplicationSection(
   applicationUuid: string,
 ): ApplicationSection {
   return getRunnerVersionWriteSection(applicationUuid);
+}
+
+/**
+ * #227 — section for persisting freeze-minted ThemeVersion snapshots.
+ */
+export function resolveFreezeThemeVersionApplicationSection(
+  applicationUuid: string,
+): ApplicationSection {
+  return getThemeVersionWriteSection(applicationUuid);
 }
 
 /** Live Query instance shape in MetaModel.storedQueries. */
@@ -456,6 +473,61 @@ export function snapshotRunnersAsHistoricalRunnerVersions(
   });
 }
 
+/** Live Theme instance shape in MetaModel.themes. */
+export type StoredThemeForFreeze = {
+  uuid: string;
+  name: string;
+  defaultLabel?: string;
+  description?: string;
+  definition: StoredMiroirTheme["definition"];
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Theme snapshot minted at freeze. */
+export type ThemeVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "ThemeVersion";
+  name: string;
+  themeUuid: string;
+  defaultLabel?: string;
+  description?: string;
+  definition: StoredMiroirTheme["definition"];
+};
+
+/**
+ * Deep-copy present-model Themes into new immutable ThemeVersion instances.
+ * Each output has a **new** UUID; `themeUuid` references the live Theme.
+ */
+export function snapshotThemesAsHistoricalThemeVersions(
+  themes: StoredThemeForFreeze[],
+  options?: SnapshotOptions,
+): ThemeVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return themes.map((theme) => {
+    if (theme.definition === undefined || theme.definition === null) {
+      throw new Error(
+        `Cannot snapshot Theme ${theme.uuid} (${theme.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: ThemeVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: THEME_VERSION_ENTITY_UUID,
+      parentName: "ThemeVersion",
+      name: theme.name,
+      themeUuid: theme.uuid,
+      definition: structuredClone(theme.definition),
+      ...(theme.defaultLabel !== undefined ? { defaultLabel: theme.defaultLabel } : {}),
+      ...(theme.description !== undefined ? { description: theme.description } : {}),
+    };
+
+    return snapshot;
+  });
+}
+
 /**
  * Deep-copy present-model Entity fields into new immutable EntityVersion instances.
  * Each output has a **new** UUID; `entityUuid` references the live Entity.
@@ -565,6 +637,15 @@ export type ApplicationVersionCrossRunnerVersionRow = {
   runnerVersion: string;
 };
 
+/** Cross row linking an Application Version to a historical ThemeVersion. */
+export type ApplicationVersionCrossThemeVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  themeVersion: string;
+};
+
 export type FreezeApplicationVersionPlan = {
   selfApplicationVersion: ApplicationVersion;
   entityVersions: EntityVersion[];
@@ -591,6 +672,10 @@ export type FreezeApplicationVersionPlan = {
   crossRunnerVersions: ApplicationVersionCrossRunnerVersionRow[];
   /** Persist section for RunnerVersion rows (#227). */
   runnerVersionApplicationSection: ApplicationSection;
+  themeVersions: ThemeVersionSnapshot[];
+  crossThemeVersions: ApplicationVersionCrossThemeVersionRow[];
+  /** Persist section for ThemeVersion rows (#227). */
+  themeVersionApplicationSection: ApplicationSection;
 };
 
 export type BuildFreezeApplicationVersionPlanInput = {
@@ -608,6 +693,8 @@ export type BuildFreezeApplicationVersionPlanInput = {
   endpoints?: StoredEndpointForFreeze[];
   /** Present-model Runners to snapshot (#227). Defaults to empty. */
   runners?: StoredRunnerForFreeze[];
+  /** Present-model Themes to snapshot (#227). Defaults to empty. */
+  themes?: StoredThemeForFreeze[];
   /** Existing SAVs for this app+branch — used for duplicate label detection and tip resolution. */
   existingApplicationVersions?: ApplicationVersion[];
   /**
@@ -859,6 +946,9 @@ export function buildFreezeApplicationVersionPlan(
   const runnerVersions = snapshotRunnersAsHistoricalRunnerVersions(input.runners ?? [], {
     newUuid: mintUuid,
   });
+  const themeVersions = snapshotThemesAsHistoricalThemeVersions(input.themes ?? [], {
+    newUuid: mintUuid,
+  });
 
   const modelCUDMigration =
     input.previousEntityVersions !== undefined
@@ -937,6 +1027,16 @@ export function buildFreezeApplicationVersionPlan(
     }),
   );
 
+  const crossThemeVersions: ApplicationVersionCrossThemeVersionRow[] = themeVersions.map(
+    (tv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_THEME_VERSION_UUID,
+      parentName: "ApplicationVersionCrossThemeVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      themeVersion: tv.uuid,
+    }),
+  );
+
   return {
     selfApplicationVersion,
     entityVersions,
@@ -967,6 +1067,11 @@ export function buildFreezeApplicationVersionPlan(
     runnerVersions,
     crossRunnerVersions,
     runnerVersionApplicationSection: resolveFreezeRunnerVersionApplicationSection(
+      input.selfApplicationUuid,
+    ),
+    themeVersions,
+    crossThemeVersions,
+    themeVersionApplicationSection: resolveFreezeThemeVersionApplicationSection(
       input.selfApplicationUuid,
     ),
   };
@@ -1007,6 +1112,7 @@ export type FreezeMetaModelSlice = {
   menus?: StoredMenuForFreeze[];
   endpoints?: StoredEndpointForFreeze[];
   runners?: StoredRunnerForFreeze[];
+  themes?: StoredThemeForFreeze[];
   applicationVersions: ApplicationVersion[];
   entityVersions: EntityVersion[];
   applicationVersionCrossEntityVersion: Array<{
@@ -1023,6 +1129,8 @@ export type FreezeMetaModelSlice = {
   endpointVersions?: MetaModel["endpointVersions"];
   applicationVersionCrossRunnerVersion?: MetaModel["applicationVersionCrossRunnerVersion"];
   runnerVersions?: MetaModel["runnerVersions"];
+  applicationVersionCrossThemeVersion?: MetaModel["applicationVersionCrossThemeVersion"];
+  themeVersions?: MetaModel["themeVersions"];
 };
 
 /**
@@ -1114,6 +1222,7 @@ export function planFreezeApplicationVersionFromMetaModel(
     menus: metaModel.menus,
     endpoints: metaModel.endpoints,
     runners: metaModel.runners,
+    themes: metaModel.themes,
     existingApplicationVersions: metaModel.applicationVersions,
     freezeProducedVersionUuids,
     previousEntityVersions,

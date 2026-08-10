@@ -371,6 +371,8 @@ describe("RunnerTestSession (Gap E R)", () => {
       endpointVersions: [],
       applicationVersionCrossRunnerVersion: [],
       runnerVersions: [],
+      applicationVersionCrossThemeVersion: [],
+      themeVersions: [],
       applications: [],
     } as unknown as MetaModel;
     const session = new RunnerTestSession({

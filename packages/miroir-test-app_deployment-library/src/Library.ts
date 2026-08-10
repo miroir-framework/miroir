@@ -180,6 +180,8 @@ export const defaultLibraryAppModel: MetaModel = {
     endpointVersions: [],
     applicationVersionCrossRunnerVersion: [],
     runnerVersions: [],
+    applicationVersionCrossThemeVersion: [],
+    themeVersions: [],
       storedQueries: [],
       jzodSchemas: [],
       applicationVersions: [

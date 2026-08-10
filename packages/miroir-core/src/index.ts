@@ -785,6 +785,7 @@ export {
   resolveFreezeMenuVersionApplicationSection,
   resolveFreezeEndpointVersionApplicationSection,
   resolveFreezeRunnerVersionApplicationSection,
+  resolveFreezeThemeVersionApplicationSection,
   resolvePreviousApplicationVersion,
   snapshotEntitiesAsHistoricalEntityVersions,
   snapshotQueriesAsHistoricalQueryVersions,
@@ -792,6 +793,7 @@ export {
   snapshotMenusAsHistoricalMenuVersions,
   snapshotEndpointsAsHistoricalEndpointVersions,
   snapshotRunnersAsHistoricalRunnerVersions,
+  snapshotThemesAsHistoricalThemeVersions,
   QUERY_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
   REPORT_VERSION_ENTITY_UUID,
@@ -802,6 +804,8 @@ export {
   APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
   RUNNER_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID,
+  THEME_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_THEME_VERSION_UUID,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
   ApplicationVersionCrossEntityVersionRow,
@@ -810,6 +814,7 @@ export type {
   ApplicationVersionCrossMenuVersionRow,
   ApplicationVersionCrossEndpointVersionRow,
   ApplicationVersionCrossRunnerVersionRow,
+  ApplicationVersionCrossThemeVersionRow,
   BuildFreezeApplicationVersionPlanInput,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
@@ -822,6 +827,7 @@ export type {
   MenuVersionSnapshot,
   EndpointVersionSnapshot,
   RunnerVersionSnapshot,
+  ThemeVersionSnapshot,
   ResolvePreviousApplicationVersionOptions,
   SnapshotOptions,
   StoredQueryForFreeze,
@@ -829,6 +835,7 @@ export type {
   StoredMenuForFreeze,
   StoredEndpointForFreeze,
   StoredRunnerForFreeze,
+  StoredThemeForFreeze,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export {
   actionsWithDeploymentInPayload, noValue

@@ -135,11 +135,14 @@ import {
   APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
   RUNNER_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID,
+  THEME_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_THEME_VERSION_UUID,
   resolveFreezeQueryVersionApplicationSection,
   resolveFreezeReportVersionApplicationSection,
   resolveFreezeMenuVersionApplicationSection,
   resolveFreezeEndpointVersionApplicationSection,
   resolveFreezeRunnerVersionApplicationSection,
+  resolveFreezeThemeVersionApplicationSection,
 } from "miroir-core";
 
 const env: any = process.env;
@@ -1164,6 +1167,45 @@ describe.sequential("227 — RunnerVersion freeze persistence", () => {
 
       const freezeRvUuids = new Set(crossRunners.map((c) => c.runnerVersion));
       expect(freezeRvUuids.has(libraryReturnDocumentRunner.uuid)).toBe(false);
+    },
+    globalTimeOut,
+  );
+});
+
+describe.sequential("227 — ThemeVersion freeze persistence", () => {
+  it(
+    "first freeze persists empty ThemeVersions + CrossTheme (Library has no themes)",
+    async () => {
+      expect(resolveFreezeThemeVersionApplicationSection(testApplicationUuid)).toBe("model");
+
+      const freezeResult = await freezeLibrary("V1-Themes");
+      expect(
+        freezeResult instanceof Action2Error,
+        `freeze failed: ${JSON.stringify(freezeResult)}`,
+      ).toBe(false);
+
+      await refreshLibraryCache();
+      const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const sav = model.applicationVersions.find((v) => v.name === "V1-Themes");
+      expect(sav, "SAV V1-Themes missing after reload").toBeDefined();
+
+      expect(model.themes).toEqual([]);
+
+      const crossThemes = (model.applicationVersionCrossThemeVersion ?? []).filter(
+        (c) => c.applicationVersion === sav!.uuid,
+      );
+      expect(crossThemes.length).toBe(model.themes.length);
+      expect(crossThemes).toEqual([]);
+
+      const themeVersionsForSav = (model.themeVersions ?? []).filter((tv) =>
+        crossThemes.some((c) => c.themeVersion === tv.uuid),
+      );
+      expect(themeVersionsForSav).toEqual([]);
+
+      expect(THEME_VERSION_ENTITY_UUID).toBe("a7b8c9d0-e1f2-4012-a3b4-c5d6e7f8a9c0");
+      expect(APPLICATION_VERSION_CROSS_THEME_VERSION_UUID).toBe(
+        "b8c9d0e1-f2a3-4123-a4b5-c6d7e8f9a0c1",
+      );
     },
     globalTimeOut,
   );
