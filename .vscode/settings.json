@@ -1,12 +1,14 @@
 {
-  "typescript.tsserver.maxTsServerMemory": 8192,
-  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "js/ts.experimental.useTsgo": true,
+  "typescript.native-preview.tsdk": "./node_modules/@typescript/typescript-win32-x64/lib",
+  "js/ts.tsserver.maxMemory": 8192,
+  "js/ts.preferences.includePackageJsonAutoImports": "on",
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
     "**/coverage": true
   },
-  "typescript.preferences.autoImportSpecifierExcludeRegexes": ["^@mui/[^/]+$"],
+  "js/ts.preferences.autoImportSpecifierExcludeRegexes": ["^@mui/[^/]+$"],
   "accessibility.signals.lineHasError": {
     "sound": "off"
   },
