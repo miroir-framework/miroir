@@ -169,6 +169,7 @@ export const defaultLibraryAppModel: MetaModel = {
       ],
       tests: [],
       themes: [],
+      transformerDefinitions: [],
       applicationVersionCrossEntityVersion: [],
       applicationVersionCrossQueryVersion: [],
       queryVersions: [],
@@ -182,6 +183,8 @@ export const defaultLibraryAppModel: MetaModel = {
     runnerVersions: [],
     applicationVersionCrossThemeVersion: [],
     themeVersions: [],
+    applicationVersionCrossTransformerDefinitionVersion: [],
+    transformerDefinitionVersions: [],
       storedQueries: [],
       jzodSchemas: [],
       applicationVersions: [

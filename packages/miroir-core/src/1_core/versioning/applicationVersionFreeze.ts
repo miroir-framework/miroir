@@ -7,6 +7,7 @@
  * #227 — EndpointVersion (fourth non-Entity model element).
  * #227 — RunnerVersion (fifth non-Entity model element).
  * #227 — ThemeVersion (sixth non-Entity model element).
+ * #227 — TransformerDefinitionVersion (ninth non-Entity model element).
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -24,6 +25,7 @@ import type {
   RootReport,
   Runner,
   StoredMiroirTheme,
+  TransformerDefinition,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { noValue } from "../Instance.js";
 import {
@@ -34,6 +36,7 @@ import {
   getEndpointVersionWriteSection,
   getRunnerVersionWriteSection,
   getThemeVersionWriteSection,
+  getTransformerDefinitionVersionWriteSection,
 } from "../Model.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
@@ -117,6 +120,12 @@ export const THEME_VERSION_ENTITY_UUID = "a7b8c9d0-e1f2-4012-a3b4-c5d6e7f8a9c0";
 /** ApplicationVersionCrossThemeVersion Entity UUID (#227). */
 export const APPLICATION_VERSION_CROSS_THEME_VERSION_UUID =
   "b8c9d0e1-f2a3-4123-a4b5-c6d7e8f9a0c1";
+/** Historical TransformerDefinitionVersion Entity UUID (#227). */
+export const TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID =
+  "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0";
+/** ApplicationVersionCrossTransformerDefinitionVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID =
+  "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1";
 
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
@@ -185,6 +194,15 @@ export function resolveFreezeThemeVersionApplicationSection(
   applicationUuid: string,
 ): ApplicationSection {
   return getThemeVersionWriteSection(applicationUuid);
+}
+
+/**
+ * #227 — section for persisting freeze-minted TransformerDefinitionVersion snapshots.
+ */
+export function resolveFreezeTransformerDefinitionVersionApplicationSection(
+  applicationUuid: string,
+): ApplicationSection {
+  return getTransformerDefinitionVersionWriteSection(applicationUuid);
 }
 
 /** Live Query instance shape in MetaModel.storedQueries. */
@@ -528,6 +546,93 @@ export function snapshotThemesAsHistoricalThemeVersions(
   });
 }
 
+/** Body stored on TransformerDefinitionVersion.definition at freeze. */
+export type TransformerDefinitionVersionBody = {
+  classification?: string;
+  runnableAsSql?: boolean;
+  transformerInterface: TransformerDefinition["transformerInterface"];
+  transformerImplementation: TransformerDefinition["transformerImplementation"];
+};
+
+/** Live TransformerDefinition instance shape in MetaModel.transformerDefinitions. */
+export type StoredTransformerDefinitionForFreeze = {
+  uuid: string;
+  name: string;
+  defaultLabel: string;
+  description?: string;
+  classification?: string;
+  runnableAsSql?: boolean;
+  transformerInterface: TransformerDefinition["transformerInterface"];
+  transformerImplementation: TransformerDefinition["transformerImplementation"];
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical TransformerDefinition snapshot minted at freeze. */
+export type TransformerDefinitionVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "TransformerDefinitionVersion";
+  name: string;
+  transformerUuid: string;
+  defaultLabel: string;
+  description?: string;
+  definition: TransformerDefinitionVersionBody;
+};
+
+function buildTransformerDefinitionVersionBody(
+  transformer: StoredTransformerDefinitionForFreeze,
+): TransformerDefinitionVersionBody {
+  if (
+    transformer.transformerImplementation === undefined ||
+    transformer.transformerImplementation === null
+  ) {
+    throw new Error(
+      `Cannot snapshot TransformerDefinition ${transformer.uuid} (${transformer.name}): transformerImplementation is missing`,
+    );
+  }
+  if (transformer.transformerInterface === undefined || transformer.transformerInterface === null) {
+    throw new Error(
+      `Cannot snapshot TransformerDefinition ${transformer.uuid} (${transformer.name}): transformerInterface is missing`,
+    );
+  }
+
+  return {
+    transformerInterface: structuredClone(transformer.transformerInterface),
+    transformerImplementation: structuredClone(transformer.transformerImplementation),
+    ...(transformer.classification !== undefined
+      ? { classification: transformer.classification }
+      : {}),
+    ...(transformer.runnableAsSql !== undefined ? { runnableAsSql: transformer.runnableAsSql } : {}),
+  };
+}
+
+/**
+ * Deep-copy present-model TransformerDefinitions into new immutable TransformerDefinitionVersion instances.
+ * Each output has a **new** UUID; `transformerUuid` references the live TransformerDefinition.
+ */
+export function snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions(
+  transformerDefinitions: StoredTransformerDefinitionForFreeze[],
+  options?: SnapshotOptions,
+): TransformerDefinitionVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return transformerDefinitions.map((transformer) => {
+    const snapshot: TransformerDefinitionVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
+      parentName: "TransformerDefinitionVersion",
+      name: transformer.name,
+      transformerUuid: transformer.uuid,
+      defaultLabel: transformer.defaultLabel,
+      definition: buildTransformerDefinitionVersionBody(transformer),
+      ...(transformer.description !== undefined ? { description: transformer.description } : {}),
+    };
+
+    return snapshot;
+  });
+}
+
 /**
  * Deep-copy present-model Entity fields into new immutable EntityVersion instances.
  * Each output has a **new** UUID; `entityUuid` references the live Entity.
@@ -646,6 +751,15 @@ export type ApplicationVersionCrossThemeVersionRow = {
   themeVersion: string;
 };
 
+/** Cross row linking an Application Version to a historical TransformerDefinitionVersion. */
+export type ApplicationVersionCrossTransformerDefinitionVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  transformerDefinitionVersion: string;
+};
+
 export type FreezeApplicationVersionPlan = {
   selfApplicationVersion: ApplicationVersion;
   entityVersions: EntityVersion[];
@@ -676,6 +790,10 @@ export type FreezeApplicationVersionPlan = {
   crossThemeVersions: ApplicationVersionCrossThemeVersionRow[];
   /** Persist section for ThemeVersion rows (#227). */
   themeVersionApplicationSection: ApplicationSection;
+  transformerDefinitionVersions: TransformerDefinitionVersionSnapshot[];
+  crossTransformerDefinitionVersions: ApplicationVersionCrossTransformerDefinitionVersionRow[];
+  /** Persist section for TransformerDefinitionVersion rows (#227). */
+  transformerDefinitionVersionApplicationSection: ApplicationSection;
 };
 
 export type BuildFreezeApplicationVersionPlanInput = {
@@ -695,6 +813,8 @@ export type BuildFreezeApplicationVersionPlanInput = {
   runners?: StoredRunnerForFreeze[];
   /** Present-model Themes to snapshot (#227). Defaults to empty. */
   themes?: StoredThemeForFreeze[];
+  /** Present-model TransformerDefinitions to snapshot (#227). Defaults to empty. */
+  transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
   /** Existing SAVs for this app+branch — used for duplicate label detection and tip resolution. */
   existingApplicationVersions?: ApplicationVersion[];
   /**
@@ -949,6 +1069,11 @@ export function buildFreezeApplicationVersionPlan(
   const themeVersions = snapshotThemesAsHistoricalThemeVersions(input.themes ?? [], {
     newUuid: mintUuid,
   });
+  const transformerDefinitionVersions =
+    snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions(
+      input.transformerDefinitions ?? [],
+      { newUuid: mintUuid },
+    );
 
   const modelCUDMigration =
     input.previousEntityVersions !== undefined
@@ -1037,6 +1162,15 @@ export function buildFreezeApplicationVersionPlan(
     }),
   );
 
+  const crossTransformerDefinitionVersions: ApplicationVersionCrossTransformerDefinitionVersionRow[] =
+    transformerDefinitionVersions.map((tdv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
+      parentName: "ApplicationVersionCrossTransformerDefinitionVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      transformerDefinitionVersion: tdv.uuid,
+    }));
+
   return {
     selfApplicationVersion,
     entityVersions,
@@ -1074,6 +1208,10 @@ export function buildFreezeApplicationVersionPlan(
     themeVersionApplicationSection: resolveFreezeThemeVersionApplicationSection(
       input.selfApplicationUuid,
     ),
+    transformerDefinitionVersions,
+    crossTransformerDefinitionVersions,
+    transformerDefinitionVersionApplicationSection:
+      resolveFreezeTransformerDefinitionVersionApplicationSection(input.selfApplicationUuid),
   };
 }
 
@@ -1113,6 +1251,7 @@ export type FreezeMetaModelSlice = {
   endpoints?: StoredEndpointForFreeze[];
   runners?: StoredRunnerForFreeze[];
   themes?: StoredThemeForFreeze[];
+  transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
   applicationVersions: ApplicationVersion[];
   entityVersions: EntityVersion[];
   applicationVersionCrossEntityVersion: Array<{
@@ -1131,6 +1270,8 @@ export type FreezeMetaModelSlice = {
   runnerVersions?: MetaModel["runnerVersions"];
   applicationVersionCrossThemeVersion?: MetaModel["applicationVersionCrossThemeVersion"];
   themeVersions?: MetaModel["themeVersions"];
+  applicationVersionCrossTransformerDefinitionVersion?: MetaModel["applicationVersionCrossTransformerDefinitionVersion"];
+  transformerDefinitionVersions?: MetaModel["transformerDefinitionVersions"];
 };
 
 /**
@@ -1223,6 +1364,7 @@ export function planFreezeApplicationVersionFromMetaModel(
     endpoints: metaModel.endpoints,
     runners: metaModel.runners,
     themes: metaModel.themes,
+    transformerDefinitions: metaModel.transformerDefinitions,
     existingApplicationVersions: metaModel.applicationVersions,
     freezeProducedVersionUuids,
     previousEntityVersions,

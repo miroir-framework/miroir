@@ -1,5 +1,5 @@
 import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
-import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
+import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, entityVersionHistoricalTransformerDefinitionVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 
 import { cleanLevel } from "../../../1_core/constants";
 import { jzodTransitiveDependencySet } from "../../../1_core/jzod/JzodSchemaReferences";
@@ -1318,6 +1318,9 @@ export function getMiroirFundamentalJzodSchema(
         runnerVersion: entityVersionHistoricalRunnerVersion.mlSchema as any,
         /** #227 — historical Theme snapshot at freeze (EntityVersion row for ThemeVersion Entity). */
         themeVersion: entityVersionHistoricalThemeVersion.mlSchema as any,
+        /** #227 — historical TransformerDefinition snapshot at freeze. */
+        transformerDefinitionVersion:
+          entityVersionHistoricalTransformerDefinitionVersion.mlSchema as any,
 
         testCompositeAction: (
           entityDefinitionTest.mlSchema as any
@@ -3706,6 +3709,50 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
+            /** #227 — Cross rows linking SAV to historical TransformerDefinitionVersion snapshots. */
+            applicationVersionCrossTransformerDefinitionVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  transformerDefinitionVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: {
+                        id: 6,
+                        defaultLabel: "Transformer Definition Version",
+                        editable: false,
+                      },
+                    },
+                  },
+                },
+              },
+            },
             // configuration: {
             //   type: "array",
             //   definition: {
@@ -3863,6 +3910,16 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
+            transformerDefinitionVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "transformerDefinitionVersion",
+                },
+              },
+            },
             reports: {
               type: "array",
               definition: {
@@ -3897,6 +3954,16 @@ export function getMiroirFundamentalJzodSchema(
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "storedMiroirTheme",
+                },
+              },
+            },
+            transformerDefinitions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "transformerDefinition",
                 },
               },
             },

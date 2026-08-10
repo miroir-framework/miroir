@@ -39,6 +39,8 @@ import {
   entityHistoricalRunnerVersion,
   entityApplicationVersionCrossThemeVersion,
   entityHistoricalThemeVersion,
+  entityApplicationVersionCrossTransformerDefinitionVersion,
+  entityHistoricalTransformerDefinitionVersion,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationVersionInitialMiroirVersion
@@ -1223,6 +1225,16 @@ export class DomainController implements DomainControllerInterface {
       return tuvResult;
     }
 
+    const tdvResult = await persistBatch(
+      "freezeTransformerDefinitionVersions",
+      plan.transformerDefinitionVersions as EntityInstance[],
+      entityHistoricalTransformerDefinitionVersion.uuid,
+      plan.transformerDefinitionVersionApplicationSection,
+    );
+    if (tdvResult instanceof Action2Error) {
+      return tdvResult;
+    }
+
     const crossEvResult = await persistBatch(
       "freezeCrossEntityVersions",
       plan.crossEntityVersions as EntityInstance[],
@@ -1283,10 +1295,20 @@ export class DomainController implements DomainControllerInterface {
       return crossRuResult;
     }
 
-    return persistBatch(
+    const crossThResult = await persistBatch(
       "freezeCrossThemeVersions",
       plan.crossThemeVersions as EntityInstance[],
       entityApplicationVersionCrossThemeVersion.uuid,
+      versioningHistorySection,
+    );
+    if (crossThResult instanceof Action2Error) {
+      return crossThResult;
+    }
+
+    return persistBatch(
+      "freezeCrossTransformerDefinitionVersions",
+      plan.crossTransformerDefinitionVersions as EntityInstance[],
+      entityApplicationVersionCrossTransformerDefinitionVersion.uuid,
       versioningHistorySection,
     );
   }
@@ -2275,6 +2297,66 @@ export class DomainController implements DomainControllerInterface {
             }
           }
 
+          const crossTransformerDefinitionEntityUuid =
+            entityApplicationVersionCrossTransformerDefinitionVersion.uuid;
+          const crossTransformerDefinitionEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === crossTransformerDefinitionEntityUuid,
+          );
+          if (!crossTransformerDefinitionEntityPresent) {
+            const ensureCrossTransformerDefinition = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureApplicationVersionCrossTransformerDefinitionVersion",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityApplicationVersionCrossTransformerDefinitionVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureCrossTransformerDefinition instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure Cross TransformerDefinition Entity exists",
+                [],
+                ensureCrossTransformerDefinition,
+              );
+            }
+          }
+
+          const transformerDefinitionVersionEntityUuid =
+            entityHistoricalTransformerDefinitionVersion.uuid;
+          const transformerDefinitionVersionEntityPresent = metaModel.entities.some(
+            (e) => e.uuid === transformerDefinitionVersionEntityUuid,
+          );
+          if (!transformerDefinitionVersionEntityPresent) {
+            const ensureTransformerDefinitionVersionEntity = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: "freezeEnsureHistoricalTransformerDefinitionVersionEntity",
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [entityHistoricalTransformerDefinitionVersion as Entity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureTransformerDefinitionVersionEntity instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                "freezeApplicationVersion failed to ensure TransformerDefinitionVersion Entity exists",
+                [],
+                ensureTransformerDefinitionVersionEntity,
+              );
+            }
+          }
+
           // Freeze application Entities only — exclude MetaModel bootstrap Entities
           // (Entity, Report, Cross, …) that may appear in currentModel.entities.
           const metaBootstrapUuids = new Set(
@@ -2293,6 +2375,8 @@ export class DomainController implements DomainControllerInterface {
           metaBootstrapUuids.add(runnerVersionEntityUuid);
           metaBootstrapUuids.add(crossThemeEntityUuid);
           metaBootstrapUuids.add(themeVersionEntityUuid);
+          metaBootstrapUuids.add(crossTransformerDefinitionEntityUuid);
+          metaBootstrapUuids.add(transformerDefinitionVersionEntityUuid);
           const applicationEntities = metaModel.entities.filter(
             (e) => !metaBootstrapUuids.has(e.uuid),
           );
@@ -2324,6 +2408,10 @@ export class DomainController implements DomainControllerInterface {
               metaModel.applicationVersionCrossThemeVersion,
             themeVersions: metaModel.themeVersions,
             themes: metaModel.themes,
+            applicationVersionCrossTransformerDefinitionVersion:
+              metaModel.applicationVersionCrossTransformerDefinitionVersion,
+            transformerDefinitionVersions: metaModel.transformerDefinitionVersions,
+            transformerDefinitions: metaModel.transformerDefinitions,
           });
 
           const persistResult = await this.persistFreezeApplicationVersionPlan(

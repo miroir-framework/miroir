@@ -48,6 +48,8 @@ function emptyMeta(overrides?: Partial<FreezeMetaModelSlice>): FreezeMetaModelSl
     runnerVersions: [],
     applicationVersionCrossThemeVersion: [],
     themeVersions: [],
+    applicationVersionCrossTransformerDefinitionVersion: [],
+    transformerDefinitionVersions: [],
     ...overrides,
   };
 }

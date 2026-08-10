@@ -24,6 +24,7 @@ import {
   type Runner,
   type SelfApplication,
   type StoredMiroirTheme,
+  type TransformerDefinition,
   type Uuid,
   getApplicationSection,
   getMiroirFundamentalSchemaForDeployment,
@@ -52,6 +53,9 @@ import {
   entityHistoricalRunnerVersion,
   entityApplicationVersionCrossThemeVersion,
   entityHistoricalThemeVersion,
+  entityApplicationVersionCrossTransformerDefinitionVersion,
+  entityHistoricalTransformerDefinitionVersion,
+  entityTransformerDefinition,
 } from "miroir-test-app_deployment-miroir";
 import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 
@@ -151,6 +155,10 @@ export function currentModel(
       application,
       entityHistoricalThemeVersion.uuid,
     );
+    const transformerDefinitionVersionSection = getApplicationSection(
+      application,
+      entityHistoricalTransformerDefinitionVersion.uuid,
+    );
     const applicationVersionCrossReport =
       state.current[
         getReduxDeploymentsStateIndex(
@@ -231,6 +239,22 @@ export function currentModel(
           entityHistoricalThemeVersion.uuid,
         )
       ];
+    const applicationVersionCrossTransformerDefinition =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossTransformerDefinitionVersion.uuid,
+        )
+      ];
+    const historicalTransformerDefinitionVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          transformerDefinitionVersionSection,
+          entityHistoricalTransformerDefinitionVersion.uuid,
+        )
+      ];
     const endpoints =
       state.current[
         getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityEndpointVersion.uuid)
@@ -261,6 +285,10 @@ export function currentModel(
       state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityMiroirTest.uuid)];
     const themes =
       state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityDefinitionTheme.entityUuid)];
+    const transformerDefinitions =
+      state.current[
+        getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityTransformerDefinition.uuid)
+      ];
     // #216 — SelfApplication instances (not SelfApplicationVersion / SAV)
     const selfApplicationsSlice = state.current[
       getReduxDeploymentsStateIndex(
@@ -341,8 +369,19 @@ export function currentModel(
       themeVersions: (historicalThemeVersions?.entities
         ? Object.values(historicalThemeVersions.entities)
         : []) as NonNullable<MetaModel["themeVersions"]>,
+      applicationVersionCrossTransformerDefinitionVersion: (
+        applicationVersionCrossTransformerDefinition?.entities
+          ? Object.values(applicationVersionCrossTransformerDefinition.entities)
+          : []
+      ) as NonNullable<MetaModel["applicationVersionCrossTransformerDefinitionVersion"]>,
+      transformerDefinitionVersions: (historicalTransformerDefinitionVersions?.entities
+        ? Object.values(historicalTransformerDefinitionVersions.entities)
+        : []) as NonNullable<MetaModel["transformerDefinitionVersions"]>,
       tests: (tests && tests.entities ? Object.values(tests.entities) : []) as MiroirTestDefinition[],
       themes: (themes && themes.entities ? Object.values(themes.entities) : []) as StoredMiroirTheme[],
+      transformerDefinitions: (transformerDefinitions && transformerDefinitions.entities
+        ? Object.values(transformerDefinitions.entities)
+        : []) as TransformerDefinition[],
     };
     // log.info("called currentModel(", deploymentUuid, ") found result:", JSON.stringify(result, null, 2));
     return result;

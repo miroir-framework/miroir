@@ -253,6 +253,8 @@ export const emptyMetaModel: MetaModel = {
   runnerVersions: [],
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   applicationVersions: [],
   endpoints: [],
   jzodSchemas: [],
@@ -262,6 +264,7 @@ export const emptyMetaModel: MetaModel = {
   runners: [],
   tests: [],
   themes: [],
+  transformerDefinitions: [],
 }
 export type ResolvableAppMetaModel = MetaModel | CoreTransformerForBuildPlusRuntime_getFromParameters;
 

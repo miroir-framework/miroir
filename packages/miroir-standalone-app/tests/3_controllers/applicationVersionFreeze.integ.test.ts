@@ -137,12 +137,15 @@ import {
   APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID,
   THEME_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_THEME_VERSION_UUID,
+  TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
   resolveFreezeQueryVersionApplicationSection,
   resolveFreezeReportVersionApplicationSection,
   resolveFreezeMenuVersionApplicationSection,
   resolveFreezeEndpointVersionApplicationSection,
   resolveFreezeRunnerVersionApplicationSection,
   resolveFreezeThemeVersionApplicationSection,
+  resolveFreezeTransformerDefinitionVersionApplicationSection,
 } from "miroir-core";
 
 const env: any = process.env;
@@ -1205,6 +1208,44 @@ describe.sequential("227 — ThemeVersion freeze persistence", () => {
       expect(THEME_VERSION_ENTITY_UUID).toBe("a7b8c9d0-e1f2-4012-a3b4-c5d6e7f8a9c0");
       expect(APPLICATION_VERSION_CROSS_THEME_VERSION_UUID).toBe(
         "b8c9d0e1-f2a3-4123-a4b5-c6d7e8f9a0c1",
+      );
+    },
+    globalTimeOut,
+  );
+});
+
+describe.sequential("227 — TransformerDefinitionVersion freeze persistence", () => {
+  it(
+    "first freeze persists empty TransformerDefinitionVersions + Cross (Library has no transformers)",
+    async () => {
+      expect(resolveFreezeTransformerDefinitionVersionApplicationSection(testApplicationUuid)).toBe(
+        "model",
+      );
+
+      const freezeResult = await freezeLibrary("V1-Transformers");
+      expect(
+        freezeResult instanceof Action2Error,
+        `freeze failed: ${JSON.stringify(freezeResult)}`,
+      ).toBe(false);
+
+      await refreshLibraryCache();
+      const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const sav = model.applicationVersions.find((v) => v.name === "V1-Transformers");
+      expect(sav, "SAV V1-Transformers missing after reload").toBeDefined();
+
+      expect(model.transformerDefinitions ?? []).toEqual([]);
+
+      const crossTransformers = (
+        model.applicationVersionCrossTransformerDefinitionVersion ?? []
+      ).filter((c) => c.applicationVersion === sav!.uuid);
+      expect(crossTransformers.length).toBe((model.transformerDefinitions ?? []).length);
+      expect(crossTransformers).toEqual([]);
+
+      expect(TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID).toBe(
+        "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0",
+      );
+      expect(APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID).toBe(
+        "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1",
       );
     },
     globalTimeOut,

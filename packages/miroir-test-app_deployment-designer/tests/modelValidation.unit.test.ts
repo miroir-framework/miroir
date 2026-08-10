@@ -112,6 +112,8 @@ const adminMetaModel: MetaModel = {
   runnerVersions: [],
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   tests: [],
   themes: [],
   applications: [],

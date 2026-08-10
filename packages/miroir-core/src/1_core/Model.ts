@@ -12,12 +12,14 @@ import {
   entityHistoricalEndpointVersion,
   entityHistoricalRunnerVersion,
   entityHistoricalThemeVersion,
+  entityHistoricalTransformerDefinitionVersion,
   entityReport,
   entityRunner,
   entitySelfApplication,
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
   entityTheme,
+  entityTransformerDefinition,
   reportEntityDefinitionDetails,
   reportEntityDefinitionList,
   reportEntityDetails,
@@ -49,6 +51,7 @@ import {
   type Runner,
   type SelfApplication,
   type StoredMiroirTheme,
+  type TransformerDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { Action2Error, Domain2ElementFailed } from "../0_interfaces/2_domain/DomainElement";
@@ -173,6 +176,13 @@ export function getRunnerVersionWriteSection(applicationUuid: Uuid): Application
 export function getThemeVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
   return getApplicationSection(applicationUuid, entityHistoricalThemeVersion.uuid);
 }
+
+/** #227 — section for writing TransformerDefinitionVersion snapshots (Miroir → data, Library → model). */
+export function getTransformerDefinitionVersionWriteSection(
+  applicationUuid: Uuid,
+): ApplicationSection {
+  return getApplicationSection(applicationUuid, entityHistoricalTransformerDefinitionVersion.uuid);
+}
 // ################################################################################################
 /**
  * just filters the model / meta-model reports in the Miroir app for now
@@ -239,6 +249,8 @@ export const emptyApplicationModel: MetaModel = {
   runnerVersions: [],
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   endpoints: [],
   entities: [],
   entityVersions: [],
@@ -249,6 +261,7 @@ export const emptyApplicationModel: MetaModel = {
   storedQueries: [],
   tests: [],
   themes: [],
+  transformerDefinitions: [],
 }
 
 // ################################################################################################
@@ -344,6 +357,12 @@ export async function extractApplicationModel(
     const queries = await extractEntityInstances(storeController, sectionFor(entityQueryVersion.uuid), entityQueryVersion.uuid, "queries");
     const runners = await extractEntityInstances(storeController, sectionFor(entityRunner.uuid), entityRunner.uuid, "runners");
     const themes = await extractEntityInstances(storeController, sectionFor(entityTheme.uuid), entityTheme.uuid, "themes");
+    const transformerDefinitions = await extractEntityInstances(
+      storeController,
+      sectionFor(entityTransformerDefinition.uuid),
+      entityTransformerDefinition.uuid,
+      "transformer definitions",
+    );
     const tests = await extractEntityInstances(storeController, sectionFor(entityMiroirTest.uuid), entityMiroirTest.uuid, "tests");
     // 
     const applications = await extractEntityInstances(storeController, sectionFor(entitySelfApplication.uuid), entitySelfApplication.uuid, "applications");
@@ -376,9 +395,12 @@ export async function extractApplicationModel(
       runnerVersions: [],
       applicationVersionCrossThemeVersion: [],
       themeVersions: [],
+      applicationVersionCrossTransformerDefinitionVersion: [],
+      transformerDefinitionVersions: [],
       runners: runners as Runner[], 
       tests: tests as MiroirTestDefinition[],
-      themes: themes as StoredMiroirTheme[], // Themes are now included in the model extraction
+      themes: themes as StoredMiroirTheme[],
+      transformerDefinitions: transformerDefinitions as TransformerDefinition[],
     };
 
     return libraryMetaModel;

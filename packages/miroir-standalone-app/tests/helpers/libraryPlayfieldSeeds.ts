@@ -215,6 +215,8 @@ export const compositePKTestMetaModel: MetaModel = {
   runnerVersions: [],
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   applications: [],
   tests: [],
 };
@@ -346,6 +348,8 @@ export const codeNumberTestMetaModel: MetaModel = {
   runnerVersions: [],
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   applications: [],
   tests: [],
 };
@@ -377,6 +381,8 @@ export const publisherOnlyTestMetaModel: MetaModel = {
   runnerVersions: [],
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   applications: [],
   tests: [],
 };
@@ -491,6 +497,8 @@ export const noParentUuidTestMetaModel: MetaModel = {
   runnerVersions: [],
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   applications: [],
   tests: [],
 };
@@ -624,6 +632,8 @@ export const publisherAndCountryTestMetaModel: MetaModel = {
   runnerVersions: [],
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   applications: [],
   tests: [],
 };
@@ -658,6 +668,8 @@ export const emptyLibraryPlayfieldMetaModel: MetaModel = {
   runnerVersions: [],
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   applications: [],
   tests: [],
 };

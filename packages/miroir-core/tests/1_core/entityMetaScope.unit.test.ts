@@ -57,6 +57,7 @@ describe("Entity meta scope and logicalDataModel", () => {
       "c2d3e4f5-a6b7-4789-a0b1-d2e3f4a5b6c7.json", // EndpointVersion
       "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0.json", // RunnerVersion
       "a7b8c9d0-e1f2-4012-a3b4-c5d6e7f8a9c0.json", // ThemeVersion
+      "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0.json", // TransformerDefinitionVersion
       "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json", // SelfApplicationVersion
     ];
     for (const file of versioningOnly) {
@@ -73,6 +74,7 @@ describe("Entity meta scope and logicalDataModel", () => {
       "d3e4f5a6-b7c8-4890-b1c2-e3f4a5b6c7d8.json",
       "f6a7b8c9-d0e1-4123-a4b5-c6d7e8f9a0b1.json",
       "b8c9d0e1-f2a3-4123-a4b5-c6d7e8f9a0c1.json",
+      "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1.json",
     ]) {
       const entity = readEntity(file);
       expect(entity.scope, file).toBe("versioning");
@@ -173,6 +175,21 @@ describe("Entity meta scope and logicalDataModel", () => {
       entitySchema as any,
       themeVersionEntity,
       "ThemeVersion",
+      defaultMiroirModelEnvironment,
+    );
+    expect(check.status, JSON.stringify(check.innermostError, null, 2)).toBe("ok");
+  });
+
+  it("model validation accepts TransformerDefinitionVersion entity row against Entity schema", () => {
+    const entitySchema = entityDefinitionsByEntityName(defaultMiroirMetaModel).Entity?.mlSchema;
+    const transformerDefinitionVersionEntity = defaultMiroirMetaModel.entities.find(
+      (e) => e.uuid === "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0",
+    );
+    expect(transformerDefinitionVersionEntity).toBeDefined();
+    const check = checkModelValidationInstance(
+      entitySchema as any,
+      transformerDefinitionVersionEntity,
+      "TransformerDefinitionVersion",
       defaultMiroirModelEnvironment,
     );
     expect(check.status, JSON.stringify(check.innermostError, null, 2)).toBe("ok");

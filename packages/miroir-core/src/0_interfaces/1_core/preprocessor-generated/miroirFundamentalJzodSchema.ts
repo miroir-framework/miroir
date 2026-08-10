@@ -9033,6 +9033,69 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "transformerDefinitionVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "transformerUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Transformer Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "Transformer definition at freeze time"
+              }
+            }
+          }
+        }
+      },
       "testCompositeAction": {
         "type": "object",
         "definition": {
@@ -40312,6 +40375,81 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "applicationVersionCrossTransformerDefinitionVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "transformerDefinitionVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "Transformer Definition Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
           "applications": {
             "type": "array",
             "definition": {
@@ -40452,6 +40590,16 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "transformerDefinitionVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "transformerDefinitionVersion"
+              }
+            }
+          },
           "reports": {
             "type": "array",
             "definition": {
@@ -40475,6 +40623,16 @@ export const miroirFundamentalJzodSchema = {
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "storedMiroirTheme"
+              }
+            }
+          },
+          "transformerDefinitions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "transformerDefinition"
               }
             }
           }

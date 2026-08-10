@@ -786,6 +786,7 @@ export {
   resolveFreezeEndpointVersionApplicationSection,
   resolveFreezeRunnerVersionApplicationSection,
   resolveFreezeThemeVersionApplicationSection,
+  resolveFreezeTransformerDefinitionVersionApplicationSection,
   resolvePreviousApplicationVersion,
   snapshotEntitiesAsHistoricalEntityVersions,
   snapshotQueriesAsHistoricalQueryVersions,
@@ -794,6 +795,7 @@ export {
   snapshotEndpointsAsHistoricalEndpointVersions,
   snapshotRunnersAsHistoricalRunnerVersions,
   snapshotThemesAsHistoricalThemeVersions,
+  snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions,
   QUERY_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
   REPORT_VERSION_ENTITY_UUID,
@@ -806,6 +808,8 @@ export {
   APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID,
   THEME_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_THEME_VERSION_UUID,
+  TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
   ApplicationVersionCrossEntityVersionRow,
@@ -815,6 +819,7 @@ export type {
   ApplicationVersionCrossEndpointVersionRow,
   ApplicationVersionCrossRunnerVersionRow,
   ApplicationVersionCrossThemeVersionRow,
+  ApplicationVersionCrossTransformerDefinitionVersionRow,
   BuildFreezeApplicationVersionPlanInput,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
@@ -828,6 +833,8 @@ export type {
   EndpointVersionSnapshot,
   RunnerVersionSnapshot,
   ThemeVersionSnapshot,
+  TransformerDefinitionVersionSnapshot,
+  TransformerDefinitionVersionBody,
   ResolvePreviousApplicationVersionOptions,
   SnapshotOptions,
   StoredQueryForFreeze,
@@ -836,6 +843,7 @@ export type {
   StoredEndpointForFreeze,
   StoredRunnerForFreeze,
   StoredThemeForFreeze,
+  StoredTransformerDefinitionForFreeze,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export {
   actionsWithDeploymentInPayload, noValue

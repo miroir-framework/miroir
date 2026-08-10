@@ -166,6 +166,8 @@ describe("listSelfApplicationUuidPaths (T1)", () => {
         runnerVersions: [],
         applicationVersionCrossThemeVersion: [],
         themeVersions: [],
+        applicationVersionCrossTransformerDefinitionVersion: [],
+        transformerDefinitionVersions: [],
         applications: [],
         entities: [],
         entityVersions: [],

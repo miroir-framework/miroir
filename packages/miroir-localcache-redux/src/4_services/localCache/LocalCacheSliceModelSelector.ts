@@ -458,6 +458,8 @@ export const selectModelForDeploymentFromReduxState: () => (
         runnerVersions: [],
         applicationVersionCrossThemeVersion: [],
         themeVersions: [],
+        applicationVersionCrossTransformerDefinitionVersion: [],
+        transformerDefinitionVersions: [],
         // configuration: (configurations ? Object.values(configurations) : []) as StoreBasedConfiguration[],
         entities: (entities ? Object.values(entities) : []) as Entity[],
         entityVersions: (entityVersions ? Object.values(entityVersions) : []) as EntityVersion[],
