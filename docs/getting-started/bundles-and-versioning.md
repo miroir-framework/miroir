@@ -41,7 +41,7 @@ This will enable differentiated "development" and "production" environment, wher
 
 - Promote a model from development → staging → production
 - `versioned-external`: the external VCS (Git) is the source of truth; Miroir deployment assets (`assets/` directories) are committed like code
-- `versioned-internal`: Miroir itself stores the version history in the `model-version` store section — useful for applications whose model is managed entirely inside the running system
+- `versioned-internal`: Miroir itself stores the version history in the `modelVersion` store section — useful for applications whose model is managed entirely inside the running system
 
 ### Reporting on Version History
 
@@ -55,12 +55,12 @@ This will enable differentiated "development" and "production" environment, wher
 |---|---|---|
 | `git init` | Create a new Application deployment with a versioned store | similar to create application with versioned-external versioning |
 | `git clone` | Copy a deployment's `model` + `data` store sections to a new environment | deploy existing application from repository app |
-| `git commit` | "Freeze" a model as a new commit / snapshot in the `model-version` section | YES |
+| `git commit` | "Freeze" a model as a new commit / snapshot in the `modelVersion` section | YES |
 | `git checkout <branch>` | Load a different model snapshot into the active deployment | NO - for now only linear history is allowed |
 | `git diff` | Compare two EntityVersion snapshots (mlSchema diffing) | TODO: internal implementation not relying on Git's |
 | `git log` | List `SelfApplicationModelBranch` / version history entries | NO |
 | `git merge` | Reconcile two divergent model histories (manual or tooled) | NO |
-| `git push/pull` | Sync `model-version` section between environments (remote server mode) | NO |
+| `git push/pull` | Sync `modelVersion` section between environments (remote server mode) | NO |
 
 
 ### Implementation: versioned-external
@@ -73,7 +73,7 @@ This will enable differentiated "development" and "production" environment, wher
 
 ### Implementation: versioned-internal
 
-- The full version history of the application's model is stored in the `model-version` store section of the deployment
+- The full version history of the application's model is stored in the `modelVersion` store section of the deployment
 - Enables in-app rollback, branching, and audit without any external VCS
 - Suited for end-user applications where the model evolves at runtime (no developer Git workflow)
 - Heavier storage footprint; periodic pruning of old snapshots recommended for long-lived deployments

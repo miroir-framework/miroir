@@ -1051,11 +1051,11 @@ export function getMiroirFundamentalJzodSchema(
           tag: {
             value: {
               defaultLabel: "Application Section",
-              description: "A section of the application (model, data, or model-version for version history)",
+              description: "A section of the application (model, data, or modelVersion for version history)",
               initializeTo: { initializeToType: "value", value: "data" },
             },
           },
-          definition: ["model", "data", "model-version"],
+          definition: ["model", "data", "modelVersion"],
         },
         dataStoreApplicationType: {
           type: "enum",
@@ -1588,6 +1588,14 @@ export function getMiroirFundamentalJzodSchema(
             },
             data: {
               type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "storeSectionConfiguration",
+              },
+            },
+            "modelVersion": {
+              type: "schemaReference",
+              optional: true,
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "storeSectionConfiguration",

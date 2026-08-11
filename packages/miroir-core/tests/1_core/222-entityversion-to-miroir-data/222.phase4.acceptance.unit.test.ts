@@ -71,9 +71,9 @@ describe("222 Phase 4 — acceptance (A–D)", () => {
     expect(miroirModelEntities.map((e: Entity) => e.uuid)).toContain(entityEntity.uuid);
   });
 
-  it("#232 A: EV section model-version for Miroir and Library (was data/model in #222)", () => {
-    expect(getApplicationSection(MIROIR, entityEntityVersion.uuid as string)).toBe("model-version");
-    expect(getApplicationSection(LIBRARY, entityEntityVersion.uuid as string)).toBe("model-version");
+  it("#232 A: EV section modelVersion for Miroir and Library (was data/model in #222)", () => {
+    expect(getApplicationSection(MIROIR, entityEntityVersion.uuid as string)).toBe("modelVersion");
+    expect(getApplicationSection(LIBRARY, entityEntityVersion.uuid as string)).toBe("modelVersion");
   });
 
   it("B: Entity present-model mlSchema on Entity; section model", () => {

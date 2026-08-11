@@ -106,7 +106,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   constructor(
     private adminStore: PersistenceStoreAdminSectionInterface,
     private modelStoreSection: PersistenceStoreModelSectionInterface,
-    private dataStoreSection: PersistenceStoreDataSectionInterface
+    private dataStoreSection: PersistenceStoreDataSectionInterface,
+    /** #232 — optional; version-history section. Absence causes named error on modelVersion requests. */
+    private modelVersionStoreSection?: PersistenceStoreDataSectionInterface,
   ) {
     this.logHeader = "PersistenceStoreController " + modelStoreSection.getStoreName();
   }
@@ -114,6 +116,28 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // #########################################################################################
   getStoreName(): string {
     return this.modelStoreSection.getStoreName();
+  }
+
+  /**
+   * #232 — resolve a section to its backing store, or return Action2Error for an unconfigured
+   * modelVersion section (instead of silently falling through to data or model).
+   */
+  private getSectionInstanceStore(
+    section: ApplicationSection,
+  ):
+    | PersistenceStoreDataSectionInterface
+    | PersistenceStoreModelSectionInterface
+    | Action2Error {
+    if (section === "modelVersion") {
+      if (!this.modelVersionStoreSection) {
+        return new Action2Error(
+          "FailedToOpenStore",
+          `modelVersion section is not configured for this deployment (store: ${this.logHeader}). Add a modelVersion section to the deployment configuration to persist version history.`,
+        );
+      }
+      return this.modelVersionStoreSection;
+    }
+    return section === "model" ? this.modelStoreSection : this.dataStoreSection;
   }
 
   // #############################################################################################
@@ -135,10 +159,17 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
     // TODO: composite actions / queries could execute on different sections, how should this be dealt with?
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
-    const currentStore:
-      | PersistenceStoreDataSectionInterface
-      | PersistenceStoreModelSectionInterface =
-      action.payload.applicationSection == "model" ? this.modelStoreSection : this.dataStoreSection;
+    const section = action.payload.applicationSection;
+    if (!section) {
+      return new Action2Error(
+        "InvalidAction",
+        `${this.logHeader} handleBoxedQueryAction missing applicationSection on query payload.`,
+      );
+    }
+    const currentStore = this.getSectionInstanceStore(section);
+    if (currentStore instanceof Action2Error) {
+      return currentStore;
+    }
     const result: Action2ReturnType = await currentStore.handleBoxedQueryAction(
       action,
       applicationDeploymentMap,
@@ -167,13 +198,20 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
     // TODO: composite actions / queries could execute on different sections, how should this be dealt with?
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
-    const currentStore:
-      | PersistenceStoreDataSectionInterface
-      | PersistenceStoreModelSectionInterface =
-      action.payload.applicationSection == "model" ? this.modelStoreSection : this.dataStoreSection;
+    const section = action.payload.applicationSection;
+    if (!section) {
+      return new Action2Error(
+        "InvalidAction",
+        `${this.logHeader} handleQueryTemplateActionForServerONLY missing applicationSection on query payload.`,
+      );
+    }
+    const currentStore = this.getSectionInstanceStore(section);
+    if (currentStore instanceof Action2Error) {
+      return currentStore;
+    }
 
     log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", action, 
-      action.payload.applicationSection == "model" ? "modelStoreSection" : "dataStoreSection", currentStore.getStoreName());
+      section, currentStore.getStoreName());
 
     const result: Action2ReturnType = await currentStore.handleQueryTemplateActionForServerONLY(
       action,
@@ -478,6 +516,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     await this.adminStore.open();
     await this.dataStoreSection.open();
     await this.modelStoreSection.open();
+    if (this.modelVersionStoreSection) {
+      await this.modelVersionStoreSection.open();
+    }
     return Promise.resolve(ACTION_OK);
   }
 
@@ -486,6 +527,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     await this.adminStore.close();
     await this.modelStoreSection.close();
     await this.dataStoreSection.close();
+    if (this.modelVersionStoreSection) {
+      await this.modelVersionStoreSection.close();
+    }
     return Promise.resolve(ACTION_OK);
   }
 
@@ -642,13 +686,14 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   ): Promise<Action2EntityInstanceReturnType> {
     log.info(this.logHeader, "getInstance", "section", section, "entity", entityUuid, "instancePrimaryKey", instancePrimaryKey);
 
-    // let result: EntityInstance | undefined;
-    let result: Action2EntityInstanceReturnType;
-    if (section == "data") {
-      result = await this.dataStoreSection.getInstance(entityUuid, instancePrimaryKey);
-    } else {
-      result = await this.modelStoreSection.getInstance(entityUuid, instancePrimaryKey);
+    const currentStore = this.getSectionInstanceStore(section);
+    if (currentStore instanceof Action2Error) {
+      return currentStore;
     }
+    const result: Action2EntityInstanceReturnType = await currentStore.getInstance(
+      entityUuid,
+      instancePrimaryKey,
+    );
     log.trace(
       this.logHeader,
       "getInstance",
@@ -694,7 +739,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   ): Promise<Action2EntityInstanceCollectionOrFailure> {
     // TODO: fix applicationSection!!!
     
-    const currentStore = section == "data" ? this.dataStoreSection : this.modelStoreSection;
+    const currentStore = this.getSectionInstanceStore(section);
+    if (currentStore instanceof Action2Error) {
+      return currentStore;
+    }
     log.info(
       this.logHeader,
       "getInstances",
@@ -704,8 +752,6 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       entityUuid,
       "storeName",
       "'" + currentStore.getStoreName() + "'",
-      // "known entities",
-      // section == "data" ? this.getEntityUuids() : this.getModelEntities()
     );
     const instances: Action2EntityInstanceCollectionOrFailure = await currentStore.getInstances(
       entityUuid
@@ -788,6 +834,15 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       this.getEntityUuids()
     );
 
+    const currentStore = this.getSectionInstanceStore(section);
+    if (currentStore instanceof Action2Error) {
+      return currentStore;
+    }
+
+    if (section === "modelVersion") {
+      return currentStore.upsertInstance(resolvedParentUuid, instance);
+    }
+
     if (section == "data") {
       if (this.getEntityUuids().indexOf(resolvedParentUuid) == -1) {
         log.error(
@@ -803,24 +858,24 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
           `upsertInstance failed for section: ${section}, entityUuid ${resolvedParentUuid}, error: Entity not found in data section, existing entities: ${this.getEntityUuids()}.`
         );
       }
-      return this.dataStoreSection.upsertInstance(resolvedParentUuid, instance);
-    } else {
-      if (this.getModelEntities().indexOf(resolvedParentUuid) == -1) {
-        log.error(
-          this.logHeader,
-          "upsertInstance failed for section: ",
-          section,
-          "entityUuid",
-          resolvedParentUuid,
-          "error: Entity not found in model section."
-        );
-        return new Action2Error(
-          "FailedToUpsertInstance",
-          `upsertInstance failed for section: ${section}, entityUuid ${resolvedParentUuid}, error: Entity not found in model section.`
-        );
-      }
-      return this.modelStoreSection.upsertInstance(resolvedParentUuid, instance);
+      return currentStore.upsertInstance(resolvedParentUuid, instance);
     }
+
+    if (this.getModelEntities().indexOf(resolvedParentUuid) == -1) {
+      log.error(
+        this.logHeader,
+        "upsertInstance failed for section: ",
+        section,
+        "entityUuid",
+        resolvedParentUuid,
+        "error: Entity not found in model section."
+      );
+      return new Action2Error(
+        "FailedToUpsertInstance",
+        `upsertInstance failed for section: ${section}, entityUuid ${resolvedParentUuid}, error: Entity not found in model section.`
+      );
+    }
+    return currentStore.upsertInstance(resolvedParentUuid, instance);
   }
 
   // ##############################################################################################
@@ -834,12 +889,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       log.error(this.logHeader, "deleteInstance failed to resolve parentUuid for instance", instance);
       return resolvedParentUuid;
     }
-    if (section == "data") {
-      return this.dataStoreSection.deleteInstance(resolvedParentUuid, instance);
-    } else {
-      return this.modelStoreSection.deleteInstance(resolvedParentUuid, instance);
+    const currentStore = this.getSectionInstanceStore(section);
+    if (currentStore instanceof Action2Error) {
+      return currentStore;
     }
-    return Promise.resolve(ACTION_OK);
+    return currentStore.deleteInstance(resolvedParentUuid, instance);
   }
 
   // ##############################################################################################
@@ -854,10 +908,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         log.error(this.logHeader, "deleteInstances failed to resolve parentUuid for instance", instance);
         return resolvedParentUuid;
       }
-      if (section == "data") {
-        return this.dataStoreSection.deleteInstance(resolvedParentUuid, instance);
-      } else {
-        return this.modelStoreSection.deleteInstance(resolvedParentUuid, instance);
+      const currentStore = this.getSectionInstanceStore(section);
+      if (currentStore instanceof Action2Error) {
+        return currentStore;
+      }
+      const deleteResult = await currentStore.deleteInstance(resolvedParentUuid, instance);
+      if (deleteResult instanceof Action2Error) {
+        return deleteResult;
       }
     }
     return Promise.resolve(ACTION_OK);

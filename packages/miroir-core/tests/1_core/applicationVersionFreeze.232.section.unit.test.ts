@@ -1,5 +1,5 @@
 /**
- * #232 Slice 1.2 / refactor — getApplicationSection returns "model-version" for all
+ * #232 Slice 1.2 / refactor — getApplicationSection returns "modelVersion" for all
  * version-history entity families. The family-specific resolveFreeze* helpers and
  * get*WriteSection helpers have been removed; getApplicationSection is the single source.
  */
@@ -63,7 +63,7 @@ const VERSION_HISTORY_ENTITIES = [
   { name: "ApplicationVersionCrossTransformerDefinitionVersion", entity: entityApplicationVersionCrossTransformerDefinitionVersion },
 ];
 
-describe("232 — getApplicationSection routes version-history entities to model-version", () => {
+describe("232 — getApplicationSection routes version-history entities to modelVersion", () => {
   it("versionHistoryEntityUuids covers all history families", () => {
     for (const { name, entity } of VERSION_HISTORY_ENTITIES) {
       expect(versionHistoryEntityUuids.has(entity.uuid!), `${name} UUID in set`).toBe(true);
@@ -71,14 +71,14 @@ describe("232 — getApplicationSection routes version-history entities to model
     expect(versionHistoryEntityUuids.size).toBe(VERSION_HISTORY_ENTITIES.length);
   });
 
-  it("getApplicationSection returns model-version for all history families regardless of app", () => {
+  it("getApplicationSection returns modelVersion for all history families regardless of app", () => {
     for (const { name, entity } of VERSION_HISTORY_ENTITIES) {
-      expect(getApplicationSection(selfApplicationMiroir.uuid, entity.uuid!), `${name} Miroir`).toBe("model-version");
-      expect(getApplicationSection(selfApplicationLibrary.uuid, entity.uuid!), `${name} Library`).toBe("model-version");
+      expect(getApplicationSection(selfApplicationMiroir.uuid, entity.uuid!), `${name} Miroir`).toBe("modelVersion");
+      expect(getApplicationSection(selfApplicationLibrary.uuid, entity.uuid!), `${name} Library`).toBe("modelVersion");
     }
   });
 
-  it("freeze plan sets all *ApplicationSection fields to model-version", () => {
+  it("freeze plan sets all *ApplicationSection fields to modelVersion", () => {
     const plan = buildFreezeApplicationVersionPlan({
       selfApplicationUuid: selfApplicationMiroir.uuid,
       branchUuid: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
@@ -86,14 +86,14 @@ describe("232 — getApplicationSection routes version-history entities to model
       entities: [makeEntity("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", "Book")],
       newUuid: (() => { let n = 0; return () => `aaaaaaaa-aaaa-4aaa-8aaa-${String(++n).padStart(12, "0")}`; })(),
     });
-    expect(plan.entityVersionApplicationSection).toBe("model-version");
-    expect(plan.queryVersionApplicationSection).toBe("model-version");
-    expect(plan.reportVersionApplicationSection).toBe("model-version");
-    expect(plan.menuVersionApplicationSection).toBe("model-version");
-    expect(plan.endpointVersionApplicationSection).toBe("model-version");
-    expect(plan.runnerVersionApplicationSection).toBe("model-version");
-    expect(plan.themeVersionApplicationSection).toBe("model-version");
-    expect(plan.transformerDefinitionVersionApplicationSection).toBe("model-version");
+    expect(plan.entityVersionApplicationSection).toBe("modelVersion");
+    expect(plan.queryVersionApplicationSection).toBe("modelVersion");
+    expect(plan.reportVersionApplicationSection).toBe("modelVersion");
+    expect(plan.menuVersionApplicationSection).toBe("modelVersion");
+    expect(plan.endpointVersionApplicationSection).toBe("modelVersion");
+    expect(plan.runnerVersionApplicationSection).toBe("modelVersion");
+    expect(plan.themeVersionApplicationSection).toBe("modelVersion");
+    expect(plan.transformerDefinitionVersionApplicationSection).toBe("modelVersion");
   });
 
   it("live getApplicationSection is unchanged for Entity (model) and non-Entity (data)", () => {

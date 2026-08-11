@@ -22,9 +22,9 @@ const MIROIR = selfApplicationMiroir.uuid as string;
 const LIBRARY = selfApplicationLibrary.uuid as string;
 
 describe("222 Phase 3 — EntityVersion round-trip section contract", () => {
-  it("#232 getApplicationSection returns model-version for EntityVersion in Miroir and Library", () => {
-    expect(getApplicationSection(MIROIR, entityEntityVersion.uuid as string)).toBe("model-version");
-    expect(getApplicationSection(LIBRARY, entityEntityVersion.uuid as string)).toBe("model-version");
+  it("#232 getApplicationSection returns modelVersion for EntityVersion in Miroir and Library", () => {
+    expect(getApplicationSection(MIROIR, entityEntityVersion.uuid as string)).toBe("modelVersion");
+    expect(getApplicationSection(LIBRARY, entityEntityVersion.uuid as string)).toBe("modelVersion");
   });
 
   it("resetAndinitializeDeploymentCompositeAction groups meta-model instances by getApplicationSection", () => {

@@ -5750,7 +5750,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
-            "description": "A section of the application (model, data, or model-version for version history)",
+            "description": "A section of the application (model, data, or modelVersion for version history)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -5760,7 +5760,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": [
           "model",
           "data",
-          "model-version"
+          "modelVersion"
         ]
       },
       "dataStoreApplicationType": {
@@ -12896,6 +12896,14 @@ export const miroirFundamentalJzodSchema = {
           },
           "data": {
             "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storeSectionConfiguration"
+            }
+          },
+          "modelVersion": {
+            "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "storeSectionConfiguration"
@@ -28941,7 +28949,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
-            "description": "A section of the application (model, data, or model-version for version history)",
+            "description": "A section of the application (model, data, or modelVersion for version history)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -28951,7 +28959,7 @@ export const miroirFundamentalJzodSchema = {
         "definition": [
           "model",
           "data",
-          "model-version"
+          "modelVersion"
         ]
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox_extend": {
@@ -38427,6 +38435,14 @@ export const miroirFundamentalJzodSchema = {
           },
           "data": {
             "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration"
+            }
+          },
+          "modelVersion": {
+            "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration"

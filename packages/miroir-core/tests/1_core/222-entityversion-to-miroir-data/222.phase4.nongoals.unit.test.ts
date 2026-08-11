@@ -55,8 +55,8 @@ describe("222 Phase 4 — non-goals (relocate ≠ purge; no freeze required)", (
     expect(snaps[0].entityUuid).toBe(entity.uuid);
   });
 
-  it("E: EntityVersion freeze section is model-version after #232 (getApplicationSection is the single source)", () => {
+  it("E: EntityVersion freeze section is modelVersion after #232 (getApplicationSection is the single source)", () => {
     expect(FREEZE_APPLICATION_VERSION_ACTION_TYPE).toBe("freezeApplicationVersion");
-    expect(getApplicationSection(selfApplicationMiroir.uuid as string, entityEntityVersion.uuid!)).toBe("model-version");
+    expect(getApplicationSection(selfApplicationMiroir.uuid as string, entityEntityVersion.uuid!)).toBe("modelVersion");
   });
 });

@@ -24,9 +24,9 @@ const modelTs = join(
 );
 
 describe("222 Phase 2 — extractApplicationModel section strategy", () => {
-  it("#232 EntityVersion section is model-version for both Miroir and Library", () => {
-    expect(getApplicationSection(MIROIR_APP_UUID, EV_UUID)).toBe("model-version");
-    expect(getApplicationSection(LIBRARY_APP_UUID, EV_UUID)).toBe("model-version");
+  it("#232 EntityVersion section is modelVersion for both Miroir and Library", () => {
+    expect(getApplicationSection(MIROIR_APP_UUID, EV_UUID)).toBe("modelVersion");
+    expect(getApplicationSection(LIBRARY_APP_UUID, EV_UUID)).toBe("modelVersion");
   });
 
   it("Entity remains model for both Miroir and Library", () => {

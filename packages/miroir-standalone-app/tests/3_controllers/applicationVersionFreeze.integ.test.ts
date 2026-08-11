@@ -498,9 +498,9 @@ afterAll(async () => {
 
 describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () => {
   it(
-    "first freeze persists SAV + EntityVersions + Cross (Library EV section = model-version after #232)",
+    "first freeze persists SAV + EntityVersions + Cross (Library EV section = modelVersion after #232)",
     async () => {
-      expect(getApplicationSection(testApplicationUuid, entityEntityVersion.uuid!)).toBe("model-version");
+      expect(getApplicationSection(testApplicationUuid, entityEntityVersion.uuid!)).toBe("modelVersion");
 
       const freezeResult = await freezeLibrary("V1-Freeze");
       expect(

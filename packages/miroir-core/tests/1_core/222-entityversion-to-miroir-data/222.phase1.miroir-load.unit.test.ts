@@ -25,11 +25,11 @@ describe("222 Phase 1 — Miroir load contracts (Entity bootstrap; EV in data)",
     expect(uuids).not.toContain(entityEntityVersion.uuid);
   });
 
-  it("#232 EntityVersion routes to model-version (was data in #222)", () => {
+  it("#232 EntityVersion routes to modelVersion (was data in #222)", () => {
     expect((entityEntity as Entity).mlSchema).toBeDefined();
     expect(getApplicationSection(MIROIR_APP_UUID, entityEntity.uuid as string)).toBe("model");
     expect(getApplicationSection(MIROIR_APP_UUID, entityEntityVersion.uuid as string)).toBe(
-      "model-version",
+      "modelVersion",
     );
   });
 

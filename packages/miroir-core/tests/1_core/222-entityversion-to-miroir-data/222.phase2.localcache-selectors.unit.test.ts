@@ -29,17 +29,17 @@ const LIBRARY_DEPLOYMENT = "00000000-0000-4000-8000-0000000000aa";
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../../../");
 
 describe("222 Phase 2 — LocalCache / selector EV section indexing", () => {
-  it("#232 Miroir EV section is model-version (was data in #222)", () => {
+  it("#232 Miroir EV section is modelVersion (was data in #222)", () => {
     const section = getApplicationSection(MIROIR_APP_UUID, EV_UUID);
-    expect(section).toBe("model-version");
+    expect(section).toBe("modelVersion");
     expect(getReduxDeploymentsStateIndex(MIROIR_DEPLOYMENT, section, EV_UUID)).toBe(
       `${MIROIR_DEPLOYMENT}_model-version_${EV_UUID}`,
     );
   });
 
-  it("#232 Library EV section is model-version (was model in #222)", () => {
+  it("#232 Library EV section is modelVersion (was model in #222)", () => {
     const section = getApplicationSection(LIBRARY_APP_UUID, EV_UUID);
-    expect(section).toBe("model-version");
+    expect(section).toBe("modelVersion");
     expect(getReduxDeploymentsStateIndex(LIBRARY_DEPLOYMENT, section, EV_UUID)).toBe(
       `${LIBRARY_DEPLOYMENT}_model-version_${EV_UUID}`,
     );

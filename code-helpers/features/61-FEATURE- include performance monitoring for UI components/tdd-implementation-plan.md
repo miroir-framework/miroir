@@ -553,7 +553,7 @@ insufficient: click freezes of multiple seconds remained when opening nested
 ## 8. Out of scope (explicit)
 
 - Long-term persistent metrics store / historical dashboards (#61 sub-issue).
-- Automatic detection of “unnecessary” refreshes (would need model-version comparison — future).
+- Automatic detection of “unnecessary” refreshes (would need modelVersion comparison — future).
 - Replacing React DevTools Profiler for deep flamegraphs.
 - Changing production logging levels or Redux selector caching (related but separate from display revival).
 

@@ -138,7 +138,7 @@ const metaModelReports = [
 
 // ################################################################################################
 /**
- * #232 — entity UUIDs whose instances always belong to `model-version`.
+ * #232 — entity UUIDs whose instances always belong to `modelVersion`.
  * Checked first in getApplicationSection; independent of application UUID.
  */
 export const versionHistoryEntityUuids: ReadonlySet<string> = new Set([
@@ -166,8 +166,8 @@ export function getApplicationSection(
   applicationUuid: Uuid,
   entityUuid: Uuid,
 ): ApplicationSection {
-  // #232: version-history entities always live in model-version regardless of application
-  if (versionHistoryEntityUuids.has(entityUuid)) return "model-version";
+  // #232: version-history entities always live in modelVersion regardless of application
+  if (versionHistoryEntityUuids.has(entityUuid)) return "modelVersion";
   if (applicationUuid == selfApplicationMiroir.uuid) {
     return metaMetaModelEntityUuids.includes(entityUuid) ? "model" : "data";
   }

@@ -187,10 +187,26 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         dataStore,
       )) as PersistenceStoreModelSectionInterface;
 
+      let modelVersionStore: PersistenceStoreDataSectionInterface | undefined;
+      const modelVersionConfig = config["modelVersion"];
+      if (modelVersionConfig) {
+        modelVersionStore = (await storeSectionFactory(
+          this.storeSectionFactoryRegister,
+          "modelVersion",
+          modelVersionConfig,
+          this.filesystemDeploymentRootDirectory,
+        )) as PersistenceStoreDataSectionInterface;
+        log.info(
+          "addPersistenceStoreController created modelVersion store for deployment",
+          deploymentUuid,
+        );
+      }
+
       this.persistenceStoreControllers[deploymentUuid] = new PersistenceStoreController(
         adminStore,
         modelStore,
         dataStore,
+        modelVersionStore,
       );
       log.info("addPersistenceStoreController DONE for deployment", deploymentUuid);
     }

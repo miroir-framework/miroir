@@ -3,13 +3,13 @@
 ## Scope
 
 Implement the accepted ADR choice in
-[`../232-FEATURE-dedicated-model-version-storage-analysis.md`](../232-FEATURE-dedicated-model-version-storage-analysis.md):
-make `model-version` a first-class deployment storage section, distinct from
+[`../232-FEATURE-dedicated-modelVersion-storage-analysis.md`](../232-FEATURE-dedicated-modelVersion-storage-analysis.md):
+make `modelVersion` a first-class deployment storage section, distinct from
 the live `model` and application `data` sections.
 
 The completed behavior is:
 
-- a versioned deployment has an independently configured `model-version`
+- a versioned deployment has an independently configured `modelVersion`
   section;
 - a freeze persists version-history rows there;
 - callers can read those rows through the normal persistence interface; and
@@ -18,13 +18,13 @@ The completed behavior is:
 
 This plan is deliberately limited to storage separation. It does not add
 branching, checkout, pruning, version-history UI, remote synchronization, or
-new model-version entity types.
+new modelVersion entity types.
 
 Related:
 
 - Issue: https://github.com/miroir-framework/miroir/issues/232
 - Decision record / analysis:
-  [`../232-FEATURE-dedicated-model-version-storage-analysis.md`](../232-FEATURE-dedicated-model-version-storage-analysis.md)
+  [`../232-FEATURE-dedicated-modelVersion-storage-analysis.md`](../232-FEATURE-dedicated-modelVersion-storage-analysis.md)
 - Existing freeze producer:
   [`../216-FEATURE-application-versions-and-freeze/tdd-implementation-plan.md`](../216-FEATURE-application-versions-and-freeze/tdd-implementation-plan.md)
 - Historical non-Entity freeze rows:
@@ -37,9 +37,9 @@ Related:
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize the existing section matrix | Done | Current two-section behavior locked; updated after Slice 1 transition |
-| 1 | Add the section contract and versioning configuration gate | Done | `ApplicationSection` includes `"model-version"`; all freeze resolvers return `"model-version"` |
+| 1 | Add the section contract and versioning configuration gate | Done | `ApplicationSection` includes `"modelVersion"`; all freeze resolvers return `"modelVersion"` |
 | 2 | Generalize persistence section routing | Planned | Controller routes a read/write by section without a model/data branch |
-| 3 | Filesystem freeze tracer bullet | Planned | Freeze writes history only to `model-version` |
+| 3 | Filesystem freeze tracer bullet | Planned | Freeze writes history only to `modelVersion` |
 | 4 | SQL backend parity | Planned | SQL freeze/read path uses its configured history schema |
 | 5 | Remaining backend policy, docs, and regression locks | Planned | Explicit support policy and unchanged live behavior |
 
@@ -49,13 +49,13 @@ Related:
 
 | Decision | Choice for this plan |
 |---|---|
-| Architecture | Option A: `model-version` is a first-class `ApplicationSection`, not a flag on `model` and not a use of `data`. |
-| Configuration compatibility | `model-version` is optional for an unversioned deployment, preserving existing unversioned configurations. A versioned deployment must have it; attempting a history write without it returns an explicit configuration error. |
-| Section contents | All freeze-produced history is co-located in `model-version`: `SelfApplicationVersion`, historical Entity/Query/Report/Menu/Endpoint/Runner/Theme/TransformerDefinition versions, and their ApplicationVersion cross rows. |
+| Architecture | Option A: `modelVersion` is a first-class `ApplicationSection`, not a flag on `model` and not a use of `data`. |
+| Configuration compatibility | `modelVersion` is optional for an unversioned deployment, preserving existing unversioned configurations. A versioned deployment must have it; attempting a history write without it returns an explicit configuration error. |
+| Section contents | All freeze-produced history is co-located in `modelVersion`: `SelfApplicationVersion`, historical Entity/Query/Report/Menu/Endpoint/Runner/Theme/TransformerDefinition versions, and their ApplicationVersion cross rows. |
 | Live sections | Current Entity/model-concept rows remain in `model`; ordinary application rows remain in `data`. No live-model migration is part of #232. |
 | Persistence abstraction | Replace the controller's model-versus-data conditional routing with a section-keyed internal registry. Do not add another chain of section conditionals at every call site. |
 | Backend order | Filesystem is the end-to-end tracer. SQL is required parity for server deployments. IndexedDB/MongoDB/Bundled receive an explicit support decision in Slice 5; bundled remains read-only and cannot support internal freeze writes. |
-| Loading history | Startup/rollback of the active model does not eagerly load all historical snapshots. History is loaded only by explicit queries/reads targeting `model-version`. |
+| Loading history | Startup/rollback of the active model does not eagerly load all historical snapshots. History is loaded only by explicit queries/reads targeting `modelVersion`. |
 | Migration | Existing snapshot rows in `model` or `data` are not migrated automatically in this issue. Compatibility/migration is a follow-up once a legacy-data policy is agreed. |
 
 ---
@@ -63,13 +63,13 @@ Related:
 ## Target public interfaces and behavior
 
 1. **Section vocabulary**
-   - `ApplicationSection` includes `"model-version"`.
+   - `ApplicationSection` includes `"modelVersion"`.
    - Request actions, query extractors, and REST routes can carry that section
      without casts or a fallback to `data`.
 
 2. **Deployment configuration**
    - `StoreUnitConfiguration` can specify:
-     `{ admin, model, data, "model-version"?: ... }`. The configuration key
+     `{ admin, model, data, "modelVersion"?: ... }`. The configuration key
      is the same literal section name used by requests and persistence routing.
    - A versioned deployment is rejected with a diagnostic that identifies its
      deployment and missing history section when it tries to persist history.
@@ -77,14 +77,14 @@ Related:
 3. **Persistence**
    - `PersistenceStoreController` resolves an explicitly requested section
      from one internal section registry.
-   - A `model-version` read, upsert, delete, and boxed query reach the
+   - A `modelVersion` read, upsert, delete, and boxed query reach the
      configured backing store, not the model or data backing store.
 
 4. **Freeze**
-   - `resolveFreeze*ApplicationSection` returns `"model-version"` for every
+   - `resolveFreeze*ApplicationSection` returns `"modelVersion"` for every
      history entity family.
    - `persistFreezeApplicationVersionPlan` writes all history-plan batches to
-     `model-version`.
+     `modelVersion`.
    - A later edit to a live Entity or model concept changes neither the stored
      history row nor its section.
 
@@ -134,7 +134,7 @@ Characterize, without production changes:
 - `StoreUnitConfiguration` currently exposes `admin`, `model`, and `data`;
 - filesystem and SQL configuration fixtures have only those three sections;
 - a current freeze plan resolves historical rows to the existing section
-  matrix, not to `model-version`.
+  matrix, not to `modelVersion`.
 
 The test is a characterization lock. Once Slice 1 changes the contract, retain
 only assertions that document the intentional before/after transition; do not
@@ -153,7 +153,7 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze
 
 ### Goal
 
-Make `model-version` expressible and validate its availability before any
+Make `modelVersion` expressible and validate its availability before any
 backend-specific persistence work.
 
 ### 1.1 RED → GREEN — Configuration accepts a history section
@@ -163,10 +163,10 @@ backend-specific persistence work.
 
 Behavior:
 
-- a valid StoreUnit configuration with `model-version` parses;
+- a valid StoreUnit configuration with `modelVersion` parses;
 - existing unversioned configuration without it still parses;
 - an action/configuration path that enables internal versioning but lacks
-  `model-version` produces a descriptive configuration error, rather than
+  `modelVersion` produces a descriptive configuration error, rather than
   silently selecting `model` or `data`.
 
 **GREEN:**
@@ -184,9 +184,9 @@ Behavior:
 Behavior:
 
 - every exported `resolveFreeze*ApplicationSection` helper returns
-  `"model-version"` for a versioned application;
+  `"modelVersion"` for a versioned application;
 - plan-level history section fields for EntityVersion, QueryVersion, and the
-  other already supported historical families are all `"model-version"`;
+  other already supported historical families are all `"modelVersion"`;
 - live `getApplicationSection` behavior for Entity and application data is
   unchanged.
 
@@ -225,10 +225,10 @@ Do not mock controller internals.
 
 Behavior:
 
-- a caller that asks to read/write `model-version` is routed to the registered
+- a caller that asks to read/write `modelVersion` is routed to the registered
   history section;
 - `model` and `data` still resolve to their existing sections;
-- an unconfigured `model-version` request fails with a named configuration
+- an unconfigured `modelVersion` request fails with a named configuration
   error and does not fall back to `data`.
 
 **GREEN:**
@@ -247,17 +247,17 @@ startup test area.
 Behavior:
 
 - opening a filesystem-configured deployment registers and opens distinct
-  `model`, `data`, and `model-version` stores;
-- the store name/path exposed for `model-version` differs from `model`;
-- opening an unversioned configuration without `model-version` remains valid
+  `model`, `data`, and `modelVersion` stores;
+- the store name/path exposed for `modelVersion` differs from `model`;
+- opening an unversioned configuration without `modelVersion` remains valid
   until an operation requests history storage.
 
 **GREEN:**
 
-- add `model-version` factory registrations to the core configuration
+- add `modelVersion` factory registrations to the core configuration
   mechanism and filesystem startup;
 - use the model-section implementation only when it is semantically suitable,
-  but pass the actual `"model-version"` section identity through to the store.
+  but pass the actual `"modelVersion"` section identity through to the store.
 
 ### Validation
 
@@ -274,31 +274,31 @@ npx tsc --noEmit --skipLibCheck
 ### Goal
 
 Prove the complete user-visible path: freeze a versioned deployment, then
-retrieve the historical snapshot from `model-version` while the live model
+retrieve the historical snapshot from `modelVersion` while the live model
 continues to use `model`.
 
 ### 3.1 RED → GREEN — Freeze separates live and historical rows
 
-**Test:** add a `232 — model-version section persistence` describe block to
+**Test:** add a `232 — modelVersion section persistence` describe block to
 [`packages/miroir-standalone-app/tests/3_controllers/applicationVersionFreeze.integ.test.ts`](../../../packages/miroir-standalone-app/tests/3_controllers/applicationVersionFreeze.integ.test.ts).
 
 Behavior:
 
 1. Configure a versioned filesystem deployment with distinct `model` and
-   `model-version` directories.
+   `modelVersion` directories.
 2. Freeze `V1`.
 3. Read the historical EntityVersion and SelfApplicationVersion rows through
-   the persistence public API with `applicationSection: "model-version"` and
+   the persistence public API with `applicationSection: "modelVersion"` and
    find them.
 4. Read the same historical parent UUID from `model` and find no history rows.
-5. Alter a live Entity in `model`; re-read the `V1` row from `model-version`
+5. Alter a live Entity in `model`; re-read the `V1` row from `modelVersion`
    and confirm the snapshot is unchanged.
 
 **GREEN:**
 
 - route every `persistFreezeApplicationVersionPlan` history batch, including
   SelfApplicationVersion and all cross rows, to the plan's
-  `model-version` section;
+  `modelVersion` section;
 - update test configuration/fixture setup with a distinct history directory;
 - do not change active-model rollback loading.
 
@@ -309,7 +309,7 @@ Behavior:
 Behavior:
 
 - after restart/rollback, the live model loads successfully from `model`
-  without eagerly reading all `model-version` rows;
+  without eagerly reading all `modelVersion` rows;
 - an explicit history read remains available after the active model loads.
 
 ### Validation
@@ -335,12 +335,12 @@ Behavior:
 
 - a deployment may configure a history schema distinct from the live model
   schema;
-- opening the deployment resolves `"model-version"` to that configured schema;
+- opening the deployment resolves `"modelVersion"` to that configured schema;
 - a history write/read cannot return rows from the live model schema.
 
 **GREEN:**
 
-- register the SQL section factory for `model-version`;
+- register the SQL section factory for `modelVersion`;
 - ensure the created store retains the actual section identity and uses the
   configured SQL schema;
 - extend SQL setup/migration only as required for the existing section-store
@@ -353,7 +353,7 @@ Behavior:
 
 Behavior:
 
-- freeze persists history to SQL `model-version`;
+- freeze persists history to SQL `modelVersion`;
 - live model remains in its configured model schema;
 - a post-freeze live-model edit leaves the historical snapshot unchanged.
 
@@ -378,7 +378,7 @@ documentation, and regression tests for the separation invariant.
 
 **Test/documented behavior:**
 
-- IndexedDB and MongoDB either support `model-version` through the same public
+- IndexedDB and MongoDB either support `modelVersion` through the same public
   section behavior as filesystem/SQL, with tests, or reject internal
   versioning at configuration time with a precise unsupported-backend error.
 - Bundled storage remains read-only; a bundled deployment cannot enable
@@ -396,7 +396,7 @@ Update:
 - [`docs/getting-started/workflow-and-versioning.md`](../../../docs/getting-started/workflow-and-versioning.md)
   to link the design statement to the implemented storage topology;
 - representative filesystem and SQL configuration examples with distinct
-  `model-version` locations.
+  `modelVersion` locations.
 
 ### 5.3 NON-REGRESSION — Separation matrix
 
@@ -404,7 +404,7 @@ Add or retain tests that prove:
 
 - unversioned deployments do not require history storage;
 - history rows never fall back to `model` or `data`;
-- live Entity/model rows never move to `model-version`;
+- live Entity/model rows never move to `modelVersion`;
 - active-model bootstrap does not depend on historical rows.
 
 ### Validation

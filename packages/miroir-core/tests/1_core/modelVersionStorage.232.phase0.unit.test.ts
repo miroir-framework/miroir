@@ -52,7 +52,7 @@ describe("232 Phase 0 — current section matrix", () => {
     expect(getApplicationSection(selfApplicationLibrary.uuid, entityEntity.uuid)).toBe("model");
   });
 
-  it("freeze history now routes to model-version via getApplicationSection (Slice 1 transition)", () => {
+  it("freeze history now routes to modelVersion via getApplicationSection (Slice 1 transition)", () => {
     const plan = buildFreezeApplicationVersionPlan({
       selfApplicationUuid: selfApplicationMiroir.uuid,
       branchUuid: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
@@ -61,9 +61,9 @@ describe("232 Phase 0 — current section matrix", () => {
       newUuid: () => "aaaaaaaa-aaaa-4aaa-8aaa-000000000001",
     });
 
-    expect(getApplicationSection(selfApplicationMiroir.uuid, entityEntityVersion.uuid!)).toBe("model-version");
-    expect(plan.entityVersionApplicationSection).toBe("model-version");
-    expect(plan.queryVersionApplicationSection).toBe("model-version");
-    expect(getApplicationSection(selfApplicationLibrary.uuid, entityEntityVersion.uuid!)).toBe("model-version");
+    expect(getApplicationSection(selfApplicationMiroir.uuid, entityEntityVersion.uuid!)).toBe("modelVersion");
+    expect(plan.entityVersionApplicationSection).toBe("modelVersion");
+    expect(plan.queryVersionApplicationSection).toBe("modelVersion");
+    expect(getApplicationSection(selfApplicationLibrary.uuid, entityEntityVersion.uuid!)).toBe("modelVersion");
   });
 });
