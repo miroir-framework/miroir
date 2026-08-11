@@ -1,5 +1,6 @@
 /**
  * #222 Phase 1.1 — target section matrix after Miroir EntityVersion → data.
+ * #232 — EntityVersion now routes to model-version for all applications.
  */
 import { describe, expect, it } from "vitest";
 
@@ -27,12 +28,12 @@ describe("222 Phase 1 — section matrix (target)", () => {
     expect(getApplicationSection(MIROIR_APP_UUID, ENTITY_UUID)).toBe("model");
   });
 
-  it("Miroir + EntityVersion → data", () => {
-    expect(getApplicationSection(MIROIR_APP_UUID, ENTITY_VERSION_ENTITY_UUID)).toBe("data");
+  it("#232 Miroir + EntityVersion → model-version (was data in #222)", () => {
+    expect(getApplicationSection(MIROIR_APP_UUID, ENTITY_VERSION_ENTITY_UUID)).toBe("model-version");
   });
 
-  it("Library (non-Miroir) + EntityVersion → model", () => {
-    expect(getApplicationSection(LIBRARY_APP_UUID, ENTITY_VERSION_ENTITY_UUID)).toBe("model");
+  it("#232 Library (non-Miroir) + EntityVersion → model-version (was model in #222)", () => {
+    expect(getApplicationSection(LIBRARY_APP_UUID, ENTITY_VERSION_ENTITY_UUID)).toBe("model-version");
   });
 
   it("metaMetaModelEntities is Entity-only", () => {

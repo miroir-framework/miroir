@@ -28,6 +28,7 @@ import {
   Deployment,
   DomainControllerInterface,
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
+  getApplicationSection,
   LoggerInterface,
   LoggerOptions,
   MiroirActivityTracker,
@@ -35,7 +36,6 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   resetAndinitializeDeploymentCompositeAction,
-  resolveFreezeEntityVersionApplicationSection,
   resolvePreviousApplicationVersion,
   StoreUnitConfiguration,
   testUtils_deleteApplicationDeployment,
@@ -498,9 +498,9 @@ afterAll(async () => {
 
 describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () => {
   it(
-    "first freeze persists SAV + EntityVersions + Cross (Library EV section = model)",
+    "first freeze persists SAV + EntityVersions + Cross (Library EV section = model-version after #232)",
     async () => {
-      expect(resolveFreezeEntityVersionApplicationSection(testApplicationUuid)).toBe("model");
+      expect(getApplicationSection(testApplicationUuid, entityEntityVersion.uuid!)).toBe("model-version");
 
       const freezeResult = await freezeLibrary("V1-Freeze");
       expect(

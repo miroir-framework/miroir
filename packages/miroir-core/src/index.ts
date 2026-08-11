@@ -779,14 +779,6 @@ export {
   isApplicationVersionPlaceholder,
   planFreezeApplicationVersion,
   planFreezeApplicationVersionFromMetaModel,
-  resolveFreezeEntityVersionApplicationSection,
-  resolveFreezeQueryVersionApplicationSection,
-  resolveFreezeReportVersionApplicationSection,
-  resolveFreezeMenuVersionApplicationSection,
-  resolveFreezeEndpointVersionApplicationSection,
-  resolveFreezeRunnerVersionApplicationSection,
-  resolveFreezeThemeVersionApplicationSection,
-  resolveFreezeTransformerDefinitionVersionApplicationSection,
   resolvePreviousApplicationVersion,
   snapshotEntitiesAsHistoricalEntityVersions,
   snapshotQueriesAsHistoricalQueryVersions,
@@ -911,9 +903,10 @@ export {
   defaultMiroirModelEnvironment,
   emptyApplicationModel, extractApplicationData,
   extractApplicationModel,
-  extractEntityInstances, getApplicationSection, getEntityVersionWriteSection,
+  extractEntityInstances, getApplicationSection,
   getReportsAndEntitiesForDeploymentUuid, metaMetaModelEntities,
-  metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities
+  metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities,
+  versionHistoryEntityUuids,
 } from "./1_core/Model.js";
 export {
   resolveCachePolicyCarrierForEntity,

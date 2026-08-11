@@ -28,16 +28,7 @@ import type {
   TransformerDefinition,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { noValue } from "../Instance.js";
-import {
-  getEntityVersionWriteSection,
-  getQueryVersionWriteSection,
-  getReportVersionWriteSection,
-  getMenuVersionWriteSection,
-  getEndpointVersionWriteSection,
-  getRunnerVersionWriteSection,
-  getThemeVersionWriteSection,
-  getTransformerDefinitionVersionWriteSection,
-} from "../Model.js";
+import { getApplicationSection } from "../Model.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   type EntityPresentModelDefinitionField,
@@ -130,79 +121,6 @@ export const APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID =
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
   newUuid?: () => string;
-}
-
-/**
- * #222 / #216 — section for persisting freeze-minted EntityVersion snapshots.
- * Miroir → `"data"`; Library / other MetaModel apps → `"model"`.
- */
-export function resolveFreezeEntityVersionApplicationSection(
-  applicationUuid: string,
-): ApplicationSection {
-  return getEntityVersionWriteSection(applicationUuid);
-}
-
-/**
- * #227 — section for persisting freeze-minted QueryVersion snapshots.
- */
-export function resolveFreezeQueryVersionApplicationSection(
-  applicationUuid: string,
-): ApplicationSection {
-  return getQueryVersionWriteSection(applicationUuid);
-}
-
-/**
- * #227 — section for persisting freeze-minted ReportVersion snapshots.
- */
-export function resolveFreezeReportVersionApplicationSection(
-  applicationUuid: string,
-): ApplicationSection {
-  return getReportVersionWriteSection(applicationUuid);
-}
-
-/**
- * #227 — section for persisting freeze-minted MenuVersion snapshots.
- */
-export function resolveFreezeMenuVersionApplicationSection(
-  applicationUuid: string,
-): ApplicationSection {
-  return getMenuVersionWriteSection(applicationUuid);
-}
-
-/**
- * #227 — section for persisting freeze-minted EndpointVersion snapshots.
- */
-export function resolveFreezeEndpointVersionApplicationSection(
-  applicationUuid: string,
-): ApplicationSection {
-  return getEndpointVersionWriteSection(applicationUuid);
-}
-
-/**
- * #227 — section for persisting freeze-minted RunnerVersion snapshots.
- */
-export function resolveFreezeRunnerVersionApplicationSection(
-  applicationUuid: string,
-): ApplicationSection {
-  return getRunnerVersionWriteSection(applicationUuid);
-}
-
-/**
- * #227 — section for persisting freeze-minted ThemeVersion snapshots.
- */
-export function resolveFreezeThemeVersionApplicationSection(
-  applicationUuid: string,
-): ApplicationSection {
-  return getThemeVersionWriteSection(applicationUuid);
-}
-
-/**
- * #227 — section for persisting freeze-minted TransformerDefinitionVersion snapshots.
- */
-export function resolveFreezeTransformerDefinitionVersionApplicationSection(
-  applicationUuid: string,
-): ApplicationSection {
-  return getTransformerDefinitionVersionWriteSection(applicationUuid);
 }
 
 /** Live Query instance shape in MetaModel.storedQueries. */
@@ -1175,43 +1093,44 @@ export function buildFreezeApplicationVersionPlan(
     selfApplicationVersion,
     entityVersions,
     crossEntityVersions,
-    entityVersionApplicationSection: resolveFreezeEntityVersionApplicationSection(
-      input.selfApplicationUuid,
+    entityVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, ENTITY_VERSION_ENTITY_UUID,
     ),
     queryVersions,
     crossQueryVersions,
-    queryVersionApplicationSection: resolveFreezeQueryVersionApplicationSection(
-      input.selfApplicationUuid,
+    queryVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, QUERY_VERSION_ENTITY_UUID,
     ),
     reportVersions,
     crossReportVersions,
-    reportVersionApplicationSection: resolveFreezeReportVersionApplicationSection(
-      input.selfApplicationUuid,
+    reportVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, REPORT_VERSION_ENTITY_UUID,
     ),
     menuVersions,
     crossMenuVersions,
-    menuVersionApplicationSection: resolveFreezeMenuVersionApplicationSection(
-      input.selfApplicationUuid,
+    menuVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, MENU_VERSION_ENTITY_UUID,
     ),
     endpointVersions,
     crossEndpointVersions,
-    endpointVersionApplicationSection: resolveFreezeEndpointVersionApplicationSection(
-      input.selfApplicationUuid,
+    endpointVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, ENDPOINT_VERSION_ENTITY_UUID,
     ),
     runnerVersions,
     crossRunnerVersions,
-    runnerVersionApplicationSection: resolveFreezeRunnerVersionApplicationSection(
-      input.selfApplicationUuid,
+    runnerVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, RUNNER_VERSION_ENTITY_UUID,
     ),
     themeVersions,
     crossThemeVersions,
-    themeVersionApplicationSection: resolveFreezeThemeVersionApplicationSection(
-      input.selfApplicationUuid,
+    themeVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, THEME_VERSION_ENTITY_UUID,
     ),
     transformerDefinitionVersions,
     crossTransformerDefinitionVersions,
-    transformerDefinitionVersionApplicationSection:
-      resolveFreezeTransformerDefinitionVersionApplicationSection(input.selfApplicationUuid),
+    transformerDefinitionVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
+    ),
   };
 }
 

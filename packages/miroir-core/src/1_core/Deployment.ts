@@ -440,20 +440,17 @@ export function buildResetAndinitializeDeploymentActionSequence(
             ...appMetaModel.applicationVersions as EntityInstance[],
             ...appMetaModel.applications as EntityInstance[],
           ];
-          const bySection: Record<"model" | "data", EntityInstance[]> = {
+          const bySection: Partial<Record<string, EntityInstance[]>> = {
             model: [],
             data: [],
           };
           for (const obj of metaModelObjects) {
             const parentUuid = (obj as EntityInstance & { parentUuid?: string }).parentUuid;
-            if (!parentUuid) {
-              bySection.model.push(obj);
-              continue;
-            }
-            bySection[getApplicationSection(applicationUuid, parentUuid)].push(obj);
+            const section = parentUuid ? getApplicationSection(applicationUuid, parentUuid) : "model";
+            (bySection[section] ??= []).push(obj);
           }
           return (["model", "data"] as const)
-            .filter((section) => bySection[section].length > 0)
+            .filter((section) => (bySection[section]?.length ?? 0) > 0)
             .map((section) => ({
               actionType: "createInstance" as const,
               actionLabel: `resetAndinitializeDeploymentCompositeAction_createMetaModelInstances_${section}`,
@@ -461,7 +458,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
               payload: {
                 application: applicationUuid,
                 applicationSection: section,
-                objects: bySection[section],
+                objects: bySection[section] ?? [],
               },
             }));
         })(),

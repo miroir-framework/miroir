@@ -1051,11 +1051,11 @@ export function getMiroirFundamentalJzodSchema(
           tag: {
             value: {
               defaultLabel: "Application Section",
-              description: "A section of the application (model or data)",
+              description: "A section of the application (model, data, or model-version for version history)",
               initializeTo: { initializeToType: "value", value: "data" },
             },
           },
-          definition: ["model", "data"],
+          definition: ["model", "data", "model-version"],
         },
         dataStoreApplicationType: {
           type: "enum",

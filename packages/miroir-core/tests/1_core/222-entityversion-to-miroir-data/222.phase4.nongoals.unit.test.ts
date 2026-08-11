@@ -5,14 +5,14 @@ import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { metaMetaModelEntities, metaMetaModelEntityUuids } from "../../../src/1_core/Model.js";
+import { metaMetaModelEntities, metaMetaModelEntityUuids, getApplicationSection } from "../../../src/1_core/Model.js";
 import {
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
-  resolveFreezeEntityVersionApplicationSection,
   snapshotEntitiesAsHistoricalEntityVersions,
 } from "../../../src/1_core/versioning/applicationVersionFreeze.js";
 import {
   entityEntity,
+  entityEntityVersion,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 import type { Entity } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -55,11 +55,8 @@ describe("222 Phase 4 — non-goals (relocate ≠ purge; no freeze required)", (
     expect(snaps[0].entityUuid).toBe(entity.uuid);
   });
 
-  it("E: EntityVersion remains documentation-class today — freeze Action type exists but #222 does not require freeze feature", () => {
+  it("E: EntityVersion freeze section is model-version after #232 (getApplicationSection is the single source)", () => {
     expect(FREEZE_APPLICATION_VERSION_ACTION_TYPE).toBe("freezeApplicationVersion");
-    // Section helper ready for future persist; no full freeze planner required to close #222
-    expect(resolveFreezeEntityVersionApplicationSection(selfApplicationMiroir.uuid as string)).toBe(
-      "data",
-    );
+    expect(getApplicationSection(selfApplicationMiroir.uuid as string, entityEntityVersion.uuid!)).toBe("model-version");
   });
 });

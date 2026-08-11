@@ -36,8 +36,8 @@ Related:
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the existing section matrix | Planned | Current two-section behavior locked |
-| 1 | Add the section contract and versioning configuration gate | Planned | Config validates and missing history storage fails explicitly |
+| 0 | Characterize the existing section matrix | Done | Current two-section behavior locked; updated after Slice 1 transition |
+| 1 | Add the section contract and versioning configuration gate | Done | `ApplicationSection` includes `"model-version"`; all freeze resolvers return `"model-version"` |
 | 2 | Generalize persistence section routing | Planned | Controller routes a read/write by section without a model/data branch |
 | 3 | Filesystem freeze tracer bullet | Planned | Freeze writes history only to `model-version` |
 | 4 | SQL backend parity | Planned | SQL freeze/read path uses its configured history schema |

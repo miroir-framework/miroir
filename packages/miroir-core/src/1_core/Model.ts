@@ -18,6 +18,14 @@ import {
   entitySelfApplication,
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
+  entityApplicationVersionCrossEntityVersion,
+  entityApplicationVersionCrossQueryVersion,
+  entityApplicationVersionCrossReportVersion,
+  entityApplicationVersionCrossMenuVersion,
+  entityApplicationVersionCrossEndpointVersion,
+  entityApplicationVersionCrossRunnerVersion,
+  entityApplicationVersionCrossThemeVersion,
+  entityApplicationVersionCrossTransformerDefinitionVersion,
   entityTheme,
   entityTransformerDefinition,
   reportEntityDefinitionDetails,
@@ -129,60 +137,43 @@ const metaModelReports = [
 ];
 
 // ################################################################################################
+/**
+ * #232 — entity UUIDs whose instances always belong to `model-version`.
+ * Checked first in getApplicationSection; independent of application UUID.
+ */
+export const versionHistoryEntityUuids: ReadonlySet<string> = new Set([
+  entityEntityVersion.uuid!,
+  entitySelfApplicationVersion.uuid!,
+  entityApplicationVersionCrossEntityVersion.uuid!,
+  entityHistoricalQueryVersion.uuid!,
+  entityApplicationVersionCrossQueryVersion.uuid!,
+  entityHistoricalReportVersion.uuid!,
+  entityApplicationVersionCrossReportVersion.uuid!,
+  entityHistoricalMenuVersion.uuid!,
+  entityApplicationVersionCrossMenuVersion.uuid!,
+  entityHistoricalEndpointVersion.uuid!,
+  entityApplicationVersionCrossEndpointVersion.uuid!,
+  entityHistoricalRunnerVersion.uuid!,
+  entityApplicationVersionCrossRunnerVersion.uuid!,
+  entityHistoricalThemeVersion.uuid!,
+  entityApplicationVersionCrossThemeVersion.uuid!,
+  entityHistoricalTransformerDefinitionVersion.uuid!,
+  entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
+]);
+
+// ################################################################################################
 export function getApplicationSection(
   applicationUuid: Uuid,
   entityUuid: Uuid,
-): ApplicationSection{
-  if (applicationUuid == selfApplicationMiroir.uuid) {
-    return metaMetaModelEntityUuids.includes(entityUuid)?"model":"data";
-  }
-  return metaModelEntityUuids.includes(entityUuid)?"model":"data";
-}
-
-/**
- * #222 — section for writing EntityVersion instances (Miroir → data, Library → model).
- * Prefer this (or getApplicationSection) over hard-coded `"model"` for EV upserts.
- */
-export function getEntityVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
-  return getApplicationSection(applicationUuid, entityEntityVersion.uuid);
-}
-
-/** #227 — section for writing QueryVersion snapshots (Miroir → data, Library → model). */
-export function getQueryVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
-  return getApplicationSection(applicationUuid, entityHistoricalQueryVersion.uuid);
-}
-
-/** #227 — section for writing ReportVersion snapshots (Miroir → data, Library → model). */
-export function getReportVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
-  return getApplicationSection(applicationUuid, entityHistoricalReportVersion.uuid);
-}
-
-/** #227 — section for writing MenuVersion snapshots (Miroir → data, Library → model). */
-export function getMenuVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
-  return getApplicationSection(applicationUuid, entityHistoricalMenuVersion.uuid);
-}
-
-/** #227 — section for writing EndpointVersion snapshots (Miroir → data, Library → model). */
-export function getEndpointVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
-  return getApplicationSection(applicationUuid, entityHistoricalEndpointVersion.uuid);
-}
-
-/** #227 — section for writing RunnerVersion snapshots (Miroir → data, Library → model). */
-export function getRunnerVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
-  return getApplicationSection(applicationUuid, entityHistoricalRunnerVersion.uuid);
-}
-
-/** #227 — section for writing ThemeVersion snapshots (Miroir → data, Library → model). */
-export function getThemeVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
-  return getApplicationSection(applicationUuid, entityHistoricalThemeVersion.uuid);
-}
-
-/** #227 — section for writing TransformerDefinitionVersion snapshots (Miroir → data, Library → model). */
-export function getTransformerDefinitionVersionWriteSection(
-  applicationUuid: Uuid,
 ): ApplicationSection {
-  return getApplicationSection(applicationUuid, entityHistoricalTransformerDefinitionVersion.uuid);
+  // #232: version-history entities always live in model-version regardless of application
+  if (versionHistoryEntityUuids.has(entityUuid)) return "model-version";
+  if (applicationUuid == selfApplicationMiroir.uuid) {
+    return metaMetaModelEntityUuids.includes(entityUuid) ? "model" : "data";
+  }
+  return metaModelEntityUuids.includes(entityUuid) ? "model" : "data";
 }
+
 // ################################################################################################
 /**
  * just filters the model / meta-model reports in the Miroir app for now
