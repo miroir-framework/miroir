@@ -549,6 +549,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     log.info(this.logHeader, "clear", this.getEntityUuids());
     await this.dataStoreSection.clear();
     await this.modelStoreSection.clear();
+    if (this.modelVersionStoreSection) {
+      await this.modelVersionStoreSection.clear();
+    }
     return Promise.resolve(ACTION_OK);
   }
 

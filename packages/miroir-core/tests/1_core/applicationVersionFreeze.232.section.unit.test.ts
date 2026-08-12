@@ -29,6 +29,9 @@ import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 import {
   buildFreezeApplicationVersionPlan,
+  mergeVersionHistoryIntoFreezeMetaModel,
+  planFreezeApplicationVersionFromMetaModel,
+  type FreezeMetaModelSlice,
 } from "../../src/1_core/versioning/applicationVersionFreeze.js";
 import { getApplicationSection, versionHistoryEntityUuids } from "../../src/1_core/Model.js";
 import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -101,5 +104,72 @@ describe("232 — getApplicationSection routes version-history entities to model
     expect(getApplicationSection(selfApplicationMiroir.uuid, ENTITY_UUID)).toBe("model");
     expect(getApplicationSection(selfApplicationMiroir.uuid, "00000000-0000-0000-0000-000000000000")).toBe("data");
     expect(getApplicationSection(selfApplicationLibrary.uuid, ENTITY_UUID)).toBe("model");
+  });
+});
+
+describe("#232 — freeze chain from modelVersion-persisted history", () => {
+  it("second freeze links previousVersion when prior tip exists only in persisted slice", () => {
+    const appUuid = selfApplicationLibrary.uuid;
+    const branchUuid = "9034141b-0d0d-4beb-82af-dfc02be15c2d";
+    const v1Uuid = "7a46582b-6018-4b07-b5a8-32c03c6cfdfe";
+    const live: FreezeMetaModelSlice = {
+      applications: [{ uuid: appUuid, versioningEnabled: true }],
+      entities: [makeEntity("7395d1e5-6a44-49d8-91cb-452302b41162", "Book")],
+      applicationVersions: [
+        {
+          uuid: "419773b4-a73c-46ca-8913-0ee27fb2ce0a",
+          name: "Initial",
+          selfApplication: appUuid,
+          branch: branchUuid,
+          parentUuid: entitySelfApplicationVersion.uuid!,
+          parentName: "ApplicationVersion",
+          modelStructureMigration: [],
+          modelCUDMigration: [],
+        },
+      ],
+      entityVersions: [],
+      applicationVersionCrossEntityVersion: [],
+    };
+    const persisted: Partial<FreezeMetaModelSlice> = {
+      applicationVersions: [
+        {
+          uuid: v1Uuid,
+          name: "V1-Chain",
+          selfApplication: appUuid,
+          branch: branchUuid,
+          parentUuid: entitySelfApplicationVersion.uuid!,
+          parentName: "ApplicationVersion",
+          modelStructureMigration: [],
+          modelCUDMigration: [],
+        },
+      ],
+      applicationVersionCrossEntityVersion: [
+        {
+          uuid: "cross-v1-book",
+          parentUuid: entityApplicationVersionCrossEntityVersion.uuid!,
+          applicationVersion: v1Uuid,
+          entityVersion: "ev-v1-book",
+        },
+      ],
+      entityVersions: [
+        {
+          uuid: "ev-v1-book",
+          entityUuid: "7395d1e5-6a44-49d8-91cb-452302b41162",
+          parentUuid: entityEntityVersion.uuid!,
+          parentName: "EntityVersion",
+          name: "Book",
+          mlSchema: { type: "object", definition: { title: { type: "string" } } },
+        },
+      ],
+    };
+    const enriched = mergeVersionHistoryIntoFreezeMetaModel(live, persisted);
+    const plan = planFreezeApplicationVersionFromMetaModel(
+      { application: appUuid, versionName: "V2-Chain", branch: branchUuid },
+      {
+        ...enriched,
+        entities: live.entities,
+      },
+    );
+    expect(plan.selfApplicationVersion.previousVersion).toBe(v1Uuid);
   });
 });

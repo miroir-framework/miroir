@@ -133,6 +133,13 @@ export declare interface PersistenceStoreLocalOrRemoteInterface {
     action: PersistenceAction,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Action2ReturnType>;
+  /** Direct local-store read bypassing redux dispatch (#232 freeze history enrichment). */
+  readLocalPersistenceSectionInstances(
+    application: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    section: import("../1_core/preprocessor-generated/miroirFundamentalType").ApplicationSection,
+    parentEntityUuid: string,
+  ): Promise<EntityInstance[]>;
   handleLocalCacheAction(
     action: LocalCacheAction,
     applicationDeploymentMap: ApplicationDeploymentMap

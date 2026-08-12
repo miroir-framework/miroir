@@ -11,6 +11,8 @@ import {
   ACTION_OK,
   Action2Error,
   Action2ReturnType,
+  ApplicationSection,
+  Domain2ElementFailed,
   EntityInstance,
   LocalCacheAction,
   LoggerInterface,
@@ -308,11 +310,32 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   }
 
   // ###############################################################################
-  // ###############################################################################
-  // ###############################################################################
-  // ###############################################################################
-  // ###############################################################################
-  // ###############################################################################
+  async readLocalPersistenceSectionInstances(
+    application: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    section: ApplicationSection,
+    parentEntityUuid: string,
+  ): Promise<EntityInstance[]> {
+    if (this.params.persistenceStoreAccessMode === "none") {
+      return [];
+    }
+    const manager = this.params.localPersistenceStoreControllerManager;
+    const deploymentUuid = applicationDeploymentMap[application];
+    const controller = manager.getPersistenceStoreController(deploymentUuid);
+    if (!controller) {
+      return [];
+    }
+    const result = await controller.getInstances(section, parentEntityUuid);
+    if (result instanceof Action2Error) {
+      return [];
+    }
+    const collection = result.returnedDomainElement;
+    if (!collection || collection instanceof Domain2ElementFailed) {
+      return [];
+    }
+    return collection.instances ?? [];
+  }
+
   // ###############################################################################
   // ###############################################################################
   public *innerHandlePersistenceActionForLocalPersistenceStore(

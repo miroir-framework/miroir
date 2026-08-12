@@ -51,7 +51,7 @@
                   "interpolation": "build",
                   "referenceName": "testApplicationUuid"
                 },
-                "applicationSection": "model",
+                "applicationSection": "modelVersion",
                 "queryExecutionStrategy": "storage",
                 "query": {
                   "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -70,7 +70,7 @@
                   "extractors": {
                     "applicationVersions": {
                       "extractorOrCombinerType": "extractorInstancesByEntity",
-                      "applicationSection": "model",
+                      "applicationSection": "modelVersion",
                       "parentName": "SelfApplicationVersion",
                       "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                       "orderBy": {
@@ -80,7 +80,7 @@
                     },
                     "crosses": {
                       "extractorOrCombinerType": "extractorInstancesByEntity",
-                      "applicationSection": "model",
+                      "applicationSection": "modelVersion",
                       "parentName": "ApplicationVersionCrossEntityVersion",
                       "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                       "orderBy": {
@@ -336,7 +336,7 @@
                   "interpolation": "build",
                   "referenceName": "testApplicationUuid"
                 },
-                "applicationSection": "model",
+                "applicationSection": "modelVersion",
                 "queryExecutionStrategy": "storage",
                 "query": {
                   "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -355,7 +355,7 @@
                   "extractors": {
                     "applicationVersions": {
                       "extractorOrCombinerType": "extractorInstancesByEntity",
-                      "applicationSection": "model",
+                      "applicationSection": "modelVersion",
                       "parentName": "SelfApplicationVersion",
                       "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
                       "orderBy": {
@@ -365,7 +365,7 @@
                     },
                     "crosses": {
                       "extractorOrCombinerType": "extractorInstancesByEntity",
-                      "applicationSection": "model",
+                      "applicationSection": "modelVersion",
                       "parentName": "ApplicationVersionCrossEntityVersion",
                       "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                       "orderBy": {

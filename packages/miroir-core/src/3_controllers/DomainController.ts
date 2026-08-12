@@ -91,8 +91,11 @@ import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS
 } from "../1_core/versioning/applicationVersioning.js";
 import {
+  loadVersionHistoryFreezeSlice,
+  mergeVersionHistoryIntoFreezeMetaModel,
   planFreezeApplicationVersionFromMetaModel,
   type FreezeApplicationVersionPlan,
+  type FreezeMetaModelSlice,
   type StoredQueryForFreeze,
 } from "../1_core/versioning/applicationVersionFreeze.js";
 import {
@@ -1096,6 +1099,50 @@ export class DomainController implements DomainControllerInterface {
   }
 
   /**
+   * #232 — load persisted version-history rows for freeze planning (chain tips, diffs).
+   * Does not mutate the live model cache; only supplements the freeze meta-model slice.
+   */
+  private async loadModelVersionHistoryForFreeze(
+    application: Uuid,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Partial<FreezeMetaModelSlice>> {
+    const instanceEndpoint = "ed520de4-55a9-4550-ac50-b1b713b72a89";
+    const loadInstances = async (parentEntityUuid: string): Promise<Array<{ uuid: string }>> => {
+      const localInstances =
+        await this.persistenceStoreLocalOrRemote.readLocalPersistenceSectionInstances(
+          application,
+          applicationDeploymentMap,
+          "modelVersion",
+          parentEntityUuid,
+        );
+      if (localInstances.length > 0 || this.persistenceStoreAccessMode === "local") {
+        return localInstances as Array<{ uuid: string }>;
+      }
+      const result = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
+        {
+          actionType: "getInstances",
+          endpoint: instanceEndpoint,
+          payload: {
+            application,
+            applicationSection: "modelVersion",
+            parentUuid: parentEntityUuid,
+          },
+        },
+        applicationDeploymentMap,
+      );
+      if (result instanceof Action2Error) {
+        return [];
+      }
+      const collection = result.returnedDomainElement;
+      if (!collection || collection instanceof Domain2ElementFailed) {
+        return [];
+      }
+      return (collection.instances ?? []) as Array<{ uuid: string }>;
+    };
+    return loadVersionHistoryFreezeSlice(loadInstances);
+  }
+
+  /**
    * #216 Phase 6 — persist freeze plan rows immediately (SAV + historical EVs + Cross).
    * Uses createInstance (not transactional createEntity / commit replay).
    */
@@ -1137,19 +1184,13 @@ export class DomainController implements DomainControllerInterface {
       return ACTION_OK;
     };
 
-    const savSection = getApplicationSection(
-      application,
-      entitySelfApplicationVersion.uuid,
-    );
-    // Cross Entity is not always listed in metaModelEntityUuids; co-locate with SAV
-    // (Miroir → data, Library → model) so the Entity definition exists in that section.
-    const versioningHistorySection = savSection;
+    const historySection = plan.entityVersionApplicationSection;
 
     const savResult = await persistBatch(
       "freezeSelfApplicationVersion",
       [plan.selfApplicationVersion as EntityInstance],
       entitySelfApplicationVersion.uuid,
-      savSection,
+      historySection,
     );
     if (savResult instanceof Action2Error) {
       return savResult;
@@ -1239,7 +1280,7 @@ export class DomainController implements DomainControllerInterface {
       "freezeCrossEntityVersions",
       plan.crossEntityVersions as EntityInstance[],
       entityApplicationVersionCrossEntityVersion.uuid,
-      versioningHistorySection,
+      historySection,
     );
     if (crossEvResult instanceof Action2Error) {
       return crossEvResult;
@@ -1249,7 +1290,7 @@ export class DomainController implements DomainControllerInterface {
       "freezeCrossQueryVersions",
       plan.crossQueryVersions as EntityInstance[],
       entityApplicationVersionCrossQueryVersion.uuid,
-      versioningHistorySection,
+      historySection,
     );
     if (crossQvResult instanceof Action2Error) {
       return crossQvResult;
@@ -1259,7 +1300,7 @@ export class DomainController implements DomainControllerInterface {
       "freezeCrossReportVersions",
       plan.crossReportVersions as EntityInstance[],
       entityApplicationVersionCrossReportVersion.uuid,
-      versioningHistorySection,
+      historySection,
     );
     if (crossRvResult instanceof Action2Error) {
       return crossRvResult;
@@ -1269,7 +1310,7 @@ export class DomainController implements DomainControllerInterface {
       "freezeCrossMenuVersions",
       plan.crossMenuVersions as EntityInstance[],
       entityApplicationVersionCrossMenuVersion.uuid,
-      versioningHistorySection,
+      historySection,
     );
     if (crossMvResult instanceof Action2Error) {
       return crossMvResult;
@@ -1279,7 +1320,7 @@ export class DomainController implements DomainControllerInterface {
       "freezeCrossEndpointVersions",
       plan.crossEndpointVersions as EntityInstance[],
       entityApplicationVersionCrossEndpointVersion.uuid,
-      versioningHistorySection,
+      historySection,
     );
     if (crossEpResult instanceof Action2Error) {
       return crossEpResult;
@@ -1289,7 +1330,7 @@ export class DomainController implements DomainControllerInterface {
       "freezeCrossRunnerVersions",
       plan.crossRunnerVersions as EntityInstance[],
       entityApplicationVersionCrossRunnerVersion.uuid,
-      versioningHistorySection,
+      historySection,
     );
     if (crossRuResult instanceof Action2Error) {
       return crossRuResult;
@@ -1299,7 +1340,7 @@ export class DomainController implements DomainControllerInterface {
       "freezeCrossThemeVersions",
       plan.crossThemeVersions as EntityInstance[],
       entityApplicationVersionCrossThemeVersion.uuid,
-      versioningHistorySection,
+      historySection,
     );
     if (crossThResult instanceof Action2Error) {
       return crossThResult;
@@ -1309,7 +1350,7 @@ export class DomainController implements DomainControllerInterface {
       "freezeCrossTransformerDefinitionVersions",
       plan.crossTransformerDefinitionVersions as EntityInstance[],
       entityApplicationVersionCrossTransformerDefinitionVersion.uuid,
-      versioningHistorySection,
+      historySection,
     );
   }
 
@@ -2381,10 +2422,16 @@ export class DomainController implements DomainControllerInterface {
             (e) => !metaBootstrapUuids.has(e.uuid),
           );
 
-          const plan = planFreezeApplicationVersionFromMetaModel(payload, {
+          const freezeMetaModelSlice: FreezeMetaModelSlice = {
             applications: metaModel.applications,
-            entities: applicationEntities,
+            entities: metaModel.entities,
             storedQueries: metaModel.storedQueries as StoredQueryForFreeze[],
+            reports: metaModel.reports,
+            menus: metaModel.menus,
+            endpoints: metaModel.endpoints,
+            runners: metaModel.runners,
+            themes: metaModel.themes,
+            transformerDefinitions: metaModel.transformerDefinitions,
             applicationVersions: metaModel.applicationVersions,
             entityVersions: metaModel.entityVersions,
             applicationVersionCrossEntityVersion: metaModel.applicationVersionCrossEntityVersion,
@@ -2392,26 +2439,58 @@ export class DomainController implements DomainControllerInterface {
             queryVersions: metaModel.queryVersions,
             applicationVersionCrossReportVersion: metaModel.applicationVersionCrossReportVersion,
             reportVersions: metaModel.reportVersions,
-            reports: metaModel.reports,
             applicationVersionCrossMenuVersion: metaModel.applicationVersionCrossMenuVersion,
             menuVersions: metaModel.menuVersions,
-            menus: metaModel.menus,
-            applicationVersionCrossEndpointVersion:
-              metaModel.applicationVersionCrossEndpointVersion,
+            applicationVersionCrossEndpointVersion: metaModel.applicationVersionCrossEndpointVersion,
             endpointVersions: metaModel.endpointVersions,
-            endpoints: metaModel.endpoints,
-            applicationVersionCrossRunnerVersion:
-              metaModel.applicationVersionCrossRunnerVersion,
+            applicationVersionCrossRunnerVersion: metaModel.applicationVersionCrossRunnerVersion,
             runnerVersions: metaModel.runnerVersions,
-            runners: metaModel.runners,
-            applicationVersionCrossThemeVersion:
-              metaModel.applicationVersionCrossThemeVersion,
+            applicationVersionCrossThemeVersion: metaModel.applicationVersionCrossThemeVersion,
             themeVersions: metaModel.themeVersions,
-            themes: metaModel.themes,
             applicationVersionCrossTransformerDefinitionVersion:
               metaModel.applicationVersionCrossTransformerDefinitionVersion,
             transformerDefinitionVersions: metaModel.transformerDefinitionVersions,
-            transformerDefinitions: metaModel.transformerDefinitions,
+          };
+          const persistedHistory = await this.loadModelVersionHistoryForFreeze(
+            payload.application,
+            applicationDeploymentMap,
+          );
+          const enrichedMetaModel = mergeVersionHistoryIntoFreezeMetaModel(
+            freezeMetaModelSlice,
+            persistedHistory,
+          );
+
+          const plan = planFreezeApplicationVersionFromMetaModel(payload, {
+            applications: enrichedMetaModel.applications,
+            entities: applicationEntities,
+            storedQueries: enrichedMetaModel.storedQueries as StoredQueryForFreeze[],
+            applicationVersions: enrichedMetaModel.applicationVersions,
+            entityVersions: enrichedMetaModel.entityVersions,
+            applicationVersionCrossEntityVersion: enrichedMetaModel.applicationVersionCrossEntityVersion,
+            applicationVersionCrossQueryVersion: enrichedMetaModel.applicationVersionCrossQueryVersion,
+            queryVersions: enrichedMetaModel.queryVersions,
+            applicationVersionCrossReportVersion: enrichedMetaModel.applicationVersionCrossReportVersion,
+            reportVersions: enrichedMetaModel.reportVersions,
+            reports: enrichedMetaModel.reports,
+            applicationVersionCrossMenuVersion: enrichedMetaModel.applicationVersionCrossMenuVersion,
+            menuVersions: enrichedMetaModel.menuVersions,
+            menus: enrichedMetaModel.menus,
+            applicationVersionCrossEndpointVersion:
+              enrichedMetaModel.applicationVersionCrossEndpointVersion,
+            endpointVersions: enrichedMetaModel.endpointVersions,
+            endpoints: enrichedMetaModel.endpoints,
+            applicationVersionCrossRunnerVersion:
+              enrichedMetaModel.applicationVersionCrossRunnerVersion,
+            runnerVersions: enrichedMetaModel.runnerVersions,
+            runners: enrichedMetaModel.runners,
+            applicationVersionCrossThemeVersion:
+              enrichedMetaModel.applicationVersionCrossThemeVersion,
+            themeVersions: enrichedMetaModel.themeVersions,
+            themes: enrichedMetaModel.themes,
+            applicationVersionCrossTransformerDefinitionVersion:
+              enrichedMetaModel.applicationVersionCrossTransformerDefinitionVersion,
+            transformerDefinitionVersions: enrichedMetaModel.transformerDefinitionVersions,
+            transformerDefinitions: enrichedMetaModel.transformerDefinitions,
           });
 
           const persistResult = await this.persistFreezeApplicationVersionPlan(

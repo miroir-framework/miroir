@@ -38,9 +38,9 @@ Related:
 |---|---|---|---|
 | 0 | Characterize the existing section matrix | Done | Current two-section behavior locked; updated after Slice 1 transition |
 | 1 | Add the section contract and versioning configuration gate | Done | `ApplicationSection` includes `"modelVersion"`; all freeze resolvers return `"modelVersion"` |
-| 2 | Generalize persistence section routing | Planned | Controller routes a read/write by section without a model/data branch |
-| 3 | Filesystem freeze tracer bullet | Planned | Freeze writes history only to `modelVersion` |
-| 4 | SQL backend parity | Planned | SQL freeze/read path uses its configured history schema |
+| 2 | Generalize persistence section routing | Done | `PersistenceStoreController` routes CRUD/query by section; manager + filesystem startup wire optional `modelVersion` store |
+| 3 | Filesystem freeze tracer bullet | Done | Freeze writes history only to `modelVersion`; live model stays in `model`; integ tests 3.1/3.2 green |
+| 4 | SQL backend parity | Done | Postgres `modelVersion` factory + profile config; same pattern on filesystem / indexedDb / MongoDB |
 | 5 | Remaining backend policy, docs, and regression locks | Planned | Explicit support policy and unchanged live behavior |
 
 ---
@@ -119,6 +119,8 @@ tests before implementation.
 
 ## Slice 0 — Characterize the existing section matrix
 
+**Status: Done**
+
 ### Goal
 
 Lock the current contract and current history-placement behavior before changing
@@ -150,6 +152,8 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze
 ---
 
 ## Slice 1 — Add the section contract and versioning configuration gate
+
+**Status: Done**
 
 ### Goal
 
@@ -209,6 +213,8 @@ npm run devBuild -w miroir-core
 ---
 
 ## Slice 2 — Generalize persistence section routing
+
+**Status: Done**
 
 ### Goal
 
@@ -271,6 +277,8 @@ npx tsc --noEmit --skipLibCheck
 
 ## Slice 3 — Filesystem freeze tracer bullet
 
+**Status: Done**
+
 ### Goal
 
 Prove the complete user-visible path: freeze a versioned deployment, then
@@ -319,9 +327,21 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 npm run testByFile -w miroir-core -- applicationVersionFreeze
 ```
 
+### Realized (Slice 3)
+
+- `persistFreezeApplicationVersionPlan` routes all history batches to `modelVersion`.
+- `DomainController.loadModelVersionHistoryForFreeze` loads persisted history before planning (local read with remote fallback for emulateServer).
+- `mergeVersionHistoryIntoFreezeMetaModel` chains second freeze via `previousVersion` from `modelVersion` storage.
+- `readLocalPersistenceSectionInstances` on persistence interface for direct section reads.
+- Filesystem: lazy `mkdir` on first write to empty `modelVersion` directory.
+- Test config: distinct `library_modelVersion` tmp dir; `clearModelVersionPersistence()` in `beforeEach`.
+- Integration suite `232 Slice 3 — modelVersion section persistence` (tests 3.1, 3.1 isolation, 3.2); **18/18** `applicationVersionFreeze` integ tests pass on filesystem emulateServer profile.
+
 ---
 
 ## Slice 4 — SQL backend parity
+
+**Status: Done**
 
 ### Goal
 
@@ -368,6 +388,8 @@ npx tsc --noEmit --skipLibCheck
 ---
 
 ## Slice 5 — Remaining backend policy, documentation, and regression locks
+
+**Status: Planned**
 
 ### Goal
 

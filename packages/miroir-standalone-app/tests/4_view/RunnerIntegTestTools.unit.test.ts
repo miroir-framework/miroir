@@ -40,6 +40,11 @@ describe("testApplicationStorageConfiguration", () => {
         connectionString: "mongodb://localhost:27017",
         database: "runner_library_ephemeral",
       },
+      modelVersion: {
+        emulatedServerType: "mongodb",
+        connectionString: "mongodb://localhost:27017",
+        database: "runner_library_ephemeral_modelVersion",
+      },
     });
   });
 });

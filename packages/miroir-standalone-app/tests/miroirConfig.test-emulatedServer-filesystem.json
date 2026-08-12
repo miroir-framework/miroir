@@ -44,6 +44,10 @@
         "data": {
           "emulatedServerType": "filesystem",
           "directory":"miroir-standalone-app/tests/tmp/library_data"
+        },
+        "modelVersion": {
+          "emulatedServerType": "filesystem",
+          "directory":"miroir-standalone-app/tests/tmp/library_modelVersion"
         }
       }
     },

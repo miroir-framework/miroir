@@ -1173,10 +1173,7 @@ export type FreezeMetaModelSlice = {
   transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
   applicationVersions: ApplicationVersion[];
   entityVersions: EntityVersion[];
-  applicationVersionCrossEntityVersion: Array<{
-    applicationVersion: string;
-    entityVersion: string;
-  }>;
+  applicationVersionCrossEntityVersion: MetaModel["applicationVersionCrossEntityVersion"];
   applicationVersionCrossQueryVersion?: MetaModel["applicationVersionCrossQueryVersion"];
   queryVersions?: MetaModel["queryVersions"];
   applicationVersionCrossReportVersion?: MetaModel["applicationVersionCrossReportVersion"];
@@ -1192,6 +1189,114 @@ export type FreezeMetaModelSlice = {
   applicationVersionCrossTransformerDefinitionVersion?: MetaModel["applicationVersionCrossTransformerDefinitionVersion"];
   transformerDefinitionVersions?: MetaModel["transformerDefinitionVersions"];
 };
+
+function mergeInstancesByUuid<T extends { uuid: string }>(
+  base: T[],
+  extra: T[] | undefined,
+): T[] {
+  if (!extra?.length) {
+    return base;
+  }
+  const merged = new Map(base.map((item) => [item.uuid, item]));
+  for (const item of extra) {
+    merged.set(item.uuid, item);
+  }
+  return [...merged.values()];
+}
+
+/** #232 — overlay modelVersion-persisted rows onto the in-memory slice used for freeze planning. */
+export function mergeVersionHistoryIntoFreezeMetaModel(
+  metaModel: FreezeMetaModelSlice,
+  persisted: Partial<FreezeMetaModelSlice>,
+): FreezeMetaModelSlice {
+  return {
+    ...metaModel,
+    applicationVersions: mergeInstancesByUuid(
+      metaModel.applicationVersions,
+      persisted.applicationVersions,
+    ),
+    entityVersions: mergeInstancesByUuid(metaModel.entityVersions, persisted.entityVersions),
+    applicationVersionCrossEntityVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossEntityVersion,
+      persisted.applicationVersionCrossEntityVersion,
+    ),
+    applicationVersionCrossQueryVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossQueryVersion ?? [],
+      persisted.applicationVersionCrossQueryVersion,
+    ),
+    queryVersions: mergeInstancesByUuid(metaModel.queryVersions ?? [], persisted.queryVersions),
+    applicationVersionCrossReportVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossReportVersion ?? [],
+      persisted.applicationVersionCrossReportVersion,
+    ),
+    reportVersions: mergeInstancesByUuid(metaModel.reportVersions ?? [], persisted.reportVersions),
+    applicationVersionCrossMenuVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossMenuVersion ?? [],
+      persisted.applicationVersionCrossMenuVersion,
+    ),
+    menuVersions: mergeInstancesByUuid(metaModel.menuVersions ?? [], persisted.menuVersions),
+    applicationVersionCrossEndpointVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossEndpointVersion ?? [],
+      persisted.applicationVersionCrossEndpointVersion,
+    ),
+    endpointVersions: mergeInstancesByUuid(
+      metaModel.endpointVersions ?? [],
+      persisted.endpointVersions,
+    ),
+    applicationVersionCrossRunnerVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossRunnerVersion ?? [],
+      persisted.applicationVersionCrossRunnerVersion,
+    ),
+    runnerVersions: mergeInstancesByUuid(metaModel.runnerVersions ?? [], persisted.runnerVersions),
+    applicationVersionCrossThemeVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossThemeVersion ?? [],
+      persisted.applicationVersionCrossThemeVersion,
+    ),
+    themeVersions: mergeInstancesByUuid(metaModel.themeVersions ?? [], persisted.themeVersions),
+    applicationVersionCrossTransformerDefinitionVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossTransformerDefinitionVersion ?? [],
+      persisted.applicationVersionCrossTransformerDefinitionVersion,
+    ),
+    transformerDefinitionVersions: mergeInstancesByUuid(
+      metaModel.transformerDefinitionVersions ?? [],
+      persisted.transformerDefinitionVersions,
+    ),
+  };
+}
+
+export type ModelVersionInstanceLoader = (
+  parentEntityUuid: string,
+) => Promise<Array<{ uuid: string }>>;
+
+/** #232 — read all version-history collections from the modelVersion section for freeze chaining. */
+export async function loadVersionHistoryFreezeSlice(
+  loadInstances: ModelVersionInstanceLoader,
+): Promise<Partial<FreezeMetaModelSlice>> {
+  const load = async <T extends { uuid: string }>(parentUuid: string) =>
+    (await loadInstances(parentUuid)) as T[];
+
+  return {
+    applicationVersions: await load(APPLICATION_VERSION_ENTITY_UUID),
+    entityVersions: await load(ENTITY_VERSION_ENTITY_UUID),
+    applicationVersionCrossEntityVersion: await load(APPLICATION_VERSION_CROSS_ENTITY_VERSION_UUID),
+    queryVersions: await load(QUERY_VERSION_ENTITY_UUID),
+    applicationVersionCrossQueryVersion: await load(APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID),
+    reportVersions: await load(REPORT_VERSION_ENTITY_UUID),
+    applicationVersionCrossReportVersion: await load(APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID),
+    menuVersions: await load(MENU_VERSION_ENTITY_UUID),
+    applicationVersionCrossMenuVersion: await load(APPLICATION_VERSION_CROSS_MENU_VERSION_UUID),
+    endpointVersions: await load(ENDPOINT_VERSION_ENTITY_UUID),
+    applicationVersionCrossEndpointVersion: await load(APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID),
+    runnerVersions: await load(RUNNER_VERSION_ENTITY_UUID),
+    applicationVersionCrossRunnerVersion: await load(APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID),
+    themeVersions: await load(THEME_VERSION_ENTITY_UUID),
+    applicationVersionCrossThemeVersion: await load(APPLICATION_VERSION_CROSS_THEME_VERSION_UUID),
+    transformerDefinitionVersions: await load(TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID),
+    applicationVersionCrossTransformerDefinitionVersion: await load(
+      APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
+    ),
+  };
+}
 
 /**
  * Resolve SelfApplication + Entities + tip context from MetaModel, then plan.

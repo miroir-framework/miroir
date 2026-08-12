@@ -94,4 +94,25 @@ export function miroirIndexedDbStoreSectionStartup(
       }
     }
   );
+  configurationService.registerStoreSectionFactory(
+    "indexedDb",
+    "modelVersion",
+    async (
+      section: ApplicationSection,
+      config: StoreSectionConfiguration,
+      filesystemDeploymentRootDirectory: string,
+    ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
+      if (config.emulatedServerType == "indexedDb") {
+        log.info("called registerStoreSectionFactory modelVersion function for", section, config);
+        const indexedDbStoreName = config.indexedDbName + "-modelVersion";
+        return Promise.resolve(
+          new IndexedDbDataStoreSection(
+            indexedDbStoreName,
+            new IndexedDb("modelVersion", filesystemDeploymentRootDirectory, indexedDbStoreName),
+          ),
+        );
+      }
+      return Promise.resolve(new ErrorDataStore());
+    },
+  );
 }

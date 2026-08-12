@@ -33,7 +33,7 @@ describe("222 Phase 2 — LocalCache / selector EV section indexing", () => {
     const section = getApplicationSection(MIROIR_APP_UUID, EV_UUID);
     expect(section).toBe("modelVersion");
     expect(getReduxDeploymentsStateIndex(MIROIR_DEPLOYMENT, section, EV_UUID)).toBe(
-      `${MIROIR_DEPLOYMENT}_model-version_${EV_UUID}`,
+      `${MIROIR_DEPLOYMENT}_modelVersion_${EV_UUID}`,
     );
   });
 
@@ -41,7 +41,7 @@ describe("222 Phase 2 — LocalCache / selector EV section indexing", () => {
     const section = getApplicationSection(LIBRARY_APP_UUID, EV_UUID);
     expect(section).toBe("modelVersion");
     expect(getReduxDeploymentsStateIndex(LIBRARY_DEPLOYMENT, section, EV_UUID)).toBe(
-      `${LIBRARY_DEPLOYMENT}_model-version_${EV_UUID}`,
+      `${LIBRARY_DEPLOYMENT}_modelVersion_${EV_UUID}`,
     );
   });
 

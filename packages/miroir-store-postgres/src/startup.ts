@@ -106,4 +106,28 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
 
     }
   );
+  configurationService.registerStoreSectionFactory(
+    "sql",
+    "modelVersion",
+    async (
+      section: ApplicationSection,
+      config: StoreSectionConfiguration,
+      filesystemDeploymentRootDirectory: string,
+    ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
+      log.info("called registerStoreSectionFactory function for", section, "sql", config);
+      if (config.emulatedServerType == "sql") {
+        const sqlDbStoreName: string = config.connectionString + ":" + config.schema;
+        return Promise.resolve(
+          new SqlDbDataStoreSection(
+            "modelVersion",
+            sqlDbStoreName,
+            config.connectionString,
+            config.schema,
+            config.forceNullOptionalAttributeToUndefined ?? false,
+          ),
+        );
+      }
+      return Promise.resolve(new ErrorDataStore());
+    },
+  );
 }

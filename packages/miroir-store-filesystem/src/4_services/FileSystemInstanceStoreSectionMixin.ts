@@ -235,7 +235,11 @@ export function FileSystemInstanceStoreSectionMixin<TBase extends MixableFileSys
         const pkValue = Array.isArray(idAttribute)
           ? idAttribute.map(attr => encodeURIComponent(String((instance as any)[attr]))).join("_")
           : String((instance as any)[idAttribute]);
-        filePath = path.join(this.directory, entityUuid, fullName(pkValue));
+        const entityInstancesPath = path.join(this.directory, entityUuid);
+        if (!fs.existsSync(entityInstancesPath)) {
+          fs.mkdirSync(entityInstancesPath, { recursive: true });
+        }
+        filePath = path.join(entityInstancesPath, fullName(pkValue));
         log.info(
           this.logHeader,
           "upsertInstance called",

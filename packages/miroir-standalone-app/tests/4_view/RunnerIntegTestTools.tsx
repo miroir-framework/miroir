@@ -130,6 +130,10 @@ export function testApplicationStorageConfiguration(
           emulatedServerType: "indexedDb",
           indexedDbName: testApplicationName,
         },
+        modelVersion: {
+          emulatedServerType: "indexedDb",
+          indexedDbName: `${testApplicationName}_modelVersion`,
+        },
       };
       break;
     }
@@ -143,6 +147,10 @@ export function testApplicationStorageConfiguration(
         data: {
           emulatedServerType: "filesystem",
           directory: "./test_data/" + testApplicationName,
+        },
+        modelVersion: {
+          emulatedServerType: "filesystem",
+          directory: `./test_data/${testApplicationName}_modelVersion`,
         },
       };
       break;
@@ -160,6 +168,11 @@ export function testApplicationStorageConfiguration(
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
           schema: testApplicationName,
         },
+        modelVersion: {
+          emulatedServerType: "sql",
+          connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+          schema: `${testApplicationName}_modelVersion`,
+        },
       };
       break;
     }
@@ -175,6 +188,11 @@ export function testApplicationStorageConfiguration(
           emulatedServerType: "mongodb",
           connectionString: "mongodb://localhost:27017",
           database: testApplicationName,
+        },
+        modelVersion: {
+          emulatedServerType: "mongodb",
+          connectionString: "mongodb://localhost:27017",
+          database: `${testApplicationName}_modelVersion`,
         },
       };
       break;

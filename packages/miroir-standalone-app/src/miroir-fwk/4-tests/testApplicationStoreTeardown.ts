@@ -13,9 +13,8 @@ import {
 /**
  * Browser-safe — no Node built-ins. Shared by runner sessions and IntegrationTestSession.
  *
- * Drops the ephemeral run-target store, then optionally removes the Admin Deployment and
- * AdminApplication instances created for that run (runner createDeployment path).
- * Transformer IntegrationTestSession does not register those Admin instances — pass
+ * Drops the ephemeral run-target store (model, data, and modelVersion when configured),
+ * then optionally removes the Admin Deployment and AdminApplication instances created for
  * `deleteAdminInstances: false` there.
  */
 export function buildTeardownTestApplicationStoresAction(

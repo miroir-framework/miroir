@@ -144,14 +144,40 @@ export async function storeActionOrBundleActionStoreRunner(
         "appDataStoreDeleted",
         appDataStoreDeleted
       );
-      if (appModelStoreDeleted instanceof Action2Error || appDataStoreDeleted instanceof Action2Error) {
+      const modelVersionConfig = action.payload.configuration.modelVersion;
+      let appModelVersionStoreDeleted: Action2ReturnType = ACTION_OK;
+      if (modelVersionConfig) {
+        appModelVersionStoreDeleted =
+          await localAppPersistenceStoreController.deleteStore(modelVersionConfig);
+        log.info(
+          "storeActionOrBundleActionStoreRunner deleteStore for application",
+          action.payload.application,
+          "deployment",
+          deploymentUuid,
+          "appModelVersionStoreDeleted",
+          appModelVersionStoreDeleted
+        );
+      }
+      if (
+        appModelStoreDeleted instanceof Action2Error ||
+        appDataStoreDeleted instanceof Action2Error ||
+        appModelVersionStoreDeleted instanceof Action2Error
+      ) {
         return new Action2Error(
           "FailedToDeleteStore",
           (appModelStoreDeleted instanceof Action2Error ? appModelStoreDeleted.errorMessage : "model store deleted OK") +
             " --- " +
-            (appDataStoreDeleted instanceof Action2Error ? appDataStoreDeleted.errorMessage : "data store deleted OK"),
+            (appDataStoreDeleted instanceof Action2Error ? appDataStoreDeleted.errorMessage : "data store deleted OK") +
+            " --- " +
+            (appModelVersionStoreDeleted instanceof Action2Error
+              ? appModelVersionStoreDeleted.errorMessage
+              : "modelVersion store deleted OK"),
             [], // errorStack,
-          appModelStoreDeleted instanceof Action2Error ? appModelStoreDeleted : appDataStoreDeleted as Action2Error
+          appModelStoreDeleted instanceof Action2Error
+            ? appModelStoreDeleted
+            : appDataStoreDeleted instanceof Action2Error
+              ? appDataStoreDeleted
+              : (appModelVersionStoreDeleted as Action2Error)
         );
       }
       break;

@@ -50,6 +50,11 @@
           "emulatedServerType": "mongodb",
           "connectionString": "mongodb://localhost:27017",
           "database": "miroir-app"
+        },
+        "modelVersion": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-app_modelVersion"
         }
       }
     },
