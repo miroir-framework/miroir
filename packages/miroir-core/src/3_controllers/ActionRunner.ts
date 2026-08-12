@@ -76,12 +76,27 @@ export async function storeActionOrBundleActionStoreRunner(
       const appDataStoreCreated: Action2ReturnType =
         await localAppPersistenceStoreController.createStore(action.payload.configuration.data);
 
-      if (appModelStoreCreated instanceof Action2Error || appDataStoreCreated instanceof Action2Error) {
+      let appModelVersionStoreCreated: Action2ReturnType = ACTION_OK;
+      const modelVersionConfig = action.payload.configuration.modelVersion;
+      if (modelVersionConfig) {
+        appModelVersionStoreCreated =
+          await localAppPersistenceStoreController.createStore(modelVersionConfig);
+      }
+
+      if (
+        appModelStoreCreated instanceof Action2Error ||
+        appDataStoreCreated instanceof Action2Error ||
+        appModelVersionStoreCreated instanceof Action2Error
+      ) {
         return new Action2Error(
           "FailedToCreateStore",
           (appModelStoreCreated instanceof Action2Error ? appModelStoreCreated.errorMessage : "model store created OK") +
             " --- " +
-            (appDataStoreCreated instanceof Action2Error ? appDataStoreCreated.errorMessage : "data store created OK")
+            (appDataStoreCreated instanceof Action2Error ? appDataStoreCreated.errorMessage : "data store created OK") +
+            " --- " +
+            (appModelVersionStoreCreated instanceof Action2Error
+              ? appModelVersionStoreCreated.errorMessage
+              : "modelVersion store created OK")
         );
       }
       log.info(

@@ -223,6 +223,21 @@ describe("216 Phase 4 — plan attaches diff on second freeze", () => {
     ]);
   });
 
+  it("returns [] after JSON persistence round-trip (Postgres JSONB parity)", () => {
+    const mlSchema = {
+      type: "object",
+      definition: {
+        zField: { type: "string" },
+        aField: { type: "number", optional: true },
+      },
+    };
+    const entities = [makeEntity(BOOK, "Book", mlSchema as Entity["mlSchema"])];
+    const previous = snap(entities);
+    const roundTripped = JSON.parse(JSON.stringify(previous)) as EntityVersion[];
+    const next = snap(entities, 10);
+    expect(diffEntityVersionSnapshots(roundTripped, next)).toEqual([]);
+  });
+
   it("second freeze with identical entities yields empty modelCUDMigration", () => {
     const entities = [makeEntity(BOOK, "Book")];
     const first = buildFreezeApplicationVersionPlan({

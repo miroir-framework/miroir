@@ -40,7 +40,7 @@ Related:
 | 1 | Add the section contract and versioning configuration gate | Done | `ApplicationSection` includes `"modelVersion"`; all freeze resolvers return `"modelVersion"` |
 | 2 | Generalize persistence section routing | Done | `PersistenceStoreController` routes CRUD/query by section; manager + filesystem startup wire optional `modelVersion` store |
 | 3 | Filesystem freeze tracer bullet | Done | Freeze writes history only to `modelVersion`; live model stays in `model`; integ tests 3.1/3.2 green |
-| 4 | SQL backend parity | Done | Postgres `modelVersion` factory + profile config; same pattern on filesystem / indexedDb / MongoDB |
+| 4 | SQL backend parity | Done | Postgres factory + schema bootstrap + SQL freeze integ tracer (3/3) |
 | 5 | Remaining backend policy, docs, and regression locks | Planned | Explicit support policy and unchanged live behavior |
 
 ---
@@ -210,6 +210,14 @@ npm run build -w miroir-test-app_deployment-miroir
 npm run devBuild -w miroir-core
 ```
 
+### Realized (Slice 1)
+
+- `ApplicationSection` extended to `"model" | "data" | "modelVersion"` in Jzod schema + generated `miroirFundamentalType.ts` / `miroirFundamentalJzodSchema.ts`.
+- `StoreUnitConfiguration` accepts optional `"modelVersion"` key (same literal as routing).
+- `versionHistoryEntityUuids` + `getApplicationSection()` in `Model.ts` route all version-history entity families to `modelVersion` before live model/data classification.
+- `planFreezeApplicationVersionFromMetaModel` sets every `*ApplicationSection` plan field via `getApplicationSection` (all `"modelVersion"`).
+- Tests: `modelVersionStorage.232.contract.unit.test.ts`, `applicationVersionFreeze.232.section.unit.test.ts`; phase-0 characterization updated for intentional transition.
+
 ---
 
 ## Slice 2 — Generalize persistence section routing
@@ -272,6 +280,14 @@ npm run testByFile -w miroir-core -- persistenceStoreController.232
 npm run testByFile -w miroir-core -- modelVersionStorage.232
 npx tsc --noEmit --skipLibCheck
 ```
+
+### Realized (Slice 2)
+
+- `PersistenceStoreController` optional 4th ctor arg `modelVersionStoreSection`; private `getSectionInstanceStore()` routes CRUD/query/boxed-query by section with named error when `modelVersion` unconfigured.
+- `PersistenceStoreControllerManager.addPersistenceStoreController` opens optional `modelVersion` store from deployment config.
+- Filesystem `registerStoreSectionFactory("filesystem", "modelVersion", …)` → `FileSystemDataStoreSection` with section identity `"modelVersion"`.
+- `PersistenceStoreController.clear()` and `ActionRunner` `deleteStore` include `modelVersion` when configured.
+- Tests: `persistenceStoreController.232.sections.unit.test.ts`, `persistenceStoreControllerManager.232.startup.unit.test.ts`.
 
 ---
 
@@ -384,6 +400,16 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 npm run build -w miroir-store-postgres
 npx tsc --noEmit --skipLibCheck
 ```
+
+### Realized (Slice 4)
+
+- Postgres `registerStoreSectionFactory("sql", "modelVersion", …)` → `SqlDbDataStoreSection` with distinct schema (`library_modelVersion` in test profile).
+- `SqlDbStore.open()` ensures schema via `CREATE SCHEMA IF NOT EXISTS`; `ActionRunner` `createStore` provisions `modelVersion` schema on deployment create.
+- `PersistenceStoreController.ensureModelVersionStorageForEntity()` lazy-registers version-history entity tables in SQL (bootstrap entity defs via `getVersionHistoryEntityDefinition()`).
+- Postgres Sequelize mapping includes `boolean` ML attributes; `isApplicationVersioningEnabled()` accepts legacy `"true"` string rows.
+- Unit test: `persistenceStoreControllerManager.232.sql.startup.unit.test.ts` (skips when Postgres unavailable).
+- Integ: `232 Slice 4 — SQL modelVersion section persistence` in `applicationVersionFreeze.integ.test.ts` (3 tests; runs before Phase 6 on SQL profile).
+- Filesystem: `getEntityUuids()` tolerates missing `modelVersion` root dir after test cleanup.
 
 ---
 

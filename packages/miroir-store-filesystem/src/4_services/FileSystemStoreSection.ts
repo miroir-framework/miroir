@@ -72,8 +72,10 @@ export class FileSystemStoreSection
 
   // #############################################################################################
   getEntityUuids(): string[] {
-    const files = fs.readdirSync(this.directory);
-    return files;
+    if (!fs.existsSync(this.directory)) {
+      return [];
+    }
+    return fs.readdirSync(this.directory);
   }
 
   // #############################################################################################
@@ -99,7 +101,7 @@ export class FileSystemStoreSection
     log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", entity);
     const entityInstancesPath = path.join(this.directory, entity.uuid);
     if (!fs.existsSync(entityInstancesPath)) {
-      fs.mkdirSync(entityInstancesPath);
+      fs.mkdirSync(entityInstancesPath, { recursive: true });
     } else {
       log.debug(this.logHeader, "createStorageSpaceForInstancesOfEntity storage space already exists for", entity.uuid);
     }

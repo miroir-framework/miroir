@@ -161,6 +161,34 @@ export const versionHistoryEntityUuids: ReadonlySet<string> = new Set([
   entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
 ]);
 
+const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
+  [entityEntityVersion.uuid!, entityEntityVersion as Entity],
+  [entitySelfApplicationVersion.uuid!, entitySelfApplicationVersion as Entity],
+  [entityApplicationVersionCrossEntityVersion.uuid!, entityApplicationVersionCrossEntityVersion as Entity],
+  [entityHistoricalQueryVersion.uuid!, entityHistoricalQueryVersion as Entity],
+  [entityApplicationVersionCrossQueryVersion.uuid!, entityApplicationVersionCrossQueryVersion as Entity],
+  [entityHistoricalReportVersion.uuid!, entityHistoricalReportVersion as Entity],
+  [entityApplicationVersionCrossReportVersion.uuid!, entityApplicationVersionCrossReportVersion as Entity],
+  [entityHistoricalMenuVersion.uuid!, entityHistoricalMenuVersion as Entity],
+  [entityApplicationVersionCrossMenuVersion.uuid!, entityApplicationVersionCrossMenuVersion as Entity],
+  [entityHistoricalEndpointVersion.uuid!, entityHistoricalEndpointVersion as Entity],
+  [entityApplicationVersionCrossEndpointVersion.uuid!, entityApplicationVersionCrossEndpointVersion as Entity],
+  [entityHistoricalRunnerVersion.uuid!, entityHistoricalRunnerVersion as Entity],
+  [entityApplicationVersionCrossRunnerVersion.uuid!, entityApplicationVersionCrossRunnerVersion as Entity],
+  [entityHistoricalThemeVersion.uuid!, entityHistoricalThemeVersion as Entity],
+  [entityApplicationVersionCrossThemeVersion.uuid!, entityApplicationVersionCrossThemeVersion as Entity],
+  [entityHistoricalTransformerDefinitionVersion.uuid!, entityHistoricalTransformerDefinitionVersion as Entity],
+  [
+    entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
+    entityApplicationVersionCrossTransformerDefinitionVersion as Entity,
+  ],
+]);
+
+/** Bootstrap Entity row for a version-history parent entity (SQL modelVersion lazy table creation). */
+export function getVersionHistoryEntityDefinition(entityUuid: string): Entity | undefined {
+  return versionHistoryEntityDefinitions.get(entityUuid);
+}
+
 // ################################################################################################
 export function getApplicationSection(
   applicationUuid: Uuid,

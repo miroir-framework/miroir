@@ -25,6 +25,7 @@ import { ACTION_OK } from "../../src/1_core/constants.js";
 import { PersistenceStoreController } from "../../src/4_services/PersistenceStoreController.js";
 import type { ApplicationDeploymentMap } from "../../src/1_core/Deployment.js";
 import type { MiroirModelEnvironment } from "../../src/0_interfaces/1_core/Transformer.js";
+import { entitySelfApplicationVersion } from "miroir-test-app_deployment-miroir";
 
 // ---------------------------------------------------------------------------
 // Minimal test stubs
@@ -113,7 +114,13 @@ class ModelSectionStub extends DataSectionStub implements PersistenceStoreModelS
 // ---------------------------------------------------------------------------
 
 const ENTITY_UUID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+/** Version-history parent entity used for modelVersion upsert ensure-storage path (#232 Slice 4). */
+const HISTORY_ENTITY_UUID = entitySelfApplicationVersion.uuid!;
 const INSTANCE = { uuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", parentUuid: ENTITY_UUID };
+const HISTORY_INSTANCE = {
+  uuid: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+  parentUuid: HISTORY_ENTITY_UUID,
+};
 const DEPLOY_MAP = {} as ApplicationDeploymentMap;
 
 // ---------------------------------------------------------------------------
@@ -193,9 +200,9 @@ describe("232 Slice 2 — PersistenceStoreController section routing", () => {
 
     const controller = new PersistenceStoreController(admin, modelStore, dataStore, historyStore);
 
-    const result = await controller.upsertInstance("modelVersion", INSTANCE as any);
+    const result = await controller.upsertInstance("modelVersion", HISTORY_INSTANCE as any);
     expect(result instanceof Action2Error).toBe(false);
-    expect(historyStore.upserted[ENTITY_UUID]).toHaveLength(1);
+    expect(historyStore.upserted[HISTORY_ENTITY_UUID]).toHaveLength(1);
   });
 
   it("2.1 RED — upsertInstance modelVersion unconfigured returns named error", async () => {

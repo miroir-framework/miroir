@@ -259,6 +259,10 @@ const testDeploymentStorageConfiguration = miroirConfig.client.emulateServer
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
+const libraryStoreBackend = testDeploymentStorageConfiguration.model.emulatedServerType;
+const isFilesystemBackend = libraryStoreBackend === "filesystem";
+const isSqlBackend = libraryStoreBackend === "sql";
+
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const BRANCH_UUID = selfApplicationModelBranchLibraryMasterBranch.uuid as string;
@@ -357,12 +361,12 @@ function modelEntityDir(parentEntityUuid: string): string {
 }
 
 function clearModelVersionPersistence() {
+  const modelVersion = testDeploymentStorageConfiguration.modelVersion;
+  if (!modelVersion || modelVersion.emulatedServerType !== "filesystem") {
+    return;
+  }
   const root = miroirConfig.client.filesystemDeploymentRootDirectory.replace(/\\/g, "/");
-  const subDir = (
-    testDeploymentStorageConfiguration as StoreUnitConfiguration & {
-      modelVersion?: { directory: string };
-    }
-  ).modelVersion!.directory.replace(/\\/g, "/");
+  const subDir = modelVersion.directory.replace(/\\/g, "/");
   rmSync(join(root, subDir), { recursive: true, force: true });
 }
 
@@ -598,6 +602,109 @@ afterAll(async () => {
     libraryModelEnv(),
   );
 }, globalTimeOut);
+
+describe.sequential.skipIf(!isSqlBackend)("232 Slice 4 — SQL modelVersion section persistence", () => {
+  it(
+    "4.1 — SQL config uses distinct modelVersion schema; freeze persists history there not in model section",
+    async () => {
+      expect(testDeploymentStorageConfiguration.modelVersion).toBeDefined();
+      expect(testDeploymentStorageConfiguration.modelVersion!.emulatedServerType).toBe("sql");
+      const modelSchema = (testDeploymentStorageConfiguration.model as { schema: string }).schema;
+      const historySchema = (testDeploymentStorageConfiguration.modelVersion as { schema: string })
+        .schema;
+      expect(historySchema).not.toBe(modelSchema);
+
+      const freezeResult = await freezeLibrary("232-SQL-V1");
+      expect(freezeResult instanceof Action2Error, JSON.stringify(freezeResult)).toBe(false);
+
+      const historySavInstances = await getPersistedInstances(
+        "modelVersion",
+        entitySelfApplicationVersion.uuid!,
+      );
+      expect(historySavInstances.some((s: any) => s.name === "232-SQL-V1")).toBe(true);
+
+      const modelSavInstances = await getPersistedInstances(
+        "model",
+        entitySelfApplicationVersion.uuid!,
+      );
+      expect(modelSavInstances.some((s: any) => s.name === "232-SQL-V1")).toBe(false);
+    },
+    globalTimeOut,
+  );
+
+  it(
+    "4.1 — live Entity edit after freeze leaves SQL modelVersion snapshot unchanged",
+    async () => {
+      const freezeResult = await freezeLibrary("232-SQL-Isolation");
+      expect(freezeResult instanceof Action2Error).toBe(false);
+
+      await refreshLibraryCache();
+      const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      const history = await loadPersistedVersionHistory();
+      const sav = history.applicationVersions.find((v) => v.name === "232-SQL-Isolation")!;
+      const bookCross = history.applicationVersionCrossEntityVersion.find(
+        (c: any) =>
+          c.applicationVersion === sav.uuid &&
+          history.entityVersions.find((e: any) => e.uuid === c.entityVersion)?.entityUuid ===
+            entityBook.uuid,
+      );
+      expect(bookCross).toBeDefined();
+
+      const historyBefore = (await getPersistedInstances(
+        "modelVersion",
+        entityEntityVersion.uuid!,
+      )).find((ev: any) => ev.uuid === bookCross!.entityVersion);
+      expect(historyBefore).toBeDefined();
+
+      const liveBook = model.entities.find((e) => e.uuid === entityBook.uuid)!;
+      const updatedBook: Entity = {
+        ...liveBook,
+        name: "BookRenamedAfter232SqlFreeze",
+      };
+      const updateResult = await domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: testApplicationUuid,
+            applicationSection: "model",
+            objects: [updatedBook as EntityInstance],
+          },
+        },
+        applicationDeploymentMap,
+        libraryModelEnv(),
+      );
+      expect(updateResult instanceof Action2Error).toBe(false);
+
+      const historyAfter = (await getPersistedInstances(
+        "modelVersion",
+        entityEntityVersion.uuid!,
+      )).find((ev: any) => ev.uuid === bookCross!.entityVersion);
+      expect(historyAfter?.name).toBe(historyBefore!.name);
+      expect(historyAfter?.name).not.toBe("BookRenamedAfter232SqlFreeze");
+    },
+    globalTimeOut,
+  );
+
+  it(
+    "4.2 — rollback loads live model without requiring modelVersion reads; SQL history remains queryable",
+    async () => {
+      const freezeResult = await freezeLibrary("232-SQL-Bootstrap");
+      expect(freezeResult instanceof Action2Error).toBe(false);
+
+      await refreshLibraryCache();
+      const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
+      expect(model.entities.length).toBeGreaterThan(0);
+
+      const historySav = await getPersistedInstances(
+        "modelVersion",
+        entitySelfApplicationVersion.uuid!,
+      );
+      expect(historySav.some((s: any) => s.name === "232-SQL-Bootstrap")).toBe(true);
+    },
+    globalTimeOut,
+  );
+});
 
 describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () => {
   it(
@@ -1502,18 +1609,20 @@ describe.sequential("232 Slice 3 — modelVersion section persistence", () => {
       const modelEvInstances = await getPersistedInstances("model", entityEntityVersion.uuid!);
       expect(modelEvInstances).toHaveLength(0);
 
-      const frozenSav = historySavInstances.find((s: any) => s.name === "232-V1")!;
-      expect(frozenSav).toBeDefined();
-      const frozenSavPath = `${frozenSav.uuid}.json`;
-      expect(() =>
-        readFileSync(
-          join(modelVersionEntityDir(entitySelfApplicationVersion.uuid!), frozenSavPath),
-        ),
-      ).not.toThrow();
-      // Bootstrap assets may already populate library_model; assert the freeze row file is absent there.
-      expect(() =>
-        readFileSync(join(modelEntityDir(entitySelfApplicationVersion.uuid!), frozenSavPath)),
-      ).toThrow();
+      if (isFilesystemBackend) {
+        const frozenSav = historySavInstances.find((s: any) => s.name === "232-V1")!;
+        expect(frozenSav).toBeDefined();
+        const frozenSavPath = `${frozenSav.uuid}.json`;
+        expect(() =>
+          readFileSync(
+            join(modelVersionEntityDir(entitySelfApplicationVersion.uuid!), frozenSavPath),
+          ),
+        ).not.toThrow();
+        // Bootstrap assets may already populate library_model; assert the freeze row file is absent there.
+        expect(() =>
+          readFileSync(join(modelEntityDir(entitySelfApplicationVersion.uuid!), frozenSavPath)),
+        ).toThrow();
+      }
     },
     globalTimeOut,
   );

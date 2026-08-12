@@ -59,11 +59,19 @@ export type FreezeApplicationVersionActionType =
 /**
  * Reject freeze / version-history Actions for unversioned applications.
  * Throws when `versioningEnabled` is not strictly `true`.
+ * Accepts `"true"` for legacy SQL rows created before boolean Sequelize mapping (#232 Slice 4).
  */
+export function isApplicationVersioningEnabled(
+  selfApplication: { versioningEnabled?: boolean | undefined },
+): boolean {
+  const flag = selfApplication.versioningEnabled as boolean | string | undefined;
+  return flag === true || flag === "true";
+}
+
 export function assertApplicationVersioningEnabled(
   selfApplication: { versioningEnabled?: boolean | undefined },
 ): void {
-  if (selfApplication.versioningEnabled !== true) {
+  if (!isApplicationVersioningEnabled(selfApplication)) {
     throw new Error(
       `Application does not have versioning enabled (versioningEnabled: ${String(selfApplication.versioningEnabled)})`,
     );
@@ -776,8 +784,32 @@ export type ModelCudMigrationCandidate =
       differingFields: EntityPresentModelDefinitionField[];
     };
 
+function canonicalizeJsonValue(value: unknown): unknown {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => canonicalizeJsonValue(item));
+  }
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    const normalized: Record<string, unknown> = {};
+    for (const key of Object.keys(record).sort()) {
+      const child = canonicalizeJsonValue(record[key]);
+      if (child !== undefined) {
+        normalized[key] = child;
+      }
+    }
+    return normalized;
+  }
+  return value;
+}
+
+/** Deep equality for JSON-like present-model fields (Postgres JSONB key order / null omission). */
 function stableJsonEqual(a: unknown, b: unknown): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+  return (
+    JSON.stringify(canonicalizeJsonValue(a)) === JSON.stringify(canonicalizeJsonValue(b))
+  );
 }
 
 function indexEntityVersionsByLiveUuid(

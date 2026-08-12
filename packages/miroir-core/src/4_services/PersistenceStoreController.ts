@@ -48,6 +48,7 @@ import {
 import { ACTION_OK } from "../1_core/constants";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { resolveInstanceParentUuid } from "../1_core/Entity/EntityPrimaryKey";
+import { getVersionHistoryEntityDefinition } from "../1_core/Model.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -628,6 +629,49 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     return this.dataStoreSection.createStorageSpaceForInstancesOfEntity(entity);
   }
 
+  /**
+   * #232 — SQL (and other structured backends) require entity tables in the modelVersion
+   * schema before instance upserts. Filesystem creates directories lazily on upsert.
+   * TODO: Filesystem should create directories eagerly on Entity creation
+   * TODO: this is called at upsert, this is HIGHLY inefficient. Create operation should void theneed for this.
+   */
+  private async ensureModelVersionStorageForEntity(
+    parentEntityUuid: string,
+  ): Promise<Action2VoidReturnType> {
+    if (!this.modelVersionStoreSection) {
+      return new Action2Error(
+        "FailedToUpsertInstance",
+        "modelVersion section is not configured for this deployment.",
+      );
+    }
+    if (this.modelVersionStoreSection.getEntityUuids().includes(parentEntityUuid)) {
+      return ACTION_OK;
+    }
+    const entitiesResult = await this.modelStoreSection.getInstances(entityEntity.uuid);
+    if (entitiesResult instanceof Action2Error) {
+      return entitiesResult;
+    }
+    const collection = entitiesResult.returnedDomainElement;
+    if (!collection || collection instanceof Domain2ElementFailed) {
+      return new Action2Error(
+        "FailedToUpsertInstance",
+        `modelVersion upsert: could not load model Entity catalog for ${parentEntityUuid}.`,
+      );
+    }
+    const entityDef = (collection.instances ?? []).find(
+      (candidate) => candidate.uuid === parentEntityUuid,
+    ) as Entity | undefined;
+    const resolvedEntityDef =
+      entityDef ?? getVersionHistoryEntityDefinition(parentEntityUuid);
+    if (!resolvedEntityDef) {
+      return new Action2Error(
+        "FailedToUpsertInstance",
+        `modelVersion upsert: Entity ${parentEntityUuid} not registered in model section.`,
+      );
+    }
+    return this.modelVersionStoreSection.createStorageSpaceForInstancesOfEntity(resolvedEntityDef);
+  }
+
   // ##############################################################################################
   async createEntity(entity: Entity): Promise<Action2VoidReturnType> {
     const result = await this.modelStoreSection.createEntity(entity);
@@ -843,6 +887,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     }
 
     if (section === "modelVersion") {
+      const ensureStorage = await this.ensureModelVersionStorageForEntity(resolvedParentUuid);
+      if (ensureStorage instanceof Action2Error) {
+        return ensureStorage;
+      }
       return currentStore.upsertInstance(resolvedParentUuid, instance);
     }
 
