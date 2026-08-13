@@ -32,10 +32,10 @@ Related:
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize asset/layout mismatch | Done | Inventory GREEN; target layout RED until Slice 2 |
-| 1 | `versioningMode` contract | Done | Jzod + `resolveVersioningMode`; Miroir row `versioned-internal` |
-| 2 | Relocate Miroir Version History assets | Planned | `miroir_modelVersion/` populated; `miroir_data/` Version History-free |
-| 3 | Filesystem asset seed → `modelVersion` store | Planned | Writable profile reads Version History from store section, not `data` |
+| 0 | Characterize asset/layout mismatch | **DONE** | Inventory + target layout tests GREEN (post–Slice 2 inventory assertions) |
+| 1 | `versioningMode` contract | **DONE** | Jzod + `resolveVersioningMode`; Miroir row `versioned-internal` |
+| 2 | Relocate Miroir Version History assets | **DONE** | `miroir_modelVersion/` populated; `miroir_data/` Version History-free; exports + modelValidation |
+| 3 | Filesystem asset seed → `modelVersion` store | **DONE** | Emulated-server profile reads seeded Version History from `modelVersion`, not `data` |
 | 4 | Bundled Miroir alignment | Planned | No modelVersion in bundled config; `#222` tests retired |
 | 5 | Docs, inventory, non-regression | Planned | General docs + package inventory note |
 
@@ -54,18 +54,17 @@ Related:
 | Version History parent UUID set | `versionHistoryEntityUuids` in `Model.ts` (single source for asset move + tests) |
 | Other deployment packages | Inventory only in Slice 5; no relocation in #234 |
 
-### Miroir Version History folders to relocate (initial inventory)
+### Miroir Version History folders relocated (Slice 2)
 
-From `assets/miroir_data/` today (instance JSON, not Entity metaclass rows):
+From `assets/miroir_data/` → `assets/miroir_modelVersion/` (instance JSON only; `versionHistoryEntityUuids` parents):
 
-| Parent entity UUID | Role | ~files |
+| Parent entity UUID | Role | Files moved |
 |---|---|---|
 | `54b9c72f-d4f3-4db9-9e0e-0dc840b530bd` | EntityVersion instances | 34 |
 | `c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24` | SelfApplicationVersion | 2 |
-| `e4320b9e-ab45-4abe-85d8-359604b3c62f` | HistoricalQueryVersion | 3 |
-| `3d8da4d4-8f76-4bb4-9212-14869d81c00c` | HistoricalEndpointVersion | 11 |
+| `8bec933d-6287-4de7-8a88-5c24216de9f4` | ApplicationVersionCrossEntityVersion | 7 |
 
-Scan for any additional `versionHistoryEntityUuids` parent directories under `miroir_data/` during Slice 0 and relocate in Slice 2.
+**Not moved:** live model/data concepts (Query `e4320b9e…`, Endpoint `3d8da4d4…`, etc.) remain under `miroir_data/`. Entity metaclass rows stay under `miroir_model/`.
 
 ---
 
@@ -86,7 +85,7 @@ Legend: **RED** → **GREEN** → **Validation** per slice. Do not batch all RED
 
 ## Slice 0 — Characterize asset/layout mismatch
 
-**Status: Done**
+**Status: DONE**
 
 ### Goal
 
@@ -128,8 +127,8 @@ npm run testByFile -w miroir-core -- 222.phase1.assets-layout
 
 ### Realized (Slice 0)
 
-- **`versioningModes.234.inventory.unit.test.ts`** — Version History registry size; no `*_modelVersion/` dirs yet; Miroir Version History under `miroir_data/` with locked parent→count map; cross-package inventory snapshot.
-- **`versioningModes.234.assets-layout.unit.test.ts`** — target layout (RED until Slice 2): `miroir_modelVersion/`, empty Version History in `miroir_data/`, index import paths.
+- **`versioningModes.234.inventory.unit.test.ts`** — Version History registry; Miroir `miroir_modelVersion/` layout assertions (updated post–Slice 2); cross-package inventory snapshot.
+- **`versioningModes.234.assets-layout.unit.test.ts`** — target layout (GREEN since Slice 2): `miroir_modelVersion/`, empty Version History in `miroir_data/`, index import paths.
 - **`versioningModes.234.slice0-inventory.ts`** — shared constants for move set and paths.
 - **`222.slice0-inventory.ts`** — refreshed to 34 EntityVersion instance UUIDs (was stale at 20).
 - **`222.phase1.assets-layout.unit.test.ts`** — describe renamed to legacy pre-#234.
@@ -138,7 +137,7 @@ npm run testByFile -w miroir-core -- 222.phase1.assets-layout
 
 ## Slice 1 — `versioningMode` contract
 
-**Status: Done**
+**Status: DONE**
 
 ### Goal
 
@@ -197,7 +196,7 @@ npm run testByFile -w miroir-core -- entityPresentModel.217.phase3
 
 ## Slice 2 — Relocate Miroir Version History assets
 
-**Status: Planned**
+**Status: DONE**
 
 ### Goal
 
@@ -237,11 +236,19 @@ npm run testByFile -w miroir-core -- versioningModes.234.deployment-exports
 npm run testByFile -w miroir-core -- 234.
 ```
 
+### Realized (Slice 2)
+
+- **`assets/miroir_modelVersion/`** — git-moved 43 JSON files across three `versionHistoryEntityUuids` parent folders (`54b9c72f…` 34, `c3f0facf…` 2, `8bec933d…` 7); empty Version History dirs removed from `miroir_data/`.
+- **`index.ts`** — 76 export paths repointed from `miroir_data/` → `miroir_modelVersion/` for Version History parents; section comments updated.
+- **`versioningModes.234.slice0-inventory.ts`** — inventory corrected (dropped Query/Endpoint false positives; added `8bec933d…` cross-table parent); `MIROIR_VERSION_HISTORY_PARENTS_SLICE0` renamed from `MIROIR_VH_*`.
+- **Tests:** `versioningModes.234.assets-layout.unit.test.ts` (5/5 GREEN); `versioningModes.234.inventory.unit.test.ts` updated for post-relocation assertions (4/4); `modelValidation.unit.test.ts` (147/147); `entityMetaScope.unit.test.ts` path updated.
+- **Legacy:** `#222` `222.phase1.assets-layout.unit.test.ts` now fails as expected until Slice 4 retirement.
+
 ---
 
 ## Slice 3 — Filesystem asset seed → `modelVersion` store
 
-**Status: Planned**
+**Status: DONE**
 
 ### Goal
 
@@ -282,6 +289,16 @@ npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesyst
 npm run testByFile -w miroir-core -- modelVersionStorage.232
 npm run testByFile -w miroir-core -- applicationVersionFreeze.232
 ```
+
+### Realized (Slice 3)
+
+- **`miroirConfig.test-emulatedServer-filesystem.json`** — Miroir deployment (`10ff36f2…`) includes `modelVersion` → `miroir-test-app_deployment-miroir/assets/miroir_modelVersion`; CI config updated (`ci/tests/config/…`).
+- **`PersistenceStoreController.bootFromPersistedState()`** — registers Version History entities on the optional `modelVersion` store section (filters `versionHistoryEntityUuids` from model catalog).
+- **`versioningModes.234.deployment-assets.unit.test.ts`** — asset tree discoverability + packages-relative bootstrap path (3/3).
+- **`versioningModes.234.filesystem-seed.integ.test.ts`** — after open + boot, EntityVersion / SelfApplicationVersion rows readable from `modelVersion`, absent from `data` (4/4).
+- **`applicationVersionFreeze.integ.test.ts`** — inline Miroir deployment config includes `modelVersion` pointing at package assets.
+- **`MIROIR_MODEL_VERSION_PACKAGES_RELATIVE`** — shared constant for filesystem bootstrap path under `packages/`.
+- **Regression:** `modelVersionStorage.232` (15/15), `applicationVersionFreeze.232` (5/5), full `versioningModes.234.*` (24/24).
 
 ---
 
@@ -411,7 +428,7 @@ npm run nonreg -- --tier default
 | Filesystem seed hook unclear | Slice 3.2 integ test first; trace existing model/data seed path |
 | Large `index.ts` churn breaks consumers | `deployment-exports` test + ripgrep before merge |
 | Freeze gate too strict for transitional rows | Slice 1 documents `versioningEnabled` + `versioningMode` mapping |
-| `#222` tests block Slice 2 | Keep legacy tests until Slice 4; 234 target tests fail until GREEN |
+| `#222` tests block Slice 2 | Keep legacy tests until Slice 4; 234 target tests GREEN since Slice 2 |
 | SQL profile seed parity | Slice 3 filesystem-first; SQL seed follow-up if config already supports `modelVersion` schema |
 
 ---

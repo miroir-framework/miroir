@@ -48,6 +48,7 @@ import {
 import { ACTION_OK } from "../1_core/constants";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { resolveInstanceParentUuid } from "../1_core/Entity/EntityPrimaryKey";
+import { versionHistoryEntityUuids } from "../1_core/Model.js";
 import { getVersionHistoryEntityDefinition } from "../1_core/Model.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -494,9 +495,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       dataEntities
     );
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
-      // #222 — EntityVersion instances are in Miroir data; only Entity stays model-section-only.
       ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
-        (e) => e.name !== "Entity"
+        (e) => e.name !== "Entity",
       ),
     );
     if (
@@ -507,6 +507,21 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         "FailedToGetInstances",
         `bootFromPersistedState failed for section data: ${dataBootFromPersistedState}`
       );
+    }
+
+    if (this.modelVersionStoreSection) {
+      const modelEntities = ((dataEntities as any).returnedDomainElement?.instances as Entity[]) ?? [];
+      const versionHistoryEntities = modelEntities.filter((entity) =>
+        versionHistoryEntityUuids.has(entity.uuid!),
+      );
+      const modelVersionBootFromPersistedState =
+        await this.modelVersionStoreSection.bootFromPersistedState(versionHistoryEntities);
+      if (modelVersionBootFromPersistedState instanceof Action2Error) {
+        return new Action2Error(
+          "FailedToGetInstances",
+          `bootFromPersistedState failed for section modelVersion: ${modelVersionBootFromPersistedState.errorMessage}`,
+        );
+      }
     }
 
     return Promise.resolve(ACTION_OK);

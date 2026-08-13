@@ -23,3 +23,7 @@ export const MIROIR_DEPLOYMENT_INDEX =
 
 export const MIROIR_MODEL_VERSION_ASSETS_DIR =
   "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion";
+
+/** Relative to `filesystemDeploymentRootDirectory` (monorepo `packages/`). */
+export const MIROIR_MODEL_VERSION_PACKAGES_RELATIVE =
+  "miroir-test-app_deployment-miroir/assets/miroir_modelVersion";

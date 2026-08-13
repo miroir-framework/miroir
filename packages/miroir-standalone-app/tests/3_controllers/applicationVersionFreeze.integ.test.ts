@@ -278,6 +278,10 @@ const deployment_Miroir: Deployment = {
       emulatedServerType: "filesystem",
       directory: "../miroir-test-app_deployment-miroir/assets/miroir_data",
     },
+    modelVersion: {
+      emulatedServerType: "filesystem",
+      directory: "../miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
+    },
   },
 };
 
