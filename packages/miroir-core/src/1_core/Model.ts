@@ -37,7 +37,6 @@ import {
   selfApplicationMiroir
 } from "miroir-test-app_deployment-miroir";
 
-// import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type { DeploymentUuidToReportsEntities } from "../0_interfaces/1_core/Model";

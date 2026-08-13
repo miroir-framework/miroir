@@ -5,7 +5,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "domain_controller_application_version_freeze",
-  "description": "DomainController freezeApplicationVersion action integration tests (#216). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session libraryPlayfieldSeed (Publisher+Country). Duplicate versionName rejection remains unit-covered (actionTest cannot express expected Action failure).",
+  "description": "DomainController freezeApplicationVersion action integration tests (#216, #227). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session libraryPlayfieldSeed (Publisher+Country). Covers EntityVersion freeze/migration plus Query, Report, Menu, Endpoint, Runner, Theme, and TransformerDefinition version snapshots. Duplicate versionName rejection remains unit-covered (actionTest cannot express expected Action failure).",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "domainController.applicationVersion.freeze",
@@ -2760,6 +2760,3908 @@
                 },
                 "expectedValue": {
                   "count": 4
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Freeze V1 snapshots Query Report Menu Endpoint Runner Theme Transformer versions",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Freeze V1 snapshots Query Report Menu Endpoint Runner Theme Transformer versions",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createInstance",
+                "actionLabel": "seedModelConcepts",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "model",
+                  "objects": [
+                    {
+                      "uuid": "6176dcdf-39a6-4805-8dc5-3c2366a31a11",
+                      "parentName": "Query",
+                      "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                      "name": "BookCountByPublisher",
+                      "defaultLabel": "The count of Books By Publisher.",
+                      "description": "This query produces a list of publishers, with the count of Books for each publisher.",
+                      "definition": {
+                        "extractorTemplates": {
+                          "publishers": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "applicationSection": "data",
+                            "parentName": "Publisher",
+                            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
+                          }
+                        },
+                        "combinerTemplates": {
+                          "BookWithPublisher": {
+                            "extractorOrCombinerType": "combinerManyToMany",
+                            "label": "BookCountByPublisher_BookWithPublisher",
+                            "applicationSection": "data",
+                            "parentName": "Book",
+                            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                            "objectListReference": "publishers",
+                            "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher",
+                            "applyTransformer": {
+                              "transformerType": "createObject",
+                              "interpolation": "runtime",
+                              "definition": {
+                                "publisherName": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "referenceObject",
+                                    "name"
+                                  ]
+                                },
+                                "publisherUuid": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "referenceObject",
+                                    "uuid"
+                                  ]
+                                },
+                                "bookName": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "foreignKeyObject",
+                                    "name"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "runtimeTransformers": {
+                          "00_BookCountByPublisher": {
+                            "transformerType": "aggregate",
+                            "applyTo": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "BookWithPublisher"
+                            },
+                            "groupBy": [
+                              "publisherName",
+                              "publisherUuid"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "uuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "parentName": "Report",
+                      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                      "conceptLevel": "Model",
+                      "name": "CountryList",
+                      "defaultLabel": "List of Countries",
+                      "definition": {
+                        "reportParameters": {},
+                        "extractorTemplates": {
+                          "countries": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "parentName": "Country",
+                            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+                          }
+                        },
+                        "runStoredQueries": [
+                          {
+                            "label": "AuthorsByCountryCount",
+                            "storedQuery": "6eaaec37-e3bc-40e4-af1b-4088412c0e34"
+                          }
+                        ],
+                        "section": {
+                          "type": "list",
+                          "definition": [
+                            {
+                              "type": "objectListReportSection",
+                              "definition": {
+                                "label": "Countries",
+                                "parentName": "Country",
+                                "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                "fetchedDataReference": "countries",
+                                "sortByAttribute": "name"
+                              }
+                            },
+                            {
+                              "type": "graphReportSection",
+                              "definition": {
+                                "label": "Author Count by Country",
+                                "fetchedDataReference": "00_AuthorCountByCountry",
+                                "graphType": "bar",
+                                "dataMapping": {
+                                  "labelField": "countryName",
+                                  "valueField": "aggregate"
+                                },
+                                "config": {
+                                  "width": 600,
+                                  "height": 400,
+                                  "showTooltips": true,
+                                  "showLegend": true
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+                      "parentName": "Menu",
+                      "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                      "name": "LibraryMenu",
+                      "defaultLabel": "Library Menu",
+                      "description": "This is the default menu allowing to explore the Library SelfApplication.",
+                      "definition": {
+                        "menuType": "complexMenu",
+                        "definition": [
+                          {
+                            "title": "Library",
+                            "label": "library",
+                            "items": [
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Application",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+                                "icon": "category",
+                                "menuItemScope": "model",
+                                "instanceUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Entities",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                                "icon": "category",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Queries",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
+                                "icon": "saved_search",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Reports",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                                "icon": "newspaper",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Menus",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
+                                "icon": "list",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Endpoints",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+                                "icon": "list",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Runners",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "3c26c31e-c988-40b2-af47-d7380e35ba80",
+                                "icon": "directions_run",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Tests",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "58dc6706-0473-468c-90ee-61b54b157140",
+                                "icon": {
+                                  "iconType": "mui",
+                                  "name": "playlist_add_check"
+                                }
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuItemDivider",
+                                "label": "Library Model-Data Divider",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Books",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+                                "icon": "auto_stories"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Authors",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+                                "icon": "star"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Publishers",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "a77aa662-006d-46cd-9176-01f02a1a12dc",
+                                "icon": "account_balance"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library countries",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+                                "icon": "flag"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Users",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "3df9413d-5050-4357-910c-f764aacae7e6",
+                                "icon": "person"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Lending History",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "cee26a1e-be58-497c-9d15-fa6832787907",
+                                "icon": "history"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuItemDivider",
+                                "label": "Library Data-Evolution Divider",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Application Evolution Traces",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
+                                "icon": "timeline",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Application Evolution Trace Events",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "230467a6-ecc3-4945-bd05-5d9e826c44fb",
+                                "icon": "history",
+                                "menuItemScope": "model"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "uuid": "9884c1a4-5122-488a-85db-a99fbc02e678",
+                      "parentName": "Endpoint",
+                      "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                      "name": "Books",
+                      "version": "1",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "definition": {
+                        "actions": []
+                      }
+                    },
+                    {
+                      "uuid": "98a38a84-e702-4540-a056-c7676a193a2b",
+                      "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "name": "returnDocument",
+                      "defaultLabel": "Return Document",
+                      "parentName": "Runner",
+                      "definition": {
+                        "runnerType": "actionRunner",
+                        "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                        "action": "returnDocument"
+                      }
+                    },
+                    {
+                      "uuid": "f0000001-0001-4001-8001-000000000001",
+                      "parentName": "Theme",
+                      "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+                      "name": "FreezeTestTheme",
+                      "defaultLabel": "Theme for freeze concept test",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "definition": {
+                        "id": "freeze-test",
+                        "name": "Freeze Test Theme"
+                      }
+                    },
+                    {
+                      "uuid": "f0000002-0002-4002-8002-000000000002",
+                      "name": "freezeTestReturnValue",
+                      "defaultLabel": "Return value transformer for freeze test",
+                      "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                      "parentName": "TransformerDefinition",
+                      "classification": "basic",
+                      "transformerInterface": {
+                        "inputOutput": {
+                          "input": "any",
+                          "output": "any"
+                        },
+                        "transformerParameterSchema": {
+                          "transformerType": {
+                            "type": "literal",
+                            "definition": "returnValue"
+                          },
+                          "transformerDefinition": {
+                            "type": "object",
+                            "definition": {
+                              "value": {
+                                "type": "any",
+                                "optional": true,
+                                "description": "Value to return"
+                              }
+                            }
+                          }
+                        },
+                        "transformerResultSchema": {
+                          "returns": "any"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V1-Concepts",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V1-Concepts",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossEntityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "queryVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "QueryVersion",
+                          "parentUuid": "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossQueryVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossQueryVersion",
+                          "parentUuid": "9e4c6d8a-2b5f-4a1c-9d7e-3f6b8a2c4e1d",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "reportVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ReportVersion",
+                          "parentUuid": "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossReportVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossReportVersion",
+                          "parentUuid": "f2b3c4d5-e6f7-4890-a1b2-c3d4e5f6a7b8",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "menuVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "MenuVersion",
+                          "parentUuid": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossMenuVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossMenuVersion",
+                          "parentUuid": "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "endpointVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "EndpointVersion",
+                          "parentUuid": "c2d3e4f5-a6b7-4789-a0b1-d2e3f4a5b6c7",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossEndpointVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossEndpointVersion",
+                          "parentUuid": "d3e4f5a6-b7c8-4890-b1c2-e3f4a5b6c7d8",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "runnerVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "RunnerVersion",
+                          "parentUuid": "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossRunnerVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossRunnerVersion",
+                          "parentUuid": "f6a7b8c9-d0e1-4123-a4b5-c6d7e8f9a0b1",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "themeVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ThemeVersion",
+                          "parentUuid": "a7b8c9d0-e1f2-4012-a3b4-c5d6e7f8a9c0",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossThemeVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossThemeVersion",
+                          "parentUuid": "b8c9d0e1-f2a3-4123-a4b5-c6d7e8f9a0c1",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "transformerDefinitionVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "TransformerDefinitionVersion",
+                          "parentUuid": "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossTransformerDefinitionVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossTransformerDefinitionVersion",
+                          "parentUuid": "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V1-Concepts",
+            "nameGivenToResult": "countSAV_V1-Concepts",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V1-Concepts",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V1-Concepts"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_queryVersions_queryUuid_6176dcdf",
+            "nameGivenToResult": "count_queryVersions_queryUuid_6176dcdf",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_queryVersions_queryUuid_6176dcdf",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "queryVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "queryUuid"
+                        ]
+                      },
+                      "right": "6176dcdf-39a6-4805-8dc5-3c2366a31a11"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_queryVersions_name_BookCountByPublisher",
+            "nameGivenToResult": "count_queryVersions_name_BookCountByPublisher",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_queryVersions_name_BookCountByPublisher",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "queryVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "BookCountByPublisher"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_reportVersions_reportUuid_08176cc7",
+            "nameGivenToResult": "count_reportVersions_reportUuid_08176cc7",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_reportVersions_reportUuid_08176cc7",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "reportVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "reportUuid"
+                        ]
+                      },
+                      "right": "08176cc7-43ae-4fca-91b7-bf869d19e4b9"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_reportVersions_name_CountryList",
+            "nameGivenToResult": "count_reportVersions_name_CountryList",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_reportVersions_name_CountryList",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "reportVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "CountryList"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_menuVersions_menuUuid_dd168e5a",
+            "nameGivenToResult": "count_menuVersions_menuUuid_dd168e5a",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_menuVersions_menuUuid_dd168e5a",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "menuVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "menuUuid"
+                        ]
+                      },
+                      "right": "dd168e5a-2a21-4d2d-a443-032c6d15eb22"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_menuVersions_name_LibraryMenu",
+            "nameGivenToResult": "count_menuVersions_name_LibraryMenu",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_menuVersions_name_LibraryMenu",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "menuVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "LibraryMenu"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_endpointVersions_endpointUuid_9884c1a4",
+            "nameGivenToResult": "count_endpointVersions_endpointUuid_9884c1a4",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_endpointVersions_endpointUuid_9884c1a4",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "endpointVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "endpointUuid"
+                        ]
+                      },
+                      "right": "9884c1a4-5122-488a-85db-a99fbc02e678"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_endpointVersions_name_Books",
+            "nameGivenToResult": "count_endpointVersions_name_Books",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_endpointVersions_name_Books",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "endpointVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "Books"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_runnerVersions_runnerUuid_98a38a84",
+            "nameGivenToResult": "count_runnerVersions_runnerUuid_98a38a84",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_runnerVersions_runnerUuid_98a38a84",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "runnerVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "runnerUuid"
+                        ]
+                      },
+                      "right": "98a38a84-e702-4540-a056-c7676a193a2b"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_runnerVersions_name_returnDocument",
+            "nameGivenToResult": "count_runnerVersions_name_returnDocument",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_runnerVersions_name_returnDocument",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "runnerVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "returnDocument"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_themeVersions_themeUuid_f0000001",
+            "nameGivenToResult": "count_themeVersions_themeUuid_f0000001",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_themeVersions_themeUuid_f0000001",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "themeVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "themeUuid"
+                        ]
+                      },
+                      "right": "f0000001-0001-4001-8001-000000000001"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_themeVersions_name_FreezeTestTheme",
+            "nameGivenToResult": "count_themeVersions_name_FreezeTestTheme",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_themeVersions_name_FreezeTestTheme",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "themeVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "FreezeTestTheme"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_transformerDefinitionVersions_transformerDefinitionUuid_f0000002",
+            "nameGivenToResult": "count_transformerDefinitionVersions_transformerDefinitionUuid_f0000002",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_transformerDefinitionVersions_transformerDefinitionUuid_f0000002",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "transformerDefinitionVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "transformerDefinitionUuid"
+                        ]
+                      },
+                      "right": "f0000002-0002-4002-8002-000000000002"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_transformerDefinitionVersions_name_freezeTestReturnValue",
+            "nameGivenToResult": "count_transformerDefinitionVersions_name_freezeTestReturnValue",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_transformerDefinitionVersions_name_freezeTestReturnValue",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "transformerDefinitionVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "freezeTestReturnValue"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_crossQueryVersions_at_least_one",
+            "nameGivenToResult": "count_crossQueryVersions_at_least_one",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_crossQueryVersions_at_least_one",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crossQueryVersions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_crossReportVersions_at_least_one",
+            "nameGivenToResult": "count_crossReportVersions_at_least_one",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_crossReportVersions_at_least_one",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crossReportVersions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_crossMenuVersions_at_least_one",
+            "nameGivenToResult": "count_crossMenuVersions_at_least_one",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_crossMenuVersions_at_least_one",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crossMenuVersions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_crossEndpointVersions_at_least_one",
+            "nameGivenToResult": "count_crossEndpointVersions_at_least_one",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_crossEndpointVersions_at_least_one",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crossEndpointVersions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_crossRunnerVersions_at_least_one",
+            "nameGivenToResult": "count_crossRunnerVersions_at_least_one",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_crossRunnerVersions_at_least_one",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crossRunnerVersions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_crossThemeVersions_at_least_one",
+            "nameGivenToResult": "count_crossThemeVersions_at_least_one",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_crossThemeVersions_at_least_one",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crossThemeVersions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_crossTransformerDefinitionVersions_at_least_one",
+            "nameGivenToResult": "count_crossTransformerDefinitionVersions_at_least_one",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_crossTransformerDefinitionVersions_at_least_one",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crossTransformerDefinitionVersions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_queryVersions_uuid_differs_from_live",
+            "nameGivenToResult": "count_queryVersions_uuid_differs_from_live",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_queryVersions_uuid_differs_from_live",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "queryVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "queryUuid"
+                          ]
+                        },
+                        "right": "6176dcdf-39a6-4805-8dc5-3c2366a31a11"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "uuid"
+                          ]
+                        },
+                        "right": "6176dcdf-39a6-4805-8dc5-3c2366a31a11"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_reportVersions_uuid_differs_from_live",
+            "nameGivenToResult": "count_reportVersions_uuid_differs_from_live",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_reportVersions_uuid_differs_from_live",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "reportVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "reportUuid"
+                          ]
+                        },
+                        "right": "08176cc7-43ae-4fca-91b7-bf869d19e4b9"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "uuid"
+                          ]
+                        },
+                        "right": "08176cc7-43ae-4fca-91b7-bf869d19e4b9"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_menuVersions_uuid_differs_from_live",
+            "nameGivenToResult": "count_menuVersions_uuid_differs_from_live",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_menuVersions_uuid_differs_from_live",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "menuVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "menuUuid"
+                          ]
+                        },
+                        "right": "dd168e5a-2a21-4d2d-a443-032c6d15eb22"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "uuid"
+                          ]
+                        },
+                        "right": "dd168e5a-2a21-4d2d-a443-032c6d15eb22"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_endpointVersions_uuid_differs_from_live",
+            "nameGivenToResult": "count_endpointVersions_uuid_differs_from_live",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_endpointVersions_uuid_differs_from_live",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "endpointVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "endpointUuid"
+                          ]
+                        },
+                        "right": "9884c1a4-5122-488a-85db-a99fbc02e678"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "uuid"
+                          ]
+                        },
+                        "right": "9884c1a4-5122-488a-85db-a99fbc02e678"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_runnerVersions_uuid_differs_from_live",
+            "nameGivenToResult": "count_runnerVersions_uuid_differs_from_live",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_runnerVersions_uuid_differs_from_live",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "runnerVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "runnerUuid"
+                          ]
+                        },
+                        "right": "98a38a84-e702-4540-a056-c7676a193a2b"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "uuid"
+                          ]
+                        },
+                        "right": "98a38a84-e702-4540-a056-c7676a193a2b"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_themeVersions_uuid_differs_from_live",
+            "nameGivenToResult": "count_themeVersions_uuid_differs_from_live",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_themeVersions_uuid_differs_from_live",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "themeVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "themeUuid"
+                          ]
+                        },
+                        "right": "f0000001-0001-4001-8001-000000000001"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "uuid"
+                          ]
+                        },
+                        "right": "f0000001-0001-4001-8001-000000000001"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_transformerDefinitionVersions_uuid_differs_from_live",
+            "nameGivenToResult": "count_transformerDefinitionVersions_uuid_differs_from_live",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_transformerDefinitionVersions_uuid_differs_from_live",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "transformerDefinitionVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "transformerDefinitionUuid"
+                          ]
+                        },
+                        "right": "f0000002-0002-4002-8002-000000000002"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "uuid"
+                          ]
+                        },
+                        "right": "f0000002-0002-4002-8002-000000000002"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "Freeze then edit live model concepts leaves historical versions unchanged",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "Freeze then edit live model concepts leaves historical versions unchanged",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshMiroirLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "actionType": "rollback",
+                "actionLabel": "refreshLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "createInstance",
+                "actionLabel": "seedModelConcepts",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "model",
+                  "objects": [
+                    {
+                      "uuid": "6176dcdf-39a6-4805-8dc5-3c2366a31a11",
+                      "parentName": "Query",
+                      "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                      "name": "BookCountByPublisher",
+                      "defaultLabel": "The count of Books By Publisher.",
+                      "description": "This query produces a list of publishers, with the count of Books for each publisher.",
+                      "definition": {
+                        "extractorTemplates": {
+                          "publishers": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "applicationSection": "data",
+                            "parentName": "Publisher",
+                            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
+                          }
+                        },
+                        "combinerTemplates": {
+                          "BookWithPublisher": {
+                            "extractorOrCombinerType": "combinerManyToMany",
+                            "label": "BookCountByPublisher_BookWithPublisher",
+                            "applicationSection": "data",
+                            "parentName": "Book",
+                            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                            "objectListReference": "publishers",
+                            "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher",
+                            "applyTransformer": {
+                              "transformerType": "createObject",
+                              "interpolation": "runtime",
+                              "definition": {
+                                "publisherName": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "referenceObject",
+                                    "name"
+                                  ]
+                                },
+                                "publisherUuid": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "referenceObject",
+                                    "uuid"
+                                  ]
+                                },
+                                "bookName": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "foreignKeyObject",
+                                    "name"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "runtimeTransformers": {
+                          "00_BookCountByPublisher": {
+                            "transformerType": "aggregate",
+                            "applyTo": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "BookWithPublisher"
+                            },
+                            "groupBy": [
+                              "publisherName",
+                              "publisherUuid"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "uuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "parentName": "Report",
+                      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                      "conceptLevel": "Model",
+                      "name": "CountryList",
+                      "defaultLabel": "List of Countries",
+                      "definition": {
+                        "reportParameters": {},
+                        "extractorTemplates": {
+                          "countries": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "parentName": "Country",
+                            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+                          }
+                        },
+                        "runStoredQueries": [
+                          {
+                            "label": "AuthorsByCountryCount",
+                            "storedQuery": "6eaaec37-e3bc-40e4-af1b-4088412c0e34"
+                          }
+                        ],
+                        "section": {
+                          "type": "list",
+                          "definition": [
+                            {
+                              "type": "objectListReportSection",
+                              "definition": {
+                                "label": "Countries",
+                                "parentName": "Country",
+                                "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                "fetchedDataReference": "countries",
+                                "sortByAttribute": "name"
+                              }
+                            },
+                            {
+                              "type": "graphReportSection",
+                              "definition": {
+                                "label": "Author Count by Country",
+                                "fetchedDataReference": "00_AuthorCountByCountry",
+                                "graphType": "bar",
+                                "dataMapping": {
+                                  "labelField": "countryName",
+                                  "valueField": "aggregate"
+                                },
+                                "config": {
+                                  "width": 600,
+                                  "height": 400,
+                                  "showTooltips": true,
+                                  "showLegend": true
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+                      "parentName": "Menu",
+                      "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                      "name": "LibraryMenu",
+                      "defaultLabel": "Library Menu",
+                      "description": "This is the default menu allowing to explore the Library SelfApplication.",
+                      "definition": {
+                        "menuType": "complexMenu",
+                        "definition": [
+                          {
+                            "title": "Library",
+                            "label": "library",
+                            "items": [
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Application",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+                                "icon": "category",
+                                "menuItemScope": "model",
+                                "instanceUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Entities",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                                "icon": "category",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Queries",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
+                                "icon": "saved_search",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Reports",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                                "icon": "newspaper",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Menus",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
+                                "icon": "list",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Endpoints",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+                                "icon": "list",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Runners",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "3c26c31e-c988-40b2-af47-d7380e35ba80",
+                                "icon": "directions_run",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Tests",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "58dc6706-0473-468c-90ee-61b54b157140",
+                                "icon": {
+                                  "iconType": "mui",
+                                  "name": "playlist_add_check"
+                                }
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuItemDivider",
+                                "label": "Library Model-Data Divider",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Books",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+                                "icon": "auto_stories"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Authors",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+                                "icon": "star"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Publishers",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "a77aa662-006d-46cd-9176-01f02a1a12dc",
+                                "icon": "account_balance"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library countries",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+                                "icon": "flag"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Users",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "3df9413d-5050-4357-910c-f764aacae7e6",
+                                "icon": "person"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Lending History",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "cee26a1e-be58-497c-9d15-fa6832787907",
+                                "icon": "history"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuItemDivider",
+                                "label": "Library Data-Evolution Divider",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Application Evolution Traces",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
+                                "icon": "timeline",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Application Evolution Trace Events",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "230467a6-ecc3-4945-bd05-5d9e826c44fb",
+                                "icon": "history",
+                                "menuItemScope": "model"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "uuid": "9884c1a4-5122-488a-85db-a99fbc02e678",
+                      "parentName": "Endpoint",
+                      "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                      "name": "Books",
+                      "version": "1",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "definition": {
+                        "actions": []
+                      }
+                    },
+                    {
+                      "uuid": "98a38a84-e702-4540-a056-c7676a193a2b",
+                      "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "name": "returnDocument",
+                      "defaultLabel": "Return Document",
+                      "parentName": "Runner",
+                      "definition": {
+                        "runnerType": "actionRunner",
+                        "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                        "action": "returnDocument"
+                      }
+                    },
+                    {
+                      "uuid": "f0000001-0001-4001-8001-000000000001",
+                      "parentName": "Theme",
+                      "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+                      "name": "FreezeTestTheme",
+                      "defaultLabel": "Theme for freeze concept test",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "definition": {
+                        "id": "freeze-test",
+                        "name": "Freeze Test Theme"
+                      }
+                    },
+                    {
+                      "uuid": "f0000002-0002-4002-8002-000000000002",
+                      "name": "freezeTestReturnValue",
+                      "defaultLabel": "Return value transformer for freeze test",
+                      "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                      "parentName": "TransformerDefinition",
+                      "classification": "basic",
+                      "transformerInterface": {
+                        "inputOutput": {
+                          "input": "any",
+                          "output": "any"
+                        },
+                        "transformerParameterSchema": {
+                          "transformerType": {
+                            "type": "literal",
+                            "definition": "returnValue"
+                          },
+                          "transformerDefinition": {
+                            "type": "object",
+                            "definition": {
+                              "value": {
+                                "type": "any",
+                                "optional": true,
+                                "description": "Value to return"
+                              }
+                            }
+                          }
+                        },
+                        "transformerResultSchema": {
+                          "returns": "any"
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "freezeApplicationVersion",
+                "actionLabel": "freeze_V1-ConceptIsolation",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "versionName": "V1-ConceptIsolation",
+                  "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+                }
+              },
+              {
+                "actionType": "updateInstance",
+                "actionLabel": "renameQueryAfterFreeze",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "model",
+                  "objects": [
+                    {
+                      "uuid": "6176dcdf-39a6-4805-8dc5-3c2366a31a11",
+                      "parentName": "Query",
+                      "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                      "name": "BookCountRenamedAfterFreeze",
+                      "defaultLabel": "The count of Books By Publisher.",
+                      "description": "This query produces a list of publishers, with the count of Books for each publisher.",
+                      "definition": {
+                        "extractorTemplates": {
+                          "publishers": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "applicationSection": "data",
+                            "parentName": "Publisher",
+                            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
+                          }
+                        },
+                        "combinerTemplates": {
+                          "BookWithPublisher": {
+                            "extractorOrCombinerType": "combinerManyToMany",
+                            "label": "BookCountByPublisher_BookWithPublisher",
+                            "applicationSection": "data",
+                            "parentName": "Book",
+                            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                            "objectListReference": "publishers",
+                            "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher",
+                            "applyTransformer": {
+                              "transformerType": "createObject",
+                              "interpolation": "runtime",
+                              "definition": {
+                                "publisherName": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "referenceObject",
+                                    "name"
+                                  ]
+                                },
+                                "publisherUuid": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "referenceObject",
+                                    "uuid"
+                                  ]
+                                },
+                                "bookName": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "foreignKeyObject",
+                                    "name"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "runtimeTransformers": {
+                          "00_BookCountByPublisher": {
+                            "transformerType": "aggregate",
+                            "applyTo": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "BookWithPublisher"
+                            },
+                            "groupBy": [
+                              "publisherName",
+                              "publisherUuid"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "updateInstance",
+                "actionLabel": "renameReportAfterFreeze",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "model",
+                  "objects": [
+                    {
+                      "uuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "parentName": "Report",
+                      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                      "conceptLevel": "Model",
+                      "name": "CountryListRenamedAfterFreeze",
+                      "defaultLabel": "List of Countries",
+                      "definition": {
+                        "reportParameters": {},
+                        "extractorTemplates": {
+                          "countries": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "parentName": "Country",
+                            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+                          }
+                        },
+                        "runStoredQueries": [
+                          {
+                            "label": "AuthorsByCountryCount",
+                            "storedQuery": "6eaaec37-e3bc-40e4-af1b-4088412c0e34"
+                          }
+                        ],
+                        "section": {
+                          "type": "list",
+                          "definition": [
+                            {
+                              "type": "objectListReportSection",
+                              "definition": {
+                                "label": "Countries",
+                                "parentName": "Country",
+                                "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                "fetchedDataReference": "countries",
+                                "sortByAttribute": "name"
+                              }
+                            },
+                            {
+                              "type": "graphReportSection",
+                              "definition": {
+                                "label": "Author Count by Country",
+                                "fetchedDataReference": "00_AuthorCountByCountry",
+                                "graphType": "bar",
+                                "dataMapping": {
+                                  "labelField": "countryName",
+                                  "valueField": "aggregate"
+                                },
+                                "config": {
+                                  "width": 600,
+                                  "height": 400,
+                                  "showTooltips": true,
+                                  "showLegend": true
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "updateInstance",
+                "actionLabel": "renameMenuAfterFreeze",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "model",
+                  "objects": [
+                    {
+                      "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+                      "parentName": "Menu",
+                      "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                      "name": "LibraryMenuRenamedAfterFreeze",
+                      "defaultLabel": "Library Menu",
+                      "description": "This is the default menu allowing to explore the Library SelfApplication.",
+                      "definition": {
+                        "menuType": "complexMenu",
+                        "definition": [
+                          {
+                            "title": "Library",
+                            "label": "library",
+                            "items": [
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Application",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+                                "icon": "category",
+                                "menuItemScope": "model",
+                                "instanceUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Entities",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+                                "icon": "category",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Queries",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
+                                "icon": "saved_search",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Reports",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+                                "icon": "newspaper",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Menus",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
+                                "icon": "list",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Endpoints",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+                                "icon": "list",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Runners",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "3c26c31e-c988-40b2-af47-d7380e35ba80",
+                                "icon": "directions_run",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Tests",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "58dc6706-0473-468c-90ee-61b54b157140",
+                                "icon": {
+                                  "iconType": "mui",
+                                  "name": "playlist_add_check"
+                                }
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuItemDivider",
+                                "label": "Library Model-Data Divider",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Books",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+                                "icon": "auto_stories"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Authors",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+                                "icon": "star"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Publishers",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "a77aa662-006d-46cd-9176-01f02a1a12dc",
+                                "icon": "account_balance"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library countries",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+                                "icon": "flag"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Users",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "3df9413d-5050-4357-910c-f764aacae7e6",
+                                "icon": "person"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Library Lending History",
+                                "section": "data",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "cee26a1e-be58-497c-9d15-fa6832787907",
+                                "icon": "history"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuItemDivider",
+                                "label": "Library Data-Evolution Divider",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Application Evolution Traces",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
+                                "icon": "timeline",
+                                "menuItemScope": "model"
+                              },
+                              {
+                                "miroirMenuItemType": "miroirMenuReportLink",
+                                "label": "Application Evolution Trace Events",
+                                "section": "model",
+                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "reportUuid": "230467a6-ecc3-4945-bd05-5d9e826c44fb",
+                                "icon": "history",
+                                "menuItemScope": "model"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "actionType": "commit",
+                "actionLabel": "commitConceptRenames",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState",
+                "nameGivenToResult": "freezeState",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "storedQueries": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Query",
+                          "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "reports": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Report",
+                          "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "menus": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Menu",
+                          "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "endpoints": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Endpoint",
+                          "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "runners": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Runner",
+                          "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "themes": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Theme",
+                          "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "transformerDefinitions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "TransformerDefinition",
+                          "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "applicationVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "SelfApplicationVersion",
+                          "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "entityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "EntityVersion",
+                          "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossEntityVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossEntityVersion",
+                          "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "queryVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "QueryVersion",
+                          "parentUuid": "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossQueryVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossQueryVersion",
+                          "parentUuid": "9e4c6d8a-2b5f-4a1c-9d7e-3f6b8a2c4e1d",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "reportVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ReportVersion",
+                          "parentUuid": "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossReportVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossReportVersion",
+                          "parentUuid": "f2b3c4d5-e6f7-4890-a1b2-c3d4e5f6a7b8",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "menuVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "MenuVersion",
+                          "parentUuid": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossMenuVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossMenuVersion",
+                          "parentUuid": "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "endpointVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "EndpointVersion",
+                          "parentUuid": "c2d3e4f5-a6b7-4789-a0b1-d2e3f4a5b6c7",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossEndpointVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossEndpointVersion",
+                          "parentUuid": "d3e4f5a6-b7c8-4890-b1c2-e3f4a5b6c7d8",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "runnerVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "RunnerVersion",
+                          "parentUuid": "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossRunnerVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossRunnerVersion",
+                          "parentUuid": "f6a7b8c9-d0e1-4123-a4b5-c6d7e8f9a0b1",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "themeVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ThemeVersion",
+                          "parentUuid": "a7b8c9d0-e1f2-4012-a3b4-c5d6e7f8a9c0",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossThemeVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossThemeVersion",
+                          "parentUuid": "b8c9d0e1-f2a3-4123-a4b5-c6d7e8f9a0c1",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "transformerDefinitionVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "TransformerDefinitionVersion",
+                          "parentUuid": "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossTransformerDefinitionVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossTransformerDefinitionVersion",
+                          "parentUuid": "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "countSAV_V1-ConceptIsolation",
+            "nameGivenToResult": "countSAV_V1-ConceptIsolation",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "countSAV_V1-ConceptIsolation",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "applicationVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "V1-ConceptIsolation"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_storedQueries_name_BookCountRenamedAfterFreeze",
+            "nameGivenToResult": "count_storedQueries_name_BookCountRenamedAfterFreeze",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_storedQueries_name_BookCountRenamedAfterFreeze",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "storedQueries"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "BookCountRenamedAfterFreeze"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_storedQueries_name_BookCountByPublisher",
+            "nameGivenToResult": "count_storedQueries_name_BookCountByPublisher",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_storedQueries_name_BookCountByPublisher",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "storedQueries"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "BookCountByPublisher"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_reports_name_CountryListRenamedAfterFreeze",
+            "nameGivenToResult": "count_reports_name_CountryListRenamedAfterFreeze",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_reports_name_CountryListRenamedAfterFreeze",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "reports"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "CountryListRenamedAfterFreeze"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_reports_name_CountryList",
+            "nameGivenToResult": "count_reports_name_CountryList",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_reports_name_CountryList",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "reports"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "CountryList"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_menus_name_LibraryMenuRenamedAfterFreeze",
+            "nameGivenToResult": "count_menus_name_LibraryMenuRenamedAfterFreeze",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_menus_name_LibraryMenuRenamedAfterFreeze",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "menus"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "LibraryMenuRenamedAfterFreeze"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_menus_name_LibraryMenu",
+            "nameGivenToResult": "count_menus_name_LibraryMenu",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_menus_name_LibraryMenu",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "menus"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "LibraryMenu"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_queryVersions_name_BookCountByPublisher",
+            "nameGivenToResult": "count_queryVersions_name_BookCountByPublisher",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_queryVersions_name_BookCountByPublisher",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "queryVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "BookCountByPublisher"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_queryVersions_name_BookCountRenamedAfterFreeze",
+            "nameGivenToResult": "count_queryVersions_name_BookCountRenamedAfterFreeze",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_queryVersions_name_BookCountRenamedAfterFreeze",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "queryVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "BookCountRenamedAfterFreeze"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_reportVersions_name_CountryList",
+            "nameGivenToResult": "count_reportVersions_name_CountryList",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_reportVersions_name_CountryList",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "reportVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "CountryList"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_reportVersions_name_CountryListRenamedAfterFreeze",
+            "nameGivenToResult": "count_reportVersions_name_CountryListRenamedAfterFreeze",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_reportVersions_name_CountryListRenamedAfterFreeze",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "reportVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "CountryListRenamedAfterFreeze"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_menuVersions_name_LibraryMenu",
+            "nameGivenToResult": "count_menuVersions_name_LibraryMenu",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_menuVersions_name_LibraryMenu",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "menuVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "LibraryMenu"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "count_menuVersions_name_LibraryMenuRenamedAfterFreeze",
+            "nameGivenToResult": "count_menuVersions_name_LibraryMenuRenamedAfterFreeze",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "count_menuVersions_name_LibraryMenuRenamedAfterFreeze",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "menuVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "LibraryMenuRenamedAfterFreeze"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
                 }
               }
             }
