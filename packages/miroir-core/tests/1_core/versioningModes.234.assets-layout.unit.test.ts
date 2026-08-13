@@ -1,6 +1,5 @@
 /**
- * #234 Slice 0.2 / Slice 2 target — Miroir VH assets belong in miroir_modelVersion/.
- * RED until Slice 2 asset relocation is complete.
+ * #234 Slice 2 — Miroir VH assets belong in miroir_modelVersion/.
  */
 import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -66,6 +65,9 @@ describe("234 target — Miroir modelVersion assets layout", () => {
     );
     expect(src).not.toMatch(
       /from\s+"\.\/assets\/miroir_data\/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24\//,
+    );
+    expect(src).not.toMatch(
+      /from\s+"\.\/assets\/miroir_data\/8bec933d-6287-4de7-8a88-5c24216de9f4\//,
     );
   });
 });

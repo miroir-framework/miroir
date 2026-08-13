@@ -21,7 +21,7 @@ const MODEL_ENTITIES = join(
 );
 const ENTITY_EV = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
 );
 
 function readEntity(filename: string): Entity {

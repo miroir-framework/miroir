@@ -8,12 +8,11 @@ export const REPO_ROOT = join(import.meta.dirname, "../../../..");
 /** Deployment packages under packages/miroir-test-app_deployment-* */
 export const DEPLOYMENT_PACKAGE_GLOB = "miroir-test-app_deployment-";
 
-/** Miroir VH parent folders under miroir_data/ today (Slice 0 baseline → move in Slice 2). */
+/** Miroir VH parent folders under assets/miroir_modelVersion/ (Slice 2 layout). */
 export const MIROIR_VH_DATA_PARENTS_SLICE0: Readonly<Record<string, number>> = {
   "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd": 34,
   "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24": 2,
-  "e4320b9e-ab45-4abe-85d8-359604b3c62f": 3,
-  "3d8da4d4-8f76-4bb4-9212-14869d81c00c": 11,
+  "8bec933d-6287-4de7-8a88-5c24216de9f4": 7,
 };
 
 export const MIROIR_ENTITY_VERSION_METACLASS_PATH =

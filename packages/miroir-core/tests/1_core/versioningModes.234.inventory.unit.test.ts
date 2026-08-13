@@ -1,5 +1,5 @@
 /**
- * #234 Slice 0.1 — deployment VH inventory characterization (current wrong state).
+ * #234 Slice 0.1 / Slice 2 — deployment VH inventory (post-relocation for Miroir).
  */
 import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, statSync } from "node:fs";
@@ -64,8 +64,14 @@ describe("234 Slice 0.1 — deployment VH inventory", () => {
     expect(versionHistoryEntityUuids.size).toBeGreaterThanOrEqual(17);
   });
 
-  it("no deployment package has assets/*_modelVersion/ yet", () => {
+  it("Miroir deployment package has assets/miroir_modelVersion/ after Slice 2", () => {
+    const miroirModelVersion = join(
+      REPO_ROOT,
+      "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
+    );
+    expect(existsSync(miroirModelVersion)).toBe(true);
     for (const packageName of listDeploymentPackages()) {
+      if (packageName === "miroir-test-app_deployment-miroir") continue;
       const assetsRoot = join(REPO_ROOT, "packages", packageName, "assets");
       if (!existsSync(assetsRoot)) continue;
       const modelVersionDirs = readdirSync(assetsRoot).filter((name) => name.endsWith("_modelVersion"));
@@ -73,13 +79,13 @@ describe("234 Slice 0.1 — deployment VH inventory", () => {
     }
   });
 
-  it("Miroir package still has VH instance JSON under miroir_data/ (pre-Slice-2 baseline)", () => {
-    const miroirData = join(
+  it("Miroir VH instance JSON lives under miroir_modelVersion/ (Slice 2 layout)", () => {
+    const miroirModelVersion = join(
       REPO_ROOT,
-      "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+      "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
     );
     for (const [parentUuid, expectedCount] of Object.entries(MIROIR_VH_DATA_PARENTS_SLICE0)) {
-      const dir = join(miroirData, parentUuid);
+      const dir = join(miroirModelVersion, parentUuid);
       expect(existsSync(dir), parentUuid).toBe(true);
       expect(countJsonFiles(dir), parentUuid).toBe(expectedCount);
     }
@@ -92,15 +98,12 @@ describe("234 Slice 0.1 — deployment VH inventory", () => {
     }
 
     const miroirHits = allHits.filter((h) => h.packageName === "miroir-test-app_deployment-miroir");
-    expect(miroirHits.length).toBeGreaterThan(0);
-    expect(miroirHits.every((h) => h.sectionDir === "miroir_data")).toBe(true);
+    expect(miroirHits.length).toBe(0);
 
     const byKey = Object.fromEntries(
       allHits.map((h) => [`${h.packageName}:${h.sectionDir}:${h.parentUuid}`, h.fileCount]),
     );
     expect(byKey).toMatchObject({
-      "miroir-test-app_deployment-miroir:miroir_data:54b9c72f-d4f3-4db9-9e0e-0dc840b530bd": 34,
-      "miroir-test-app_deployment-miroir:miroir_data:c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24": 2,
       "miroir-test-app_deployment-admin:admin_model:54b9c72f-d4f3-4db9-9e0e-0dc840b530bd": 8,
       "miroir-test-app_deployment-library:library_model:54b9c72f-d4f3-4db9-9e0e-0dc840b530bd": 6,
     });
