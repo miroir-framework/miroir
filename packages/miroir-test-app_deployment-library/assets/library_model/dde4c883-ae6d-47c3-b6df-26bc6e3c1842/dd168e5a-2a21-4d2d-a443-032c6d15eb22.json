@@ -24,28 +24,10 @@
           },
           {
             "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Application Versions",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "0810de28-fdab-4baf-8935-7e04a8f779a9",
-            "icon": "web_asset",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Library Entities",
             "section": "model",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-            "icon": "category",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Entity Definitions",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
             "icon": "category",
             "menuItemScope": "model"
           },

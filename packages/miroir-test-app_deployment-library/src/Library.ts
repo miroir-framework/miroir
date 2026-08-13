@@ -55,20 +55,6 @@ import bookEndpoint from "../assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d
 import returnDocument from "../assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/98a38a84-e702-4540-a056-c7676a193a2b.json" with { type: "json" };
 import lendDocument from "../assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/cc853632-f158-43fa-b9ed-437c9c25f539.json" with { type: "json" };
 
-import selfApplicationVersionLibraryInitialVersion from "../assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json" with { type: "json" };
-
-
-// import {
-//   reportCountryDetails,
-//   reportLendingHistoryItemDetails,
-//   reportLendingHistoryItemList,
-//   reportLibraryHome,
-//   reportPublisherDetails,
-//   reportUserDetails,
-//   reportUserList,
-//   // returnDocument,
-//   selfApplicationVersionLibraryInitialVersion,
-// } from "..";
 import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json" with { type: "json" };
 import menuDefaultLibrary from "../assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json" with { type: "json" };
 
@@ -187,9 +173,7 @@ export const defaultLibraryAppModel: MetaModel = {
     transformerDefinitionVersions: [],
       storedQueries: [],
       jzodSchemas: [],
-      applicationVersions: [
-        selfApplicationVersionLibraryInitialVersion,
-      ],
+      applicationVersions: [],
     };
 
 // console.log("###################################################################################")
