@@ -27,6 +27,7 @@ import {
   entityDefinitionBlob,
   reportBlobDetails,
   reportBlobList,
+  selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
 import { LocalCache } from "../src/index.js";
@@ -123,6 +124,7 @@ describe("214 Phase 5 — Blob partial-fetch tracer", () => {
 
   it("5.2.1 refresh does not stage-C full Blob (#114)", () => {
     const included = resolveEntitiesToFetchOnRefresh(
+      selfApplicationMiroir.uuid as string,
       [],
       [entityBlob as Entity],
       { [BLOB]: entityDefinitionBlob as EntityVersion }

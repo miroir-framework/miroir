@@ -552,8 +552,7 @@ export class DomainController implements DomainControllerInterface {
           };
 
           // Model is always loaded entirely (application concepts). Fetch model first so
-          // Entity cache policies are available for data refresh. EntityVersion is not
-          // required for Miroir bootstrap (#222 — EV instances load from data when listed).
+          // Entity cache policies are available for non-model refresh (#232 modelVersion).
           const modelFetchTargets = modelEntitiesToFetch.map((e) => ({
             section: "model" as ApplicationSection,
             entity: e,
@@ -561,7 +560,7 @@ export class DomainController implements DomainControllerInterface {
           const modelInstances = await Promise.all(modelFetchTargets.map(fetchEntityInstances));
 
           // Optional cache-policy fallback from EntityVersion when EV was fetched in the
-          // model phase (Library / Admin). Miroir EV is not in miroirModelEntities (#222);
+          // model phase (Library / Admin). Miroir EV is not in miroirModelEntities;
           // empty map is fine — refresh policy uses Entity.cache from model-fetched Entities.
           const entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {};
           const entityDefinitionFetchIndex = modelEntitiesToFetch.findIndex(
@@ -583,14 +582,17 @@ export class DomainController implements DomainControllerInterface {
           }
 
           const toFetchEntities = resolveEntitiesToFetchOnRefresh(
+            applicationUuid,
             modelEntitiesToFetch,
             dataEntitiesToFetch as Entity[],
             entityDefinitionsByEntityUuid,
           );
-          const dataFetchTargets = toFetchEntities.filter((e) => e.section === "data");
-          const dataInstances = await Promise.all(dataFetchTargets.map(fetchEntityInstances));
+          const nonModelFetchTargets = toFetchEntities.filter((e) => e.section !== "model");
+          const nonModelInstances = await Promise.all(
+            nonModelFetchTargets.map(fetchEntityInstances),
+          );
 
-          const allInstances = [...modelInstances, ...dataInstances];
+          const allInstances = [...modelInstances, ...nonModelInstances];
 
           const errors = allInstances.filter((result) => result instanceof Action2Error);
           const nonErrors = allInstances.filter((result) => !(result instanceof Action2Error));

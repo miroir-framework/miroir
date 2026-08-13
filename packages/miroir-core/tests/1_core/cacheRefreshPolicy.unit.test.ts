@@ -4,7 +4,7 @@ import {
   isLazyCacheOnRefreshEntity,
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
-} from "../../src/1_core/cacheRefreshPolicy.js";
+} from "../../src/1_core/localCache/cacheRefreshPolicy.js";
 import type {
   ApplicationSection,
   Entity,
@@ -72,6 +72,7 @@ describe("shouldCacheAllInstancesOnRefresh (1.1 default eager)", () => {
 });
 
 describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
+  const applicationUuid = "00000000-0000-4000-8000-000000000001";
   const modelA = entity("model-a", "Entity");
   const modelB = entity("model-b", "EntityVersion");
   const dataEager = entity("data-eager", "Book");
@@ -86,6 +87,7 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
 
   it("always includes every model entity regardless of cache flags", () => {
     const result = resolveEntitiesToFetchOnRefresh(
+      applicationUuid,
       [modelA, modelB],
       [dataLazy],
       {
@@ -103,6 +105,7 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
 
   it("includes data entities whose cacheAllInstancesOnRefresh is true or absent", () => {
     const result = resolveEntitiesToFetchOnRefresh(
+      applicationUuid,
       [modelA],
       [dataEager, dataDefault, dataLazy],
       definitionsByEntityUuid,
@@ -116,6 +119,7 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
 
   it("excludes data entities with cacheAllInstancesOnRefresh false", () => {
     const result = resolveEntitiesToFetchOnRefresh(
+      applicationUuid,
       [],
       [dataLazy],
       definitionsByEntityUuid,
@@ -125,12 +129,13 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
   });
 
   it("excludes Miroir Blob when EntityVersion asset sets cacheAllInstancesOnRefresh false (Phase 4)", async () => {
-    const { entityBlob, entityDefinitionBlob } = await import(
+    const { entityBlob, entityDefinitionBlob, selfApplicationMiroir } = await import(
       "miroir-test-app_deployment-miroir"
     );
     expect(entityDefinitionBlob.cache?.cacheAllInstancesOnRefresh).toBe(false);
 
     const result = resolveEntitiesToFetchOnRefresh(
+      selfApplicationMiroir.uuid as string,
       [],
       [entityBlob as Entity],
       { [entityBlob.uuid]: entityDefinitionBlob as EntityVersion },
@@ -140,15 +145,41 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
   });
 
   it("excludes Blob from Entity.cache without EntityVersion map (Phase 7)", async () => {
-    const { entityBlob } = await import("miroir-test-app_deployment-miroir");
+    const { entityBlob, selfApplicationMiroir } = await import(
+      "miroir-test-app_deployment-miroir"
+    );
     expect(entityBlob.cache?.cacheAllInstancesOnRefresh).toBe(false);
 
-    const result = resolveEntitiesToFetchOnRefresh([], [entityBlob as Entity]);
+    const result = resolveEntitiesToFetchOnRefresh(
+      selfApplicationMiroir.uuid as string,
+      [],
+      [entityBlob as Entity],
+    );
     expect(result).toEqual([]);
+  });
+
+  it("routes version-history entities to modelVersion (#232)", async () => {
+    const { entitySelfApplicationVersion, selfApplicationMiroir } = await import(
+      "miroir-test-app_deployment-miroir"
+    );
+
+    const result = resolveEntitiesToFetchOnRefresh(
+      selfApplicationMiroir.uuid as string,
+      [],
+      [entitySelfApplicationVersion as Entity],
+    );
+
+    expect(result).toEqual([
+      {
+        section: "modelVersion" as ApplicationSection,
+        entity: entitySelfApplicationVersion,
+      },
+    ]);
   });
 
   it("tags sections correctly on the fetch list", () => {
     const result = resolveEntitiesToFetchOnRefresh(
+      applicationUuid,
       [modelA],
       [dataEager],
       definitionsByEntityUuid,
