@@ -23,7 +23,7 @@ import {
 
 import { TransformerEditor } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
 import { cleanLevel, packageName } from "../3_controllers/constants";
-import { book1, entityBook, entityDefinitionBook } from "miroir-test-app_deployment-library";
+import { book1, entityBook } from "miroir-test-app_deployment-library";
 
 // ################################################################################################
 const pageLabel = "TransformerEditor.test";
@@ -63,9 +63,9 @@ function createMockStore() {
       [getReduxDeploymentsStateIndex(mockDeploymentUuid, "model", entityBook.uuid)]: {
         entities: {
           [entityBook.uuid]: entityBook as any,
-          [entityDefinitionBook.uuid]: entityDefinitionBook as any
+          [entityBook.uuid]: entityBook as any
         },
-        ids: [entityBook.uuid, entityDefinitionBook.uuid]
+        ids: [entityBook.uuid]
       },
       [getReduxDeploymentsStateIndex(mockDeploymentUuid, "data", entityBook.uuid)]: {
         entities: {

@@ -47,7 +47,6 @@ import {
   author1,
   book1,
   entityAuthor,
-  entityDefinitionAuthor,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import fs from "node:fs";
@@ -482,15 +481,9 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
 
   // ################################################################################################
   it("rename Author Entity", async () => {
-    // setup — #220 createEntity is Entity-only; seed historical EntityVersion separately
     const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as Entity);
     expect(entityCreated, "failed to setup test case").toEqual(ACTION_OK);
-    const entityVersionCreated = await localAppPersistenceStoreController.upsertInstance(
-      "model",
-      entityDefinitionAuthor as EntityInstance,
-    );
-    expect(entityVersionCreated, "failed to seed Author EntityVersion").toEqual(ACTION_OK);
-    // test starts
+
     const modelActionRenameEntity: ModelActionRenameEntity = {
       // actionType: "modelAction",
       actionType: "renameEntity",
@@ -519,27 +512,11 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
           "fetchEntityDefinitions",
           v,
           async () =>
-            await localAppPersistenceStoreController.getInstances(
-              "model",
-              entityEntityVersion.uuid,
-            ),
-          (a, p) => (a as any).returnedDomainElement.instances as EntityVersion[],
-          "entityDefinitions", // name to give to result
-          // "entityInstanceCollection", // expected result.elementType
-          undefined,
-          undefined, // expected result
-        ),
-      )
-      .then((v) =>
-        chainVitestSteps(
-          "fetchEntityDefinitions",
-          v,
-          async () =>
             await localAppPersistenceStoreController.renameEntityClean(modelActionRenameEntity),
           undefined,
-          undefined, // name to give to result
-          undefined, // expected result.elementType
-          undefined, // expected result
+          undefined,
+          undefined,
+          undefined,
         ),
       )
       .then((v) =>
@@ -557,43 +534,12 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
               "externalDataSource",
               "idAttribute",
             ]),
-          undefined, // name to give to result
-          // "entityInstanceCollection",
+          undefined,
           undefined,
           [
             {
               ...entityAuthor,
-              // #217 Phase 11 — present-model rename is Entity-authoritative
               name: entityAuthor.name + "ssss",
-            },
-          ],
-        ),
-      )
-      .then((v) =>
-        chainVitestSteps(
-          "getEntityDefinitionInstancesToCheckResult",
-          v,
-          async () =>
-            await localAppPersistenceStoreController.getInstances(
-              "model",
-              entityEntityVersion.uuid,
-            ),
-          (a) =>
-            ignorePostgresExtraAttributesOnList((a as any).returnedDomainElement.instances, [
-              "author",
-              "icon",
-              "display",
-              "storageAccess",
-              "externalDataSource",
-              "idAttribute",
-            ]),
-          undefined, // name to give to result
-          // "entityInstanceCollection",
-          undefined,
-          [
-            {
-              // #217 Phase 11 — live ED is historical; rename does not dual-write
-              ...entityDefinitionAuthor,
             },
           ],
         ),

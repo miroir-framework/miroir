@@ -23,23 +23,12 @@ import {
 const bookEntityComplete = defaultLibraryAppModel.entities.find(
   (e) => e.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityVersions.find(
-  (d) => d.entityUuid === bookEntityComplete.uuid,
-)!;
-
-// /** Synthetic legacy Entity without definition-bearing fields (pre-Phase-3 shape). */
-// const bookEntityLegacyIncomplete: Entity = {
-//   uuid: bookEntityComplete.uuid,
-//   name: bookEntityComplete.name,
-//   parentUuid: bookEntityComplete.parentUuid,
-//   parentName: bookEntityComplete.parentName,
-//   parentDefinitionVersionUuid: bookEntityComplete.parentDefinitionVersionUuid,
-//   conceptLevel: bookEntityComplete.conceptLevel,
-//   description: bookEntityComplete.description,
-// };
-
 
 describe("PK helpers — Entity-first via resolver", () => {
+  it("book Entity carries present-model mlSchema", () => {
+    expect(bookEntityComplete.mlSchema).toBeTruthy();
+  });
+
   it("reads idAttribute from Entity or EntityVersion sources", () => {
     expect(getEntityPrimaryKeyAttribute({ idAttribute: "code" })).toBe("code");
     expect(getEntityPrimaryKeyAttribute({ idAttribute: ["a", "b"] })).toEqual(["a", "b"]);

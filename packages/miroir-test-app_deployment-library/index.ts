@@ -2,6 +2,7 @@
 export {
   defaultLibraryAppModel,
   getDefaultLibraryModelEnvironmentDEFUNCT,
+  libraryInitApplicationVersion,
 } from "./src/Library";
 export { resolveLibraryDeploymentUuid } from "./src/resolveLibraryDeploymentUuid";
 export { libraryApplicationInstances } from "./src/uploadBooksAndReports";
@@ -16,26 +17,6 @@ export { default as entityBook } from "./assets/library_model/16dbfe28-e1d7-4f20
 export { default as entityCountry } from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d3139a6d-0486-4ec8-bded-2a83a3c3cee4.json" with { type: "json" };
 export { default as entityUser } from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ca794e28-b2dc-45b3-8137-00151557eea8.json" with { type: "json" };
 export { default as entityLendingHistoryItem } from "./assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e81078f3-2de7-4301-bd79-d3a156aec149.json" with { type: "json" };
-
-// Library Model - Entity Versions
-export { default as entityVersionBook } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json" with { type: "json" };
-/** @deprecated Use entityVersionBook */
-export { default as entityDefinitionBook } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/797dd185-0155-43fd-b23f-f6d0af8cae06.json" with { type: "json" };
-export { default as entityVersionPublisher } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json" with { type: "json" };
-/** @deprecated Use entityVersionPublisher */
-export { default as entityDefinitionPublisher } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/7a939fe8-d119-4e7f-ab94-95b2aae30db9.json" with { type: "json" };
-export { default as entityVersionAuthor } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json" with { type: "json" };
-/** @deprecated Use entityVersionAuthor */
-export { default as entityDefinitionAuthor } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/b30b7180-f7dc-4cca-b4e8-e476b77fe61d.json" with { type: "json" };
-export { default as entityVersionCountry } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" with { type: "json" };
-/** @deprecated Use entityVersionCountry */
-export { default as entityDefinitionCountry } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/56628e31-3db5-4c5c-9328-4ff7ce54c36a.json" with { type: "json" };
-export { default as entityVersionUser } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/8a4b9e9f-ae19-489f-977f-f3062107e066.json" with { type: "json" };
-/** @deprecated Use entityVersionUser */
-export { default as entityDefinitionUser } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/8a4b9e9f-ae19-489f-977f-f3062107e066.json" with { type: "json" };
-export { default as entityVersionLendingHistoryItem } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/ce054a0c-5c45-4e2b-a1a9-07e3e5dc8505.json" with { type: "json" };
-/** @deprecated Use entityVersionLendingHistoryItem */
-export { default as entityDefinitionLendingHistoryItem } from "./assets/library_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/ce054a0c-5c45-4e2b-a1a9-07e3e5dc8505.json" with { type: "json" };
 
 // Library Model - Reports
 export { default as reportAuthorDetails } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/6d9faa54-643c-4aec-87c3-32635ad95902.json" with { type: "json" };
@@ -66,7 +47,8 @@ export { default as menuDefaultLibrary } from "./assets/library_model/dde4c883-a
 
 // Library Model - Application metadata
 export { default as selfApplicationLibrary } from "./assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json" with { type: "json" };
-export { default as selfApplicationVersionLibraryInitialVersion } from "./assets/library_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/419773b4-a73c-46ca-8913-0ee27fb2ce0a.json" with { type: "json" };
+/** @deprecated Unversioned Library — use libraryInitApplicationVersion (synthetic init-only). */
+export { libraryInitApplicationVersion as selfApplicationVersionLibraryInitialVersion } from "./src/Library.js";
 export { default as selfApplicationModelBranchLibraryMasterBranch } from "./assets/library_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/ad1ddc4e-556e-4598-9cff-706a2bde0be7.json" with { type: "json" };
 
 // Library Model - Documents

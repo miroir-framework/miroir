@@ -231,7 +231,7 @@ npm run nonreg -- --tier default
 
 **`versioned-internal`** means Miroir owns application version history in the **`modelVersion` storage section** — including, for the Miroir deployment package, a git-tracked **`assets/miroir_modelVersion/`** directory. #234 **relocates** Version History instances out of the wrong `miroir_data/` paths; it does **not** strip Version History from the Miroir repo. **Bundled Miroir** deliberately omits `modelVersion`, so versioning features are unavailable there.
 
-**Satellite deployment packages** (admin, library, designer, postgres) are explicitly **`unversioned`**: no in-app freeze, no Application Versions / Entity Definitions menu entries; present-model EntityVersion JSON in `*_model/` remains for schema snapshots only.
+**Satellite deployment packages** (admin, library, designer, postgres) are explicitly **`unversioned`**: no in-app freeze, no Application Versions / Entity Definitions menu entries; domain schema lives on **Entity** rows only (no per-entity EntityVersion JSON in git assets).
 
 ---
 
@@ -259,7 +259,7 @@ npm run nonreg -- --tier default
 
 ### Known limitations (documented, not blockers)
 
-- VH-shaped JSON still present under `*_model/` for unversioned apps (present-model snapshots, not freeze history).
+- Unversioned apps use synthetic init-only `ApplicationVersion` objects in tests/init (not shipped as model assets).
 - User-local stores with pre-#232 VH rows under `data`/`model` are not auto-migrated.
 - `versioned-external` mode is defined but unused.
 - Full default `npm run nonreg` had pre-existing failures unrelated to #234 (SQL freeze profile, absent integ manifest entry).

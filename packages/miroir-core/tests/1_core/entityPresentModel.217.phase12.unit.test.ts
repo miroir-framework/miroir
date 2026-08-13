@@ -112,7 +112,7 @@ describe("217 Phase 12 — EntityVersion → EntityVersion vocabulary gate", () 
     expect(index).toMatch(/EntityVersion/);
   });
 
-  it("deployment package exports EntityVersion symbols with deprecated EntityVersion aliases", () => {
+  it("Miroir deployment package exports EntityVersion symbols with deprecated EntityVersion aliases", () => {
     const src = readFileSync(DEPLOYMENT_INDEX, "utf8");
     expect(src).toMatch(/\bas entityEntityVersion\b/);
     expect(src).toMatch(/\bas entityEntityDefinition\b/); // deprecated alias
@@ -124,7 +124,7 @@ describe("217 Phase 12 — EntityVersion → EntityVersion vocabulary gate", () 
     expect(src).toMatch(/\bas reportEntityDefinitionList\b/); // deprecated alias
   });
 
-  it("non-bootstrap EntityVersion instance exports use entityVersion* with deprecated entityVersion* aliases", () => {
+  it("Miroir meta-model EntityVersion exports use entityVersion* with deprecated aliases", () => {
     const miroir = readFileSync(DEPLOYMENT_INDEX, "utf8");
     for (const [primary, deprecated] of [
       ["entityVersionEntity", "entityDefinitionEntity"],
@@ -136,22 +136,22 @@ describe("217 Phase 12 — EntityVersion → EntityVersion vocabulary gate", () 
       expect(miroir).toMatch(new RegExp(`@deprecated Use ${primary}`));
       expect(miroir).toMatch(new RegExp(`\\bas ${deprecated}\\b|as ${deprecated}\\b|export \\{[^}]*${deprecated}`));
     }
+  });
 
+  it("unversioned deployment packages do not export per-entity EntityVersion assets", () => {
     const library = readFileSync(
       join(REPO_ROOT, "packages/miroir-test-app_deployment-library/index.ts"),
       "utf8",
     );
-    expect(library).toMatch(/\bas entityVersionAuthor\b/);
-    expect(library).toMatch(/@deprecated Use entityVersionAuthor/);
-    expect(library).toMatch(/\bas entityDefinitionAuthor\b/);
+    expect(library).not.toMatch(/\bas entityVersionAuthor\b/);
+    expect(library).not.toMatch(/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/);
 
     const admin = readFileSync(
       join(REPO_ROOT, "packages/miroir-test-app_deployment-admin/index.ts"),
       "utf8",
     );
-    expect(admin).toMatch(/\bas entityVersionDeployment\b/);
-    expect(admin).toMatch(/@deprecated Use entityVersionDeployment/);
-    expect(admin).toMatch(/\bas entityDefinitionDeployment\b/);
+    expect(admin).not.toMatch(/\bas entityVersionDeployment\b/);
+    expect(admin).not.toMatch(/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/);
   });
 
   it("EntityVersion list/details reports use Entity Version display vocabulary", () => {

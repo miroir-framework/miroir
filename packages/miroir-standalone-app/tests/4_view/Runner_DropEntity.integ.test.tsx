@@ -32,7 +32,6 @@ import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import {
   entityAuthor,
-  entityDefinitionAuthor,
 } from "miroir-test-app_deployment-library";
 import {
   entityEntity,
@@ -154,7 +153,6 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
       createEntity: {
         application: testApplicationUuid,
         entity: entityAuthor,
-        entityVersion: entityDefinitionAuthor,
       },
       [runnerDropEntity.name]: {
         application: testApplicationUuid,

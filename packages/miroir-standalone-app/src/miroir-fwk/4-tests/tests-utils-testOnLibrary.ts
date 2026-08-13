@@ -1,6 +1,5 @@
 import {
   CompositeActionSequence,
-  EntityVersion,
   EntityInstance,
   Entity,
   MiroirConfigClient,
@@ -10,12 +9,10 @@ import {
 import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployment-admin";
 import {
   entityAuthor,
-  entityDefinitionAuthor,
   author1,
   author2,
   author3,
   entityBook,
-  entityDefinitionBook,
   book1,
   book2,
   book4,
@@ -25,22 +22,18 @@ import {
   penguin as publisher2,
   springer as publisher3,
   entityPublisher,
-  entityDefinitionPublisher,
 } from "miroir-test-app_deployment-library";
 
 export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances  = [
   {
     entity: entityAuthor as Entity,
-    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
-      // book3 as EntityInstance,
       book4 as EntityInstance,
       book5 as EntityInstance,
       book6 as EntityInstance,
@@ -48,8 +41,6 @@ export const libraryEntitesAndInstancesWithoutBook3: ApplicationEntitiesAndInsta
   },
   {
     entity: entityPublisher as Entity,
-    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
 ];
-

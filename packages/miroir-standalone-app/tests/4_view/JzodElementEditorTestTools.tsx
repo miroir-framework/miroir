@@ -37,10 +37,6 @@ import {
   entityAuthor,
   entityBook,
   entityCountry,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionCountry,
-  entityDefinitionPublisher,
   entityPublisher,
   libraryApplicationInstances,
   menuDefaultLibrary,
@@ -702,17 +698,6 @@ export function getWrapperLoadingLocalCache(
             entityBook as EntityInstance,
             entityCountry as EntityInstance,
             entityPublisher as EntityInstance
-          ]
-        },
-        {
-          parentName: entityEntityVersion.name,
-          parentUuid: entityEntityVersion.uuid,
-          applicationSection: "model",
-          instances: [
-            entityDefinitionBook as EntityInstance,
-            entityDefinitionAuthor as EntityInstance,
-            entityDefinitionCountry as EntityInstance,
-            entityDefinitionPublisher as EntityInstance,
           ]
         },
         {

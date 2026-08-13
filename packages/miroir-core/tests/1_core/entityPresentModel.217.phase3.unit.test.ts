@@ -85,4 +85,8 @@ describe("217 Phase 3 — versioningMode on canonical applications", () => {
     const application = defaultLibraryAppModel.applications[0] as SelfApplication;
     expect(application.versioningMode).toBe("unversioned");
   });
+
+  it("defaultLibraryAppModel has no entityVersions (unversioned app)", () => {
+    expect(defaultLibraryAppModel.entityVersions).toEqual([]);
+  });
 });

@@ -51,9 +51,6 @@ import {
   deployment_Library_DO_NO_USE,
   entityAuthor,
   entityBook,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
   entityPublisher,
   folio as publisher1,
   penguin as publisher2,
@@ -207,17 +204,14 @@ beforeEach(
             // authors
             {
               entity: entityAuthor as Entity,
-              entityVersion: entityDefinitionAuthor as EntityVersion,
               instances: [
                 author1,
                 author2,
                 author3 as EntityInstance,
               ],
             },
-            // books
             {
               entity: entityBook as Entity,
-              entityVersion: entityDefinitionBook as EntityVersion,
               instances: [
                 book1 as EntityInstance,
                 book2 as EntityInstance,
@@ -227,10 +221,8 @@ beforeEach(
                 book6 as EntityInstance,
               ]
             },
-            // publishers
             {
               entity: entityPublisher as Entity,
-              entityVersion: entityDefinitionPublisher as EntityVersion,
               instances: [
                 publisher1,
                 publisher2,
