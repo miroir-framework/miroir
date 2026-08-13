@@ -6,8 +6,8 @@
  *
  * The classification of instances into model vs data sections is
  * deployment-specific:
- *   - Miroir deployment: only Entity instances go into model
- *     (EntityVersion and all others live in miroir_data/ and go into data — #222)
+ *   - Miroir deployment: only Entity instances go into model; Version History
+ *     instances are omitted from bundled data (no modelVersion section — #234)
  *   - Admin deployment: reports, menus, selfApplication, selfApplicationVersion,
  *     selfApplicationModelBranch and storeBasedConfiguration also live in
  *     admin_model/ and must go into the model section.
@@ -15,6 +15,7 @@
  */
 
 import type { EntityInstance, MiroirConfigClient, StoreUnitConfiguration } from "miroir-core";
+import { versionHistoryEntityUuids } from "miroir-core";
 import type { BundledDeploymentData, BundledSectionData } from "miroir-store-bundled";
 
 import * as adminDeployment from "miroir-test-app_deployment-admin";
@@ -70,8 +71,7 @@ export const demoMiroirConfig: MiroirConfigClient = {
 
 /**
  * For the Miroir deployment: only Entity lives in miroir_model/.
- * EntityVersion instances (and everything else: reports, menus, selfApplication, …)
- * are in miroir_data/ (#222).
+ * Version History parent UUIDs are excluded from bundled data entirely (#234).
  */
 const MIROIR_MODEL_PARENT_UUIDS = new Set([
   "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", // entityEntity
@@ -135,6 +135,7 @@ function makeBundledDeploymentData(
   starImport: Record<string, unknown>,
   dataOverrides: BundledSectionData = {},
   modelParentUuids: Set<string> = MIROIR_MODEL_PARENT_UUIDS,
+  excludeParentUuids: ReadonlySet<string> = new Set<string>(),
 ): BundledDeploymentData {
   const all = groupByParentUuid(starImport);
 
@@ -142,6 +143,7 @@ function makeBundledDeploymentData(
   const data: BundledSectionData = {};
 
   for (const [parentUuid, instances] of Object.entries(all)) {
+    if (excludeParentUuids.has(parentUuid)) continue;
     if (modelParentUuids.has(parentUuid)) {
       model[parentUuid] = instances;
     } else {
@@ -158,6 +160,9 @@ function makeBundledDeploymentData(
 export const demoBundledData: Record<string, BundledDeploymentData> = {
   [MIROIR_DEPLOYMENT_UUID]: makeBundledDeploymentData(
     miroirDeployment as unknown as Record<string, unknown>,
+    {},
+    MIROIR_MODEL_PARENT_UUIDS,
+    versionHistoryEntityUuids,
   ),
   [ADMIN_DEPLOYMENT_UUID]: makeBundledDeploymentData(
     adminDeployment as unknown as Record<string, unknown>,

@@ -304,7 +304,7 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze.232
 
 ## Slice 4 — Bundled Miroir alignment
 
-**Status: Planned**
+**Status: DONE**
 
 ### Goal
 
@@ -347,6 +347,14 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-sandbox/tsconfig.json
 # Sandbox smoke (manual or existing app test if present):
 # npm run dev -w miroir-sandbox
 ```
+
+### Realized
+
+- **`packages/miroir-sandbox/src/bundledData.ts`** — `makeBundledDeploymentData` accepts `excludeParentUuids`; Miroir bundled data passes `versionHistoryEntityUuids` so Version History instances are omitted from both `model` and `data` buckets. Removed `#222` comments.
+- **`packages/miroir-core/tests/1_core/versioningModes.234.bundled.unit.test.ts`** — 3 tests (4.1 bundled data/config, 4.2 bootstrap empty history + missing modelVersion section).
+- **Retired** `222.phase1.assets-layout.unit.test.ts` (superseded by `versioningModes.234.assets-layout` + `versioningModes.234.bundled`).
+- **`ADMIN_MODEL_PARENT_UUIDS`** unchanged (admin follow-up deferred).
+- **Regression:** `versioningModes.234.*` (27/27), `modelVersionStorage.232.policy` (4/4), `miroir-store-bundled` build OK.
 
 ---
 
