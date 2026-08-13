@@ -1,7 +1,7 @@
 # Defining Entities
 
 **Audience:** application authors and tool builders who need to model domain concepts in Miroir.  
-**Related:** [Core Concepts](../core-concepts.md) · [Entity API reference](../../reference/api/entity.md) · [Library tutorial](../../tutorials/library-tutorial.md) · Issues [#172](https://github.com/miroir-framework/miroir/issues/172)–[#176](https://github.com/miroir-framework/miroir/issues/176)
+**Related:** [Core Concepts](../core-concepts.md) · [Entity API reference](../../reference/api/entity.md) · [Library tutorial](../../tutorials/library-tutorial.md)
 
 This guide is **use-case centric**: pick the situation that matches what you are trying to do, then follow the Entity / EntityVersion shape that fits. It does not replace the meta-model tour in Core Concepts; it answers “which kind of Entity do I need?”
 
@@ -29,14 +29,14 @@ Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dua
 
 ## Use-case map
 
-| You need to… | Pattern | Primary examples | Issues |
-|--------------|---------|------------------|--------|
-| Own a normal domain type end-to-end | Miroir-managed + UUID PK | Library `Book`, `Author`, `Publisher` | — |
-| Browse / diagnose an external DB catalogue | `conceptLevel: "External"` + `externalDataSource` | Postgres app `tables`, `columns`, `schemata` | [#174](https://github.com/miroir-framework/miroir/issues/174) |
-| Match an external natural key (not UUID) | `idAttribute: "<attr>"` | Non-UUID PK entities / tests | [#173](https://github.com/miroir-framework/miroir/issues/173) |
-| Match a multi-column natural key | `idAttribute: ["a","b",…]` | Postgres `tables`, `columns` | [#176](https://github.com/miroir-framework/miroir/issues/176) |
-| Import / sync instances that omit `parentUuid` | Optional `parentUuid`; resolve from action context | `domain_controller_no_parent_uuid_crud` | [#172](https://github.com/miroir-framework/miroir/issues/172) |
-| Reflect a PK-less table | Explicit PK-less handling; refresh flushes cache | External tables without PK | [#175](https://github.com/miroir-framework/miroir/issues/175) |
+| You need to… | Pattern | Primary examples |
+|--------------|---------|------------------|
+| Own a normal domain type end-to-end | Miroir-managed + UUID PK | Library `Book`, `Author`, `Publisher` |
+| Browse / diagnose an external DB catalogue | `conceptLevel: "External"` + `externalDataSource` | Postgres app `tables`, `columns`, `schemata` |
+| Match an external natural key (not UUID) | `idAttribute: "<attr>"` | Non-UUID PK entities / tests |
+| Match a multi-column natural key | `idAttribute: ["a","b",…]` | Postgres `tables`, `columns` |
+| Import / sync instances that omit `parentUuid` | Optional `parentUuid`; resolve from action context | `domain_controller_no_parent_uuid_crud` |
+| Reflect a PK-less table | Explicit PK-less handling; refresh flushes cache | External tables without PK |
 
 ---
 
@@ -127,7 +127,7 @@ Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dua
    - **`externalDataSource`** (e.g. `{ "schema": "information_schema" }`),
    - an **`idAttribute`** that matches the physical key (often composite),
    - `mlSchema` attributes marked non-editable in the UI when read-only.
-3. Application / deployment constraints: apps that need external entities may restrict which storage backends can host them; deployment must supply access directives (schema, etc.). **CUD on external instances fails** by design ([#174](https://github.com/miroir-framework/miroir/issues/174)).
+3. Application / deployment constraints: apps that need external entities may restrict which storage backends can host them; deployment must supply access directives (schema, etc.). **CUD on external instances fails** by design.
 
 **Entity** — Postgres `columns`:
 
@@ -168,7 +168,7 @@ Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dua
 
 ## Use case 3 — Non-UUID primary key
 
-**When:** The natural identity is not a UUID (integer `oid`, business `code`, table name, …). Default Miroir Entities keep `uuid`; override with **`idAttribute`** on the Entity / EntityVersion ([#173](https://github.com/miroir-framework/miroir/issues/173)).
+**When:** The natural identity is not a UUID (integer `oid`, business `code`, table name, …). Default Miroir Entities keep `uuid`; override with **`idAttribute`** on the Entity / EntityVersion.
 
 | `idAttribute` | Meaning |
 |---------------|---------|
@@ -200,7 +200,7 @@ Helpers live in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 | `tables` | `["table_catalog", "table_schema", "table_name"]` |
 | `columns` | `["table_catalog", "table_schema", "table_name", "column_name"]` |
 
-**Platform behavior** ([#176](https://github.com/miroir-framework/miroir/issues/176), plan under `code-helpers/features/176-FEATURE- support tables & entities with composite PK/`):
+**Platform behavior** (see plan under `code-helpers/features/176-FEATURE- support tables & entities with composite PK/`):
 
 - Composite keys are **serialized** to a single string for LocalCache / filesystem / IndexedDB indexing (`|` separator, `\` escaping).
 - SQL stores use multi-column `WHERE` / primary-key columns.
@@ -211,7 +211,7 @@ Helpers live in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 
 ## Use case 5 — Instances without `parentUuid`
 
-**When:** Integrating payloads or stores that do not stamp every row with Miroir’s Entity uuid ([#172](https://github.com/miroir-framework/miroir/issues/172)).
+**When:** Integrating payloads or stores that do not stamp every row with Miroir’s Entity uuid.
 
 **Intent:** keep instances “self-sufficient” when `parentUuid` is present, but allow it to be **optional**. The platform must still know which Entity an instance belongs to (action payload / collection context). If that mapping is lost, surface the constraint explicitly.
 
@@ -229,7 +229,7 @@ Helpers live in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 
 ## Use case 6 — Entities / tables without a primary key
 
-**When:** External (or imported) tables have **no** reliable PK ([#175](https://github.com/miroir-framework/miroir/issues/175)).
+**When:** External (or imported) tables have **no** reliable PK.
 
 **Target behavior**
 

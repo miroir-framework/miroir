@@ -7,7 +7,7 @@ A Miroir application is always composed of at least two **Deployments**:
 | Deployment | UUID | Role |
 |---|---|---|
 | Admin | `18db21bf-f8d3-4f6a-8296-84b69f6dc48b` | Hosts meta-configuration: the list of deployments, their store configurations, the admin application itself (entities, reports, menus) |
-| Miroir | `10ff36f2-50a3-48d8-b80f-e48e5d13af8e` | Hosts the Miroir meta-model bootstrap (**Entity**) plus framework-level concepts; EntityVersion instances and reports/queries/menus/… live in Miroir **data** (#222) |
+| Miroir | `10ff36f2-50a3-48d8-b80f-e48e5d13af8e` | Hosts the Miroir meta-model bootstrap (**Entity**) plus framework-level concepts; EntityVersion instances and reports/queries/menus/… live in Miroir **data** (not in `miroir_model`) |
 | App (optional) | e.g. `f714bb2f-a12d-4e71-a03b-74dcedea6eb4` | Hosts a user-defined application (e.g. Library). One or more per installation. |
 
 Each deployment is divided into **sections** (three for unversioned deployments; four when version history is enabled):
@@ -17,7 +17,7 @@ Each deployment is divided into **sections** (three for unversioned deployments;
 | `admin` | Low-level administration store: list of schemas/collections managed by this deployment. Used internally by the store backend. |
 | `model` | Live model definitions (Entity; for non-Miroir apps also EntityVersion and other framework model concepts) and, for non-Miroir deployments, model-level instances (Reports, Menus, Queries, SelfApplication, etc.) |
 | `data` | Domain data instances (Application, Deployment, Book, Author, …) |
-| `modelVersion` | **Optional (#232).** Version-history snapshots written by `freezeApplicationVersion`: SelfApplicationVersion, EntityVersion / QueryVersion / … rows, and ApplicationVersion cross rows. Not loaded during ordinary bootstrap/rollback of the live model. |
+| `modelVersion` | **Optional.** Version-history snapshots written by `freezeApplicationVersion`: SelfApplicationVersion, EntityVersion / QueryVersion / … rows, and ApplicationVersion cross rows. Not loaded during ordinary bootstrap/rollback of the live model. |
 
 For **versioned-internal** applications (`versioningEnabled: true`), the deployment configuration must include a writable `modelVersion` section distinct from `model`. Unversioned deployments omit it; any request targeting `modelVersion` without configuration returns an explicit error (no fallback to `model` or `data`).
 
@@ -113,7 +113,7 @@ Each section (`admin`, `model`, `data`, and optionally `modelVersion`) of a depl
 - Used exclusively in the `miroir-sandbox` demo SPA.
 - All data is statically imported at build time from the deployment packages (`miroir-test-app_deployment-miroir`, `miroir-test-app_deployment-admin`).
 - Read-only: no writes are persisted.
-- **Cannot host `modelVersion` history (#232):** if a bundled deployment declares a `modelVersion` section, freeze/history writes fail with an explicit read-only error. Use filesystem, IndexedDB, MongoDB, or SQL for versioned-internal applications.
+- **Cannot host `modelVersion` history:** if a bundled deployment declares a `modelVersion` section, freeze/history writes fail with an explicit read-only error. Use filesystem, IndexedDB, MongoDB, or SQL for versioned-internal applications.
 - Registered at startup via `miroirBundledStoreSectionStartup(configurationService, bundledData)`.
 
 ### `modelVersion` (version history, optional)
@@ -146,7 +146,7 @@ Live model concepts (`scope` absent / `modeling`) — Entity, Query, Report, you
 
 **IndexedDB / MongoDB:** same pattern — separate database name or IndexedDB namespace suffix `-modelVersion` (see `miroirConfig.test-emulatedServer-indexedDb.json` and `miroirConfig.test-emulatedServer-mongodb.json` in `miroir-standalone-app/tests/`).
 
-#### Backend support matrix (#232)
+#### Backend support matrix
 
 | Backend | Writable `modelVersion` | Notes |
 |---|---|---|
@@ -164,7 +164,7 @@ The bundled store factory (`miroir-store-bundled`) splits statically-imported in
 
 ### Miroir deployment
 
-Only **Entity** instances live in `miroir_model/`. **EntityVersion** instances live in `miroir_data/` (ordinary model concept / documentation-class data; #222):
+Only **Entity** instances live in `miroir_model/`. **EntityVersion** instances live in `miroir_data/` (ordinary model concept / documentation-class data):
 
 | Section | parentUuids |
 |---|---|
@@ -241,7 +241,7 @@ function loadConfigurationFromPersistenceStore(applicationUuid, deploymentUuid, 
   entities = callPersistenceAction("RestPersistenceAction_read", { section: "model", parentUuid: entityEntity.uuid })
 
   if (deploymentUuid == MIROIR_DEPLOYMENT_UUID):
-    modelEntitiesToFetch = miroirModelEntities  // Entity MetaModel peers (not EntityVersion; #222)
+    modelEntitiesToFetch = miroirModelEntities  // Entity MetaModel peers (not EntityVersion)
   else:
     modelEntitiesToFetch = metaModelEntities    // all framework-level entities
 
@@ -285,7 +285,7 @@ Browser (CLIENT)
                                             ├── tests/assets/admin_data/
                                             ├── tests/tmp/miroir_model/
                                             ├── tests/tmp/library_data/
-                                            └── tests/tmp/library_modelVersion/   ← version history (#232)
+                                            └── tests/tmp/library_modelVersion/   ← version history
 ```
 
 Config: `emulateServer: true`, `emulatedServerType: "filesystem"`. Versioned app deployments add a fourth `modelVersion` directory.

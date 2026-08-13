@@ -337,7 +337,7 @@ Level 4: Reference & Deep Dive
 - [docs-new/reference/api/actions.md](reference/api/actions.md)
 - [docs-new/reference/api/reports.md](reference/api/reports.md)
 - [docs-new/reference/api/endpoints.md](reference/api/endpoints.md)
-- [docs-new/reference/testing.md](reference/testing.md) - Full testing reference (Features #196, #197)
+- [docs-new/reference/testing.md](reference/testing.md) - Full testing reference (MiroirTest migration, UI integration launch)
 
 ### 🚧 To Be Created (Priority)
 - getting-started/what-is-miroir.md

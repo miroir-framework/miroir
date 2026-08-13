@@ -1,20 +1,19 @@
-# Release Process Internals (#227)
+# Release Process Internals
 
 This page is the authoritative technical reference for the **layered Lerna release-tree
-producer** implemented under [`ci/release/`](../../ci/release/) for
-[#227](https://github.com/miroir-framework/miroir/issues/227). It documents *how the
+producer** implemented under [`ci/release/`](../../ci/release/). It documents *how the
 pipeline works internally*, not just how to invoke it. For step-by-step operator
 instructions see [`ci/release/README.md`](../../ci/release/README.md).
 
-> **Supersedes #223.** `docs/contributing/release-process.md` describes the earlier
-> `scripts/release_tag.py` approach (#223), which is obsolete / on the wrong track and
+> **Supersedes legacy tagging.** `docs/contributing/release-process.md` describes the earlier
+> `scripts/release_tag.py` approach, which is obsolete / on the wrong track and
 > is not reused, extended, or depended on here. `ci/release/` never touches
 > `scripts/release_tag.py` or its support modules.
 >
-> **Feeds #224.** [#224](https://github.com/miroir-framework/miroir/issues/224)
+> **Feeds artefact pipeline.** The multi-platform artefact producer
 > ("produce multi-platform release artefacts") is a downstream consumer: it builds
 > server/Electron/Docker/library-JSON artefacts from the already-versioned,
-> already-built, already-validated release worktree this pipeline produces. #224 has
+> already-built, already-validated release worktree this pipeline produces. That pipeline has
 > no implementation yet (`ci/artefacts/` is a placeholder) and, per the handoff
 > contract below, must never choose package versions or rewrite dependency ranges
 > itself.
@@ -33,7 +32,7 @@ ci/release/
     worktree.py                # Disposable `git worktree` helpers
     semver.py                   # Product SemVer parsing/increment
     common.py                    # ReleaseError, subprocess/JSON helpers
-  HANDOFF.md                # #227 → #224 contract (schema reference)
+  HANDOFF.md                # release producer → artefact pipeline contract (schema reference)
   lerna-spike.md             # Encoded/proven Lerna invocation from the selection spike
   README.md
   tests/                     # pytest suite (`test_release_version.py`, `test_tarballs.py`)
@@ -290,7 +289,7 @@ The resulting `ReleasePlan` (dataclass) is printed as JSON on every invocation �
 --skip-build                  Version + lockfile only; skip build/pack/consumer validation
 --commit / --tag / --push     Explicit release commit / annotated product tag / push (push requires both)
 --allow-dirty                  Allow --apply directly in a dirty tree without --worktree
---verify <release-handoff.json>  Validate an existing #227->#224 handoff descriptor and exit
+--verify <release-handoff.json>  Validate an existing release→artefact handoff descriptor and exit
 ```
 
 ### Transparency / safety behavior
@@ -333,14 +332,14 @@ python ci/release/release_version.py --bump minor --since 0.5.0-rc.1 --apply --w
 python ci/release/release_version.py --verify /path/to/release-worktree/release-handoff.json
 ```
 
-## 9. Outputs and the #224 handoff contract
+## 9. Outputs and the artefact-pipeline handoff contract
 
 On a successful `--apply`, the release worktree contains:
 
 | Artefact | Written by | Purpose |
 |---|---|---|
 | `release-plan.json` | `handoff.write_release_plan()` | Full selection, layers, versions, tarball metadata |
-| `release-handoff.json` | `handoff.write_handoff_contract()` | Stable, versioned (`schemaVersion: 1`) contract for #224 |
+| `release-handoff.json` | `handoff.write_handoff_contract()` | Stable, versioned (`schemaVersion: 1`) contract for the artefact pipeline |
 | `release-tarballs/P<n>/*.tgz` | `tarballs.pack_layer()` | Packed packages per runtime layer |
 | `release-tarballs/manifest.json` | `tarballs.pack_layer()` | Tarball paths + SHA-256 digests |
 | Versioned `package.json` / `lerna.json` / `package-lock.json` | Lerna + `set_root_and_lerna_version()` | The release tree itself |
@@ -353,9 +352,9 @@ On a successful `--apply`, the release worktree contains:
             "Build platform artefacts only from this validated release worktree.",
 ```
 
-i.e. by the time #224 (or any artefact pipeline) reads this file, the `miroir-core` ↔
+i.e. by the time the artefact pipeline (or any downstream consumer) reads this file, the `miroir-core` ↔
 `deployment-miroir`/`-admin` bootstrap question described in §2–§6 has already been
-fully resolved and verified — #224 never needs to reason about it.
+fully resolved and verified — the artefact pipeline never needs to reason about it.
 
 ## 10. Relationship to normal `build-all.sh` development
 
@@ -369,11 +368,11 @@ fully resolved and verified — #224 never needs to reason about it.
 
 ## 11. Non-goals of the current implementation (v1)
 
-Per the issue's acceptance criteria, explicitly **out of scope** until follow-up work:
+Per the v1 acceptance criteria, explicitly **out of scope** until follow-up work:
 
 - Pre-release lifecycle family (`premajor`/`preminor`/`prepatch`/`prerelease`,
   promotion) — `increment()` only supports `major`/`minor`/`patch`.
-- Registry publish (`npm publish`) and GitHub Release upload — HITL/manual, and #224's
+- Registry publish (`npm publish`) and GitHub Release upload — HITL/manual, and the artefact pipeline's
   responsibility at the earliest.
 - A separate CI-only implementation — the same `ci/release/` entrypoint is meant to
   run locally and in CI.

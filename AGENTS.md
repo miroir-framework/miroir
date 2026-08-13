@@ -102,7 +102,7 @@ always favor integration tests to unit tests, avoid mocking when possible
 
 ### Core Testing Commands
 
-Entity-backed tests use the unified **`MiroirTest`** model (Feature #196). Prefer `testMiroir` for suite selection; `testByFile` + `RUN_TEST` remains for per-file selective runs.
+Entity-backed tests use the unified **`MiroirTest`** model. Prefer `testMiroir` for suite selection; `testByFile` + `RUN_TEST` remains for per-file selective runs.
 
 ```bash
 # Rebuild deployment after MiroirTest JSON changes
