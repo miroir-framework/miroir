@@ -1,0 +1,26 @@
+/**
+ * #234 Slice 0 — shared VH asset inventory constants (not a test file).
+ */
+import { join } from "node:path";
+
+export const REPO_ROOT = join(import.meta.dirname, "../../../..");
+
+/** Deployment packages under packages/miroir-test-app_deployment-* */
+export const DEPLOYMENT_PACKAGE_GLOB = "miroir-test-app_deployment-";
+
+/** Miroir VH parent folders under miroir_data/ today (Slice 0 baseline → move in Slice 2). */
+export const MIROIR_VH_DATA_PARENTS_SLICE0: Readonly<Record<string, number>> = {
+  "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd": 34,
+  "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24": 2,
+  "e4320b9e-ab45-4abe-85d8-359604b3c62f": 3,
+  "3d8da4d4-8f76-4bb4-9212-14869d81c00c": 11,
+};
+
+export const MIROIR_ENTITY_VERSION_METACLASS_PATH =
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.json";
+
+export const MIROIR_DEPLOYMENT_INDEX =
+  "packages/miroir-test-app_deployment-miroir/index.ts";
+
+export const MIROIR_MODEL_VERSION_ASSETS_DIR =
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion";

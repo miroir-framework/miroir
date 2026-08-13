@@ -32,7 +32,7 @@ Related:
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize asset/layout mismatch | Planned | RED locks wrong VH placement + deployment inventory |
+| 0 | Characterize asset/layout mismatch | Done | Inventory GREEN; target layout RED until Slice 2 |
 | 1 | `versioningMode` contract | Planned | Jzod + generated types; Miroir SelfApplication row |
 | 2 | Relocate Miroir VH assets | Planned | `miroir_modelVersion/` populated; `miroir_data/` VH-free |
 | 3 | Filesystem asset seed → `modelVersion` store | Planned | Writable profile reads VH from store section, not `data` |
@@ -86,7 +86,7 @@ Legend: **RED** → **GREEN** → **Validation** per slice. Do not batch all RED
 
 ## Slice 0 — Characterize asset/layout mismatch
 
-**Status: Planned**
+**Status: Done**
 
 ### Goal
 
@@ -125,6 +125,14 @@ npm run testByFile -w miroir-core -- versioningModes.234.assets-layout
 npm run testByFile -w miroir-core -- 222.phase1.assets-layout
 # Legacy #222 may still pass until Slice 4 retirement
 ```
+
+### Realized (Slice 0)
+
+- **`versioningModes.234.inventory.unit.test.ts`** — VH registry size; no `*_modelVersion/` dirs yet; Miroir VH under `miroir_data/` with locked parent→count map; cross-package inventory snapshot.
+- **`versioningModes.234.assets-layout.unit.test.ts`** — target layout (RED until Slice 2): `miroir_modelVersion/`, empty VH in `miroir_data/`, index import paths.
+- **`versioningModes.234.slice0-inventory.ts`** — shared constants for move set and paths.
+- **`222.slice0-inventory.ts`** — refreshed to 34 EntityVersion instance UUIDs (was stale at 20).
+- **`222.phase1.assets-layout.unit.test.ts`** — describe renamed to legacy pre-#234.
 
 ---
 

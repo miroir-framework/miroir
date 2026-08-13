@@ -1,6 +1,6 @@
 /**
  * #222 Slice 0 inventory — Miroir EntityVersion instance UUIDs (stable across relocate).
- * Shared by phase0/phase1 tests; not a test file itself.
+ * Shared by legacy #222 phase tests and #234 move baseline; refresh when EV rows added/removed.
  */
 export const MIROIR_ENTITY_VERSION_INSTANCE_UUIDS_SLICE0 = [
   "0f421b2f-2fdc-47ee-8232-62121ea46350",
@@ -16,11 +16,25 @@ export const MIROIR_ENTITY_VERSION_INSTANCE_UUIDS_SLICE0 = [
   "69bf7c03-a1df-4d1c-88c1-44363feeea87",
   "9460420b-f176-4918-bd45-894ab195ffe9",
   "952d2c65-4da2-45c2-9394-a0920ceedfb6",
+  "a3b4c5d6-e7f8-4123-a4b5-c6d7e8f9a0d2",
   "b17d5e9e-12f2-4ed8-abdb-2576c01514a4",
+  "b1c2d3e4-f5a6-4b7c-8d9e-0f1a2b3c4d5e",
+  "b4c5d6e7-f8a9-4123-a4b5-c6d7e8f9a0d3",
   "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
   "c0b71083-8cc8-43db-bf52-572f1f03bbb5",
+  "c2d3e4f5-a6b7-4c8d-9e0f-1a2b3c4d5e6f",
   "c3179f1d-10bd-4b0f-9a6b-f118d8eb2312",
+  "c3d4e5f6-a7b8-4901-a2b3-c4d5e6f7a8b9",
+  "c9d0e1f2-a3b4-4123-a4b5-c6d7e8f9a0b1",
+  "c9d0e1f2-a3b4-4123-a4b5-c6d7e8f9a0c2",
+  "d0e1f2a3-b4c5-4123-a4b5-c6d7e8f9a0b2",
+  "d0e1f2a3-b4c5-4123-a4b5-c6d7e8f9a0c3",
   "d2842a84-3e66-43ee-ac58-7e13b95b01e8",
+  "d3e4f5a6-b7c8-4901-a2e3-f4a5b6c7d8e9",
+  "d4e5f6a7-b8c9-4012-a3b4-c5d6e7f8a9b0",
   "daa38a5f-f1b5-4d4f-94b7-54e97fe6782e",
   "e3c1cc69-066d-4f52-beeb-b659dc7a88b9",
+  "e4f5a6b7-c8d9-4012-a2b3-f4a5b6c7d8e9",
+  "e4f5a6b7-c8d9-4012-a3f4-a5b6c7d8e9f0",
+  "f5a6b7c8-d9e0-4123-a3b4-a5b6c7d8e9f0",
 ] as const;

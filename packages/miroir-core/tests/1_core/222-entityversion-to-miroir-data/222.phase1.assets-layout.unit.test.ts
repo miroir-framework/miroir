@@ -1,5 +1,6 @@
 /**
- * #222 Phase 1.2 — Miroir EntityVersion instances live under miroir_data.
+ * Legacy #222 Phase 1.2 — Miroir EntityVersion instances live under miroir_data.
+ * Superseded by #234 target layout (miroir_modelVersion/); retired in Slice 4.
  */
 import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -30,7 +31,7 @@ const SANDBOX_BUNDLED = join(
   "packages/miroir-sandbox/src/bundledData.ts",
 );
 
-describe("222 Phase 1 — assets layout", () => {
+describe("legacy 222 Phase 1 — assets layout (pre-#234)", () => {
   it("EntityVersion instances live under miroir_data with Slice 0 UUID set", () => {
     expect(existsSync(EV_DATA_DIR)).toBe(true);
     const onDisk = readdirSync(EV_DATA_DIR)
