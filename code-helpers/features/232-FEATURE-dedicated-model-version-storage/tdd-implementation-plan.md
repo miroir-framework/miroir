@@ -41,7 +41,7 @@ Related:
 | 2 | Generalize persistence section routing | Done | `PersistenceStoreController` routes CRUD/query by section; manager + filesystem startup wire optional `modelVersion` store |
 | 3 | Filesystem freeze tracer bullet | Done | Freeze writes history only to `modelVersion`; live model stays in `model`; integ tests 3.1/3.2 green |
 | 4 | SQL backend parity | Done | Postgres factory + schema bootstrap + SQL freeze integ tracer (3/3) |
-| 5 | Remaining backend policy, docs, and regression locks | Planned | Explicit support policy and unchanged live behavior |
+| 5 | Remaining backend policy, docs, and regression locks | Done | Policy tests + docs + separation matrix |
 
 ---
 
@@ -415,7 +415,7 @@ npx tsc --noEmit --skipLibCheck
 
 ## Slice 5 — Remaining backend policy, documentation, and regression locks
 
-**Status: Planned**
+**Status: Done**
 
 ### Goal
 
@@ -466,6 +466,14 @@ npx tsc --noEmit --skipLibCheck
 Run the smallest successful backend-specific integration suites while building
 each slice. Escalate to `npm run nonreg` once all supported writable backends
 have their explicit policy tests.
+
+### Realized (Slice 5)
+
+- **Backend policy tests:** `modelVersionStorage.232.policy.unit.test.ts` — IndexedDB and MongoDB route `modelVersion` to distinct registered stores; bundled with `modelVersion` rejects writes via `BundledUnsupportedModelVersionStore` and `BUNDLED_MODEL_VERSION_UNSUPPORTED_MESSAGE`; bundled without `modelVersion` remains valid.
+- **Separation regression locks:** `modelVersionStorage.232.separation.unit.test.ts` — unversioned controller error, live vs history section resolution, freeze plan sections, bootstrap without persisted history.
+- **Bundled startup:** `miroir-store-bundled` registers explicit `modelVersion` factory (read-only rejection, not missing-factory throw).
+- **Docs:** `data-architecture-deployments.md` — fourth section, backend matrix, filesystem/SQL/IndexedDB examples; `bundles-and-versioning.md` — links to deployment topology, bundled exclusion note.
+- **Note:** Plan referenced `workflow-and-versioning.md`; repo uses `bundles-and-versioning.md` (updated instead).
 
 ---
 

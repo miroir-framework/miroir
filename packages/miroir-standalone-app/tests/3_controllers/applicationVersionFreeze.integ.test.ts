@@ -9,8 +9,7 @@
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import process from "process";
-import { rmSync } from "node:fs";
-import { readFileSync } from "node:fs";
+import { readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 
 import type {
@@ -18,30 +17,46 @@ import type {
   EndpointDefinition,
   Entity,
   EntityInstance,
+  EntityInstanceCollection,
   EntityVersion,
+  MetaModel,
   SelfApplication,
 } from "miroir-core";
 import {
   Action2Error,
+  APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
+  APPLICATION_VERSION_CROSS_MENU_VERSION_UUID,
+  APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
+  APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID,
+  APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID,
+  APPLICATION_VERSION_CROSS_THEME_VERSION_UUID,
+  APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
   ConfigurationService,
   createDeploymentCompositeAction,
   defaultSelfApplicationDeploymentMap,
   Deployment,
   DomainControllerInterface,
+  ENDPOINT_VERSION_ENTITY_UUID,
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   getApplicationSection,
   LoggerInterface,
   LoggerOptions,
+  MENU_VERSION_ENTITY_UUID,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
+  QUERY_VERSION_ENTITY_UUID,
+  REPORT_VERSION_ENTITY_UUID,
   resetAndinitializeDeploymentCompositeAction,
   resolvePreviousApplicationVersion,
+  RUNNER_VERSION_ENTITY_UUID,
   StoreUnitConfiguration,
   testUtils_deleteApplicationDeployment,
   testUtils_resetApplicationDeployment,
+  THEME_VERSION_ENTITY_UUID,
+  TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
 } from "miroir-core";
 
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
@@ -66,6 +81,12 @@ import {
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
 } from "miroir-test-app_deployment-library";
+import {
+  defaultMiroirMetaModel,
+  entityApplicationVersionCrossEntityVersion,
+  entityEntityVersion,
+  entitySelfApplicationVersion,
+} from "miroir-test-app_deployment-miroir";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const bookCountByPublisherQuery = JSON.parse(
@@ -120,33 +141,92 @@ const libraryReturnDocumentRunner = JSON.parse(
   description?: string;
   definition: Record<string, unknown>;
 };
-import {
-  defaultMiroirMetaModel,
-  entityApplicationVersionCrossEntityVersion,
-  entityEntityVersion,
-  entitySelfApplicationVersion,
-  selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
-import {
-  QUERY_VERSION_ENTITY_UUID,
-  APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
-  REPORT_VERSION_ENTITY_UUID,
-  APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID,
-  MENU_VERSION_ENTITY_UUID,
-  APPLICATION_VERSION_CROSS_MENU_VERSION_UUID,
-  ENDPOINT_VERSION_ENTITY_UUID,
-  APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
-  RUNNER_VERSION_ENTITY_UUID,
-  APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID,
-  THEME_VERSION_ENTITY_UUID,
-  APPLICATION_VERSION_CROSS_THEME_VERSION_UUID,
-  TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
-  APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
-} from "miroir-core";
 
-const env: any = process.env;
+/** Persisted store rows — `EntityInstance` only types uuid/parentUuid; JSON rows carry domain fields. */
+type PersistedRow = Record<string, unknown> & { uuid?: string };
+
+function findNamed(rows: PersistedRow[], name: string): PersistedRow | undefined {
+  return rows.find((row) => row.name === name);
+}
+
+function hasNamed(rows: PersistedRow[], name: string): boolean {
+  return rows.some((row) => row.name === name);
+}
+
+function findByUuid(rows: PersistedRow[], uuid: string): PersistedRow | undefined {
+  return rows.find((row) => row.uuid === uuid);
+}
+
+function readEntityField(entity: Entity | EntityVersion, field: string): unknown {
+  return (entity as Record<string, unknown>)[field];
+}
+
+function crossesForApplicationVersion(
+  crosses: PersistedRow[],
+  applicationVersionUuid: string,
+): PersistedRow[] {
+  return crosses.filter((cross) => cross.applicationVersion === applicationVersionUuid);
+}
+
+function findCrossForEntity(
+  crosses: PersistedRow[],
+  entityVersions: PersistedRow[],
+  applicationVersionUuid: string,
+  entityUuid: string,
+): PersistedRow | undefined {
+  return crosses.find((cross) => {
+    if (cross.applicationVersion !== applicationVersionUuid) return false;
+    const ev = findByUuid(entityVersions, cross.entityVersion as string);
+    return ev?.entityUuid === entityUuid;
+  });
+}
+
+function findEntityVersionForCrosses(
+  entityVersions: PersistedRow[],
+  crosses: PersistedRow[],
+  entityUuid: string,
+): PersistedRow | undefined {
+  return entityVersions.find((ev) => {
+    return (
+      ev.entityUuid === entityUuid &&
+      crosses.some((cross) => cross.entityVersion === ev.uuid)
+    );
+  });
+}
+
+function findCrossForQuery(
+  crosses: PersistedRow[],
+  queryVersions: PersistedRow[],
+  applicationVersionUuid: string,
+  queryUuid: string,
+): PersistedRow | undefined {
+  return crosses
+    .filter((cross) => cross.applicationVersion === applicationVersionUuid)
+    .find((cross) => {
+      const qv = findByUuid(queryVersions, cross.queryVersion as string);
+      return qv?.queryUuid === queryUuid;
+    });
+}
+
+function mlSchemaDefinition(mlSchema: Entity["mlSchema"]): Record<string, unknown> {
+  const definition = (mlSchema as { definition?: Record<string, unknown> } | undefined)?.definition;
+  return definition ?? {};
+}
+
+function filesystemDeploymentRoot(): string {
+  return (miroirConfig.client as { filesystemDeploymentRootDirectory: string })
+    .filesystemDeploymentRootDirectory.replace(/\\/g, "/");
+}
+
+function filesystemSectionDir(
+  section: StoreUnitConfiguration["model"] | NonNullable<StoreUnitConfiguration["modelVersion"]>,
+): string {
+  return (section as { directory: string }).directory.replace(/\\/g, "/");
+}
+
+const env = process.env;
 const fileName = "applicationVersionFreeze.integ.test";
-const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
+const myConsoleLog = (...args: unknown[]) => console.log(fileName, ...args);
 
 let log: LoggerInterface = console as any as LoggerInterface;
 MiroirLoggerFactory.registerLoggerToStart(
@@ -281,8 +361,11 @@ function libraryPersistenceStore() {
 async function getPersistedInstances(section: "model" | "modelVersion", parentEntityUuid: string) {
   const result = await libraryPersistenceStore().getInstances(section, parentEntityUuid);
   expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
-  const collection = (result as any).returnedDomainElement;
-  return collection?.instances ?? [];
+  if (result instanceof Action2Error) {
+    return [] as PersistedRow[];
+  }
+  const collection = result.returnedDomainElement as EntityInstanceCollection | undefined;
+  return (collection?.instances ?? []) as PersistedRow[];
 }
 
 async function loadPersistedVersionHistory() {
@@ -339,24 +422,22 @@ async function loadPersistedVersionHistory() {
 
 async function findPersistedSav(versionName: string) {
   const history = await loadPersistedVersionHistory();
-  const sav = history.applicationVersions.find((v: any) => v.name === versionName);
+  const sav = findNamed(history.applicationVersions, versionName);
   expect(sav, `SAV ${versionName} missing in modelVersion persistence`).toBeDefined();
   return sav!;
 }
 
 function modelVersionEntityDir(parentEntityUuid: string): string {
-  const root = miroirConfig.client.filesystemDeploymentRootDirectory.replace(/\\/g, "/");
-  const subDir = (
-    testDeploymentStorageConfiguration as StoreUnitConfiguration & {
-      modelVersion?: { directory: string };
-    }
-  ).modelVersion!.directory.replace(/\\/g, "/");
+  const root = filesystemDeploymentRoot();
+  const subDir = filesystemSectionDir(
+    testDeploymentStorageConfiguration.modelVersion!,
+  );
   return join(root, subDir, parentEntityUuid).replace(/\\/g, "/");
 }
 
 function modelEntityDir(parentEntityUuid: string): string {
-  const root = miroirConfig.client.filesystemDeploymentRootDirectory.replace(/\\/g, "/");
-  const subDir = testDeploymentStorageConfiguration.model.directory.replace(/\\/g, "/");
+  const root = filesystemDeploymentRoot();
+  const subDir = filesystemSectionDir(testDeploymentStorageConfiguration.model);
   return join(root, subDir, parentEntityUuid).replace(/\\/g, "/");
 }
 
@@ -365,8 +446,8 @@ function clearModelVersionPersistence() {
   if (!modelVersion || modelVersion.emulatedServerType !== "filesystem") {
     return;
   }
-  const root = miroirConfig.client.filesystemDeploymentRootDirectory.replace(/\\/g, "/");
-  const subDir = modelVersion.directory.replace(/\\/g, "/");
+  const root = filesystemDeploymentRoot();
+  const subDir = filesystemSectionDir(modelVersion);
   rmSync(join(root, subDir), { recursive: true, force: true });
 }
 
@@ -407,18 +488,15 @@ async function freezeLibrary(versionName: string) {
 function presentModelSlice(entity: Entity | EntityVersion) {
   const slice: Record<string, unknown> = { name: (entity as Entity).name };
   for (const field of ENTITY_PRESENT_MODEL_DEFINITION_FIELDS) {
-    if ((entity as any)[field] !== undefined) {
-      slice[field] = (entity as any)[field];
+    const value = readEntityField(entity, field);
+    if (value !== undefined) {
+      slice[field] = value;
     }
   }
   return slice;
 }
 
-function queryVersionSlice(queryVersion: {
-  name: string;
-  queryUuid: string;
-  definition: unknown;
-}) {
+function queryVersionSlice(queryVersion: PersistedRow) {
   return {
     name: queryVersion.name,
     queryUuid: queryVersion.queryUuid,
@@ -460,12 +538,7 @@ async function seedLibraryReport() {
   expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
 }
 
-function reportVersionSlice(reportVersion: {
-  name: string;
-  reportUuid: string;
-  defaultLabel?: string;
-  definition: unknown;
-}) {
+function reportVersionSlice(reportVersion: PersistedRow) {
   return {
     name: reportVersion.name,
     reportUuid: reportVersion.reportUuid,
@@ -474,13 +547,7 @@ function reportVersionSlice(reportVersion: {
   };
 }
 
-function menuVersionSlice(menuVersion: {
-  name: string;
-  menuUuid: string;
-  defaultLabel?: string;
-  description?: string;
-  definition: unknown;
-}) {
+function menuVersionSlice(menuVersion: PersistedRow) {
   return {
     name: menuVersion.name,
     menuUuid: menuVersion.menuUuid,
@@ -490,15 +557,7 @@ function menuVersionSlice(menuVersion: {
   };
 }
 
-function endpointVersionSlice(endpointVersion: {
-  name: string;
-  endpointUuid: string;
-  version: string;
-  application: string;
-  description?: string;
-  transactionalEndpoint?: boolean;
-  definition: unknown;
-}) {
+function endpointVersionSlice(endpointVersion: PersistedRow) {
   return {
     name: endpointVersion.name,
     endpointUuid: endpointVersion.endpointUuid,
@@ -510,14 +569,7 @@ function endpointVersionSlice(endpointVersion: {
   };
 }
 
-function runnerVersionSlice(runnerVersion: {
-  name: string;
-  runnerUuid: string;
-  application: string;
-  defaultLabel: string;
-  description?: string;
-  definition: unknown;
-}) {
+function runnerVersionSlice(runnerVersion: PersistedRow) {
   return {
     name: runnerVersion.name,
     runnerUuid: runnerVersion.runnerUuid,
@@ -577,7 +629,7 @@ beforeEach(async () => {
         applicationVersion: selfApplicationVersionLibraryInitialVersion,
       },
       libraryEntitiesAndInstancesWithoutBook3,
-      defaultLibraryModelEnvironment.currentModel as any,
+      defaultLibraryModelEnvironment.currentModel as MetaModel,
       domainControllerDataCrudFilterEntities,
     ),
     applicationDeploymentMap,
@@ -603,7 +655,9 @@ afterAll(async () => {
   );
 }, globalTimeOut);
 
-describe.sequential.skipIf(!isSqlBackend)("232 Slice 4 — SQL modelVersion section persistence", () => {
+const describeSlice4 = isSqlBackend ? describe.sequential : describe.sequential.skip;
+
+describeSlice4("232 Slice 4 — SQL modelVersion section persistence", () => {
   it(
     "4.1 — SQL config uses distinct modelVersion schema; freeze persists history there not in model section",
     async () => {
@@ -621,13 +675,13 @@ describe.sequential.skipIf(!isSqlBackend)("232 Slice 4 — SQL modelVersion sect
         "modelVersion",
         entitySelfApplicationVersion.uuid!,
       );
-      expect(historySavInstances.some((s: any) => s.name === "232-SQL-V1")).toBe(true);
+      expect(hasNamed(historySavInstances, "232-SQL-V1")).toBe(true);
 
       const modelSavInstances = await getPersistedInstances(
         "model",
         entitySelfApplicationVersion.uuid!,
       );
-      expect(modelSavInstances.some((s: any) => s.name === "232-SQL-V1")).toBe(false);
+      expect(hasNamed(modelSavInstances, "232-SQL-V1")).toBe(false);
     },
     globalTimeOut,
   );
@@ -641,19 +695,19 @@ describe.sequential.skipIf(!isSqlBackend)("232 Slice 4 — SQL modelVersion sect
       await refreshLibraryCache();
       const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
       const history = await loadPersistedVersionHistory();
-      const sav = history.applicationVersions.find((v) => v.name === "232-SQL-Isolation")!;
-      const bookCross = history.applicationVersionCrossEntityVersion.find(
-        (c: any) =>
-          c.applicationVersion === sav.uuid &&
-          history.entityVersions.find((e: any) => e.uuid === c.entityVersion)?.entityUuid ===
-            entityBook.uuid,
+      const sav = findNamed(history.applicationVersions, "232-SQL-Isolation")!;
+      const bookCross = findCrossForEntity(
+        history.applicationVersionCrossEntityVersion,
+        history.entityVersions,
+        sav.uuid as string,
+        entityBook.uuid!,
       );
       expect(bookCross).toBeDefined();
 
-      const historyBefore = (await getPersistedInstances(
-        "modelVersion",
-        entityEntityVersion.uuid!,
-      )).find((ev: any) => ev.uuid === bookCross!.entityVersion);
+      const historyBefore = findByUuid(
+        await getPersistedInstances("modelVersion", entityEntityVersion.uuid!),
+        bookCross!.entityVersion as string,
+      );
       expect(historyBefore).toBeDefined();
 
       const liveBook = model.entities.find((e) => e.uuid === entityBook.uuid)!;
@@ -676,10 +730,10 @@ describe.sequential.skipIf(!isSqlBackend)("232 Slice 4 — SQL modelVersion sect
       );
       expect(updateResult instanceof Action2Error).toBe(false);
 
-      const historyAfter = (await getPersistedInstances(
-        "modelVersion",
-        entityEntityVersion.uuid!,
-      )).find((ev: any) => ev.uuid === bookCross!.entityVersion);
+      const historyAfter = findByUuid(
+        await getPersistedInstances("modelVersion", entityEntityVersion.uuid!),
+        bookCross!.entityVersion as string,
+      );
       expect(historyAfter?.name).toBe(historyBefore!.name);
       expect(historyAfter?.name).not.toBe("BookRenamedAfter232SqlFreeze");
     },
@@ -700,7 +754,7 @@ describe.sequential.skipIf(!isSqlBackend)("232 Slice 4 — SQL modelVersion sect
         "modelVersion",
         entitySelfApplicationVersion.uuid!,
       );
-      expect(historySav.some((s: any) => s.name === "232-SQL-Bootstrap")).toBe(true);
+      expect(hasNamed(historySav, "232-SQL-Bootstrap")).toBe(true);
     },
     globalTimeOut,
   );
@@ -722,14 +776,15 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
       const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
       const history = await loadPersistedVersionHistory();
 
-      const sav = history.applicationVersions.find((v: any) => v.name === "V1-Freeze");
+      const sav = findNamed(history.applicationVersions, "V1-Freeze");
       expect(sav, "SAV V1-Freeze missing in modelVersion after reload").toBeDefined();
       expect(sav!.previousVersion).toBeUndefined();
       expect(sav!.modelCUDMigration ?? []).toEqual([]);
       expect(sav!.branch).toBe(BRANCH_UUID);
 
-      const crosses = history.applicationVersionCrossEntityVersion.filter(
-        (c: any) => c.applicationVersion === sav!.uuid,
+      const crosses = crossesForApplicationVersion(
+        history.applicationVersionCrossEntityVersion,
+        sav!.uuid as string,
       );
       // Freeze snapshots application Entities only — exclude MetaModel bootstrap Entities.
       const metaBootstrapUuids = new Set(defaultMiroirMetaModel.entities.map((e) => e.uuid));
@@ -741,14 +796,14 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
       expect(crosses.length).toBeGreaterThan(0);
 
       for (const cross of crosses) {
-        const ev = history.entityVersions.find((e: any) => e.uuid === cross.entityVersion);
+        const ev = findByUuid(history.entityVersions, cross.entityVersion as string);
         expect(ev, `EntityVersion ${cross.entityVersion} missing`).toBeDefined();
         expect(ev!.uuid).not.toBe(ev!.entityUuid);
         expect(ev!.parentUuid).toBe(entityEntityVersion.uuid);
 
         const live = freezeTargetEntities.find((e) => e.uuid === ev!.entityUuid);
         expect(live, `live Entity ${ev!.entityUuid} missing`).toBeDefined();
-        expect(presentModelSlice(ev!)).toEqual(presentModelSlice(live!));
+        expect(presentModelSlice(ev! as EntityVersion)).toEqual(presentModelSlice(live!));
       }
 
       // Pre-existing documentation-class EntityVersions (if any) are not reused as freeze uuids
@@ -769,15 +824,16 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
       await refreshLibraryCache();
       let model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
       const history = await loadPersistedVersionHistory();
-      const sav = history.applicationVersions.find((v: any) => v.name === "V1-Isolation")!;
-      const bookCross = history.applicationVersionCrossEntityVersion.find((c: any) => {
-        if (c.applicationVersion !== sav.uuid) return false;
-        const ev = history.entityVersions.find((e: any) => e.uuid === c.entityVersion);
-        return ev?.entityUuid === entityBook.uuid;
-      });
+      const sav = findNamed(history.applicationVersions, "V1-Isolation")!;
+      const bookCross = findCrossForEntity(
+        history.applicationVersionCrossEntityVersion,
+        history.entityVersions,
+        sav.uuid as string,
+        entityBook.uuid!,
+      );
       expect(bookCross).toBeDefined();
       const frozenBookEvBefore = structuredClone(
-        history.entityVersions.find((e: any) => e.uuid === bookCross!.entityVersion)!,
+        findByUuid(history.entityVersions, bookCross!.entityVersion as string)!,
       );
 
       const liveBook = model.entities.find((e) => e.uuid === entityBook.uuid)!;
@@ -787,7 +843,7 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
         mlSchema: {
           ...liveBook.mlSchema!,
           definition: {
-            ...(liveBook.mlSchema as any).definition,
+            ...mlSchemaDefinition(liveBook.mlSchema),
             afterFreezeAttr: { type: "string" },
           },
         },
@@ -813,8 +869,9 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
       const liveAfter = model.entities.find((e) => e.uuid === entityBook.uuid)!;
       expect(liveAfter.name).toBe("BookRenamedAfterFreeze");
 
-      const frozenBookEvAfter = (await loadPersistedVersionHistory()).entityVersions.find(
-        (e: any) => e.uuid === bookCross!.entityVersion,
+      const frozenBookEvAfter = findByUuid(
+        (await loadPersistedVersionHistory()).entityVersions,
+        bookCross!.entityVersion as string,
       )!;
       expect(frozenBookEvAfter.name).toBe(frozenBookEvBefore.name);
       expect(frozenBookEvAfter.mlSchema).toEqual(frozenBookEvBefore.mlSchema);
@@ -829,7 +886,7 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
 
       await refreshLibraryCache();
       let history = await loadPersistedVersionHistory();
-      const v1 = history.applicationVersions.find((v: any) => v.name === "V1-Chain")!;
+      const v1 = findNamed(history.applicationVersions, "V1-Chain")!;
       expect(v1).toBeDefined();
 
       const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
@@ -859,12 +916,12 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
       expect((await freezeLibrary("V2-Chain")) instanceof Action2Error).toBe(false);
       await refreshLibraryCache();
       history = await loadPersistedVersionHistory();
-      const v2 = history.applicationVersions.find((v: any) => v.name === "V2-Chain")!;
+      const v2 = findNamed(history.applicationVersions, "V2-Chain")!;
       expect(v2).toBeDefined();
       expect(v2.previousVersion).toBe(v1.uuid);
-      expect(v2.modelCUDMigration?.length ?? 0).toBeGreaterThan(0);
+      expect(Array.isArray(v2.modelCUDMigration) ? v2.modelCUDMigration.length : 0).toBeGreaterThan(0);
       expect(
-        (v2.modelCUDMigration as any[]).some(
+        ((v2.modelCUDMigration ?? []) as Array<{ kind: string; entityUuid?: string }>).some(
           (c) => c.kind === "renameEntity" && c.entityUuid === entityBook.uuid,
         ),
       ).toBe(true);
@@ -879,7 +936,7 @@ describe.sequential("216 Phase 6 — freezeApplicationVersion persistence", () =
       expect((await freezeLibrary("V2-Same")) instanceof Action2Error).toBe(false);
       await refreshLibraryCache();
       const history = await loadPersistedVersionHistory();
-      const v2 = history.applicationVersions.find((v: any) => v.name === "V2-Same")!;
+      const v2 = findNamed(history.applicationVersions, "V2-Same")!;
       expect(v2.previousVersion).toBeDefined();
       expect(v2.modelCUDMigration ?? []).toEqual([]);
     },
@@ -1008,7 +1065,7 @@ describe.sequential("227 — QueryVersion freeze persistence", () => {
       await refreshLibraryCache();
       const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
       const history = await loadPersistedVersionHistory();
-      const sav = history.applicationVersions.find((v: any) => v.name === "V1-Queries");
+      const sav = findNamed(history.applicationVersions, "V1-Queries");
       expect(sav, "SAV V1-Queries missing after reload").toBeDefined();
 
       const liveQueries = model.storedQueries.filter(
@@ -1016,15 +1073,16 @@ describe.sequential("227 — QueryVersion freeze persistence", () => {
       );
       expect(liveQueries.length).toBe(1);
 
-      const crossQueries = history.applicationVersionCrossQueryVersion.filter(
-        (c: any) => c.applicationVersion === sav!.uuid,
+      const crossQueries = crossesForApplicationVersion(
+        history.applicationVersionCrossQueryVersion,
+        sav!.uuid as string,
       );
       expect(crossQueries.length).toBe(liveQueries.length);
       expect(crossQueries.length).toBeGreaterThan(0);
 
       for (const cross of crossQueries) {
         expect(cross.parentUuid).toBe(APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID);
-        const qv = history.queryVersions.find((q: any) => q.uuid === cross.queryVersion);
+        const qv = findByUuid(history.queryVersions, cross.queryVersion as string);
         expect(qv, `QueryVersion ${cross.queryVersion} missing`).toBeDefined();
         expect(qv!.uuid).not.toBe(qv!.queryUuid);
         expect(qv!.parentUuid).toBe(QUERY_VERSION_ENTITY_UUID);
@@ -1060,15 +1118,16 @@ describe.sequential("227 — QueryVersion freeze persistence", () => {
       await refreshLibraryCache();
       let model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
       const history = await loadPersistedVersionHistory();
-      const sav = history.applicationVersions.find((v: any) => v.name === "V1-Query-Isolation")!;
-      const queryCross = history.applicationVersionCrossQueryVersion.find((c: any) => {
-        if (c.applicationVersion !== sav.uuid) return false;
-        const qv = history.queryVersions.find((q: any) => q.uuid === c.queryVersion);
-        return qv?.queryUuid === bookCountByPublisherQuery.uuid;
-      });
+      const sav = findNamed(history.applicationVersions, "V1-Query-Isolation")!;
+      const queryCross = findCrossForQuery(
+        history.applicationVersionCrossQueryVersion,
+        history.queryVersions,
+        sav.uuid as string,
+        bookCountByPublisherQuery.uuid,
+      );
       expect(queryCross).toBeDefined();
       const frozenQueryBefore = structuredClone(
-        history.queryVersions.find((q: any) => q.uuid === queryCross!.queryVersion)!,
+        findByUuid(history.queryVersions, queryCross!.queryVersion as string)!,
       );
 
       const liveQuery = model.storedQueries.find(
@@ -1106,9 +1165,7 @@ describe.sequential("227 — QueryVersion freeze persistence", () => {
       ) as { name: string; definition: Record<string, unknown> };
       expect(liveAfter.name).toBe("BookCountRenamedAfterFreeze");
 
-      const frozenQueryAfter = history.queryVersions.find(
-        (q: any) => q.uuid === queryCross!.queryVersion,
-      )!;
+      const frozenQueryAfter = findByUuid(history.queryVersions, queryCross!.queryVersion as string)!;
       expect(frozenQueryAfter.name).toBe(frozenQueryBefore.name);
       expect(frozenQueryAfter.definition).toEqual(frozenQueryBefore.definition);
     },
@@ -1503,22 +1560,23 @@ describe.sequential("216 Phase 8 — end-to-end freeze tracer bullet", () => {
       await refreshLibraryCache();
       model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
       let history = await loadPersistedVersionHistory();
-      const v1 = history.applicationVersions.find((v: any) => v.name === "Tracer-V1")!;
+      const v1 = findNamed(history.applicationVersions, "Tracer-V1")!;
       expect(v1).toBeDefined();
       expect(v1.previousVersion).toBeUndefined();
       expect(v1.modelCUDMigration ?? []).toEqual([]);
-      const v1Crosses = history.applicationVersionCrossEntityVersion.filter(
-        (c: any) => c.applicationVersion === v1.uuid,
+      const v1Crosses = crossesForApplicationVersion(
+        history.applicationVersionCrossEntityVersion,
+        v1.uuid as string,
       );
       expect(v1Crosses.length).toBeGreaterThan(0);
       const liveBookBefore = model.entities.find((e) => e.uuid === entityBook.uuid)!;
-      const bookEvV1 = history.entityVersions.find((ev: any) =>
-        v1Crosses.some(
-          (c: any) => c.entityVersion === ev.uuid && ev.entityUuid === entityBook.uuid,
-        ),
+      const bookEvV1 = findEntityVersionForCrosses(
+        history.entityVersions,
+        v1Crosses,
+        entityBook.uuid!,
       )!;
       expect(bookEvV1).toBeDefined();
-      expect(presentModelSlice(bookEvV1)).toEqual(presentModelSlice(liveBookBefore));
+      expect(presentModelSlice(bookEvV1 as EntityVersion)).toEqual(presentModelSlice(liveBookBefore));
 
       // 3. Mutate live Entity — add attribute only (no rename)
       const updatedBook: Entity = {
@@ -1526,7 +1584,7 @@ describe.sequential("216 Phase 8 — end-to-end freeze tracer bullet", () => {
         mlSchema: {
           ...liveBookBefore.mlSchema!,
           definition: {
-            ...(liveBookBefore.mlSchema as any).definition,
+            ...mlSchemaDefinition(liveBookBefore.mlSchema),
             tracerPhase8Attr: { type: "string" },
           },
         },
@@ -1554,7 +1612,7 @@ describe.sequential("216 Phase 8 — end-to-end freeze tracer bullet", () => {
       await refreshLibraryCache();
       model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
       history = await loadPersistedVersionHistory();
-      const v2 = history.applicationVersions.find((v: any) => v.name === "Tracer-V2")!;
+      const v2 = findNamed(history.applicationVersions, "Tracer-V2")!;
       expect(v2).toBeDefined();
       expect(v2.previousVersion).toBe(v1.uuid);
 
@@ -1574,12 +1632,14 @@ describe.sequential("216 Phase 8 — end-to-end freeze tracer bullet", () => {
 
       // 5. Live model remains Entity-authoritative (not read through Cross / V1 EV)
       const liveBookAfter = model.entities.find((e) => e.uuid === entityBook.uuid)!;
-      expect((liveBookAfter.mlSchema as any).definition.tracerPhase8Attr).toEqual({
+      expect(mlSchemaDefinition(liveBookAfter.mlSchema).tracerPhase8Attr).toEqual({
         type: "string",
       });
-      const frozenBookEvV1 = history.entityVersions.find((e: any) => e.uuid === bookEvV1.uuid)!;
-      expect((frozenBookEvV1.mlSchema as any).definition.tracerPhase8Attr).toBeUndefined();
-      expect(presentModelSlice(liveBookAfter)).not.toEqual(presentModelSlice(frozenBookEvV1));
+      const frozenBookEvV1 = findByUuid(history.entityVersions, bookEvV1.uuid!)!;
+      expect(mlSchemaDefinition(frozenBookEvV1.mlSchema as Entity["mlSchema"]).tracerPhase8Attr).toBeUndefined();
+      expect(presentModelSlice(liveBookAfter)).not.toEqual(
+        presentModelSlice(frozenBookEvV1 as EntityVersion),
+      );
     },
     globalTimeOut,
   );
@@ -1604,13 +1664,13 @@ describe.sequential("232 Slice 3 — modelVersion section persistence", () => {
         "modelVersion",
         entitySelfApplicationVersion.uuid!,
       );
-      expect(historySavInstances.some((s: any) => s.name === "232-V1")).toBe(true);
+      expect(hasNamed(historySavInstances, "232-V1")).toBe(true);
 
       const modelEvInstances = await getPersistedInstances("model", entityEntityVersion.uuid!);
       expect(modelEvInstances).toHaveLength(0);
 
       if (isFilesystemBackend) {
-        const frozenSav = historySavInstances.find((s: any) => s.name === "232-V1")!;
+        const frozenSav = findNamed(historySavInstances, "232-V1")!;
         expect(frozenSav).toBeDefined();
         const frozenSavPath = `${frozenSav.uuid}.json`;
         expect(() =>
@@ -1636,19 +1696,19 @@ describe.sequential("232 Slice 3 — modelVersion section persistence", () => {
       await refreshLibraryCache();
       const model = domainController.currentModel(testApplicationUuid, applicationDeploymentMap);
       const history = await loadPersistedVersionHistory();
-      const sav = history.applicationVersions.find((v) => v.name === "232-Isolation")!;
-      const bookCross = history.applicationVersionCrossEntityVersion.find(
-        (c: any) =>
-          c.applicationVersion === sav.uuid &&
-          history.entityVersions.find((e: any) => e.uuid === c.entityVersion)?.entityUuid ===
-            entityBook.uuid,
+      const sav = findNamed(history.applicationVersions, "232-Isolation")!;
+      const bookCross = findCrossForEntity(
+        history.applicationVersionCrossEntityVersion,
+        history.entityVersions,
+        sav.uuid as string,
+        entityBook.uuid!,
       );
       expect(bookCross).toBeDefined();
 
-      const historyBefore = (await getPersistedInstances(
-        "modelVersion",
-        entityEntityVersion.uuid!,
-      )).find((ev: any) => ev.uuid === bookCross!.entityVersion);
+      const historyBefore = findByUuid(
+        await getPersistedInstances("modelVersion", entityEntityVersion.uuid!),
+        bookCross!.entityVersion as string,
+      );
       expect(historyBefore).toBeDefined();
 
       const liveBook = model.entities.find((e) => e.uuid === entityBook.uuid)!;
@@ -1671,10 +1731,10 @@ describe.sequential("232 Slice 3 — modelVersion section persistence", () => {
       );
       expect(updateResult instanceof Action2Error).toBe(false);
 
-      const historyAfter = (await getPersistedInstances(
-        "modelVersion",
-        entityEntityVersion.uuid!,
-      )).find((ev: any) => ev.uuid === bookCross!.entityVersion);
+      const historyAfter = findByUuid(
+        await getPersistedInstances("modelVersion", entityEntityVersion.uuid!),
+        bookCross!.entityVersion as string,
+      );
       expect(historyAfter?.name).toBe(historyBefore!.name);
       expect(historyAfter?.name).not.toBe("BookRenamedAfter232Freeze");
     },
@@ -1695,7 +1755,7 @@ describe.sequential("232 Slice 3 — modelVersion section persistence", () => {
         "modelVersion",
         entitySelfApplicationVersion.uuid!,
       );
-      expect(historySav.some((s: any) => s.name === "232-Bootstrap")).toBe(true);
+      expect(hasNamed(historySav, "232-Bootstrap")).toBe(true);
     },
     globalTimeOut,
   );

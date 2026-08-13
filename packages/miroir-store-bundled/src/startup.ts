@@ -17,6 +17,7 @@ import { cleanLevel } from "./4_services/constants.js";
 import { BundledAdminStore } from "./4_services/BundledAdminStore.js";
 import { BundledDataStoreSection } from "./4_services/BundledDataStoreSection.js";
 import { BundledModelStoreSection } from "./4_services/BundledModelStoreSection.js";
+import { BundledUnsupportedModelVersionStore } from "./4_services/BundledUnsupportedModelVersionStore.js";
 import { packageName } from "./constants.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -135,6 +136,26 @@ export function miroirBundledStoreSectionStartup(
         );
       }
       log.warn("registerStoreSectionFactory bundled data: unexpected config", config);
+      return Promise.resolve(new ErrorDataStore());
+    },
+  );
+
+  configurationService.registerStoreSectionFactory(
+    "bundled",
+    "modelVersion",
+    async (
+      _section: ApplicationSection,
+      config: StoreSectionConfiguration,
+    ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
+      if (config.emulatedServerType === "bundled") {
+        const bundledConfig = config as BundledStoreSectionConfiguration;
+        log.warn(
+          "registerStoreSectionFactory bundled modelVersion: read-only bundled deployment cannot persist version history",
+          bundledConfig.deploymentUuid,
+        );
+        return Promise.resolve(new BundledUnsupportedModelVersionStore(bundledConfig.deploymentUuid));
+      }
+      log.warn("registerStoreSectionFactory bundled modelVersion: unexpected config", config);
       return Promise.resolve(new ErrorDataStore());
     },
   );
