@@ -110,6 +110,8 @@ settings (`idAttribute`), view/cache fields, and related display metadata.
 - `name` - Human-readable name
 - `description` - Documentation
 - `mlSchema` - Structure definition in Jzod / ML format (present model)
+- `scope` - *(meta-model Entity rows only)* `versioning` vs `modeling`; absent = modeling. Labels version-history concepts (`EntityVersion`, `SelfApplicationVersion`, …) vs ordinary model concepts. **Not read by runtime routing today** — see [Entity API — scope](../reference/api/entity.md#meta-model-classification-scope--logicaldatamodel).
+- `logicalDataModel` - *(meta-model Entity rows only)* `entity` vs `manyToMany` for cross/link tables; absent = entity.
 
 **File Location**: `<app>_model/16dbfe28-…/<entityUuid>.json` (under the Entity meta-entity folder)
 

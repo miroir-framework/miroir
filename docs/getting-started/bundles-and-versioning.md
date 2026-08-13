@@ -74,6 +74,7 @@ This will enable differentiated "development" and "production" environment, wher
 ### Implementation: versioned-internal
 
 - The full version history of the application's model is stored in the **`modelVersion` store section** of the deployment (separate from live `model` and application `data` — see [Data Architecture: Deployments](../reference/data-architecture-deployments.md#modelversion-version-history-optional))
+- Meta-model Entity types that participate in freeze history are marked **`scope: "versioning"`** on their Entity row (e.g. `EntityVersion`, `SelfApplicationVersion`, `ApplicationVersionCross*`). That metadata classifies versioning infrastructure vs ordinary **`modeling`** concepts; runtime section routing currently uses an explicit UUID registry in code, not a scan of `scope`. See [Entity API — scope](../reference/api/entity.md#meta-model-classification-scope--logicaldatamodel).
 - Enables in-app rollback, branching, and audit without any external VCS
 - Suited for end-user applications where the model evolves at runtime (no developer Git workflow)
 - Heavier storage footprint; periodic pruning of old snapshots recommended for long-lived deployments

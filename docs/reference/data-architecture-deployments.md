@@ -120,6 +120,10 @@ Each section (`admin`, `model`, `data`, and optionally `modelVersion`) of a depl
 
 Present only on deployments with `versioningEnabled: true`. Uses the same backend types as `model` and `data`, but must point at storage **separate** from the live model.
 
+**Which entity families use it:** freeze persists historical rows for meta-model Entity types classified as version history — e.g. `SelfApplicationVersion`, `EntityVersion`, `QueryVersion`, and `ApplicationVersionCross*` link tables. In the bootstrap model these Entity rows carry **`scope: "versioning"`** (see [Entity API — scope](../reference/api/entity.md#meta-model-classification-scope--logicaldatamodel)). Runtime routing uses the `versionHistoryEntityUuids` registry in `Model.ts`, not a dynamic read of `scope` today.
+
+Live model concepts (`scope` absent / `modeling`) — Entity, Query, Report, your app's `Book`, etc. — stay in the **`model`** section; only freeze-produced history rows go to **`modelVersion`**.
+
 **Filesystem example** (Library integration tests):
 
 ```json

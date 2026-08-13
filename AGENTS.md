@@ -201,6 +201,8 @@ Entities (present model) and EntityVersions support three kinds of primary keys 
 - **Non-UUID single PK**: `idAttribute` is a single string naming any attribute (e.g. `"code"`).
 - **Composite PK**: `idAttribute` is a `string[]` array (e.g. `["region", "code"]`).
 
+**Entity `scope` (meta-model classification):** optional on meta-model **Entity** rows only — `"versioning"` marks freeze / application-version-history concepts (`EntityVersion`, `SelfApplicationVersion`, `ApplicationVersionCross*`, …); absent = `"modeling"`. Companion `logicalDataModel`: `"manyToMany"` for cross tables. **Runtime routing** (`model` vs `modelVersion`) uses `versionHistoryEntityUuids` in `Model.ts`, not a dynamic read of `scope` yet. See `docs/reference/api/entity.md#meta-model-classification-scope--logicaldatamodel`.
+
 Helper functions for PK handling are in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 - `getEntityPrimaryKeyAttribute(entityDefinition)` — returns `string | string[]`
 - `getEntityPrimaryKeyAttributes(entityDefinition)` — always returns `string[]`

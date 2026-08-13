@@ -241,6 +241,34 @@ Treat this as a specialized external-read pattern; prefer adding a real / compos
 
 ---
 
+## Versioning infrastructure entities (`scope`)
+
+**When:** You are extending or reading the **Miroir meta-model** itself (not a Library/Admin app model) and need to understand rows such as `EntityVersion`, `QueryVersion`, `SelfApplicationVersion`, or `ApplicationVersionCrossEntityVersion`.
+
+**What `scope` means**
+
+`scope` is an optional field on **Entity** definitions in the meta-model:
+
+| `scope` | Meaning |
+|---------|---------|
+| *(absent)* or **`modeling`** | Normal live-model concept — `Query`, `Report`, Library `Book`, … |
+| **`versioning`** | Part of **application version history** — types whose *instances* are written by `freezeApplicationVersion` into the `modelVersion` store section |
+
+Companion field **`logicalDataModel`**: use **`manyToMany`** on cross/link Entity types (`ApplicationVersionCross*`). Leave absent (→ `entity`) on ordinary `*Version` snapshot types.
+
+**What it is *not***
+
+- Not a flag on **instances** (Book rows, freeze snapshots). It classifies the **Entity concept** in `miroir_model/`.
+- **Not wired to runtime routing yet.** Which entity UUIDs land in `modelVersion` is determined by `versionHistoryEntityUuids` / `getApplicationSection()` in code, not by scanning `entity.scope` at runtime. The metadata documents intent and is locked by tests.
+
+**Authoring guidance**
+
+- Application authors defining Library `Book` / `Author` **do not set `scope`** — defaults to modeling.
+- Framework/bootstrap changes to versioning Entity rows should set `scope: "versioning"` (and `logicalDataModel: "manyToMany"` on cross tables) to match existing Miroir bootstrap assets.
+- See [Entity API — meta-model classification](../../reference/api/entity.md#meta-model-classification-scope--logicaldatamodel) and [Bundles and Versioning — versioned-internal](../getting-started/bundles-and-versioning.md#implementation-versioned-internal).
+
+---
+
 ## Choosing a shape (decision checklist)
 
 1. **Who owns the rows?** Miroir store → Use case 1. External DB/API → Use case 2 (+ 3/4/6 as needed).
@@ -267,7 +295,7 @@ Entity files are keyed by the **Entity** uuid under the Entity’s parent Entity
 ## Related reading
 
 - [Core Concepts — Entity & EntityVersion](../core-concepts.md#entity--entityversion)
-- [Entity & EntityVersion API](../../reference/api/entity.md)
+- [Entity & EntityVersion API](../../reference/api/entity.md) — includes `scope` / `logicalDataModel`
 - [Library tutorial — editing Book](../../tutorials/library-tutorial.md)
 - [Creating applications](creating-applications.md) (placeholder; links here)
 - Feature notes: `code-helpers/features/173-FEATURE- enable non-uuid primary keys for Entities/plan.md`, `code-helpers/features/176-FEATURE- support tables & entities with composite PK/plan.md`

@@ -6,6 +6,7 @@
   "name": "SelfApplication",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
+  "scope": "versioning",
   "description": "Self SelfApplication",
   "viewAttributes": [
     "name",
