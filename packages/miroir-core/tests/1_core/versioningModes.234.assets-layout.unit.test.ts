@@ -1,5 +1,5 @@
 /**
- * #234 Slice 2 — Miroir VH assets belong in miroir_modelVersion/.
+ * #234 Slice 2 — Miroir Version History assets belong in miroir_modelVersion/.
  */
 import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -12,7 +12,7 @@ import {
   MIROIR_DEPLOYMENT_INDEX,
   MIROIR_ENTITY_VERSION_METACLASS_PATH,
   MIROIR_MODEL_VERSION_ASSETS_DIR,
-  MIROIR_VH_DATA_PARENTS_SLICE0,
+  MIROIR_VERSION_HISTORY_PARENTS_SLICE0,
   REPO_ROOT,
 } from "./versioningModes.234.slice0-inventory.js";
 
@@ -31,15 +31,15 @@ describe("234 target — Miroir modelVersion assets layout", () => {
     expect(existsSync(MIROIR_MODEL_VERSION)).toBe(true);
   });
 
-  it("relocated VH parent folders live under miroir_modelVersion with expected counts", () => {
-    for (const [parentUuid, expectedCount] of Object.entries(MIROIR_VH_DATA_PARENTS_SLICE0)) {
+  it("relocated Version History parent folders live under miroir_modelVersion with expected counts", () => {
+    for (const [parentUuid, expectedCount] of Object.entries(MIROIR_VERSION_HISTORY_PARENTS_SLICE0)) {
       const dir = join(MIROIR_MODEL_VERSION, parentUuid);
       expect(existsSync(dir), parentUuid).toBe(true);
       expect(countJsonInDir(dir), parentUuid).toBe(expectedCount);
     }
   });
 
-  it("no VH instance JSON remains under miroir_data/ for versionHistoryEntityUuids parents", () => {
+  it("no Version History instance JSON remains under miroir_data/ for versionHistoryEntityUuids parents", () => {
     if (!existsSync(MIROIR_DATA)) return;
     for (const entry of readdirSync(MIROIR_DATA)) {
       if (!versionHistoryEntityUuids.has(entry)) continue;
@@ -57,7 +57,7 @@ describe("234 target — Miroir modelVersion assets layout", () => {
     expect((entityEntityVersion as Entity).mlSchema).toBeDefined();
   });
 
-  it("deployment index imports VH instances from miroir_modelVersion/, not miroir_data/", () => {
+  it("deployment index imports Version History instances from miroir_modelVersion/, not miroir_data/", () => {
     const src = readFileSync(DEPLOYMENT_INDEX, "utf8");
     expect(src).toMatch(/from\s+"\.\/assets\/miroir_modelVersion\//);
     expect(src).not.toMatch(

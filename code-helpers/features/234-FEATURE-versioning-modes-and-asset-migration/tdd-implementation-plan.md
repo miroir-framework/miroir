@@ -6,18 +6,18 @@ Implement the decisions in
 [`analysis.md`](./analysis.md):
 
 - introduce explicit **`versioningMode`** (`unversioned` | `versioned-internal` | `versioned-external`) on Application / SelfApplication metadata;
-- **relocate** version-history (VH) instance JSON for the **Miroir self-application deployment package** from `assets/miroir_data/` into **`assets/miroir_modelVersion/`**, aligned with runtime `modelVersion` section routing (#232);
+- **relocate** version-history instance JSON for the **Miroir self-application deployment package** from `assets/miroir_data/` into **`assets/miroir_modelVersion/`**, aligned with runtime `modelVersion` section routing (#232);
 - align **bundled** Miroir profile: **no `modelVersion` section** — versioning features unavailable in sandbox/demo;
 - inventory other deployment packages for follow-up (no asset migration in this issue except Miroir).
 
 Completed behavior:
 
-- **`versioned-internal`** (Miroir): VH instances live in the **`modelVersion` storage section**; git-tracked deployment assets use **`miroir_modelVersion/`**; Miroir versioning features consult stored VH rows, not Git history.
-- **Filesystem / SQL writable profiles**: bootstrap loads VH from configured `modelVersion` store seeded from deployment assets where applicable.
-- **Bundled Miroir**: model + data only; VH not imported; freeze/history actions unavailable or gated.
-- **No dual-read fallback** from legacy `miroir_data/` VH paths after migration.
+- **`versioned-internal`** (Miroir): Version History instances live in the **`modelVersion` storage section**; git-tracked deployment assets use **`miroir_modelVersion/`**; Miroir versioning features consult stored Version History rows, not Git history.
+- **Filesystem / SQL writable profiles**: bootstrap loads Version History from configured `modelVersion` store seeded from deployment assets where applicable.
+- **Bundled Miroir**: model + data only; Version History not imported; freeze/history actions unavailable or gated.
+- **No dual-read fallback** from legacy `miroir_data/` Version History paths after migration.
 
-This plan does **not** implement GitProxy / versioned-external runtime tooling, admin/library asset migration, or automatic migration of user-local stores that still hold VH under old paths.
+This plan does **not** implement GitProxy / versioned-external runtime tooling, admin/library asset migration, or automatic migration of user-local stores that still hold Version History under old paths.
 
 Related:
 
@@ -34,8 +34,8 @@ Related:
 |---|---|---|---|
 | 0 | Characterize asset/layout mismatch | Done | Inventory GREEN; target layout RED until Slice 2 |
 | 1 | `versioningMode` contract | Done | Jzod + `resolveVersioningMode`; Miroir row `versioned-internal` |
-| 2 | Relocate Miroir VH assets | Planned | `miroir_modelVersion/` populated; `miroir_data/` VH-free |
-| 3 | Filesystem asset seed → `modelVersion` store | Planned | Writable profile reads VH from store section, not `data` |
+| 2 | Relocate Miroir Version History assets | Planned | `miroir_modelVersion/` populated; `miroir_data/` Version History-free |
+| 3 | Filesystem asset seed → `modelVersion` store | Planned | Writable profile reads Version History from store section, not `data` |
 | 4 | Bundled Miroir alignment | Planned | No modelVersion in bundled config; `#222` tests retired |
 | 5 | Docs, inventory, non-regression | Planned | General docs + package inventory note |
 
@@ -46,15 +46,15 @@ Related:
 | Decision | Choice |
 |---|---|
 | Miroir deployment mode | **`versioned-internal`** |
-| VH in git assets | **Relocate** to `assets/miroir_modelVersion/` (not delete) |
+| Version History in git assets | **Relocate** to `assets/miroir_modelVersion/` (not delete) |
 | Live Entity metaclass rows | Stay in `assets/miroir_model/` |
-| Ordinary Miroir data | Stay in `assets/miroir_data/` (exclude VH parent UUIDs) |
+| Ordinary Miroir data | Stay in `assets/miroir_data/` (exclude Version History parent UUIDs) |
 | Bundled Miroir | **No `modelVersion` section**; versioning features disabled |
 | Legacy `versioningEnabled` | Keep during transition; derive or mirror from `versioningMode` in freeze gate |
-| VH parent UUID set | `versionHistoryEntityUuids` in `Model.ts` (single source for asset move + tests) |
+| Version History parent UUID set | `versionHistoryEntityUuids` in `Model.ts` (single source for asset move + tests) |
 | Other deployment packages | Inventory only in Slice 5; no relocation in #234 |
 
-### Miroir VH folders to relocate (initial inventory)
+### Miroir Version History folders to relocate (initial inventory)
 
 From `assets/miroir_data/` today (instance JSON, not Entity metaclass rows):
 
@@ -92,14 +92,14 @@ Legend: **RED** → **GREEN** → **Validation** per slice. Do not batch all RED
 
 Lock the **current wrong state** and the **target layout** before moving files or changing schema.
 
-### 0.1 RED → GREEN — Deployment VH inventory characterization
+### 0.1 RED → GREEN — Deployment Version History inventory characterization
 
 **Test:** `packages/miroir-core/tests/1_core/versioningModes.234.inventory.unit.test.ts`
 
 Behavior:
 
 - for each `miroir-test-app_deployment-*` package, enumerate directories under `assets/*_data/` and `assets/*_model/` whose names match any UUID in `versionHistoryEntityUuids`;
-- assert **Miroir package** currently has VH instance files under `miroir_data/` (not yet under `miroir_modelVersion/`);
+- assert **Miroir package** currently has Version History instance files under `miroir_data/` (not yet under `miroir_modelVersion/`);
 - assert **no package** yet has `assets/*_modelVersion/`;
 - snapshot expected Miroir move set (parent UUID → file count) for Slice 2 diff review.
 
@@ -112,9 +112,9 @@ Behavior:
 Behavior:
 
 - `assets/miroir_modelVersion/` exists after Slice 2 (fail in Slice 0);
-- no VH instance JSON under `miroir_data/<versionHistoryEntityUuid>/`;
+- no Version History instance JSON under `miroir_data/<versionHistoryEntityUuid>/`;
 - `miroir_model/16dbfe28…/54b9c72f….json` (Entity row for EntityVersion **metaclass**) still present;
-- `index.ts` imports VH instances from `miroir_modelVersion/` paths, not `miroir_data/54b9c72f…/`.
+- `index.ts` imports Version History instances from `miroir_modelVersion/` paths, not `miroir_data/54b9c72f…/`.
 
 ### Validation
 
@@ -128,8 +128,8 @@ npm run testByFile -w miroir-core -- 222.phase1.assets-layout
 
 ### Realized (Slice 0)
 
-- **`versioningModes.234.inventory.unit.test.ts`** — VH registry size; no `*_modelVersion/` dirs yet; Miroir VH under `miroir_data/` with locked parent→count map; cross-package inventory snapshot.
-- **`versioningModes.234.assets-layout.unit.test.ts`** — target layout (RED until Slice 2): `miroir_modelVersion/`, empty VH in `miroir_data/`, index import paths.
+- **`versioningModes.234.inventory.unit.test.ts`** — Version History registry size; no `*_modelVersion/` dirs yet; Miroir Version History under `miroir_data/` with locked parent→count map; cross-package inventory snapshot.
+- **`versioningModes.234.assets-layout.unit.test.ts`** — target layout (RED until Slice 2): `miroir_modelVersion/`, empty Version History in `miroir_data/`, index import paths.
 - **`versioningModes.234.slice0-inventory.ts`** — shared constants for move set and paths.
 - **`222.slice0-inventory.ts`** — refreshed to 34 EntityVersion instance UUIDs (was stale at 20).
 - **`222.phase1.assets-layout.unit.test.ts`** — describe renamed to legacy pre-#234.
@@ -195,13 +195,13 @@ npm run testByFile -w miroir-core -- entityPresentModel.217.phase3
 
 ---
 
-## Slice 2 — Relocate Miroir VH assets
+## Slice 2 — Relocate Miroir Version History assets
 
 **Status: Planned**
 
 ### Goal
 
-Move VH instance JSON into **`assets/miroir_modelVersion/`** and repoint package exports — no deletion of history content.
+Move Version History instance JSON into **`assets/miroir_modelVersion/`** and repoint package exports — no deletion of history content.
 
 ### 2.1 RED → GREEN — Physical asset move
 
@@ -210,8 +210,8 @@ Move VH instance JSON into **`assets/miroir_modelVersion/`** and repoint package
 **GREEN:**
 
 - create `packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/`;
-- `git mv` (or move) all instance JSON under VH parent UUIDs from `miroir_data/` → `miroir_modelVersion/` preserving `<parentUuid>/<instanceUuid>.json` layout;
-- remove empty VH directories from `miroir_data/`;
+- `git mv` (or move) all instance JSON under Version History parent UUIDs from `miroir_data/` → `miroir_modelVersion/` preserving `<parentUuid>/<instanceUuid>.json` layout;
+- remove empty Version History directories from `miroir_data/`;
 - do **not** move Entity metaclass JSON from `miroir_model/16dbfe28…/`.
 
 ### 2.2 RED → GREEN — Package exports and modelValidation
@@ -220,7 +220,7 @@ Move VH instance JSON into **`assets/miroir_modelVersion/`** and repoint package
 
 Behavior:
 
-- every `index.ts` export that pointed at `miroir_data/<vhParent>/` now points at `miroir_modelVersion/<vhParent>/`;
+- every `index.ts` export that pointed at `miroir_data/<versionHistoryParent>/` now points at `miroir_modelVersion/<versionHistoryParent>/`;
 - deprecated `entityDefinition*` aliases updated consistently;
 - `npm run build -w miroir-test-app_deployment-miroir` succeeds;
 - modelValidation suite passes for miroir deployment assets.
@@ -245,7 +245,7 @@ npm run testByFile -w miroir-core -- 234.
 
 ### Goal
 
-Writable filesystem (and emulated-server filesystem profile) **loads VH from the `modelVersion` store section**, seeded from `miroir_modelVersion/` deployment assets — not from `data`.
+Writable filesystem (and emulated-server filesystem profile) **loads Version History from the `modelVersion` store section**, seeded from `miroir_modelVersion/` deployment assets — not from `data`.
 
 ### 3.1 RED → GREEN — Deployment package exposes modelVersion asset slice
 
@@ -254,16 +254,16 @@ Writable filesystem (and emulated-server filesystem profile) **loads VH from the
 Behavior:
 
 - deployment package build output / star export includes `miroir_modelVersion` asset tree (mechanism TBD: export map, separate entry, or filesystem seed script — test asserts **discoverability** for store bootstrap);
-- instance count per VH parent in assets matches Slice 0 inventory after move.
+- instance count per Version History parent in assets matches Slice 0 inventory after move.
 
-### 3.2 RED → GREEN — Store bootstrap reads VH from modelVersion section
+### 3.2 RED → GREEN — Store bootstrap reads Version History from modelVersion section
 
 **Test:** `packages/miroir-standalone-app/tests/3_controllers/versioningModes.234.filesystem-seed.integ.test.ts` (or extend `applicationVersionFreeze.integ.test.ts` with a dedicated describe)
 
 Behavior:
 
 - with `emulatedServer-filesystem` profile and Miroir deployment config including **`modelVersion`** directory;
-- after bootstrap, `getInstances` / persistence read with `applicationSection: "modelVersion"` returns seeded VH rows (e.g. known EntityVersion instance UUID from assets);
+- after bootstrap, `getInstances` / persistence read with `applicationSection: "modelVersion"` returns seeded Version History rows (e.g. known EntityVersion instance UUID from assets);
 - same UUID **not** returned from `applicationSection: "data"`;
 - freeze can append new history; pre-seeded rows remain addressable.
 
@@ -291,9 +291,9 @@ npm run testByFile -w miroir-core -- applicationVersionFreeze.232
 
 ### Goal
 
-Bundled/sandbox Miroir profile: **no `modelVersion` section**; VH not loaded into bundled store; versioning features unavailable.
+Bundled/sandbox Miroir profile: **no `modelVersion` section**; Version History not loaded into bundled store; versioning features unavailable.
 
-### 4.1 RED → GREEN — bundledData excludes VH from model and data
+### 4.1 RED → GREEN — bundledData excludes Version History from model and data
 
 **Test:** `packages/miroir-core/tests/1_core/versioningModes.234.bundled.unit.test.ts`
 
@@ -303,9 +303,9 @@ Behavior:
 - `demoMiroirConfig` / bundled `StoreUnitConfiguration` for Miroir UUID has **no** `modelVersion` key;
 - `ADMIN_MODEL_PARENT_UUIDS` unchanged in Slice 4 (admin follow-up).
 
-**GREEN:** update `packages/miroir-sandbox/src/bundledData.ts` — remove `#222` comments; drop VH parent UUIDs from data classification; do not add modelVersion to bundled Miroir config.
+**GREEN:** update `packages/miroir-sandbox/src/bundledData.ts` — remove `#222` comments; drop Version History parent UUIDs from data classification; do not add modelVersion to bundled Miroir config.
 
-### 4.2 RED → GREEN — Bundled bootstrap has no VH in store sections
+### 4.2 RED → GREEN — Bundled bootstrap has no Version History in store sections
 
 **Test:** extend bundled unit test or lightweight integ with `BundledDataStoreSection`
 
@@ -354,7 +354,7 @@ Optional doc test: markdown link sanity or contributor checklist item in plan on
 
 **Deliverable:** `code-helpers/features/234-FEATURE-versioning-modes-and-asset-migration/deployment-inventory.md`
 
-Table for admin, library, designer, postgres: current VH location, proposed `versioningMode`, follow-up slice notes (no code migration in #234).
+Table for admin, library, designer, postgres: current Version History location, proposed `versioningMode`, follow-up slice notes (no code migration in #234).
 
 **Test:** `versioningModes.234.inventory.unit.test.ts` asserts inventory file exists and lists all five deployment package names (lightweight doc lock).
 
@@ -385,7 +385,7 @@ npm run nonreg -- --tier default
 | `versioningMode` Jzod | `packages/miroir-test-app_deployment-miroir/assets/miroir_model/…` SelfApplication EntityVersion + bootstrap schema |
 | Generated types | `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` |
 | Mode helpers | `packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts` or new `versioningMode.ts` |
-| Miroir VH assets | `packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/` |
+| Miroir Version History assets | `packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion/` |
 | Package exports | `packages/miroir-test-app_deployment-miroir/index.ts` |
 | Bundled classification | `packages/miroir-sandbox/src/bundledData.ts` |
 | Filesystem test config | `packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json` |
@@ -396,9 +396,9 @@ npm run nonreg -- --tier default
 
 ## Out of scope
 
-- Relocating VH assets for admin, library, designer, postgres packages.
+- Relocating Version History assets for admin, library, designer, postgres packages.
 - `versioned-external` GitProxy / MCP runtime.
-- Migrating user-local filesystem/SQL stores with VH still under legacy `data`/`model` paths.
+- Migrating user-local filesystem/SQL stores with Version History still under legacy `data`/`model` paths.
 - Branch/checkout/rollback UI, pruning, remote `modelVersion` sync.
 - Bundled read-only **serving** of modelVersion assets (bundled Miroir omits section entirely).
 
@@ -418,4 +418,4 @@ npm run nonreg -- --tier default
 
 ## Bottom line
 
-#234 closes the gap between **#232 runtime routing** and **git deployment layout**: VH instances move to **`miroir_modelVersion/`**, **`versioningMode`** makes internal vs external explicit, filesystem profiles **seed and read `modelVersion`**, and bundled Miroir stays a **versioning-free** demo slice.
+#234 closes the gap between **#232 runtime routing** and **git deployment layout**: Version History instances move to **`miroir_modelVersion/`**, **`versioningMode`** makes internal vs external explicit, filesystem profiles **seed and read `modelVersion`**, and bundled Miroir stays a **versioning-free** demo slice.

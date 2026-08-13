@@ -1,5 +1,5 @@
 /**
- * #234 Slice 0.1 / Slice 2 — deployment VH inventory (post-relocation for Miroir).
+ * #234 Slice 0.1 / Slice 2 — deployment Version History inventory (post-relocation for Miroir).
  */
 import { describe, expect, it } from "vitest";
 import { existsSync, readdirSync, statSync } from "node:fs";
@@ -8,11 +8,11 @@ import { join } from "node:path";
 import { versionHistoryEntityUuids } from "../../src/1_core/Model.js";
 import {
   DEPLOYMENT_PACKAGE_GLOB,
-  MIROIR_VH_DATA_PARENTS_SLICE0,
+  MIROIR_VERSION_HISTORY_PARENTS_SLICE0,
   REPO_ROOT,
 } from "./versioningModes.234.slice0-inventory.js";
 
-type VhFolderHit = {
+type VersionHistoryFolderHit = {
   packageName: string;
   sectionDir: string;
   parentUuid: string;
@@ -30,9 +30,13 @@ function countJsonFiles(dir: string): number {
   return readdirSync(dir).filter((name) => name.endsWith(".json")).length;
 }
 
-function scanVhFoldersInSection(sectionPath: string, packageName: string, sectionName: string): VhFolderHit[] {
+function scanVersionHistoryFoldersInSection(
+  sectionPath: string,
+  packageName: string,
+  sectionName: string,
+): VersionHistoryFolderHit[] {
   if (!existsSync(sectionPath) || !statSync(sectionPath).isDirectory()) return [];
-  const hits: VhFolderHit[] = [];
+  const hits: VersionHistoryFolderHit[] = [];
   for (const entry of readdirSync(sectionPath)) {
     const entryPath = join(sectionPath, entry);
     if (!statSync(entryPath).isDirectory()) continue;
@@ -45,21 +49,21 @@ function scanVhFoldersInSection(sectionPath: string, packageName: string, sectio
   return hits;
 }
 
-function scanPackage(packageName: string): VhFolderHit[] {
+function scanPackage(packageName: string): VersionHistoryFolderHit[] {
   const assetsRoot = join(REPO_ROOT, "packages", packageName, "assets");
   if (!existsSync(assetsRoot)) return [];
-  const hits: VhFolderHit[] = [];
+  const hits: VersionHistoryFolderHit[] = [];
   for (const sectionName of readdirSync(assetsRoot)) {
     const sectionPath = join(assetsRoot, sectionName);
     if (!statSync(sectionPath).isDirectory()) continue;
     if (sectionName.endsWith("_modelVersion") || sectionName === "deployment") continue;
     if (!sectionName.endsWith("_model") && !sectionName.endsWith("_data")) continue;
-    hits.push(...scanVhFoldersInSection(sectionPath, packageName, sectionName));
+    hits.push(...scanVersionHistoryFoldersInSection(sectionPath, packageName, sectionName));
   }
   return hits;
 }
 
-describe("234 Slice 0.1 — deployment VH inventory", () => {
+describe("234 Slice 0.1 — deployment Version History inventory", () => {
   it("versionHistoryEntityUuids registry is non-empty", () => {
     expect(versionHistoryEntityUuids.size).toBeGreaterThanOrEqual(17);
   });
@@ -79,20 +83,20 @@ describe("234 Slice 0.1 — deployment VH inventory", () => {
     }
   });
 
-  it("Miroir VH instance JSON lives under miroir_modelVersion/ (Slice 2 layout)", () => {
+  it("Miroir Version History instance JSON lives under miroir_modelVersion/ (Slice 2 layout)", () => {
     const miroirModelVersion = join(
       REPO_ROOT,
       "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
     );
-    for (const [parentUuid, expectedCount] of Object.entries(MIROIR_VH_DATA_PARENTS_SLICE0)) {
+    for (const [parentUuid, expectedCount] of Object.entries(MIROIR_VERSION_HISTORY_PARENTS_SLICE0)) {
       const dir = join(miroirModelVersion, parentUuid);
       expect(existsSync(dir), parentUuid).toBe(true);
       expect(countJsonFiles(dir), parentUuid).toBe(expectedCount);
     }
   });
 
-  it("records VH folders under model/data across all deployment packages", () => {
-    const allHits: VhFolderHit[] = [];
+  it("records Version History folders under model/data across all deployment packages", () => {
+    const allHits: VersionHistoryFolderHit[] = [];
     for (const packageName of listDeploymentPackages()) {
       allHits.push(...scanPackage(packageName));
     }
