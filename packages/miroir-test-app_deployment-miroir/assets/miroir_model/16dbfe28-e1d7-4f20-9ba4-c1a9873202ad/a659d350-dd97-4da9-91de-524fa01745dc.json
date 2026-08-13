@@ -91,6 +91,21 @@
             }
           }
         }
+      },
+      "versioningMode": {
+        "type": "enum",
+        "optional": true,
+        "definition": ["unversioned", "versioned-internal", "versioned-external"],
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Versioning Mode",
+            "description": "How application model version history is managed: unversioned (none), versioned-internal (Miroir modelVersion section), or versioned-external (external VCS). When absent, legacy versioningEnabled: true defaults to versioned-internal.",
+            "display": {
+              "editable": false
+            }
+          }
+        }
       }
     }
   }

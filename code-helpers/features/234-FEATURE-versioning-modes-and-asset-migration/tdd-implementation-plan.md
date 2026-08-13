@@ -33,7 +33,7 @@ Related:
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize asset/layout mismatch | Done | Inventory GREEN; target layout RED until Slice 2 |
-| 1 | `versioningMode` contract | Planned | Jzod + generated types; Miroir SelfApplication row |
+| 1 | `versioningMode` contract | Done | Jzod + `resolveVersioningMode`; Miroir row `versioned-internal` |
 | 2 | Relocate Miroir VH assets | Planned | `miroir_modelVersion/` populated; `miroir_data/` VH-free |
 | 3 | Filesystem asset seed → `modelVersion` store | Planned | Writable profile reads VH from store section, not `data` |
 | 4 | Bundled Miroir alignment | Planned | No modelVersion in bundled config; `#222` tests retired |
@@ -138,7 +138,7 @@ npm run testByFile -w miroir-core -- 222.phase1.assets-layout
 
 ## Slice 1 — `versioningMode` contract
 
-**Status: Planned**
+**Status: Done**
 
 ### Goal
 
@@ -185,6 +185,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npm run testByFile -w miroir-core -- applicationVersionFreeze.216.gate
 npm run testByFile -w miroir-core -- entityPresentModel.217.phase3
 ```
+
+### Realized (Slice 1)
+
+- **`versioningMode.ts`** — `VersioningMode`, `resolveVersioningMode`, `assertApplicationVersioningEnabled` (freeze requires `versioned-internal`; rejects `versioned-external`).
+- **SelfApplication Jzod** — optional enum `unversioned` | `versioned-internal` | `versioned-external` on Entity row `a659d350…`; regenerated `miroirFundamentalType.ts`.
+- **Miroir instance** — `360fcf1f…` JSON + export: `versioningMode: "versioned-internal"`, `versioningEnabled: true`.
+- **Tests:** `versioningModes.234.contract.unit.test.ts` (10/10), `versioningModes.234.miroir-self-app.unit.test.ts` (2/2).
 
 ---
 

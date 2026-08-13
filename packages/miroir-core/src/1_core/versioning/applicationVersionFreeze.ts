@@ -49,34 +49,23 @@ function normalizeOptionalBranchUuid(branch: string | undefined): string | undef
 /** Model Endpoint actionType for user-triggered freeze (ADR D1-a). */
 export const FREEZE_APPLICATION_VERSION_ACTION_TYPE = "freezeApplicationVersion" as const;
 
+import {
+  assertApplicationVersioningEnabled,
+} from "./versioningMode.js";
+
 export type FreezeApplicationVersionActionType =
   typeof FREEZE_APPLICATION_VERSION_ACTION_TYPE;
 
-// ---------------------------------------------------------------------------
-// Phase 1: Versioning gate
-// ---------------------------------------------------------------------------
+export {
+  assertApplicationVersioningEnabled,
+  isApplicationVersioningEnabled,
+  resolveVersioningMode,
+  type VersioningMode,
+} from "./versioningMode.js";
 
-/**
- * Reject freeze / version-history Actions for unversioned applications.
- * Throws when `versioningEnabled` is not strictly `true`.
- * Accepts `"true"` for legacy SQL rows created before boolean Sequelize mapping (#232 Slice 4).
- */
-export function isApplicationVersioningEnabled(
-  selfApplication: { versioningEnabled?: boolean | undefined },
-): boolean {
-  const flag = selfApplication.versioningEnabled as boolean | string | undefined;
-  return flag === true || flag === "true";
-}
-
-export function assertApplicationVersioningEnabled(
-  selfApplication: { versioningEnabled?: boolean | undefined },
-): void {
-  if (!isApplicationVersioningEnabled(selfApplication)) {
-    throw new Error(
-      `Application does not have versioning enabled (versioningEnabled: ${String(selfApplication.versioningEnabled)})`,
-    );
-  }
-}
+// ---------------------------------------------------------------------------
+// Phase 1: Versioning gate — see versioningMode.ts (#234)
+// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Phase 1: Entity snapshot → historical EntityVersions

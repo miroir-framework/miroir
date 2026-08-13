@@ -11,5 +11,6 @@
     "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
     "reportUuid": "29ef8018-43fc-4ee9-a736-6f9d625be7b7"
   },
-  "versioningEnabled": true
+  "versioningEnabled": true,
+  "versioningMode": "versioned-internal"
 }

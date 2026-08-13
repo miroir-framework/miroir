@@ -7651,6 +7651,25 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          "versioningMode": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "unversioned",
+              "versioned-internal",
+              "versioned-external"
+            ],
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Versioning Mode",
+                "description": "How application model version history is managed: unversioned (none), versioned-internal (Miroir modelVersion section), or versioned-external (external VCS). When absent, legacy versioningEnabled: true defaults to versioned-internal.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
           }
         }
       },
@@ -36288,6 +36307,25 @@ export const miroirFundamentalJzodSchema = {
                 "id": 9,
                 "defaultLabel": "Versioning Enabled",
                 "description": "Immutable creation-time capability: when true, the application may keep Application Version / Entity Version history. Selected at application creation and must not change afterward. Absent on legacy assets until migration populates an explicit value.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "versioningMode": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "unversioned",
+              "versioned-internal",
+              "versioned-external"
+            ],
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Versioning Mode",
+                "description": "How application model version history is managed: unversioned (none), versioned-internal (Miroir modelVersion section), or versioned-external (external VCS). When absent, legacy versioningEnabled: true defaults to versioned-internal.",
                 "display": {
                   "editable": false
                 }
