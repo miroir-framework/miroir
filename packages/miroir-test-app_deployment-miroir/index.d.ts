@@ -14,6 +14,22 @@ export declare const entitySelfApplication: any;
 export declare const entitySelfApplicationVersion: any;
 export declare const entitySelfApplicationModelBranch: any;
 export declare const entityQueryVersion: any;
+/** #227 — historical QueryVersion Entity (freeze snapshots). */
+export declare const entityHistoricalQueryVersion: any;
+export declare const entityApplicationVersionCrossQueryVersion: any;
+/** #227 — historical ReportVersion Entity (freeze snapshots). */
+export declare const entityHistoricalReportVersion: any;
+export declare const entityApplicationVersionCrossReportVersion: any;
+export declare const entityHistoricalMenuVersion: any;
+export declare const entityApplicationVersionCrossMenuVersion: any;
+export declare const entityHistoricalEndpointVersion: any;
+export declare const entityApplicationVersionCrossEndpointVersion: any;
+export declare const entityHistoricalRunnerVersion: any;
+export declare const entityApplicationVersionCrossRunnerVersion: any;
+export declare const entityHistoricalThemeVersion: any;
+export declare const entityApplicationVersionCrossThemeVersion: any;
+export declare const entityHistoricalTransformerDefinitionVersion: any;
+export declare const entityApplicationVersionCrossTransformerDefinitionVersion: any;
 export declare const entityTest: any;
 export declare const entityTransformerDefinition: any;
 export declare const entityMiroirTest: any;
@@ -76,6 +92,22 @@ export declare const entityVersionCommit: any;
 /** @deprecated Use entityVersionCommit */
 export declare const entityDefinitionCommit: any;
 export declare const entityVersionQueryVersionV1: any;
+/** #227 — bootstrap EntityVersion row for historical QueryVersion Entity. */
+export declare const entityVersionHistoricalQueryVersion: any;
+export declare const entityVersionApplicationVersionCrossQueryVersion: any;
+/** #227 — bootstrap EntityVersion row for historical ReportVersion Entity. */
+export declare const entityVersionHistoricalReportVersion: any;
+export declare const entityVersionApplicationVersionCrossReportVersion: any;
+export declare const entityVersionHistoricalMenuVersion: any;
+export declare const entityVersionApplicationVersionCrossMenuVersion: any;
+export declare const entityVersionHistoricalEndpointVersion: any;
+export declare const entityVersionApplicationVersionCrossEndpointVersion: any;
+export declare const entityVersionHistoricalRunnerVersion: any;
+export declare const entityVersionApplicationVersionCrossRunnerVersion: any;
+export declare const entityVersionHistoricalThemeVersion: any;
+export declare const entityVersionApplicationVersionCrossThemeVersion: any;
+export declare const entityVersionHistoricalTransformerDefinitionVersion: any;
+export declare const entityVersionApplicationVersionCrossTransformerDefinitionVersion: any;
 /** @deprecated Use entityVersionQueryVersionV1 */
 export declare const entityDefinitionQueryVersionV1: any;
 export declare const entityVersionBlob: any;
@@ -296,9 +328,15 @@ export declare const materialStoredMiroirTheme: any;
 export declare const entityVersionTheme: any;
 /** @deprecated Use entityVersionTheme */
 export declare const entityDefinitionTheme: any;
-import type { MetaModel } from "miroir-core";
+import type { Entity, MetaModel } from "miroir-core";
 
 export declare const defaultMiroirMetaModel: MetaModel;
+export declare const miroirModelInitializeCreateEntityOrder: Entity[];
+export declare const miroirModelInitializeDataInstances: any[];
+export declare const miroirModelInitializeEntityVersionInstances: any[];
+export declare const miroirModelInitializeEntityVersionsAfterEntityEntityVersion: any[];
+export declare const miroirModelInitializeEntityVersionsByEntityUuid: ReadonlyMap<string, readonly any[]>;
+export declare const appModelInitializeCreateEntityOrder: Entity[];
 export declare const RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY: any;
 export declare const miroirThemeSchemaJson: any;
 export declare const tableThemeSchemaJson: any;

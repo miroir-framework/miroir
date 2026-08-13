@@ -5,5 +5,5 @@
   "name": "Admin",
   "defaultLabel": "The Admin self selfApplication.",
   "description": "The model and data of the Admin self selfApplication.",
-  "versioningEnabled": true
+  "versioningMode": "unversioned"
 }

@@ -76,12 +76,27 @@ export async function storeActionOrBundleActionStoreRunner(
       const appDataStoreCreated: Action2ReturnType =
         await localAppPersistenceStoreController.createStore(action.payload.configuration.data);
 
-      if (appModelStoreCreated instanceof Action2Error || appDataStoreCreated instanceof Action2Error) {
+      let appModelVersionStoreCreated: Action2ReturnType = ACTION_OK;
+      const modelVersionConfig = action.payload.configuration.modelVersion;
+      if (modelVersionConfig) {
+        appModelVersionStoreCreated =
+          await localAppPersistenceStoreController.createStore(modelVersionConfig);
+      }
+
+      if (
+        appModelStoreCreated instanceof Action2Error ||
+        appDataStoreCreated instanceof Action2Error ||
+        appModelVersionStoreCreated instanceof Action2Error
+      ) {
         return new Action2Error(
           "FailedToCreateStore",
           (appModelStoreCreated instanceof Action2Error ? appModelStoreCreated.errorMessage : "model store created OK") +
             " --- " +
-            (appDataStoreCreated instanceof Action2Error ? appDataStoreCreated.errorMessage : "data store created OK")
+            (appDataStoreCreated instanceof Action2Error ? appDataStoreCreated.errorMessage : "data store created OK") +
+            " --- " +
+            (appModelVersionStoreCreated instanceof Action2Error
+              ? appModelVersionStoreCreated.errorMessage
+              : "modelVersion store created OK")
         );
       }
       log.info(
@@ -144,14 +159,40 @@ export async function storeActionOrBundleActionStoreRunner(
         "appDataStoreDeleted",
         appDataStoreDeleted
       );
-      if (appModelStoreDeleted instanceof Action2Error || appDataStoreDeleted instanceof Action2Error) {
+      const modelVersionConfig = action.payload.configuration.modelVersion;
+      let appModelVersionStoreDeleted: Action2ReturnType = ACTION_OK;
+      if (modelVersionConfig) {
+        appModelVersionStoreDeleted =
+          await localAppPersistenceStoreController.deleteStore(modelVersionConfig);
+        log.info(
+          "storeActionOrBundleActionStoreRunner deleteStore for application",
+          action.payload.application,
+          "deployment",
+          deploymentUuid,
+          "appModelVersionStoreDeleted",
+          appModelVersionStoreDeleted
+        );
+      }
+      if (
+        appModelStoreDeleted instanceof Action2Error ||
+        appDataStoreDeleted instanceof Action2Error ||
+        appModelVersionStoreDeleted instanceof Action2Error
+      ) {
         return new Action2Error(
           "FailedToDeleteStore",
           (appModelStoreDeleted instanceof Action2Error ? appModelStoreDeleted.errorMessage : "model store deleted OK") +
             " --- " +
-            (appDataStoreDeleted instanceof Action2Error ? appDataStoreDeleted.errorMessage : "data store deleted OK"),
+            (appDataStoreDeleted instanceof Action2Error ? appDataStoreDeleted.errorMessage : "data store deleted OK") +
+            " --- " +
+            (appModelVersionStoreDeleted instanceof Action2Error
+              ? appModelVersionStoreDeleted.errorMessage
+              : "modelVersion store deleted OK"),
             [], // errorStack,
-          appModelStoreDeleted instanceof Action2Error ? appModelStoreDeleted : appDataStoreDeleted as Action2Error
+          appModelStoreDeleted instanceof Action2Error
+            ? appModelStoreDeleted
+            : appDataStoreDeleted instanceof Action2Error
+              ? appDataStoreDeleted
+              : (appModelVersionStoreDeleted as Action2Error)
         );
       }
       break;

@@ -56,6 +56,12 @@
           "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
           "schema": "library",
           "forceNullOptionalAttributeToUndefined": true
+        },
+        "modelVersion": {
+          "emulatedServerType": "sql",
+          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "library_modelVersion",
+          "forceNullOptionalAttributeToUndefined": true
         }
       }
     },

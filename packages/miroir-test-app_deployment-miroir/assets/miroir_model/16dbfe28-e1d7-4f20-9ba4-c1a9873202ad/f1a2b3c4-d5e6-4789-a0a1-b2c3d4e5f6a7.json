@@ -1,0 +1,87 @@
+{
+  "uuid": "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "ReportVersion",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel": "Model",
+  "scope": "versioning",
+  "description": "Historical snapshot of a Report at Application Version freeze time.",
+  "viewAttributes": [
+    "name",
+    "reportUuid",
+    "defaultLabel",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "reportUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Report Uuid of the live Report this snapshot captures",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label"
+          }
+        }
+      },
+      "type": {
+        "type": "enum",
+        "definition": [
+          "list",
+          "grid"
+        ],
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Type of Report"
+          }
+        }
+      },
+      "definition": {
+        "type": "any",
+        "tag": {
+          "value": {
+            "defaultLabel": "Report definition at freeze time"
+          }
+        }
+      }
+    }
+  }
+}

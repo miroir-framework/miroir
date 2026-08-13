@@ -4,12 +4,6 @@
  */
 import { describe, expect, it } from "vitest";
 
-import {
-  entityApplicationForAdmin,
-  entityDefinitionAdminApplication,
-  entityDefinitionDeployment,
-  entityDeployment,
-} from "miroir-test-app_deployment-admin";
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 import {
   entityDefinitionEntity,
@@ -39,19 +33,13 @@ describe("§11.1 / Phase 0 — UI present-model fields locked", () => {
     const book = defaultLibraryAppModel.entities.find(
       (entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
     )!;
-    const bookDefinition = defaultLibraryAppModel.entityVersions.find(
-      (definition) => definition.entityUuid === book.uuid,
-    )!;
-    expect(book.viewAttributes).toEqual(bookDefinition.viewAttributes);
     expect(book.viewAttributes?.length).toBeGreaterThan(0);
-    expect(book.defaultInstanceDetailsReportUuid).toBe(
-      bookDefinition.defaultInstanceDetailsReportUuid,
-    );
     expect(book.defaultInstanceDetailsReportUuid).toBeTruthy();
+    expect(book.mlSchema).toBeTruthy();
   });
 });
 
-describe("§11.1 / Phase 4 — codegen source Entity.mlSchema ≡ EntityVersion.mlSchema", () => {
+describe("§11.1 / Phase 4 — codegen source Entity.mlSchema ≡ EntityVersion.mlSchema (versioned Miroir meta-model only)", () => {
   const pairs: Array<{ label: string; entity: Entity; entityVersion: EntityVersion }> = [
     {
       label: "Entity",
@@ -72,16 +60,6 @@ describe("§11.1 / Phase 4 — codegen source Entity.mlSchema ≡ EntityVersion.
       label: "Menu",
       entity: entityMenu as Entity,
       entityVersion: entityDefinitionMenu as EntityVersion,
-    },
-    {
-      label: "AdminApplication",
-      entity: entityApplicationForAdmin as Entity,
-      entityVersion: entityDefinitionAdminApplication as EntityVersion,
-    },
-    {
-      label: "Deployment",
-      entity: entityDeployment as Entity,
-      entityVersion: entityDefinitionDeployment as EntityVersion,
     },
   ];
 

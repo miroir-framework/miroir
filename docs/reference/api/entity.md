@@ -31,6 +31,8 @@ interface Entity {
   icon?: string;                   // Optional UI icon
   mlSchema?: JzodObject;           // Present-model structure (authoritative)
   idAttribute?: string | string[]; // Primary key attribute(s) — defaults to "uuid"
+  scope?: "versioning" | "modeling"; // Meta-model classification — see below
+  logicalDataModel?: "entity" | "manyToMany"; // Logical persistence shape — see below
 }
 ```
 
@@ -44,6 +46,31 @@ interface Entity {
 | `description` | string | No | Optional documentation |
 | `conceptLevel` | enum | No | Level in meta-model hierarchy |
 | `icon` | string | No | Optional icon name for UI display |
+| `scope` | `"versioning"` \| `"modeling"` | No | **Meta-model only.** Classifies this Entity row as part of application version history vs ordinary live modeling. **Absent means `modeling`.** See [Meta-model classification](#meta-model-classification-scope--logicaldatamodel). |
+| `logicalDataModel` | `"entity"` \| `"manyToMany"` | No | **Meta-model only.** Declares the logical persistence shape (ordinary entity table vs cross/link table). **Absent means `entity`.** Often paired with `scope: "versioning"` on `ApplicationVersionCross*` entities. |
+
+### Meta-model classification (`scope` & `logicalDataModel`)
+
+These optional fields appear on **Entity** rows in the Miroir meta-model (and on bootstrap meta-entities such as `EntityVersion`, `QueryVersion`, `SelfApplicationVersion`). They document **what role that Entity concept plays**, not a property of domain instances like Library `Book`.
+
+| Field | Values | Default when absent | Meaning |
+|-------|--------|---------------------|---------|
+| `scope` | `versioning`, `modeling` | `modeling` | `versioning` marks infrastructure for **freeze / application version history** (historical `*Version` rows, `SelfApplicationVersion`, `ApplicationVersionCross*`). `modeling` is a normal live-model concept (`Query`, `Report`, `Book`, …). |
+| `logicalDataModel` | `entity`, `manyToMany` | `entity` | `manyToMany` marks link/cross tables (e.g. `ApplicationVersionCrossEntityVersion`). Ordinary version snapshot types use the default `entity` shape. |
+
+**Examples (Miroir bootstrap model):**
+
+```json
+{ "name": "EntityVersion", "scope": "versioning" }
+{ "name": "ApplicationVersionCrossEntityVersion", "scope": "versioning", "logicalDataModel": "manyToMany" }
+{ "name": "Query", "scope": undefined }
+```
+
+**Runtime behavior today:** persistence section routing (`model` vs `modelVersion` vs `data`) and freeze planning use the explicit `versionHistoryEntityUuids` registry in `Model.ts` / `getApplicationSection()` — **not** a dynamic read of `Entity.scope`. The field is authoritative for **model documentation, validation, and tests** (`entityMetaScope.unit.test.ts`); future work may derive routing from it.
+
+**Do not confuse** with `schemaChangeKind`’s unrelated `scope` (`"meta"` vs `"app"`) used for schema-revision fingerprints.
+
+See also: [Defining Entities — versioning infrastructure](../../guides/developer/defining-entities.md#versioning-infrastructure-entities-scope), [Data Architecture — `modelVersion` section](../data-architecture-deployments.md#modelversion-version-history-optional).
 
 ### Example
 

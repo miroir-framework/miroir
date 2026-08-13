@@ -1,7 +1,13 @@
 {
   "version": 1,
-  "description": "Repo-wide non-regression steps. Tiers: unit \u2282 default \u2282 full.",
+  "description": "Repo-wide non-regression steps. Tiers: unit \u2282 default \u2282 full. Integration steps use {profile} (default: defaultProfile). Override: npm run nonreg -- --profile emulatedServer-filesystem",
   "defaultProfile": "emulatedServer-sql",
+  "profiles": [
+    "emulatedServer-sql",
+    "emulatedServer-filesystem",
+    "emulatedServer-indexedDb",
+    "emulatedServer-mongodb"
+  ],
   "steps": [
     {
       "id": "unit-miroir-core",

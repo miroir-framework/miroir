@@ -5,13 +5,6 @@ export { default as entityRole } from "./assets/designer_model/16dbfe28-e1d7-4f2
 export { default as entityActivity } from "./assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/fd622624-1a7e-46fa-9964-c4ecfb543de3.json" with { type: "json" };
 export { default as entityApplicationVersionForDesigner } from "./assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ff3d211b-7eb6-473a-afbf-503bb70a5c26.json" with { type: "json" };
 
-// Designer Model - Entity Definitions  
-export { default as entityDefinitionDesignerApplication } from "./assets/designer_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" with { type: "json" };
-export { default as entityDefinitionDesignerApplicationVersion } from "./assets/designer_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/53edf3b4-c8ff-4de5-9f28-2d1ecda2a02a.json" with { type: "json" };
-export { default as entityDefinitionDesignerUseCase } from "./assets/designer_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/e08fdc20-e87f-4728-8bac-2ee0e427c3ac.json" with { type: "json" };
-export { default as entityDefinitionDesignerRole } from "./assets/designer_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/1243c5d7-f152-4d66-b386-97499f8323dd.json" with { type: "json" };
-export { default as entityDefinitionDesignerActivity } from "./assets/designer_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/ad4810cf-a746-4999-9572-830d66f366f6.json" with { type: "json" };
-
 // Admin Model - Reports
 export { default as reportRoleList } from "./assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/87f62ef5-913a-4652-b331-c126ff0e4fdb.json" with { type: "json" };
 export { default as reportApplicationList } from "./assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/951d74b2-a3e9-4e07-8850-1d7d12909f11.json" with { type: "json" };

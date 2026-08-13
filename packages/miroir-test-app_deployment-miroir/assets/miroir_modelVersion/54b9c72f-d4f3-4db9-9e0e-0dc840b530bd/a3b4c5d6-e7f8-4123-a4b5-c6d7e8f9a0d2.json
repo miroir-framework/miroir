@@ -1,0 +1,82 @@
+{
+  "uuid": "a3b4c5d6-e7f8-4123-a4b5-c6d7e8f9a0d2",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0",
+  "name": "TransformerDefinitionVersion",
+  "conceptLevel": "Model",
+  "description": "Historical snapshot of a TransformerDefinition at freeze time.",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "name",
+    "transformerUuid",
+    "defaultLabel",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "transformerUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Transformer Uuid",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label"
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "definition": {
+        "type": "any",
+        "tag": {
+          "value": {
+            "defaultLabel": "Transformer definition at freeze time"
+          }
+        }
+      }
+    }
+  }
+}

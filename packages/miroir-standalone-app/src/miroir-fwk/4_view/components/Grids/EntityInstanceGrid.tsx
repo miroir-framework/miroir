@@ -293,6 +293,9 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
     // always use object, not array, to ensure correct refresh!
     () => ({
       tableComponentRowUuidIndexSchema: Object.values(props.instancesToDisplay ?? {})
+        .filter(
+          (i): i is EntityInstance => i != null && typeof i === "object" && !Array.isArray(i)
+        )
         .sort((a: EntityInstance, b: EntityInstance) => // initial sort, to be enhanced! (issue #22)
           props.sortByAttribute
             ? (a as any)[props.sortByAttribute] > (b as any)[props.sortByAttribute]

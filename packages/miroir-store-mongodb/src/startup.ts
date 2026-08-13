@@ -106,4 +106,26 @@ export function miroirMongoDbStoreSectionStartup(configurationService: Configura
       }
     }
   );
+
+  configurationService.registerStoreSectionFactory(
+    "mongodb",
+    "modelVersion",
+    async (
+      section: ApplicationSection,
+      config: StoreSectionConfiguration,
+      filesystemDeploymentRootDirectory: string,
+    ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
+      if (isMongoDbConfig(config)) {
+        log.info("called registerStoreSectionFactory modelVersion function for", section, config);
+        const mongoDbStoreName = config.database + "-modelVersion";
+        return Promise.resolve(
+          new MongoDbDataStoreSection(
+            mongoDbStoreName,
+            new MongoDb("modelVersion", config.connectionString, mongoDbStoreName),
+          ),
+        );
+      }
+      return Promise.resolve(new ErrorDataStore());
+    },
+  );
 }

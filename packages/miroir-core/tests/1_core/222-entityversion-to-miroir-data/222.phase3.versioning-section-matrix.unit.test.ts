@@ -1,5 +1,6 @@
 /**
- * #222 Phase 3.4 — Cross / SAV / EntityVersion section matrix (future versioning).
+ * #222 Phase 3.4 — Cross / SAV / EntityVersion section matrix.
+ * #232 — all version-history entities now route to modelVersion for any application.
  */
 import { describe, expect, it } from "vitest";
 
@@ -17,26 +18,22 @@ const MIROIR = selfApplicationMiroir.uuid as string;
 const LIBRARY = selfApplicationLibrary.uuid as string;
 
 describe("222 Phase 3 — versioning section matrix", () => {
-  it("Miroir: Entity model; EntityVersion / Cross / SAV data", () => {
+  it("#232 Miroir: Entity model; EntityVersion / Cross / SAV → modelVersion (was data in #222)", () => {
     expect(getApplicationSection(MIROIR, entityEntity.uuid as string)).toBe("model");
-    expect(getApplicationSection(MIROIR, entityEntityVersion.uuid as string)).toBe("data");
+    expect(getApplicationSection(MIROIR, entityEntityVersion.uuid as string)).toBe("modelVersion");
     expect(
       getApplicationSection(MIROIR, entityApplicationVersionCrossEntityVersion.uuid as string),
-    ).toBe("data");
+    ).toBe("modelVersion");
     expect(getApplicationSection(MIROIR, entitySelfApplicationVersion.uuid as string)).toBe(
-      "data",
+      "modelVersion",
     );
   });
 
-  it("Library: EntityVersion / SAV model; Cross data (Cross Entity not in MetaModel entities list)", () => {
-    expect(getApplicationSection(LIBRARY, entityEntityVersion.uuid as string)).toBe("model");
-    expect(getApplicationSection(LIBRARY, entitySelfApplicationVersion.uuid as string)).toBe(
-      "model",
-    );
-    // ApplicationVersionCrossEntityVersion Entity is not in defaultMiroirMetaModel.entities,
-    // so getApplicationSection treats it as a data-section concept for non-Miroir apps.
+  it("#232 Library: EntityVersion / SAV / Cross → modelVersion (was model/data in #222)", () => {
+    expect(getApplicationSection(LIBRARY, entityEntityVersion.uuid as string)).toBe("modelVersion");
+    expect(getApplicationSection(LIBRARY, entitySelfApplicationVersion.uuid as string)).toBe("modelVersion");
     expect(
       getApplicationSection(LIBRARY, entityApplicationVersionCrossEntityVersion.uuid as string),
-    ).toBe("data");
+    ).toBe("modelVersion");
   });
 });

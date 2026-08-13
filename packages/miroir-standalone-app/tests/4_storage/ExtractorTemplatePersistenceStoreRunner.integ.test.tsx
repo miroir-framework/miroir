@@ -51,9 +51,6 @@ import {
   deployment_Library_DO_NO_USE,
   entityAuthor,
   entityBook,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
   entityPublisher,
   folio as publisher1,
   penguin as publisher2,
@@ -73,12 +70,8 @@ import { loadTestConfigFiles } from '../utils/fileTools.js';
 import { AppStackIntegrationTestSession } from '../helpers/IntegrationTestSession.js';
 
 import {
-  entityApplicationEvolutionTraceEvent,
-  entityApplicationVersionCrossEntityVersion,
-  entityEndpointVersion,
+  defaultMiroirMetaModel,
   entityEntity,
-  entityEntityVersion,
-  entityMenu,
 } from "miroir-test-app_deployment-miroir";
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
@@ -211,17 +204,14 @@ beforeEach(
             // authors
             {
               entity: entityAuthor as Entity,
-              entityVersion: entityDefinitionAuthor as EntityVersion,
               instances: [
                 author1,
                 author2,
                 author3 as EntityInstance,
               ],
             },
-            // books
             {
               entity: entityBook as Entity,
-              entityVersion: entityDefinitionBook as EntityVersion,
               instances: [
                 book1 as EntityInstance,
                 book2 as EntityInstance,
@@ -231,10 +221,8 @@ beforeEach(
                 book6 as EntityInstance,
               ]
             },
-            // publishers
             {
               entity: entityPublisher as Entity,
-              entityVersion: entityDefinitionPublisher as EntityVersion,
               instances: [
                 publisher1,
                 publisher2,
@@ -273,6 +261,11 @@ const resultHandler = (a: any, ignoreAttributes?: string[]) =>
       ])
     )
   );
+
+const expectedMiroirEntitiesWithEnInName = defaultMiroirMetaModel.entities
+  .filter((entity) => entity.name.toLowerCase().includes("en"))
+  .map((entity) => resultHandler(entity, ["author"]))
+  .sort((a, b) => a.name.localeCompare(b.name));
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
@@ -462,14 +455,7 @@ describe.sequential("ExtractorTemplatePersistenceStoreRunner.integ.test", () => 
       //   ),
       undefined, // name to give to result
       undefined,
-      [
-        entityApplicationEvolutionTraceEvent,
-        entityApplicationVersionCrossEntityVersion,
-        entityEndpointVersion,
-        entityEntity,
-        entityEntityVersion,
-        entityMenu,
-      ].sort((a, b) => a.name.localeCompare(b.name))
+      expectedMiroirEntitiesWithEnInName,
       // [entityReport, entityStoreBasedConfiguration].sort((a, b) => a.name.localeCompare(b.name))
     );
   });

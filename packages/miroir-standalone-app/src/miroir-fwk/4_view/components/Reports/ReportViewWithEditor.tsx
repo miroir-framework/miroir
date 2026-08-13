@@ -30,7 +30,6 @@ import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
-import { seedReportInputApplicationFromPageParams } from './reportInputApplication.js';
 import { useEnsureReportQueryLoaded } from './useEnsureReportQueryLoaded.js';
 import { useReportQueryLoadService } from './useReportQueryLoadService.js';
 
@@ -67,6 +66,14 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     props.pageParams,
   );
   const context = useMiroirContextService();
+  /** Sidebar application + URL page params — exposed to report transformers (#225). */
+  const reportInterpreterPageParams = useMemo(
+    () => ({
+      ...props.pageParams,
+      applicationSelector: context.toolsPageState?.applicationSelector,
+    }),
+    [props.pageParams, context.toolsPageState?.applicationSelector],
+  );
   const outlineContext = useDocumentOutlineContext();
   const { showSnackbar, handleAsyncAction } = useSnackbar();
   const domainController: DomainControllerInterface = useDomainControllerService();
@@ -98,8 +105,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
           ? props.reportDefinition.definition.extractorTemplates
             ? {
                 queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
-                application: props.pageParams.application ?? "NO_APPLICATION",
-                pageParams: props.pageParams,
+                application: reportInterpreterPageParams.application ?? "NO_APPLICATION",
+                pageParams: reportInterpreterPageParams,
                 queryParams: {},
                 contextResults: {},
                 extractorTemplates: props.reportDefinition.definition.extractorTemplates,
@@ -109,8 +116,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
             : props.reportDefinition.definition.extractors
               ? {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  application: props.pageParams.application ?? "NO_APPLICATION",
-                  pageParams: props.pageParams,
+                  application: reportInterpreterPageParams.application ?? "NO_APPLICATION",
+                  pageParams: reportInterpreterPageParams,
                   extractors: props.reportDefinition.definition.extractors,
                   combiners: props.reportDefinition.definition.combiners,
                   runtimeTransformers: props.reportDefinition.definition.runtimeTransformers,
@@ -118,14 +125,14 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               : {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
                   application: "",
-                  pageParams: props.pageParams,
+                  pageParams: reportInterpreterPageParams,
                   extractors: {},
                 }
           : undefined;
       log.info("ReportViewWithEditor reportDataQueryBase", result);
       return result;
     },
-    [props.reportDefinition, props.pageParams]
+    [props.reportDefinition, reportInterpreterPageParams]
   );
 
   const reportDataQueryResults: Domain2QueryReturnType<
@@ -208,17 +215,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       props.applicationDeploymentMap,
       props.deploymentUuid,
       defaultMiroirModelEnvironment,
-      {}, // transformerParams
-    );
-    // Seed inputReportSection application pickers from the page URL so the
-    // control matches the extractor filter (getFromParameters "application").
-    const seededInputs = seedReportInputApplicationFromPageParams(
-      reportSectionsData,
-      props.reportDefinition?.definition.section,
-      props.pageParams?.application,
+      reportInterpreterPageParams,
     );
     const result = {
-      ...seededInputs,
+      ...reportSectionsData,
       ...props.storedQueryData,
       ...reportData, // TODO: choose between spreading reportData or including as reportData attribute
       pageParams: props.pageParams,
@@ -228,7 +228,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
-  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportData]);
+  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportData, reportInterpreterPageParams]);
 
   // ###############################################################################################
   // ###############################################################################################

@@ -1,6 +1,13 @@
 /**
  * #216 — Application Version freeze (Entities only, linear history, Option A diff).
  * #220 — Freeze-adjacent vocabulary uses EntityVersion only.
+ * #227 — QueryVersion tracer (first non-Entity model element).
+ * #227 — ReportVersion (second non-Entity model element).
+ * #227 — MenuVersion (third non-Entity model element).
+ * #227 — EndpointVersion (fourth non-Entity model element).
+ * #227 — RunnerVersion (fifth non-Entity model element).
+ * #227 — ThemeVersion (sixth non-Entity model element).
+ * #227 — TransformerDefinitionVersion (ninth non-Entity model element).
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -10,9 +17,18 @@ import type {
   ApplicationVersion,
   Entity,
   EntityVersion,
+  EndpointDefinition,
+  MetaModel,
+  MenuDefinition,
+  Query,
+  Report,
+  RootReport,
+  Runner,
+  StoredMiroirTheme,
+  TransformerDefinition,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { noValue } from "../Instance.js";
-import { getEntityVersionWriteSection } from "../Model.js";
+import { getApplicationSection } from "../Model.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   type EntityPresentModelDefinitionField,
@@ -33,26 +49,23 @@ function normalizeOptionalBranchUuid(branch: string | undefined): string | undef
 /** Model Endpoint actionType for user-triggered freeze (ADR D1-a). */
 export const FREEZE_APPLICATION_VERSION_ACTION_TYPE = "freezeApplicationVersion" as const;
 
+import {
+  assertApplicationVersioningEnabled,
+} from "./versioningMode.js";
+
 export type FreezeApplicationVersionActionType =
   typeof FREEZE_APPLICATION_VERSION_ACTION_TYPE;
 
-// ---------------------------------------------------------------------------
-// Phase 1: Versioning gate
-// ---------------------------------------------------------------------------
+export {
+  assertApplicationVersioningEnabled,
+  isApplicationVersioningEnabled,
+  resolveVersioningMode,
+  type VersioningMode,
+} from "./versioningMode.js";
 
-/**
- * Reject freeze / version-history Actions for unversioned applications.
- * Throws when `versioningEnabled` is not strictly `true`.
- */
-export function assertApplicationVersioningEnabled(
-  selfApplication: { versioningEnabled?: boolean | undefined },
-): void {
-  if (selfApplication.versioningEnabled !== true) {
-    throw new Error(
-      `Application does not have versioning enabled (versioningEnabled: ${String(selfApplication.versioningEnabled)})`,
-    );
-  }
-}
+// ---------------------------------------------------------------------------
+// Phase 1: Versioning gate — see versioningMode.ts (#234)
+// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Phase 1: Entity snapshot → historical EntityVersions
@@ -65,20 +78,474 @@ const APPLICATION_VERSION_ENTITY_UUID = "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24";
 /** ApplicationVersionCrossEntityVersion Entity UUID. */
 const APPLICATION_VERSION_CROSS_ENTITY_VERSION_UUID =
   "8bec933d-6287-4de7-8a88-5c24216de9f4";
+/** Historical QueryVersion Entity UUID (#227). */
+export const QUERY_VERSION_ENTITY_UUID = "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c";
+/** ApplicationVersionCrossQueryVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID =
+  "9e4c6d8a-2b5f-4a1c-9d7e-3f6b8a2c4e1d";
+/** Historical ReportVersion Entity UUID (#227). */
+export const REPORT_VERSION_ENTITY_UUID = "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7";
+/** ApplicationVersionCrossReportVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID =
+  "f2b3c4d5-e6f7-4890-a1b2-c3d4e5f6a7b8";
+/** Historical MenuVersion Entity UUID (#227). */
+export const MENU_VERSION_ENTITY_UUID = "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7";
+/** ApplicationVersionCrossMenuVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_MENU_VERSION_UUID =
+  "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8";
+/** Historical EndpointVersion Entity UUID (#227). */
+export const ENDPOINT_VERSION_ENTITY_UUID = "c2d3e4f5-a6b7-4789-a0b1-d2e3f4a5b6c7";
+/** ApplicationVersionCrossEndpointVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID =
+  "d3e4f5a6-b7c8-4890-b1c2-e3f4a5b6c7d8";
+/** Historical RunnerVersion Entity UUID (#227). */
+export const RUNNER_VERSION_ENTITY_UUID = "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0";
+/** ApplicationVersionCrossRunnerVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID =
+  "f6a7b8c9-d0e1-4123-a4b5-c6d7e8f9a0b1";
+/** Historical ThemeVersion Entity UUID (#227). */
+export const THEME_VERSION_ENTITY_UUID = "a7b8c9d0-e1f2-4012-a3b4-c5d6e7f8a9c0";
+/** ApplicationVersionCrossThemeVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_THEME_VERSION_UUID =
+  "b8c9d0e1-f2a3-4123-a4b5-c6d7e8f9a0c1";
+/** Historical TransformerDefinitionVersion Entity UUID (#227). */
+export const TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID =
+  "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0";
+/** ApplicationVersionCrossTransformerDefinitionVersion Entity UUID (#227). */
+export const APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID =
+  "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1";
 
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
   newUuid?: () => string;
 }
 
+/** Live Query instance shape in MetaModel.storedQueries. */
+export type StoredQueryForFreeze = {
+  uuid: string;
+  name: string;
+  definition: Query;
+  description?: string;
+  defaultLabel?: string;
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Query snapshot minted at freeze. */
+export type QueryVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "QueryVersion";
+  name: string;
+  queryUuid: string;
+  definition: Query;
+  description?: string;
+  defaultLabel?: string;
+};
+
 /**
- * #222 / #216 — section for persisting freeze-minted EntityVersion snapshots.
- * Miroir → `"data"`; Library / other MetaModel apps → `"model"`.
+ * Deep-copy present-model Queries into new immutable QueryVersion instances.
+ * Each output has a **new** UUID; `queryUuid` references the live Query.
  */
-export function resolveFreezeEntityVersionApplicationSection(
-  applicationUuid: string,
-): ApplicationSection {
-  return getEntityVersionWriteSection(applicationUuid);
+export function snapshotQueriesAsHistoricalQueryVersions(
+  queries: StoredQueryForFreeze[],
+  options?: SnapshotOptions,
+): QueryVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return queries.map((query) => {
+    if (query.definition === undefined || query.definition === null) {
+      throw new Error(
+        `Cannot snapshot Query ${query.uuid} (${query.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: QueryVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: QUERY_VERSION_ENTITY_UUID,
+      parentName: "QueryVersion",
+      name: query.name,
+      queryUuid: query.uuid,
+      definition: structuredClone(query.definition),
+      ...(query.description !== undefined ? { description: query.description } : {}),
+      ...(query.defaultLabel !== undefined ? { defaultLabel: query.defaultLabel } : {}),
+    };
+
+    return snapshot;
+  });
+}
+
+/** Live Report instance shape in MetaModel.reports. */
+export type StoredReportForFreeze = {
+  uuid: string;
+  name: string;
+  definition: RootReport;
+  defaultLabel?: string;
+  type?: Report["type"];
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Report snapshot minted at freeze. */
+export type ReportVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "ReportVersion";
+  name: string;
+  reportUuid: string;
+  definition: RootReport;
+  defaultLabel?: string;
+  type?: Report["type"];
+};
+
+/**
+ * Deep-copy present-model Reports into new immutable ReportVersion instances.
+ * Each output has a **new** UUID; `reportUuid` references the live Report.
+ */
+export function snapshotReportsAsHistoricalReportVersions(
+  reports: StoredReportForFreeze[],
+  options?: SnapshotOptions,
+): ReportVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return reports.map((report) => {
+    if (report.definition === undefined || report.definition === null) {
+      throw new Error(
+        `Cannot snapshot Report ${report.uuid} (${report.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: ReportVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: REPORT_VERSION_ENTITY_UUID,
+      parentName: "ReportVersion",
+      name: report.name,
+      reportUuid: report.uuid,
+      definition: structuredClone(report.definition),
+      ...(report.defaultLabel !== undefined ? { defaultLabel: report.defaultLabel } : {}),
+      ...(report.type !== undefined ? { type: report.type } : {}),
+    };
+
+    return snapshot;
+  });
+}
+
+/** Live Menu instance shape in MetaModel.menus. */
+export type StoredMenuForFreeze = {
+  uuid: string;
+  name: string;
+  definition: MenuDefinition;
+  defaultLabel?: string;
+  description?: string;
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Menu snapshot minted at freeze. */
+export type MenuVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "MenuVersion";
+  name: string;
+  menuUuid: string;
+  definition: MenuDefinition;
+  defaultLabel?: string;
+  description?: string;
+};
+
+/**
+ * Deep-copy present-model Menus into new immutable MenuVersion instances.
+ * Each output has a **new** UUID; `menuUuid` references the live Menu.
+ */
+export function snapshotMenusAsHistoricalMenuVersions(
+  menus: StoredMenuForFreeze[],
+  options?: SnapshotOptions,
+): MenuVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return menus.map((menu) => {
+    if (menu.definition === undefined || menu.definition === null) {
+      throw new Error(
+        `Cannot snapshot Menu ${menu.uuid} (${menu.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: MenuVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: MENU_VERSION_ENTITY_UUID,
+      parentName: "MenuVersion",
+      name: menu.name,
+      menuUuid: menu.uuid,
+      definition: structuredClone(menu.definition),
+      ...(menu.defaultLabel !== undefined ? { defaultLabel: menu.defaultLabel } : {}),
+      ...(menu.description !== undefined ? { description: menu.description } : {}),
+    };
+
+    return snapshot;
+  });
+}
+
+/** Live Endpoint instance shape in MetaModel.endpoints. */
+export type StoredEndpointForFreeze = {
+  uuid: string;
+  name: string;
+  version: string;
+  application: string;
+  definition: EndpointDefinition["definition"];
+  description?: string;
+  transactionalEndpoint?: boolean;
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Endpoint snapshot minted at freeze. */
+export type EndpointVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "EndpointVersion";
+  name: string;
+  endpointUuid: string;
+  version: string;
+  application: string;
+  definition: EndpointDefinition["definition"];
+  description?: string;
+  transactionalEndpoint?: boolean;
+};
+
+/**
+ * Deep-copy present-model Endpoints into new immutable EndpointVersion instances.
+ * Each output has a **new** UUID; `endpointUuid` references the live Endpoint.
+ */
+export function snapshotEndpointsAsHistoricalEndpointVersions(
+  endpoints: StoredEndpointForFreeze[],
+  options?: SnapshotOptions,
+): EndpointVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return endpoints.map((endpoint) => {
+    if (endpoint.definition === undefined || endpoint.definition === null) {
+      throw new Error(
+        `Cannot snapshot Endpoint ${endpoint.uuid} (${endpoint.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: EndpointVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: ENDPOINT_VERSION_ENTITY_UUID,
+      parentName: "EndpointVersion",
+      name: endpoint.name,
+      endpointUuid: endpoint.uuid,
+      version: endpoint.version,
+      application: endpoint.application,
+      definition: structuredClone(endpoint.definition),
+      ...(endpoint.description !== undefined ? { description: endpoint.description } : {}),
+      ...(endpoint.transactionalEndpoint !== undefined
+        ? { transactionalEndpoint: endpoint.transactionalEndpoint }
+        : {}),
+    };
+
+    return snapshot;
+  });
+}
+
+/** Live Runner instance shape in MetaModel.runners. */
+export type StoredRunnerForFreeze = {
+  uuid: string;
+  name: string;
+  application: string;
+  defaultLabel: string;
+  description?: string;
+  definition: Runner["definition"];
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Runner snapshot minted at freeze. */
+export type RunnerVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "RunnerVersion";
+  name: string;
+  runnerUuid: string;
+  application: string;
+  defaultLabel: string;
+  description?: string;
+  definition: Runner["definition"];
+};
+
+/**
+ * Deep-copy present-model Runners into new immutable RunnerVersion instances.
+ * Each output has a **new** UUID; `runnerUuid` references the live Runner.
+ */
+export function snapshotRunnersAsHistoricalRunnerVersions(
+  runners: StoredRunnerForFreeze[],
+  options?: SnapshotOptions,
+): RunnerVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return runners.map((runner) => {
+    if (runner.definition === undefined || runner.definition === null) {
+      throw new Error(
+        `Cannot snapshot Runner ${runner.uuid} (${runner.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: RunnerVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: RUNNER_VERSION_ENTITY_UUID,
+      parentName: "RunnerVersion",
+      name: runner.name,
+      runnerUuid: runner.uuid,
+      application: runner.application,
+      defaultLabel: runner.defaultLabel,
+      definition: structuredClone(runner.definition),
+      ...(runner.description !== undefined ? { description: runner.description } : {}),
+    };
+
+    return snapshot;
+  });
+}
+
+/** Live Theme instance shape in MetaModel.themes. */
+export type StoredThemeForFreeze = {
+  uuid: string;
+  name: string;
+  defaultLabel?: string;
+  description?: string;
+  definition: StoredMiroirTheme["definition"];
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical Theme snapshot minted at freeze. */
+export type ThemeVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "ThemeVersion";
+  name: string;
+  themeUuid: string;
+  defaultLabel?: string;
+  description?: string;
+  definition: StoredMiroirTheme["definition"];
+};
+
+/**
+ * Deep-copy present-model Themes into new immutable ThemeVersion instances.
+ * Each output has a **new** UUID; `themeUuid` references the live Theme.
+ */
+export function snapshotThemesAsHistoricalThemeVersions(
+  themes: StoredThemeForFreeze[],
+  options?: SnapshotOptions,
+): ThemeVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return themes.map((theme) => {
+    if (theme.definition === undefined || theme.definition === null) {
+      throw new Error(
+        `Cannot snapshot Theme ${theme.uuid} (${theme.name}): definition is missing`,
+      );
+    }
+
+    const snapshot: ThemeVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: THEME_VERSION_ENTITY_UUID,
+      parentName: "ThemeVersion",
+      name: theme.name,
+      themeUuid: theme.uuid,
+      definition: structuredClone(theme.definition),
+      ...(theme.defaultLabel !== undefined ? { defaultLabel: theme.defaultLabel } : {}),
+      ...(theme.description !== undefined ? { description: theme.description } : {}),
+    };
+
+    return snapshot;
+  });
+}
+
+/** Body stored on TransformerDefinitionVersion.definition at freeze. */
+export type TransformerDefinitionVersionBody = {
+  classification?: string;
+  runnableAsSql?: boolean;
+  transformerInterface: TransformerDefinition["transformerInterface"];
+  transformerImplementation: TransformerDefinition["transformerImplementation"];
+};
+
+/** Live TransformerDefinition instance shape in MetaModel.transformerDefinitions. */
+export type StoredTransformerDefinitionForFreeze = {
+  uuid: string;
+  name: string;
+  defaultLabel: string;
+  description?: string;
+  classification?: string;
+  runnableAsSql?: boolean;
+  transformerInterface: TransformerDefinition["transformerInterface"];
+  transformerImplementation: TransformerDefinition["transformerImplementation"];
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical TransformerDefinition snapshot minted at freeze. */
+export type TransformerDefinitionVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "TransformerDefinitionVersion";
+  name: string;
+  transformerUuid: string;
+  defaultLabel: string;
+  description?: string;
+  definition: TransformerDefinitionVersionBody;
+};
+
+function buildTransformerDefinitionVersionBody(
+  transformer: StoredTransformerDefinitionForFreeze,
+): TransformerDefinitionVersionBody {
+  if (
+    transformer.transformerImplementation === undefined ||
+    transformer.transformerImplementation === null
+  ) {
+    throw new Error(
+      `Cannot snapshot TransformerDefinition ${transformer.uuid} (${transformer.name}): transformerImplementation is missing`,
+    );
+  }
+  if (transformer.transformerInterface === undefined || transformer.transformerInterface === null) {
+    throw new Error(
+      `Cannot snapshot TransformerDefinition ${transformer.uuid} (${transformer.name}): transformerInterface is missing`,
+    );
+  }
+
+  return {
+    transformerInterface: structuredClone(transformer.transformerInterface),
+    transformerImplementation: structuredClone(transformer.transformerImplementation),
+    ...(transformer.classification !== undefined
+      ? { classification: transformer.classification }
+      : {}),
+    ...(transformer.runnableAsSql !== undefined ? { runnableAsSql: transformer.runnableAsSql } : {}),
+  };
+}
+
+/**
+ * Deep-copy present-model TransformerDefinitions into new immutable TransformerDefinitionVersion instances.
+ * Each output has a **new** UUID; `transformerUuid` references the live TransformerDefinition.
+ */
+export function snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions(
+  transformerDefinitions: StoredTransformerDefinitionForFreeze[],
+  options?: SnapshotOptions,
+): TransformerDefinitionVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return transformerDefinitions.map((transformer) => {
+    const snapshot: TransformerDefinitionVersionSnapshot = {
+      uuid: mintUuid(),
+      parentUuid: TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
+      parentName: "TransformerDefinitionVersion",
+      name: transformer.name,
+      transformerUuid: transformer.uuid,
+      defaultLabel: transformer.defaultLabel,
+      definition: buildTransformerDefinitionVersionBody(transformer),
+      ...(transformer.description !== undefined ? { description: transformer.description } : {}),
+    };
+
+    return snapshot;
+  });
 }
 
 /**
@@ -145,12 +612,103 @@ export type ApplicationVersionCrossEntityVersionRow = {
   entityVersion: string;
 };
 
+/** Cross row linking an Application Version to a historical QueryVersion. */
+export type ApplicationVersionCrossQueryVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  queryVersion: string;
+};
+
+/** Cross row linking an Application Version to a historical ReportVersion. */
+export type ApplicationVersionCrossReportVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  reportVersion: string;
+};
+
+/** Cross row linking an Application Version to a historical MenuVersion. */
+export type ApplicationVersionCrossMenuVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  menuVersion: string;
+};
+
+/** Cross row linking an Application Version to a historical EndpointVersion. */
+export type ApplicationVersionCrossEndpointVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  endpointVersion: string;
+};
+
+/** Cross row linking an Application Version to a historical RunnerVersion. */
+export type ApplicationVersionCrossRunnerVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  runnerVersion: string;
+};
+
+/** Cross row linking an Application Version to a historical ThemeVersion. */
+export type ApplicationVersionCrossThemeVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  themeVersion: string;
+};
+
+/** Cross row linking an Application Version to a historical TransformerDefinitionVersion. */
+export type ApplicationVersionCrossTransformerDefinitionVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  transformerDefinitionVersion: string;
+};
+
 export type FreezeApplicationVersionPlan = {
   selfApplicationVersion: ApplicationVersion;
   entityVersions: EntityVersion[];
   crossEntityVersions: ApplicationVersionCrossEntityVersionRow[];
   /** Persist section for EntityVersion rows (Miroir data / Library model). */
   entityVersionApplicationSection: ApplicationSection;
+  queryVersions: QueryVersionSnapshot[];
+  crossQueryVersions: ApplicationVersionCrossQueryVersionRow[];
+  /** Persist section for QueryVersion rows (#227). */
+  queryVersionApplicationSection: ApplicationSection;
+  reportVersions: ReportVersionSnapshot[];
+  crossReportVersions: ApplicationVersionCrossReportVersionRow[];
+  /** Persist section for ReportVersion rows (#227). */
+  reportVersionApplicationSection: ApplicationSection;
+  menuVersions: MenuVersionSnapshot[];
+  crossMenuVersions: ApplicationVersionCrossMenuVersionRow[];
+  /** Persist section for MenuVersion rows (#227). */
+  menuVersionApplicationSection: ApplicationSection;
+  endpointVersions: EndpointVersionSnapshot[];
+  crossEndpointVersions: ApplicationVersionCrossEndpointVersionRow[];
+  /** Persist section for EndpointVersion rows (#227). */
+  endpointVersionApplicationSection: ApplicationSection;
+  runnerVersions: RunnerVersionSnapshot[];
+  crossRunnerVersions: ApplicationVersionCrossRunnerVersionRow[];
+  /** Persist section for RunnerVersion rows (#227). */
+  runnerVersionApplicationSection: ApplicationSection;
+  themeVersions: ThemeVersionSnapshot[];
+  crossThemeVersions: ApplicationVersionCrossThemeVersionRow[];
+  /** Persist section for ThemeVersion rows (#227). */
+  themeVersionApplicationSection: ApplicationSection;
+  transformerDefinitionVersions: TransformerDefinitionVersionSnapshot[];
+  crossTransformerDefinitionVersions: ApplicationVersionCrossTransformerDefinitionVersionRow[];
+  /** Persist section for TransformerDefinitionVersion rows (#227). */
+  transformerDefinitionVersionApplicationSection: ApplicationSection;
 };
 
 export type BuildFreezeApplicationVersionPlanInput = {
@@ -158,6 +716,20 @@ export type BuildFreezeApplicationVersionPlanInput = {
   branchUuid: string;
   versionName: string;
   entities: Entity[];
+  /** Present-model Queries to snapshot (#227). Defaults to empty. */
+  storedQueries?: StoredQueryForFreeze[];
+  /** Present-model Reports to snapshot (#227). Defaults to empty. */
+  reports?: StoredReportForFreeze[];
+  /** Present-model Menus to snapshot (#227). Defaults to empty. */
+  menus?: StoredMenuForFreeze[];
+  /** Present-model Endpoints to snapshot (#227). Defaults to empty. */
+  endpoints?: StoredEndpointForFreeze[];
+  /** Present-model Runners to snapshot (#227). Defaults to empty. */
+  runners?: StoredRunnerForFreeze[];
+  /** Present-model Themes to snapshot (#227). Defaults to empty. */
+  themes?: StoredThemeForFreeze[];
+  /** Present-model TransformerDefinitions to snapshot (#227). Defaults to empty. */
+  transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
   /** Existing SAVs for this app+branch — used for duplicate label detection and tip resolution. */
   existingApplicationVersions?: ApplicationVersion[];
   /**
@@ -201,8 +773,32 @@ export type ModelCudMigrationCandidate =
       differingFields: EntityPresentModelDefinitionField[];
     };
 
+function canonicalizeJsonValue(value: unknown): unknown {
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => canonicalizeJsonValue(item));
+  }
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    const normalized: Record<string, unknown> = {};
+    for (const key of Object.keys(record).sort()) {
+      const child = canonicalizeJsonValue(record[key]);
+      if (child !== undefined) {
+        normalized[key] = child;
+      }
+    }
+    return normalized;
+  }
+  return value;
+}
+
+/** Deep equality for JSON-like present-model fields (Postgres JSONB key order / null omission). */
 function stableJsonEqual(a: unknown, b: unknown): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+  return (
+    JSON.stringify(canonicalizeJsonValue(a)) === JSON.stringify(canonicalizeJsonValue(b))
+  );
 }
 
 function indexEntityVersionsByLiveUuid(
@@ -394,6 +990,29 @@ export function buildFreezeApplicationVersionPlan(
   const entityVersions = snapshotEntitiesAsHistoricalEntityVersions(input.entities, {
     newUuid: mintUuid,
   });
+  const queryVersions = snapshotQueriesAsHistoricalQueryVersions(input.storedQueries ?? [], {
+    newUuid: mintUuid,
+  });
+  const reportVersions = snapshotReportsAsHistoricalReportVersions(input.reports ?? [], {
+    newUuid: mintUuid,
+  });
+  const menuVersions = snapshotMenusAsHistoricalMenuVersions(input.menus ?? [], {
+    newUuid: mintUuid,
+  });
+  const endpointVersions = snapshotEndpointsAsHistoricalEndpointVersions(input.endpoints ?? [], {
+    newUuid: mintUuid,
+  });
+  const runnerVersions = snapshotRunnersAsHistoricalRunnerVersions(input.runners ?? [], {
+    newUuid: mintUuid,
+  });
+  const themeVersions = snapshotThemesAsHistoricalThemeVersions(input.themes ?? [], {
+    newUuid: mintUuid,
+  });
+  const transformerDefinitionVersions =
+    snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions(
+      input.transformerDefinitions ?? [],
+      { newUuid: mintUuid },
+    );
 
   const modelCUDMigration =
     input.previousEntityVersions !== undefined
@@ -423,12 +1042,115 @@ export function buildFreezeApplicationVersionPlan(
     }),
   );
 
+  const crossQueryVersions: ApplicationVersionCrossQueryVersionRow[] = queryVersions.map(
+    (qv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
+      parentName: "ApplicationVersionCrossQueryVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      queryVersion: qv.uuid,
+    }),
+  );
+
+  const crossReportVersions: ApplicationVersionCrossReportVersionRow[] = reportVersions.map(
+    (rv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID,
+      parentName: "ApplicationVersionCrossReportVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      reportVersion: rv.uuid,
+    }),
+  );
+
+  const crossMenuVersions: ApplicationVersionCrossMenuVersionRow[] = menuVersions.map(
+    (mv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_MENU_VERSION_UUID,
+      parentName: "ApplicationVersionCrossMenuVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      menuVersion: mv.uuid,
+    }),
+  );
+
+  const crossEndpointVersions: ApplicationVersionCrossEndpointVersionRow[] =
+    endpointVersions.map((ev) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
+      parentName: "ApplicationVersionCrossEndpointVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      endpointVersion: ev.uuid,
+    }));
+
+  const crossRunnerVersions: ApplicationVersionCrossRunnerVersionRow[] = runnerVersions.map(
+    (rv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID,
+      parentName: "ApplicationVersionCrossRunnerVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      runnerVersion: rv.uuid,
+    }),
+  );
+
+  const crossThemeVersions: ApplicationVersionCrossThemeVersionRow[] = themeVersions.map(
+    (tv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_THEME_VERSION_UUID,
+      parentName: "ApplicationVersionCrossThemeVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      themeVersion: tv.uuid,
+    }),
+  );
+
+  const crossTransformerDefinitionVersions: ApplicationVersionCrossTransformerDefinitionVersionRow[] =
+    transformerDefinitionVersions.map((tdv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
+      parentName: "ApplicationVersionCrossTransformerDefinitionVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      transformerDefinitionVersion: tdv.uuid,
+    }));
+
   return {
     selfApplicationVersion,
     entityVersions,
     crossEntityVersions,
-    entityVersionApplicationSection: resolveFreezeEntityVersionApplicationSection(
-      input.selfApplicationUuid,
+    entityVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, ENTITY_VERSION_ENTITY_UUID,
+    ),
+    queryVersions,
+    crossQueryVersions,
+    queryVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, QUERY_VERSION_ENTITY_UUID,
+    ),
+    reportVersions,
+    crossReportVersions,
+    reportVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, REPORT_VERSION_ENTITY_UUID,
+    ),
+    menuVersions,
+    crossMenuVersions,
+    menuVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, MENU_VERSION_ENTITY_UUID,
+    ),
+    endpointVersions,
+    crossEndpointVersions,
+    endpointVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, ENDPOINT_VERSION_ENTITY_UUID,
+    ),
+    runnerVersions,
+    crossRunnerVersions,
+    runnerVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, RUNNER_VERSION_ENTITY_UUID,
+    ),
+    themeVersions,
+    crossThemeVersions,
+    themeVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, THEME_VERSION_ENTITY_UUID,
+    ),
+    transformerDefinitionVersions,
+    crossTransformerDefinitionVersions,
+    transformerDefinitionVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
     ),
   };
 }
@@ -463,13 +1185,139 @@ export type FreezeApplicationVersionActionPayload = {
 export type FreezeMetaModelSlice = {
   applications: Array<{ uuid: string; versioningEnabled?: boolean | undefined }>;
   entities: Entity[];
+  storedQueries?: StoredQueryForFreeze[];
+  reports?: StoredReportForFreeze[];
+  menus?: StoredMenuForFreeze[];
+  endpoints?: StoredEndpointForFreeze[];
+  runners?: StoredRunnerForFreeze[];
+  themes?: StoredThemeForFreeze[];
+  transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
   applicationVersions: ApplicationVersion[];
   entityVersions: EntityVersion[];
-  applicationVersionCrossEntityVersion: Array<{
-    applicationVersion: string;
-    entityVersion: string;
-  }>;
+  applicationVersionCrossEntityVersion: MetaModel["applicationVersionCrossEntityVersion"];
+  applicationVersionCrossQueryVersion?: MetaModel["applicationVersionCrossQueryVersion"];
+  queryVersions?: MetaModel["queryVersions"];
+  applicationVersionCrossReportVersion?: MetaModel["applicationVersionCrossReportVersion"];
+  reportVersions?: MetaModel["reportVersions"];
+  applicationVersionCrossMenuVersion?: MetaModel["applicationVersionCrossMenuVersion"];
+  menuVersions?: MetaModel["menuVersions"];
+  applicationVersionCrossEndpointVersion?: MetaModel["applicationVersionCrossEndpointVersion"];
+  endpointVersions?: MetaModel["endpointVersions"];
+  applicationVersionCrossRunnerVersion?: MetaModel["applicationVersionCrossRunnerVersion"];
+  runnerVersions?: MetaModel["runnerVersions"];
+  applicationVersionCrossThemeVersion?: MetaModel["applicationVersionCrossThemeVersion"];
+  themeVersions?: MetaModel["themeVersions"];
+  applicationVersionCrossTransformerDefinitionVersion?: MetaModel["applicationVersionCrossTransformerDefinitionVersion"];
+  transformerDefinitionVersions?: MetaModel["transformerDefinitionVersions"];
 };
+
+function mergeInstancesByUuid<T extends { uuid: string }>(
+  base: T[],
+  extra: T[] | undefined,
+): T[] {
+  if (!extra?.length) {
+    return base;
+  }
+  const merged = new Map(base.map((item) => [item.uuid, item]));
+  for (const item of extra) {
+    merged.set(item.uuid, item);
+  }
+  return [...merged.values()];
+}
+
+/** #232 — overlay modelVersion-persisted rows onto the in-memory slice used for freeze planning. */
+export function mergeVersionHistoryIntoFreezeMetaModel(
+  metaModel: FreezeMetaModelSlice,
+  persisted: Partial<FreezeMetaModelSlice>,
+): FreezeMetaModelSlice {
+  return {
+    ...metaModel,
+    applicationVersions: mergeInstancesByUuid(
+      metaModel.applicationVersions,
+      persisted.applicationVersions,
+    ),
+    entityVersions: mergeInstancesByUuid(metaModel.entityVersions, persisted.entityVersions),
+    applicationVersionCrossEntityVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossEntityVersion,
+      persisted.applicationVersionCrossEntityVersion,
+    ),
+    applicationVersionCrossQueryVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossQueryVersion ?? [],
+      persisted.applicationVersionCrossQueryVersion,
+    ),
+    queryVersions: mergeInstancesByUuid(metaModel.queryVersions ?? [], persisted.queryVersions),
+    applicationVersionCrossReportVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossReportVersion ?? [],
+      persisted.applicationVersionCrossReportVersion,
+    ),
+    reportVersions: mergeInstancesByUuid(metaModel.reportVersions ?? [], persisted.reportVersions),
+    applicationVersionCrossMenuVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossMenuVersion ?? [],
+      persisted.applicationVersionCrossMenuVersion,
+    ),
+    menuVersions: mergeInstancesByUuid(metaModel.menuVersions ?? [], persisted.menuVersions),
+    applicationVersionCrossEndpointVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossEndpointVersion ?? [],
+      persisted.applicationVersionCrossEndpointVersion,
+    ),
+    endpointVersions: mergeInstancesByUuid(
+      metaModel.endpointVersions ?? [],
+      persisted.endpointVersions,
+    ),
+    applicationVersionCrossRunnerVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossRunnerVersion ?? [],
+      persisted.applicationVersionCrossRunnerVersion,
+    ),
+    runnerVersions: mergeInstancesByUuid(metaModel.runnerVersions ?? [], persisted.runnerVersions),
+    applicationVersionCrossThemeVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossThemeVersion ?? [],
+      persisted.applicationVersionCrossThemeVersion,
+    ),
+    themeVersions: mergeInstancesByUuid(metaModel.themeVersions ?? [], persisted.themeVersions),
+    applicationVersionCrossTransformerDefinitionVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossTransformerDefinitionVersion ?? [],
+      persisted.applicationVersionCrossTransformerDefinitionVersion,
+    ),
+    transformerDefinitionVersions: mergeInstancesByUuid(
+      metaModel.transformerDefinitionVersions ?? [],
+      persisted.transformerDefinitionVersions,
+    ),
+  };
+}
+
+export type ModelVersionInstanceLoader = (
+  parentEntityUuid: string,
+) => Promise<Array<{ uuid: string }>>;
+
+/** #232 — read all version-history collections from the modelVersion section for freeze chaining. */
+export async function loadVersionHistoryFreezeSlice(
+  loadInstances: ModelVersionInstanceLoader,
+): Promise<Partial<FreezeMetaModelSlice>> {
+  const load = async <T extends { uuid: string }>(parentUuid: string) =>
+    (await loadInstances(parentUuid)) as T[];
+
+  return {
+    applicationVersions: await load(APPLICATION_VERSION_ENTITY_UUID),
+    entityVersions: await load(ENTITY_VERSION_ENTITY_UUID),
+    applicationVersionCrossEntityVersion: await load(APPLICATION_VERSION_CROSS_ENTITY_VERSION_UUID),
+    queryVersions: await load(QUERY_VERSION_ENTITY_UUID),
+    applicationVersionCrossQueryVersion: await load(APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID),
+    reportVersions: await load(REPORT_VERSION_ENTITY_UUID),
+    applicationVersionCrossReportVersion: await load(APPLICATION_VERSION_CROSS_REPORT_VERSION_UUID),
+    menuVersions: await load(MENU_VERSION_ENTITY_UUID),
+    applicationVersionCrossMenuVersion: await load(APPLICATION_VERSION_CROSS_MENU_VERSION_UUID),
+    endpointVersions: await load(ENDPOINT_VERSION_ENTITY_UUID),
+    applicationVersionCrossEndpointVersion: await load(APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID),
+    runnerVersions: await load(RUNNER_VERSION_ENTITY_UUID),
+    applicationVersionCrossRunnerVersion: await load(APPLICATION_VERSION_CROSS_RUNNER_VERSION_UUID),
+    themeVersions: await load(THEME_VERSION_ENTITY_UUID),
+    applicationVersionCrossThemeVersion: await load(APPLICATION_VERSION_CROSS_THEME_VERSION_UUID),
+    transformerDefinitionVersions: await load(TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID),
+    applicationVersionCrossTransformerDefinitionVersion: await load(
+      APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
+    ),
+  };
+}
 
 /**
  * Resolve SelfApplication + Entities + tip context from MetaModel, then plan.
@@ -555,6 +1403,13 @@ export function planFreezeApplicationVersionFromMetaModel(
     versionName: payload.versionName,
     description: payload.description,
     entities: metaModel.entities,
+    storedQueries: metaModel.storedQueries,
+    reports: metaModel.reports,
+    menus: metaModel.menus,
+    endpoints: metaModel.endpoints,
+    runners: metaModel.runners,
+    themes: metaModel.themes,
+    transformerDefinitions: metaModel.transformerDefinitions,
     existingApplicationVersions: metaModel.applicationVersions,
     freezeProducedVersionUuids,
     previousEntityVersions,

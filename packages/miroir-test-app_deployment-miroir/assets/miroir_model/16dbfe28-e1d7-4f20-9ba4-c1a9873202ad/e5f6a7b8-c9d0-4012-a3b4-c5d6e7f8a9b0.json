@@ -1,0 +1,92 @@
+{
+  "uuid": "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "RunnerVersion",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel": "Model",
+  "scope": "versioning",
+  "description": "Historical snapshot of a Runner at Application Version freeze time.",
+  "viewAttributes": [
+    "name",
+    "runnerUuid",
+    "defaultLabel",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "runnerUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Runner Uuid of the live Runner this snapshot captures",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "application": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Application"
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label"
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "definition": {
+        "type": "any",
+        "tag": {
+          "value": {
+            "defaultLabel": "Runner definition at freeze time"
+          }
+        }
+      }
+    }
+  }
+}

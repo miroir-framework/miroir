@@ -24,6 +24,7 @@ import {
   type Runner,
   type SelfApplication,
   type StoredMiroirTheme,
+  type TransformerDefinition,
   type Uuid,
   getApplicationSection,
   getMiroirFundamentalSchemaForDeployment,
@@ -40,6 +41,21 @@ import {
   entitySelfApplication,
   entitySelfApplicationVersion,
   entityApplicationVersionCrossEntityVersion,
+  entityApplicationVersionCrossQueryVersion,
+  entityHistoricalQueryVersion,
+  entityApplicationVersionCrossReportVersion,
+  entityHistoricalReportVersion,
+  entityApplicationVersionCrossMenuVersion,
+  entityHistoricalMenuVersion,
+  entityApplicationVersionCrossEndpointVersion,
+  entityHistoricalEndpointVersion,
+  entityApplicationVersionCrossRunnerVersion,
+  entityHistoricalRunnerVersion,
+  entityApplicationVersionCrossThemeVersion,
+  entityHistoricalThemeVersion,
+  entityApplicationVersionCrossTransformerDefinitionVersion,
+  entityHistoricalTransformerDefinitionVersion,
+  entityTransformerDefinition,
 } from "miroir-test-app_deployment-miroir";
 import type { LocalCacheSliceState } from "./localCacheReduxSliceInterface";
 
@@ -99,6 +115,146 @@ export function currentModel(
           entityApplicationVersionCrossEntityVersion.uuid,
         )
       ];
+    const applicationVersionCrossQuery =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossQueryVersion.uuid,
+        )
+      ];
+    const queryVersionSection = getApplicationSection(
+      application,
+      entityHistoricalQueryVersion.uuid,
+    );
+    const historicalQueryVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          queryVersionSection,
+          entityHistoricalQueryVersion.uuid,
+        )
+      ];
+    const reportVersionSection = getApplicationSection(
+      application,
+      entityHistoricalReportVersion.uuid,
+    );
+    const menuVersionSection = getApplicationSection(
+      application,
+      entityHistoricalMenuVersion.uuid,
+    );
+    const endpointVersionSection = getApplicationSection(
+      application,
+      entityHistoricalEndpointVersion.uuid,
+    );
+    const runnerVersionSection = getApplicationSection(
+      application,
+      entityHistoricalRunnerVersion.uuid,
+    );
+    const themeVersionSection = getApplicationSection(
+      application,
+      entityHistoricalThemeVersion.uuid,
+    );
+    const transformerDefinitionVersionSection = getApplicationSection(
+      application,
+      entityHistoricalTransformerDefinitionVersion.uuid,
+    );
+    const applicationVersionCrossReport =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossReportVersion.uuid,
+        )
+      ];
+    const historicalReportVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          reportVersionSection,
+          entityHistoricalReportVersion.uuid,
+        )
+      ];
+    const applicationVersionCrossMenu =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossMenuVersion.uuid,
+        )
+      ];
+    const historicalMenuVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          menuVersionSection,
+          entityHistoricalMenuVersion.uuid,
+        )
+      ];
+    const applicationVersionCrossEndpoint =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossEndpointVersion.uuid,
+        )
+      ];
+    const historicalEndpointVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          endpointVersionSection,
+          entityHistoricalEndpointVersion.uuid,
+        )
+      ];
+    const applicationVersionCrossRunner =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossRunnerVersion.uuid,
+        )
+      ];
+    const historicalRunnerVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          runnerVersionSection,
+          entityHistoricalRunnerVersion.uuid,
+        )
+      ];
+    const applicationVersionCrossTheme =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossThemeVersion.uuid,
+        )
+      ];
+    const historicalThemeVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          themeVersionSection,
+          entityHistoricalThemeVersion.uuid,
+        )
+      ];
+    const applicationVersionCrossTransformerDefinition =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossTransformerDefinitionVersion.uuid,
+        )
+      ];
+    const historicalTransformerDefinitionVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          transformerDefinitionVersionSection,
+          entityHistoricalTransformerDefinitionVersion.uuid,
+        )
+      ];
     const endpoints =
       state.current[
         getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityEndpointVersion.uuid)
@@ -129,6 +285,10 @@ export function currentModel(
       state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityMiroirTest.uuid)];
     const themes =
       state.current[getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityDefinitionTheme.entityUuid)];
+    const transformerDefinitions =
+      state.current[
+        getReduxDeploymentsStateIndex(deploymentUuid, modelSection, entityTransformerDefinition.uuid)
+      ];
     // #216 — SelfApplication instances (not SelfApplicationVersion / SAV)
     const selfApplicationsSlice = state.current[
       getReduxDeploymentsStateIndex(
@@ -154,6 +314,12 @@ export function currentModel(
       applicationVersionCrossEntityVersion: (applicationVersionCross?.entities
         ? Object.values(applicationVersionCross.entities)
         : []) as MetaModel["applicationVersionCrossEntityVersion"],
+      applicationVersionCrossQueryVersion: (applicationVersionCrossQuery?.entities
+        ? Object.values(applicationVersionCrossQuery.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossQueryVersion"]>,
+      applicationVersionCrossReportVersion: (applicationVersionCrossReport?.entities
+        ? Object.values(applicationVersionCrossReport.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossReportVersion"]>,
       endpoints: (endpoints && endpoints.entities
         ? Object.values(endpoints.entities)
         : []) as MetaModel["endpoints"],
@@ -173,8 +339,49 @@ export function currentModel(
       storedQueries: (queries && queries.entities
         ? Object.values(queries.entities)
         : []) as Query[],
+      queryVersions: (historicalQueryVersions?.entities
+        ? Object.values(historicalQueryVersions.entities)
+        : []) as NonNullable<MetaModel["queryVersions"]>,
+      reportVersions: (historicalReportVersions?.entities
+        ? Object.values(historicalReportVersions.entities)
+        : []) as NonNullable<MetaModel["reportVersions"]>,
+      applicationVersionCrossMenuVersion: (applicationVersionCrossMenu?.entities
+        ? Object.values(applicationVersionCrossMenu.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossMenuVersion"]>,
+      menuVersions: (historicalMenuVersions?.entities
+        ? Object.values(historicalMenuVersions.entities)
+        : []) as NonNullable<MetaModel["menuVersions"]>,
+      applicationVersionCrossEndpointVersion: (applicationVersionCrossEndpoint?.entities
+        ? Object.values(applicationVersionCrossEndpoint.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossEndpointVersion"]>,
+      endpointVersions: (historicalEndpointVersions?.entities
+        ? Object.values(historicalEndpointVersions.entities)
+        : []) as NonNullable<MetaModel["endpointVersions"]>,
+      applicationVersionCrossRunnerVersion: (applicationVersionCrossRunner?.entities
+        ? Object.values(applicationVersionCrossRunner.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossRunnerVersion"]>,
+      runnerVersions: (historicalRunnerVersions?.entities
+        ? Object.values(historicalRunnerVersions.entities)
+        : []) as NonNullable<MetaModel["runnerVersions"]>,
+      applicationVersionCrossThemeVersion: (applicationVersionCrossTheme?.entities
+        ? Object.values(applicationVersionCrossTheme.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossThemeVersion"]>,
+      themeVersions: (historicalThemeVersions?.entities
+        ? Object.values(historicalThemeVersions.entities)
+        : []) as NonNullable<MetaModel["themeVersions"]>,
+      applicationVersionCrossTransformerDefinitionVersion: (
+        applicationVersionCrossTransformerDefinition?.entities
+          ? Object.values(applicationVersionCrossTransformerDefinition.entities)
+          : []
+      ) as NonNullable<MetaModel["applicationVersionCrossTransformerDefinitionVersion"]>,
+      transformerDefinitionVersions: (historicalTransformerDefinitionVersions?.entities
+        ? Object.values(historicalTransformerDefinitionVersions.entities)
+        : []) as NonNullable<MetaModel["transformerDefinitionVersions"]>,
       tests: (tests && tests.entities ? Object.values(tests.entities) : []) as MiroirTestDefinition[],
       themes: (themes && themes.entities ? Object.values(themes.entities) : []) as StoredMiroirTheme[],
+      transformerDefinitions: (transformerDefinitions && transformerDefinitions.entities
+        ? Object.values(transformerDefinitions.entities)
+        : []) as TransformerDefinition[],
     };
     // log.info("called currentModel(", deploymentUuid, ") found result:", JSON.stringify(result, null, 2));
     return result;

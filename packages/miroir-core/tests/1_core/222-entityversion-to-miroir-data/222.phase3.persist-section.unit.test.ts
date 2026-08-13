@@ -1,13 +1,13 @@
 /**
- * #222 Phase 3.1 — EntityVersion write section helper (Miroir data / Library model).
+ * #222 Phase 3.1 — EntityVersion write section helper.
+ * #232 — getApplicationSection now returns "modelVersion" for EntityVersion and all history
+ * families; the removed getEntityVersionWriteSection was an alias for getApplicationSection.
  */
 import { describe, expect, it } from "vitest";
 
 import {
   getApplicationSection,
-  getEntityVersionWriteSection,
 } from "../../../src/1_core/Model.js";
-import { resolveFreezeEntityVersionApplicationSection } from "../../../src/1_core/versioning/applicationVersionFreeze.js";
 import {
   entityEntityVersion,
   selfApplicationMiroir,
@@ -19,15 +19,16 @@ const LIBRARY = selfApplicationLibrary.uuid as string;
 const EV = entityEntityVersion.uuid as string;
 
 describe("222 Phase 3 — persist / write section for EntityVersion", () => {
-  it("Miroir EntityVersion writes target data", () => {
-    expect(getEntityVersionWriteSection(MIROIR)).toBe("data");
-    expect(getApplicationSection(MIROIR, EV)).toBe("data");
-    expect(resolveFreezeEntityVersionApplicationSection(MIROIR)).toBe("data");
+  it("#232 EntityVersion section is modelVersion for Miroir (was data in #222)", () => {
+    expect(getApplicationSection(MIROIR, EV)).toBe("modelVersion");
   });
 
-  it("Library EntityVersion writes target model", () => {
-    expect(getEntityVersionWriteSection(LIBRARY)).toBe("model");
-    expect(getApplicationSection(LIBRARY, EV)).toBe("model");
-    expect(resolveFreezeEntityVersionApplicationSection(LIBRARY)).toBe("model");
+  it("#232 EntityVersion section is modelVersion for Library (was model in #222)", () => {
+    expect(getApplicationSection(LIBRARY, EV)).toBe("modelVersion");
+  });
+
+  it("freeze EntityVersion section is modelVersion for all apps (#232 Slice 1)", () => {
+    expect(getApplicationSection(MIROIR, EV)).toBe("modelVersion");
+    expect(getApplicationSection(LIBRARY, EV)).toBe("modelVersion");
   });
 });

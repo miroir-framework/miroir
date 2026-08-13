@@ -98,17 +98,6 @@ export async function setupMiroirTest(
     ConfigurationService.configurationService.StoreSectionFactoryRegister
   );
 
-  const domainControllerForClient = await setupMiroirDomainController(
-    miroirContext, 
-    {
-      persistenceStoreAccessMode: "remote",
-      localPersistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
-      remotePersistenceStoreRestClient,
-    }
-  ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
-
-  const localCache = domainControllerForClient.getLocalCache();
-
   let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
     if (!miroirConfig.client.filesystemDeploymentRootDirectory) {
@@ -119,17 +108,31 @@ export async function setupMiroirTest(
       ConfigurationService.configurationService.StoreSectionFactoryRegister,
       miroirConfig.client.filesystemDeploymentRootDirectory,
     );
+  }
 
+  const domainControllerForClient = await setupMiroirDomainController(
+    miroirContext, 
+    {
+      persistenceStoreAccessMode: "remote",
+      localPersistenceStoreControllerManager:
+        persistenceStoreControllerManagerForServer ?? persistenceStoreControllerManagerForClient,
+      remotePersistenceStoreRestClient,
+    }
+  ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
+
+  const localCache = domainControllerForClient.getLocalCache();
+
+  if (miroirConfig.client.emulateServer) {
     const domainControllerForServer = await setupMiroirDomainController(
       miroirContext, 
       {
         persistenceStoreAccessMode: "local",
-        localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer,
+        localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer!,
       }
     ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
     (client as RestClientStub).setServerDomainController(domainControllerForServer);
-    (client as RestClientStub).setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
+    (client as RestClientStub).setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer!);
     return {
       domainControllerForServer,
       domainControllerForClient,

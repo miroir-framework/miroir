@@ -38,6 +38,13 @@ export type DeploymentUuidToReportsEntities = {
     entities: Entity[];
     entityVersions: EntityVersion[];
   };
+  /** #232 — Version History list/detail reports (EntityVersion, SelfApplicationVersion, …). */
+  modelVersion?: {
+    availableQueries: Query[];
+    availableReports: Report[];
+    entities: Entity[];
+    entityVersions: EntityVersion[];
+  };
 };
 export type DeploymentUuidToReportsEntitiesMapping = {
   [x: string]: DeploymentUuidToReportsEntities

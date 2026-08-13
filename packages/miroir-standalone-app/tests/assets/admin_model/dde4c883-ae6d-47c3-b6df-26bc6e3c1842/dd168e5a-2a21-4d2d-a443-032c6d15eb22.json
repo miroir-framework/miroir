@@ -20,13 +20,6 @@
             "icon": "category"
           },
           {
-            "label": "Admin Entity Definitions",
-            "section": "model",
-            "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-            "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
-            "icon": "category"
-          },
-          {
             "label": "Admin Applications",
             "section": "data",
             "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",

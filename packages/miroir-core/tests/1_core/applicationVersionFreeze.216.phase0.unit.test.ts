@@ -2,6 +2,7 @@
  * #216 Phase 0 — lock freeze contracts & fixtures (characterization).
  * #220 — UUID-reuse helper removed; freeze must mint new UUIDs only.
  * #222 — freeze module lives under versioning/; Miroir EV section is data.
+ * #232 — version-history entities always resolve to modelVersion via getApplicationSection.
  *
  * Documents the Action type name, versioning fixtures, Cross schema shape,
  * and that freeze must not reintroduce UUID-reuse / dual-write helpers.
@@ -17,9 +18,10 @@ import {
 import { ApplicationVersionCrossEntityVersionSchema } from "../../src/0_interfaces/1_core/Model.js";
 import {
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
-  resolveFreezeEntityVersionApplicationSection,
 } from "../../src/1_core/versioning/applicationVersionFreeze.js";
+import { getApplicationSection } from "../../src/1_core/Model.js";
 import {
+  entityEntityVersion,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
@@ -75,12 +77,9 @@ describe("216 Phase 0 — freeze contracts", () => {
     ).toBe(false);
   });
 
-  it("#222 freeze EV write section: Miroir data, Library model", () => {
-    expect(resolveFreezeEntityVersionApplicationSection(selfApplicationMiroir.uuid as string)).toBe(
-      "data",
-    );
-    expect(resolveFreezeEntityVersionApplicationSection(selfApplicationLibrary.uuid as string)).toBe(
-      "model",
-    );
+  it("#232 EntityVersion section: modelVersion for any application via getApplicationSection", () => {
+    const EV = entityEntityVersion.uuid as string;
+    expect(getApplicationSection(selfApplicationMiroir.uuid as string, EV)).toBe("modelVersion");
+    expect(getApplicationSection(selfApplicationLibrary.uuid as string, EV)).toBe("modelVersion");
   });
 });

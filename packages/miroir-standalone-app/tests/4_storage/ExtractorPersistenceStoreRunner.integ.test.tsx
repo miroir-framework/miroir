@@ -17,6 +17,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreControllerInterface,
   PersistenceStoreControllerManagerInterface,
+  resetAndInitApplicationDeployment,
   resetIntegTestbed,
   StoreUnitConfiguration
 } from "miroir-core";
@@ -62,14 +63,16 @@ import { loadTestConfigFiles } from "../utils/fileTools.js";
 
 import {
   defaultMiroirMetaModel,
-  entityApplicationEvolutionTraceEvent,
-  entityApplicationVersionCrossEntityVersion,
-  entityEndpointVersion,
   entityEntity,
-  entityEntityVersion,
-  entityMenu,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
+
+const expectedMiroirEntitiesWithEnInName = ignorePostgresExtraAttributesOnList(
+  defaultMiroirMetaModel.entities.filter((entity) =>
+    entity.name.toLowerCase().includes("en"),
+  ),
+  ["author", "storageAccess"],
+).sort((a, b) => a.name.localeCompare(b.name));
 let domainController: DomainControllerInterface;
 // let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;
@@ -193,6 +196,11 @@ beforeAll(async () => {
     throw new Error("beforeAll failed localAppPersistenceStoreController initialization!");
   }
   localAppPersistenceStoreController = localAppPsc;
+
+  // Postgres miroir schema may predate meta-model changes; refresh from defaultMiroirMetaModel.
+  await resetAndInitApplicationDeployment(domainController, applicationDeploymentMap, [
+    deployment_Miroir as Deployment,
+  ]);
 
   return Promise.resolve();
 });
@@ -504,14 +512,7 @@ describe.sequential("ExtractorOrQueryPersistenceStoreRunner.integ.test", async (
         ),
       undefined, // name to give to result
       undefined,
-      [
-        entityApplicationEvolutionTraceEvent,
-        entityApplicationVersionCrossEntityVersion,
-        entityEndpointVersion,
-        entityEntity,
-        entityEntityVersion,
-        entityMenu,
-      ].sort((a, b) => a.name.localeCompare(b.name)),
+      expectedMiroirEntitiesWithEnInName,
     );
   });
 

@@ -1,6 +1,7 @@
 /**
  * #222 Phase 3.3 — contract: EV round-trip section must match getApplicationSection
  * (filesystem integ covered by PersistenceStoreController + DomainController MiroirTest suites).
+ * #232 — getEntityVersionWriteSection removed; getApplicationSection is the single source.
  */
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -9,7 +10,6 @@ import { fileURLToPath } from "node:url";
 
 import {
   getApplicationSection,
-  getEntityVersionWriteSection,
 } from "../../../src/1_core/Model.js";
 import {
   entityEntityVersion,
@@ -22,13 +22,9 @@ const MIROIR = selfApplicationMiroir.uuid as string;
 const LIBRARY = selfApplicationLibrary.uuid as string;
 
 describe("222 Phase 3 — EntityVersion round-trip section contract", () => {
-  it("write section equals read section for Miroir and Library", () => {
-    expect(getEntityVersionWriteSection(MIROIR)).toBe(
-      getApplicationSection(MIROIR, entityEntityVersion.uuid as string),
-    );
-    expect(getEntityVersionWriteSection(LIBRARY)).toBe(
-      getApplicationSection(LIBRARY, entityEntityVersion.uuid as string),
-    );
+  it("#232 getApplicationSection returns modelVersion for EntityVersion in Miroir and Library", () => {
+    expect(getApplicationSection(MIROIR, entityEntityVersion.uuid as string)).toBe("modelVersion");
+    expect(getApplicationSection(LIBRARY, entityEntityVersion.uuid as string)).toBe("modelVersion");
   });
 
   it("resetAndinitializeDeploymentCompositeAction groups meta-model instances by getApplicationSection", () => {

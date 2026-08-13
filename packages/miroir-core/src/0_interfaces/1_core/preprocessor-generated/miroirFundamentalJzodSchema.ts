@@ -5828,7 +5828,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
-            "description": "A section of the application (model or data)",
+            "description": "A section of the application (model, data, or modelVersion for version history)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -5837,7 +5837,8 @@ export const miroirFundamentalJzodSchema = {
         },
         "definition": [
           "model",
-          "data"
+          "data",
+          "modelVersion"
         ]
       },
       "dataStoreApplicationType": {
@@ -7728,6 +7729,25 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          "versioningMode": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "unversioned",
+              "versioned-internal",
+              "versioned-external"
+            ],
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Versioning Mode",
+                "description": "How application model version history is managed: unversioned (none), versioned-internal (Miroir modelVersion section), or versioned-external (external VCS). When absent, legacy versioningEnabled: true defaults to versioned-internal.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
           }
         }
       },
@@ -8433,6 +8453,42 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "scope": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "versioning",
+              "modeling"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Scope",
+                "description": "Classifies meta-model entities. Absent is equivalent to modeling.",
+                "display": {
+                  "editable": false
+                },
+                "id": 19
+              }
+            }
+          },
+          "logicalDataModel": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "manyToMany",
+              "entity"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Logical Data Model",
+                "description": "Logical persistence shape for this entity. Absent is equivalent to entity.",
+                "display": {
+                  "editable": false
+                },
+                "id": 20
+              }
+            }
+          },
           "mlSchema": {
             "type": "schemaReference",
             "definition": {
@@ -8662,6 +8718,477 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "ML Schema"
+              }
+            }
+          }
+        }
+      },
+      "queryVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "queryUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Query Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "Query definition at freeze time"
+              }
+            }
+          }
+        }
+      },
+      "reportVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "reportUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Report Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "type": {
+            "type": "enum",
+            "definition": [
+              "list",
+              "grid"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Type of Report"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "Report definition at freeze time"
+              }
+            }
+          }
+        }
+      },
+      "menuVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "menuUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "Menu definition at freeze time"
+              }
+            }
+          }
+        }
+      },
+      "endpointVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "endpointUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Endpoint Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "version": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Version"
+              }
+            }
+          },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Application"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "transactionalEndpoint": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Transactional Endpoint"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "Endpoint definition at freeze time"
+              }
+            }
+          }
+        }
+      },
+      "runnerVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "runnerUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Runner Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "application": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Application"
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "Runner definition at freeze time"
+              }
+            }
+          }
+        }
+      },
+      "themeVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "themeUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Theme Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "Theme definition at freeze time"
+              }
+            }
+          }
+        }
+      },
+      "transformerDefinitionVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "transformerUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Transformer Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "Transformer definition at freeze time"
               }
             }
           }
@@ -12466,6 +12993,14 @@ export const miroirFundamentalJzodSchema = {
           },
           "data": {
             "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storeSectionConfiguration"
+            }
+          },
+          "modelVersion": {
+            "type": "schemaReference",
+            "optional": true,
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "storeSectionConfiguration"
@@ -28486,7 +29021,7 @@ export const miroirFundamentalJzodSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
-            "description": "A section of the application (model or data)",
+            "description": "A section of the application (model, data, or modelVersion for version history)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -28495,7 +29030,8 @@ export const miroirFundamentalJzodSchema = {
         },
         "definition": [
           "model",
-          "data"
+          "data",
+          "modelVersion"
         ]
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox_extend": {
@@ -35829,6 +36365,25 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             }
+          },
+          "versioningMode": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "unversioned",
+              "versioned-internal",
+              "versioned-external"
+            ],
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Versioning Mode",
+                "description": "How application model version history is managed: unversioned (none), versioned-internal (Miroir modelVersion section), or versioned-external (external VCS). When absent, legacy versioningEnabled: true defaults to versioned-internal.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
           }
         }
       },
@@ -36211,6 +36766,42 @@ export const miroirFundamentalJzodSchema = {
                     "description": "The physical table name in the external storage. Defaults to the entity name when absent."
                   }
                 }
+              }
+            }
+          },
+          "scope": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "versioning",
+              "modeling"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Scope",
+                "description": "Classifies meta-model entities. Absent is equivalent to modeling.",
+                "display": {
+                  "editable": false
+                },
+                "id": 19
+              }
+            }
+          },
+          "logicalDataModel": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "manyToMany",
+              "entity"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Logical Data Model",
+                "description": "Logical persistence shape for this entity. Absent is equivalent to entity.",
+                "display": {
+                  "editable": false
+                },
+                "id": 20
               }
             }
           },
@@ -37939,6 +38530,14 @@ export const miroirFundamentalJzodSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration"
             }
+          },
+          "modelVersion": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration"
+            }
           }
         }
       },
@@ -39435,6 +40034,531 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "applicationVersionCrossQueryVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "queryVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "Query Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "applicationVersionCrossReportVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "reportVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "Report Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "applicationVersionCrossMenuVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "menuVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "Menu Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "applicationVersionCrossEndpointVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "endpointVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "Endpoint Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "applicationVersionCrossRunnerVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "runnerVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "Runner Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "applicationVersionCrossThemeVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "themeVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "Theme Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "applicationVersionCrossTransformerDefinitionVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "transformerDefinitionVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "Transformer Definition Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
           "applications": {
             "type": "array",
             "definition": {
@@ -39515,6 +40639,76 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "queryVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "queryVersion"
+              }
+            }
+          },
+          "reportVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "reportVersion"
+              }
+            }
+          },
+          "menuVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "menuVersion"
+              }
+            }
+          },
+          "endpointVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "endpointVersion"
+              }
+            }
+          },
+          "runnerVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "runnerVersion"
+              }
+            }
+          },
+          "themeVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "themeVersion"
+              }
+            }
+          },
+          "transformerDefinitionVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "transformerDefinitionVersion"
+              }
+            }
+          },
           "reports": {
             "type": "array",
             "definition": {
@@ -39538,6 +40732,16 @@ export const miroirFundamentalJzodSchema = {
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "storedMiroirTheme"
+              }
+            }
+          },
+          "transformerDefinitions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "transformerDefinition"
               }
             }
           }

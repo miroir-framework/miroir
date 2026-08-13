@@ -1,19 +1,18 @@
 # Release Process
 
-> **Superseded.** This page describes the original #223 tagging approach
+> **Superseded.** This page describes the original legacy tagging approach
 > (`scripts/release_tag.py`), which is obsolete / on the wrong track. The current
-> release producer is [#227](https://github.com/miroir-framework/miroir/issues/227)
-> (`ci/release/`) — see [Release Process Internals](../reference/release-process.md)
+> release producer is `ci/release/` — see [Release Process Internals](../reference/release-process.md)
 > for the authoritative reference, including why it *does* use `lerna version`
 > (contradicting the "never use Lerna" guidance below).
 
-Local-first product (pre-)release tagging for the Miroir monorepo (#223).  
-Artefact builds are [#224](https://github.com/miroir-framework/miroir/issues/224). GitHub Release upload stays **manual**.
+Local-first product (pre-)release tagging for the Miroir monorepo (legacy `scripts/release_tag.py` flow).  
+Artefact builds are handled by the separate multi-platform artefact pipeline. GitHub Release upload stays **manual**.
 
 ## Overview
 
 1. Tag (pre-)release packages ← `python scripts/release_tag.py` (this doc)
-2. Produce artefacts (#224)
+2. Produce artefacts (artefact pipeline)
 3. Validate / test (`npm run nonreg`)
 4. Publish via GitHub Release (manual, as with `0.5.0-rc.1`)
 
@@ -66,7 +65,7 @@ Commit message: `chore: release <version>`. Tag message: `release <version>`.
 - [ ] Working tree clean (or intentional `--allow-dirty`)
 - [ ] `python scripts/release_tag.py --version <ver> --dry-run` looks correct
 - [ ] Apply with `--commit --tag` (push only when ready)
-- [ ] Build artefacts (#224)
+- [ ] Build artefacts (artefact pipeline)
 - [ ] Run `npm run nonreg` (or agreed subset)
 - [ ] Create GitHub Release **manually**; mark Pre-release if version has `-`
 - [ ] Attach artefacts; do not rely on automated `gh release create` yet
@@ -78,7 +77,7 @@ Manual for now (same spirit as `0.5.0-rc.1`):
 1. Ensure the git tag exists on the remote (`git push` / `git push --tags` if you used `--push`, or push separately)
 2. Open GitHub → Releases → Draft a new release from the tag
 3. Title ≈ tag name; mark Pre-release when applicable
-4. Upload artefacts produced by the artefact pipeline (#224)
+4. Upload artefacts produced by the artefact pipeline
 
 ## Post-release
 

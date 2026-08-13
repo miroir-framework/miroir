@@ -32,15 +32,6 @@
             "miroirMenuItemType": "miroirMenuReportLink"
           },
           {
-            "icon": "category",
-            "label": "Postgres Manager Entity Definitions",
-            "section": "model",
-            "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
-            "menuItemScope": "model",
-            "selfApplication": "84d28eb1-d98a-499e-bf24-62cade033da6",
-            "miroirMenuItemType": "miroirMenuReportLink"
-          },
-          {
             "icon": "saved_search",
             "label": "Postgres Manager Queries",
             "section": "model",

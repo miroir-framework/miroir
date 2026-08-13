@@ -1,5 +1,5 @@
 import { JzodElement, JzodReference } from "@miroir-framework/jzod-ts";
-import { miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
+import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, entityVersionHistoricalTransformerDefinitionVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-test-app_deployment-miroir";
 
 import { cleanLevel } from "../../../1_core/constants";
 import { jzodTransitiveDependencySet } from "../../../1_core/jzod/JzodSchemaReferences";
@@ -1127,11 +1127,11 @@ export function getMiroirFundamentalJzodSchema(
           tag: {
             value: {
               defaultLabel: "Application Section",
-              description: "A section of the application (model or data)",
+              description: "A section of the application (model, data, or modelVersion for version history)",
               initializeTo: { initializeToType: "value", value: "data" },
             },
           },
-          definition: ["model", "data"],
+          definition: ["model", "data", "modelVersion"],
         },
         dataStoreApplicationType: {
           type: "enum",
@@ -1382,6 +1382,21 @@ export function getMiroirFundamentalJzodSchema(
         entity: entityDefinitionEntity.mlSchema as any,
         // #217 Phase 12: vocabulary EntityVersion → EntityVersion (UUID preserved)
         entityVersion: entityDefinitionEntityDefinitionV1.mlSchema as any, // param also exported as entityVersionEntityVersionV1
+        /** #227 — historical Query snapshot at freeze (EntityVersion row for QueryVersion Entity). */
+        queryVersion: entityVersionHistoricalQueryVersion.mlSchema as any,
+        /** #227 — historical Report snapshot at freeze (EntityVersion row for ReportVersion Entity). */
+        reportVersion: entityVersionHistoricalReportVersion.mlSchema as any,
+        /** #227 — historical Menu snapshot at freeze (EntityVersion row for MenuVersion Entity). */
+        menuVersion: entityVersionHistoricalMenuVersion.mlSchema as any,
+        /** #227 — historical Endpoint snapshot at freeze (EntityVersion row for EndpointVersion Entity). */
+        endpointVersion: entityVersionHistoricalEndpointVersion.mlSchema as any,
+        /** #227 — historical Runner snapshot at freeze (EntityVersion row for RunnerVersion Entity). */
+        runnerVersion: entityVersionHistoricalRunnerVersion.mlSchema as any,
+        /** #227 — historical Theme snapshot at freeze (EntityVersion row for ThemeVersion Entity). */
+        themeVersion: entityVersionHistoricalThemeVersion.mlSchema as any,
+        /** #227 — historical TransformerDefinition snapshot at freeze. */
+        transformerDefinitionVersion:
+          entityVersionHistoricalTransformerDefinitionVersion.mlSchema as any,
 
         testCompositeAction: (
           entityDefinitionTest.mlSchema as any
@@ -1649,6 +1664,14 @@ export function getMiroirFundamentalJzodSchema(
             },
             data: {
               type: "schemaReference",
+              definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "storeSectionConfiguration",
+              },
+            },
+            "modelVersion": {
+              type: "schemaReference",
+              optional: true,
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "storeSectionConfiguration",
@@ -3542,6 +3565,278 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
+            /** #227 — Cross rows linking SAV to historical QueryVersion snapshots. */
+            applicationVersionCrossQueryVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  queryVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 6, defaultLabel: "Query Version", editable: false } },
+                  },
+                },
+              },
+            },
+            /** #227 — Cross rows linking SAV to historical ReportVersion snapshots. */
+            applicationVersionCrossReportVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  reportVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 6, defaultLabel: "Report Version", editable: false } },
+                  },
+                },
+              },
+            },
+            /** #227 — Cross rows linking SAV to historical MenuVersion snapshots. */
+            applicationVersionCrossMenuVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  menuVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 6, defaultLabel: "Menu Version", editable: false } },
+                  },
+                },
+              },
+            },
+            /** #227 — Cross rows linking SAV to historical EndpointVersion snapshots. */
+            applicationVersionCrossEndpointVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  endpointVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 6, defaultLabel: "Endpoint Version", editable: false } },
+                  },
+                },
+              },
+            },
+            /** #227 — Cross rows linking SAV to historical RunnerVersion snapshots. */
+            applicationVersionCrossRunnerVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  runnerVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 6, defaultLabel: "Runner Version", editable: false } },
+                  },
+                },
+              },
+            },
+            /** #227 — Cross rows linking SAV to historical ThemeVersion snapshots. */
+            applicationVersionCrossThemeVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  themeVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 6, defaultLabel: "Theme Version", editable: false } },
+                  },
+                },
+              },
+            },
+            /** #227 — Cross rows linking SAV to historical TransformerDefinitionVersion snapshots. */
+            applicationVersionCrossTransformerDefinitionVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  transformerDefinitionVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: {
+                        id: 6,
+                        defaultLabel: "Transformer Definition Version",
+                        editable: false,
+                      },
+                    },
+                  },
+                },
+              },
+            },
             // configuration: {
             //   type: "array",
             //   definition: {
@@ -3634,6 +3929,81 @@ export function getMiroirFundamentalJzodSchema(
                 },
               },
             },
+            /** #227 — historical Query snapshots minted at freeze. */
+            queryVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "queryVersion",
+                },
+              },
+            },
+            /** #227 — historical Report snapshots minted at freeze. */
+            reportVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "reportVersion",
+                },
+              },
+            },
+            /** #227 — historical Menu snapshots minted at freeze. */
+            menuVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "menuVersion",
+                },
+              },
+            },
+            /** #227 — historical Endpoint snapshots minted at freeze. */
+            endpointVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "endpointVersion",
+                },
+              },
+            },
+            /** #227 — historical Runner snapshots minted at freeze. */
+            runnerVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "runnerVersion",
+                },
+              },
+            },
+            themeVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "themeVersion",
+                },
+              },
+            },
+            transformerDefinitionVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "transformerDefinitionVersion",
+                },
+              },
+            },
             reports: {
               type: "array",
               definition: {
@@ -3668,6 +4038,16 @@ export function getMiroirFundamentalJzodSchema(
                 definition: {
                   absolutePath: miroirFundamentalJzodSchemaUuid,
                   relativePath: "storedMiroirTheme",
+                },
+              },
+            },
+            transformerDefinitions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalJzodSchemaUuid,
+                  relativePath: "transformerDefinition",
                 },
               },
             },

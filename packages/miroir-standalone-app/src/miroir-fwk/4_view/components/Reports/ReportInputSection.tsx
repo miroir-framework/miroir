@@ -20,7 +20,7 @@ import { reportUrl } from "../../navigation.js";
  *
  * When the input schema includes an `application` uuid field, changing it
  * navigates to the same report under that application so extractor filters
- * that use getFromParameters("application") (pageParams) refresh the list.
+ * that use getFromParameters("applicationSelector") refresh the list.
  */
 export function ReportInputSection(props: {
   label: string;

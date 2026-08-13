@@ -10,6 +10,7 @@
     "extractorTemplates": {
       "applicationVersion": {
         "extractorOrCombinerType": "extractorByPrimaryKey",
+        "applicationSection": "modelVersion",
         "parentName": "SelfApplicationVersion",
         "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
         "instanceUuid": {
@@ -33,6 +34,51 @@
         "objectListReference": "00_crossEntityVersions",
         "objectListReferenceAttribute": "entityVersion",
         "AttributeOfRootListObjectToCompareToListReferenceUuid": "uuid"
+      },
+      "02_crossQueryVersions": {
+        "extractorOrCombinerType": "combinerOneToMany",
+        "parentName": "ApplicationVersionCrossQueryVersion",
+        "parentUuid": "9e4c6d8a-2b5f-4a1c-9d7e-3f6b8a2c4e1d",
+        "objectReference": "applicationVersion",
+        "AttributeOfListObjectToCompareToReferenceUuid": "applicationVersion"
+      },
+      "03_queryVersions": {
+        "extractorOrCombinerType": "combinerManyToMany",
+        "parentName": "QueryVersion",
+        "parentUuid": "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c",
+        "objectListReference": "02_crossQueryVersions",
+        "objectListReferenceAttribute": "queryVersion",
+        "AttributeOfRootListObjectToCompareToListReferenceUuid": "uuid"
+      },
+      "04_crossReportVersions": {
+        "extractorOrCombinerType": "combinerOneToMany",
+        "parentName": "ApplicationVersionCrossReportVersion",
+        "parentUuid": "f2b3c4d5-e6f7-4890-a1b2-c3d4e5f6a7b8",
+        "objectReference": "applicationVersion",
+        "AttributeOfListObjectToCompareToReferenceUuid": "applicationVersion"
+      },
+      "05_reportVersions": {
+        "extractorOrCombinerType": "combinerManyToMany",
+        "parentName": "ReportVersion",
+        "parentUuid": "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7",
+        "objectListReference": "04_crossReportVersions",
+        "objectListReferenceAttribute": "reportVersion",
+        "AttributeOfRootListObjectToCompareToListReferenceUuid": "uuid"
+      },
+      "06_crossMenuVersions": {
+        "extractorOrCombinerType": "combinerOneToMany",
+        "parentName": "ApplicationVersionCrossMenuVersion",
+        "parentUuid": "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+        "objectReference": "applicationVersion",
+        "AttributeOfListObjectToCompareToReferenceUuid": "applicationVersion"
+      },
+      "07_menuVersions": {
+        "extractorOrCombinerType": "combinerManyToMany",
+        "parentName": "MenuVersion",
+        "parentUuid": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+        "objectListReference": "06_crossMenuVersions",
+        "objectListReferenceAttribute": "menuVersion",
+        "AttributeOfRootListObjectToCompareToListReferenceUuid": "uuid"
       }
     },
     "section": {
@@ -52,6 +98,36 @@
             "parentName": "EntityVersion",
             "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
             "fetchedDataReference": "01_entityVersions",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Query Versions",
+            "parentName": "QueryVersion",
+            "parentUuid": "7f3a8b2c-4d1e-4f9a-b6c3-8e5d2a1f0b9c",
+            "fetchedDataReference": "03_queryVersions",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Report Versions",
+            "parentName": "ReportVersion",
+            "parentUuid": "f1a2b3c4-d5e6-4789-a0a1-b2c3d4e5f6a7",
+            "fetchedDataReference": "05_reportVersions",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Menu Versions",
+            "parentName": "MenuVersion",
+            "parentUuid": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+            "fetchedDataReference": "07_menuVersions",
             "sortByAttribute": "name"
           }
         },

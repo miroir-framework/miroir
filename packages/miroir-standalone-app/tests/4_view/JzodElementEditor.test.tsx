@@ -39,7 +39,7 @@ import {
   waitAfterUserInteraction,
 } from "./JzodElementEditorTestTools";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
-import { book1, entityDefinitionBook } from "miroir-test-app_deployment-library";
+import { book1, entityBook } from "miroir-test-app_deployment-library";
 
 import {
   entityDefinitionEntityDefinition,
@@ -2342,7 +2342,7 @@ export function getJzodBookEditorTests(
             listKey: "ROOT.testField",
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
-            rawJzodSchema: entityDefinitionBook.mlSchema as JzodObject,
+            rawJzodSchema: entityBook.mlSchema as JzodObject,
             // rawJzodSchema: {
             //   type: "object",
             //   definition: {a:{ type: "string" }, b:{ type: "number" }},
@@ -2459,7 +2459,7 @@ export function getJzodEntityDefinitionEditorTests(
             rootLessListKey: "testField",
             rootLessListKeyArray: ["testField"],
             rawJzodSchema: (entityDefinitionEntityDefinition as EntityVersion).mlSchema,
-            initialFormState: entityDefinitionBook,
+            initialFormState: entityBook,
           },
           tests: async (expect: ExpectStatic, container: Container) => {
             const formValues: Record<string, any> = extractValuesFromRenderedElements(
@@ -2473,7 +2473,7 @@ export function getJzodEntityDefinitionEditorTests(
             const testResult = formValuesToJSON(formValues, "testField");
             console.log("Test result:", testResult);
             expect(testResult).toEqual({
-              ...entityDefinitionBook,
+              ...entityBook,
               defaultInstanceDetailsReportUuid: "Detailed information about a Book",
               // -   "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
               // +   "defaultInstanceDetailsReportUuid": "Detailed information about a Book",
@@ -3261,14 +3261,14 @@ export function getJzodEditorPerformanceTests(
         //     rootLessListKey: "testField",
         //     rootLessListKeyArray: ["testField"],
         //     rawJzodSchema: (entityDefinitionEntityDefinition as EntityVersion).mlSchema,
-        //     initialFormState: entityDefinitionBook
+        //     initialFormState: entityBook
         //   },
         //   tests: async (expect: ExpectStatic, container: Container) => {
         //     const formValues: Record<string, any> = extractValuesFromRenderedElements(expect,              undefined,
         //  container, "testField", "initial form state");
         //     // console.log("Extracted initial values:", values);
         //     const testResult = formValuesToJSON(formValues);
-        //     expect(testResult).toEqual(entityDefinitionBook);
+        //     expect(testResult).toEqual(entityBook);
         //   },
         // },
       },

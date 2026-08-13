@@ -6,7 +6,7 @@
 
 ## Overview
 
-Miroir-core tests are stored as **deployment JSON entities** (`MiroirTest` format, Feature #196) and executed through a unified runner. The same instances run from:
+Miroir-core tests are stored as **deployment JSON entities** (`MiroirTest` format) and executed through a unified runner. The same instances run from:
 
 - **Vitest** (CLI / CI) — both unit and integration modes
 - **Miroir standalone UI** (menu **Miroir Tests** — unit mode only, no side effects)
@@ -21,7 +21,7 @@ Legacy `UnitTest` and `TransformerTest` entities remain in the deployment for ba
 |------|----------|-------------|----------------|
 | **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | All miroir-core registry suites except `miroirCoreTransformers` |
 | **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `miroirCoreTransformers`, etc. via `MIROIR_TEST_*` |
-| **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD (Data.CRUD deprecated), PersistenceStoreController (incl. #214 attribute projection), extractors |
+| **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD (Data.CRUD deprecated), PersistenceStoreController (incl. attribute projection), extractors |
 | **Runner / Action integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | `runner_library`, `domain_controller_data_crud` |
 
 The UI always runs **unit** mode.
@@ -161,7 +161,7 @@ npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
 
 Filter one editor: `npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#jzodelementeditortesttsx--component-integration-suite).
 
-**MiroirTestDisplay integration launch (B6-d1)** — RTL proof for Feature #197 **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.library`; Postgres required (Node SQL mock env):
+**MiroirTestDisplay integration launch (B6-d1)** — RTL proof for the **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.library`; Postgres required (Node SQL mock env):
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
@@ -230,5 +230,5 @@ For MiroirTest integration lifecycle (`initSession` / `beforeEach` / `teardown`)
 
 - **[Testing Reference](../../reference/testing.md)** — full env vars, all store backends, programmatic API, key file index
 - [Contributing: testing guidelines](../../contributing/testing.md) — contributor commands
-- Feature #196 plan: `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`
-- Feature #197 plan: `code-helpers/features/197-FEATURE-run-integration-tests-in-the-UI/plan.md`
+- MiroirTest migration plan: `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`
+- UI integration launch plan: `code-helpers/features/197-FEATURE-run-integration-tests-in-the-UI/plan.md`

@@ -172,11 +172,13 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
 
   // const menuApplicationSection = getApplicationSection(props.applicationUuid, props.menuUuid);
   const menuApplicationSection = getApplicationSection(props.applicationUuid, entityMenu.uuid);
+  const metaModelReady =
+    (currentModel?.entities?.length ?? 0) > 0 || (currentModel?.menus?.length ?? 0) > 0;
   const fetchDeploymentMenusQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
     useMemo(
       () =>
         getQueryRunnerParamsForReduxDeploymentsState(
-          currentModel?.applicationVersions?.length > 0
+          metaModelReady
             ? {
                 queryType: "boxedQueryWithExtractorCombinerTransformer",
                 application: props.applicationUuid,
@@ -193,7 +195,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
             : dummyDomainManyQueryWithDeploymentUuid,
           deploymentEntityStateSelectorMap,
         ),
-      [deploymentEntityStateSelectorMap, currentModel, props.deploymentUuid, props.menuUuid],
+      [deploymentEntityStateSelectorMap, metaModelReady, menuApplicationSection, props.applicationUuid, props.deploymentUuid, props.menuUuid],
     );
 
   // log.info("SidebarSection fetchDeploymentMenusQueryParams",fetchDeploymentMenusQueryParams)

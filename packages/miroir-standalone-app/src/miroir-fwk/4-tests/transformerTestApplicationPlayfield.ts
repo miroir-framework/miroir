@@ -45,12 +45,20 @@ export function deriveEphemeralTestApplicationStorageConfiguration(
         admin: template.admin,
         model: { emulatedServerType: "indexedDb", indexedDbName: id },
         data: { emulatedServerType: "indexedDb", indexedDbName: id },
+        modelVersion: {
+          emulatedServerType: "indexedDb",
+          indexedDbName: `${id}_modelVersion`,
+        },
       };
     case "filesystem":
       return {
         admin: template.admin,
         model: { emulatedServerType: "filesystem", directory: `./test_data/${id}` },
         data: { emulatedServerType: "filesystem", directory: `./test_data/${id}` },
+        modelVersion: {
+          emulatedServerType: "filesystem",
+          directory: `./test_data/${id}_modelVersion`,
+        },
       };
     case "sql": {
       const connectionString =
@@ -71,6 +79,12 @@ export function deriveEphemeralTestApplicationStorageConfiguration(
           schema: id,
           forceNullOptionalAttributeToUndefined: true,
         },
+        modelVersion: {
+          emulatedServerType: "sql",
+          connectionString,
+          schema: `${id}_modelVersion`,
+          forceNullOptionalAttributeToUndefined: true,
+        },
       };
     }
     case "mongodb": {
@@ -82,6 +96,11 @@ export function deriveEphemeralTestApplicationStorageConfiguration(
         admin: template.admin,
         model: { emulatedServerType: "mongodb", connectionString, database: id },
         data: { emulatedServerType: "mongodb", connectionString, database: id },
+        modelVersion: {
+          emulatedServerType: "mongodb",
+          connectionString,
+          database: `${id}_modelVersion`,
+        },
       };
     }
     default:

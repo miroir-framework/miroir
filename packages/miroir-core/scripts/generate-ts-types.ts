@@ -328,6 +328,8 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
   ) {
     newFileContents = newFileContents + phase12AliasBlock;
   }
+  // #232 — jzod-ts emits unquoted hyphenated object keys; quote them for valid TS/Zod.
+  newFileContents = newFileContents.replace(/modelVersion:/g, '"modelVersion":');
   console.log(
     "generateTsTypeFileFromJzodSchemaInParallel generateTypes took",
     Date.now() - generateTypesStart,

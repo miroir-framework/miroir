@@ -8,7 +8,7 @@ This guide walks you through cloning the monorepo and building the **Miroir serv
 
 The Miroir monorepo provide shell scripts that scaffold build operations, but require a shell (`bash`) interpreter. You may bypass these and call `npm` commands directly, if that suits you better.
 
-*disclaimer: [No step-by-step validation has been performed on this guide](https://github.com/miroir-framework/miroir/issues/190), some inaccuracies may remain*
+*Disclaimer: no step-by-step validation has been performed on this guide; some inaccuracies may remain.*
 
 ## Platform notes and known friction points
 

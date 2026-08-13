@@ -1,6 +1,6 @@
 # UI performance monitoring (render insights)
 
-Developer note for diagnosing refresh storms and slow renders in the Miroir standalone app (GitHub [#61](https://github.com/miroir-framework/miroir/issues/61)).
+Developer note for diagnosing refresh storms and slow renders in the Miroir standalone app.
 
 ## Timer toggle (AppBar)
 

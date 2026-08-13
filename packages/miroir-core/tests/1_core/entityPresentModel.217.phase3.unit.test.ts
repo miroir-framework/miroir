@@ -32,8 +32,11 @@ const CANONICAL_MODEL_ROOTS = [
   "packages/miroir-test-app_deployment-designer/assets/designer_model",
 ] as const;
 
-const CANONICAL_SELF_APPLICATION_PATHS = [
+const VERSIONED_SELF_APPLICATION_PATHS = [
   "packages/miroir-test-app_deployment-miroir/assets/miroir_data/a659d350-dd97-4da9-91de-524fa01745dc/360fcf1f-f0d4-4f8a-9262-07886e70fa15.json",
+] as const;
+
+const UNVERSIONED_SELF_APPLICATION_PATHS = [
   "packages/miroir-test-app_deployment-admin/assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json",
   "packages/miroir-test-app_deployment-library/assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json",
   "packages/miroir-test-app_deployment-postgres/assets/postgres_model/a659d350-dd97-4da9-91de-524fa01745dc/84d28eb1-d98a-499e-bf24-62cade033da6.json",
@@ -52,22 +55,38 @@ function loadJsonInstancesFromCollection(
     );
 }
 
-describe("217 Phase 3 — versioningEnabled on canonical applications", () => {
-  for (const relativePath of CANONICAL_SELF_APPLICATION_PATHS) {
-    it(`${relativePath} has versioningEnabled: true`, () => {
+describe("217 Phase 3 — versioningMode on canonical applications", () => {
+  for (const relativePath of VERSIONED_SELF_APPLICATION_PATHS) {
+    it(`${relativePath} is versioned-internal`, () => {
       const application = JSON.parse(
         readFileSync(join(repoRoot, relativePath), "utf8"),
       ) as SelfApplication;
-      expect(application.versioningEnabled).toBe(true);
+      expect(application.versioningMode ?? (application.versioningEnabled ? "versioned-internal" : "unversioned")).toBe(
+        "versioned-internal",
+      );
     });
   }
 
-  it("selfApplicationMiroir export has versioningEnabled: true", () => {
-    expect((selfApplicationMiroir as SelfApplication).versioningEnabled).toBe(true);
+  for (const relativePath of UNVERSIONED_SELF_APPLICATION_PATHS) {
+    it(`${relativePath} is unversioned`, () => {
+      const application = JSON.parse(
+        readFileSync(join(repoRoot, relativePath), "utf8"),
+      ) as SelfApplication;
+      expect(application.versioningMode).toBe("unversioned");
+      expect(application.versioningEnabled).toBeUndefined();
+    });
+  }
+
+  it("selfApplicationMiroir export is versioned-internal", () => {
+    expect((selfApplicationMiroir as SelfApplication).versioningMode).toBe("versioned-internal");
   });
 
-  it("defaultLibraryAppModel application has versioningEnabled: true", () => {
+  it("defaultLibraryAppModel application is unversioned", () => {
     const application = defaultLibraryAppModel.applications[0] as SelfApplication;
-    expect(application.versioningEnabled).toBe(true);
+    expect(application.versioningMode).toBe("unversioned");
+  });
+
+  it("defaultLibraryAppModel has no entityVersions (unversioned app)", () => {
+    expect(defaultLibraryAppModel.entityVersions).toEqual([]);
   });
 });

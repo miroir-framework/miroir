@@ -92,8 +92,11 @@ npm run build -w miroir-core
 # Build multiple stores in parallel
 npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-store-bundled
 
-# Type checking only (no build on miroir-standalone-app)
-npx tsc --noEmit --skipLibCheck
+# Type checking — per package (do not run from repo root)
+# Root tsconfig.json has no `include`, so repo-root tsc loads the entire monorepo and can exhaust memory.
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+# Repeat for other packages you touched, or run devBuild/build (which typecheck as part of compile).
 ```
 
 ### Testing Patterns
@@ -102,7 +105,7 @@ always favor integration tests to unit tests, avoid mocking when possible
 
 ### Core Testing Commands
 
-Entity-backed tests use the unified **`MiroirTest`** model (Feature #196). Prefer `testMiroir` for suite selection; `testByFile` + `RUN_TEST` remains for per-file selective runs.
+Entity-backed tests use the unified **`MiroirTest`** model. Prefer `testMiroir` for suite selection; `testByFile` + `RUN_TEST` remains for per-file selective runs.
 
 ```bash
 # Rebuild deployment after MiroirTest JSON changes
@@ -200,6 +203,8 @@ Entities (present model) and EntityVersions support three kinds of primary keys 
 - **UUID PK** (default): `idAttribute` is absent or `"uuid"` — standard UUID-based identity.
 - **Non-UUID single PK**: `idAttribute` is a single string naming any attribute (e.g. `"code"`).
 - **Composite PK**: `idAttribute` is a `string[]` array (e.g. `["region", "code"]`).
+
+**Entity `scope` (meta-model classification):** optional on meta-model **Entity** rows only — `"versioning"` marks freeze / application-version-history concepts (`EntityVersion`, `SelfApplicationVersion`, `ApplicationVersionCross*`, …); absent = `"modeling"`. Companion `logicalDataModel`: `"manyToMany"` for cross tables. **Runtime routing** (`model` vs `modelVersion`) uses `versionHistoryEntityUuids` in `Model.ts`, not a dynamic read of `scope` yet. See `docs/reference/api/entity.md#meta-model-classification-scope--logicaldatamodel`.
 
 Helper functions for PK handling are in `packages/miroir-core/src/1_core/EntityPrimaryKey.ts`:
 - `getEntityPrimaryKeyAttribute(entityDefinition)` — returns `string | string[]`

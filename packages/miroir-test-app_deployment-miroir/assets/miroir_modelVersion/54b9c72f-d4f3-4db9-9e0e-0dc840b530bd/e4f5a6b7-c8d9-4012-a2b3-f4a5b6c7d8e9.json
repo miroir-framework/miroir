@@ -1,0 +1,99 @@
+{
+  "uuid": "e4f5a6b7-c8d9-4012-a2b3-f4a5b6c7d8e9",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "c2d3e4f5-a6b7-4789-a0b1-d2e3f4a5b6c7",
+  "name": "EndpointVersion",
+  "conceptLevel": "Model",
+  "description": "Historical snapshot of an Endpoint at freeze time.",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "name",
+    "endpointUuid",
+    "version",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "endpointUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Endpoint Uuid",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "version": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Version"
+          }
+        }
+      },
+      "application": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Application"
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "transactionalEndpoint": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Transactional Endpoint"
+          }
+        }
+      },
+      "definition": {
+        "type": "any",
+        "tag": {
+          "value": {
+            "defaultLabel": "Endpoint definition at freeze time"
+          }
+        }
+      }
+    }
+  }
+}

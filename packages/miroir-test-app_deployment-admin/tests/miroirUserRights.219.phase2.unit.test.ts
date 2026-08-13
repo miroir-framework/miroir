@@ -94,16 +94,10 @@ describe("miroirUserRights.219.phase2 — MiroirRight model and seed data", () =
     expect(definition.uuid).toBeUndefined();
   });
 
-  it("has a matching EntityVersion for MiroirRight", () => {
+  it("has present-model mlSchema on MiroirRight Entity (no separate EntityVersion row)", () => {
     const entity = findAdminEntityByName("MiroirRight", modelDir);
     expect(entity?.uuid).toBeTruthy();
-    const versionDir = join(modelDir, ENTITY_VERSION_PARENT_UUID);
-    const match = readdirSync(versionDir)
-      .filter((n) => n.endsWith(".json"))
-      .map((n) => readJsonInstance(join(versionDir, n)))
-      .find((v) => v.entityUuid === entity!.uuid && v.name === "MiroirRight");
-    expect(match).toBeDefined();
-    const definition = getMlSchemaDefinition(match as Record<string, unknown>);
+    const definition = getMlSchemaDefinition(entity as Record<string, unknown>);
     expect(definition.miroirUser).toBeDefined();
     expect(definition.targetType).toBeDefined();
     expect(definition.targetUuid).toBeDefined();
@@ -146,7 +140,7 @@ describe("miroirUserRights.219.phase2 — MiroirRight model and seed data", () =
   it("package index.ts exports entityMiroirRight and seed MiroirRight instances", () => {
     const indexSource = readFileSync(join(PACKAGE_ROOT, "index.ts"), "utf8");
     expect(indexSource).toMatch(/export \{ default as entityMiroirRight \}/);
-    expect(indexSource).toMatch(/export \{ default as entityVersionMiroirRight \}/);
+    expect(indexSource).not.toMatch(/export \{ default as entityVersionMiroirRight \}/);
     expect(indexSource).toMatch(/export \{ default as miroirRight_/);
   });
 });

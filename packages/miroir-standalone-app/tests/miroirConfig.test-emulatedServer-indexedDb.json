@@ -44,6 +44,10 @@
         "data": {
           "emulatedServerType": "indexedDb",
           "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-app"
+        },
+        "modelVersion": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "miroir-standalone-app/tests/tmp/indexedDb-app_modelVersion"
         }
       }
     },

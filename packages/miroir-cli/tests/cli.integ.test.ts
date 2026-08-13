@@ -45,11 +45,7 @@ import {
   book6,
   entityAuthor,
   entityBook,
-  entityDefinitionAuthor,
-  entityDefinitionBook,
-  entityDefinitionPublisher,
   entityPublisher,
-  entityDefinitionUser,
   entityUser,
   folio as publisher1,
   penguin as publisher2,
@@ -101,12 +97,10 @@ MiroirLoggerFactory.registerLoggerToStart(
 const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances = [
   {
     entity: entityAuthor as Entity,
-    entityVersion: entityDefinitionAuthor as EntityVersion,
     instances: [author1, author2, author3 as EntityInstance],
   },
   {
     entity: entityBook as Entity,
-    entityVersion: entityDefinitionBook as EntityVersion,
     instances: [
       book1 as EntityInstance,
       book2 as EntityInstance,
@@ -117,12 +111,10 @@ const libraryEntitiesAndInstancesWithoutBook3: ApplicationEntitiesAndInstances =
   },
   {
     entity: entityPublisher as Entity,
-    entityVersion: entityDefinitionPublisher as EntityVersion,
     instances: [publisher1 as EntityInstance, publisher2 as EntityInstance, publisher3 as EntityInstance],
   },
   {
     entity: entityUser as Entity,
-    entityVersion: entityDefinitionUser as EntityVersion,
     instances: [
       user1 as EntityInstance,
       user2 as EntityInstance,

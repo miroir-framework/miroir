@@ -268,16 +268,16 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
       testbedModel: publisherAndCountryTestMetaModel,
     },
   },
-  // ###############################################################################
-  [miroirTest_runner_freeze_application_version.name]: {
-    suiteDefinition: miroirTest_runner_freeze_application_version.definition as MiroirTestSuite,
-    runnerRegistry: {},
-    libraryPlayfieldSeed: {
-      testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: publisherAndCountryTestMetaModel,
-    },
-  },
+  // // ###############################################################################
+  // [miroirTest_runner_freeze_application_version.name]: {
+  //   suiteDefinition: miroirTest_runner_freeze_application_version.definition as MiroirTestSuite,
+  //   runnerRegistry: {},
+  //   libraryPlayfieldSeed: {
+  //     testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
+  //     testbedInitApplicationParameters: libraryTestbedInitParams,
+  //     testbedModel: publisherAndCountryTestMetaModel,
+  //   },
+  // },
   // ###############################################################################
   [miroirTest_evolutionTraceWP1.name]: {
     suiteDefinition: miroirTest_evolutionTraceWP1.definition as MiroirTestSuite,

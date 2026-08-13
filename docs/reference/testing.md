@@ -41,7 +41,7 @@ npm run nonreg -- --tier full --run-all
 
 | Tier | Contents |
 |------|----------|
-| `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` + LocalCache memory measure (#211: pure `localCacheMemoryMeasure` / attributed + static redux/zustand images) |
+| `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` + LocalCache memory measure (pure `localCacheMemoryMeasure` / attributed + static redux/zustand images) |
 | `default` | `unit` + deployment `modelValidation` for **miroir**, **admin**, **library** (right after miroir-core unit) + MiroirTest integ (`miroirCoreTransformers`, `runner_library`, `domain_controller_data_crud`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
 | `full` | `default` + deployment `modelValidation` for **postgres** |
 
@@ -151,7 +151,7 @@ unionArrayChoices, unionObjectChoices
 
 Unit tests run entirely in-memory. No Postgres, no filesystem seeding.
 
-### LocalCache memory measure (#211)
+### LocalCache memory measure
 
 Pure sizing and static LocalCache image checks (included in `npm run nonreg:unit`):
 
@@ -162,7 +162,7 @@ npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryMeasure.unit
 # Attributed per-Entity + top-10 (present.current only; loading ignored)
 npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryAttributed.unit.test.ts
 
-# UI gate + docked summary (#211 Phase 7)
+# UI gate + docked summary (Phase 7)
 npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorGate.unit.test.ts
 npm run testByFile -w miroir-standalone-app -- tests/4_view/LocalCacheMonitorSummary.unit.test.tsx
 npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorIndicators.unit.test.ts
@@ -692,7 +692,7 @@ Tests persistence below the domain layer, including the persistence controller a
 
 | File | Setup | Focus |
 |------|-------|-------|
-| `PersistenceStoreController.integ.test.tsx` | `AppStackIntegrationTestSession` | PersistenceStoreController open/create/read/write, model actions; **#214** projected `getInstances` (keys ⊆ allow-list ∪ identity) |
+| `PersistenceStoreController.integ.test.tsx` | `AppStackIntegrationTestSession` | PersistenceStoreController open/create/read/write, model actions; projected `getInstances` (keys ⊆ allow-list ∪ identity) |
 | `ExtractorPersistenceStoreRunner.integ.test.tsx` | `AppStackIntegrationTestSession` | `ExtractorPersistenceStoreRunner` end-to-end |
 | `ExtractorTemplatePersistenceStoreRunner.integ.test.tsx` | `AppStackIntegrationTestSession` | Extractor templates against live store |
 
@@ -700,7 +700,7 @@ Tests persistence below the domain layer, including the persistence controller a
 npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-sql PersistenceStoreController.integ
 
-# Filesystem profile — preferred for #214 projection smoke (filter-after-read)
+# Filesystem profile — preferred for attribute-projection smoke (filter-after-read)
 npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-filesystem PersistenceStoreController.integ
 
@@ -708,9 +708,9 @@ npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-indexedDb ExtractorPersistenceStoreRunner.integ
 ```
 
-##### Attribute projection (#214)
+##### Attribute projection
 
-Partial-fetch contract and controller projection live in Feature [#214](https://github.com/miroir-framework/miroir/issues/214) (`code-helpers/features/214-FEATURE-large-entity-instance-partial-fetch/`).
+Partial-fetch contract and controller projection: `code-helpers/features/214-FEATURE-large-entity-instance-partial-fetch/`.
 
 | Layer | What to run | Notes |
 |-------|-------------|--------|
@@ -1331,7 +1331,7 @@ Real-server profiles require a reachable `miroir-server` and the selected backen
 npm run build -w miroir-test-app_deployment-miroir
 
 # After changing Query / Endpoint / EntityVersion Jzod in deployment-miroir
-# (e.g. #214 attributes on extractors or RestPersistenceAction_read)
+# (e.g. `attributes` on extractors or RestPersistenceAction_read)
 npm run build -w miroir-test-app_deployment-miroir
 npm run devBuild -w miroir-core   # regenerates preprocessor-generated types + package build
 

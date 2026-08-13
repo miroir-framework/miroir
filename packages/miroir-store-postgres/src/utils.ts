@@ -91,6 +91,7 @@ export function fromMiroirPresentModelToSequelizeEntityDefinition(
             (
               [
                 "any",
+                "boolean",
                 "date",
                 "number",
                 "string",

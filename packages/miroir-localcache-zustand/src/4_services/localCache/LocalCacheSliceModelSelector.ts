@@ -398,18 +398,16 @@ const selectApplicationVersionsFromReduxState = createSelector(
     applicationDeploymentMap: ApplicationDeploymentMap,
     params: MiroirQueryTemplate
   ): EntityInstancesUuidIndex | undefined => {
+    const application =
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application ?? "undefined"
+        : params.application;
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application ?? "undefined"
-        : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entitySelfApplicationVersion.uuid
+      application,
+      getApplicationSection(application, entitySelfApplicationVersion.uuid),
+      entitySelfApplicationVersion.uuid,
     );
   }
 );
@@ -487,6 +485,21 @@ export const selectModelForDeploymentFromReduxState: () => (
           ? Object.values(applicationVersions)
           : []) as ApplicationVersion[],
         applicationVersionCrossEntityVersion: [],
+        applicationVersionCrossQueryVersion: [],
+        queryVersions: [],
+        applicationVersionCrossReportVersion: [],
+        reportVersions: [],
+        applicationVersionCrossMenuVersion: [],
+        menuVersions: [],
+        applicationVersionCrossEndpointVersion: [],
+        endpointVersions: [],
+        applicationVersionCrossRunnerVersion: [],
+        runnerVersions: [],
+        applicationVersionCrossThemeVersion: [],
+        themeVersions: [],
+        applicationVersionCrossTransformerDefinitionVersion: [],
+        transformerDefinitionVersions: [],
+        transformerDefinitions: [],
         entities: (entities ? Object.values(entities) : []) as Entity[],
         entityVersions: (entityVersions ? Object.values(entityVersions) : []) as EntityVersion[],
         endpoints: (endpoints ? Object.values(endpoints) : []) as EndpointDefinition[],

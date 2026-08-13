@@ -6,6 +6,8 @@ import {
   ACTION_OK,
   Action2Error,
   Action2ReturnType,
+  ApplicationSection,
+  Domain2ElementFailed,
   LocalCacheAction,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -320,6 +322,33 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
       log.error("PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore error:", error);
       return new Action2Error("FailedToHandlePersistenceActionForLocalPersistenceStore", error.message, error.stack);
     }
+  }
+
+  // ###############################################################################
+  async readLocalPersistenceSectionInstances(
+    application: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    section: ApplicationSection,
+    parentEntityUuid: string,
+  ): Promise<EntityInstance[]> {
+    const manager = this.params.localPersistenceStoreControllerManager;
+    if (!manager) {
+      return [];
+    }
+    const deploymentUuid = applicationDeploymentMap[application];
+    const controller = manager.getPersistenceStoreController(deploymentUuid);
+    if (!controller) {
+      return [];
+    }
+    const result = await controller.getInstances(section, parentEntityUuid);
+    if (result instanceof Action2Error) {
+      return [];
+    }
+    const collection = result.returnedDomainElement;
+    if (!collection || collection instanceof Domain2ElementFailed) {
+      return [];
+    }
+    return collection.instances ?? [];
   }
 
   // ###############################################################################

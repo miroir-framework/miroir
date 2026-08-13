@@ -64,7 +64,7 @@ npm run testMiroir -w miroir-core -- --suites alterObject,EntityPrimaryKey --mod
 # All registered suites
 npm run testMiroir -w miroir-core -- --mode unit
 
-# LocalCache memory measure (#211) — also in nonreg:unit
+# LocalCache memory measure — also in nonreg:unit
 npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryMeasure.unit.test.ts
 npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryAttributed.unit.test.ts
 npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorGate.unit.test.ts
@@ -75,7 +75,7 @@ npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorFoo
 npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 
-# Attribute projection (#214) — unit (no store)
+# Attribute projection — unit (no store)
 npm run testByFile -w miroir-core -- tests/1_core/instanceProjection.unit.test.ts
 npm run testByFile -w miroir-core -- tests/1_core/instanceProjectionSchema.unit.test.ts
 npm run testByFile -w miroir-core -- tests/4_services/PersistenceStoreController.projection.unit.test.ts
@@ -96,7 +96,7 @@ Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`
 |------|---------|
 | **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ` |
 | **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ` |
-| **Freeze runner (#225)** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner_freeze_application_version --mode integ` |
+| **Freeze runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner_freeze_application_version --mode integ` |
 
 Legacy env form:
 
@@ -134,7 +134,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
 npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
 
-# Same suite — filesystem profile (includes #214 attribute-projection assertion)
+# Same suite — filesystem profile (includes attribute-projection assertion)
 npm run testByFile -w miroir-standalone-app -- \
   --profile emulatedServer-filesystem PersistenceStoreController.integ
 
@@ -148,7 +148,7 @@ Full catalogue: [reference/testing.md](../reference/testing.md#running-app-stack
 
 ### JzodElementEditor component tests
 
-React Testing Library suite for the Jzod schema editor — prerequisite baseline before Feature #197 Phase B transformer UI work:
+React Testing Library suite for the Jzod schema editor — prerequisite baseline before transformer UI work in the Miroir Tests report:
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
@@ -166,7 +166,7 @@ No Postgres required (in-memory `LocalCache`). See [reference/testing.md § Jzod
 
 ### MiroirTestDisplay UI integration launch (B6-d1)
 
-RTL proof for Feature #197 — **Run Integration Tests** from the Miroir Tests report (`MiroirTestDisplay` → inspector). Single leaf: Return Book on `runner.library`.
+RTL proof for **Run Integration Tests** from the Miroir Tests report (`MiroirTestDisplay` → inspector). Single leaf: Return Book on `runner.library`.
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
@@ -253,7 +253,7 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 5. Run `tests/4_services/miroirTest.schema.unit.test.ts` to validate JSON shape.
 6. Run the new suite with `testMiroir`.
 
-For migrations from legacy `UnitTest` / `TransformerTest`, see the Feature 196 plan.
+For migrations from legacy `UnitTest` / `TransformerTest`, see `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`.
 
 Do **not** modify `UnitTestTools.ts` or `TestTools.ts` for new features — extend `MiroirTestTools.ts` only.
 
@@ -288,5 +288,5 @@ Activity tracking results are printed via `displayMiroirTestResults` after each 
 
 - **[Testing Reference](../reference/testing.md)** — full env vars, all backends, programmatic API
 - [Developer testing guide](../guides/developer/testing.md) — concepts and architecture
-- Feature #196 plan: `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`
-- Feature #197 plan: `code-helpers/features/197-FEATURE-run-integration-tests-in-the-UI/plan.md`
+- MiroirTest migration plan: `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`
+- UI integration launch plan: `code-helpers/features/197-FEATURE-run-integration-tests-in-the-UI/plan.md`

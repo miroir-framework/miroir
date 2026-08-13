@@ -6,6 +6,7 @@
   "name": "SelfApplicationVersion",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
+  "scope": "versioning",
   "description": "A Version of the Self SelfApplication",
   "defaultInstanceDetailsReportUuid": "17e78252-2540-4003-9305-d85c0c02d7ba",
   "icon": "Interests",

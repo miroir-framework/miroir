@@ -115,7 +115,30 @@ export function miroirFileSystemStoreSectionStartup(
       }
     }
   );
+  configurationService.registerStoreSectionFactory(
+    "filesystem",
+    "modelVersion",
+    async (
+      section: ApplicationSection,
+      config: StoreSectionConfiguration,
+      filesystemDeploymentRootDirectory: string,
+    ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
+      if (config.emulatedServerType == "filesystem") {
+        log.info(
+          "called registerStoreSectionFactory function for filesystem modelVersion store with filesystemDeploymentRootDirectory",
+          filesystemDeploymentRootDirectory,
+        );
+        const filesystemStoreName: string = config.directory;
+        return Promise.resolve(
+          new FileSystemDataStoreSection(
+            "modelVersion",
+            filesystemStoreName,
+            filesystemDeploymentRootDirectory,
+            config.directory,
+          ),
+        );
+      }
+      return Promise.resolve(new ErrorDataStore());
+    },
+  );
 }
-
-// miroirAppStartup();
-// miroirCoreStartup();

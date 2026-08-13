@@ -29,19 +29,19 @@ const LIBRARY_DEPLOYMENT = "00000000-0000-4000-8000-0000000000aa";
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../../../");
 
 describe("222 Phase 2 — LocalCache / selector EV section indexing", () => {
-  it("Miroir EV ReduxDeploymentsState index uses data section", () => {
+  it("#232 Miroir EV section is modelVersion (was data in #222)", () => {
     const section = getApplicationSection(MIROIR_APP_UUID, EV_UUID);
-    expect(section).toBe("data");
+    expect(section).toBe("modelVersion");
     expect(getReduxDeploymentsStateIndex(MIROIR_DEPLOYMENT, section, EV_UUID)).toBe(
-      `${MIROIR_DEPLOYMENT}_data_${EV_UUID}`,
+      `${MIROIR_DEPLOYMENT}_modelVersion_${EV_UUID}`,
     );
   });
 
-  it("Library EV ReduxDeploymentsState index uses model section", () => {
+  it("#232 Library EV section is modelVersion (was model in #222)", () => {
     const section = getApplicationSection(LIBRARY_APP_UUID, EV_UUID);
-    expect(section).toBe("model");
+    expect(section).toBe("modelVersion");
     expect(getReduxDeploymentsStateIndex(LIBRARY_DEPLOYMENT, section, EV_UUID)).toBe(
-      `${LIBRARY_DEPLOYMENT}_model_${EV_UUID}`,
+      `${LIBRARY_DEPLOYMENT}_modelVersion_${EV_UUID}`,
     );
   });
 
@@ -53,6 +53,7 @@ describe("222 Phase 2 — LocalCache / selector EV section indexing", () => {
     );
     expect(reports.model.entityVersions.length).toBeGreaterThan(0);
     expect(reports.data.entityVersions.length).toBeGreaterThan(0);
+    expect(reports.modelVersion?.entityVersions.length).toBeGreaterThan(0);
   });
 
   it("LocalCacheSliceModelSelector (redux) uses getApplicationSection for EntityVersion", () => {

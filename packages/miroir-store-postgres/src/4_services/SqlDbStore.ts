@@ -66,6 +66,7 @@ export class SqlDbStore implements PersistenceStoreAbstractInterface {
   public async open(): Promise<Action2VoidReturnType> {
     try {
       await this.sequelize.authenticate();
+      await this.sequelize.query(`CREATE SCHEMA IF NOT EXISTS "${this.schema}"`);
       log.info(
         this.logHeader,
         "data Connection to postgres data schema",

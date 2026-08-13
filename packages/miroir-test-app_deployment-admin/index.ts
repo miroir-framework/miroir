@@ -7,29 +7,6 @@ export { default as entityImport } from "./assets/admin_model/16dbfe28-e1d7-4f20
 export { default as entityMiroirUser } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d20d09e5-0685-4fc7-b9bd-fcfa3845127a.json" with { type: "json" };
 export { default as entityMiroirRight } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a6136fc7-949b-4d64-9f13-dd3afce1ab3c.json" with { type: "json" };
 
-// Admin Model - Entity Versions  
-export { default as entityVersionAdminApplication } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" with { type: "json" };
-/** @deprecated Use entityVersionAdminApplication */
-export { default as entityDefinitionAdminApplication } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/3fb6203e-f639-4b2a-afe1-e1fb45d6b2ea.json" with { type: "json" };
-export { default as entityVersionDeployment } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" with { type: "json" };
-/** @deprecated Use entityVersionDeployment */
-export { default as entityDefinitionDeployment } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/c50240e7-c451-46c2-b60a-07b3172a5ef9.json" with { type: "json" };
-export { default as entityVersionViewParams } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json" with { type: "json" };
-/** @deprecated Use entityVersionViewParams */
-export { default as entityDefinitionViewParams } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/4cb43523-350f-49bd-813e-ab7d5cef78b2.json" with { type: "json" };
-export { default as entityVersionStoreBasedConfiguration } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/53edf3b4-c8ff-4de5-9f28-2d1ecda2a02a.json" with { type: "json" };
-/** @deprecated Use entityVersionStoreBasedConfiguration */
-export { default as entityDefinitionStoreBasedConfiguration } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/53edf3b4-c8ff-4de5-9f28-2d1ecda2a02a.json" with { type: "json" };
-export { default as entityVersionImport } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9f68d5aa-8def-421b-a9bc-52ed22a63e7e.json" with { type: "json" };
-/** @deprecated Use entityVersionImport */
-export { default as entityDefinitionImport } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/9f68d5aa-8def-421b-a9bc-52ed22a63e7e.json" with { type: "json" };
-export { default as entityVersionMiroirUser } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/92b319e7-f8d9-439d-899b-138c64ed81f2.json" with { type: "json" };
-/** @deprecated Use entityVersionMiroirUser */
-export { default as entityDefinitionMiroirUser } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/92b319e7-f8d9-439d-899b-138c64ed81f2.json" with { type: "json" };
-export { default as entityVersionMiroirRight } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/ce16e291-cfff-4653-a074-9517fb4f2c34.json" with { type: "json" };
-/** @deprecated Use entityVersionMiroirRight */
-export { default as entityDefinitionMiroirRight } from "./assets/admin_model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/ce16e291-cfff-4653-a074-9517fb4f2c34.json" with { type: "json" };
-
 // Admin Model - Reports
 export { default as reportViewParamsDetails } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/57b3d7ef-8c12-4891-893e-35bab00b2037.json" with { type: "json" };
 export { default as reportApplicationList } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/08acd6c2-710a-4b17-a92a-60b81c936cfc.json" with { type: "json" };
@@ -49,7 +26,21 @@ export { default as menuDefaultAdmin } from "./assets/admin_model/dde4c883-ae6d-
 
 // Admin Model - Application metadata
 export { default as adminSelfApplication } from "./assets/admin_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json" with { type: "json" };
-export { default as selfApplicationVersionAdminInitialVersion } from "./assets/admin_model/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/b843bd4b-83bd-4241-95c6-b16bbdc75abd.json" with { type: "json" };
+/** Synthetic init-only ApplicationVersion for unversioned Admin (not shipped as a model asset). */
+export const adminInitApplicationVersion = {
+  uuid: "b843bd4b-83bd-4241-95c6-b16bbdc75abd",
+  parentName: "ApplicationVersion",
+  parentUuid: "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+  name: "Initial",
+  previousVersion: "",
+  modelStructureMigration: [],
+  modelCUDMigration: [],
+  selfApplication: "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  branch: "9034141b-0d0d-4beb-82af-dfc02be15c2d",
+  description: "Synthetic init-only ApplicationVersion for unversioned Admin",
+};
+/** @deprecated Unversioned Admin — use adminInitApplicationVersion. */
+export { adminInitApplicationVersion as selfApplicationVersionAdminInitialVersion };
 export { default as selfApplicationModelBranchAdminMasterBranch } from "./assets/admin_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/9034141b-0d0d-4beb-82af-dfc02be15c2d.json" with { type: "json" };
 
 // ################################################################################################

@@ -6,21 +6,37 @@ import {
   entityMenu,
   entityMiroirTest,
   entityQueryVersion,
+  entityHistoricalQueryVersion,
+  entityHistoricalReportVersion,
+  entityHistoricalMenuVersion,
+  entityHistoricalEndpointVersion,
+  entityHistoricalRunnerVersion,
+  entityHistoricalThemeVersion,
+  entityHistoricalTransformerDefinitionVersion,
   entityReport,
   entityRunner,
   entitySelfApplication,
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
+  entityApplicationVersionCrossEntityVersion,
+  entityApplicationVersionCrossQueryVersion,
+  entityApplicationVersionCrossReportVersion,
+  entityApplicationVersionCrossMenuVersion,
+  entityApplicationVersionCrossEndpointVersion,
+  entityApplicationVersionCrossRunnerVersion,
+  entityApplicationVersionCrossThemeVersion,
+  entityApplicationVersionCrossTransformerDefinitionVersion,
   entityTheme,
+  entityTransformerDefinition,
   reportEntityDefinitionDetails,
   reportEntityDefinitionList,
   reportEntityDetails,
   reportEntityList,
   reportApplicationVersionList,
+  reportApplicationVersionDetails,
   selfApplicationMiroir
 } from "miroir-test-app_deployment-miroir";
 
-// import { entityDefinitionEndpoint, reportEndpointVersionList } from "..";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type { DeploymentUuidToReportsEntities } from "../0_interfaces/1_core/Model";
@@ -43,6 +59,7 @@ import {
   type Runner,
   type SelfApplication,
   type StoredMiroirTheme,
+  type TransformerDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { Action2Error, Domain2ElementFailed } from "../0_interfaces/2_domain/DomainElement";
@@ -111,32 +128,84 @@ export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
 };
 
 // ################################################################################################
-const metaModelReports = [
+const metaModelModelReports = [
   reportEntityList.uuid,
-  reportEntityDefinitionList.uuid,
   reportEntityDetails.uuid,
+];
+
+const metaModelVersionReports = [
+  reportEntityDefinitionList.uuid,
   reportEntityDefinitionDetails.uuid,
   reportApplicationVersionList.uuid,
+  reportApplicationVersionDetails.uuid,
 ];
+
+// ################################################################################################
+/**
+ * #232 — entity UUIDs whose instances always belong to `modelVersion`.
+ * Checked first in getApplicationSection; independent of application UUID.
+ */
+export const versionHistoryEntityUuids: ReadonlySet<string> = new Set([
+  entityEntityVersion.uuid!,
+  entitySelfApplicationVersion.uuid!,
+  entityApplicationVersionCrossEntityVersion.uuid!,
+  entityHistoricalQueryVersion.uuid!,
+  entityApplicationVersionCrossQueryVersion.uuid!,
+  entityHistoricalReportVersion.uuid!,
+  entityApplicationVersionCrossReportVersion.uuid!,
+  entityHistoricalMenuVersion.uuid!,
+  entityApplicationVersionCrossMenuVersion.uuid!,
+  entityHistoricalEndpointVersion.uuid!,
+  entityApplicationVersionCrossEndpointVersion.uuid!,
+  entityHistoricalRunnerVersion.uuid!,
+  entityApplicationVersionCrossRunnerVersion.uuid!,
+  entityHistoricalThemeVersion.uuid!,
+  entityApplicationVersionCrossThemeVersion.uuid!,
+  entityHistoricalTransformerDefinitionVersion.uuid!,
+  entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
+]);
+
+const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
+  [entityEntityVersion.uuid!, entityEntityVersion as Entity],
+  [entitySelfApplicationVersion.uuid!, entitySelfApplicationVersion as Entity],
+  [entityApplicationVersionCrossEntityVersion.uuid!, entityApplicationVersionCrossEntityVersion as Entity],
+  [entityHistoricalQueryVersion.uuid!, entityHistoricalQueryVersion as Entity],
+  [entityApplicationVersionCrossQueryVersion.uuid!, entityApplicationVersionCrossQueryVersion as Entity],
+  [entityHistoricalReportVersion.uuid!, entityHistoricalReportVersion as Entity],
+  [entityApplicationVersionCrossReportVersion.uuid!, entityApplicationVersionCrossReportVersion as Entity],
+  [entityHistoricalMenuVersion.uuid!, entityHistoricalMenuVersion as Entity],
+  [entityApplicationVersionCrossMenuVersion.uuid!, entityApplicationVersionCrossMenuVersion as Entity],
+  [entityHistoricalEndpointVersion.uuid!, entityHistoricalEndpointVersion as Entity],
+  [entityApplicationVersionCrossEndpointVersion.uuid!, entityApplicationVersionCrossEndpointVersion as Entity],
+  [entityHistoricalRunnerVersion.uuid!, entityHistoricalRunnerVersion as Entity],
+  [entityApplicationVersionCrossRunnerVersion.uuid!, entityApplicationVersionCrossRunnerVersion as Entity],
+  [entityHistoricalThemeVersion.uuid!, entityHistoricalThemeVersion as Entity],
+  [entityApplicationVersionCrossThemeVersion.uuid!, entityApplicationVersionCrossThemeVersion as Entity],
+  [entityHistoricalTransformerDefinitionVersion.uuid!, entityHistoricalTransformerDefinitionVersion as Entity],
+  [
+    entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
+    entityApplicationVersionCrossTransformerDefinitionVersion as Entity,
+  ],
+]);
+
+/** Bootstrap Entity row for a version-history parent entity (SQL modelVersion lazy table creation). */
+export function getVersionHistoryEntityDefinition(entityUuid: string): Entity | undefined {
+  return versionHistoryEntityDefinitions.get(entityUuid);
+}
 
 // ################################################################################################
 export function getApplicationSection(
   applicationUuid: Uuid,
   entityUuid: Uuid,
-): ApplicationSection{
+): ApplicationSection {
+  // #232: version-history entities always live in modelVersion regardless of application
+  if (versionHistoryEntityUuids.has(entityUuid)) return "modelVersion";
   if (applicationUuid == selfApplicationMiroir.uuid) {
-    return metaMetaModelEntityUuids.includes(entityUuid)?"model":"data";
+    return metaMetaModelEntityUuids.includes(entityUuid) ? "model" : "data";
   }
-  return metaModelEntityUuids.includes(entityUuid)?"model":"data";
+  return metaModelEntityUuids.includes(entityUuid) ? "model" : "data";
 }
 
-/**
- * #222 — section for writing EntityVersion instances (Miroir → data, Library → model).
- * Prefer this (or getApplicationSection) over hard-coded `"model"` for EV upserts.
- */
-export function getEntityVersionWriteSection(applicationUuid: Uuid): ApplicationSection {
-  return getApplicationSection(applicationUuid, entityEntityVersion.uuid);
-}
 // ################################################################################################
 /**
  * just filters the model / meta-model reports in the Miroir app for now
@@ -156,13 +225,27 @@ export function getReportsAndEntitiesForDeploymentUuid(
     return {
       model: {
         availableQueries: metaModel.storedQueries,
-        availableReports: metaModel.reports.filter((r:Report) => metaModelReports.includes(r.uuid)),
+        availableReports: metaModel.reports.filter((r: Report) =>
+          metaModelModelReports.includes(r.uuid),
+        ),
+        entities: metaModel.entities,
+        entityVersions: metaModel.entityVersions,
+      },
+      modelVersion: {
+        availableQueries: metaModel.storedQueries,
+        availableReports: metaModel.reports.filter((r: Report) =>
+          metaModelVersionReports.includes(r.uuid),
+        ),
         entities: metaModel.entities,
         entityVersions: metaModel.entityVersions,
       },
       data: {
         availableQueries: metaModel.storedQueries,
-        availableReports: metaModel.reports.filter((r) => !metaModelReports.includes(r.uuid)),
+        availableReports: metaModel.reports.filter(
+          (r) =>
+            !metaModelModelReports.includes(r.uuid) &&
+            !metaModelVersionReports.includes(r.uuid),
+        ),
         entities: metaModel.entities,
         entityVersions: metaModel.entityVersions,
       },
@@ -191,6 +274,20 @@ export const emptyApplicationModel: MetaModel = {
   applications: [],
   applicationVersions: [],
   applicationVersionCrossEntityVersion: [],
+  applicationVersionCrossQueryVersion: [],
+  queryVersions: [],
+  applicationVersionCrossReportVersion: [],
+  reportVersions: [],
+  applicationVersionCrossMenuVersion: [],
+  menuVersions: [],
+  applicationVersionCrossEndpointVersion: [],
+  endpointVersions: [],
+  applicationVersionCrossRunnerVersion: [],
+  runnerVersions: [],
+  applicationVersionCrossThemeVersion: [],
+  themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
   endpoints: [],
   entities: [],
   entityVersions: [],
@@ -201,6 +298,7 @@ export const emptyApplicationModel: MetaModel = {
   storedQueries: [],
   tests: [],
   themes: [],
+  transformerDefinitions: [],
 }
 
 // ################################################################################################
@@ -228,6 +326,7 @@ const modelIcons: Record<string, string> = {
   // 
   // ApplicationModelBranch: "application-model-branch",
   EndpointVersion: "endpoint-version",
+  RunnerVersion: "runner-version",
   JzodSchema: "jzod-schema",
   SelfApplication: "self-application",
   SelfApplicationVersion: "self-application-version",
@@ -295,6 +394,12 @@ export async function extractApplicationModel(
     const queries = await extractEntityInstances(storeController, sectionFor(entityQueryVersion.uuid), entityQueryVersion.uuid, "queries");
     const runners = await extractEntityInstances(storeController, sectionFor(entityRunner.uuid), entityRunner.uuid, "runners");
     const themes = await extractEntityInstances(storeController, sectionFor(entityTheme.uuid), entityTheme.uuid, "themes");
+    const transformerDefinitions = await extractEntityInstances(
+      storeController,
+      sectionFor(entityTransformerDefinition.uuid),
+      entityTransformerDefinition.uuid,
+      "transformer definitions",
+    );
     const tests = await extractEntityInstances(storeController, sectionFor(entityMiroirTest.uuid), entityMiroirTest.uuid, "tests");
     // 
     const applications = await extractEntityInstances(storeController, sectionFor(entitySelfApplication.uuid), entitySelfApplication.uuid, "applications");
@@ -314,10 +419,25 @@ export async function extractApplicationModel(
       storedQueries: queries as Query[],
       jzodSchemas: jzodSchemas as MlSchema[],
       applicationVersions: applicationVersions as ApplicationVersion[],
-      applicationVersionCrossEntityVersion: [], // These would need to be read separately if needed
+      applicationVersionCrossEntityVersion: [],
+      applicationVersionCrossQueryVersion: [],
+      queryVersions: [], // These would need to be read separately if needed
+      applicationVersionCrossReportVersion: [],
+      reportVersions: [],
+      applicationVersionCrossMenuVersion: [],
+      menuVersions: [],
+      applicationVersionCrossEndpointVersion: [],
+      endpointVersions: [],
+      applicationVersionCrossRunnerVersion: [],
+      runnerVersions: [],
+      applicationVersionCrossThemeVersion: [],
+      themeVersions: [],
+      applicationVersionCrossTransformerDefinitionVersion: [],
+      transformerDefinitionVersions: [],
       runners: runners as Runner[], 
       tests: tests as MiroirTestDefinition[],
-      themes: themes as StoredMiroirTheme[], // Themes are now included in the model extraction
+      themes: themes as StoredMiroirTheme[],
+      transformerDefinitions: transformerDefinitions as TransformerDefinition[],
     };
 
     return libraryMetaModel;

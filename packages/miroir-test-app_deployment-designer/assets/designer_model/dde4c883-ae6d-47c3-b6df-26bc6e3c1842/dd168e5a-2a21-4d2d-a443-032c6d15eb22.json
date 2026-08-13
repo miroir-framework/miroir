@@ -60,14 +60,6 @@
           },
           {
             "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Designer Entity Definitions",
-            "section": "model",
-            "selfApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
-            "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
-            "icon": "category"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Designer Applications",
             "section": "data",
             "selfApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
