@@ -92,8 +92,11 @@ npm run build -w miroir-core
 # Build multiple stores in parallel
 npm run build -w miroir-localcache-redux -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-store-bundled
 
-# Type checking only (no build on miroir-standalone-app)
-npx tsc --noEmit --skipLibCheck
+# Type checking — per package (do not run from repo root)
+# Root tsconfig.json has no `include`, so repo-root tsc loads the entire monorepo and can exhaust memory.
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+# Repeat for other packages you touched, or run devBuild/build (which typecheck as part of compile).
 ```
 
 ### Testing Patterns
