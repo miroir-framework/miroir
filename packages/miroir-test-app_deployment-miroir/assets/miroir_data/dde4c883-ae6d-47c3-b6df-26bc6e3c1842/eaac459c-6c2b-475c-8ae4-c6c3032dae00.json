@@ -23,7 +23,7 @@
           {
             "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Miroir Entity Versions",
-            "section": "model",
+            "section": "modelVersion",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "f9aff35d-8636-4519-8361-c7648e0ddc68",
             "icon": "category"
@@ -31,7 +31,7 @@
           {
             "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Miroir Application Versions",
-            "section": "model",
+            "section": "modelVersion",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
             "reportUuid": "0810de28-fdab-4baf-8935-7e04a8f779a9",
             "icon": "web_asset"

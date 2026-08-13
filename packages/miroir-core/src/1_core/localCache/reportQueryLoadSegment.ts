@@ -12,6 +12,7 @@ import {
 } from "./localCacheSegment.js";
 import { getReduxDeploymentsStateIndex } from "../../2_domain/ReduxDeploymentsState.js";
 import type { ReportQueryLoadRequest } from "../../2_domain/ReportQueryLoadService.js";
+import type { ApplicationSection } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
 /** One persistence read target derived from a resolved report query. */
 export type ReportQueryLoadTarget = {
@@ -173,7 +174,7 @@ export type LocalCacheSegmentSlice = {
 
 export type LocalCacheSegmentHeaderLookup = (
   deploymentUuid: string,
-  applicationSection: "data" | "model",
+  applicationSection: ApplicationSection,
   entityUuid: string,
   kind: CacheSegmentKind
 ) => LocalCacheSegmentHeader | LocalCacheSegmentSlice | undefined;

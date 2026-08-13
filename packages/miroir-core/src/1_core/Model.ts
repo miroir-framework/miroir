@@ -128,10 +128,13 @@ export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
 };
 
 // ################################################################################################
-const metaModelReports = [
+const metaModelModelReports = [
   reportEntityList.uuid,
-  reportEntityDefinitionList.uuid,
   reportEntityDetails.uuid,
+];
+
+const metaModelVersionReports = [
+  reportEntityDefinitionList.uuid,
   reportEntityDefinitionDetails.uuid,
   reportApplicationVersionList.uuid,
 ];
@@ -221,13 +224,27 @@ export function getReportsAndEntitiesForDeploymentUuid(
     return {
       model: {
         availableQueries: metaModel.storedQueries,
-        availableReports: metaModel.reports.filter((r:Report) => metaModelReports.includes(r.uuid)),
+        availableReports: metaModel.reports.filter((r: Report) =>
+          metaModelModelReports.includes(r.uuid),
+        ),
+        entities: metaModel.entities,
+        entityVersions: metaModel.entityVersions,
+      },
+      modelVersion: {
+        availableQueries: metaModel.storedQueries,
+        availableReports: metaModel.reports.filter((r: Report) =>
+          metaModelVersionReports.includes(r.uuid),
+        ),
         entities: metaModel.entities,
         entityVersions: metaModel.entityVersions,
       },
       data: {
         availableQueries: metaModel.storedQueries,
-        availableReports: metaModel.reports.filter((r) => !metaModelReports.includes(r.uuid)),
+        availableReports: metaModel.reports.filter(
+          (r) =>
+            !metaModelModelReports.includes(r.uuid) &&
+            !metaModelVersionReports.includes(r.uuid),
+        ),
         entities: metaModel.entities,
         entityVersions: metaModel.entityVersions,
       },

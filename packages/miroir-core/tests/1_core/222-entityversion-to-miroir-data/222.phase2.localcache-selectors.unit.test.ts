@@ -53,6 +53,7 @@ describe("222 Phase 2 — LocalCache / selector EV section indexing", () => {
     );
     expect(reports.model.entityVersions.length).toBeGreaterThan(0);
     expect(reports.data.entityVersions.length).toBeGreaterThan(0);
+    expect(reports.modelVersion?.entityVersions.length).toBeGreaterThan(0);
   });
 
   it("LocalCacheSliceModelSelector (redux) uses getApplicationSection for EntityVersion", () => {

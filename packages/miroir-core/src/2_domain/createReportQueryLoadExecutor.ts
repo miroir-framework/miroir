@@ -12,6 +12,7 @@ import type {
   RestPersistenceAction,
   RunBoxedQueryAction,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { PersistenceStoreLocalOrRemoteInterface } from "../0_interfaces/4-services/PersistenceInterface.js";
 import {
   parentUuidsFromResolvedReportQuery,
@@ -83,7 +84,7 @@ function instanceFromPrimaryKeyQueryResult(
 
 function buildPrimaryKeyQueryAction(
   request: ReportQueryLoadRequest,
-  section: "data" | "model",
+  section: ApplicationSection,
   extractorKey: string,
   extractor: Extractor,
   projectionAttributes?: string[],
@@ -116,7 +117,7 @@ function buildPrimaryKeyQueryAction(
 
 function collectionFromReadResult(
   target: ReportQueryLoadTarget,
-  section: "data" | "model",
+  section: ApplicationSection,
   element: unknown,
   projectionAttributes?: string[],
 ): EntityInstanceCollection {
@@ -170,7 +171,7 @@ function collectionFromReadResult(
 export function createReportQueryLoadExecutor(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  options?: { applicationSection?: "data" | "model" },
+  options?: { applicationSection?: ApplicationSection },
 ): ReportQueryLoadExecutor {
   const withStore = domainController as DomainControllerWithRemoteStore;
   if (typeof withStore.getRemoteStore !== "function") {

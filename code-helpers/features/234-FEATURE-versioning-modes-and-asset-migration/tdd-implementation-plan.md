@@ -373,6 +373,8 @@ Document modes and four-folder asset layout; publish deployment inventory for fo
 - **`code-helpers/features/234-FEATURE-versioning-modes-and-asset-migration/deployment-inventory.md`** — per-package Version History location and follow-up table.
 - **`versioningModes.234.inventory.unit.test.ts`** — 5.2 lock: inventory file exists and lists all five deployment packages.
 - **Legacy `#222` tests** — paths retargeted from `miroir_data/` to `miroir_modelVersion/` for post–Slice 2 layout.
+- **`domain_controller_application_version_freeze` MiroirTest** — Version History query extractors use `modelVersion` section (aligns with #232 routing).
+- **Non-reg default tier:** 35/37 steps pass. Pre-existing failures: `appstack-DomainController.integ` (test file absent from manifest), `domain_controller_application_version_freeze` on SQL profile (filesystem profile green).
 
 ### 5.1 RED → GREEN — Documentation
 
@@ -451,4 +453,4 @@ npm run nonreg -- --tier default
 
 ## Bottom line
 
-#234 closes the gap between **#232 runtime routing** and **git deployment layout**: Version History instances move to **`miroir_modelVersion/`**, **`versioningMode`** makes internal vs external explicit, filesystem profiles **seed and read `modelVersion`**, and bundled Miroir stays a **versioning-free** demo slice.
+#234 closes the gap between **#232 runtime routing** and **git deployment layout**: Version History instances move to **`miroir_modelVersion/`**, **`versioningMode`** makes internal vs external explicit, filesystem profiles **seed and read `modelVersion`**, bundled Miroir stays a **versioning-free** demo slice, and docs plus deployment inventory capture follow-ups for admin/library/designer/postgres packages.

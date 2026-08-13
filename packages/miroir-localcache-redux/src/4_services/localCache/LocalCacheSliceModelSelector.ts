@@ -355,17 +355,15 @@ const selectApplicationVersionsFromReduxState = createSelector(
     applicationDeploymentMap: ApplicationDeploymentMap,
     params: MiroirQueryTemplate
   ) => {
+    const application =
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application ?? "undefined"
+        : params.application;
     return selectEntityInstancesFromReduxDeploymentsState(
       reduxState,
       applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application ?? "undefined"
-        : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
+      application,
+      getApplicationSection(application, entitySelfApplicationVersion.uuid),
       entitySelfApplicationVersion.uuid
     );
   }
