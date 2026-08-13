@@ -27,51 +27,79 @@ function loadTargetKey(target: ReportQueryLoadTarget): string {
   return `${target.parentUuid}:${target.instanceUuid ?? ""}:${target.extractorKey ?? ""}`;
 }
 
+function addAllInstancesLoadTarget(
+  targets: ReportQueryLoadTarget[],
+  seen: Set<string>,
+  parentUuid: string
+): void {
+  const target: ReportQueryLoadTarget = { parentUuid };
+  const key = loadTargetKey(target);
+  if (seen.has(key)) {
+    return;
+  }
+  seen.add(key);
+  targets.push(target);
+}
+
 /**
- * Collects load targets from extractors in a resolved report query.
- * Supports extractorInstancesByEntity (all instances) and extractorByPrimaryKey
- * (single instance — e.g. BlobDetails when cacheAllInstancesOnRefresh is false).
+ * Collects load targets from extractors and combiners in a resolved report query.
+ * Supports extractorInstancesByEntity (all instances), extractorByPrimaryKey
+ * (single instance — e.g. BlobDetails when cacheAllInstancesOnRefresh is false),
+ * and combinerOneToMany / combinerManyToMany (entity collections joined in-report).
  */
 export function reportQueryLoadTargetsFromResolvedReportQuery(
   resolvedQuery: ReportQueryLoadRequest["resolvedQuery"],
 ): ReportQueryLoadTarget[] {
-  const extractors = (resolvedQuery as { extractors?: Record<string, any> })
-    ?.extractors;
-  if (!extractors) {
-    return [];
-  }
   const targets: ReportQueryLoadTarget[] = [];
   const seen = new Set<string>();
-  for (const [extractorKey, extractor] of Object.entries(extractors)) {
-    if (!extractor || typeof extractor.parentUuid !== "string") {
-      continue;
-    }
-    if (extractor.extractorOrCombinerType === "extractorInstancesByEntity") {
-      const target: ReportQueryLoadTarget = { parentUuid: extractor.parentUuid };
-      const key = loadTargetKey(target);
-      if (!seen.has(key)) {
-        seen.add(key);
-        targets.push(target);
+
+  const extractors = (resolvedQuery as { extractors?: Record<string, any> })
+    ?.extractors;
+  if (extractors) {
+    for (const [extractorKey, extractor] of Object.entries(extractors)) {
+      if (!extractor || typeof extractor.parentUuid !== "string") {
+        continue;
       }
-      continue;
-    }
-    if (extractor.extractorOrCombinerType === "extractorByPrimaryKey") {
-      const instanceUuid =
-        typeof extractor.instanceUuid === "string"
-          ? extractor.instanceUuid
-          : undefined;
-      const target: ReportQueryLoadTarget = {
-        parentUuid: extractor.parentUuid,
-        extractorKey,
-        ...(instanceUuid ? { instanceUuid } : {}),
-      };
-      const key = loadTargetKey(target);
-      if (!seen.has(key)) {
-        seen.add(key);
-        targets.push(target);
+      if (extractor.extractorOrCombinerType === "extractorInstancesByEntity") {
+        addAllInstancesLoadTarget(targets, seen, extractor.parentUuid);
+        continue;
+      }
+      if (extractor.extractorOrCombinerType === "extractorByPrimaryKey") {
+        const instanceUuid =
+          typeof extractor.instanceUuid === "string"
+            ? extractor.instanceUuid
+            : undefined;
+        const target: ReportQueryLoadTarget = {
+          parentUuid: extractor.parentUuid,
+          extractorKey,
+          ...(instanceUuid ? { instanceUuid } : {}),
+        };
+        const key = loadTargetKey(target);
+        if (!seen.has(key)) {
+          seen.add(key);
+          targets.push(target);
+        }
       }
     }
   }
+
+  const combiners = (resolvedQuery as { combiners?: Record<string, any> })
+    ?.combiners;
+  if (combiners) {
+    for (const combiner of Object.values(combiners)) {
+      if (!combiner || typeof combiner.parentUuid !== "string") {
+        continue;
+      }
+      const combinerType = combiner.extractorOrCombinerType;
+      if (
+        combinerType === "combinerOneToMany" ||
+        combinerType === "combinerManyToMany"
+      ) {
+        addAllInstancesLoadTarget(targets, seen, combiner.parentUuid);
+      }
+    }
+  }
+
   return targets;
 }
 

@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   reportApplicationVersionList,
+  reportApplicationVersionDetails,
   reportEntityDefinitionList,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
@@ -27,6 +28,11 @@ const ENTITY_VERSION_LIST_REPORT = join(
 const MIROIR_DEPLOYMENT_ADMIN = join(
   REPO_ROOT,
   "packages/miroir-test-app_deployment-admin/assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json",
+);
+
+const APPLICATION_VERSION_DETAILS_REPORT = join(
+  REPO_ROOT,
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/17e78252-2540-4003-9305-d85c0c02d7ba.json",
 );
 
 describe("234 — Miroir Entity Versions report routing", () => {
@@ -61,6 +67,13 @@ describe("234 — Miroir Entity Versions report routing", () => {
     );
   });
 
+  it("ApplicationVersionDetails report extractor uses modelVersion applicationSection", () => {
+    const report = JSON.parse(readFileSync(APPLICATION_VERSION_DETAILS_REPORT, "utf8"));
+    expect(report.definition.extractorTemplates.applicationVersion.applicationSection).toBe(
+      "modelVersion",
+    );
+  });
+
   it("getReportsAndEntitiesForDeploymentUuid exposes Version History reports under modelVersion", () => {
     const mapping = getReportsAndEntitiesForDeploymentUuid(
       selfApplicationMiroir.uuid!,
@@ -71,8 +84,12 @@ describe("234 — Miroir Entity Versions report routing", () => {
       mapping.modelVersion?.availableReports.map((r) => r.uuid) ?? [];
     expect(modelVersionReportUuids).toContain(reportEntityDefinitionList.uuid);
     expect(modelVersionReportUuids).toContain(reportApplicationVersionList.uuid);
+    expect(modelVersionReportUuids).toContain(reportApplicationVersionDetails.uuid);
     expect(mapping.model?.availableReports.map((r) => r.uuid)).not.toContain(
       reportEntityDefinitionList.uuid,
+    );
+    expect(mapping.model?.availableReports.map((r) => r.uuid)).not.toContain(
+      reportApplicationVersionDetails.uuid,
     );
   });
 });

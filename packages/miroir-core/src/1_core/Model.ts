@@ -33,6 +33,7 @@ import {
   reportEntityDetails,
   reportEntityList,
   reportApplicationVersionList,
+  reportApplicationVersionDetails,
   selfApplicationMiroir
 } from "miroir-test-app_deployment-miroir";
 
@@ -137,6 +138,7 @@ const metaModelVersionReports = [
   reportEntityDefinitionList.uuid,
   reportEntityDefinitionDetails.uuid,
   reportApplicationVersionList.uuid,
+  reportApplicationVersionDetails.uuid,
 ];
 
 // ################################################################################################
