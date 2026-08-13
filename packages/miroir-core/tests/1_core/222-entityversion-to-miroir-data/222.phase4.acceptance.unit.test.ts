@@ -24,6 +24,11 @@ import type { Entity } from "../../../src/0_interfaces/1_core/preprocessor-gener
 import { MIROIR_ENTITY_VERSION_INSTANCE_UUIDS_SLICE0 } from "./222.slice0-inventory.js";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
+const EV_MODEL_VERSION_DIR = join(
+  REPO_ROOT,
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
+  "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+);
 const EV_DATA_DIR = join(
   REPO_ROOT,
   "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
@@ -52,15 +57,18 @@ describe("222 Phase 4 — acceptance (A–D)", () => {
     expect((entityEntityVersion as Entity).conceptLevel).toBe("Model");
   });
 
-  it("A: Miroir EV instances only under miroir_data; model dir empty/absent", () => {
-    expect(existsSync(EV_DATA_DIR)).toBe(true);
-    const onDisk = readdirSync(EV_DATA_DIR)
+  it("A: Miroir EV instances under miroir_modelVersion; not under model or legacy data path", () => {
+    expect(existsSync(EV_MODEL_VERSION_DIR)).toBe(true);
+    const onDisk = readdirSync(EV_MODEL_VERSION_DIR)
       .filter((n) => n.endsWith(".json"))
       .map((n) => n.replace(/\.json$/, ""))
       .sort();
     expect(onDisk).toEqual([...MIROIR_ENTITY_VERSION_INSTANCE_UUIDS_SLICE0]);
     if (existsSync(EV_MODEL_DIR)) {
       expect(readdirSync(EV_MODEL_DIR).filter((n) => n.endsWith(".json"))).toEqual([]);
+    }
+    if (existsSync(EV_DATA_DIR)) {
+      expect(readdirSync(EV_DATA_DIR).filter((n) => n.endsWith(".json"))).toEqual([]);
     }
   });
 
@@ -81,9 +89,9 @@ describe("222 Phase 4 — acceptance (A–D)", () => {
     expect(getApplicationSection(MIROIR, entityEntity.uuid as string)).toBe("model");
   });
 
-  it("B: Slice 0 EV UUID set is a subset of on-disk Miroir data EV instances", () => {
+  it("B: Slice 0 EV UUID set is a subset of on-disk Miroir modelVersion EV instances", () => {
     const onDisk = new Set(
-      readdirSync(EV_DATA_DIR)
+      readdirSync(EV_MODEL_VERSION_DIR)
         .filter((n) => n.endsWith(".json"))
         .map((n) => n.replace(/\.json$/, "")),
     );
@@ -101,12 +109,15 @@ describe("222 Phase 4 — acceptance (A–D)", () => {
     expect((entityEntity as Entity).mlSchema).toBeDefined();
   });
 
-  it("D: deployment index has no miroir_model/54b9c72f EV instance imports", () => {
+  it("D: deployment index imports EV instances from miroir_modelVersion/, not miroir_data/", () => {
     const src = readFileSync(DEPLOYMENT_INDEX, "utf8");
     expect(src).not.toMatch(
       /from\s+"\.\/assets\/miroir_model\/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd\//,
     );
     expect(src).toMatch(
+      /from\s+"\.\/assets\/miroir_modelVersion\/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd\//,
+    );
+    expect(src).not.toMatch(
       /from\s+"\.\/assets\/miroir_data\/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd\//,
     );
   });

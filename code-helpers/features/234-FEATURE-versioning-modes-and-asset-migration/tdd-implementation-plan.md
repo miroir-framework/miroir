@@ -360,11 +360,19 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-sandbox/tsconfig.json
 
 ## Slice 5 — Docs, inventory, non-regression
 
-**Status: Planned**
+**Status: DONE**
 
 ### Goal
 
 Document modes and four-folder asset layout; publish deployment inventory for follow-ups; lock repo-wide non-regression.
+
+### Realized
+
+- **`docs/getting-started/bundles-and-versioning.md`** — bundled Miroir omits Version History; git `*_modelVersion/` asset folder reference.
+- **`docs/reference/data-architecture-deployments.md`** — versioning mode matrix; deployment package asset folders; updated bundled classification and Miroir overview.
+- **`code-helpers/features/234-FEATURE-versioning-modes-and-asset-migration/deployment-inventory.md`** — per-package Version History location and follow-up table.
+- **`versioningModes.234.inventory.unit.test.ts`** — 5.2 lock: inventory file exists and lists all five deployment packages.
+- **Legacy `#222` tests** — paths retargeted from `miroir_data/` to `miroir_modelVersion/` for post–Slice 2 layout.
 
 ### 5.1 RED → GREEN — Documentation
 

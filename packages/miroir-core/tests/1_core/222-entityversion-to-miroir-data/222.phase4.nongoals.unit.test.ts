@@ -19,9 +19,9 @@ import type { Entity } from "../../../src/0_interfaces/1_core/preprocessor-gener
 import { MIROIR_ENTITY_VERSION_INSTANCE_UUIDS_SLICE0 } from "./222.slice0-inventory.js";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../../..");
-const EV_DATA_DIR = join(
+const EV_MODEL_VERSION_DIR = join(
   REPO_ROOT,
-  "packages/miroir-test-app_deployment-miroir/assets/miroir_data",
+  "packages/miroir-test-app_deployment-miroir/assets/miroir_modelVersion",
   "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
 );
 const FREEZE_SRC = join(
@@ -30,8 +30,8 @@ const FREEZE_SRC = join(
 );
 
 describe("222 Phase 4 — non-goals (relocate ≠ purge; no freeze required)", () => {
-  it("redundant live EntityVersion rows still present (count ≥ Slice 0)", () => {
-    const count = readdirSync(EV_DATA_DIR).filter((n) => n.endsWith(".json")).length;
+  it("redundant live EntityVersion rows still present under modelVersion (count ≥ Slice 0)", () => {
+    const count = readdirSync(EV_MODEL_VERSION_DIR).filter((n) => n.endsWith(".json")).length;
     expect(count).toBeGreaterThanOrEqual(MIROIR_ENTITY_VERSION_INSTANCE_UUIDS_SLICE0.length);
     expect(count).toBe(MIROIR_ENTITY_VERSION_INSTANCE_UUIDS_SLICE0.length);
   });

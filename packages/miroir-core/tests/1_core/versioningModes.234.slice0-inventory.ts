@@ -27,3 +27,14 @@ export const MIROIR_MODEL_VERSION_ASSETS_DIR =
 /** Relative to `filesystemDeploymentRootDirectory` (monorepo `packages/`). */
 export const MIROIR_MODEL_VERSION_PACKAGES_RELATIVE =
   "miroir-test-app_deployment-miroir/assets/miroir_modelVersion";
+
+export const DEPLOYMENT_INVENTORY_MD =
+  "code-helpers/features/234-FEATURE-versioning-modes-and-asset-migration/deployment-inventory.md";
+
+export const DEPLOYMENT_PACKAGE_NAMES = [
+  "miroir-test-app_deployment-admin",
+  "miroir-test-app_deployment-designer",
+  "miroir-test-app_deployment-library",
+  "miroir-test-app_deployment-miroir",
+  "miroir-test-app_deployment-postgres",
+] as const;

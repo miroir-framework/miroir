@@ -2,12 +2,14 @@
  * #234 Slice 0.1 / Slice 2 — deployment Version History inventory (post-relocation for Miroir).
  */
 import { describe, expect, it } from "vitest";
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { versionHistoryEntityUuids } from "../../src/1_core/Model.js";
 import {
+  DEPLOYMENT_INVENTORY_MD,
   DEPLOYMENT_PACKAGE_GLOB,
+  DEPLOYMENT_PACKAGE_NAMES,
   MIROIR_VERSION_HISTORY_PARENTS_SLICE0,
   REPO_ROOT,
 } from "./versioningModes.234.slice0-inventory.js";
@@ -111,5 +113,14 @@ describe("234 Slice 0.1 — deployment Version History inventory", () => {
       "miroir-test-app_deployment-admin:admin_model:54b9c72f-d4f3-4db9-9e0e-0dc840b530bd": 8,
       "miroir-test-app_deployment-library:library_model:54b9c72f-d4f3-4db9-9e0e-0dc840b530bd": 6,
     });
+  });
+
+  it("5.2 — deployment-inventory.md exists and lists all five deployment packages", () => {
+    const inventoryPath = join(REPO_ROOT, DEPLOYMENT_INVENTORY_MD);
+    expect(existsSync(inventoryPath)).toBe(true);
+    const content = readFileSync(inventoryPath, "utf8");
+    for (const packageName of DEPLOYMENT_PACKAGE_NAMES) {
+      expect(content, packageName).toContain(packageName);
+    }
   });
 });

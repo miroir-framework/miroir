@@ -78,5 +78,6 @@ This will enable differentiated "development" and "production" environment, wher
 - Enables in-app rollback, branching, and audit without any external VCS
 - Suited for end-user applications where the model evolves at runtime (no developer Git workflow)
 - Heavier storage footprint; periodic pruning of old snapshots recommended for long-lived deployments
-- **Bundled (sandbox) deployments cannot persist `modelVersion` history** — use filesystem, IndexedDB, MongoDB, or PostgreSQL for writable version history
+- **Bundled (sandbox) deployments cannot persist `modelVersion` history** — the bundled Miroir profile omits the `modelVersion` store section entirely and excludes Version History instances from bundled `model`/`data`. Use filesystem, IndexedDB, MongoDB, or PostgreSQL for writable version history.
+- **Git deployment assets** for `versioned-internal` applications mirror the four-folder layout: live model under `*_model/`, domain data under `*_data/`, and Version History under `*_modelVersion/` (see [Data Architecture: Deployments](../reference/data-architecture-deployments.md#deployment-package-asset-folders)).
 
