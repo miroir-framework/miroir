@@ -8,7 +8,7 @@ Implement the decisions in
 - introduce explicit **`versioningMode`** (`unversioned` | `versioned-internal` | `versioned-external`) on Application / SelfApplication metadata;
 - **relocate** version-history instance JSON for the **Miroir self-application deployment package** from `assets/miroir_data/` into **`assets/miroir_modelVersion/`**, aligned with runtime `modelVersion` section routing (#232);
 - align **bundled** Miroir profile: **no `modelVersion` section** — versioning features unavailable in sandbox/demo;
-- inventory other deployment packages for follow-up (no asset migration in this issue except Miroir).
+- inventory other deployment packages; classify **admin, library, designer, postgres as `unversioned`** (Slice 6) with menu/metadata alignment — no `*_modelVersion/` relocation for those packages.
 
 Completed behavior:
 
@@ -17,7 +17,7 @@ Completed behavior:
 - **Bundled Miroir**: model + data only; Version History not imported; freeze/history actions unavailable or gated.
 - **No dual-read fallback** from legacy `miroir_data/` Version History paths after migration.
 
-This plan does **not** implement GitProxy / versioned-external runtime tooling, admin/library asset migration, or automatic migration of user-local stores that still hold Version History under old paths.
+This plan does **not** implement GitProxy / versioned-external runtime tooling, or automatic migration of user-local stores that still hold Version History under old paths. Relocating VH assets for satellite apps to `*_modelVersion/` is deferred unless those apps are reclassified away from `unversioned`.
 
 Related:
 
@@ -36,8 +36,9 @@ Related:
 | 1 | `versioningMode` contract | **DONE** | Jzod + `resolveVersioningMode`; Miroir row `versioned-internal` |
 | 2 | Relocate Miroir Version History assets | **DONE** | `miroir_modelVersion/` populated; `miroir_data/` Version History-free; exports + modelValidation |
 | 3 | Filesystem asset seed → `modelVersion` store | **DONE** | Emulated-server profile reads seeded Version History from `modelVersion`, not `data` |
-| 4 | Bundled Miroir alignment | Planned | No modelVersion in bundled config; `#222` tests retired |
-| 5 | Docs, inventory, non-regression | Planned | General docs + package inventory note |
+| 4 | Bundled Miroir alignment | **DONE** | No modelVersion in bundled config; `#222` layout tests retired |
+| 5 | Docs, inventory, non-regression | **DONE** | General docs + deployment inventory |
+| 6 | Unversioned satellite applications | **DONE** | Admin, library, designer, postgres: `versioningMode: unversioned`; menus; library bundled meta-model |
 
 ---
 
@@ -52,7 +53,7 @@ Related:
 | Bundled Miroir | **No `modelVersion` section**; versioning features disabled |
 | Legacy `versioningEnabled` | Keep during transition; derive or mirror from `versioningMode` in freeze gate |
 | Version History parent UUID set | `versionHistoryEntityUuids` in `Model.ts` (single source for asset move + tests) |
-| Other deployment packages | Inventory only in Slice 5; no relocation in #234 |
+| Other deployment packages | **Unversioned** (admin, library, designer, postgres) — Slice 6; Miroir-only `versioned-internal` + `miroir_modelVersion/` |
 
 ### Miroir Version History folders relocated (Slice 2)
 
@@ -429,9 +430,42 @@ npm run nonreg -- --tier default
 
 ---
 
+## Slice 6 — Unversioned satellite applications
+
+**Status: DONE**
+
+### Goal
+
+Classify **admin, library, designer, postgres** as explicitly **`unversioned`** so they do not expose in-app application version freeze or version-history navigation. Miroir remains the sole **`versioned-internal`** reference deployment.
+
+### Realized
+
+- **SelfApplication rows** — `versioningMode: "unversioned"` (removed legacy `versioningEnabled: true`) in each package's `a659d350…/` SelfApplication JSON.
+- **Menus** — removed version-history report links:
+  - Library: Application Versions, Entity Definitions
+  - Admin / Designer / Postgres: Entity Definitions
+- **Library bundled meta-model** — `defaultLibraryAppModel.applicationVersions: []`; removed seeded Application Version import from `Library.ts`.
+- **Tests** — `entityPresentModel.217.phase3` expects Miroir = `versioned-internal`, four satellites = `unversioned`; test fixtures for admin menu/SelfApplication aligned.
+
+### Out of scope for Slice 6
+
+- Deleting present-model EntityVersion schema JSON under `*_model/54b9c72f…/` (still required for dual Entity/EntityVersion modeling).
+- Relocating those rows to `*_modelVersion/` (only meaningful for `versioned-internal` apps).
+
+### Validation
+
+```bash
+npm run build -w miroir-test-app_deployment-library
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase3
+npm run testByFile -w miroir-core -- 234.
+```
+
+---
+
 ## Out of scope
 
-- Relocating Version History assets for admin, library, designer, postgres packages.
+- Relocating Version History **freeze** assets for admin, library, designer, postgres while they remain **`unversioned`** (present-model EV snapshots in `*_model/` stay).
+- Re-enabling versioning UI on satellite apps without a deliberate mode reclassification.
 - `versioned-external` GitProxy / MCP runtime.
 - Migrating user-local filesystem/SQL stores with Version History still under legacy `data`/`model` paths.
 - Branch/checkout/rollback UI, pruning, remote `modelVersion` sync.
@@ -453,4 +487,4 @@ npm run nonreg -- --tier default
 
 ## Bottom line
 
-#234 closes the gap between **#232 runtime routing** and **git deployment layout**: Version History instances move to **`miroir_modelVersion/`**, **`versioningMode`** makes internal vs external explicit, filesystem profiles **seed and read `modelVersion`**, bundled Miroir stays a **versioning-free** demo slice, and docs plus deployment inventory capture follow-ups for admin/library/designer/postgres packages.
+#234 closes the gap between **#232 runtime routing** and **git deployment layout**: Version History instances move to **`miroir_modelVersion/`** for Miroir, **`versioningMode`** makes internal vs external vs unversioned explicit, filesystem profiles **seed and read `modelVersion`**, bundled Miroir stays a **versioning-free** demo slice, and **admin / library / designer / postgres** are **`unversioned`** with consistent menus and metadata.

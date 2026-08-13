@@ -25,7 +25,7 @@ Related:
 | What “internal” does *not* mean | It does **not** mean “no Version History in the repo” or “Version History only appears after runtime freeze.” Git may version the `modelVersion` directory like any other assets path; Miroir versioning features read/write those rows as **`modelVersion` section** instances, not as generic git history |
 | First implementation slice | **Formal `versioningMode` + relocate Miroir Version History assets** (`miroir_data/` → `miroir_modelVersion/`); no long-lived fallback that reads Version History from legacy `data`/`model` paths |
 | Bundled Miroir profile | **No `modelVersion` section** in bundled config — version-related features are **unavailable** in bundled/sandbox mode (live model + data only) |
-| Other deployment packages | **Inventory + proposed mode** in this analysis; asset relocation deferred to follow-up slices |
+| Other deployment packages | **Miroir only** gets full `versioned-internal` asset relocation. **Admin, library, designer, postgres** classified **`unversioned`** in Slice 6 (metadata + menus; no `*_modelVersion/` migration) |
 
 **Rationale:** Runtime already routes Version History to `modelVersion`. Static assets must use the same section layout so filesystem seeding, store bootstrap, and git-tracked deployments agree with `getApplicationSection()`. The old `#222` layout (Version History under `miroir_data/`) is the bug, not the presence of Version History JSON in git.
 
@@ -104,13 +104,15 @@ All move to **`miroir_modelVersion/`** with the same parentUuid folder structure
 
 ## Proposed inventory — all deployment packages
 
-| Package | Proposed mode | Version History asset home (when internal) | Slice |
+| Package | Mode | Version History asset home | Slice |
 |---|---|---|---|
-| `miroir-test-app_deployment-miroir` | **`versioned-internal`** | **`miroir_modelVersion/`** | **1 — relocate** |
-| `miroir-test-app_deployment-admin` | `versioned-external` (proposed) | no Miroir Version History section; git tracks current model | 2+ |
-| `miroir-test-app_deployment-library` | `versioned-external` (proposed) | same | 2+ |
-| `miroir-test-app_deployment-designer` | `versioned-external` (proposed) | same | 2+ |
-| `miroir-test-app_deployment-postgres` | fixture-specific | TBD | 2+ |
+| `miroir-test-app_deployment-miroir` | **`versioned-internal`** | **`miroir_modelVersion/`** | **1–5 — done** |
+| `miroir-test-app_deployment-admin` | **`unversioned`** | none (no freeze; present-model EV snapshots stay in `admin_model/`) | **6 — done** |
+| `miroir-test-app_deployment-library` | **`unversioned`** | none | **6 — done** |
+| `miroir-test-app_deployment-designer` | **`unversioned`** | none | **6 — done** |
+| `miroir-test-app_deployment-postgres` | **`unversioned`** | none | **6 — done** |
+
+Rationale for unversioned satellites: example / admin / fixture apps are git-shipped with a stable present model; in-app freeze and Application Version history UI are not needed. Miroir remains the sole **`versioned-internal`** reference deployment.
 
 ---
 
@@ -195,7 +197,8 @@ Keep Version History only in runtime stores; delete from git assets.
 
 ### Slice 4+ — Other packages
 
-- Per inventory; external apps likely remove Version History from `*_model/` rather than add `*_modelVersion/`.
+- **Slice 6 (closed in #234):** admin, library, designer, postgres → **`unversioned`** (`versioningMode` on SelfApplication; strip version-history menu links; library bundled meta-model drops seeded `applicationVersions`).
+- Future: reclassify a satellite app to `versioned-internal` only if product needs in-app freeze for that deployment package.
 
 ---
 
@@ -226,4 +229,45 @@ npm run nonreg -- --tier default
 
 ## Bottom line
 
-**`versioned-internal`** means Miroir owns application version history in the **`modelVersion` storage section** — including, for the Miroir deployment package, a git-tracked **`assets/miroir_modelVersion/`** directory. #234 **relocates** Version History instances out of the wrong `miroir_data/` (and similar) paths; it does **not** strip Version History from the repo. **Bundled Miroir** deliberately omits `modelVersion`, so versioning features are unavailable there. **Slice 1** scopes relocation to the Miroir package only.
+**`versioned-internal`** means Miroir owns application version history in the **`modelVersion` storage section** — including, for the Miroir deployment package, a git-tracked **`assets/miroir_modelVersion/`** directory. #234 **relocates** Version History instances out of the wrong `miroir_data/` paths; it does **not** strip Version History from the Miroir repo. **Bundled Miroir** deliberately omits `modelVersion`, so versioning features are unavailable there.
+
+**Satellite deployment packages** (admin, library, designer, postgres) are explicitly **`unversioned`**: no in-app freeze, no Application Versions / Entity Definitions menu entries; present-model EntityVersion JSON in `*_model/` remains for schema snapshots only.
+
+---
+
+## Closing analysis (issue complete)
+
+### Delivered
+
+| Area | Outcome |
+|---|---|
+| **Contract** | `versioningMode` enum on SelfApplication; `resolveVersioningMode` / `assertApplicationVersioningEnabled` in `versioningMode.ts` |
+| **Miroir assets** | Version History instances under `assets/miroir_modelVersion/`; absent from `miroir_data/` for VH parent UUIDs |
+| **Filesystem** | Writable profiles seed and read Version History from `modelVersion` (integ tests green) |
+| **Bundled Miroir** | No `modelVersion` section; VH excluded from bundled import |
+| **Docs** | Mode matrix in `bundles-and-versioning.md` and `data-architecture-deployments.md` |
+| **Miroir UI routing** | Entity Versions / Application Versions reports and menus use `modelVersion`; report query load includes combiner targets |
+| **Satellite apps** | Admin, library, designer, postgres: `versioningMode: "unversioned"`; menus consistent; library `applicationVersions: []` |
+
+### Acceptance criteria (GitHub issue)
+
+- [x] `versioningMode` (3-valued) expressible on Application metadata with documented semantics
+- [x] Miroir deployment no longer ships VH instance JSON under `miroir_data/` for version-history parents
+- [x] Bundled demo config aligned with Miroir = `versioned-internal` trimmed assets
+- [x] Non-regression tests: bundled load + writable freeze path (`versioningModes.234.*`, `modelVersionStorage.232`)
+- [x] Application inventory completed for all `miroir-test-app_deployment-*` packages with **resolved** mode (not merely proposed)
+
+### Known limitations (documented, not blockers)
+
+- VH-shaped JSON still present under `*_model/` for unversioned apps (present-model snapshots, not freeze history).
+- User-local stores with pre-#232 VH rows under `data`/`model` are not auto-migrated.
+- `versioned-external` mode is defined but unused.
+- Full default `npm run nonreg` had pre-existing failures unrelated to #234 (SQL freeze profile, absent integ manifest entry).
+
+### Validation run at close
+
+```bash
+npm run testByFile -w miroir-core -- 234.
+npm run testByFile -w miroir-core -- entityPresentModel.217.phase3
+npm run build -w miroir-test-app_deployment-library
+```

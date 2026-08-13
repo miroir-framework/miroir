@@ -6,28 +6,33 @@ Runtime routing uses the `modelVersion` store section for all `versionHistoryEnt
 
 ## Summary table
 
-| Package | Version History asset location | `versioningMode` (current / proposed) | Follow-up |
+| Package | Version History asset location | `versioningMode` | Status |
 |---|---|---|---|
-| `miroir-test-app_deployment-miroir` | `assets/miroir_modelVersion/` — EntityVersion (34), SelfApplicationVersion (2), ApplicationVersionCrossEntityVersion (7) | `versioned-internal` / `versioned-internal` | **Done (#234)** — reference layout; filesystem bootstrap seeds `modelVersion`; bundled profile omits section |
-| `miroir-test-app_deployment-admin` | `assets/admin_model/` — EntityVersion (8), SelfApplicationVersion (1) | *(absent, legacy)* / `versioned-internal` | Relocate VH rows to `admin_modelVersion/`; set `versioningMode` on SelfApplication row |
-| `miroir-test-app_deployment-library` | `assets/library_model/` — EntityVersion (6), SelfApplicationVersion (2) | *(absent, legacy)* / `versioned-internal` | Relocate to `library_modelVersion/`; add explicit `versioningMode`; wire test configs |
-| `miroir-test-app_deployment-designer` | `assets/designer_model/` — EntityVersion (5), SelfApplicationVersion (1) | *(absent, legacy)* / `versioned-internal` | Relocate to `designer_modelVersion/`; add explicit `versioningMode` |
-| `miroir-test-app_deployment-postgres` | `assets/postgres_model/` — EntityVersion (3), SelfApplicationVersion (1) | *(absent, legacy)* / `versioned-internal` | Relocate to `postgres_modelVersion/`; add explicit `versioningMode`; align SQL seed paths |
+| `miroir-test-app_deployment-miroir` | `assets/miroir_modelVersion/` — EntityVersion (34), SelfApplicationVersion (2), ApplicationVersionCrossEntityVersion (7) | `versioned-internal` | **Done** — reference layout; filesystem bootstrap seeds `modelVersion`; bundled profile omits section; versioning menus/reports wired to `modelVersion` |
+| `miroir-test-app_deployment-admin` | `assets/admin_model/` — EntityVersion (8), SelfApplicationVersion (1) *present-model schema snapshots* | **`unversioned`** | **Done (#234 Slice 6)** — explicit `versioningMode`; no freeze; menu omits Entity Definitions (version-history list) |
+| `miroir-test-app_deployment-library` | `assets/library_model/` — EntityVersion (6), SelfApplicationVersion (2) *present-model schema snapshots* | **`unversioned`** | **Done (#234 Slice 6)** — explicit `versioningMode`; menu omits Application Versions + Entity Definitions; bundled meta-model `applicationVersions: []` |
+| `miroir-test-app_deployment-designer` | `assets/designer_model/` — EntityVersion (5), SelfApplicationVersion (1) *present-model schema snapshots* | **`unversioned`** | **Done (#234 Slice 6)** — explicit `versioningMode`; menu omits Entity Definitions |
+| `miroir-test-app_deployment-postgres` | `assets/postgres_model/` — EntityVersion (3), SelfApplicationVersion (1) *present-model schema snapshots* | **`unversioned`** | **Done (#234 Slice 6)** — explicit `versioningMode`; menu omits Entity Definitions |
 
 ## Notes
 
-- **Legacy rule:** when `versioningEnabled: true` and `versioningMode` is absent, treat as `versioned-internal` (same as explicit internal mode for runtime gates).
-- **Entity definitions** for all Version History entity types (EntityVersion, SelfApplicationVersion, Historical*Version, ApplicationVersionCross*) live only in the Miroir deployment package under `miroir_model/16dbfe28…/` — other packages reference those metaclass rows, not duplicate Entity JSON.
+- **Legacy rule:** when `versioningEnabled: true` and `versioningMode` is absent, treat as `versioned-internal` (same as explicit internal mode for runtime freeze gates).
+- **Unversioned satellite apps:** EntityVersion JSON still under `*_model/54b9c72f…/` describes **present-model schema snapshots** (Author, Book, …) for the dual Entity / EntityVersion pattern — not application version freeze history. No `*_modelVersion/` relocation required while the app remains unversioned.
+- **Entity metaclass rows** for Version History *types* (EntityVersion, SelfApplicationVersion, ApplicationVersionCross*, …) live in the Miroir deployment package under `miroir_model/16dbfe28…/` — other packages reference those metaclass rows, not duplicate Entity JSON.
 - **Bundled / sandbox:** Miroir bundled profile has **no** `modelVersion` section and **no** Version History instances in bundled `model` or `data` (read-only live model + data only).
-- **`versioned-external`:** not used by any deployment package today; history would live in Git (`assets/*_model/` + committed tags) with no writable `modelVersion` section in Miroir stores.
+- **`versioned-external`:** not used by any deployment package today; history would live in Git with no writable Miroir `modelVersion` section.
 
-## Asset folder convention (target)
+## Asset folder convention
 
 | Folder | Purpose |
 |---|---|
-| `{prefix}_model/` | Live model — Entity rows, Reports, Queries, Menus, SelfApplication, … |
+| `{prefix}_model/` | Live model — Entity rows, Reports, Queries, Menus, SelfApplication, present-model EntityVersion schema snapshots |
 | `{prefix}_data/` | Application/domain data instances |
-| `{prefix}_modelVersion/` | Version History snapshots (EntityVersion, SelfApplicationVersion, ApplicationVersionCross*, …) |
+| `{prefix}_modelVersion/` | Version History snapshots for **`versioned-internal`** apps only |
 | `{prefix}_admin/` or nested admin sections | Admin deployment only |
 
 Miroir deployment prefixes: `miroir_model`, `miroir_data`, `miroir_modelVersion`.
+
+## Follow-up (post-#234)
+
+If admin, library, designer, or postgres are later reclassified as `versioned-internal` or `versioned-external`, revisit: relocate freeze-history rows to `*_modelVersion/`, restore versioning menus, and wire deployment store configs — out of scope for the closed #234 slice.
