@@ -106,8 +106,7 @@ function resolveTestApplicationStoreOptionsFromEnv(
       return {
         emulatedServerType: "filesystem",
         applicationRootDirectory:
-          env.MIROIR_TEST_APP_FILESYSTEM_ROOT ??
-          path.join(resolveDefaultFilesystemDeploymentRoot(), "tests/tmp", INTEG_TEST_APPLICATION_NAME),
+          env.MIROIR_TEST_APP_FILESYSTEM_ROOT ?? "tests/tmp/testApplication",
       };
     case "indexedDb":
       return {

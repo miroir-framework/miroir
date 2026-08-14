@@ -3,7 +3,7 @@ import * as vitest from "vitest";
 
 import type { DomainControllerInterface } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 import { defaultSelfApplicationDeploymentMap } from "../../src/1_core/Deployment";
-import { runMiroirTransformerIntegrationTest } from "../../src/5_tests/MiroirTransformerTestTools";
+import { runMiroirTransformerIntegrationTest, resolveTransformerIntegrationRunAsSql } from "../../src/5_tests/MiroirTransformerTestTools";
 import type { MiroirTestForTransformer } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { defaultMetaModelEnvironment } from "../../src/1_core/Model";
 
@@ -49,6 +49,7 @@ describe("runMiroirTransformerIntegrationTest", () => {
       domainController,
       applicationDeploymentMap,
       TEST_APPLICATION_UUID,
+      { runAsSql: true },
     );
 
     await runIntegration(
@@ -63,5 +64,39 @@ describe("runMiroirTransformerIntegrationTest", () => {
     expect(domainController.handleBoxedExtractorOrQueryAction).toHaveBeenCalledTimes(1);
     const [action] = vi.mocked(domainController.handleBoxedExtractorOrQueryAction).mock.calls[0];
     expect(action.payload.application).toBe(TEST_APPLICATION_UUID);
+  });
+});
+
+describe("resolveTransformerIntegrationRunAsSql", () => {
+  it("returns true for postgres-backed test application stores", () => {
+    const runAsSql = resolveTransformerIntegrationRunAsSql(
+      {
+        getPersistenceStoreController: () => ({
+          getStoreName: () => "postgres://postgres:postgres@localhost:5432/postgres:testApplication",
+        }),
+      } as any,
+      {
+        ...defaultSelfApplicationDeploymentMap,
+        [TEST_APPLICATION_UUID]: "bbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      },
+      TEST_APPLICATION_UUID,
+    );
+    expect(runAsSql).toBe(true);
+  });
+
+  it("returns false for filesystem-backed test application stores", () => {
+    const runAsSql = resolveTransformerIntegrationRunAsSql(
+      {
+        getPersistenceStoreController: () => ({
+          getStoreName: () => "tests/tmp/testApplication/testApplication_model",
+        }),
+      } as any,
+      {
+        ...defaultSelfApplicationDeploymentMap,
+        [TEST_APPLICATION_UUID]: "bbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      },
+      TEST_APPLICATION_UUID,
+    );
+    expect(runAsSql).toBe(false);
   });
 });

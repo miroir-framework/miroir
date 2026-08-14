@@ -165,6 +165,16 @@ describe("IntegrationTestSession store configuration", () => {
     });
     expect(options.adminStore.emulatedServerType).toBe("filesystem");
   });
+
+  it("resolveTestSessionForIntegOptionsFromEnv uses repo-relative filesystem app root", () => {
+    const options = resolveTestSessionForIntegOptionsFromEnv({
+      MIROIR_TEST_APP_STORE_TYPE: "filesystem",
+    });
+    expect(options.testApplicationStore).toEqual({
+      emulatedServerType: "filesystem",
+      applicationRootDirectory: "tests/tmp/testApplication",
+    });
+  });
 });
 
 describe("IntegrationTestSession session lifecycle", () => {

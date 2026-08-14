@@ -24,6 +24,7 @@ import { runMiroirActionTest } from "./ActionTestTools.js";
 import { runMiroirFunctionCallTestInMemory } from "./FunctionCallTestTools";
 import {
   runMiroirTransformerIntegrationTest,
+  resolveTransformerIntegrationRunAsSql,
   runMiroirTransformerTest,
 } from "./MiroirTransformerTestTools";
 import { runMiroirQueryRunnerTestInMemory } from "./QueryRunnerTestTools";
@@ -171,6 +172,13 @@ export async function runMiroirTest(
           env.domainController,
           env.applicationDeploymentMap,
           env.testApplicationUuid,
+          {
+            runAsSql: resolveTransformerIntegrationRunAsSql(
+              env.persistenceStoreControllerManager,
+              env.applicationDeploymentMap,
+              env.testApplicationUuid,
+            ),
+          },
         );
         return runIntegration(
           localVitest,

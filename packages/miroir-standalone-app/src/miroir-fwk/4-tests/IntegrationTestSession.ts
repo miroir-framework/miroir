@@ -515,9 +515,21 @@ export class IntegrationTestSession implements RunnerTestSessionInterface {
   }
 
   private getTestStoreConfig(): StoreUnitConfiguration {
+    const storeOptions = this.options.testApplicationStore;
+    if (storeOptions.emulatedServerType === "filesystem") {
+      const filesystemRoot = this.getFilesystemDeploymentRoot();
+      const applicationRootDirectory = relativeStoreDirectory(
+        filesystemRoot,
+        normalizeSlashes(storeOptions.applicationRootDirectory),
+      );
+      return buildTestApplicationStoreUnitConfiguration(this.getApplicationName(), {
+        ...storeOptions,
+        applicationRootDirectory,
+      });
+    }
     return buildTestApplicationStoreUnitConfiguration(
       this.getApplicationName(),
-      this.options.testApplicationStore,
+      storeOptions,
     );
   }
 

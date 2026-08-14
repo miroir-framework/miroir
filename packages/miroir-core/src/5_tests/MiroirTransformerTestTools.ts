@@ -28,6 +28,7 @@ import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainC
 import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
+import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import { jsonify } from "../1_core/testing/test-expect";
 import {
   transformer_extended_apply_wrapper,
@@ -55,6 +56,42 @@ MiroirLoggerFactory.registerLoggerToStart(
 });
 
 export const miroirTestGlobalTimeOut = 30000;
+
+/** Integration transformer tests only execute SQL when the test app persistence store is Postgres. */
+export function resolveTransformerIntegrationRunAsSql(
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  testApplicationUuid: Uuid,
+): boolean {
+  const deploymentUuid = applicationDeploymentMap[testApplicationUuid];
+  if (!deploymentUuid) {
+    return false;
+  }
+  const controller = persistenceStoreControllerManager.getPersistenceStoreController(deploymentUuid);
+  if (!controller) {
+    return false;
+  }
+  return /^postgres(?:ql)?:\/\//.test(controller.getStoreName());
+}
+
+function resolveTransformerIntegrationExpectedValue(
+  transformerTest: MiroirTestForTransformer,
+  runAsSql: boolean,
+): unknown {
+  if (runAsSql) {
+    return transformerTest.integrationTestExpectedValue ?? transformerTest.expectedValue;
+  }
+  return transformerTest.unitTestExpectedValue ?? transformerTest.expectedValue;
+}
+
+function normalizeTransformerIntegrationComparisonValue(
+  value: unknown,
+  runAsSql: boolean,
+  ignoreAttributes?: string[],
+): unknown {
+  const ignored = ignorePostgresExtraAttributes(value, ignoreAttributes);
+  return runAsSql ? ignored : removeUndefinedProperties(unNullify(ignored));
+}
 
 function getValueByDottedPath(obj: unknown, path: string): unknown {
   if (path === "") {
@@ -253,6 +290,7 @@ export function runMiroirTransformerIntegrationTest(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
   testApplicationUuid: Uuid,
+  options: { runAsSql?: boolean } = {},
 ) {
   return async (
     localVitest: VitestNamespace,
@@ -272,11 +310,13 @@ export function runMiroirTransformerIntegrationTest(
       ?.transformerType;
     // Whitelisted function-call transformers are not SQL-translatable unless the test
     // explicitly expects QueryNotExecutable on the SQL integration path.
+    const defaultRunAsSql = options.runAsSql ?? true;
     const runAsSql =
       transformerType === "ansiColumnsToJzodSchema"
-        ? (transformerTest.integrationTestExpectedValue as { queryFailure?: string } | undefined)
+        ? defaultRunAsSql &&
+          (transformerTest.integrationTestExpectedValue as { queryFailure?: string } | undefined)
             ?.queryFailure === "QueryNotExecutable"
-        : true;
+        : defaultRunAsSql;
 
     if (!localVitest.expect) {
       throw new Error(
@@ -317,17 +357,18 @@ export function runMiroirTransformerIntegrationTest(
       transformerTest.transformerRuntimeContext ?? {},
     );
 
-    const expectedValue =
-      transformerTest.integrationTestExpectedValue ?? transformerTest.expectedValue;
+    const expectedValue = resolveTransformerIntegrationExpectedValue(transformerTest, runAsSql);
 
     if (resolvedTransformer instanceof TransformerFailure) {
-      const resultWithIgnored = ignorePostgresExtraAttributes(
+      const resultWithIgnored = normalizeTransformerIntegrationComparisonValue(
         resolvedTransformer as any,
+        runAsSql,
         transformerTest.ignoreAttributes,
       );
       const resultWithRetain =
         transformerTest.retainAttributes &&
         typeof resultWithIgnored === "object" &&
+        resultWithIgnored !== null &&
         !Array.isArray(resultWithIgnored)
           ? Object.fromEntries(
               Object.entries(resultWithIgnored).filter(([key]) =>
@@ -336,7 +377,15 @@ export function runMiroirTransformerIntegrationTest(
             )
           : resultWithIgnored;
       try {
-        localVitest.expect(resultWithRetain, testPathName).toEqual(expectedValue);
+        localVitest
+          .expect(resultWithRetain, testPathName)
+          .toEqual(
+            normalizeTransformerIntegrationComparisonValue(
+              expectedValue,
+              runAsSql,
+              transformerTest.ignoreAttributes,
+            ),
+          );
         miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, {
           assertionName: testPathName,
           assertionResult: "ok",
@@ -358,6 +407,22 @@ export function runMiroirTransformerIntegrationTest(
       queryResult = {
         status: "ok",
         returnedDomainElement: resolvedTransformer as any,
+      };
+    } else if (!runAsSql) {
+      const runtimeResult = transformer_extended_apply_wrapper(
+        undefined,
+        "runtime",
+        [],
+        undefined,
+        resolvedTransformer,
+        "value",
+        modelEnvironment,
+        transformerTest.transformerParams ?? {},
+        transformerTest.transformerRuntimeContext ?? {},
+      );
+      queryResult = {
+        status: "ok",
+        returnedDomainElement: { transformer: runtimeResult },
       };
     } else {
       queryResult = await domainController.handleBoxedExtractorOrQueryAction(
@@ -406,45 +471,38 @@ export function runMiroirTransformerIntegrationTest(
     let resultWithRetain: any;
     let testAssertionResult: TestAssertionResult;
     try {
-      if (queryResult["status"] == "error") {
-        resultWithIgnored = ignorePostgresExtraAttributes(
-          (queryResult as any).innerError,
+      const normalizedExpected = normalizeTransformerIntegrationComparisonValue(
+        expectedValue,
+        runAsSql,
+        transformerTest.ignoreAttributes,
+      );
+      if (queryResult.status === "error") {
+        resultWithIgnored = normalizeTransformerIntegrationComparisonValue(
+          (queryResult as { innerError?: unknown }).innerError,
+          runAsSql,
           transformerTest.ignoreAttributes,
         );
-        resultWithRetain = transformerTest.retainAttributes
+      } else {
+        resultWithIgnored = normalizeTransformerIntegrationComparisonValue(
+          testRunStep == "runtime"
+            ? (queryResult as Action2Success).returnedDomainElement.transformer
+            : (queryResult as Action2Success).returnedDomainElement,
+          runAsSql,
+          transformerTest.ignoreAttributes,
+        );
+      }
+      resultWithRetain =
+        transformerTest.retainAttributes &&
+        typeof resultWithIgnored === "object" &&
+        resultWithIgnored !== null &&
+        !Array.isArray(resultWithIgnored)
           ? Object.fromEntries(
               Object.entries(resultWithIgnored).filter(([key]) =>
                 transformerTest.retainAttributes!.includes(key),
               ),
             )
           : resultWithIgnored;
-        localVitest
-          .expect(
-            resultWithRetain,
-            testPathName + "comparing received query error to expected result",
-          )
-          .toEqual(expectedValue);
-      } else {
-        resultWithIgnored =
-          testRunStep == "runtime"
-            ? ignorePostgresExtraAttributes(
-                (queryResult as Action2Success).returnedDomainElement.transformer,
-                transformerTest.ignoreAttributes,
-              )
-            : (queryResult as Action2Success).returnedDomainElement;
-        resultWithRetain =
-          transformerTest.retainAttributes &&
-          typeof resultWithIgnored === "object" &&
-          resultWithIgnored !== null &&
-          !Array.isArray(resultWithIgnored)
-            ? Object.fromEntries(
-                Object.entries(resultWithIgnored).filter(([key]) =>
-                  transformerTest.retainAttributes!.includes(key),
-                ),
-              )
-            : resultWithIgnored;
-        localVitest.expect(resultWithRetain, testPathName).toEqual(expectedValue);
-      }
+      localVitest.expect(resultWithRetain, testPathName).toEqual(normalizedExpected);
       testAssertionResult = {
         assertionName: testPathName,
         assertionResult: "ok",

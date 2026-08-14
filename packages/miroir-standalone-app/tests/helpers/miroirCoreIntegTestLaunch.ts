@@ -8,6 +8,7 @@ import {
 } from "miroir-core";
 
 import type { TestSessionForIntegOptions } from "./IntegrationTestSession.js";
+import { resolveDefaultFilesystemDeploymentRoot } from "./IntegrationTestSession.js";
 import { listIntegrationTestProfileNames } from "./integrationTestProfiles.js";
 
 const VALID_APP_STORE_TYPES = ["sql", "filesystem", "indexedDb", "mongodb"] as const;
@@ -181,7 +182,12 @@ export function validateMiroirCoreIntegTestLaunch(
   }
 
   if (testSessionOptions.testApplicationStore.emulatedServerType === "filesystem") {
-    const appRoot = testSessionOptions.testApplicationStore.applicationRootDirectory;
+    const filesystemRoot =
+      testSessionOptions.filesystemDeploymentRootDirectory ??
+      resolveDefaultFilesystemDeploymentRoot();
+    const appRoot = path.isAbsolute(testSessionOptions.testApplicationStore.applicationRootDirectory)
+      ? testSessionOptions.testApplicationStore.applicationRootDirectory
+      : path.join(filesystemRoot, testSessionOptions.testApplicationStore.applicationRootDirectory);
     const parentDir = path.dirname(appRoot);
     if (!fs.existsSync(parentDir)) {
       errors.push(`Parent directory for test app filesystem root does not exist: ${parentDir}`);
