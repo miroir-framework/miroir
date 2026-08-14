@@ -2,7 +2,7 @@
 
 GitHub issue: [miroir-framework/miroir#235](https://github.com/miroir-framework/miroir/issues/235)
 
-**Status:** Slice 0 done · Slices 1–7 not started
+**Status:** Slices 0–1 done · Slices 2–7 not started
 
 **Depends on / related:** #43 (logger startup race), #197 (UI integ), workflow doc `docs/guides/architecture/workflows/runQuery-emulated-server.md`
 
@@ -131,9 +131,11 @@ Add hop numbers to mermaid in `runQuery-emulated-server.md` when slice 3 lands.
 - INFO line: `→ {block} …` / `← {block} status=`.
 - Interior existing `log.info` payloads: leave for slice 4 (or demote only DC dumps if cheap).
 
-**Green:** `domain_controller_data_crud` Refresh all Instances — grep runId shows query enter/exit; prefix not `*NoTestSuite*` for that leaf.
+**Green:** `domain_controller_data_crud` Refresh all Instances — grep runId shows query enter/exit. (Suite/leaf labels still `*NoTestSuite*` until slice 2.)
 
 **Done when:** Path A has visible `>`/`<` around composite query + boxed query.
+
+**Done (2026-08-15):** `trackAction` / `trackActivity` emit `#run.sN># → {block}` then `#run.sN<# ← {block} status=` in a try/finally (error path still `<` with `status=error`). `handleBoxedExtractorOrQueryAction` and `handleCompositeRunBoxedQueryAction` wrap with `DC.handleBoxedQuery` / `DC.compositeRunBoxedQuery`. Tests: `runLogTokens.unit.test.ts`.
 
 ### Slice 2 — Context sync (tracker → logger) + #43 readiness
 

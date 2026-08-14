@@ -5,6 +5,7 @@ import {
   CROCKFORD_RUN_ID_ALPHABET,
   formatRunBanner,
   formatRunLogPrefix,
+  formatSpanBoundaryLine,
   generateRunId,
   LoggerGlobalContext,
   RUN_LOG_PREFIX_PATTERN,
@@ -36,6 +37,18 @@ describe("run log tokens", () => {
   it("formatRunBanner names the run for copy-paste grep", () => {
     expect(formatRunBanner("K7X2NQ", "START")).toBe("RUN K7X2NQ START");
     expect(formatRunBanner("K7X2NQ", "END", "ok")).toBe("RUN K7X2NQ END status=ok");
+  });
+
+  it("formatSpanBoundaryLine pairs enter/exit with the prefix", () => {
+    expect(formatSpanBoundaryLine("#K7X2NQ.s1>#", "enter", "DC.handleBoxedQuery")).toBe(
+      "#K7X2NQ.s1># → DC.handleBoxedQuery",
+    );
+    expect(formatSpanBoundaryLine("#K7X2NQ.s1<#", "exit", "DC.handleBoxedQuery", "ok")).toBe(
+      "#K7X2NQ.s1<# ← DC.handleBoxedQuery status=ok",
+    );
+    expect(formatSpanBoundaryLine("#K7X2NQ.s1<#", "exit", "DC.handleBoxedQuery", "error")).toBe(
+      "#K7X2NQ.s1<# ← DC.handleBoxedQuery status=error",
+    );
   });
 });
 
@@ -90,16 +103,32 @@ describe("MiroirActivityTracker writes run log tokens", () => {
   it("nested trackAction increments span and restores parent on end", async () => {
     const testId = tracker.startTest("leaf");
     const runId = LoggerGlobalContext.getRunId()!;
-
-    await tracker.trackAction("outer", undefined, async () => {
-      expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.s1.#`);
-      await tracker.trackAction("inner", undefined, async () => {
-        expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.s2.#`);
+    const lines: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
+    try {
+      await tracker.trackAction("outer", undefined, async () => {
+        expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.s1.#`);
+        await tracker.trackAction("inner", undefined, async () => {
+          expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.s2.#`);
+        });
+        expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.s1.#`);
       });
-      expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.s1.#`);
-    });
+    } finally {
+      console.log = originalLog;
+    }
 
     expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.-.#`);
+    const enterOuter = lines.findIndex((line) => line.includes(`#${runId}.s1># → outer`));
+    const enterInner = lines.findIndex((line) => line.includes(`#${runId}.s2># → inner`));
+    const exitInner = lines.findIndex((line) => line.includes(`#${runId}.s2<# ← inner status=ok`));
+    const exitOuter = lines.findIndex((line) => line.includes(`#${runId}.s1<# ← outer status=ok`));
+    expect(enterOuter).toBeGreaterThanOrEqual(0);
+    expect(enterInner).toBeGreaterThan(enterOuter);
+    expect(exitInner).toBeGreaterThan(enterInner);
+    expect(exitOuter).toBeGreaterThan(exitInner);
     tracker.endActivity(testId);
     expect(LoggerGlobalContext.getRunId()).toBeUndefined();
   });
@@ -111,6 +140,60 @@ describe("MiroirActivityTracker writes run log tokens", () => {
       expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.s1.#`);
     });
     expect(LoggerGlobalContext.getRunId()).toBeUndefined();
+  });
+
+  it("trackAction logs enter then exit with the same span", async () => {
+    const lines: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
+    try {
+      await tracker.trackAction("runBoxedQueryAction", "DC.handleBoxedQuery", async () => {
+        expect(LoggerGlobalContext.getRunLogPrefix()).toMatch(/\.s1\.#$/);
+      });
+      const enter = lines.find((line) => line.includes("→ DC.handleBoxedQuery"));
+      const exit = lines.find((line) => line.includes("← DC.handleBoxedQuery"));
+      expect(enter).toBeDefined();
+      expect(exit).toBeDefined();
+      const enterMatch = enter!.match(RUN_LOG_PREFIX_PATTERN);
+      const exitMatch = exit!.match(RUN_LOG_PREFIX_PATTERN);
+      expect(enterMatch?.[1]).toBe(exitMatch?.[1]);
+      expect(enterMatch?.[2]).toBe("s1");
+      expect(exitMatch?.[2]).toBe("s1");
+      expect(enter).toContain(">#");
+      expect(exit).toContain("<#");
+      expect(exit).toContain("status=ok");
+    } finally {
+      console.log = originalLog;
+    }
+  });
+
+  it("trackAction error path still logs exit with status=error", async () => {
+    const lines: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
+    try {
+      await expect(
+        tracker.trackAction("runBoxedQueryAction", "DC.handleBoxedQuery", async () => {
+          throw new Error("boom");
+        }),
+      ).rejects.toThrow("boom");
+      const enter = lines.find((line) => line.includes("→ DC.handleBoxedQuery"));
+      const exit = lines.find((line) => line.includes("← DC.handleBoxedQuery"));
+      expect(enter).toBeDefined();
+      expect(exit).toBeDefined();
+      expect(enter).toMatch(RUN_LOG_PREFIX_PATTERN);
+      expect(exit).toMatch(RUN_LOG_PREFIX_PATTERN);
+      expect(enter!.match(RUN_LOG_PREFIX_PATTERN)?.[2]).toBe(
+        exit!.match(RUN_LOG_PREFIX_PATTERN)?.[2],
+      );
+      expect(exit).toContain("status=error");
+    } finally {
+      console.log = originalLog;
+    }
   });
 
   it("startTestAssertion pushes a span under the leaf run", () => {

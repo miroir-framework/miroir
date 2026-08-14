@@ -35,6 +35,19 @@ export function formatRunBanner(
   return `RUN ${runId} START`;
 }
 
+/** INFO enter/exit body; prefix already includes `>` or `<`. */
+export function formatSpanBoundaryLine(
+  prefix: string,
+  kind: "enter" | "exit",
+  block: string,
+  status?: string,
+): string {
+  if (kind === "enter") {
+    return `${prefix} → ${block}`;
+  }
+  return `${prefix} ← ${block} status=${status ?? "ok"}`;
+}
+
 export interface LoggerContextElement {
   testSuite: string | undefined;
   test: string | undefined;

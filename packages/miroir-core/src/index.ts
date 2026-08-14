@@ -1201,6 +1201,7 @@ export {
   CROCKFORD_RUN_ID_ALPHABET,
   formatRunBanner,
   formatRunLogPrefix,
+  formatSpanBoundaryLine,
   generateRunId,
   LoggerGlobalContext,
   RUN_LOG_PREFIX_PATTERN,

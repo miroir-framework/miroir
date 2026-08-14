@@ -14,6 +14,7 @@ import type { MiroirEventService, MiroirEventServiceInterface } from './MiroirEv
 import type { LogTopic } from '../0_interfaces/4-services/LoggerInterface';
 import {
   formatRunBanner,
+  formatSpanBoundaryLine,
   generateRunId,
   LoggerGlobalContext,
 } from "../4_services/LoggerContext";
@@ -219,6 +220,16 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     this.syncRunLogContext(".");
   }
 
+  private spanBlockName(actionType: string, actionLabel: string | undefined): string {
+    return actionLabel ?? actionType;
+  }
+
+  private emitSpanBoundary(kind: "enter" | "exit", block: string, status?: string): void {
+    console.log(
+      formatSpanBoundaryLine(LoggerGlobalContext.getRunLogPrefix(), kind, block, status),
+    );
+  }
+
   // ##############################################################################################
   // ##############################################################################################
   // ##############################################################################################
@@ -233,14 +244,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       activityLabel,
       parentActivity?.activityId
     );
-    try {
-      const result = await actionFn();
-      this.endActivity(trackingId);
-      return result;
-    } catch (error) {
-      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
-      throw error;
-    }
+    return this.runTrackedSpan(trackingId, this.spanBlockName(activityType, activityLabel), actionFn);
   }
 
   // ##############################################################################################
@@ -339,13 +343,29 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     actionFn: () => Promise<T>
   ): Promise<T> {
     const trackingId = this.startActivity_Action(actionType, actionLabel);
+    return this.runTrackedSpan(trackingId, this.spanBlockName(actionType, actionLabel), actionFn);
+  }
+
+  private async runTrackedSpan<T>(
+    trackingId: string,
+    block: string,
+    actionFn: () => Promise<T>,
+  ): Promise<T> {
+    this.syncRunLogContext(">");
+    this.emitSpanBoundary("enter", block);
+    this.syncRunLogContext(".");
+    let status = "ok";
+    let errorMessage: string | undefined;
     try {
-      const result = await actionFn();
-      this.endActivity(trackingId);
-      return result;
+      return await actionFn();
     } catch (error) {
-      this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
+      status = "error";
+      errorMessage = error instanceof Error ? error.message : String(error);
       throw error;
+    } finally {
+      this.syncRunLogContext("<");
+      this.emitSpanBoundary("exit", block, status);
+      this.endActivity(trackingId, errorMessage);
     }
   }
 

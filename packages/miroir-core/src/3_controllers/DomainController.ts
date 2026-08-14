@@ -735,6 +735,23 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
+    return this.miroirContext.miroirActivityTracker.trackAction(
+      "runBoxedQueryAction",
+      "DC.handleBoxedQuery",
+      () =>
+        this.executeBoxedExtractorOrQueryAction(
+          runBoxedExtractorOrQueryAction,
+          applicationDeploymentMap,
+          currentModel,
+        ),
+    );
+  }
+
+  private async executeBoxedExtractorOrQueryAction(
+    runBoxedExtractorOrQueryAction: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment,
+  ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     try {
       LoggerGlobalContext.setAction(runBoxedExtractorOrQueryAction.actionType);
@@ -4077,6 +4094,23 @@ export class DomainController implements DomainControllerInterface {
     //   nameGivenToResult: string;
     //   queryTemplate: RunBoxedQueryAction;
     // },
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    localContext: Record<string, any>,
+  ) {
+    return this.miroirContext.miroirActivityTracker.trackAction(
+      "compositeRunBoxedQueryAction",
+      "DC.compositeRunBoxedQuery",
+      () =>
+        this.executeCompositeRunBoxedQueryAction(
+          currentAction,
+          applicationDeploymentMap,
+          localContext,
+        ),
+    );
+  }
+
+  private async executeCompositeRunBoxedQueryAction(
+    currentAction: CompositeRunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     localContext: Record<string, any>,
   ) {
