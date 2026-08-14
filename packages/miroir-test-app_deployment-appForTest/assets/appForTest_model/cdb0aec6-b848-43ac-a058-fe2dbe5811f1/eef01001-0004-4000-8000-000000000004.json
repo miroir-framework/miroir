@@ -1,0 +1,9 @@
+{
+  "uuid": "eef01001-0004-4000-8000-000000000004",
+  "parentName": "ApplicationModelBranch",
+  "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "selfApplication": "eef01001-0001-4000-8000-000000000001",
+  "headVersion": "eef01001-0005-4000-8000-000000000005",
+  "name": "master",
+  "description": "The master branch of the appForTest SelfApplication"
+}

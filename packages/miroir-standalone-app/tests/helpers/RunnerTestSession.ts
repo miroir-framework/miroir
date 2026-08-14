@@ -26,6 +26,11 @@ import {
 } from "miroir-core";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
+  defaultAppForTestModel,
+  deployment_AppForTest_DO_NO_USE,
+  selfApplicationAppForTest,
+} from "miroir-test-app_deployment-appForTest";
+import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
@@ -150,13 +155,37 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
   constructor(private readonly options: RunnerTestSessionOptions) {}
 
-  private resolveLibraryModelForRunTarget(runTarget: TestbedUuids): MetaModel {
+  private resolveTestAppModelForRunTarget(runTarget: TestbedUuids): MetaModel {
+    if (runTarget.applicationName === "appForTest") {
+      return remapLibraryAppModelForRunTarget(
+        defaultAppForTestModel as MetaModel,
+        selfApplicationAppForTest.uuid as string,
+        deployment_AppForTest_DO_NO_USE.uuid,
+        runTarget,
+      );
+    }
     return remapLibraryAppModelForRunTarget(
       defaultLibraryAppModel as MetaModel,
       selfApplicationLibrary.uuid as string,
       deployment_Library_DO_NO_USE.uuid,
       runTarget,
     );
+  }
+
+  private resolveCanonicalModelRemap(runTarget: TestbedUuids): {
+    canonicalApplicationUuid: string;
+    canonicalDeploymentUuid: string;
+  } {
+    if (runTarget.applicationName === "appForTest") {
+      return {
+        canonicalApplicationUuid: selfApplicationAppForTest.uuid as string,
+        canonicalDeploymentUuid: deployment_AppForTest_DO_NO_USE.uuid,
+      };
+    }
+    return {
+      canonicalApplicationUuid: selfApplicationLibrary.uuid as string,
+      canonicalDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+    };
   }
 
   // ##############################################################################################
@@ -240,14 +269,26 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       });
     }
 
-    const libraryModelForSession = this.resolveLibraryModelForRunTarget(runTarget);
-    this.libraryModelForSession = libraryModelForSession;
+    const libraryModelForSession = remapLibraryAppModelForRunTarget(
+      defaultLibraryAppModel as MetaModel,
+      selfApplicationLibrary.uuid as string,
+      deployment_Library_DO_NO_USE.uuid,
+      runTarget,
+    );
+    const testAppModelForSession = this.resolveTestAppModelForRunTarget(runTarget);
+    this.libraryModelForSession = testAppModelForSession;
 
     const sessionTestParams = buildRunnerTestSessionParamBank(
       this.options.suiteTestParams,
       runTarget,
       {
         defaultLibraryAppModel: libraryModelForSession,
+        defaultAppForTestModel: remapLibraryAppModelForRunTarget(
+          defaultAppForTestModel as MetaModel,
+          selfApplicationAppForTest.uuid as string,
+          deployment_AppForTest_DO_NO_USE.uuid,
+          runTarget,
+        ),
         emptyApplicationModel,
       },
     );
@@ -289,6 +330,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     }
     const emulateServer = this.runnerTestContext.internalMiroirConfig.client.emulateServer === true;
     const playfieldSeed = this.options.libraryPlayfieldSeed;
+    const { canonicalApplicationUuid, canonicalDeploymentUuid } =
+      this.resolveCanonicalModelRemap(this.runnerTestContext.runTarget);
     await beforeEachTest(this.domainController, this.applicationDeploymentMap, {
       applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
       deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
@@ -303,8 +346,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
             // custom entities (e.g. composite-PK TestEntityCompositePK).
             testbedModel: remapLibraryAppModelForRunTarget(
               playfieldSeed.testbedModel,
-              selfApplicationLibrary.uuid as string,
-              deployment_Library_DO_NO_USE.uuid,
+              canonicalApplicationUuid,
+              canonicalDeploymentUuid,
               this.runnerTestContext.runTarget,
             ),
           }
@@ -330,7 +373,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       runTarget.applicationUuid === selfApplicationMiroir.uuid
         ? defaultMiroirMetaModel
         : (this.libraryModelForSession ??
-          this.resolveLibraryModelForRunTarget(runTarget));
+          this.resolveTestAppModelForRunTarget(runTarget));
     const modelEnvironment = buildTestSessionModelEnvironment(
       runTarget.deploymentUuid,
       currentModel,

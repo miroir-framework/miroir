@@ -1,0 +1,27 @@
+{
+  "uuid": "eef01001-0002-4000-8000-000000000002",
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "name": "AppForTestFilesystemDeployment",
+  "defaultLabel": "AppForTestFilesystemDeployment",
+  "selfApplication": "eef01001-0001-4000-8000-000000000001",
+  "description": "Filesystem deployment for appForTest integration tests",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-test-app_deployment-admin/assets"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-test-app_deployment-appForTest/assets/appForTest_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-test-app_deployment-appForTest/assets/appForTest_data"
+    },
+    "modelVersion": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-test-app_deployment-appForTest/assets/appForTest_modelVersion"
+    }
+  }
+}

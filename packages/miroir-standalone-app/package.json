@@ -51,6 +51,7 @@
     "miroir-store-bundled": "*",
     "miroir-store-indexedDb": "*",
     "miroir-test-app_deployment-library": "*",
+    "miroir-test-app_deployment-appForTest": "*",
     "miroir-test-app_deployment-miroir": "*",
     "mock-socket": "^9.1.5",
     "process": "^0.11.10",

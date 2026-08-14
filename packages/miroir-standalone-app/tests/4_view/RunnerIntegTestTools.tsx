@@ -29,6 +29,7 @@ import {
 import {
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
+import { resolveCanonicalTestDeploymentUuid } from "../helpers/resolveCanonicalTestDeploymentUuid.js";
 
 export interface RunnerTestParams {
   pageLabel: string,
@@ -250,9 +251,10 @@ export function getTestConfig(
     configuration: adminDeploymentStorageConfiguration,
   };
 
+  const canonicalDeploymentUuid = resolveCanonicalTestDeploymentUuid(testApplicationName);
   const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[deployment_Library_DO_NO_USE.uuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Library_DO_NO_USE.uuid];
+    ? miroirConfig.client.deploymentStorageConfig[canonicalDeploymentUuid]
+    : miroirConfig.client.serverConfig.storeSectionConfiguration[canonicalDeploymentUuid];
   return {
     applicationDeploymentMap,
     miroirDeploymentStorageConfiguration,

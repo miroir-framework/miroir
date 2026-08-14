@@ -1,0 +1,12 @@
+{
+  "uuid": "eef01001-0005-4000-8000-000000000005",
+  "parentName": "ApplicationVersion",
+  "parentUuid": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+  "name": "Initial",
+  "previousVersion": "",
+  "modelStructureMigration": [],
+  "modelCUDMigration": [],
+  "selfApplication": "eef01001-0001-4000-8000-000000000001",
+  "branch": "eef01001-0004-4000-8000-000000000004",
+  "description": "Initial ApplicationVersion for appForTest"
+}

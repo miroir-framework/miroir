@@ -53,6 +53,24 @@
           "emulatedServerType": "filesystem",
           "directory":"miroir-standalone-app/tests/tmp/library_modelVersion"
         }
+      },
+      "eef01001-0002-4000-8000-000000000002": {
+        "admin": {
+          "emulatedServerType": "filesystem",
+          "directory":"miroir-standalone-app/tests/tmp/miroir_admin"
+        },
+        "model": {
+          "emulatedServerType": "filesystem",
+          "directory":"miroir-standalone-app/tests/tmp/appForTest_model"
+        },
+        "data": {
+          "emulatedServerType": "filesystem",
+          "directory":"miroir-standalone-app/tests/tmp/appForTest_data"
+        },
+        "modelVersion": {
+          "emulatedServerType": "filesystem",
+          "directory":"miroir-standalone-app/tests/tmp/appForTest_modelVersion"
+        }
       }
     },
     "deploymentMode":"monoUser",

@@ -5,14 +5,14 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "runner_freeze_application_version",
-  "description": "freezeApplicationVersion runner integration tests (#225 Phase 2). Owned by Miroir meta-application; Library (Publisher+Country) is the runTarget/testbed. Leaves: V1 baseline freeze; V1\u2192alter\u2192V2 via runner.",
+  "description": "freezeApplicationVersion runner integration tests (#225 Phase 2). Owned by Miroir meta-application; appForTest (Publisher+Country) is the runTarget/testbed. Leaves: V1 baseline freeze; V1\u2192alter\u2192V2 via runner.",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "runner.freezeApplicationVersion",
     "runTarget": {
-      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-      "applicationName": "Library",
-      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+      "applicationUuid": "eef01001-0001-4000-8000-000000000001",
+      "applicationName": "appForTest",
+      "deploymentUuid": "eef01001-0002-4000-8000-000000000002"
     },
     "miroirTests": [
       {
@@ -23,7 +23,7 @@
         "initialModel": {
           "transformerType": "getFromParameters",
           "interpolation": "build",
-          "referenceName": "defaultLibraryAppModel"
+          "referenceName": "defaultAppForTestModel"
         },
         "testParams": {
           "freezeApplicationVersion": {
@@ -33,7 +33,7 @@
               "referenceName": "testApplicationUuid"
             },
             "versionName": "V1-Baseline",
-            "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+            "branch": "eef01001-0004-4000-8000-000000000004"
           }
         },
         "preTestCompositeActions": [
@@ -251,7 +251,7 @@
         "initialModel": {
           "transformerType": "getFromParameters",
           "interpolation": "build",
-          "referenceName": "defaultLibraryAppModel"
+          "referenceName": "defaultAppForTestModel"
         },
         "testParams": {
           "freezeApplicationVersion": {
@@ -261,7 +261,7 @@
               "referenceName": "testApplicationUuid"
             },
             "versionName": "V2-Alter",
-            "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+            "branch": "eef01001-0004-4000-8000-000000000004"
           }
         },
         "preRunnerCompositeActions": [
@@ -276,7 +276,7 @@
                 "referenceName": "testApplicationUuid"
               },
               "versionName": "V1-Alter",
-              "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d"
+              "branch": "eef01001-0004-4000-8000-000000000004"
             }
           },
           {

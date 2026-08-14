@@ -79,6 +79,7 @@ ALL_PACKAGES=(
   miroir-ai
   miroir-standalone-app
   miroir-test-app_deployment-library
+  miroir-test-app_deployment-appForTest
   miroir-test-app_deployment-postgres
 )
 
@@ -99,7 +100,7 @@ STAGE_CACHES_STORES=(
 STAGE_UI_SERVICES=(miroir-react miroir-mcp miroir-diagram-class)
 STAGE_APPS=(miroir-cli miroir-ai miroir-mcp)
 STAGE_STANDALONE=(miroir-standalone-app)
-STAGE_DEPLOY_TEST=(miroir-test-app_deployment-library miroir-test-app_deployment-postgres)
+STAGE_DEPLOY_TEST=(miroir-test-app_deployment-library miroir-test-app_deployment-appForTest miroir-test-app_deployment-postgres)
 
 # ---------------------------------------------------------------------------
 # Argument parsing

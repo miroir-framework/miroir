@@ -61,6 +61,7 @@ import {
   publisherOnlyTestMetaModel,
   type TestbedSetupParameters
 } from "../../../tests/helpers/libraryPlayfieldSeeds.js";
+import { appForTestFreezePlayfieldSeed } from "../../../tests/helpers/appForTestPlayfieldSeeds.js";
 
 
 export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
@@ -120,11 +121,8 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
       .definition as MiroirTestSuite,
     runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
     resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[runnerFreezeApplicationVersion.uuid],
-    libraryPlayfieldSeed: {
-      testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: publisherAndCountryTestMetaModel,
-    }
+    libraryPlayfieldSeed: appForTestFreezePlayfieldSeed,
+    defaultApplicationName: "appForTest",
   },
   // ###############################################################################
   [miroirTest_domain_controller_data_crud.name]: {

@@ -1,0 +1,49 @@
+{
+  "name": "miroir-test-app_deployment-appForTest",
+  "private": true,
+  "version": "0.5.0-rc.1",
+  "description": "Minimal versioned-internal test application assets for the Miroir Framework",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "index.d.ts",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "LICENSE.md",
+    "package.json",
+    "index.d.ts",
+    "dist/index.js",
+    "dist/index.js.map",
+    "dist/assets/**/*.json"
+  ],
+  "scripts": {
+    "copy-files": "copyfiles -u 1 assets/**/*.json dist/assets",
+    "build": "tsup",
+    "devBuild": "npm run build",
+    "test": "vitest run --poolOptions.threads.singleThread -t",
+    "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
+  },
+  "nx": {
+    "implicitDependencies": [
+      "!miroir-core"
+    ]
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1",
+    "miroir-core": "*",
+    "miroir-store-filesystem": "*",
+    "miroir-test-app_deployment-admin": "*",
+    "miroir-test-app_deployment-miroir": "*",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  }
+}
