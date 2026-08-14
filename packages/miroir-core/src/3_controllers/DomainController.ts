@@ -522,12 +522,43 @@ export class DomainController implements DomainControllerInterface {
               )
               .then((fetchContext: Record<string, any> | Action2Error) => {
                 if (fetchContext instanceof Action2Error) {
+                  // Bundled / unversioned deployments may omit modelVersion (#232 Slice 4).
+                  if (
+                    e.section === "modelVersion" &&
+                    fetchContext.errorMessage?.includes(
+                      "modelVersion section is not configured",
+                    )
+                  ) {
+                    return {
+                      parentName: e.entity.name,
+                      parentUuid: e.entity.uuid,
+                      applicationSection: "modelVersion" as ApplicationSection,
+                      instances: [],
+                    };
+                  }
                   return fetchContext;
                 } else {
                   return fetchContext["entityInstanceCollection"].returnedDomainElement;
                 }
               })
               .catch((reason) => {
+                const reasonMessage =
+                  reason instanceof Error
+                    ? reason.message
+                    : typeof reason === "string"
+                      ? reason
+                      : JSON.stringify(reason);
+                if (
+                  e.section === "modelVersion" &&
+                  reasonMessage.includes("modelVersion section is not configured")
+                ) {
+                  return {
+                    parentName: e.entity.name,
+                    parentUuid: e.entity.uuid,
+                    applicationSection: "modelVersion" as ApplicationSection,
+                    instances: [],
+                  };
+                }
                 log.error(
                   "DomainController loadConfigurationFromPersistenceStore failed to fetch entity instances for entity ",
                   e.entity.name,

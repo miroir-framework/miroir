@@ -1,6 +1,7 @@
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type {
   AdminApplication,
+  ApplicationSection,
   CompositeActionSequence,
   CoreTransformerForBuildPlusRuntime,
   CoreTransformerForBuildPlusRuntime_getFromParameters,
@@ -440,16 +441,13 @@ export function buildResetAndinitializeDeploymentActionSequence(
             ...appMetaModel.applicationVersions as EntityInstance[],
             ...appMetaModel.applications as EntityInstance[],
           ];
-          const bySection: Partial<Record<string, EntityInstance[]>> = {
-            model: [],
-            data: [],
-          };
+          const bySection: Partial<Record<ApplicationSection, EntityInstance[]>> = {};
           for (const obj of metaModelObjects) {
             const parentUuid = (obj as EntityInstance & { parentUuid?: string }).parentUuid;
             const section = parentUuid ? getApplicationSection(applicationUuid, parentUuid) : "model";
             (bySection[section] ??= []).push(obj);
           }
-          return (["model", "data"] as const)
+          return (["model", "data", "modelVersion"] as const)
             .filter((section) => (bySection[section]?.length ?? 0) > 0)
             .map((section) => ({
               actionType: "createInstance" as const,
