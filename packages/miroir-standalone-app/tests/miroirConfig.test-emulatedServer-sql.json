@@ -36,6 +36,12 @@
           "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
           "schema": "miroir",
           "forceNullOptionalAttributeToUndefined": true
+        },
+        "modelVersion": {
+          "emulatedServerType": "sql",
+          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "miroir_modelVersion",
+          "forceNullOptionalAttributeToUndefined": true
         }
       },
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {

@@ -3,6 +3,7 @@ import type {
   Entity,
   EntityVersion,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { getApplicationSection } from "../Model.js";
 
 export type EntityFetchOnRefresh = {
   section: ApplicationSection;
@@ -51,11 +52,13 @@ export function resolveCachePolicyCarrierForEntity(
 /**
  * Builds the refresh fetch list.
  * - Model entities are always included (application concepts must be fully available).
- * - Data entities are included only when shouldCacheAllInstancesOnRefresh is true.
+ * - Non-model entities are included only when shouldCacheAllInstancesOnRefresh is true.
+ * - Section routing uses getApplicationSection (#232: version-history → modelVersion).
  *
  * #217 Phase 7: reads Entity.cache first; optional EntityVersion map is legacy fallback.
  */
 export function resolveEntitiesToFetchOnRefresh(
+  applicationUuid: string,
   modelEntities: Entity[],
   dataEntities: Entity[],
   entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {},
@@ -65,16 +68,16 @@ export function resolveEntitiesToFetchOnRefresh(
     entity,
   }));
 
-  const dataFetches: EntityFetchOnRefresh[] = dataEntities
+  const nonModelFetches: EntityFetchOnRefresh[] = dataEntities
     .filter((entity) =>
       shouldCacheAllInstancesOnRefresh(
         resolveCachePolicyCarrierForEntity(entity, entityDefinitionsByEntityUuid),
       ),
     )
     .map((entity) => ({
-      section: "data" as ApplicationSection,
+      section: getApplicationSection(applicationUuid, entity.uuid!),
       entity,
     }));
 
-  return [...modelFetches, ...dataFetches];
+  return [...modelFetches, ...nonModelFetches];
 }

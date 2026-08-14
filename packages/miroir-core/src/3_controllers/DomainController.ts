@@ -522,12 +522,43 @@ export class DomainController implements DomainControllerInterface {
               )
               .then((fetchContext: Record<string, any> | Action2Error) => {
                 if (fetchContext instanceof Action2Error) {
+                  // Bundled / unversioned deployments may omit modelVersion (#232 Slice 4).
+                  if (
+                    e.section === "modelVersion" &&
+                    fetchContext.errorMessage?.includes(
+                      "modelVersion section is not configured",
+                    )
+                  ) {
+                    return {
+                      parentName: e.entity.name,
+                      parentUuid: e.entity.uuid,
+                      applicationSection: "modelVersion" as ApplicationSection,
+                      instances: [],
+                    };
+                  }
                   return fetchContext;
                 } else {
                   return fetchContext["entityInstanceCollection"].returnedDomainElement;
                 }
               })
               .catch((reason) => {
+                const reasonMessage =
+                  reason instanceof Error
+                    ? reason.message
+                    : typeof reason === "string"
+                      ? reason
+                      : JSON.stringify(reason);
+                if (
+                  e.section === "modelVersion" &&
+                  reasonMessage.includes("modelVersion section is not configured")
+                ) {
+                  return {
+                    parentName: e.entity.name,
+                    parentUuid: e.entity.uuid,
+                    applicationSection: "modelVersion" as ApplicationSection,
+                    instances: [],
+                  };
+                }
                 log.error(
                   "DomainController loadConfigurationFromPersistenceStore failed to fetch entity instances for entity ",
                   e.entity.name,
@@ -552,8 +583,7 @@ export class DomainController implements DomainControllerInterface {
           };
 
           // Model is always loaded entirely (application concepts). Fetch model first so
-          // Entity cache policies are available for data refresh. EntityVersion is not
-          // required for Miroir bootstrap (#222 — EV instances load from data when listed).
+          // Entity cache policies are available for non-model refresh (#232 modelVersion).
           const modelFetchTargets = modelEntitiesToFetch.map((e) => ({
             section: "model" as ApplicationSection,
             entity: e,
@@ -561,7 +591,7 @@ export class DomainController implements DomainControllerInterface {
           const modelInstances = await Promise.all(modelFetchTargets.map(fetchEntityInstances));
 
           // Optional cache-policy fallback from EntityVersion when EV was fetched in the
-          // model phase (Library / Admin). Miroir EV is not in miroirModelEntities (#222);
+          // model phase (Library / Admin). Miroir EV is not in miroirModelEntities;
           // empty map is fine — refresh policy uses Entity.cache from model-fetched Entities.
           const entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {};
           const entityDefinitionFetchIndex = modelEntitiesToFetch.findIndex(
@@ -583,14 +613,17 @@ export class DomainController implements DomainControllerInterface {
           }
 
           const toFetchEntities = resolveEntitiesToFetchOnRefresh(
+            applicationUuid,
             modelEntitiesToFetch,
             dataEntitiesToFetch as Entity[],
             entityDefinitionsByEntityUuid,
           );
-          const dataFetchTargets = toFetchEntities.filter((e) => e.section === "data");
-          const dataInstances = await Promise.all(dataFetchTargets.map(fetchEntityInstances));
+          const nonModelFetchTargets = toFetchEntities.filter((e) => e.section !== "model");
+          const nonModelInstances = await Promise.all(
+            nonModelFetchTargets.map(fetchEntityInstances),
+          );
 
-          const allInstances = [...modelInstances, ...dataInstances];
+          const allInstances = [...modelInstances, ...nonModelInstances];
 
           const errors = allInstances.filter((result) => result instanceof Action2Error);
           const nonErrors = allInstances.filter((result) => !(result instanceof Action2Error));
