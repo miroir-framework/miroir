@@ -84,7 +84,7 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 
 ### Core Concepts
 - [Core Concepts Overview](guides/core-concepts.md) - Entity, Query, Transformer, Action, Report
-- [Architecture](guides/architecture.md) - Layered architecture and design patterns
+- [Architecture](guides/architecture.md) - Layered architecture and [action workflows](guides/architecture/workflows/runQuery-emulated-server.md) (start with `runBoxedQueryAction` on emulated server)
 - [Meta-Model & Jzod](guides/meta-model.md) - Understanding the meta-language
 - [Model vs Data](guides/model-vs-data.md) - Application structure
 - [Glossary](reference/glossary.md) - Terms and definitions
