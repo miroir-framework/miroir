@@ -37,7 +37,10 @@ export function templateLogLevelOptionsFactory(
         (LoggerGlobalContext.getCompositeAction() ? LoggerGlobalContext.getCompositeAction() : "*"),
       action: (opts) =>
         testSeparator + (LoggerGlobalContext.getAction() ? LoggerGlobalContext.getAction() : "*"),
-      template: "#{{testSuite}}{{test}}{{testAssertion}}{{compositeActionSequence}}{{action}}# " + template,
+      runToken: () => LoggerGlobalContext.getRunLogPrefix(),
+      template:
+        "{{runToken}} #{{testSuite}}{{test}}{{testAssertion}}{{compositeActionSequence}}{{action}}# " +
+        template,
       time: () => new Date().toTimeString().split(" ")[0],
     },
   };

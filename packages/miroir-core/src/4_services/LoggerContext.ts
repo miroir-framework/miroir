@@ -1,3 +1,39 @@
+export type RunLogDir = ">" | "." | "<";
+
+/** Crockford base32 without I, L, O, U — uppercase only, 6 chars ≈ 1e9 space. */
+export const CROCKFORD_RUN_ID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+export const RUN_LOG_PREFIX_PATTERN = /#([0-9A-HJKMNP-TV-Z]{6})\.(s\d+|-)[>.<]#/;
+
+export function generateRunId(): string {
+  let runId = "";
+  for (let i = 0; i < 6; i++) {
+    runId += CROCKFORD_RUN_ID_ALPHABET[Math.floor(Math.random() * CROCKFORD_RUN_ID_ALPHABET.length)];
+  }
+  return runId;
+}
+
+export function formatRunLogPrefix(
+  runId: string | undefined,
+  spanId: string | undefined,
+  dir: RunLogDir | undefined,
+): string {
+  const run = runId ?? "*NoRun*";
+  const span = spanId ?? "-";
+  const direction = dir ?? ".";
+  return `#${run}.${span}${direction}#`;
+}
+
+export function formatRunBanner(
+  runId: string,
+  phase: "START" | "END",
+  status?: string,
+): string {
+  if (phase === "END") {
+    return `RUN ${runId} END status=${status ?? "ok"}`;
+  }
+  return `RUN ${runId} START`;
+}
 
 export interface LoggerContextElement {
   testSuite: string | undefined;
@@ -5,36 +41,40 @@ export interface LoggerContextElement {
   testAssertion: string | undefined;
   compositeActionSequence: string | undefined;
   action: string | undefined;
-  // testLogLabel: string | undefined;
+  runId: string | undefined;
+  spanId: string | undefined;
+  dir: RunLogDir | undefined;
 }
 
-export const defaultLoggerContextElement: LoggerContextElement = {
-  testSuite: undefined,
-  test: undefined,
-  testAssertion: undefined,
-  // testLogLabel: undefined,
-  compositeActionSequence: undefined,
-  action: undefined,
-};
+export function emptyLoggerContextElement(): LoggerContextElement {
+  return {
+    testSuite: undefined,
+    test: undefined,
+    testAssertion: undefined,
+    compositeActionSequence: undefined,
+    action: undefined,
+    runId: undefined,
+    spanId: undefined,
+    dir: undefined,
+  };
+}
+
+export const defaultLoggerContextElement: LoggerContextElement = emptyLoggerContextElement();
 
 export class LoggerGlobalContext {
-  public static contextElement: LoggerContextElement = defaultLoggerContextElement;
-  // private static testSuite: string | undefined = undefined;
-  // private static test: string | undefined = undefined;
-  // private static testAssertion: string | undefined = undefined;
-  // private static compositeActionSequence: string | undefined = undefined;
-  // private static action: string | undefined = undefined;
+  public static contextElement: LoggerContextElement = emptyLoggerContextElement();
 
   public static testLogLabel: string = "";
 
   public static reset(): void {
-    LoggerGlobalContext.contextElement = defaultLoggerContextElement;
+    LoggerGlobalContext.contextElement = emptyLoggerContextElement();
+    LoggerGlobalContext.testLogLabel = "";
   }
-  
+
   public static getTestLogLabel(): string {
     return LoggerGlobalContext.testLogLabel;
   }
-  
+
   public static computeTestLogLabel(): string {
     return (
       LoggerGlobalContext.contextElement?.testSuite +
@@ -49,7 +89,7 @@ export class LoggerGlobalContext {
     return LoggerGlobalContext.contextElement?.testSuite;
   }
 
-  public static getTest(): string | undefined{
+  public static getTest(): string | undefined {
     return LoggerGlobalContext.contextElement?.test;
   }
 
@@ -63,6 +103,42 @@ export class LoggerGlobalContext {
 
   public static getAction(): string | undefined {
     return LoggerGlobalContext.contextElement?.action;
+  }
+
+  public static getRunId(): string | undefined {
+    return LoggerGlobalContext.contextElement?.runId;
+  }
+
+  public static getSpanId(): string | undefined {
+    return LoggerGlobalContext.contextElement?.spanId;
+  }
+
+  public static getRunLogDir(): RunLogDir | undefined {
+    return LoggerGlobalContext.contextElement?.dir;
+  }
+
+  public static getRunLogPrefix(): string {
+    return formatRunLogPrefix(
+      LoggerGlobalContext.contextElement.runId,
+      LoggerGlobalContext.contextElement.spanId,
+      LoggerGlobalContext.contextElement.dir,
+    );
+  }
+
+  public static setRunLogTokens(tokens: {
+    runId?: string | undefined;
+    spanId?: string | undefined;
+    dir?: RunLogDir | undefined;
+  }): void {
+    if ("runId" in tokens) {
+      LoggerGlobalContext.contextElement.runId = tokens.runId;
+    }
+    if ("spanId" in tokens) {
+      LoggerGlobalContext.contextElement.spanId = tokens.spanId;
+    }
+    if ("dir" in tokens) {
+      LoggerGlobalContext.contextElement.dir = tokens.dir;
+    }
   }
 
   public static setTestSuite(testSuite: string | undefined): void {

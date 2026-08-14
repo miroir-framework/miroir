@@ -2,7 +2,7 @@
 
 GitHub issue: [miroir-framework/miroir#235](https://github.com/miroir-framework/miroir/issues/235)
 
-**Status:** Plan (not started)
+**Status:** Slice 0 done · Slices 1–7 not started
 
 **Depends on / related:** #43 (logger startup race), #197 (UI integ), workflow doc `docs/guides/architecture/workflows/runQuery-emulated-server.md`
 
@@ -120,6 +120,8 @@ Add hop numbers to mermaid in `runQuery-emulated-server.md` when slice 3 lands.
 **Green:** `LoggerContext` / tracker unit tests; existing tests still pass (prefix change only).
 
 **Done when:** a fake leaf produces lines all containing the same 6-char token; nested trackAction increments span and restores parent on end.
+
+**Done (2026-08-14):** `generateRunId` / `formatRunLogPrefix` / `formatRunBanner`; tracker `startTest` begins a run; `trackAction` / `startTestAssertion` push LIFO spans; prefix template is `{{runToken}} #legacy…#`. Tests: `packages/miroir-core/tests/4_services/runLogTokens.unit.test.ts`. Enter/exit `>`/`<` log lines are slice 1.
 
 ### Slice 1 — Paired enter/exit at DomainController + trackAction
 

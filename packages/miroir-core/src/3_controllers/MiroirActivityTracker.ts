@@ -12,6 +12,11 @@ import {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { MiroirEventService, MiroirEventServiceInterface } from './MiroirEventService';
 import type { LogTopic } from '../0_interfaces/4-services/LoggerInterface';
+import {
+  formatRunBanner,
+  generateRunId,
+  LoggerGlobalContext,
+} from "../4_services/LoggerContext";
 
 const activityTypeToTopicMap: Record<MiroirActivity["activityType"], LogTopic> = {
   action: "action",
@@ -47,6 +52,10 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   private currentTest: string | undefined = undefined;
   private currentTestAssertion: string | undefined = undefined;
   private testAssertionsResults: TestSuiteResult = {};
+
+  private currentRunId: string | undefined = undefined;
+  private nextSpanNumber = 0;
+  private spanStack: number[] = [];
 
   // Transformer tracking configuration
   private transformerTrackingEnabled: boolean = true;
@@ -129,6 +138,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     this.currentTest = undefined;
     this.currentTestAssertion = undefined;
     this.testAssertionsResults = {};
+    this.resetRunLogTokens();
   }
 
   // subscribe(callback: (actions: MiroirEventTrackingData[]) => void): () => void {
@@ -145,6 +155,68 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   getCurrentActivityTopic(): LogTopic | undefined{
     // return this.currentActivityStack.length >0?activityTypeToTopicMap[this.currentActivityStack[this.currentActivityStack.length - 1].activityType]: undefined;
     return this.currentActivityStack.length >0?getActivityTopic(this.currentActivityStack[this.currentActivityStack.length - 1]): undefined;
+  }
+
+  private syncRunLogContext(dir: "." | ">" | "<" = "."): void {
+    const spanNumber = this.spanStack[this.spanStack.length - 1];
+    LoggerGlobalContext.setRunLogTokens({
+      runId: this.currentRunId,
+      spanId: spanNumber !== undefined ? `s${spanNumber}` : undefined,
+      dir,
+    });
+  }
+
+  private resetRunLogTokens(): void {
+    this.currentRunId = undefined;
+    this.nextSpanNumber = 0;
+    this.spanStack = [];
+    LoggerGlobalContext.setRunLogTokens({
+      runId: undefined,
+      spanId: undefined,
+      dir: undefined,
+    });
+  }
+
+  private beginRun(): string {
+    this.currentRunId = generateRunId();
+    this.nextSpanNumber = 0;
+    this.spanStack = [];
+    this.syncRunLogContext(".");
+    console.log(formatRunBanner(this.currentRunId, "START"));
+    return this.currentRunId;
+  }
+
+  private endRun(status: string): void {
+    if (this.currentRunId) {
+      console.log(formatRunBanner(this.currentRunId, "END", status));
+    }
+    this.resetRunLogTokens();
+  }
+
+  private ensureRun(): string {
+    if (!this.currentRunId) {
+      return this.beginRun();
+    }
+    return this.currentRunId;
+  }
+
+  private pushSpan(activity: MiroirActivity): void {
+    const runId = this.ensureRun();
+    this.nextSpanNumber += 1;
+    this.spanStack.push(this.nextSpanNumber);
+    activity.runId = runId;
+    activity.spanId = `s${this.nextSpanNumber}`;
+    this.syncRunLogContext(".");
+  }
+
+  private popSpan(activity: MiroirActivity): void {
+    if (!activity.spanId) {
+      return;
+    }
+    if (this.spanStack.length > 0) {
+      this.spanStack.pop();
+    }
+    this.syncRunLogContext(".");
   }
 
   // ##############################################################################################
@@ -211,6 +283,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
     // Push to action stack
     this.currentActivityStack.push(activity);
+    this.pushSpan(activity);
 
     this.miroirEventService?.pushEventFromActivity(activity);
     return id;
@@ -231,6 +304,8 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       event.error = error;
     }
 
+    this.popSpan(event);
+
     // Remove from action stack
     // const index = this.currentActivityStack.indexOf(trackingId);
     const index = this.currentActivityStack.findIndex(a => a.activityId === trackingId);
@@ -238,9 +313,17 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       this.currentActivityStack.splice(index, 1);
     }
 
-    // if (["testSuite", "test", "testAssertion"].includes(event.activityType)) {
-    //   this.currentTestPath.pop();
-    // }
+    if (event.activityType === "test" && event.runId && event.runId === this.currentRunId) {
+      this.endRun(error ? "error" : "ok");
+    } else if (
+      event.activityType === "action" &&
+      this.spanStack.length === 0 &&
+      this.currentTest === undefined &&
+      this.currentRunId
+    ) {
+      this.endRun(error ? "error" : "ok");
+    }
+
     this.miroirEventService?.pushEventFromActivity(event);
   }
 
@@ -300,6 +383,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
     // Push to action stack
     this.currentActivityStack.push(activity);
+    this.pushSpan(activity);
 
     this.miroirEventService?.pushEventFromActivity(activity);
     return id;
@@ -566,17 +650,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
     this.currentActivityStack.push(activity);
     this.currentTestAssertion = testAssertion;
-
-    // // Remove any previous testAssertion entries from currentTestPath
-    // // to ensutry
-    // while (this.currentTestPath.length > 0) {re each testAssertion gets its own clean en
-    //   const lastElement = this.currentTestPath[this.currentTestPath.length - 1];
-    //   if (lastElement.testAssertion) {
-    //     this.currentTestPath.pop();
-    //   } else {
-    //     break;
-    //   }
-    // }
+    this.pushSpan(activity);
 
     this.miroirEventService?.pushEventFromActivity(activity);
 
@@ -807,6 +881,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
     this.currentActivityStack.push(activity);
     this.currentTest = test;
+
+    const runId = this.beginRun();
+    activity.runId = runId;
 
     // // Remove any previous test or testAssertion entries from currentTestPath
     // // to ensure each test gets its own clean path within the current test suite context

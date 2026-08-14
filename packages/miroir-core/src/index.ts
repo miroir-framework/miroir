@@ -1197,7 +1197,15 @@ export { getActivityTopic, MiroirActivityTracker } from "./3_controllers/MiroirA
 export { MiroirContext } from "./3_controllers/MiroirContext.js";
 // export { TransformerEventService } from "./3_controllers/TransformerEventService.js";
 export { modelInitialize } from "./3_controllers/ModelInitializer.js";
-export { LoggerGlobalContext } from "./4_services/LoggerContext.js";
+export {
+  CROCKFORD_RUN_ID_ALPHABET,
+  formatRunBanner,
+  formatRunLogPrefix,
+  generateRunId,
+  LoggerGlobalContext,
+  RUN_LOG_PREFIX_PATTERN,
+  emptyLoggerContextElement,
+} from "./4_services/LoggerContext.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/MiroirLoggerFactory.js";
 export {
   PersistenceStoreController,

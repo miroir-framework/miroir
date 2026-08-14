@@ -21,6 +21,10 @@ interface MiroirActivity_Root {
   error?: string;
   depth: number;
   children: string[];
+  /** Grep token for the test leaf / top-level action run. Not the internal activityId. */
+  runId?: string;
+  /** Span within the run, e.g. "s12". Same id on enter and exit. */
+  spanId?: string;
 }
 
 // Discriminated union for event tracking data
