@@ -210,7 +210,7 @@ function getOrCreateEntityAdapter(
   entityInstancesLocationIndex: string,
   idAttribute?: string | string[]
 ): EntityAdapter<EntityInstance, string> {
-  log.info(
+  log.debug(
     "getOrCreateEntityAdapter called for entityInstancesLocationIndex",
     entityInstancesLocationIndex,
     "with idAttribute",
@@ -298,7 +298,7 @@ function registerEntityAdapterFromPresentModelSource(
   const idAttribute = getEntityPrimaryKeyAttribute(source as any);
   const targetEntityUuid =
     (source as any).entityUuid ?? (source as any).uuid;
-  log.info(
+  log.debug(
     "registerEntityAdapterFromPresentModelSource",
     source,
     "idAttribute",
@@ -405,15 +405,13 @@ function loadNewEntityInstancesInLocalCache(
   state: LocalCacheSliceState,
   instanceCollection: EntityInstanceCollection
 ) {
-  log.info(
+  log.debug(
     "loadNewEntityInstancesInLocalCache Redux called with deployment",
     deploymentUuid,
     "section",
     section,
     "instanceCollection.parentUuid",
     instanceCollection.parentUuid,
-    "instanceCollection",
-    instanceCollection
   );
   // #217 Phase 11: register PK from Entity only (ED is historical).
   if (instanceCollection.parentUuid === entityEntity.uuid) {
@@ -437,15 +435,13 @@ function loadNewEntityInstancesInLocalCache(
     instanceCollection.parentUuid,
     segment
   );
-  log.info(
+  log.debug(
     "loadNewEntityInstancesInLocalCache for deployment",
     deploymentUuid,
     "section",
     section,
     "segment",
     segment,
-    "instanceCollection",
-    instanceCollection,
     "instanceCollectionEntityIndex",
     instanceCollectionEntityIndex
   );
@@ -844,17 +840,13 @@ function handleModelAction(
 ): Action2ReturnType {
   const deploymentUuid =
     applicationDeploymentMap[action.payload.application];
-  log.info(
+  log.debug(
     "localCacheSliceObject handleModelAction called",
     action.actionType,
     "application",
     action.payload.application,
     "deploymentUuid",
     deploymentUuid,
-    "applicationDeploymentMap",
-    applicationDeploymentMap,
-    "action",
-    action, 
   );
   // TODO: fail in case of Transactional Entity (Entity, EntityVersion...)?
   // switch (action.actionType) {

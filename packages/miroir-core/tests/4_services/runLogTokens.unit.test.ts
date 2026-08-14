@@ -12,6 +12,11 @@ import {
   RUN_LOG_PREFIX_PATTERN,
 } from "../../src/4_services/LoggerContext";
 import { summarizeQueryHopResult, trackQueryHop } from "../../src/4_services/trackQueryHop";
+import {
+  formatRollbackSectionSummary,
+  logPhaseForActionType,
+  summarizeRollbackInstanceCollections,
+} from "../../src/4_services/rollbackLog";
 
 describe("run log tokens", () => {
   afterEach(() => {
@@ -387,10 +392,93 @@ describe("MiroirActivityTracker writes test labels to LoggerGlobalContext", () =
 });
 
 describe("logger prefix template includes run token", () => {
-  it("places runToken before the legacy test-label block", () => {
+  it("places runToken before the legacy test-label block and phase after it", () => {
     const options = templateLogLevelOptionsFactory("3_miroir-core_DomainController", "INFO", "[{{time}}] {{level}} {{name}}### ");
     expect(options.prefix?.template).toMatch(
-      /^{{runToken}} #{{testSuite}}{{test}}{{testAssertion}}{{compositeActionSequence}}{{action}}# /,
+      /^{{runToken}} #{{testSuite}}{{test}}{{testAssertion}}{{compositeActionSequence}}{{action}}# \{\{phase\}\} /,
     );
+  });
+});
+
+describe("log phase on LoggerGlobalContext and tracker", () => {
+  let tracker: MiroirActivityTracker;
+
+  beforeEach(() => {
+    LoggerGlobalContext.reset();
+    tracker = new MiroirActivityTracker();
+    new MiroirEventService(tracker);
+  });
+
+  afterEach(() => {
+    tracker.destroy();
+    LoggerGlobalContext.reset();
+  });
+
+  it("starts with no phase", () => {
+    expect(LoggerGlobalContext.getPhase()).toBeUndefined();
+    expect(tracker.getPhase()).toBeUndefined();
+  });
+
+  it("pushPhase / popPhase nest and restore", () => {
+    tracker.pushPhase("rollback");
+    expect(LoggerGlobalContext.getPhase()).toBe("rollback");
+    tracker.pushPhase("query");
+    expect(LoggerGlobalContext.getPhase()).toBe("query");
+    tracker.popPhase();
+    expect(LoggerGlobalContext.getPhase()).toBe("rollback");
+    tracker.popPhase();
+    expect(LoggerGlobalContext.getPhase()).toBeUndefined();
+  });
+
+  it("trackAction options.phase is set during the span and cleared after", async () => {
+    await tracker.trackAction("runBoxedQueryAction", "DC.handleBoxedQuery", async () => {
+      expect(LoggerGlobalContext.getPhase()).toBe("query");
+    }, { phase: "query" });
+    expect(LoggerGlobalContext.getPhase()).toBeUndefined();
+  });
+
+  it("trackTestAssertion sets phase=assertion", async () => {
+    await tracker.trackTest("Refresh all Instances", undefined, async () => {
+      await tracker.trackTestAssertion("checkNumberOfBooks", undefined, async () => {
+        expect(LoggerGlobalContext.getPhase()).toBe("assertion");
+      });
+      expect(LoggerGlobalContext.getPhase()).toBeUndefined();
+    });
+  });
+});
+
+describe("rollback section summaries", () => {
+  it("formatRollbackSectionSummary is one INFO line per application/section", () => {
+    expect(
+      formatRollbackSectionSummary("5af03c98-fe5e-490b-b08f-e1230971c57f", "data", 6, 25),
+    ).toBe(
+      "rollback application=5af03c98-fe5e-490b-b08f-e1230971c57f section=data entities=6 instances=25",
+    );
+  });
+
+  it("summarizeRollbackInstanceCollections groups by section and lists entities", () => {
+    const { summaries, perEntity } = summarizeRollbackInstanceCollections("app-1", [
+      { applicationSection: "model", parentName: "Entity", instances: [{}, {}] },
+      { applicationSection: "model", parentName: "EntityVersion", instances: [{}] },
+      { applicationSection: "data", parentName: "Book", instances: [{}, {}, {}, {}, {}] },
+    ]);
+    expect(summaries).toEqual([
+      "rollback application=app-1 section=model entities=2 instances=3",
+      "rollback application=app-1 section=data entities=1 instances=5",
+    ]);
+    expect(perEntity).toEqual([
+      "rollback application=app-1 section=model entity=Entity instances=2",
+      "rollback application=app-1 section=model entity=EntityVersion instances=1",
+      "rollback application=app-1 section=data entity=Book instances=5",
+    ]);
+  });
+
+  it("logPhaseForActionType maps rollback / bootstrap / query", () => {
+    expect(logPhaseForActionType("rollback")).toBe("rollback");
+    expect(logPhaseForActionType("remoteLocalCacheRollback")).toBe("rollback");
+    expect(logPhaseForActionType("initModel")).toBe("bootstrap");
+    expect(logPhaseForActionType("storeManagementAction_openStore")).toBe("bootstrap");
+    expect(logPhaseForActionType("runBoxedQueryAction")).toBe("query");
+    expect(logPhaseForActionType("getInstances")).toBeUndefined();
   });
 });

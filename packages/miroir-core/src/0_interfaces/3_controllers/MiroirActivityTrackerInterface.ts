@@ -61,6 +61,7 @@ export type TestAssertionPath = {testSuite?: string, test?: string, testAssertio
 export type TrackActionOptions<T> = {
   enterExtra?: string;
   exitExtra?: (result: T | undefined, status: string) => string | undefined;
+  phase?: "bootstrap" | "rollback" | "query" | "assertion";
 };
 
 // #############################################################################################
@@ -171,6 +172,10 @@ export interface MiroirActivityTrackerInterface {
    * @returns The current action name or undefined
    */
   getAction(): string | undefined;
+
+  pushPhase(phase: "bootstrap" | "rollback" | "query" | "assertion"): void;
+  popPhase(): void;
+  getPhase(): "bootstrap" | "rollback" | "query" | "assertion" | undefined;
 
   trackAction<T>(
     actionType: string,

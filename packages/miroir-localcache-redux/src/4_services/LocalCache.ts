@@ -210,7 +210,7 @@ export class LocalCache implements LocalCacheInterface {
     action: LocalCacheAction,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Action2ReturnType {
-    log.info("LocalCache handleLocalCacheAction", action, applicationDeploymentMap);
+    log.debug("LocalCache handleLocalCacheAction", action, applicationDeploymentMap);
     // log.info("LocalCache handleAction", JSON.stringify(action, undefined, 2));
 
     const actionType = (action as any)?.actionType;
@@ -244,7 +244,7 @@ export class LocalCache implements LocalCacheInterface {
       )
     );
     this.recalibrateMonitor();
-    log.info("LocalCache handleAction result=", result);
+    log.debug("LocalCache handleAction result=", result);
     return result;
   }
 

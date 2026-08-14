@@ -1207,7 +1207,14 @@ export {
   LoggerGlobalContext,
   RUN_LOG_PREFIX_PATTERN,
   emptyLoggerContextElement,
+  type LogPhase,
 } from "./4_services/LoggerContext.js";
+export {
+  formatRollbackEntityDebug,
+  formatRollbackSectionSummary,
+  logPhaseForActionType,
+  summarizeRollbackInstanceCollections,
+} from "./4_services/rollbackLog.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/MiroirLoggerFactory.js";
 export { summarizeQueryHopResult, trackQueryHop } from "./4_services/trackQueryHop.js";
 export {

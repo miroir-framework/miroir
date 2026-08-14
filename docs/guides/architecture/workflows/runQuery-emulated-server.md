@@ -321,7 +321,7 @@ Log signatures to look for on this path (INFO enter/exit; payloads at DEBUG):
 #K7X2NQ.s4<# ← DC.compositeRunBoxedQuery status=ok
 ```
 
-Sequelize `SELECT … FROM "Library"."Book"` may still appear on stdout (slice 5). Client vs server `DC.handleBoxedQuery`: the second burst sits **inside** `REST.POST /query` and has `mode=local`.
+Sequelize SQL is DEBUG (`SqlDbStore` `logging` callback). Client vs server `DC.handleBoxedQuery`: the second burst sits **inside** `REST.POST /query` and has `mode=local`.
 
 Client and server DomainControllers share one logger name. Distinguish them by **neighbors**: stub/RestServer lines sit **between** the two DC bursts; `PersistenceStoreController` / Sequelize sit on the server side only.
 
@@ -329,10 +329,10 @@ Client and server DomainControllers share one logger name. Distinguish them by *
 
 ## 7. How to read a log line
 
-Typical interior line (after slices 0–2):
+Typical interior line (after slices 0–5):
 
 ```
-#K7X2NQ.s5.# #domainController.data.crud-Refresh all Instances-Refresh all Instances-*-runBoxedQueryAction# [22:41:27] info 4_miroir-localcache-redux_LocalCache### LocalCache action= {
+#K7X2NQ.s5.# #domainController.data.crud-Refresh all Instances-Refresh all Instances-*-runBoxedQueryAction# query [22:41:27] info 3_miroir-core_DomainController### …
 ```
 
 Enter / exit (same span, opposite direction):
@@ -346,6 +346,7 @@ Enter / exit (same span, opposite direction):
 |-------|---------|
 | `#K7X2NQ.s5.#` | Run token: `#{runId}.{spanId}{dir}#` — `>` enter, `.` interior, `<` exit. No span yet: `#K7X2NQ.-.#`. No run: `#*NoRun*.-.#` |
 | `#domainController.data.crud-Refresh all Instances-…#` | Legacy labels: `testSuite-test-testAssertion-compositeAction-action` |
+| `query` / `rollback` / `assertion` / `bootstrap` / `*` | `phase` on `LoggerGlobalContext` (after the label block) |
 | trailing `runBoxedQueryAction` | `LoggerGlobalContext.setAction(actionType)` — you are **inside** that action |
 | trailing `*` | No current action on the context (bootstrap, or action finished) |
 | `[22:41:27]` | Local time |
@@ -397,14 +398,14 @@ grep 'domainController.data.crud-Refresh all Instances' logs.txt
 
 Nested children have their own `spanId`. Reconstruct parent + children by taking every line with that `runId` **between** the parent span’s `>` and `<`.
 
+**Rollback vs query (slice 5):** `phase` is `rollback` then `query` then `assertion`. Each application rollback emits **one INFO line per section** (`rollback application=… section=data entities=N instances=M`). Per-entity `getInstances` and Sequelize `Executing (default):` are DEBUG.
+
 **Noise you can skip when hunting a query:**
 
-- `Executing (default): INSERT/CREATE TABLE/DROP TABLE` during `initModel` / playfield seed.
+- Other `RUN` tokens before the leaf (session `initModel` / playfield seed, `phase=bootstrap`).
 - Redux “non-serializable value” warnings (`Date` on `timestamp`).
-- Repeated `getOrCreateEntityAdapter` while rollback hydrates the cache.
-- `upsertInstance` of Entity / EntityVersion during bootstrap.
 
-**Anchor lines for this leaf:** `RUN {runId} START` next to the suite/leaf labels, then `#….sN># → DC.compositeRunBoxedQuery`. Everything above that `RUN` (other `RUN` tokens, `initModel`, rollback SQL) is bootstrap + refresh.
+**Anchor lines for this leaf:** `RUN {runId} START` next to the suite/leaf labels, then `rollback application=` summaries, then `#….sN># → DC.compositeRunBoxedQuery`.
 
 ---
 

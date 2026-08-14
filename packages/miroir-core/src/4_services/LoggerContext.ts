@@ -1,3 +1,7 @@
+import type { LogPhase } from "./rollbackLog";
+
+export type { LogPhase } from "./rollbackLog";
+
 export type RunLogDir = ">" | "." | "<";
 
 /** Crockford base32 without I, L, O, U — uppercase only, 6 chars ≈ 1e9 space. */
@@ -59,6 +63,7 @@ export interface LoggerContextElement {
   runId: string | undefined;
   spanId: string | undefined;
   dir: RunLogDir | undefined;
+  phase: LogPhase | undefined;
 }
 
 export function emptyLoggerContextElement(): LoggerContextElement {
@@ -71,6 +76,7 @@ export function emptyLoggerContextElement(): LoggerContextElement {
     runId: undefined,
     spanId: undefined,
     dir: undefined,
+    phase: undefined,
   };
 }
 
@@ -177,5 +183,13 @@ export class LoggerGlobalContext {
 
   public static setAction(action: string | undefined): void {
     LoggerGlobalContext.contextElement.action = action;
+  }
+
+  public static getPhase(): LogPhase | undefined {
+    return LoggerGlobalContext.contextElement?.phase;
+  }
+
+  public static setPhase(phase: LogPhase | undefined): void {
+    LoggerGlobalContext.contextElement.phase = phase;
   }
 }

@@ -46,8 +46,8 @@ export class SqlDbStore implements PersistenceStoreAbstractInterface {
       define: {
         timestamps: false,
       },
-      // timestamps: false,
-    }); // Example for postgres
+      logging: (sql) => log.debug(sql),
+    });
   }
 
   // ##############################################################################################

@@ -113,6 +113,10 @@ import type { EvolutionTraceableAction } from "../2_domain/evolutionTraceWriter.
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
+import {
+  logPhaseForActionType,
+  summarizeRollbackInstanceCollections,
+} from "../4_services/rollbackLog.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants";
 
@@ -383,6 +387,27 @@ export class DomainController implements DomainControllerInterface {
     deploymentUuid: string,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2VoidReturnType> {
+    return this.miroirContext.miroirActivityTracker.trackAction(
+      "rollback",
+      "rollback",
+      () =>
+        this.executeLoadConfigurationFromPersistenceStore(
+          applicationUuid,
+          deploymentUuid,
+          applicationDeploymentMap,
+        ),
+      {
+        phase: "rollback",
+        enterExtra: `application=${applicationUuid}`,
+      },
+    );
+  }
+
+  private async executeLoadConfigurationFromPersistenceStore(
+    applicationUuid: Uuid,
+    deploymentUuid: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2VoidReturnType> {
     // log.info(
     //   "DomainController loadConfigurationFromPersistenceStore called for",
     //   "application",
@@ -627,6 +652,16 @@ export class DomainController implements DomainControllerInterface {
 
           const errors = allInstances.filter((result) => result instanceof Action2Error);
           const nonErrors = allInstances.filter((result) => !(result instanceof Action2Error));
+          const { summaries, perEntity } = summarizeRollbackInstanceCollections(
+            applicationUuid,
+            nonErrors as { applicationSection?: string; parentName?: string; instances?: unknown[] }[],
+          );
+          for (const line of summaries) {
+            log.info(line);
+          }
+          for (const line of perEntity) {
+            log.debug(line);
+          }
           // log.info(
           //   "DomainController loadConfigurationFromPersistenceStore fetched all instances for",
           //   "application",
@@ -703,13 +738,12 @@ export class DomainController implements DomainControllerInterface {
       if (result instanceof Action2Error) {
         return result;
       } else {
-        log.info(
+        log.debug(
           "DomainController loadConfigurationFromPersistenceStore completed successfully for",
           "application",
           applicationUuid,
           "deployment",
           deploymentUuid,
-          result,
         );
         return Promise.resolve(ACTION_OK);
       }
@@ -747,6 +781,7 @@ export class DomainController implements DomainControllerInterface {
           currentModel,
         ),
       {
+        phase: "query",
         enterExtra: `strategy=${strategy} mode=${this.persistenceStoreAccessMode}`,
       },
     );
@@ -2589,8 +2624,8 @@ export class DomainController implements DomainControllerInterface {
         error as any,
       );
     }
-    log.info(
-      "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction DONE actionType=",
+    log.debug(
+      "DomainController handleModelAction DONE actionType=",
       modelAction["actionType"],
       "application",
       modelAction.payload.application,
@@ -2938,20 +2973,10 @@ export class DomainController implements DomainControllerInterface {
     // localContext: Record<string, any> = {},
     currentModel?: MiroirModelEnvironment,
   ): Promise<Action2VoidReturnType> {
-    log.info(
-      "handleActionInternal START for action",
-      domainAction,
-      // "deploymentUuid",
-      // domainAction.deploymentUuid,
-      // "actionType",
-      // (domainAction as any).actionType,
-      // "actionType",
-      // domainAction?.actionType,
-      // "objects",
-      // JSON.stringify((domainAction as any)["objects"], null, 2)
-    );
+    log.debug("handleActionInternal START for action", domainAction);
     const application = (domainAction.payload as any).application ?? "APPLICATION_UUID_NOT_FOUND";
     const deploymentUuid = applicationDeploymentMap[application];
+    const actionPhase = logPhaseForActionType(domainAction.actionType);
 
 
     // if (
@@ -2969,6 +2994,9 @@ export class DomainController implements DomainControllerInterface {
       LoggerGlobalContext.setAction(domainAction.actionType);
       // Also set in MiroirActivityTracker for MiroirEventService
       this.miroirContext.miroirActivityTracker.setAction(domainAction.actionType);
+      if (actionPhase) {
+        this.miroirContext.miroirActivityTracker.pushPhase(actionPhase);
+      }
       switch (domainAction.actionType) {
         // case "modelAction":
         case "initModel":
@@ -3193,6 +3221,9 @@ export class DomainController implements DomainControllerInterface {
         "DomainController handleAction caught error" + JSON.stringify(error, null, 2),
       );
     } finally {
+      if (actionPhase) {
+        this.miroirContext.miroirActivityTracker.popPhase();
+      }
       LoggerGlobalContext.setAction(undefined);
       // Also clear in MiroirActivityTracker for MiroirEventService
       this.miroirContext.miroirActivityTracker.setAction(undefined);
@@ -4111,6 +4142,7 @@ export class DomainController implements DomainControllerInterface {
           applicationDeploymentMap,
           localContext,
         ),
+      { phase: "query" },
     );
   }
 

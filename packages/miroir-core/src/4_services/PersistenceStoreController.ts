@@ -810,7 +810,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (currentStore instanceof Action2Error) {
       return currentStore;
     }
-    log.info(
+    log.debug(
       this.logHeader,
       "getInstances",
       "section",

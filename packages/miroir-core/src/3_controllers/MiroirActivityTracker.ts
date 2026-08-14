@@ -18,6 +18,7 @@ import {
   formatSpanBoundaryLine,
   generateRunId,
   LoggerGlobalContext,
+  type LogPhase,
 } from "../4_services/LoggerContext";
 
 const activityTypeToTopicMap: Record<MiroirActivity["activityType"], LogTopic> = {
@@ -58,6 +59,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   private currentRunId: string | undefined = undefined;
   private nextSpanNumber = 0;
   private spanStack: number[] = [];
+  private phaseStack: LogPhase[] = [];
 
   // Transformer tracking configuration
   private transformerTrackingEnabled: boolean = true;
@@ -375,6 +377,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     this.syncRunLogContext(">");
     this.emitSpanBoundary("enter", block, undefined, options?.enterExtra);
     this.syncRunLogContext(".");
+    if (options?.phase) {
+      this.pushPhase(options.phase);
+    }
     let status = "ok";
     let errorMessage: string | undefined;
     let result: T | undefined;
@@ -386,6 +391,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       errorMessage = error instanceof Error ? error.message : String(error);
       throw error;
     } finally {
+      if (options?.phase) {
+        this.popPhase();
+      }
       this.syncRunLogContext("<");
       this.emitSpanBoundary("exit", block, status, options?.exitExtra?.(result, status));
       this.endActivity(trackingId, errorMessage);
@@ -446,6 +454,20 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
 
   getAction(): string | undefined {
     return this.currentAction;
+  }
+
+  pushPhase(phase: LogPhase): void {
+    this.phaseStack.push(phase);
+    LoggerGlobalContext.setPhase(phase);
+  }
+
+  popPhase(): void {
+    this.phaseStack.pop();
+    LoggerGlobalContext.setPhase(this.phaseStack[this.phaseStack.length - 1]);
+  }
+
+  getPhase(): LogPhase | undefined {
+    return this.phaseStack[this.phaseStack.length - 1];
   }
 
   // ###############################################################################################
@@ -544,6 +566,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   ): Promise<T> {
     // const testAssertionParentId = this.getCurrentActivityId();
     const trackingId = this.startTestAssertion(testAssertionName, parentTrackingId);
+    this.pushPhase("assertion");
     try {
       this.currentTestPath.push({ testAssertion: testAssertionName });
       this.setTestAssertion(testAssertionName);
@@ -566,6 +589,7 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       );
       this.currentTestPath.pop();
       this.restoreTestLabelsFromPath();
+      this.popPhase();
     }
   }
 

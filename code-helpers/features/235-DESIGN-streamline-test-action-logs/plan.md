@@ -2,7 +2,7 @@
 
 GitHub issue: [miroir-framework/miroir#235](https://github.com/miroir-framework/miroir/issues/235)
 
-**Status:** Slices 0–4 done · Slices 5–7 not started
+**Status:** Slices 0–5 done · Slices 6–7 not started
 
 **Depends on / related:** #43 (logger startup race), #197 (UI integ), workflow doc `docs/guides/architecture/workflows/runQuery-emulated-server.md`
 
@@ -174,6 +174,8 @@ No production code required if slice 1 names match the table.
 - Optional: Sequelize behind a logger or suppress in default integ config.
 
 **Done when:** rollback vs query is obvious within ~30 INFO lines (#235 AC 2).
+
+**Done (2026-08-15):** `LogPhase` on `LoggerGlobalContext` + tracker stack (`pushPhase` / `popPhase`). Prefix `{{phase}}` after the label block (`*` if unset). Boundaries: `handleActionInternal` (rollback/bootstrap), query `trackAction` (`phase=query`), `trackTestAssertion` (`assertion`). `loadConfigurationFromPersistenceStore` wraps `→ rollback` and emits one INFO summary per section; per-entity lines DEBUG. `getInstances` / LocalCache adapter churn / `handleActionInternal START` demoted. Sequelize `SqlDbStore` `logging` → `log.debug`.
 
 ### Slice 6 — UI + export
 
