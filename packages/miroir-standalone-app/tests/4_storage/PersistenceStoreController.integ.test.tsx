@@ -128,6 +128,41 @@ const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConf
   ? miroirConfig.client.deploymentStorageConfig[testApplicationDeploymentUuid]
   : miroirConfig.client.serverConfig.storeSectionConfiguration[testApplicationDeploymentUuid];
 
+function expectDeleteMissingAuthorInstanceError(instanceDeletedError: ActionError): void {
+  expect(instanceDeletedError.errorType).toBe("FailedToDeleteInstance");
+  const entityUuid = entityAuthor.uuid!;
+  const instanceUuid = author1.uuid!;
+  const errorMessage = instanceDeletedError.errorMessage ?? "";
+  const dataStoreType = libraryDeploymentStorageConfiguration.data.emulatedServerType;
+
+  switch (dataStoreType) {
+    case "indexedDb":
+      expect(errorMessage).toBe(
+        `failed to delete instance ${instanceUuid} of entity ${entityUuid}`,
+      );
+      break;
+    case "mongodb":
+      expect(errorMessage).toBe(`Collection ${entityUuid} does not exist`);
+      break;
+    case "sql":
+      expect(errorMessage).toBe(
+        `could not find entity ${entityUuid} in database schema library, available entities: `,
+      );
+      break;
+    case "filesystem":
+      expect(errorMessage).toMatch(
+        new RegExp(
+          `^could not find entity ${entityUuid} in database schema library, available entities:`,
+        ),
+      );
+      break;
+    default:
+      throw new Error(
+        `Unsupported data store type for delete Author Instance fails test: ${dataStoreType}`,
+      );
+  }
+}
+
 const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
   .emulateServer
   ? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
@@ -948,16 +983,6 @@ describe.sequential("PersistenceStoreController.integ.test", () => {
 
     const instanceDeletedError = instanceDeleted as ActionError;
     console.log("instanceDeletedError", instanceDeletedError);
-    expect(
-      {
-        errorType: instanceDeletedError.errorType,
-        errorMessage: instanceDeletedError.errorMessage,
-      },
-      "failed to delete Author",
-    ).toEqual({
-      errorType: "FailedToDeleteInstance",
-      errorMessage:
-        "could not find entity d7a144ff-d1b9-4135-800c-a7cfc1f38733 in database schema library, available entities: ",
-    });
+    expectDeleteMissingAuthorInstanceError(instanceDeletedError);
   });
 });
