@@ -257,6 +257,12 @@ export interface MiroirActivityTrackerInterface {
    */
   setTestSuite(testSuite: string | undefined): void;
 
+  /** Push a suite onto the log path so leaf trackTest does not clear the suite label. */
+  beginTestSuiteLogContext(testSuite: string): void;
+
+  /** Pop the suite pushed by beginTestSuiteLogContext and restore parent labels. */
+  endTestSuiteLogContext(): void;
+
   /**
    * Get the current test suite
    * @returns The current test suite name or undefined

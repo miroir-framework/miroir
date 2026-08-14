@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
+import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
 import { templateLogLevelOptionsFactory } from "../../src/4_services/MiroirLoggerFactory";
 import {
   CROCKFORD_RUN_ID_ALPHABET,
@@ -204,6 +205,75 @@ describe("MiroirActivityTracker writes run log tokens", () => {
     tracker.endActivity(assertionId);
     expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.-.#`);
     tracker.endActivity(testId);
+  });
+});
+
+describe("MiroirActivityTracker writes test labels to LoggerGlobalContext", () => {
+  let tracker: MiroirActivityTracker;
+
+  beforeEach(() => {
+    LoggerGlobalContext.reset();
+    tracker = new MiroirActivityTracker();
+    new MiroirEventService(tracker);
+  });
+
+  afterEach(() => {
+    tracker.destroy();
+    LoggerGlobalContext.reset();
+  });
+
+  it("startTest writes the leaf label used by the logger prefix", () => {
+    tracker.startTest("Refresh all Instances");
+    expect(LoggerGlobalContext.getTest()).toBe("Refresh all Instances");
+    const options = templateLogLevelOptionsFactory(
+      "3_miroir-core_DomainController",
+      "INFO",
+      "[{{time}}] {{level}} {{name}}### ",
+    );
+    expect(options.prefix?.test?.({} as never)).toBe("-Refresh all Instances");
+  });
+
+  it("trackTestSuite / trackTest / trackTestAssertion nest and restore labels", async () => {
+    await tracker.trackTestSuite(
+      "domainController.data.crud",
+      "domainController.data.crud",
+      undefined,
+      async () => {
+        expect(LoggerGlobalContext.getTestSuite()).toBe("domainController.data.crud");
+        await tracker.trackTest("Refresh all Instances", undefined, async () => {
+          expect(LoggerGlobalContext.getTest()).toBe("Refresh all Instances");
+          expect(LoggerGlobalContext.getTestSuite()).toBe("domainController.data.crud");
+          await tracker.trackTestAssertion("checkNumberOfBooks", undefined, async () => {
+            expect(LoggerGlobalContext.getTestAssertion()).toBe("checkNumberOfBooks");
+            expect(LoggerGlobalContext.getTest()).toBe("Refresh all Instances");
+          });
+          expect(LoggerGlobalContext.getTestAssertion()).toBeUndefined();
+          expect(LoggerGlobalContext.getTest()).toBe("Refresh all Instances");
+        });
+        expect(LoggerGlobalContext.getTest()).toBeUndefined();
+        expect(LoggerGlobalContext.getTestSuite()).toBe("domainController.data.crud");
+      },
+    );
+    expect(LoggerGlobalContext.getTestSuite()).toBeUndefined();
+  });
+
+  it("keeps a walk-level suite label while trackTest is running", async () => {
+    tracker.beginTestSuiteLogContext("domainController.data.crud");
+    try {
+      await tracker.trackTest("Refresh all Instances", undefined, async () => {
+        expect(LoggerGlobalContext.getTestSuite()).toBe("domainController.data.crud");
+        expect(LoggerGlobalContext.getTest()).toBe("Refresh all Instances");
+        await tracker.trackTestAssertion("checkNumberOfBooks", undefined, async () => {
+          expect(LoggerGlobalContext.getTestSuite()).toBe("domainController.data.crud");
+        });
+        expect(LoggerGlobalContext.getTestSuite()).toBe("domainController.data.crud");
+      });
+      expect(LoggerGlobalContext.getTest()).toBeUndefined();
+      expect(LoggerGlobalContext.getTestSuite()).toBe("domainController.data.crud");
+    } finally {
+      tracker.endTestSuiteLogContext();
+    }
+    expect(LoggerGlobalContext.getTestSuite()).toBeUndefined();
   });
 });
 

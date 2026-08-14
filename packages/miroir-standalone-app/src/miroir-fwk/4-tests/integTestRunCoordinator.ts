@@ -84,6 +84,15 @@ export type CreateIntegActivityTrackerOptions = {
 export async function createIntegActivityTracker(
   options: CreateIntegActivityTrackerOptions = {},
 ): Promise<IntegActivityTrackerBundle> {
+  const startedTracker = MiroirLoggerFactory.getStartedActivityTracker();
+  const startedEventService = MiroirLoggerFactory.getStartedEventService();
+  if (startedTracker && startedEventService) {
+    return {
+      miroirActivityTracker: startedTracker,
+      miroirEventService: startedEventService,
+    };
+  }
+
   const miroirActivityTracker = new MiroirActivityTracker();
   const miroirEventService = new MiroirEventService(miroirActivityTracker);
 

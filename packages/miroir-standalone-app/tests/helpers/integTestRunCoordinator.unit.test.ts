@@ -117,11 +117,15 @@ describe("createIntegActivityTracker (B1)", () => {
 
     await createIntegActivityTracker();
 
-    expect(startSpy).not.toHaveBeenCalled();
+    if (!MiroirLoggerFactory.getStartedActivityTracker()) {
+      expect(startSpy).not.toHaveBeenCalled();
+    }
     startSpy.mockRestore();
   });
 
   it("wires loggers when factory and options are provided", async () => {
+    vi.spyOn(MiroirLoggerFactory, "getStartedActivityTracker").mockReturnValue(undefined);
+    vi.spyOn(MiroirLoggerFactory, "getStartedEventService").mockReturnValue(undefined);
     const startSpy = vi
       .spyOn(MiroirLoggerFactory, "startRegisteredLoggers")
       .mockResolvedValue(undefined);
@@ -140,7 +144,29 @@ describe("createIntegActivityTracker (B1)", () => {
       loggerOptions,
     );
 
-    startSpy.mockRestore();
+    vi.restoreAllMocks();
+  });
+
+  it("reuses the tracker instance loggers were started with", async () => {
+    const tracker = createIntegActivityTrackerSync();
+    vi.spyOn(MiroirLoggerFactory, "getStartedActivityTracker").mockReturnValue(
+      tracker.miroirActivityTracker,
+    );
+    vi.spyOn(MiroirLoggerFactory, "getStartedEventService").mockReturnValue(
+      tracker.miroirEventService,
+    );
+    const startSpy = vi.spyOn(MiroirLoggerFactory, "startRegisteredLoggers");
+
+    const bundle = await createIntegActivityTracker({
+      loggerFactory: { create: vi.fn() } as unknown as LoggerFactoryInterface,
+      loggerOptions: { defaultLevel: "warn" } as LoggerOptions,
+    });
+
+    expect(bundle.miroirActivityTracker).toBe(tracker.miroirActivityTracker);
+    expect(bundle.miroirEventService).toBe(tracker.miroirEventService);
+    expect(startSpy).not.toHaveBeenCalled();
+
+    vi.restoreAllMocks();
   });
 });
 

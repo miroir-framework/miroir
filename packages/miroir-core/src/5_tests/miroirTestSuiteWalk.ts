@@ -8,6 +8,7 @@ import type {
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import { miroirTestGlobalTimeOut } from "./MiroirTransformerTestTools.js";
 import { isMiroirTestLeafSelected, resolveSuiteInnerFilter } from "./miroirTestFilter.js";
@@ -49,6 +50,8 @@ export type RunMiroirTestSuiteWalkParams = {
 export async function runMiroirTestSuiteWalk(
   params: RunMiroirTestSuiteWalkParams,
 ): Promise<void> {
+  await MiroirLoggerFactory.whenRegisteredLoggersStarted();
+
   const {
     localVitest,
     testSuitePath,
@@ -65,6 +68,11 @@ export async function runMiroirTestSuiteWalk(
     beforeEachLeaf,
   } = params;
 
+  const suiteLogLabel = miroirTestSuite.miroirTestLabel ?? miroirTestSuite.miroirTestType;
+  if (inProcess) {
+    miroirActivityTracker.beginTestSuiteLogContext(suiteLogLabel);
+  }
+  try {
   if (!localVitest.expect) {
     throw new Error("runMiroirTestSuiteWalk called without vitest.expect");
   }
@@ -203,22 +211,32 @@ export async function runMiroirTestSuiteWalk(
         assertionPath.push({ test: label });
         assertionPath.push({ testAssertion: label });
 
-        await runMiroirTestFn(
-          localVitest,
-          [...testSuitePath, label],
-          innerFilter,
-          effectiveLeaf,
-          modelEnvironment,
-          miroirActivityTracker,
-          parentTrackingId,
-          trackActionsBelow,
-          runMiroirTests,
-          executionOptions,
-          assertionPath,
-          isSkipped || shouldSkipSuite,
-        );
+        miroirActivityTracker.beginTestSuiteLogContext(suiteLogLabel);
+        try {
+          await runMiroirTestFn(
+            localVitest,
+            [...testSuitePath, label],
+            innerFilter,
+            effectiveLeaf,
+            modelEnvironment,
+            miroirActivityTracker,
+            parentTrackingId,
+            trackActionsBelow,
+            runMiroirTests,
+            executionOptions,
+            assertionPath,
+            isSkipped || shouldSkipSuite,
+          );
+        } finally {
+          miroirActivityTracker.endTestSuiteLogContext();
+        }
       },
       miroirTestGlobalTimeOut,
     );
+  }
+  } finally {
+    if (inProcess) {
+      miroirActivityTracker.endTestSuiteLogContext();
+    }
   }
 }

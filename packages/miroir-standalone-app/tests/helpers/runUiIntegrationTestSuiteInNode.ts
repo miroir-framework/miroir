@@ -4,7 +4,7 @@ import {
 } from "miroir-core";
 
 import {
-  createIntegActivityTrackerSync,
+  createIntegActivityTracker,
   resetIntegTestRunCoordinatorForTests,
 } from "../../src/miroir-fwk/4-tests/integTestRunCoordinator.js";
 import {
@@ -19,6 +19,7 @@ import {
 } from "./IntegrationTestSession.js";
 import { applyIntegrationTestProfile, resolveRepoRoot } from "./integrationTestProfiles.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./StandaloneAppIntegrationOrchestrator.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { resolveRealServerTransformerTestSessionOptions } from "../../src/miroir-fwk/4-tests/resolveTransformerTestSessionOptions.js";
 
@@ -42,7 +43,11 @@ export function createNodeUiIntegrationTestLauncherEnvironment(
         }
       }
     },
-    createActivityTracker: async () => createIntegActivityTrackerSync(),
+    createActivityTracker: async (logConfig) =>
+      createIntegActivityTracker({
+        loggerFactory: loglevelnext,
+        loggerOptions: logConfig,
+      }),
     expect: expectFn,
     // Same TLS-tolerant fetch as RunnerTestSession bootstrap against local miroir-server.
     fetchImpl: crossFetch as unknown as typeof fetch,

@@ -67,7 +67,7 @@ const loggerOptions = logConfig as LoggerOptions;
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
-MiroirLoggerFactory.startRegisteredLoggers(
+await MiroirLoggerFactory.startRegisteredLoggers(
   miroirActivityTracker,
   miroirEventService,
   loglevelnext,

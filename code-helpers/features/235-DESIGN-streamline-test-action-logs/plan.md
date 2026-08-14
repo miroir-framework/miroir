@@ -2,7 +2,7 @@
 
 GitHub issue: [miroir-framework/miroir#235](https://github.com/miroir-framework/miroir/issues/235)
 
-**Status:** Slices 0–1 done · Slices 2–7 not started
+**Status:** Slices 0–2 done · Slices 3–7 not started
 
 **Depends on / related:** #43 (logger startup race), #197 (UI integ), workflow doc `docs/guides/architecture/workflows/runQuery-emulated-server.md`
 
@@ -144,6 +144,8 @@ Add hop numbers to mermaid in `runQuery-emulated-server.md` when slice 3 lands.
 - Ensure UI integ launcher uses the same tracker instance as loggers.
 
 **Done when:** prefix shows suite + leaf; UI timeline receives interior logs for the running activity.
+
+**Done (2026-08-15):** Tracker `setTestSuite` / `setTest` / `setTestAssertion` (and `start*` / `track*`) write `LoggerGlobalContext` labels and restore them from `currentTestPath` on end. `MiroirLoggerFactory.whenRegisteredLoggersStarted()` gates MiroirTest walks; `registerLoggerToStart` after start creates the logger immediately (#43). UI integ `createIntegActivityTracker` reuses the tracker loggers were started with. `miroir-runner-tests.integ.test.ts` awaits logger start.
 
 ### Slice 3 — Workflow doc + hop catalog
 

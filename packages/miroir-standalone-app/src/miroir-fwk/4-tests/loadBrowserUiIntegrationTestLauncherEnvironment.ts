@@ -11,8 +11,9 @@ import {
   buildBrowserAdminBundledDeploymentData,
   MIROIR_DEPLOYMENT_UUID,
 } from "./browserAdminBundledSeed.js";
+import { loglevelnext } from "../../loglevelnextImporter.js";
 import {
-  createIntegActivityTrackerSync,
+  createIntegActivityTracker,
   getIntegTestRunCoordinator,
 } from "./integTestRunCoordinator.js";
 import { loadBrowserIntegrationTestProfileConfig } from "./integrationTestProfileAssets.js";
@@ -101,7 +102,11 @@ export async function loadBrowserUiIntegrationTestLauncherEnvironment(): Promise
   return {
     createOrchestrator: createStandaloneAppBrowserIntegrationOrchestrator,
     loadConfigForProfile,
-    createActivityTracker: async () => createIntegActivityTrackerSync(),
+    createActivityTracker: async (logConfig) =>
+      createIntegActivityTracker({
+        loggerFactory: loglevelnext,
+        loggerOptions: logConfig,
+      }),
     expect: resolveBrowserInProcessExpect(),
     getCoordinator: getIntegTestRunCoordinator,
     resolveTransformerSessionOptions: (profileName, runTargetMode, miroirConfig) => {
