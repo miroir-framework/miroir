@@ -2,7 +2,7 @@
 
 GitHub issue: [miroir-framework/miroir#235](https://github.com/miroir-framework/miroir/issues/235)
 
-**Status:** Slices 0–2 done · Slices 3–7 not started
+**Status:** Slices 0–4 done · Slices 5–7 not started
 
 **Depends on / related:** #43 (logger startup race), #197 (UI integ), workflow doc `docs/guides/architecture/workflows/runQuery-emulated-server.md`
 
@@ -155,6 +155,8 @@ Add hop numbers to mermaid in `runQuery-emulated-server.md` when slice 3 lands.
 
 No production code required if slice 1 names match the table.
 
+**Done (2026-08-15):** `runQuery-emulated-server.md` §4.1 hop catalog; Path A and Path B sequence diagrams label forward **and** return edges (`1 →` / `1←`); §7 prefix + §7.1 grep recipes. Block names match slice 1 (`DC.compositeRunBoxedQuery`, `DC.handleBoxedQuery`). Hops 3–6 enter/exit remain slice 4.
+
 ### Slice 4 — INFO contract / redundancy (query paths)
 
 - Layer roles: DC = strategy + enter/exit; saga = target (`localCache` vs `remote`); stub = `POST /query`; PSC = section + count.
@@ -162,6 +164,8 @@ No production code required if slice 1 names match the table.
 - Path B: enter/exit on saga.remote, REST, PSC, query runner.
 
 **Done when:** #235 acceptance 3–4 (≤ 1 INFO line per hop + pair).
+
+**Done (2026-08-15):** `trackQueryHop` + `summarizeQueryHopResult`. Catalog wraps: `saga.localCache` / `saga.remote` (query actions only), `REST.POST /query` (`queryActionHandler`), `PSC.handleBoxedQuery`, `SqlDbQueryRunner`. DC enter extra `strategy=… mode=…`. Query-path `JSON.stringify(action)` / full result dumps moved to DEBUG. Rollback remote actions are **not** wrapped as `saga.remote` (slice 5).
 
 ### Slice 5 — Rollback / bootstrap summarization + phase
 

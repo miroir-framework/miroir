@@ -20,7 +20,7 @@ How those pieces talk depends on **action** and **profile**. Rather than one enc
 
 | Document | Action | Profile | Status |
 |----------|--------|---------|--------|
-| [runBoxedQueryAction on emulated server](architecture/workflows/runQuery-emulated-server.md) | `runBoxedQueryAction` / `compositeRunBoxedQueryAction` | `emulatedServer-sql` | First note — template for the series |
+| [runBoxedQueryAction on emulated server](architecture/workflows/runQuery-emulated-server.md) | `runBoxedQueryAction` / `compositeRunBoxedQueryAction` | `emulatedServer-sql` | Path A/B hops numbered (forward + return); grep recipes |
 
 Later notes will cover other actions (`rollback`, `commit`, instance CRUD), other emulated backends, and `realServer-*`.
 

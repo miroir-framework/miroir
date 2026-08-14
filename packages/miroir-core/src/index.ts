@@ -656,7 +656,8 @@ export {
 } from "./0_interfaces/3_controllers/ErrorLogServiceInterface.js";
 export {
   MiroirActivityTrackerInterface,
-  MiroirActivity as MiroirEventTrackingData
+  MiroirActivity as MiroirEventTrackingData,
+  TrackActionOptions,
 } from "./0_interfaces/3_controllers/MiroirActivityTrackerInterface.js";
 export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirContextInterface.js";
 // export {
@@ -1208,6 +1209,7 @@ export {
   emptyLoggerContextElement,
 } from "./4_services/LoggerContext.js";
 export { MiroirLoggerFactory, testLogger } from "./4_services/MiroirLoggerFactory.js";
+export { summarizeQueryHopResult, trackQueryHop } from "./4_services/trackQueryHop.js";
 export {
   PersistenceStoreController,
   PersistenceStoreControllerFactoryReturnType

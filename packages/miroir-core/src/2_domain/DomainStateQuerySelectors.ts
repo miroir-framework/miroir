@@ -95,7 +95,7 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
 
   const entityUuid: Uuid = extractorParams.extractor.select.parentUuid;
 
-  log.info(
+  log.debug(
     "selectEntityInstanceUuidIndexFromDomainState params",
     extractorParams,
     deploymentUuid,

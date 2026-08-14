@@ -60,7 +60,7 @@ export class RestClientStub implements RestClientInterface {
     let data;
     try {
       // log.info("restServerDefaultHandlers", restServerDefaultHandlers)
-      log.info(
+      log.debug(
         "RestClientStub call with params",
         "deploymentUuid",
         deploymentUuid,
@@ -79,7 +79,7 @@ export class RestClientStub implements RestClientInterface {
       const methodToCall = restServerDefaultHandlers.find(
         (h) => h.method == method.toLowerCase() && h.url == rawUrl
       );
-      log.info("RestClientStub found methodToCall", methodToCall);
+      log.debug("RestClientStub found methodToCall", methodToCall);
       if (!methodToCall) {
         throw new Error(`RestClientStub: No handler found for ${method} ${rawUrl}`);
       }

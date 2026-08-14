@@ -258,7 +258,7 @@ export class LocalCache implements LocalCacheInterface {
     const domainState: DomainState = this.getDomainState();
 
     const extractorRunnerMapOnDomainState = getDomainStateExtractorRunnerMap();
-    log.info("LocalCache action=", JSON.stringify(action, undefined, 2));
+    log.debug("LocalCache action=", JSON.stringify(action, undefined, 2));
     // log.info("RestServer queryActionHandler domainState=", JSON.stringify(domainState, undefined, 2))
     let queryResult: Domain2QueryReturnType<DomainElementSuccess> =
       undefined as any as Domain2QueryReturnType<DomainElementSuccess>;

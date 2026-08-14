@@ -22,6 +22,7 @@ import { packageName } from "../constants";
 
 import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
+import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
 import { generateRestServiceResponse } from "./RestTools";
 
 import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -459,44 +460,30 @@ export async function queryActionHandler(
   body: HttpRequestBodyFormat,
   params: any,
 ):Promise<void> {
-  log.info("RestServer queryActionHandler params", params, "body", body);
-
-  /**
-   * shall a query be executed based on the state of the localCache, or fetching state from a PersistenceStore?
-   *
-   * go through the DomainController? (would be better, wouldn't it?)
-   *
-   * when the implementation accesses the localCache, the implementation is based on selectors
-   *
-   * when the implementation uses the persistenceStore, it could:
-   * - load the required data in the localCache (select) then execute in the localCache (filter, aggregation)
-   * - execute on the persistent store (sql)
-   *
-   */
-  // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
-  const runBoxedExtractorOrQueryAction: RunBoxedQueryAction =
-    body.action? body.action as RunBoxedQueryAction: body as any as RunBoxedQueryAction;
-  const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap ?? {};
-  log.info(
-    "RestServer queryActionHandler",
-    domainController.getPersistenceStoreAccessMode(),
-    "runBoxedExtractorOrQueryAction=",
-    // "useDomainControllerToHandleModelAndInstanceActions",
-    // useDomainControllerToHandleModelAndInstanceActions,
-    JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2)
+  return trackQueryHop(
+    "REST.POST /query",
+    async () => {
+      log.debug("RestServer queryActionHandler params", params, "body", body);
+      const runBoxedExtractorOrQueryAction: RunBoxedQueryAction =
+        body.action? body.action as RunBoxedQueryAction: body as any as RunBoxedQueryAction;
+      const applicationDeploymentMap: ApplicationDeploymentMap = body?.applicationDeploymentMap ?? {};
+      log.debug(
+        "RestServer queryActionHandler",
+        domainController.getPersistenceStoreAccessMode(),
+        "runBoxedExtractorOrQueryAction=",
+        JSON.stringify(runBoxedExtractorOrQueryAction, undefined, 2)
+      );
+      const result = await domainController.handleBoxedExtractorOrQueryAction(
+        runBoxedExtractorOrQueryAction,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      );
+      return continuationFunction(response)(result);
+    },
+    {
+      exitExtra: (result) => summarizeQueryHopResult(result),
+    },
   );
-  // USING THE LOCAL CACHE OR THE LOCAL PERSISTENCE STORE
-  // SHALL BE DETERMINED BY DOMAINCONTROLLER DEPENDING ON THE QUERY
-  const result = await domainController.handleBoxedExtractorOrQueryAction(
-    runBoxedExtractorOrQueryAction,
-    applicationDeploymentMap,
-    defaultMiroirModelEnvironment, // TODO: NOT USED in handleBoxedExtractorOrQueryAction
-  );
-  // log.info(
-  //   "RestServer queryActionHandler used domainController result=",
-  //   JSON.stringify(result, undefined, 2)
-  // );
-  return continuationFunction(response)(result);
 }
 
 // ################################################################################################

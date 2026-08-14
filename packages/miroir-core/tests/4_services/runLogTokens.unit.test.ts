@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { MiroirEventService } from "../../src/3_controllers/MiroirEventService";
-import { templateLogLevelOptionsFactory } from "../../src/4_services/MiroirLoggerFactory";
+import { MiroirLoggerFactory, templateLogLevelOptionsFactory } from "../../src/4_services/MiroirLoggerFactory";
 import {
   CROCKFORD_RUN_ID_ALPHABET,
   formatRunBanner,
@@ -11,6 +11,7 @@ import {
   LoggerGlobalContext,
   RUN_LOG_PREFIX_PATTERN,
 } from "../../src/4_services/LoggerContext";
+import { summarizeQueryHopResult, trackQueryHop } from "../../src/4_services/trackQueryHop";
 
 describe("run log tokens", () => {
   afterEach(() => {
@@ -50,6 +51,21 @@ describe("run log tokens", () => {
     expect(formatSpanBoundaryLine("#K7X2NQ.s1<#", "exit", "DC.handleBoxedQuery", "error")).toBe(
       "#K7X2NQ.s1<# ← DC.handleBoxedQuery status=error",
     );
+  });
+
+  it("formatSpanBoundaryLine appends optional extra on enter and exit", () => {
+    expect(
+      formatSpanBoundaryLine(
+        "#K7X2NQ.s1>#",
+        "enter",
+        "DC.handleBoxedQuery",
+        undefined,
+        "strategy=localCacheOrFail mode=remote",
+      ),
+    ).toBe("#K7X2NQ.s1># → DC.handleBoxedQuery strategy=localCacheOrFail mode=remote");
+    expect(
+      formatSpanBoundaryLine("#K7X2NQ.s1<#", "exit", "PSC.handleBoxedQuery", "ok", "section=data books=5"),
+    ).toBe("#K7X2NQ.s1<# ← PSC.handleBoxedQuery status=ok section=data books=5");
   });
 });
 
@@ -205,6 +221,99 @@ describe("MiroirActivityTracker writes run log tokens", () => {
     tracker.endActivity(assertionId);
     expect(LoggerGlobalContext.getRunLogPrefix()).toBe(`#${runId}.-.#`);
     tracker.endActivity(testId);
+  });
+
+  it("trackAction enterExtra and exitExtra appear on the paired lines", async () => {
+    const lines: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
+    try {
+      await tracker.trackAction(
+        "runBoxedQueryAction",
+        "DC.handleBoxedQuery",
+        async () => ({ status: "ok", returnedDomainElement: { books: [1, 2, 3, 4, 5] } }),
+        {
+          enterExtra: "strategy=localCacheOrFail mode=remote",
+          exitExtra: (result) => summarizeQueryHopResult(result),
+        },
+      );
+    } finally {
+      console.log = originalLog;
+    }
+    const enter = lines.find((line) => line.includes("→ DC.handleBoxedQuery"));
+    const exit = lines.find((line) => line.includes("← DC.handleBoxedQuery"));
+    expect(enter).toContain("strategy=localCacheOrFail mode=remote");
+    expect(exit).toContain("status=ok");
+    expect(exit).toContain("books=5");
+  });
+});
+
+describe("trackQueryHop uses the started activity tracker", () => {
+  let tracker: MiroirActivityTracker;
+  let previousTracker: ReturnType<typeof MiroirLoggerFactory.getStartedActivityTracker>;
+
+  beforeEach(() => {
+    LoggerGlobalContext.reset();
+    tracker = new MiroirActivityTracker();
+    previousTracker = MiroirLoggerFactory.getStartedActivityTracker();
+    MiroirLoggerFactory.activityTracker = tracker;
+  });
+
+  afterEach(() => {
+    tracker.destroy();
+    MiroirLoggerFactory.activityTracker = previousTracker;
+    LoggerGlobalContext.reset();
+  });
+
+  it("emits catalog block enter/exit with the same span", async () => {
+    const lines: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
+    try {
+      await trackQueryHop("saga.localCache", async () => "ok");
+    } finally {
+      console.log = originalLog;
+    }
+    const enter = lines.find((line) => line.includes("→ saga.localCache"));
+    const exit = lines.find((line) => line.includes("← saga.localCache"));
+    expect(enter).toBeDefined();
+    expect(exit).toBeDefined();
+    expect(enter!.match(RUN_LOG_PREFIX_PATTERN)?.[2]).toBe(
+      exit!.match(RUN_LOG_PREFIX_PATTERN)?.[2],
+    );
+    expect(exit).toContain("status=ok");
+  });
+
+  it("runs the function without a span when no tracker is started", async () => {
+    MiroirLoggerFactory.activityTracker = undefined;
+    const lines: string[] = [];
+    const originalLog = console.log;
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
+    try {
+      await expect(trackQueryHop("saga.remote", async () => 7)).resolves.toBe(7);
+    } finally {
+      console.log = originalLog;
+    }
+    expect(lines.some((line) => line.includes("saga.remote"))).toBe(false);
+  });
+});
+
+describe("summarizeQueryHopResult", () => {
+  it("summarizes boxed query result sizes", () => {
+    expect(
+      summarizeQueryHopResult({
+        status: "ok",
+        returnedDomainElement: { books: [1, 2, 3, 4, 5] },
+      }),
+    ).toBe("books=5");
+    expect(summarizeQueryHopResult({ returnedDomainElement: [1, 2] })).toBe("count=2");
+    expect(summarizeQueryHopResult(undefined)).toBeUndefined();
   });
 });
 

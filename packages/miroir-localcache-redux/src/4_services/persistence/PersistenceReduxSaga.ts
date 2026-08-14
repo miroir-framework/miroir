@@ -27,7 +27,8 @@ import {
   StoreOrBundleAction,
   storeActionOrBundleActionStoreRunner,
   type ApplicationDeploymentMap,
-  type MiroirModelEnvironment
+  type MiroirModelEnvironment,
+  trackQueryHop,
 } from "miroir-core";
 import { packageName } from '../../constants.js';
 import { handlePromiseActionForSaga } from '../../sagaTools.js';
@@ -159,6 +160,15 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     action: PersistenceAction,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Promise<Action2ReturnType> {
+    return trackQueryHop("saga.localCache", () =>
+      this.executePersistenceActionForLocalCache(action, applicationDeploymentMap),
+    );
+  }
+
+  private async executePersistenceActionForLocalCache(
+    action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap
+  ): Promise<Action2ReturnType> {
     if (!this.localCache) {
       throw new Error(
         "PersistenceReduxSaga handlePersistenceActionForLocalCache localCache not defined yet, please execute instance method PersistenceReduxSaga.run(LocalCache) before calling handlePersistenceAction!"
@@ -239,7 +249,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
     const result: Action2ReturnType = await this.localCache.dispatchToReduxStore(
       this.persistenceActionReduxSaga.handlePersistenceAction.creator({ action, applicationDeploymentMap })
     );
-    log.info("handlePersistenceAction", action, "returned", result);
+    log.debug("handlePersistenceAction", action, "returned", result);
     return Promise.resolve(result);
   }
 
@@ -267,6 +277,22 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
   // ###############################################################################
   // ###############################################################################
   async handlePersistenceActionForRemoteStore(
+    action: PersistenceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment
+  ): Promise<Action2ReturnType> {
+    const runRemote = () =>
+      this.executePersistenceActionForRemoteStore(action, applicationDeploymentMap, currentModel);
+    if (
+      action.actionType === "runBoxedQueryAction" ||
+      action.actionType === "runBoxedQueryTemplateAction"
+    ) {
+      return trackQueryHop("saga.remote", runRemote);
+    }
+    return runRemote();
+  }
+
+  private async executePersistenceActionForRemoteStore(
     action: PersistenceAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment

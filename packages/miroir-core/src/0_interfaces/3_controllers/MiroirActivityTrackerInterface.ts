@@ -58,6 +58,11 @@ export type MiroirActivity =
 
 export type TestAssertionPath = {testSuite?: string, test?: string, testAssertion?: string}[];
 
+export type TrackActionOptions<T> = {
+  enterExtra?: string;
+  exitExtra?: (result: T | undefined, status: string) => string | undefined;
+};
+
 // #############################################################################################
 export interface MiroirActivityTrackerInterface {
 
@@ -170,7 +175,8 @@ export interface MiroirActivityTrackerInterface {
   trackAction<T>(
     actionType: string,
     actionLabel: string | undefined,
-    actionFn: () => Promise<T>
+    actionFn: () => Promise<T>,
+    options?: TrackActionOptions<T>
   ): Promise<T>;
 
   // ##############################################################################################

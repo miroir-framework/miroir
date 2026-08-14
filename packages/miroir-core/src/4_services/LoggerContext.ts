@@ -41,11 +41,13 @@ export function formatSpanBoundaryLine(
   kind: "enter" | "exit",
   block: string,
   status?: string,
+  extra?: string,
 ): string {
+  const extraPart = extra ? ` ${extra}` : "";
   if (kind === "enter") {
-    return `${prefix} → ${block}`;
+    return `${prefix} → ${block}${extraPart}`;
   }
-  return `${prefix} ← ${block} status=${status ?? "ok"}`;
+  return `${prefix} ← ${block} status=${status ?? "ok"}${extraPart}`;
 }
 
 export interface LoggerContextElement {

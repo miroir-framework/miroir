@@ -9,6 +9,7 @@ import {
   MiroirActivityTrackerInterface,
   MiroirActivity,
   type TestAssertionPath,
+  type TrackActionOptions,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { MiroirEventService, MiroirEventServiceInterface } from './MiroirEventService';
 import type { LogTopic } from '../0_interfaces/4-services/LoggerInterface';
@@ -224,9 +225,14 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     return actionLabel ?? actionType;
   }
 
-  private emitSpanBoundary(kind: "enter" | "exit", block: string, status?: string): void {
+  private emitSpanBoundary(
+    kind: "enter" | "exit",
+    block: string,
+    status?: string,
+    extra?: string,
+  ): void {
     console.log(
-      formatSpanBoundaryLine(LoggerGlobalContext.getRunLogPrefix(), kind, block, status),
+      formatSpanBoundaryLine(LoggerGlobalContext.getRunLogPrefix(), kind, block, status, extra),
     );
   }
 
@@ -348,31 +354,40 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   async trackAction<T>(
     actionType: string,
     actionLabel: string | undefined,
-    actionFn: () => Promise<T>
+    actionFn: () => Promise<T>,
+    options?: TrackActionOptions<T>,
   ): Promise<T> {
     const trackingId = this.startActivity_Action(actionType, actionLabel);
-    return this.runTrackedSpan(trackingId, this.spanBlockName(actionType, actionLabel), actionFn);
+    return this.runTrackedSpan(
+      trackingId,
+      this.spanBlockName(actionType, actionLabel),
+      actionFn,
+      options,
+    );
   }
 
   private async runTrackedSpan<T>(
     trackingId: string,
     block: string,
     actionFn: () => Promise<T>,
+    options?: TrackActionOptions<T>,
   ): Promise<T> {
     this.syncRunLogContext(">");
-    this.emitSpanBoundary("enter", block);
+    this.emitSpanBoundary("enter", block, undefined, options?.enterExtra);
     this.syncRunLogContext(".");
     let status = "ok";
     let errorMessage: string | undefined;
+    let result: T | undefined;
     try {
-      return await actionFn();
+      result = await actionFn();
+      return result;
     } catch (error) {
       status = "error";
       errorMessage = error instanceof Error ? error.message : String(error);
       throw error;
     } finally {
       this.syncRunLogContext("<");
-      this.emitSpanBoundary("exit", block, status);
+      this.emitSpanBoundary("exit", block, status, options?.exitExtra?.(result, status));
       this.endActivity(trackingId, errorMessage);
     }
   }

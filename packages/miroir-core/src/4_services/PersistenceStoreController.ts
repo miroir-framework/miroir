@@ -33,6 +33,7 @@ import { modelInitialize } from "../3_controllers/ModelInitializer";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
+import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
 
 import { entityEntity } from "miroir-test-app_deployment-miroir";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
@@ -149,43 +150,46 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
     // TODO: fix applicationSection!!!
-    log.info(
-      this.logHeader,
-      "handleBoxedQueryAction called with RunBoxedQueryAction",
-      JSON.stringify(action, null, 2),
-      // "applicationDeploymentMap",
-      // JSON.stringify(applicationDeploymentMap, null, 2),
-    );
-    // log.info(this.logHeader,'this.dataStoreSection',this.dataStoreSection);
-    // log.info(this.logHeader,'this.modelStoreSection',this.modelStoreSection);
-
     // TODO: composite actions / queries could execute on different sections, how should this be dealt with?
     // RIGHT NOW RESTRICT ALL SUBQUERIES OF A QUERY TO THE SAME SECTION !!!!
     const section = action.payload.applicationSection;
-    if (!section) {
-      return new Action2Error(
-        "InvalidAction",
-        `${this.logHeader} handleBoxedQueryAction missing applicationSection on query payload.`,
-      );
-    }
-    const currentStore = this.getSectionInstanceStore(section);
-    if (currentStore instanceof Action2Error) {
-      return currentStore;
-    }
-    const result: Action2ReturnType = await currentStore.handleBoxedQueryAction(
-      action,
-      applicationDeploymentMap,
-      currentModel
+    return trackQueryHop(
+      "PSC.handleBoxedQuery",
+      async () => {
+        log.debug(
+          this.logHeader,
+          "handleBoxedQueryAction called with RunBoxedQueryAction",
+          JSON.stringify(action, null, 2),
+        );
+        if (!section) {
+          return new Action2Error(
+            "InvalidAction",
+            `${this.logHeader} handleBoxedQueryAction missing applicationSection on query payload.`,
+          );
+        }
+        const currentStore = this.getSectionInstanceStore(section);
+        if (currentStore instanceof Action2Error) {
+          return currentStore;
+        }
+        const result: Action2ReturnType = await currentStore.handleBoxedQueryAction(
+          action,
+          applicationDeploymentMap,
+          currentModel
+        );
+        log.debug(
+          this.logHeader,
+          "handleBoxedQueryAction done  for query",
+          action,
+          "result",
+          JSON.stringify(result)
+        );
+        return result;
+      },
+      {
+        enterExtra: section ? `section=${section}` : undefined,
+        exitExtra: (result) => summarizeQueryHopResult(result),
+      },
     );
-
-    log.info(
-      this.logHeader,
-      "handleBoxedQueryAction done  for query",
-      action,
-      "result",
-      JSON.stringify(result)
-    );
-    return Promise.resolve(result);
   }
 
   // #############################################################################################

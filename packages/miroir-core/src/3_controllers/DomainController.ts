@@ -735,6 +735,8 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
+    const strategy =
+      runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy ?? "localCacheOrFail";
     return this.miroirContext.miroirActivityTracker.trackAction(
       "runBoxedQueryAction",
       "DC.handleBoxedQuery",
@@ -744,6 +746,9 @@ export class DomainController implements DomainControllerInterface {
           applicationDeploymentMap,
           currentModel,
         ),
+      {
+        enterExtra: `strategy=${strategy} mode=${this.persistenceStoreAccessMode}`,
+      },
     );
   }
 
@@ -4144,7 +4149,10 @@ export class DomainController implements DomainControllerInterface {
         log.info(
           "handleCompositeRunBoxedQueryAction adding result to context as",
           currentAction.nameGivenToResult,
-          "value",
+        );
+        log.debug(
+          "handleCompositeRunBoxedQueryAction result value",
+          currentAction.nameGivenToResult,
           actionResult,
         );
         localContext[currentAction.nameGivenToResult] = actionResult.returnedDomainElement;

@@ -621,7 +621,7 @@ export const applyExtractorTransformerInMemory = (
   newFetchedData: Record<string, any>
 // ): Domain2QueryReturnType<DomainElementSuccess> => {
 ): Domain2QueryReturnType<any> => {
-  log.info("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
+  log.debug("applyExtractorTransformerInMemory  query", JSON.stringify(actionRuntimeTransformer, null, 2));
   return transformer_extended_apply_wrapper(
     undefined, // activityTracker
     "runtime",
@@ -644,15 +644,12 @@ export async function handleBoxedQueryAction(
   selectorMap: AsyncBoxedExtractorOrQueryRunnerMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Action2ReturnType> {
-  log.info(
+  log.debug(
     "handleBoxedQueryAction for",
     origin,
     "start",
     "runBoxedQueryAction",
     JSON.stringify(runBoxedQueryAction, null, 2),
-    // "applicationDeploymentMap",
-    // JSON.stringify(applicationDeploymentMap, null, 2),
-
   );
   let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
   queryResult = await selectorMap.runQuery(
@@ -670,7 +667,7 @@ export async function handleBoxedQueryAction(
     );
   } else {
     const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
-    log.info(
+    log.debug(
       "handleBoxedQueryAction for",
       origin,
       "runBoxedQueryAction",
@@ -711,7 +708,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
       const applicationSection =
         extractorOrCombiner.applicationSection ??
         getApplicationSection(application, extractorOrCombiner.parentUuid);
-      log.info(
+      log.debug(
         "innerSelectDomainElementFromExtractorOrCombiner for",
         "application", application,
         "applicationSection", applicationSection,

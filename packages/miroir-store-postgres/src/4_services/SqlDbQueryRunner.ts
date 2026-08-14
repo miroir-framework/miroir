@@ -2,6 +2,8 @@ import {
   Action2EntityInstanceCollectionOrFailure,
   Action2Error,
   Action2ReturnType,
+  summarizeQueryHopResult,
+  trackQueryHop,
   ApplicationSection,
   asyncApplyExtractorTransformerInMemory,
   AsyncBoxedExtractorOrQueryRunnerMap,
@@ -468,52 +470,57 @@ export class SqlDbQueryRunner {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment
   ): Promise<Action2ReturnType> {
-    log.info(
-      this.logHeader,
-      "handleBoxedQueryAction called with runBoxedQueryAction",
-      JSON.stringify(runBoxedQueryAction, null, 2)
+    return trackQueryHop(
+      "SqlDbQueryRunner",
+      async () => {
+        log.debug(
+          this.logHeader,
+          "handleBoxedQueryAction called with runBoxedQueryAction",
+          JSON.stringify(runBoxedQueryAction, null, 2)
+        );
+        let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
+        if (runBoxedQueryAction.payload.query.runAsSql) {
+          queryResult = await this.dbImplementationExtractorRunnerMap.runQuery(
+            {
+              extractor: runBoxedQueryAction.payload.query,
+              extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
+            },
+            applicationDeploymentMap,
+            currentModelEnvironment ?? defaultMetaModelEnvironment
+          );
+        } else {
+          queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery(
+            {
+              extractor: runBoxedQueryAction.payload.query,
+              extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
+            },
+            applicationDeploymentMap,
+            currentModelEnvironment ?? defaultMetaModelEnvironment
+          );
+        }
+        if (queryResult instanceof Domain2ElementFailed) {
+          return new Action2Error(
+            "FailedToGetInstances",
+            JSON.stringify(queryResult),
+            undefined,
+            queryResult
+          );
+        }
+        const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
+        log.debug(
+          this.logHeader,
+          "handleBoxedQueryAction",
+          "runBoxedQueryAction",
+          runBoxedQueryAction,
+          "result",
+          JSON.stringify(result, null, 2)
+        );
+        return result;
+      },
+      {
+        exitExtra: (result) => summarizeQueryHopResult(result),
+      },
     );
-    let queryResult: Domain2QueryReturnType<DomainElementSuccess>;
-    if (runBoxedQueryAction.payload.query.runAsSql) {
-      queryResult = await this.dbImplementationExtractorRunnerMap.runQuery(
-        {
-          extractor: runBoxedQueryAction.payload.query,
-          extractorRunnerMap: this.dbImplementationExtractorRunnerMap,
-        },
-        applicationDeploymentMap,
-        currentModelEnvironment ?? defaultMetaModelEnvironment // TODO: make currentModelEnvironment required in interface (not optional)
-      );
-    } else {
-      queryResult = await this.inMemoryImplementationExtractorRunnerMap.runQuery(
-        {
-          extractor: runBoxedQueryAction.payload.query,
-          extractorRunnerMap: this.inMemoryImplementationExtractorRunnerMap,
-        },
-        applicationDeploymentMap,
-        currentModelEnvironment ?? defaultMetaModelEnvironment // TODO: make currentModelEnvironment required in interface (not optional)
-      );
-    }
-    if (queryResult instanceof Domain2ElementFailed) {
-      return Promise.resolve(
-        new Action2Error(
-          "FailedToGetInstances",
-          JSON.stringify(queryResult),
-          undefined,
-          queryResult
-        )
-      );
-    } else {
-      const result: Action2ReturnType = { status: "ok", returnedDomainElement: queryResult };
-      log.info(
-        this.logHeader,
-        "handleBoxedQueryAction",
-        "runBoxedQueryAction",
-        runBoxedQueryAction,
-        "result",
-        JSON.stringify(result, null, 2)
-      );
-      return result;
-    }
   }
 
   // ##############################################################################################

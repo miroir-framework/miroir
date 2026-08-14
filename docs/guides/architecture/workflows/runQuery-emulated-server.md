@@ -145,6 +145,23 @@ flowchart TD
 
 `ServerCache` and `localCacheOrFetch` currently throw. Only `localCacheOrFail` and `storage` are live.
 
+### 4.1 Execution-block catalog
+
+Hop numbers live in **this document** (sequence-diagram edges). Logs use **block names**, not those numbers. Runtime `spanId` (`s4`, `s5`, …) is assigned per run and must not be frozen here.
+
+Direction in the log prefix: `>` enter, `.` interior, `<` exit. Same `spanId` on that hop’s `>` and `<`.
+
+| Doc hop | Block name (log) | Layer | Path A | Path B | `>` / `<` in logs today |
+|---------|------------------|-------|--------|--------|-------------------------|
+| 1 / 1← | `DC.compositeRunBoxedQuery` | client DC | yes | yes | yes |
+| 2 / 2← | `DC.handleBoxedQuery` | client or server DC | yes (client) | yes (client, then again on server) | yes (enter includes `strategy=` `mode=`) |
+| 3 / 3← | `saga.remote` | client PersistenceReduxSaga | no — `saga.localCache` instead | yes | yes |
+| 4 / 4← | `REST.POST /query` | RestServer `queryActionHandler` | no | yes | yes |
+| 5 / 5← | `PSC.handleBoxedQuery` | PersistenceStoreController | no | yes | yes (enter `section=`, exit sizes) |
+| 6 / 6← | `SqlDbQueryRunner` | storage | no | yes | yes |
+
+Path A after hop 2: `DC.handleBoxedQuery` → `saga.localCache` → `LocalCache.runQuery` (QuerySelectors on Redux). No REST, no Postgres for the query itself.
+
 ---
 
 ## 5. Path A — what `Refresh all Instances` actually does
@@ -177,33 +194,48 @@ This phase is **verbose**. One rollback walks every model/data/modelVersion enti
 
 After both rollbacks:
 
-1. `handleCompositeAction` unwraps `compositeRunBoxedQueryAction` and calls `handleCompositeRunBoxedQueryAction`.
-2. That calls `handleBoxedExtractorOrQueryAction` with the inner `runBoxedQueryAction`.
+```mermaid
+sequenceDiagram
+  participant Test as MiroirTest / composite
+  participant CDC as Client DomainController
+  participant SagaC as Client PersistenceReduxSaga
+  participant LC as LocalCache / QuerySelectors
+
+  Test->>CDC: 1 → DC.compositeRunBoxedQuery
+  CDC->>CDC: 2 → DC.handleBoxedQuery
+  Note over CDC: mode remote, strategy localCacheOrFail
+  CDC->>SagaC: saga.localCache
+  SagaC->>LC: LocalCache.runQuery
+  LC-->>SagaC: books n=5
+  SagaC-->>CDC: 2← DC.handleBoxedQuery status=ok
+  CDC-->>Test: 1← DC.compositeRunBoxedQuery
+```
+
+Steps:
+
+1. `handleCompositeAction` unwraps `compositeRunBoxedQueryAction` and calls `handleCompositeRunBoxedQueryAction` (**hop 1**).
+2. That calls `handleBoxedExtractorOrQueryAction` with the inner `runBoxedQueryAction` (**hop 2**).
 3. Client DC is `"remote"` and strategy defaults to `localCacheOrFail`.
 4. `PersistenceReduxSaga.handlePersistenceActionForLocalCache` → `LocalCache.runBoxedExtractorOrQueryAction`.
 5. `getDomainStateExtractorRunnerMap()` + `runQuery` walk extractors **synchronously** on Redux `DomainState`.
 6. `extractorInstancesByEntity` for Book becomes `selectEntityInstanceUuidIndexFromDomainState` / list extract on deployment `f714bb2f-…`, section `data`, entity `e8ba151b-…`.
 7. Result `{ books: [ five Book instances ] }` is stored in the composite context as `entityBookList`.
 
-Log signatures (from the grounding run, timestamp `22:41:27`):
+Log signatures (grounding run after slices 0–2). `K7X2NQ` / `s4` / `s5` are examples; copy the tokens from your dump:
 
 ```
-3_miroir-core_DomainController### &&&&&& handleCompositeAction compositeActionSequence handling sub action
-  actionType: 'compositeRunBoxedQueryAction'
-  nameGivenToResult: 'entityBookList'
-
-#*-*-*-runBoxedQueryAction# … 4_miroir-localcache-redux_LocalCache### LocalCache action= { "actionType": "runBoxedQueryAction", … }
-
-#*-*-*-runBoxedQueryAction# … 2_miroir-core_QuerySelectors### innerSelectDomainElementFromExtractorOrCombiner
-  … extractorOrCombinerType: 'extractorInstancesByEntity' … parentUuid: 'e8ba151b-…'
-
-#*-*-*-runBoxedQueryAction# … 2_miroir-core_DomainStateQuerySelector### selectEntityInstanceUuidIndexFromDomainState
-
-3_miroir-core_DomainController### handleCompositeRunBoxedQueryAction adding result to context as entityBookList
-  returnedDomainElement: { books: [ [Object] × 5 ] }
+#K7X2NQ.s4># → DC.compositeRunBoxedQuery
+#K7X2NQ.s5># → DC.handleBoxedQuery strategy=localCacheOrFail mode=remote
+#K7X2NQ.s6># → saga.localCache
+#K7X2NQ.s6<# ← saga.localCache status=ok
+#K7X2NQ.s5<# ← DC.handleBoxedQuery status=ok
+#K7X2NQ.s4.# … handleCompositeRunBoxedQueryAction adding result to context as entityBookList
+#K7X2NQ.s4<# ← DC.compositeRunBoxedQuery status=ok
 ```
 
-**What you will not see on this leaf:** `RestClientStub` for `/query`, `PersistenceStoreController.handleBoxedQueryAction`, or a `SELECT` on `"Library"."Book"` caused by the query itself.
+Payload dumps (`JSON.stringify(action)`, LocalCache / QuerySelectors query bodies) are **DEBUG**. At INFO you should see the enter/exit pair per hop, plus the composite “adding result to context as …” line.
+
+**What you will not see on this leaf:** `RestClientStub` for `/query`, `PersistenceStoreController.handleBoxedQueryAction`, or a `SELECT` on `"Library"."Book"` caused by the query itself. Hops 3–6 are Path B only.
 
 ### 5.3 After the query: assertions
 
@@ -217,7 +249,6 @@ This is the path a newcomer usually *imagines* when they say “run a query on t
 
 ```mermaid
 sequenceDiagram
-  autonumber
   participant Test as MiroirTest / composite
   participant CDC as Client DomainController
   participant SagaC as Client PersistenceReduxSaga
@@ -230,52 +261,67 @@ sequenceDiagram
   participant QR as SqlDbQueryRunner
   participant PG as Postgres
 
-  Test->>CDC: compositeRunBoxedQueryAction.payload = runBoxedQueryAction
-  CDC->>CDC: handleBoxedExtractorOrQueryAction<br/>mode remote, strategy storage
-  CDC->>SagaC: handlePersistenceActionForRemoteStore
+  Test->>CDC: 1 → DC.compositeRunBoxedQuery
+  CDC->>CDC: 2 → DC.handleBoxedQuery
+  Note over CDC: mode remote, strategy storage
+  CDC->>SagaC: 3 → saga.remote
   SagaC->>REST: handleNetworkPersistenceAction
-  REST->>Stub: POST /query  body { action, applicationDeploymentMap }
-  Stub->>RS: restServerDefaultHandlers match url /query
-  RS->>SDC: handleBoxedExtractorOrQueryAction
-  SDC->>SDC: mode local → skip strategy, always local persistence
+  REST->>Stub: 4 → REST.POST /query
+  Stub->>RS: restServerDefaultHandlers match /query
+  RS->>SDC: 2 → DC.handleBoxedQuery
+  Note over SDC: mode local — ignore client strategy
   SDC->>SagaS: handlePersistenceActionForLocalPersistenceStore
-  SagaS->>PSC: handleBoxedQueryAction
-  PSC->>PSC: section = payload.applicationSection (data)
-  PSC->>QR: section store.handleBoxedQueryAction
+  SagaS->>PSC: 5 → PSC.handleBoxedQuery
+  PSC->>QR: 6 → SqlDbQueryRunner
   alt query.runAsSql
     QR->>PG: SQL extractor map
-  else default (in-memory over store reads)
+  else default
     QR->>PG: getInstances / findAll then in-memory extractors
   end
-  PG-->>QR: rows
-  QR-->>CDC: Action2ReturnType { status: ok, returnedDomainElement }
-  CDC->>Test: bind nameGivenToResult
+  PG-->>QR: 6← rows
+  QR-->>PSC: 6← SqlDbQueryRunner
+  PSC-->>SDC: 5← PSC.handleBoxedQuery
+  SDC-->>RS: 2← DC.handleBoxedQuery
+  RS-->>Stub: 4← REST.POST /query
+  Stub-->>REST: 4←
+  REST-->>SagaC: 3← saga.remote
+  SagaC-->>CDC: 2← DC.handleBoxedQuery
+  CDC-->>Test: 1← DC.compositeRunBoxedQuery
 ```
 
-Layer by layer:
+Hop **2** runs twice on Path B: client DC, then server DC (same block name). Client and server share one logger name; tell them apart by **neighbors** (stub / RestServer sit between the two DC bursts).
 
-1. **Client DomainController** — `handleBoxedExtractorOrQueryAction`, `case "storage"`: `handlePersistenceActionForRemoteStore`.
-2. **Client saga** — Redux-saga generator `handlePersistenceActionForRemoteStore`. Access mode `"local"` is forbidden here (that is the server). It calls `innerHandlePersistenceActionForRemoteStore`.
-3. **REST facade** — `runBoxedQueryAction` maps to `POST /query` with `{ action, applicationDeploymentMap }`.
-4. **Stub / “network”** — `RestClientStub.call` logs `method= post`, finds `{ method: "post", url: "/query", handler: queryActionHandler }`, invokes the handler with `useDomainControllerToHandleModelAndInstanceActions: true` and the **server** DC. The return is wrapped as `{ status: 200, data: result }` to look like `fetch`.
-5. **RestServer** — `queryActionHandler` unwraps `body.action` and calls **server** `domainController.handleBoxedExtractorOrQueryAction`.
-6. **Server DomainController** — `persistenceStoreAccessMode == "local"`: **ignores** client strategy and always uses `handlePersistenceActionForLocalPersistenceStore`.
-7. **Server saga** — `runBoxedQueryAction` → `localPersistenceStoreController.handleBoxedQueryAction`.
-8. **PersistenceStoreController** — picks model vs data vs modelVersion section from `payload.applicationSection`, delegates to that section store.
-9. **Storage runner** — Postgres: `SqlDbInstanceStoreSectionMixin` → `SqlDbQueryRunner.handleBoxedQueryAction`. If `query.runAsSql` is set, extractors compile toward SQL; otherwise `ExtractorRunnerInMemory` issues store reads (`getInstances` / `findAll`) and runs extractors/combiners/transformers in memory.
+Layer by layer (hop numbers match §4.1):
 
-Log signatures to look for on this path:
+1. **Client DomainController (hops 1–2)** — `handleCompositeRunBoxedQueryAction` then `handleBoxedExtractorOrQueryAction`, `case "storage"`: `handlePersistenceActionForRemoteStore`.
+2. **Client saga (hop 3)** — Redux-saga generator `handlePersistenceActionForRemoteStore`. Access mode `"local"` is forbidden here (that is the server). It calls `innerHandlePersistenceActionForRemoteStore`.
+3. **REST facade + stub (hop 4)** — `runBoxedQueryAction` maps to `POST /query` with `{ action, applicationDeploymentMap }`. `RestClientStub.call` finds `{ method: "post", url: "/query", handler: queryActionHandler }` and invokes it in-process with the **server** DC. The return is wrapped as `{ status: 200, data: result }` to look like `fetch`.
+4. **RestServer** — `queryActionHandler` unwraps `body.action` and calls **server** `domainController.handleBoxedExtractorOrQueryAction` (**hop 2** again).
+5. **Server DomainController** — `persistenceStoreAccessMode == "local"`: **ignores** client strategy and always uses `handlePersistenceActionForLocalPersistenceStore`.
+6. **Server saga** — `runBoxedQueryAction` → `localPersistenceStoreController.handleBoxedQueryAction`.
+7. **PersistenceStoreController (hop 5)** — picks model vs data vs modelVersion section from `payload.applicationSection`, delegates to that section store.
+8. **Storage runner (hop 6)** — Postgres: `SqlDbInstanceStoreSectionMixin` → `SqlDbQueryRunner.handleBoxedQueryAction`. If `query.runAsSql` is set, extractors compile toward SQL; otherwise `ExtractorRunnerInMemory` issues store reads (`getInstances` / `findAll`) and runs extractors/combiners/transformers in memory.
 
-| Order | Logger | Message fragment |
-|-------|--------|------------------|
-| 1 | `3_miroir-core_DomainController` | `handleBoxedExtractorOrQueryAction` / composite sub-action with `runBoxedQueryAction` |
-| 2 | `4_miroir-core_RestClientStub` | `call with params` … `endpoint` involving `/query` |
-| 3 | `4_miroir-core_RestServer` | `queryActionHandler` |
-| 4 | `3_miroir-core_DomainController` | same class, now on the **server** instance (mode local) |
-| 5 | `4_miroir-core_PersistenceStoreController` | `handleBoxedQueryAction called with RunBoxedQueryAction` |
-| 6 | `4_miroir-store-postgres_SqlDbInstanceStoreSectionMixin` | `handleBoxedQueryAction called for query` |
-| 7 | Sequelize stdout | `SELECT … FROM "Library"."Book"` (or the relevant table) |
-| 8 | `3_miroir-core_DomainController` | `handleCompositeRunBoxedQueryAction adding result to context as …` |
+Log signatures to look for on this path (INFO enter/exit; payloads at DEBUG):
+
+```
+#K7X2NQ.s4># → DC.compositeRunBoxedQuery
+#K7X2NQ.s5># → DC.handleBoxedQuery strategy=storage mode=remote
+#K7X2NQ.s6># → saga.remote
+#K7X2NQ.s7># → REST.POST /query
+#K7X2NQ.s8># → DC.handleBoxedQuery strategy=storage mode=local
+#K7X2NQ.s9># → PSC.handleBoxedQuery section=data
+#K7X2NQ.s10># → SqlDbQueryRunner
+#K7X2NQ.s10<# ← SqlDbQueryRunner status=ok books=5
+#K7X2NQ.s9<# ← PSC.handleBoxedQuery status=ok books=5
+#K7X2NQ.s8<# ← DC.handleBoxedQuery status=ok
+#K7X2NQ.s7<# ← REST.POST /query status=ok books=5
+#K7X2NQ.s6<# ← saga.remote status=ok
+#K7X2NQ.s5<# ← DC.handleBoxedQuery status=ok
+#K7X2NQ.s4<# ← DC.compositeRunBoxedQuery status=ok
+```
+
+Sequelize `SELECT … FROM "Library"."Book"` may still appear on stdout (slice 5). Client vs server `DC.handleBoxedQuery`: the second burst sits **inside** `REST.POST /query` and has `mode=local`.
 
 Client and server DomainControllers share one logger name. Distinguish them by **neighbors**: stub/RestServer lines sit **between** the two DC bursts; `PersistenceStoreController` / Sequelize sit on the server side only.
 
@@ -283,22 +329,40 @@ Client and server DomainControllers share one logger name. Distinguish them by *
 
 ## 7. How to read a log line
 
-Typical line:
+Typical interior line (after slices 0–2):
 
 ```
-#*NoTestSuite*-*NoTest*-*-*-runBoxedQueryAction# [22:41:27] info 4_miroir-localcache-redux_LocalCache### LocalCache action= {
+#K7X2NQ.s5.# #domainController.data.crud-Refresh all Instances-Refresh all Instances-*-runBoxedQueryAction# [22:41:27] info 4_miroir-localcache-redux_LocalCache### LocalCache action= {
+```
+
+Enter / exit (same span, opposite direction):
+
+```
+#K7X2NQ.s5># → DC.handleBoxedQuery strategy=localCacheOrFail mode=remote
+#K7X2NQ.s5<# ← DC.handleBoxedQuery status=ok
 ```
 
 | Piece | Meaning |
 |-------|---------|
-| `#…#` | Logger context template: `testSuite-test-testAssertion-compositeAction-action` |
-| `*NoTestSuite*` / `*NoTest*` | Context slot not set (common in CLI integ; Vitest still prints the test title on `stdout \| …`) |
+| `#K7X2NQ.s5.#` | Run token: `#{runId}.{spanId}{dir}#` — `>` enter, `.` interior, `<` exit. No span yet: `#K7X2NQ.-.#`. No run: `#*NoRun*.-.#` |
+| `#domainController.data.crud-Refresh all Instances-…#` | Legacy labels: `testSuite-test-testAssertion-compositeAction-action` |
 | trailing `runBoxedQueryAction` | `LoggerGlobalContext.setAction(actionType)` — you are **inside** that action |
 | trailing `*` | No current action on the context (bootstrap, or action finished) |
 | `[22:41:27]` | Local time |
 | `info` | Level |
 | `4_miroir-localcache-redux_LocalCache` | `{layer}_{package}_{logger}` |
 | `###` | Separator before the message |
+| `→ {block}` / `← {block} status=` | Enter / exit of a catalog hop (see §4.1). Block names, not diagram numbers |
+
+A leaf also prints banners you can copy into grep:
+
+```
+RUN K7X2NQ START
+…
+RUN K7X2NQ END status=ok
+```
+
+Bootstrap / rollback often get **their own** `RUN …` tokens (standalone `trackAction` before the leaf context). The query hops for this leaf share the runId that appears next to `#domainController.data.crud-Refresh all Instances-…#`.
 
 Vitest prefixes blocks with:
 
@@ -306,7 +370,32 @@ Vitest prefixes blocks with:
 stdout | miroir-runner-tests.integ.test.ts > Refresh all Instances
 ```
 
-That title is the **leaf**, not the logger context. Use it to skip bootstrap from other tests in a concatenated dump.
+That title is the **leaf**, not the logger context. Prefer `runId` when dumps are concatenated.
+
+### 7.1 Grep recipes
+
+Copy `runId` from `RUN … START` or from any `#??????.sN.#` prefix (six Crockford-base32 characters, no `I L O U`).
+
+```bash
+# whole leaf / run (all spans, enter + interior + exit)
+grep K7X2NQ logs.txt
+
+# one hop (enter, interior, exit) — use the span from the line you care about
+grep 'K7X2NQ.s5' logs.txt
+
+# enter only / exit only
+grep 'K7X2NQ.s5>' logs.txt
+grep 'K7X2NQ.s5<' logs.txt
+
+# Path A query pair by block name (span ids vary)
+grep 'DC.compositeRunBoxedQuery' logs.txt
+grep 'DC.handleBoxedQuery' logs.txt
+
+# isolate this leaf among concatenated dumps (suite + leaf labels)
+grep 'domainController.data.crud-Refresh all Instances' logs.txt
+```
+
+Nested children have their own `spanId`. Reconstruct parent + children by taking every line with that `runId` **between** the parent span’s `>` and `<`.
 
 **Noise you can skip when hunting a query:**
 
@@ -315,7 +404,7 @@ That title is the **leaf**, not the logger context. Use it to skip bootstrap fro
 - Repeated `getOrCreateEntityAdapter` while rollback hydrates the cache.
 - `upsertInstance` of Entity / EntityVersion during bootstrap.
 
-**Anchor lines for this leaf:** first `handleCompositeAction … compositeRunBoxedQueryAction` after `loadConfigurationFromPersistenceStore completed successfully for application 5af03c98-…`. Everything above that is bootstrap + refresh.
+**Anchor lines for this leaf:** `RUN {runId} START` next to the suite/leaf labels, then `#….sN># → DC.compositeRunBoxedQuery`. Everything above that `RUN` (other `RUN` tokens, `initModel`, rollback SQL) is bootstrap + refresh.
 
 ---
 
