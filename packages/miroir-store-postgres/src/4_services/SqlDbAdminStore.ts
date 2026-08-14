@@ -7,6 +7,7 @@ import {
   PersistenceStoreAdminSectionInterface,
   StoreSectionConfiguration
 } from "miroir-core";
+import { Sequelize } from "sequelize";
 import { packageName } from "../constants";
 import { SqlDbStore } from "./SqlDbStore";
 import { cleanLevel } from "./constants";
@@ -47,18 +48,24 @@ export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdmin
       if (config.emulatedServerType !== "sql") {
         throw new Error("SqlDbAdminStore deleteStore failed for serverType " + config.emulatedServerType);
       }
-      const schemas = await this.sequelize.showAllSchemas({});
-      log.info(
-        "SqlDbAdminStore storeManagementAction deleteStore",
-        JSON.stringify(config),
-        "schemas:",
-        schemas
-      );
-
-      // await this.sequelize.dropSchema(config.schema, {});
-      await this.sequelize.query(`DROP SCHEMA IF EXISTS "${config.schema}" CASCADE;`);
+      // PersistenceStoreController.deleteStore closes all Sequelize pools first; use a
+      // short-lived connection so schema teardown still works after section close().
+      const dropSequelize = new Sequelize(config.connectionString, {
+        dialect: "postgres",
+        logging: false,
+      });
+      try {
+        log.info(
+          "SqlDbAdminStore storeManagementAction deleteStore",
+          JSON.stringify(config),
+        );
+        await dropSequelize.query(`DROP SCHEMA IF EXISTS "${config.schema}" CASCADE;`);
+        log.info("SqlDbAdminStore deleteStore DONE for schema", config.schema);
+      } finally {
+        await dropSequelize.close();
+      }
     } catch (error) {
-      return Promise.resolve(new Action2Error("FailedToDeleteStore", error as string));
+      return Promise.resolve(new Action2Error("FailedToDeleteStore", String(error)));
     }
     return Promise.resolve(ACTION_OK);
   }

@@ -85,6 +85,7 @@ function baseMiroirConfig(runTarget = runnerLibraryRunTarget()): MiroirConfigCli
       filesystemDeploymentRootDirectory: "/tmp/miroir-test",
       deploymentStorageConfig: {
         [runTarget.deploymentUuid]: storeSection,
+        [deployment_Miroir.uuid]: storeSection,
         "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": storeSection,
       },
     },
@@ -434,7 +435,7 @@ describe("RunnerTestSession (Gap E R)", () => {
 
     await session.teardown();
 
-    expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(1);
+    expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(2);
     const [action, applicationDeploymentMapArg, modelEnvironmentArg, optionsArg] = vi.mocked(
       domainController.handleCompositeAction,
     ).mock.calls[0]!;
@@ -466,6 +467,19 @@ describe("RunnerTestSession (Gap E R)", () => {
       buildTestSessionModelEnvironment(runTarget.deploymentUuid, remappedLibraryModel),
     );
     expect(optionsArg).toEqual({});
+
+    const [miroirTeardownAction] = vi.mocked(domainController.handleCompositeAction).mock
+      .calls[1]!;
+    expect(miroirTeardownAction.actionLabel).toBe("teardownTestApplicationStores");
+    expect(miroirTeardownAction.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
+      "storeManagementAction_deleteStore",
+      "storeManagementAction_closeStore",
+    ]);
+    expect(miroirTeardownAction.payload.actionSequence[0]?.payload).toMatchObject({
+      deploymentUuid: deployment_Miroir.uuid,
+      application: selfApplicationMiroir.uuid,
+    });
+
     expect(deletePersistenceStoreController).toHaveBeenCalledTimes(2);
     expect(deletePersistenceStoreController).toHaveBeenCalledWith("admin-deployment");
     expect(deletePersistenceStoreController).toHaveBeenCalledWith("miroir-deployment");

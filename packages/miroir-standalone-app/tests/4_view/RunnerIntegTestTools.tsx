@@ -113,6 +113,36 @@ export async function afterAllTests(
   return Promise.resolve();
 };
 
+const STANDALONE_APP_TESTS_TMP = "miroir-standalone-app/tests/tmp";
+
+/** Node CLI profiles use Level under `tests/tmp`; browser UI profiles use short IndexedDB names. */
+export function resolveEphemeralIndexedDbBaseName(
+  libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
+  testApplicationName: string,
+): string {
+  const template = libraryDeploymentStorageConfiguration.model;
+  if (
+    template.emulatedServerType === "indexedDb" &&
+    template.indexedDbName.includes(`${STANDALONE_APP_TESTS_TMP}/`)
+  ) {
+    return `${STANDALONE_APP_TESTS_TMP}/indexedDb-${testApplicationName}`;
+  }
+  return testApplicationName;
+}
+
+function usesStandaloneAppTestsTmpLayout(
+  libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
+): boolean {
+  const template = libraryDeploymentStorageConfiguration.model;
+  if (template.emulatedServerType === "indexedDb") {
+    return template.indexedDbName.includes(`${STANDALONE_APP_TESTS_TMP}/`);
+  }
+  if (template.emulatedServerType === "filesystem") {
+    return template.directory.includes(`${STANDALONE_APP_TESTS_TMP}/`);
+  }
+  return false;
+}
+
 // ################################################################################################
 export function testApplicationStorageConfiguration(
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
@@ -121,24 +151,46 @@ export function testApplicationStorageConfiguration(
   let testDeploymentStorageConfiguration: StoreUnitConfiguration;
   switch (libraryDeploymentStorageConfiguration.model.emulatedServerType) {
     case "indexedDb": {
+      const indexedDbBaseName = resolveEphemeralIndexedDbBaseName(
+        libraryDeploymentStorageConfiguration,
+        testApplicationName,
+      );
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
         model: {
           emulatedServerType: "indexedDb",
-          indexedDbName: testApplicationName,
+          indexedDbName: indexedDbBaseName,
         },
         data: {
           emulatedServerType: "indexedDb",
-          indexedDbName: testApplicationName,
+          indexedDbName: indexedDbBaseName,
         },
         modelVersion: {
           emulatedServerType: "indexedDb",
-          indexedDbName: `${testApplicationName}_modelVersion`,
+          indexedDbName: `${indexedDbBaseName}_modelVersion`,
         },
       };
       break;
     }
     case "filesystem": {
+      if (usesStandaloneAppTestsTmpLayout(libraryDeploymentStorageConfiguration)) {
+        testDeploymentStorageConfiguration = {
+          admin: libraryDeploymentStorageConfiguration.admin,
+          model: {
+            emulatedServerType: "filesystem",
+            directory: `${STANDALONE_APP_TESTS_TMP}/${testApplicationName}_model`,
+          },
+          data: {
+            emulatedServerType: "filesystem",
+            directory: `${STANDALONE_APP_TESTS_TMP}/${testApplicationName}_data`,
+          },
+          modelVersion: {
+            emulatedServerType: "filesystem",
+            directory: `${STANDALONE_APP_TESTS_TMP}/${testApplicationName}_modelVersion`,
+          },
+        };
+        break;
+      }
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
         model: {
@@ -252,9 +304,18 @@ export function getTestConfig(
   };
 
   const canonicalDeploymentUuid = resolveCanonicalTestDeploymentUuid(testApplicationName);
-  const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client.emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[canonicalDeploymentUuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[canonicalDeploymentUuid];
+  const libraryDeploymentStorageConfiguration: StoreUnitConfiguration | undefined =
+    miroirConfig.client.emulateServer
+      ? miroirConfig.client.deploymentStorageConfig?.[canonicalDeploymentUuid]
+      : miroirConfig.client.serverConfig?.storeSectionConfiguration?.[canonicalDeploymentUuid];
+
+  if (!libraryDeploymentStorageConfiguration) {
+    throw new Error(
+      `getTestConfig: missing store config for deployment ${canonicalDeploymentUuid} ` +
+        `(applicationName=${testApplicationName}). Add it to the profile deploymentStorageConfig.`,
+    );
+  }
+
   return {
     applicationDeploymentMap,
     miroirDeploymentStorageConfiguration,

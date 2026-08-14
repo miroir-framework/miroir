@@ -31,6 +31,10 @@
         "data": {
           "emulatedServerType": "indexedDb",
           "indexedDbName": "ui-integ-miroir"
+        },
+        "modelVersion": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-miroir_modelVersion"
         }
       },
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
@@ -45,6 +49,28 @@
         "data": {
           "emulatedServerType": "indexedDb",
           "indexedDbName": "ui-integ-library"
+        },
+        "modelVersion": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-library_modelVersion"
+        }
+      },
+      "eef01001-0002-4000-8000-000000000002": {
+        "admin": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-admin"
+        },
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-appForTest"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-appForTest"
+        },
+        "modelVersion": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-appForTest_modelVersion"
         }
       }
     },

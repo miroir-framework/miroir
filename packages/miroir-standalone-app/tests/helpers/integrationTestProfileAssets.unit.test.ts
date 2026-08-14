@@ -39,6 +39,25 @@ describe("integrationTestProfileAssets (B5/B6-b/B6-c)", () => {
       ];
     expect(miroirDeployment?.model?.emulatedServerType).toBe("indexedDb");
     expect(miroirDeployment?.data?.emulatedServerType).toBe("indexedDb");
+    expect(miroirDeployment?.modelVersion?.emulatedServerType).toBe("indexedDb");
+    expect(miroirDeployment?.modelVersion?.indexedDbName).toBe("ui-integ-miroir_modelVersion");
+
+    const libraryDeployment =
+      miroirConfig.client?.deploymentStorageConfig?.[
+        "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+      ];
+    expect(libraryDeployment?.modelVersion?.emulatedServerType).toBe("indexedDb");
+    expect(libraryDeployment?.modelVersion?.indexedDbName).toBe("ui-integ-library_modelVersion");
+
+    const appForTestDeployment =
+      miroirConfig.client?.deploymentStorageConfig?.[
+        "eef01001-0002-4000-8000-000000000002"
+      ];
+    expect(appForTestDeployment?.model?.emulatedServerType).toBe("indexedDb");
+    expect(appForTestDeployment?.modelVersion?.emulatedServerType).toBe("indexedDb");
+    expect(appForTestDeployment?.modelVersion?.indexedDbName).toBe(
+      "ui-integ-appForTest_modelVersion",
+    );
   });
 
   it("loads realServer-sql browser config (emulateServer false + rootApiUrl + Admin)", async () => {

@@ -33,6 +33,11 @@
           "emulatedServerType": "mongodb",
           "connectionString": "mongodb://localhost:27017",
           "database": "miroir-miroir"
+        },
+        "modelVersion": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-miroir_modelVersion"
         }
       },
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
@@ -55,6 +60,28 @@
           "emulatedServerType": "mongodb",
           "connectionString": "mongodb://localhost:27017",
           "database": "miroir-app_modelVersion"
+        }
+      },
+      "eef01001-0002-4000-8000-000000000002": {
+        "admin": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-admin"
+        },
+        "model": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-appForTest"
+        },
+        "data": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-appForTest"
+        },
+        "modelVersion": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-appForTest_modelVersion"
         }
       }
     },

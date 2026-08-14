@@ -7,6 +7,7 @@ import {
   StoreSectionConfiguration
 } from "miroir-core";
 import { packageName } from "../constants.js";
+import { IndexedDb } from "./IndexedDb.js";
 import { IndexedDbStore } from "./IndexedDbStore.js";
 import { cleanLevel } from "./constants.js";
 
@@ -33,9 +34,28 @@ export class IndexedDbAdminStore extends IndexedDbStore implements PersistenceSt
 
   // ##############################################################################################
   async deleteStore(config: StoreSectionConfiguration): Promise<Action2VoidReturnType> {
-    // await this.sequelize.dropSchema(this.schema,{});
-    // TODO: remove directory when on server?
-    // return clear ()
+    if (config.emulatedServerType !== "indexedDb") {
+      return Promise.resolve(ACTION_OK);
+    }
+
+    // Browser builds use native IndexedDB — no Level directories to remove.
+    if (typeof process === "undefined" || !process.versions?.node) {
+      return Promise.resolve(ACTION_OK);
+    }
+
+    await this.localUuidIndexedDb.closeObjectStore();
+
+    const root = this.localUuidIndexedDb.getFilesystemDeploymentRootDirectory();
+    const { rmSync } = await import("node:fs");
+    for (const directoryName of IndexedDb.levelDatabaseDirectoryNames(config.indexedDbName)) {
+      const directoryPath = IndexedDb.levelDatabasePath(root, directoryName);
+      try {
+        rmSync(directoryPath, { recursive: true, force: true });
+        log.info(this.logHeader, "deleteStore removed Level directory", directoryPath);
+      } catch (error) {
+        log.warn(this.logHeader, "deleteStore could not remove Level directory", directoryPath, error);
+      }
+    }
     return Promise.resolve(ACTION_OK);
   }
 }

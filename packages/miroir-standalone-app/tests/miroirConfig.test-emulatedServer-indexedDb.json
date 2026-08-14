@@ -30,6 +30,10 @@
         "data": {
           "emulatedServerType": "indexedDb",
           "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-miroir"
+        },
+        "modelVersion": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "miroir-standalone-app/tests/tmp/indexedDb-miroir_modelVersion"
         }
       },
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
@@ -48,6 +52,24 @@
         "modelVersion": {
           "emulatedServerType": "indexedDb",
           "indexedDbName": "miroir-standalone-app/tests/tmp/indexedDb-app_modelVersion"
+        }
+      },
+      "eef01001-0002-4000-8000-000000000002": {
+        "admin": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-admin"
+        },
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-appForTest"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName":"miroir-standalone-app/tests/tmp/indexedDb-appForTest"
+        },
+        "modelVersion": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "miroir-standalone-app/tests/tmp/indexedDb-appForTest_modelVersion"
         }
       }
     },

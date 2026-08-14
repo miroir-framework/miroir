@@ -37,6 +37,23 @@ export class IndexedDb {
     this.logHeader = 'IndexedDb ' + databaseName;
   }
 
+  /** Level-backed emulated IndexedDB root (Node / Vitest). */
+  getFilesystemDeploymentRootDirectory(): string {
+    return this.filesystemDeploymentRootDirectory;
+  }
+
+  /** On-disk Level database directory name(s) for a store-section `indexedDbName`. */
+  static levelDatabaseDirectoryNames(indexedDbName: string): string[] {
+    if (indexedDbName.endsWith("_modelVersion")) {
+      return [`${indexedDbName}-modelVersion`];
+    }
+    return [`${indexedDbName}-model`, `${indexedDbName}-data`];
+  }
+
+  static levelDatabasePath(filesystemDeploymentRootDirectory: string, directoryName: string): string {
+    return joinPath(filesystemDeploymentRootDirectory, directoryName);
+  }
+
   // #############################################################################################
   public async closeObjectStore():Promise<void> {
     if (this.db?.status =='open' ) {

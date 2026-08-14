@@ -33,7 +33,7 @@
         },
         "modelVersion": {
           "emulatedServerType": "filesystem",
-          "directory":"miroir-test-app_deployment-miroir/assets/miroir_modelVersion"
+          "directory":"miroir-standalone-app/tests/tmp/miroir_modelVersion"
         }
       },
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {

@@ -32,6 +32,7 @@ import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
+import { seedMiroirModelVersionTmpFromPackageAssets } from "../helpers/seedMiroirModelVersionTmpFromPackageAssets.js";
 import { cleanLevel, packageName } from "./constants.js";
 import { MIROIR_VERSION_HISTORY_PARENTS_SLICE0 } from "../../../miroir-core/tests/1_core/versioningModes.234.slice0-inventory.js";
 
@@ -91,6 +92,10 @@ async function getPersistedInstances(section: "data" | "modelVersion", parentEnt
 
 beforeAll(async () => {
   log.info(fileName, "beforeAll");
+  seedMiroirModelVersionTmpFromPackageAssets(
+    miroirConfig.client.filesystemDeploymentRootDirectory as string,
+  );
+
   const miroirDeploymentStorageConfiguration =
     miroirConfig.client.deploymentStorageConfig[MIROIR_DEPLOYMENT_UUID];
   expect(miroirDeploymentStorageConfiguration?.modelVersion).toBeDefined();
@@ -114,7 +119,7 @@ describe("234 Slice 3.2 — Miroir filesystem modelVersion seed", () => {
   it("emulated-server filesystem config includes modelVersion for Miroir deployment", () => {
     expect(miroirStorageConfiguration.modelVersion).toBeDefined();
     expect(miroirStorageConfiguration.modelVersion!.emulatedServerType).toBe("filesystem");
-    expect(miroirStorageConfiguration.modelVersion!.directory).toMatch(/miroir_modelVersion/);
+    expect(miroirStorageConfiguration.modelVersion!.directory).toMatch(/tests\/tmp\/miroir_modelVersion/);
   });
 
   it("bootstrapped store reads EntityVersion instances from modelVersion section", async () => {

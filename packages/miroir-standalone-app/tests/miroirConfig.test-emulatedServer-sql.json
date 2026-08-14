@@ -69,6 +69,32 @@
           "schema": "library_modelVersion",
           "forceNullOptionalAttributeToUndefined": true
         }
+      },
+      "eef01001-0002-4000-8000-000000000002": {
+        "admin": {
+          "emulatedServerType": "sql",
+          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "miroirAdmin",
+          "forceNullOptionalAttributeToUndefined": true
+        },
+        "model": {
+          "emulatedServerType": "sql",
+          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "appForTest",
+          "forceNullOptionalAttributeToUndefined": true
+        },
+        "data": {
+          "emulatedServerType": "sql",
+          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "appForTest",
+          "forceNullOptionalAttributeToUndefined": true
+        },
+        "modelVersion": {
+          "emulatedServerType": "sql",
+          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "appForTest_modelVersion",
+          "forceNullOptionalAttributeToUndefined": true
+        }
       }
     },
     "deploymentMode": "monoUser",

@@ -390,6 +390,24 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       {},
     );
 
+    if (this.runnerTestContext.internalMiroirConfig.client.emulateServer === true) {
+      const { miroirDeploymentStorageConfiguration } = getTestSessionConfig(
+        this.options.miroirConfig,
+        runTarget,
+      );
+      await this.domainController.handleCompositeAction(
+        buildTeardownTestApplicationStoresAction(
+          deployment_Miroir.uuid,
+          selfApplicationMiroir.uuid,
+          miroirDeploymentStorageConfiguration,
+          { deleteAdminInstances: false },
+        ),
+        this.applicationDeploymentMap,
+        buildTestSessionModelEnvironment(deployment_Miroir.uuid, defaultMiroirMetaModel),
+        {},
+      );
+    }
+
     // Release emulated-server persistence backends (Postgres pools, etc.) so the
     // vitest worker can shut down without RPC timeouts.
     if (this.persistenceStoreControllerManager) {

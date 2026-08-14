@@ -68,6 +68,7 @@ export function generateEvolutionBaseline(
     }
   }
 
+  const rootTimestamp = timestamp.toISOString();
   const root: ApplicationEvolutionTrace =
     existingRoot ??
     ({
@@ -75,7 +76,8 @@ export function generateEvolutionBaseline(
       parentUuid: EVOLUTION_TRACE_ENTITY_UUID,
       applicationUuid: deployment.applicationUuid,
       branchName: DEFAULT_EVOLUTION_BRANCH,
-      timestamp,
+      // ISO string (same as trace events) — Redux local cache requires serializable values.
+      timestamp: rootTimestamp as unknown as ApplicationEvolutionTrace["timestamp"],
     } satisfies ApplicationEvolutionTrace);
 
   const baselineEvent: ApplicationEvolutionTraceEvent = {
