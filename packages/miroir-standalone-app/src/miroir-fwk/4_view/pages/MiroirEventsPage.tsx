@@ -3,6 +3,7 @@ import {
   CheckCircle,
   Clear,
   Close,
+  ContentCopyIcon,
   Download,
   ErrorOutline,
   History,
@@ -37,8 +38,10 @@ import {
   Typography
 } from '@mui/material';
 import {
+  formatActivityRunToken,
   LoggerInterface,
   MiroirLoggerFactory,
+  suggestedRunExportFilename,
   type MiroirContextInterface,
   type MiroirEvent,
   type MiroirEventLog,
@@ -173,12 +176,17 @@ export const MiroirEventsPage: React.FC = () => {
       return;
     }
 
-    const exportData = miroirEventService.exportEvents();
+    const runId = currentActionLogs?.activity.runId;
+    const exportData =
+      eventId && runId ? miroirEventService.exportRun(runId) : miroirEventService.exportEvents();
     const blob = new Blob([exportData], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `action-logs-${eventId || 'all'}-${new Date().toISOString().split('T')[0]}.json`;
+    a.download =
+      eventId && runId
+        ? suggestedRunExportFilename(runId, currentActionLogs?.activity.status === "error")
+        : `action-logs-${eventId || 'all'}-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -327,11 +335,33 @@ export const MiroirEventsPage: React.FC = () => {
     <Box sx={{ p: 3 }}>
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          {eventId ? `Logs for Action: ${currentActionLogs?.activity.actionType || eventId}` : 'Miroir Events'}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+          <Typography variant="h4" component="h1">
+            {eventId ? `Logs for Action: ${currentActionLogs?.activity.actionType || eventId}` : 'Miroir Events'}
+          </Typography>
+          {currentActionLogs?.activity.runId && (
+            <>
+              <Chip
+                label={formatActivityRunToken(currentActionLogs.activity)}
+                size="small"
+                variant="outlined"
+                sx={{ fontFamily: "monospace" }}
+              />
+              <Tooltip title="Copy runId for grep">
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    void navigator.clipboard?.writeText(currentActionLogs.activity.runId!);
+                  }}
+                >
+                  <ContentCopyIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+            </>
+          )}
+        </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Tooltip title="Export logs">
+          <Tooltip title={currentActionLogs?.activity.runId ? "Export this run" : "Export logs"}>
             <IconButton onClick={handleExportEvents}>
               <Download />
             </IconButton>

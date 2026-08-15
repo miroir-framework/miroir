@@ -23,6 +23,7 @@ import {
   BugReport,
   CheckCircle,
   Clear,
+  ContentCopyIcon,
   // import {
   ExpandLess,
   ExpandMore,
@@ -33,7 +34,13 @@ import {
   Visibility
 } from './Themes/MaterialSymbolWrappers';
 
-import { LoggerInterface, MiroirEventTrackingData, MiroirLoggerFactory } from "miroir-core";
+import {
+  formatActivityRunToken,
+  LoggerInterface,
+  MiroirEventTrackingData,
+  MiroirLoggerFactory,
+  uniqueRunIds,
+} from "miroir-core";
 import { useMiroirContextService, useMiroirEventTrackingData } from "miroir-react";
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
@@ -346,6 +353,29 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
                   color={getStatusColor(action) as any}
                   variant="outlined"
                 />
+                {action.runId && (
+                  <>
+                    <Chip
+                      label={formatActivityRunToken(action)}
+                      size="small"
+                      variant="outlined"
+                      data-testid="run-token"
+                      sx={{ fontFamily: "monospace", fontSize: "0.7rem", height: "20px" }}
+                    />
+                    <Tooltip title="Copy runId for grep">
+                      <IconButton
+                        size="small"
+                        data-testid="copy-run-id"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void navigator.clipboard?.writeText(action.runId!);
+                        }}
+                      >
+                        <ContentCopyIcon fontSize="inherit" />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                )}
                 <Typography variant="caption" color="text.secondary" component="span">
                   {formatDuration(action.duration)}
                 </Typography>
@@ -428,11 +458,33 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
           </Box>
         </Box>
         
-        <Typography variant="body2" color="text.secondary">
-          {filteredEvents.length} items ({trackedEvents.filter(a => a.status === 'running').length} running) - 
-          Actions: {trackedEvents.filter(a => a.activityId === 'action').length}, 
-          Tests: {trackedEvents.filter(a => a.activityId !== 'action').length}
-        </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+          <Typography variant="body2" color="text.secondary">
+            {filteredEvents.length} items ({trackedEvents.filter(a => a.status === 'running').length} running) - 
+            Actions: {trackedEvents.filter(a => a.activityId === 'action').length}, 
+            Tests: {trackedEvents.filter(a => a.activityId !== 'action').length}
+          </Typography>
+          {uniqueRunIds(filteredEvents).map((runId) => (
+            <Box key={runId} sx={{ display: "flex", alignItems: "center" }}>
+              <Chip
+                label={`#${runId}`}
+                size="small"
+                variant="outlined"
+                sx={{ fontFamily: "monospace", fontSize: "0.7rem", height: "20px" }}
+              />
+              <Tooltip title="Copy runId for grep">
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    void navigator.clipboard?.writeText(runId);
+                  }}
+                >
+                  <ContentCopyIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          ))}
+        </Box>
       </Box>
 
       <Collapse in={showFilters}>

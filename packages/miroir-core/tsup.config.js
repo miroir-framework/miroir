@@ -9,6 +9,7 @@ export default defineConfig({
   },
   format: ['esm'],
   bundle: true,
+  splitting: false,
   clean: true,
   dts: true,
   sourcemap: true,
@@ -26,8 +27,11 @@ export default defineConfig({
     'miroir-test-app_deployment-library',
     // json-diff → @ewoudenberg/difflib uses dynamic require('assert'); must stay external for ncc/ESM consumers
     'json-diff',
-    // Node builtins — only used by model-validation-fs entry
+    // Node builtins — only used by Node-only subpath entries
     'node:fs',
     'node:path',
+    'node:fs/promises',
+    'fs/promises',
+    'path',
   ],
 });

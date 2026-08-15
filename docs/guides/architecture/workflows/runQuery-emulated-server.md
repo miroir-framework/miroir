@@ -375,7 +375,7 @@ That title is the **leaf**, not the logger context. Prefer `runId` when dumps ar
 
 ### 7.1 Grep recipes
 
-Copy `runId` from `RUN … START` or from any `#??????.sN.#` prefix (six Crockford-base32 characters, no `I L O U`).
+Copy `runId` from `RUN … START`, from any `#??????.sN.#` prefix (six Crockford-base32 characters, no `I L O U`), or from the Events timeline chip (same `#runId.spanId>` / `<` tokens). A failed CLI leaf also writes `miroir-run-{runId}-error.json` (`MIROIR_RUN_EXPORT_DIR` or cwd).
 
 ```bash
 # whole leaf / run (all spans, enter + interior + exit)

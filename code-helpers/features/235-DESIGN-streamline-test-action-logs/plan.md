@@ -2,7 +2,7 @@
 
 GitHub issue: [miroir-framework/miroir#235](https://github.com/miroir-framework/miroir/issues/235)
 
-**Status:** Slices 0–5 done · Slices 6–7 not started
+**Status:** Slices 0–6 done · Slice 7 not started
 
 **Depends on / related:** #43 (logger startup race), #197 (UI integ), workflow doc `docs/guides/architecture/workflows/runQuery-emulated-server.md`
 
@@ -184,6 +184,8 @@ No production code required if slice 1 names match the table.
 - Export JSON for a failed leaf (`runId`, activities, attached logs) — CLI file + UI download.
 
 **Done when:** #235 AC 5, 9.
+
+**Done (2026-08-15):** Timeline + events page show `#runId.spanId>` / `<` (same `formatRunLogPrefix` tokens as CLI) and a copy-runId control. `MiroirEventService.exportRun(runId)` builds `{ runId, activities, events+logs }`. CLI (`runMiroirCoreTestsFromCLI` / standalone runner CLI) writes `miroir-run-{runId}-error.json` on a failed leaf (`MIROIR_RUN_EXPORT_DIR` or cwd). Events page download uses the run bundle when the selected activity has a `runId`.
 
 ### Slice 7 — Config presets + docs
 

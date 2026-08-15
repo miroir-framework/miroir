@@ -1,24 +1,19 @@
-import type { MiroirTestSuite } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { defaultMetaModelEnvironment } from "../1_core/Model.js";
-import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker.js";
-import { MiroirEventService } from "../3_controllers/MiroirEventService.js";
-import { loadMiroirCoreTestSuite } from "./miroirCoreTestSuiteRegistry.js";
 import {
+  defaultMetaModelEnvironment,
+  displayMiroirTestResults,
+  loadMiroirCoreTestSuite,
+  MiroirActivityTracker,
+  MiroirEventService,
+  type MiroirTestCliConfig,
   type MiroirTestExecutionEnvironment,
   type MiroirTestExecutionOptions,
+  type MiroirTestSuite,
   type RunMiroirTests,
   type RunnerTestSessionInterface,
-  type VitestNamespace
-} from "./MiroirTestTools.js";
-import { displayMiroirTestResults } from "./MiroirTransformerTestTools.js";
-import type { MiroirTestCliConfig } from "./parseMiroirTestCliConfig.js";
+  type VitestNamespace,
+} from "miroir-core";
+import { onFailedRunExport } from "./writeFailedRunExport.js";
 
-export type RunMiroirCoreTestsFromCLIOptions = {
-  executionEnvironment?: MiroirTestExecutionEnvironment;
-  testSession?: RunnerTestSessionInterface;
-};
-
-// ################################################################################################
 export async function runMiroirCoreTestsFromCLI(
   runMiroirTests: RunMiroirTests,
   vitest: VitestNamespace,
@@ -40,9 +35,11 @@ export async function runMiroirCoreTestsFromCLI(
       ? {
           executionMode: config.executionMode as "integration",
           executionEnvironment: executionEnvironment as MiroirTestExecutionEnvironment,
+          onFailedRunExport,
         }
       : {
           executionMode: config.executionMode as "unit",
+          onFailedRunExport,
         };
 
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];

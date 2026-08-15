@@ -16,7 +16,7 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
-import { getActivityTopic, type MiroirEventLog } from 'miroir-core';
+import { formatActivityRunToken, getActivityTopic, type MiroirEventLog } from 'miroir-core';
 import React from 'react';
 
 // Utility function to get appropriate icon for log level
@@ -140,6 +140,9 @@ export const EventLogComponent: React.FC<{ eventLog: MiroirEventLog; isExpanded:
                   activity: {String(eventLog.event.activity?.activityId || "N/A")}, type:{" "}
                   {String(eventLog.event.activity?.activityType || "N/A")}, topic:{" "}
                   {String(getActivityTopic(eventLog.event.activity) || "N/A")}
+                  {eventLog.event.activity?.runId
+                    ? `, run: ${formatActivityRunToken(eventLog.event.activity)}`
+                    : ""}
                 </Typography>
               </Box>
             </Box>

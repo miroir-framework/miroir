@@ -35,6 +35,10 @@ import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainC
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import type { TestbedUuids } from "./TestbedUuids.js";
+import type { RunExportBundle } from "../4_services/runLogExport.js";
+import { exportFailedRunIfNeeded } from "../4_services/runLogExport.js";
+import { LoggerGlobalContext } from "../4_services/LoggerContext.js";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 
 /** @deprecated Use MiroirTestLeaf — actionTest is now in the fundamental union. */
 export type MiroirTestLeafExecutable = MiroirTestLeaf;
@@ -79,12 +83,19 @@ export interface RunnerTestSessionInterface {
 
 export type MiroirTestExecutionMode = "unit" | "integration";
 
+export type MiroirTestFailedRunExport = (bundle: RunExportBundle) => void | Promise<void>;
+
 export type MiroirTestExecutionOptions = {
-  executionMode: "unit";
-} | {
-  executionMode: "integration";
-  executionEnvironment: MiroirTestExecutionEnvironment;
-};
+  onFailedRunExport?: MiroirTestFailedRunExport;
+} & (
+  | {
+      executionMode: "unit";
+    }
+  | {
+      executionMode: "integration";
+      executionEnvironment: MiroirTestExecutionEnvironment;
+    }
+);
 
 
 function miroirTestLeafLabel(leaf: MiroirTestLeafExecutable): string {
@@ -350,24 +361,35 @@ export const runMiroirTests: RunMiroirTests = {
       return;
     }
     const label = miroirTestLeafLabel(leaf);
-    await miroirActivityTracker.trackTest(label, parentTrackingId, async (nestedId) => {
-      await miroirActivityTracker.trackTestAssertion(label, nestedId, async (assertionId) => {
-        await runMiroirTestsRef._runMiroirTest(
-          localVitest,
-          testNamePath,
-          filter,
-          leaf,
-          modelEnvironment,
-          miroirActivityTracker,
-          assertionId,
-          trackActionsBelow,
-          runMiroirTestsRef,
-          executionOptions,
-          testAssertionPath,
-          parentSkip,
-        );
+    let runId: string | undefined;
+    try {
+      await miroirActivityTracker.trackTest(label, parentTrackingId, async (nestedId) => {
+        runId = LoggerGlobalContext.getRunId();
+        await miroirActivityTracker.trackTestAssertion(label, nestedId, async (assertionId) => {
+          await runMiroirTestsRef._runMiroirTest(
+            localVitest,
+            testNamePath,
+            filter,
+            leaf,
+            modelEnvironment,
+            miroirActivityTracker,
+            assertionId,
+            trackActionsBelow,
+            runMiroirTestsRef,
+            executionOptions,
+            testAssertionPath,
+            parentSkip,
+          );
+        });
       });
-    });
+    } finally {
+      await exportFailedRunIfNeeded({
+        runId,
+        activities: miroirActivityTracker.getActivityIndex().values(),
+        events: MiroirLoggerFactory.getStartedEventService()?.getAllEvents(),
+        onFailedRunExport: executionOptions?.onFailedRunExport,
+      });
+    }
   },
 };
 

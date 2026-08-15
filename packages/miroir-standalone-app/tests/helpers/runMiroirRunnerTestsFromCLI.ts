@@ -13,6 +13,7 @@ import {
   type RunnerTestSessionInterface,
   type VitestNamespace,
 } from "miroir-core";
+import { onFailedRunExport } from "./writeFailedRunExport.js";
 import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
 import {
   miroirTest_domain_controller_composite_pk_crud,
@@ -74,6 +75,7 @@ export async function runMiroirRunnerTestsFromCLI(
   const executionOptions: MiroirTestExecutionOptions = {
     executionMode: "integration",
     executionEnvironment,
+    onFailedRunExport,
   };
 
   const loadedSuites: { suiteKey: string; definition: MiroirTestSuite }[] = [];

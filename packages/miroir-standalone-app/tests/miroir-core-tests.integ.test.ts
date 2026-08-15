@@ -7,10 +7,10 @@ import {
   MiroirActivityTracker,
   parseMiroirTestCliArgs,
   resolveMiroirTestCliConfigFromPartial,
-  runMiroirCoreTestsFromCLI,
   runMiroirTests,
   type MiroirConfigClient,
 } from "miroir-core";
+import { runMiroirCoreTestsFromCLI } from "./helpers/runMiroirCoreTestsFromCLI.js";
 import { assertMiroirCoreIntegTestLaunchReady } from "./helpers/miroirCoreIntegTestLaunch.js";
 import { resolveTestSessionForIntegOptionsFromEnv } from "./helpers/IntegrationTestSession.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";

@@ -1218,6 +1218,17 @@ export {
 export { MiroirLoggerFactory, testLogger } from "./4_services/MiroirLoggerFactory.js";
 export { summarizeQueryHopResult, trackQueryHop } from "./4_services/trackQueryHop.js";
 export {
+  activitySpanDirection,
+  buildRunExportBundle,
+  exportFailedRunIfNeeded,
+  failedLeafActivityForRun,
+  formatActivityRunToken,
+  suggestedFailedRunExportFilename,
+  suggestedRunExportFilename,
+  uniqueRunIds,
+  type RunExportBundle,
+} from "./4_services/runLogExport.js";
+export {
   PersistenceStoreController,
   PersistenceStoreControllerFactoryReturnType
 } from "./4_services/PersistenceStoreController.js";
@@ -1386,6 +1397,7 @@ export {
   runMiroirTestSuite,
   type MiroirTestExecutionMode,
   type MiroirTestExecutionOptions,
+  type MiroirTestFailedRunExport,
   type RunMiroirTest,
   type RunMiroirTests,
   type MiroirTestExecutionEnvironment,
@@ -1469,10 +1481,6 @@ export {
   type MiroirTestSuiteKey,
   type MiroirTestSuiteLoader,
 } from "./5_tests/miroirCoreTestSuiteRegistry.js";
-export {
-  runMiroirCoreTestsFromCLI,
-  type RunMiroirCoreTestsFromCLIOptions,
-} from "./5_tests/runMiroirCoreTestsFromCLI.js";
 export {
   type VitestNamespace,
 } from "./5_tests/MiroirTestTools.js";

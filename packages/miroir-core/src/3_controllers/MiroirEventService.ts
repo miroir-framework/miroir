@@ -7,6 +7,7 @@ import {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { LogLevel } from "../0_interfaces/4-services/LoggerInterface";
 import { LoggerGlobalContext } from "../4_services/LoggerContext";
+import { buildRunExportBundle } from "../4_services/runLogExport";
 
 // Base interface for common log entry fields
 interface MiroirEventLogBase {
@@ -114,6 +115,11 @@ export interface MiroirEventServiceInterface {
    * Export action logs as JSON
    */
   exportEvents(): string;
+
+  /**
+   * Export one run (activities + attached logs) as JSON.
+   */
+  exportRun(runId: string): string;
 
   /**
    * Subscribe to changes in the event list
@@ -473,6 +479,18 @@ export class MiroirEventService implements MiroirEventServiceInterface {
       })),
     };
     return JSON.stringify(exportData, null, 2);
+  }
+
+  exportRun(runId: string): string {
+    return JSON.stringify(
+      buildRunExportBundle({
+        runId,
+        activities: this.activityTracker.getActivityIndex().values(),
+        events: this.getAllEvents(),
+      }),
+      null,
+      2,
+    );
   }
 
   destroy(): void {
