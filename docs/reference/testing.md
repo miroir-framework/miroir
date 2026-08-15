@@ -593,13 +593,16 @@ Before first run, check `filesystemDeploymentRootDirectory` inside the chosen co
 | File | Use when |
 |------|----------|
 | `specificLoggersConfig_warn.json` | Default; minimal noise |
-| `specificLoggersConfig_orientation.json` | **#235** — WARN default; INFO on DomainController, saga, RestClientStub only. Use with run/span hop lines to read a leaf without payload dumps |
-| `specificLoggersConfig_query-debug.json` | **#235** — WARN default; DEBUG on the full query path (DC → saga → stub/REST → PSC → SqlDbQueryRunner → QuerySelectors). Payloads and Sequelize SQL |
+| `specificLoggersConfig_orientation.json` | **#235/#236** — WARN default; INFO on DomainController and RestClientStub only. Hop enter/exit lines come from the activity tracker (`console.log`), not logger levels |
+| `specificLoggersConfig_query-debug-pathA.json` | **#236** — WARN default; DEBUG on Path A query hop only (LocalCache, QuerySelectors). Use as second pass after orientation `grep $RUNID`; adds ~10 DEBUG payload lines on the leaf (not whole-session DEBUG) |
+| `specificLoggersConfig_query-debug.json` | **#235/#236** — WARN default; DEBUG on the full query path (DC → saga → stub/REST → PSC → SqlDbQueryRunner → QuerySelectors). Use for Path B or when Path A payloads are not enough; expect much higher `grep $RUNID` line count |
 | `specificLoggersConfig_DomainController_debug.json` | Debugging DomainController flows |
 | `specificLoggersConfig_info.json` | Broader INFO-level output |
 | `specificLoggersConfig_trace_filesystem.json` | Filesystem store tracing |
 
-Hop enter/exit lines (`#runId.span># → …` / `← …`) are emitted at INFO via the activity tracker (`console.log`), not via these logger levels. The presets control **MiroirLogger** noise around them: orientation keeps rollback/query summaries and DC/saga/stub interior lines at INFO while suppressing everything else at WARN; query-debug turns payload dumps back on at DEBUG.
+Hop enter/exit lines (`#runId.span># → …` / `← …`) are emitted at INFO via the activity tracker (`console.log`), not via these logger levels. The presets control **MiroirLogger** noise around them: orientation keeps rollback/query summaries at INFO while suppressing legacy composite/test dumps (demoted to DEBUG in #236); query-debug-pathA turns payload dumps on for the Path A query hop only; query-debug enables DEBUG on the full Path A+B chain.
+
+**Recommended workflow:** (1) run with `specificLoggersConfig_orientation.json`, copy `runId`, `grep $RUNID`; (2) if query payloads are needed, re-run with `specificLoggersConfig_query-debug-pathA.json` (Path A) or `specificLoggersConfig_query-debug.json` (full path). Set `MIROIR_TEST_VERBOSE_TRACKING=1` for tracker `🧪` console noise; `MIROIR_TEST_VERBOSE=1` for full env dump from the test launcher.
 
 Workflow reference (Path A vs B, grep recipes): [runQuery-emulated-server.md](../guides/architecture/workflows/runQuery-emulated-server.md).
 
@@ -614,7 +617,7 @@ npm run testMiroir -w miroir-standalone-app -- \
   --filter '{"domainController.data.crud":["Refresh all Instances"]}'
 ```
 
-Copy the six-character `runId` from `RUN … START` or `#??????.sN.#`, then `grep $RUNID` on the log file. For full action/result JSON on query hops, switch to `specificLoggersConfig_query-debug.json` (same command, different `VITE_MIROIR_LOG_CONFIG_FILENAME`).
+Copy the six-character `runId` from `RUN … START` or `#??????.sN.#`, then `grep $RUNID` on the log file. For query payload dumps on the same leaf, re-run with `specificLoggersConfig_query-debug-pathA.json` (Path A only) or `specificLoggersConfig_query-debug.json` (full query path including REST/PSC/SQL).
 
 ### Launch pattern
 

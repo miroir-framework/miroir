@@ -77,7 +77,6 @@ export function generateEvolutionBaseline(
       applicationUuid: deployment.applicationUuid,
       branchName: DEFAULT_EVOLUTION_BRANCH,
       timestamp: timestamp.toISOString() as unknown as Date,
-      timestamp: rootTimestamp as unknown as ApplicationEvolutionTrace["timestamp"],
     } satisfies ApplicationEvolutionTrace);
 
   const baselineEvent: ApplicationEvolutionTraceEvent = {

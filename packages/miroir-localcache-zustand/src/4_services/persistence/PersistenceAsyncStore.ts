@@ -197,7 +197,7 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
           );
         }
         const localStoreResult = await localPersistenceStoreController.handleAction(action, applicationDeploymentMap)
-        log.info(
+        log.debug(
           "PersistenceAsyncStore innerHandlePersistenceActionForLocalPersistenceStore done for action",
           action,
           "result=",

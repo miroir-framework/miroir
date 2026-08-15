@@ -2792,7 +2792,7 @@ export class DomainController implements DomainControllerInterface {
     endpointApplicationMap?: EndpointApplicationMap,
     actionParamValues?: Record<string, unknown>,
   ): Promise<Action2VoidReturnType> {
-    log.info("DomainController handleAction START actionType=", domainAction["actionType"]);
+    log.debug("DomainController handleAction START actionType=", domainAction["actionType"]);
     return this.miroirContext.miroirActivityTracker.trackAction(
       domainAction.actionType,
       (domainAction as any).actionLabel,
@@ -2802,7 +2802,7 @@ export class DomainController implements DomainControllerInterface {
         const resolvedEndpointApplicationMap = endpointApplicationMap ?? defaultEndpointApplicationMap;
         const endpointUuid = (domainAction as any)?.endpoint;
         const applicationUuid = endpointUuid ? resolvedEndpointApplicationMap[endpointUuid] : undefined;
-        log.info(
+        log.debug(
           "DomainController handleAction",
           domainAction.actionType,
           "endpoint",
@@ -3278,8 +3278,8 @@ export class DomainController implements DomainControllerInterface {
     for (const currentAction of sequenceToExecute.payload.actionSequence) {
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
-        log.info(
-          "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& handleCompositeAction compositeActionSequence handling sub action",
+        log.debug(
+          "handleCompositeAction compositeActionSequence handling sub action",
           currentAction,
           "modelEnvironment deploymentUuid",
           modelEnvironment.deploymentUuid,
@@ -3385,7 +3385,7 @@ export class DomainController implements DomainControllerInterface {
               // currentAction.actionType !== "modelAction" ||
               currentAction.actionType !== "initModel"
             ) {
-              log.info(
+              log.debug(
                 "handleCompositeAction domainAction action to handle",
                 JSON.stringify(currentAction, null, 2),
               );
@@ -3918,7 +3918,7 @@ export class DomainController implements DomainControllerInterface {
           prePreValueToTest as any,
         );
       } else {
-        log.info(
+        log.debug(
           "handleTestCompositeActionAssertion prePreValueToTest is not a TransformerFailure, value=",
           prePreValueToTest,
         );
@@ -3965,17 +3965,13 @@ export class DomainController implements DomainControllerInterface {
             currentAction.testAssertion.definition.expectedValue,
             assertionIgnoreAttributes,
           ):currentAction.testAssertion.definition.expectedValue;
-      log.info(
+      log.debug(
         "handleTestCompositeActionAssertion compositeRunTestAssertion to handle",
         JSON.stringify(currentAction.testAssertion, null, 2),
         "ignoreAttributes",
         assertionIgnoreAttributes,
         "expectedValue",
         JSON.stringify(expectedValue, null, 2),
-        // "preValueToTest is array",
-        // Array.isArray(preValueToTest),
-        // "preValueToTest",
-        // JSON.stringify(preValueToTest, null, 2),
         "valueToTest",
         JSON.stringify(valueToTest, null, 2),
       );
@@ -3985,8 +3981,9 @@ export class DomainController implements DomainControllerInterface {
           .toEqual(expectedValue);
         // .toEqual(currentAction.testAssertion.definition.expectedValue);
         log.info(
-          "handleTestCompositeActionAssertion compositeRunTestAssertion test passed",
-          currentAction.testAssertion,
+          "assertion",
+          currentAction.testAssertion.testLabel,
+          "ok",
         );
         actionResult = {
           status: "ok",
@@ -4007,12 +4004,11 @@ export class DomainController implements DomainControllerInterface {
           },
         );
       } catch (error) {
-        // TestSuiteContext.setTestAssertionResult({
-        //   assertionName: currentAction.testAssertion.testLabel,
-        //   assertionResult: "error",
-        //   assertionExpectedValue: currentAction.testAssertion.definition.expectedValue,
-        //   assertionActualValue: valueToTest,
-        // });
+        log.info(
+          "assertion",
+          currentAction.testAssertion.testLabel,
+          "fail",
+        );
         // Set test result in MiroirActivityTracker for TestLogService
         this.miroirContext.miroirActivityTracker.setTestAssertionResult(
           this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
@@ -4566,7 +4562,7 @@ export class DomainController implements DomainControllerInterface {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
 
-    log.info(
+    log.debug(
       "handleTestCompositeAction testAction",
       testAction,
       "localActionParams",
@@ -4580,7 +4576,7 @@ export class DomainController implements DomainControllerInterface {
     this.miroirContext.miroirActivityTracker.setTest(testAction.testLabel);
 
     if (testAction.beforeTestSetupAction) {
-      log.info(
+      log.debug(
         "handleTestCompositeAction beforeAll",
         testAction.beforeTestSetupAction.actionLabel,
         testAction.beforeTestSetupAction,
@@ -4595,7 +4591,7 @@ export class DomainController implements DomainControllerInterface {
         log.error("Error on beforeTestSetupAction", JSON.stringify(beforeAllResult, null, 2));
       }
     } else {
-      log.info("handleTestCompositeAction no beforeTestSetupAction!");
+      log.debug("handleTestCompositeAction no beforeTestSetupAction!");
     }
 
     switch (testAction.testType) {
@@ -4641,7 +4637,7 @@ export class DomainController implements DomainControllerInterface {
     }
 
     if (testAction.afterTestCleanupAction) {
-      log.info(
+      log.debug(
         "handleTestCompositeAction afterTestCleanupAction",
         testAction.afterTestCleanupAction.actionLabel,
         testAction.afterTestCleanupAction,
@@ -4656,7 +4652,7 @@ export class DomainController implements DomainControllerInterface {
         log.error("Error on afterTestCleanupAction", JSON.stringify(beforeAllResult, null, 2));
       }
     } else {
-      log.info("handleTestCompositeAction no afterTestCleanupAction!");
+      log.debug("handleTestCompositeAction no afterTestCleanupAction!");
     }
     // TestSuiteContext.setTest(undefined);
     this.miroirContext.miroirActivityTracker.setTest(undefined);

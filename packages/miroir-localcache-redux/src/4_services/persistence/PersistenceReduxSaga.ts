@@ -474,7 +474,7 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
         const localStoreResult = yield* call(() =>
           localPersistenceStoreController.handleAction(action, applicationDeploymentMap)
         );
-        log.info(
+        log.debug(
           "PersistenceActionReduxSaga innerHandlePersistenceActionForLocalPersistenceStore done for action",
           action,
           "result=",

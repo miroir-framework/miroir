@@ -744,13 +744,15 @@ export function applyLimitedCarryOnSchemaOnLevel(
     case "schemaReference": {
 
       if (baseSchema.definition.relativePath.startsWith(carryOnPrefix)) {
-        console.log(
-          "applyLimitedCarryOnSchemaOnLevel: start with carryOnPrefix",
-          "relativePath",
-          baseSchema.definition.relativePath,
-          "carryOnPrefix",
-          carryOnPrefix,
-        );
+        if (process.env.MIROIR_TEST_VERBOSE_TRACKING === "1") {
+          console.log(
+            "applyLimitedCarryOnSchemaOnLevel: start with carryOnPrefix",
+            "relativePath",
+            baseSchema.definition.relativePath,
+            "carryOnPrefix",
+            carryOnPrefix,
+          );
+        }
         return {
           resultSchema: baseSchema,
           hasBeenApplied: true,

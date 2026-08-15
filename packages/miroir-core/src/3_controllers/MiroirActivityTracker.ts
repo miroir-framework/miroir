@@ -21,6 +21,10 @@ import {
   type LogPhase,
 } from "../4_services/LoggerContext";
 
+function isMiroirTestVerboseTracking(): boolean {
+  return process.env.MIROIR_TEST_VERBOSE_TRACKING === "1";
+}
+
 const activityTypeToTopicMap: Record<MiroirActivity["activityType"], LogTopic> = {
   action: "action",
   testSuite: "action",
@@ -491,16 +495,18 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     const trackingId = this.startTestSuite(testSuiteName, parentId);
     try {
       this.currentTestPath.push({ testSuite: testSuiteName });
-      console.log(
-        "🧪🧪 Started tracking test suite",
-        testSuitePathAsString,
-        "with ID:",
-        trackingId,
-        "parent:",
-        parentId,
-        "currentTestPath:",
-        this.currentTestPath
-      );
+      if (isMiroirTestVerboseTracking()) {
+        console.log(
+          "🧪🧪 Started tracking test suite",
+          testSuitePathAsString,
+          "with ID:",
+          trackingId,
+          "parent:",
+          parentId,
+          "currentTestPath:",
+          this.currentTestPath
+        );
+      }
       const result = await actionFn(parentId);
       this.endActivity(trackingId);
       return Promise.resolve(result);
@@ -508,19 +514,21 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
     } finally {
-      console.log(
-        "🧪🧪 ended tracking test suite",
-        testSuitePathAsString,
-        "with ID:",
-        trackingId,
-        "parent:",
-        parentId,
-        "currentTestPath:",
-        this.currentTestPath
-      );
+      if (isMiroirTestVerboseTracking()) {
+        console.log(
+          "🧪🧪 ended tracking test suite",
+          testSuitePathAsString,
+          "with ID:",
+          trackingId,
+          "parent:",
+          parentId,
+          "currentTestPath:",
+          this.currentTestPath
+        );
+        console.log("currentTestPath after pop:", this.currentTestPath);
+      }
       this.currentTestPath.pop();
       this.restoreTestLabelsFromPath();
-      console.log("currentTestPath after pop:", this.currentTestPath);
     }
   }
 
@@ -535,12 +543,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     try {
       this.setTest(testName);
       this.currentTestPath.push({ test: testName });
-      console.log(
-        `🧪 Started tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
-                "currentTestPath",
-        this.currentTestPath
-
-      );
+      if (isMiroirTestVerboseTracking()) {
+        console.log(
+          `🧪 Started tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
+          "currentTestPath",
+          this.currentTestPath
+        );
+      }
       const result = await actionFn(parentTrackingId);
       this.endActivity(trackingId);
       return Promise.resolve(result);
@@ -548,11 +557,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
     } finally {
-      console.log(
-        `🧪 Ended tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
-        "currentTestPath",
-        this.currentTestPath
-      );
+      if (isMiroirTestVerboseTracking()) {
+        console.log(
+          `🧪 Ended tracking test ${testName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
+          "currentTestPath",
+          this.currentTestPath
+        );
+      }
       this.currentTestPath.pop();
       this.restoreTestLabelsFromPath();
     }
@@ -570,11 +581,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     try {
       this.currentTestPath.push({ testAssertion: testAssertionName });
       this.setTestAssertion(testAssertionName);
-      console.log(
-        `🧪 Started tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
-        "currentTestPath",
-        this.currentTestPath
-      );
+      if (isMiroirTestVerboseTracking()) {
+        console.log(
+          `🧪 Started tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
+          "currentTestPath",
+          this.currentTestPath
+        );
+      }
       const result = await actionFn(parentTrackingId);
       this.endActivity(trackingId);
       return Promise.resolve(result);
@@ -582,11 +595,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       this.endActivity(trackingId, error instanceof Error ? error.message : String(error));
       throw error;
     } finally {
-      console.log(
-        `🧪 Ended tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
-        "currentTestPath",
-        this.currentTestPath
-      );
+      if (isMiroirTestVerboseTracking()) {
+        console.log(
+          `🧪 Ended tracking test assertion ${testAssertionName} with ID: ${trackingId}, parent: ${parentTrackingId}`,
+          "currentTestPath",
+          this.currentTestPath
+        );
+      }
       this.currentTestPath.pop();
       this.restoreTestLabelsFromPath();
       this.popPhase();

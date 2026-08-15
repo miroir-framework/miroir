@@ -45,7 +45,7 @@ export class ConfigurationServiceInner {
    * registerPackageConfiguration
    */
   public registerPackageConfiguration(packageConfiguration: PackageConfiguration) {
-    log.info("ConfigurationService registerPackageConfiguration", packageConfiguration);
+    log.debug("ConfigurationService registerPackageConfiguration", packageConfiguration);
     this.packages.push(packageConfiguration);
   }
 
@@ -54,7 +54,7 @@ export class ConfigurationServiceInner {
     section: ApplicationSection,
     storeSectionFactory: PersistenceStoreSectionFactory,
   ) {
-    log.info("ConfigurationService registerStoreSectionFactory", this.StoreSectionFactoryRegister);
+    log.debug("ConfigurationService registerStoreSectionFactory", this.StoreSectionFactoryRegister);
     this.StoreSectionFactoryRegister.set(
       JSON.stringify({ storageType, section }),
       storeSectionFactory,
@@ -65,9 +65,9 @@ export class ConfigurationServiceInner {
     storageType: StorageType,
     adminStoreFactory: PersistenceStoreAdminSectionFactory,
   ) {
-    log.info("ConfigurationService registerAdminStoreFactory in", this.adminStoreFactoryRegister);
+    log.debug("ConfigurationService registerAdminStoreFactory in", this.adminStoreFactoryRegister);
     this.adminStoreFactoryRegister.set(JSON.stringify({ storageType }), adminStoreFactory);
-    log.info(
+    log.debug(
       "ConfigurationService registered in registerAdminStoreFactory",
       this.adminStoreFactoryRegister,
     );
