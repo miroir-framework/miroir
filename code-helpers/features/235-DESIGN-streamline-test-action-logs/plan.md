@@ -2,7 +2,7 @@
 
 GitHub issue: [miroir-framework/miroir#235](https://github.com/miroir-framework/miroir/issues/235)
 
-**Status:** Slices 0–6 done · Slice 7 not started
+**Status:** Slices 0–7 done
 
 **Depends on / related:** #43 (logger startup race), #197 (UI integ), workflow doc `docs/guides/architecture/workflows/runQuery-emulated-server.md`
 
@@ -192,6 +192,8 @@ No production code required if slice 1 names match the table.
 - `specificLoggersConfig_orientation.json` (INFO, DC/saga/stub).
 - `specificLoggersConfig_query-debug.json`.
 - Document in `docs/reference/testing.md` (or `logging.md` if created).
+
+**Done (2026-08-15):** `specificLoggersConfig_orientation.json` (WARN default; INFO on `3_miroir-core_DomainController`, `4_miroir-localcache-redux_PersistenceReduxSaga`, `4_miroir-core_RestClientStub`). `specificLoggersConfig_query-debug.json` (DEBUG on full query path including PSC, SqlDbQueryRunner, QuerySelectors, LocalCache, RestServer, SqlDbStore). Documented in `docs/reference/testing.md` (logger table + pilot command) and cross-linked from `runQuery-emulated-server.md` §7.1.
 
 ---
 

@@ -593,9 +593,28 @@ Before first run, check `filesystemDeploymentRootDirectory` inside the chosen co
 | File | Use when |
 |------|----------|
 | `specificLoggersConfig_warn.json` | Default; minimal noise |
+| `specificLoggersConfig_orientation.json` | **#235** — WARN default; INFO on DomainController, saga, RestClientStub only. Use with run/span hop lines to read a leaf without payload dumps |
+| `specificLoggersConfig_query-debug.json` | **#235** — WARN default; DEBUG on the full query path (DC → saga → stub/REST → PSC → SqlDbQueryRunner → QuerySelectors). Payloads and Sequelize SQL |
 | `specificLoggersConfig_DomainController_debug.json` | Debugging DomainController flows |
 | `specificLoggersConfig_info.json` | Broader INFO-level output |
 | `specificLoggersConfig_trace_filesystem.json` | Filesystem store tracing |
+
+Hop enter/exit lines (`#runId.span># → …` / `← …`) are emitted at INFO via the activity tracker (`console.log`), not via these logger levels. The presets control **MiroirLogger** noise around them: orientation keeps rollback/query summaries and DC/saga/stub interior lines at INFO while suppressing everything else at WARN; query-debug turns payload dumps back on at DEBUG.
+
+Workflow reference (Path A vs B, grep recipes): [runQuery-emulated-server.md](../guides/architecture/workflows/runQuery-emulated-server.md).
+
+**Pilot leaf with orientation logging** (from repo root):
+
+```bash
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_orientation.json \
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-sql \
+  --suites domain_controller_data_crud \
+  --mode integ \
+  --filter '{"domainController.data.crud":["Refresh all Instances"]}'
+```
+
+Copy the six-character `runId` from `RUN … START` or `#??????.sN.#`, then `grep $RUNID` on the log file. For full action/result JSON on query hops, switch to `specificLoggersConfig_query-debug.json` (same command, different `VITE_MIROIR_LOG_CONFIG_FILENAME`).
 
 ### Launch pattern
 

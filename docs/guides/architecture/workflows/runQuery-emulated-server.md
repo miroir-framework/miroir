@@ -377,6 +377,8 @@ That title is the **leaf**, not the logger context. Prefer `runId` when dumps ar
 
 Copy `runId` from `RUN … START`, from any `#??????.sN.#` prefix (six Crockford-base32 characters, no `I L O U`), or from the Events timeline chip (same `#runId.spanId>` / `<` tokens). A failed CLI leaf also writes `miroir-run-{runId}-error.json` (`MIROIR_RUN_EXPORT_DIR` or cwd).
 
+**Log presets:** `specificLoggersConfig_orientation.json` (INFO on DC/saga/stub only; WARN elsewhere) for readable hop lines; `specificLoggersConfig_query-debug.json` for payload dumps at DEBUG. See [testing.md — Logger config options](../../reference/testing.md#logger-config-options).
+
 ```bash
 # whole leaf / run (all spans, enter + interior + exit)
 grep K7X2NQ logs.txt
