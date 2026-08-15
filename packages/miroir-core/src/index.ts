@@ -975,6 +975,7 @@ export {
   expect,
   TestFramework
 } from "./1_core/testing/test-expect";
+export { toReduxSerializable } from "./1_core/reduxSerializable.js";
 export {
   base64ToBlob,
   fileToBase64,
