@@ -37,6 +37,7 @@ import {
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
   serializeCompositeKeyValue,
+  toReduxSerializable,
   assertVersioningEnabledImmutable,
   type ApplicationDeploymentMap,
   type CacheFreshness,
@@ -446,17 +447,8 @@ function loadNewEntityInstancesInLocalCache(
     instanceCollectionEntityIndex
   );
 
-  // gets rid of most warnings: "A non-serializable value was detected in the state"
   // TODO: instanceCollection should never be null/undefined! to be corrected in the REST / network / server level!
-  const serializableInstances = (instanceCollection.instances??[]).map((i: EntityInstance) =>
-    (i as any)["createdAt"]
-      ? {
-          ...i,
-          createdAt: new Date((i as any)["createdAt"]).getTime(), // for instances tha are stored in a postgres database. What about other date attributes?
-          updatedAt: new Date((i as any)["updatedAt"]).getTime(),
-        }
-      : i
-  );
+  const serializableInstances = toReduxSerializable(instanceCollection.instances ?? []);
 
   applyEntityInstancesToZone(
     deploymentUuid,
@@ -557,6 +549,7 @@ function handleInstanceAction(
         // const instances = instanceAction.payload.objects;
         for (let instance of instanceAction.payload.objects ??
           ([] as EntityInstance[])) {
+          instance = toReduxSerializable(instance);
           const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
           if (resolvedParentUuid instanceof Action2Error) {
             log.error("handleInstanceAction createInstance failed to resolve parentUuid for instance", instance);
@@ -732,6 +725,7 @@ function handleInstanceAction(
       }
       case "updateInstance": {
         for (let instance of instanceAction.payload.objects) {
+          instance = toReduxSerializable(instance);
           const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
           if (resolvedParentUuid instanceof Action2Error) {
             log.error("handleInstanceAction updateInstance failed to resolve parentUuid for instance", instance);

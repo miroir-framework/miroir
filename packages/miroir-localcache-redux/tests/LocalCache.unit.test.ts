@@ -625,3 +625,86 @@ describe("LocalCache.unit.test - custom idAttribute", () => {
     expect(Object.keys(entityInstances ?? {}).length).toBe(3);
   });
 });
+
+// ################################################################################################
+describe("LocalCache.unit.test - non-serializable Date attributes (#44)", () => {
+  const isoTimestamp = "2026-08-15T06:54:21.336Z";
+
+  function storedInstance(localCache: LocalCache): any {
+    return localCache.getDomainState()[testDeploymentUuid]?.data?.[testEntityUuid]?.[testInstanceUuid];
+  }
+
+  it("loadNewInstancesInLocalCache stores Date attributes as ISO strings", () => {
+    const localCache = new LocalCache();
+    const timestamp = new Date(isoTimestamp);
+    const instance: EntityInstance = {
+      uuid: testInstanceUuid,
+      parentUuid: testEntityUuid,
+      parentName: "TestEntity",
+      timestamp,
+      createdAt: timestamp,
+      nested: { lendStartDate: timestamp },
+    } as any;
+
+    bootstrapLocalCache(localCache, [instance]);
+
+    const stored = storedInstance(localCache);
+    expect(stored.timestamp).toBe(isoTimestamp);
+    expect(stored.createdAt).toBe(isoTimestamp);
+    expect(stored.nested.lendStartDate).toBe(isoTimestamp);
+    expect(stored.timestamp instanceof Date).toBe(false);
+    expect(() => JSON.stringify(stored)).not.toThrow();
+  });
+
+  it("createInstance stores Date attributes as ISO strings", () => {
+    const localCache = new LocalCache();
+    bootstrapLocalCache(localCache, []);
+
+    const timestamp = new Date(isoTimestamp);
+    const instance: EntityInstance = {
+      uuid: testInstanceUuid,
+      parentUuid: testEntityUuid,
+      parentName: "TestEntity",
+      timestamp,
+    } as any;
+
+    const createAction: InstanceAction = {
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: testApplicationUuid,
+        applicationSection: "data",
+        parentUuid: testEntityUuid,
+        objects: [instance],
+      },
+    };
+
+    expect(localCache.handleLocalCacheAction(createAction, applicationDeploymentMap)).toEqual(ACTION_OK);
+    expect(storedInstance(localCache).timestamp).toBe(isoTimestamp);
+  });
+
+  it("updateInstance stores Date attributes as ISO strings", () => {
+    const localCache = new LocalCache();
+    const instance: EntityInstance = {
+      uuid: testInstanceUuid,
+      parentUuid: testEntityUuid,
+      parentName: "TestEntity",
+    };
+    bootstrapLocalCache(localCache, [instance]);
+
+    const timestamp = new Date(isoTimestamp);
+    const updateAction: InstanceAction = {
+      actionType: "updateInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: testApplicationUuid,
+        applicationSection: "data",
+        parentUuid: testEntityUuid,
+        objects: [{ ...instance, timestamp } as any],
+      },
+    };
+
+    expect(localCache.handleLocalCacheAction(updateAction, applicationDeploymentMap)).toEqual(ACTION_OK);
+    expect(storedInstance(localCache).timestamp).toBe(isoTimestamp);
+  });
+});

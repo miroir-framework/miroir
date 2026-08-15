@@ -27,6 +27,7 @@ describe("generateEvolutionBaseline", () => {
     expect(result.roots).toHaveLength(1);
     expect(result.roots[0].applicationUuid).toBe(APPLICATION_UUID);
     expect(result.roots[0].branchName).toBe("master");
+    expect(result.roots[0].timestamp).toBe(TIMESTAMP.toISOString());
 
     expect(result.events).toHaveLength(1);
     expect(result.events[0].operationType).toBe("squashedBaseline");

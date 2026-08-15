@@ -31,6 +31,7 @@ import {
   resolveInstanceParentUuid,
   resolveLoadCacheSegment,
   stripLocalCacheSegmentSuffix,
+  toReduxSerializable,
   assertVersioningEnabledImmutable,
   type Action2VoidReturnType,
   type ApplicationDeploymentMap,
@@ -358,7 +359,8 @@ function handleInstanceAction(
   
   switch (instanceAction.actionType) {
     case "createInstance": {
-      for (const instance of instanceAction.payload.objects ?? []) {
+      for (const rawInstance of instanceAction.payload.objects ?? []) {
+        const instance = toReduxSerializable(rawInstance);
         const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
         if (resolvedParentUuid instanceof Action2Error) {
           log.error("handleInstanceAction createInstance failed to resolve parentUuid for instance", instance);
@@ -401,7 +403,8 @@ function handleInstanceAction(
       break;
     }
     case "updateInstance": {
-      for (const instance of instanceAction.payload.objects ?? []) {
+      for (const rawInstance of instanceAction.payload.objects ?? []) {
+        const instance = toReduxSerializable(rawInstance);
         const resolvedParentUuid = resolveInstanceParentUuid(instance, instanceAction.payload.parentUuid);
         if (resolvedParentUuid instanceof Action2Error) {
           log.error("handleInstanceAction updateInstance failed to resolve parentUuid for instance", instance);
@@ -460,16 +463,7 @@ function handleLoadNewInstancesAction(
       }
     }
     
-    // Normalize dates for serialization
-    const instances = (instanceCollection.instances ?? []).map((i: EntityInstance) =>
-      (i as any)["createdAt"]
-        ? {
-            ...i,
-            createdAt: new Date((i as any)["createdAt"]).getTime(),
-            updatedAt: new Date((i as any)["updatedAt"]).getTime(),
-          }
-        : i
-    );
+    const instances = toReduxSerializable(instanceCollection.instances ?? []);
     
     applyEntityInstancesToZone(
       deploymentUuid,

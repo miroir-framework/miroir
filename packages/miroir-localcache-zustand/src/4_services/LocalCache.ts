@@ -29,6 +29,7 @@ import {
   getExtractorRunnerParamsForDomainState,
   getQueryRunnerParamsForDomainState,
   rejectPartialMutationInstanceAction,
+  toReduxSerializable,
   type ApplicationDeploymentMap,
   type LocalCacheMonitorSnapshot,
   type MiroirModelEnvironment,
@@ -187,7 +188,7 @@ export class LocalCache implements LocalCacheInterface {
     }
 
     const result: Action2ReturnType = exceptionToActionReturnType(() =>
-      this.store.getState().handleAction(action, applicationDeploymentMap)
+      this.store.getState().handleAction(toReduxSerializable(action), applicationDeploymentMap)
     );
     this.recalibrateMonitor();
     log.info("LocalCache handleAction result=", result);

@@ -32,6 +32,7 @@ import {
   ModelActionReplayableAction,
   // RunBoxedExtractorOrQueryAction,
   rejectPartialMutationInstanceAction,
+  toReduxSerializable,
   TransactionalInstanceAction,
   type ApplicationDeploymentMap,
   type LocalCacheMonitorSnapshot,
@@ -41,6 +42,7 @@ import {
 import { packageName } from '../constants.js';
 import { cleanLevel } from './constants.js';
 import {
+  localCacheSliceName,
   ReduxReducerWithUndoRedoInterface,
   ReduxStoreWithUndoRedo
 } from "./localCache/localCacheReduxSliceInterface.js";
@@ -86,7 +88,13 @@ export class LocalCache implements LocalCacheInterface {
   constructor(persistenceStore?: PersistenceReduxSaga) {
     this.staticReducers = createUndoRedoReducer(LocalCacheSlice.reducer);
 
-    const ignoredActionsList = ["handlePersistenceAction", ...localCacheSliceGeneratedActionNames];
+    const ignoredActionsList = [
+      "handlePersistenceAction",
+      ...localCacheSliceGeneratedActionNames,
+      ...localCacheSliceGeneratedActionNames
+        .filter((name) => !name.startsWith("saga-"))
+        .map((name) => `${localCacheSliceName}/${name}`),
+    ];
 
     log.info("LocalCache constructor ignoredActionsList=", ignoredActionsList);
     this.innerReduxStore = configureStore({
@@ -239,7 +247,7 @@ export class LocalCache implements LocalCacheInterface {
       this.innerReduxStore.dispatch(
         LocalCacheSlice.actionCreators.handleAction({
           applicationDeploymentMap,
-          action,
+          action: toReduxSerializable(action),
         })
       )
     );
@@ -311,7 +319,7 @@ export class LocalCache implements LocalCacheInterface {
   async dispatchToReduxStore(
     dispatchParam: any // TODO: give exact type!
   ): Promise<Action2ReturnType> {
-    return this.innerReduxStore.dispatch(dispatchParam);
+    return this.innerReduxStore.dispatch(toReduxSerializable(dispatchParam));
   }
 
   // ###############################################################################
