@@ -1,0 +1,26 @@
+{
+  "$comment": "Scoped: persistence / store backends. Store sections and query runners at DEBUG; rest WARN. Use when an error involves a specific store (filesystem/indexedDb/postgres/mongodb) or SQL/extractor runners.",
+  "defaultLevel": "WARN",
+  "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
+  "specificLoggerOptions": {
+    "4_miroir-core_PersistenceStoreController": { "level": "DEBUG" },
+    "4_miroir-localcache-redux_PersistenceReduxSaga": { "level": "DEBUG" },
+    "4_miroir-localcache-zustand_PersistenceAsyncStore": { "level": "DEBUG" },
+    "4_miroir-store-filesystem_FileSystemStore": { "level": "DEBUG" },
+    "4_miroir-store-filesystem_FileSystemDataStoreSection": { "level": "DEBUG" },
+    "4_miroir-store-filesystem_FileSystemModelStoreSection": { "level": "DEBUG" },
+    "4_miroir-store-filesystem_FilesystemExtractorRunner": { "level": "DEBUG" },
+    "4_miroir-store-indexedDb_IndexedDbStoreSection": { "level": "DEBUG" },
+    "4_miroir-store-indexedDb_IndexedDbDataStoreSection": { "level": "DEBUG" },
+    "4_miroir-store-indexedDb_IndexedDbModelStoreSection": { "level": "DEBUG" },
+    "4_miroir-store-postgres_SqlDbQueryRunner": { "level": "DEBUG" },
+    "4_miroir-store-postgres_SqlDbQueryTemplateRunner": { "level": "DEBUG" },
+    "4_miroir-store-postgres_SqlDbInstanceStoreSectionMixin": { "level": "DEBUG" },
+    "4_miroir-store-postgres_SqlQueryBuilder": { "level": "DEBUG" },
+    "4_miroir-store-mongodb_MongoDbEntityStoreSectionMixin": { "level": "DEBUG" },
+    "4_miroir-store-mongodb_MongoDbModelStoreSection": { "level": "DEBUG" },
+    "4_miroir-store-bundled_BundledStore": { "level": "DEBUG" },
+    "4_miroir-store-bundled_BundledModelStoreSection": { "level": "DEBUG" },
+    "4_miroir-store-bundled_BundledDataStoreSection": { "level": "DEBUG" }
+  }
+}

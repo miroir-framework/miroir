@@ -1,0 +1,14 @@
+{
+  "$comment": "Catch-all, more detail. General INFO across the app, but the noisiest loggers are capped at WARN so the narrative stays readable. Use when catch-all is too quiet to see flow.",
+  "defaultLevel": "INFO",
+  "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
+  "specificLoggerOptions": {
+    "4_miroir-localcache-redux_PersistenceReduxSaga": { "level": "WARN" },
+    "4_miroir-localcache-zustand_PersistenceAsyncStore": { "level": "WARN" },
+    "3_miroir-core_ConfigurationService": { "level": "WARN" },
+    "4_miroir-localcache-redux_LocalCache": { "level": "WARN" },
+    "4_miroir-localcache-redux_LocalCacheSlice": { "level": "WARN" },
+    "2_miroir-core_QuerySelectors": { "level": "WARN" },
+    "2_miroir-core_DomainStateQuerySelector": { "level": "WARN" }
+  }
+}

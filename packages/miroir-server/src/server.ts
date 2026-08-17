@@ -51,18 +51,45 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 const packageName = "server"
 const cleanLevel = "5"
 
-const specificLoggerOptions: SpecificLoggerOptionsMap = {
-  "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},
-  "4_miroir-core_RestTools": {level:defaultLevels.INFO, },
-  // "4_miroir-redux_LocalCacheSlice": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) CCCCC-"},
-  "4_miroir-redux_LocalCacheSlice": {level:undefined, template:undefined},
+// Consolidated log presets live in miroir-standalone-app/config/logging.
+// Server selects one via MIROIR_LOG_CONFIG / VITE_MIROIR_LOG_CONFIG_FILENAME
+// (preset name like "scope-query", or a path to a config JSON). Defaults to
+// the quiet "catch-all". Kept repo-local to avoid a new package dependency.
+function resolveServerLogConfig(): LoggerOptions {
+  const fallback: LoggerOptions = {
+    defaultLevel: "WARN",
+    defaultTemplate: "[{{time}}] {{level}} ({{name}}) -",
+    specificLoggerOptions: {},
+  };
+  const selection =
+    process.env.MIROIR_LOG_CONFIG ?? process.env.VITE_MIROIR_LOG_CONFIG_FILENAME;
+  if (!selection) {
+    return fallback;
+  }
+  try {
+    const base = selection.replace(/\.json$/i, "");
+    const presetPath = selection.includes("/") || selection.includes("\\")
+      ? selection
+      : path.resolve(
+          process.cwd(),
+          `packages/miroir-standalone-app/config/logging/${base}.json`,
+        );
+    const abs = path.isAbsolute(presetPath) ? presetPath : path.resolve(process.cwd(), presetPath);
+    if (!existsSync(abs)) {
+      return fallback;
+    }
+    const parsed = JSON.parse(readFileSync(abs, "utf8")) as Partial<LoggerOptions>;
+    return {
+      defaultLevel: (parsed.defaultLevel as LoggerOptions["defaultLevel"]) ?? "WARN",
+      defaultTemplate: parsed.defaultTemplate ?? "[{{time}}] {{level}} ({{name}}) -",
+      specificLoggerOptions: parsed.specificLoggerOptions ?? {},
+    };
+  } catch {
+    return fallback;
+  }
 }
-const loggerOptions: LoggerOptions = {
-  defaultLevel: "INFO",
-  defaultTemplate: "[{{time}}] {{level}} ({{name}}) -",
-  // context: undefined,
-  specificLoggerOptions: specificLoggerOptions,
-}
+
+const loggerOptions: LoggerOptions = resolveServerLogConfig();
 
 const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterface;
 

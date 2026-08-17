@@ -1,0 +1,11 @@
+{
+  "$comment": "Scoped: UI / view layer. UI-topic loggers at DEBUG; rest WARN. Use for React rendering, hooks, report display, editors.",
+  "defaultLevel": "WARN",
+  "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
+  "specificLoggerOptions": {
+    "4_miroir-standalone-app_ReduxHooks": { "level": "DEBUG" },
+    "4_miroir-standalone-app_ReportTools": { "level": "DEBUG" },
+    "4_miroir-standalone-app_Scripts": { "level": "DEBUG" },
+    "4_miroir-standalone-app_JzodElementEditorHooks": { "level": "DEBUG" }
+  }
+}

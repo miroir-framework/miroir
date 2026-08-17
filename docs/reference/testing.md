@@ -500,7 +500,7 @@ Runner-type `MiroirTest` leaves (`runnerTest`) exercise composite actions end-to
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_warn.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all \
 MIROIR_TEST_MODE=integ \
 npm run testByFile -w miroir-standalone-app -- miroir-runner-tests.integ.test
 ```
@@ -527,7 +527,7 @@ Legacy form (manual `VITE_MIROIR_*` without `--profile`):
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
 npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ
 ```
 
@@ -556,7 +556,7 @@ npm run testByFile -w miroir-standalone-app -- \
 | Variable | Purpose |
 |----------|---------|
 | `VITE_MIROIR_TEST_CONFIG_FILENAME` | Path to a `miroirConfig.test-*.json` file (must have `.json` extension) |
-| `VITE_MIROIR_LOG_CONFIG_FILENAME` | Path to a `specificLoggersConfig_*.json` file |
+| `VITE_MIROIR_LOG_CONFIG_FILENAME` | Log preset **name** (`catch-all`, `scope-query`, …) or path to a config JSON. Defaults to `catch-all` when unset |
 | `MIROIR_TEST_STORAGE` | Set by `testByFile` when `--storage` / `--profile realServer-*` is used (Vitest child reads this after flags are stripped) |
 
 `npm run testByFile` sets `VITE_TEST_MODE=true` automatically. Explicit `VITE_MIROIR_*` still override `--profile` defaults (legacy); prefer argv going forward.
@@ -590,26 +590,32 @@ Before first run, check `filesystemDeploymentRootDirectory` inside the chosen co
 
 ### Logger config options
 
-| File | Use when |
-|------|----------|
-| `specificLoggersConfig_warn.json` | Default; minimal noise |
-| `specificLoggersConfig_orientation.json` | **#235/#236** — WARN default; INFO on DomainController and RestClientStub only. Hop enter/exit lines come from the activity tracker (`console.log`), not logger levels |
-| `specificLoggersConfig_query-debug-pathA.json` | **#236** — WARN default; DEBUG on Path A query hop only (LocalCache, QuerySelectors). Use as second pass after orientation `grep $RUNID`; adds ~10 DEBUG payload lines on the leaf (not whole-session DEBUG) |
-| `specificLoggersConfig_query-debug.json` | **#235/#236** — WARN default; DEBUG on the full query path (DC → saga → stub/REST → PSC → SqlDbQueryRunner → QuerySelectors). Use for Path B or when Path A payloads are not enough; expect much higher `grep $RUNID` line count |
-| `specificLoggersConfig_DomainController_debug.json` | Debugging DomainController flows |
-| `specificLoggersConfig_info.json` | Broader INFO-level output |
-| `specificLoggersConfig_trace_filesystem.json` | Filesystem store tracing |
+Miroir has a small set of **consolidated, named log presets** that work identically in **tests** and **dev/runtime**. They live in `packages/miroir-standalone-app/config/logging/` and are the single source of truth (the old `specificLoggersConfig_*.json` files were removed).
 
-Hop enter/exit lines (`#runId.span># → …` / `← …`) are emitted at INFO via the activity tracker (`console.log`), not via these logger levels. The presets control **MiroirLogger** noise around them: orientation keeps rollback/query summaries at INFO while suppressing legacy composite/test dumps (demoted to DEBUG in #236); query-debug-pathA turns payload dumps on for the Path A query hop only; query-debug enables DEBUG on the full Path A+B chain.
+| Preset | defaultLevel | Specific loggers | Use when |
+|--------|--------------|------------------|----------|
+| `catch-all` | WARN | — | **Default.** Everyday dev + `nonreg`. Only WARN/ERROR plus tracker run/span hop lines. Start here. |
+| `catch-all-detailed` | INFO | noisiest loggers capped at WARN | `catch-all` is too quiet to see flow, but you don't want a flood |
+| `scope-query` | WARN | DC + LocalCache + query selectors = DEBUG | Trace a query/extractor end-to-end (includes DomainController hop detail) |
+| `scope-query-local` | WARN | LocalCache + query selectors only = DEBUG | Narrow second pass after `catch-all`: query payload detail on the leaf without DC dumps |
+| `scope-persistence` | WARN | store backends + query runners = DEBUG | Error involves a specific store (filesystem/indexedDb/postgres/mongodb) or SQL |
+| `scope-transformers` | WARN | transformer runtime/utils = DEBUG | Transformer resolution / application errors |
+| `scope-ui` | WARN | UI / view-layer loggers = DEBUG | React rendering, hooks, report display, editors |
+| `full-debug` | DEBUG | everything | Last resort, a single focused test/action only — output is very large |
 
-**Recommended workflow:** (1) run with `specificLoggersConfig_orientation.json`, copy `runId`, `grep $RUNID`; (2) if query payloads are needed, re-run with `specificLoggersConfig_query-debug-pathA.json` (Path A) or `specificLoggersConfig_query-debug.json` (full path). Set `MIROIR_TEST_VERBOSE_TRACKING=1` for tracker `🧪` console noise; `MIROIR_TEST_VERBOSE=1` for full env dump from the test launcher.
+**How to choose:** start at `catch-all`. If you can't tell what's happening, go to `catch-all-detailed`. When the failure points at a layer, switch to the matching `scope-*` config. Use `full-debug` only for one focused test. Hop enter/exit lines (`#runId.span># → …` / `← …`) come from the activity tracker (`console.log`), not these logger levels — so they appear in every preset; `grep $RUNID` isolates a leaf.
+
+**Selecting a preset:**
+- **Tests:** `VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query` (a bare name), or a full path to a config JSON. Unset → `catch-all`.
+- **Dev/runtime (web app):** `VITE_MIROIR_LOG_CONFIG=scope-query` (or `VITE_MIROIR_LOG_CONFIG_FILENAME`) in the Vite env; unset → `catch-all`.
+
+**Recommended troubleshooting workflow:** (1) run with `catch-all`, copy `runId`, `grep $RUNID`; (2) re-run the same leaf with the relevant `scope-*` config for payload detail (e.g. `scope-query-local` for a query leaf, `scope-query` if you also need DomainController hops). Set `MIROIR_TEST_VERBOSE_TRACKING=1` for tracker `🧪` console noise; `MIROIR_TEST_VERBOSE=1` for full env dump from the test launcher.
 
 Workflow reference (Path A vs B, grep recipes): [runQuery-emulated-server.md](../guides/architecture/workflows/runQuery-emulated-server.md).
 
-**Pilot leaf with orientation logging** (from repo root):
+**Pilot leaf (default quiet logging)** (from repo root):
 
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_orientation.json \
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql \
   --suites domain_controller_data_crud \
@@ -617,7 +623,7 @@ npm run testMiroir -w miroir-standalone-app -- \
   --filter '{"domainController.data.crud":["Refresh all Instances"]}'
 ```
 
-Copy the six-character `runId` from `RUN … START` or `#??????.sN.#`, then `grep $RUNID` on the log file. For query payload dumps on the same leaf, re-run with `specificLoggersConfig_query-debug-pathA.json` (Path A only) or `specificLoggersConfig_query-debug.json` (full query path including REST/PSC/SQL).
+Copy the six-character `runId` from `RUN … START` or `#??????.sN.#`, then `grep $RUNID` on the log file. For query payload detail on the same leaf, re-run with `VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query-local` (narrow) or `scope-query` (adds DomainController hops).
 
 ### Launch pattern
 
@@ -625,7 +631,7 @@ Vitest matches files by substring. Run from the **repository root** so relative 
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug.json \
+VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
 npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
 ```
 

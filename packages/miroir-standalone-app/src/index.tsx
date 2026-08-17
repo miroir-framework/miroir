@@ -80,6 +80,7 @@ function CopilotKitWrapper({ children }: { children: React.ReactNode }): React.J
 
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
+import { resolveWebLogConfig } from "./config/logConfigPresets.js";
 
 import {
   adminSelfApplication,
@@ -156,11 +157,7 @@ MiroirLoggerFactory.startRegisteredLoggers(
   miroirActivityTracker,
   miroirEventService,
   loglevelnext,
-  {
-    defaultLevel: "INFO",
-    defaultTemplate: "[{{time}}] {{level}} {{name}} ### ",
-    specificLoggerOptions: {},
-  },
+  resolveWebLogConfig(),
 );
 log.info("started registered loggers DONE");
 

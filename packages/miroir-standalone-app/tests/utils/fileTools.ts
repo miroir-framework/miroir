@@ -3,6 +3,7 @@ import { MiroirConfigClient, MiroirLoggerFactory, type LoggerInterface } from "m
 import path from "path";
 import { cleanLevel } from "../3_controllers/constants";
 import { packageName } from "../../src/constants";
+import { DEFAULT_LOG_CONFIG_NAME } from "../../src/config/logConfigPresets.js";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
 let log: LoggerInterface = console as any as LoggerInterface;
@@ -74,6 +75,23 @@ export async function loadTestSingleConfigFile(fileName:string): Promise<MiroirC
   }
 
 }
+const LOG_CONFIG_PRESET_DIR = "packages/miroir-standalone-app/config/logging";
+
+/**
+ * Resolve a log-config selection to a repo-root-relative JSON path.
+ * Accepts a preset name ("catch-all", "scope-query"), a basename
+ * ("scope-query.json"), or an explicit relative/absolute path.
+ */
+function resolveLogConfigPath(selection: string): string {
+  const base = selection.replace(/\.json$/i, "");
+  const presetPath = `${LOG_CONFIG_PRESET_DIR}/${base}.json`;
+  // If it already names a directory, treat as explicit path; else prefer preset dir.
+  if (!selection.includes("/") && !selection.includes("\\")) {
+    return presetPath;
+  }
+  return selection;
+}
+
 // ################################################################################################
 export async function loadTestConfigFiles(env:any) {
   try {
@@ -86,13 +104,12 @@ export async function loadTestConfigFiles(env:any) {
     } else {
       throw new Error("Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
     }
-    
-    let logConfig:any
-    if (env.VITE_MIROIR_LOG_CONFIG_FILENAME) {
-      logConfig = await loadTestSingleConfigFile(env.VITE_MIROIR_LOG_CONFIG_FILENAME ?? "specificLoggersConfig_warn");
-    } else {
-      throw new Error("Environment variable VITE_MIROIR_LOG_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
-    }
+
+    // Log config: default to the low-noise catch-all preset so nonreg / plain
+    // test runs don't drown. Override explicitly via VITE_MIROIR_LOG_CONFIG_FILENAME
+    // (preset name or path) when troubleshooting.
+    const logSelection = env.VITE_MIROIR_LOG_CONFIG_FILENAME ?? DEFAULT_LOG_CONFIG_NAME;
+    const logConfig = await loadTestSingleConfigFile(resolveLogConfigPath(logSelection));
     log.info("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles config file contents:", JSON.stringify(miroirConfig, null, 2));
     return Promise.resolve({miroirConfig,logConfig})
   } catch (error) {

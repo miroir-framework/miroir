@@ -5,7 +5,7 @@ import type {
   StoreUnitConfiguration,
 } from 'miroir-core';
 
-import domainControllerDebugLogConfig from '../../../tests/specificLoggersConfig_DomainController_debug.json';
+import catchAllLogConfig from '../../../config/logging/catch-all.json';
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
   getIntegrationTestProfileCatalogEntry,
@@ -37,23 +37,23 @@ const BROWSER_INTEGRATION_TEST_PROFILE_ASSETS: Record<string, BrowserIntegration
   {
     [DEFAULT_UI_INTEGRATION_PROFILE_NAME]: {
       miroirConfig: browserEmulatedServerIndexedDbMiroirConfig as unknown as MiroirConfigClient,
-      logConfig: domainControllerDebugLogConfig as LoggerOptions,
+      logConfig: catchAllLogConfig as LoggerOptions,
     },
     'realServer-sql': {
       miroirConfig: browserRealServerSqlMiroirConfig as unknown as MiroirConfigClient,
-      logConfig: domainControllerDebugLogConfig as LoggerOptions,
+      logConfig: catchAllLogConfig as LoggerOptions,
     },
     'realServer-indexedDb': {
       miroirConfig: browserRealServerIndexedDbMiroirConfig as unknown as MiroirConfigClient,
-      logConfig: domainControllerDebugLogConfig as LoggerOptions,
+      logConfig: catchAllLogConfig as LoggerOptions,
     },
     'realServer-filesystem': {
       miroirConfig: browserRealServerFilesystemMiroirConfig as unknown as MiroirConfigClient,
-      logConfig: domainControllerDebugLogConfig as LoggerOptions,
+      logConfig: catchAllLogConfig as LoggerOptions,
     },
     'realServer-mongodb': {
       miroirConfig: browserRealServerMongodbMiroirConfig as unknown as MiroirConfigClient,
-      logConfig: domainControllerDebugLogConfig as LoggerOptions,
+      logConfig: catchAllLogConfig as LoggerOptions,
     },
   };
 

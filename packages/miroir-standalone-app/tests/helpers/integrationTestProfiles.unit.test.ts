@@ -69,7 +69,7 @@ describe("integrationTestProfiles (Gap D0)", () => {
     applyIntegrationTestProfile("emulatedServer-sql", { respectExistingEnv: true });
 
     expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toBe("/custom/config.json");
-    expect(process.env.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("specificLoggersConfig");
+    expect(process.env.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("config/logging");
   });
 
   it("resolveTransformerDefaultsForProfile derives emulatedServer-sql from JSON", () => {
@@ -89,9 +89,7 @@ describe("integrationTestProfiles (Gap D0)", () => {
     expect(process.env.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
       "miroirConfig.test-emulatedServer-sql.json",
     );
-    expect(process.env.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain(
-      "specificLoggersConfig_DomainController_debug.json",
-    );
+    expect(process.env.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("catch-all.json");
     expect(process.env.MIROIR_TEST_APP_STORE_TYPE).toBe("sql");
     expect(process.env.MIROIR_TEST_ADMIN_STORE_TYPE).toBe("filesystem");
     expect(process.env.MIROIR_TEST_POSTGRES_HOST).toBe("localhost");

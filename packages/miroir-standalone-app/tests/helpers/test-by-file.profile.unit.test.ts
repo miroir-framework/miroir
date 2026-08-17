@@ -63,7 +63,7 @@ describe("testByFileLauncher profile (Gap D5)", () => {
     expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
       "miroirConfig.test-emulatedServer-sql.json",
     );
-    expect(spawnEnv.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("specificLoggersConfig");
+    expect(spawnEnv.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("config/logging");
   });
 
   it("--storage sql applies realServer-sql profile and sets MIROIR_TEST_STORAGE", () => {

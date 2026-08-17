@@ -1,6 +1,0 @@
-{
-  "defaultLevel": "WARN",
-  "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
-  "specificLoggerOptions": {
-  }
-}

@@ -50,7 +50,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
     expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
       "miroirConfig.test-emulatedServer-sql.json",
     );
-    expect(spawnEnv.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("specificLoggersConfig");
+    expect(spawnEnv.VITE_MIROIR_LOG_CONFIG_FILENAME).toContain("config/logging");
     expect(spawnEnv.MIROIR_TEST_POSTGRES_HOST).toBe("localhost");
     expect(spawnEnv.MIROIR_TEST_APP_STORE_TYPE).toBe("sql");
     expect(spawnEnv.MIROIR_TEST_ADMIN_STORE_TYPE).toBe("filesystem");

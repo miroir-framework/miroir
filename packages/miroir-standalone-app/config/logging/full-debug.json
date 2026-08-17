@@ -1,0 +1,6 @@
+{
+  "$comment": "Full debug. Everything at DEBUG. Use only for a focused, single test/action — output is very large. Prefer a scoped config first.",
+  "defaultLevel": "DEBUG",
+  "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
+  "specificLoggerOptions": {}
+}

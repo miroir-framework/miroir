@@ -1,0 +1,6 @@
+{
+  "$comment": "Catch-all, low-resolution. Default for development and nonreg. Only WARN/ERROR plus tracker run/span hop lines (console). Use for everyday dev and as the nonreg default so failures surface without drowning.",
+  "defaultLevel": "WARN",
+  "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
+  "specificLoggerOptions": {}
+}

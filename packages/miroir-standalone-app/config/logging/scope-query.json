@@ -1,0 +1,13 @@
+{
+  "$comment": "Scoped: query path. DomainController hop lines + LocalCache + query selectors at DEBUG; rest WARN. Use to trace a query/extractor end-to-end (Path A local cache and into the store). Pair with `grep $RUNID` from an orientation run.",
+  "defaultLevel": "WARN",
+  "defaultTemplate": "[{{time}}] {{level}} {{name}} ### ",
+  "specificLoggerOptions": {
+    "3_miroir-core_DomainController": { "level": "DEBUG" },
+    "4_miroir-localcache-redux_LocalCache": { "level": "DEBUG" },
+    "2_miroir-core_QuerySelectors": { "level": "DEBUG" },
+    "2_miroir-core_DomainStateQuerySelector": { "level": "DEBUG" },
+    "2_miroir-core_QueryTemplateSelectors": { "level": "DEBUG" },
+    "2_miroir-core_DomainDataAccess": { "level": "DEBUG" }
+  }
+}

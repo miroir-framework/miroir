@@ -33,74 +33,76 @@ export type ApplyIntegrationTestProfileOptions = {
 };
 
 const TESTS = "./packages/miroir-standalone-app/tests";
+/** Canonical consolidated log presets (shared by tests and dev/runtime). */
+const LOG_CONFIGS = "./packages/miroir-standalone-app/config/logging";
 
 function configPath(filename: string): string {
   return `${TESTS}/${filename}`;
 }
 
 function logPath(filename: string): string {
-  return `${TESTS}/${filename}`;
+  return `${LOG_CONFIGS}/${filename}`;
 }
 
 export const INTEGRATION_TEST_PROFILES: Record<string, IntegrationTestProfile> = {
   "emulatedServer-sql": {
     name: "emulatedServer-sql",
     miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-sql.json"),
-    logConfigFilename: logPath("specificLoggersConfig_DomainController_debug.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "Local default — admin filesystem, miroir + library Postgres",
   },
   "emulatedServer-filesystem": {
     name: "emulatedServer-filesystem",
     miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-filesystem.json"),
-    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "All store sections on filesystem (no Postgres)",
   },
   "emulatedServer-indexedDb": {
     name: "emulatedServer-indexedDb",
     miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-indexedDb.json"),
-    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "Miroir + library IndexedDB",
   },
   "emulatedServer-mongodb": {
     name: "emulatedServer-mongodb",
     miroirConfigFilename: configPath("miroirConfig.test-emulatedServer-mongodb.json"),
-    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "Miroir + library MongoDB",
   },
   "ci-emulatedServer-host-sql": {
     name: "ci-emulatedServer-host-sql",
     miroirConfigFilename: configPath("miroirConfig.test-ci-emulatedServer-host-sql.json"),
-    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "CI preset — host Postgres connection strings in JSON",
   },
   "ci-emulatedServer-dockerized-sql": {
     name: "ci-emulatedServer-dockerized-sql",
     miroirConfigFilename: configPath("miroirConfig.test-ci-emulatedServer-dockerized-sql.json"),
-    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "CI preset — dockerized Postgres connection strings in JSON",
   },
   "realServer-sql": {
     name: "realServer-sql",
     miroirConfigFilename: configPath("miroirConfig.test-realServer-sql.json"),
-    logConfigFilename: logPath("specificLoggersConfig_DomainController_debug.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "Client REST → live miroir-server (Postgres stores on server) — B6-c",
   },
   "realServer-indexedDb": {
     name: "realServer-indexedDb",
     miroirConfigFilename: configPath("miroirConfig.test-realServer-indexedDb.json"),
-    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "Client REST → live miroir-server (IndexedDB stores on server) — B6-c",
   },
   "realServer-filesystem": {
     name: "realServer-filesystem",
     miroirConfigFilename: configPath("miroirConfig.test-realServer-filesystem.json"),
-    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "Client REST → live miroir-server (filesystem stores on server) — B6-c",
   },
   "realServer-mongodb": {
     name: "realServer-mongodb",
     miroirConfigFilename: configPath("miroirConfig.test-realServer-mongodb.json"),
-    logConfigFilename: logPath("specificLoggersConfig_warn.json"),
+    logConfigFilename: logPath("catch-all.json"),
     description: "Client REST → live miroir-server (MongoDB stores on server) — B6-c",
   },
 };
