@@ -18,6 +18,25 @@ Integration tests need a reachable store when using SQL/ MongoDB configs:
 
 ---
 
+## Test file layout
+
+Tests live under each package's `tests/<layer>/` directory, named after the capability they guard (feature-based non-regression tests).
+
+Tests produced while working on a specific issue (typically agent-TDD phase checkpoints, often carrying the issue number in their name, e.g. `entityPresentModel.217.phase1.unit.test.ts`) must be isolated in an **issue directory**:
+
+```
+tests/<layer>/issues/<issue>-<slug>/    # e.g. tests/1_core/issues/217-entity-present-model/
+```
+
+Rules:
+
+- No test file with an issue number in its name lives outside an `issues/` directory.
+- An issue touching several layers gets one `issues/<issue>-<slug>/` directory per layer.
+- Issue-scoped helpers/fixtures live inside the issue directory alongside the tests.
+- When the issue closes, migrate still-valuable assertions into feature-named suites in the canonical layer directory and delete the issue directory (see [#238](https://github.com/miroir-framework/miroir/issues/238)).
+
+---
+
 ## Running tests
 
 **Prefer argv** (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Env vars remain for CI / legacy; see [Parameter surface](../reference/testing.md#parameter-surface-argv-preferred) in the reference.
