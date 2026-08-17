@@ -268,12 +268,10 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
 
 // ################################################################################################
 export function testLogger(loggerName: string, log: LoggerInterface) {
-  console.log("###############################", loggerName, "logger Test: level", log.level);
   log.trace("loggerName:", loggerName, "@@@@@@@@@@@@ TRACE");
   log.debug("loggerName:", loggerName, "@@@@@@@@@@@@ DEBUG");
   log.info("loggerName:", loggerName, "@@@@@@@@@@@@ INFO");
   log.log("loggerName:", loggerName, "@@@@@@@@@@@@ LOG");
   log.warn("loggerName:", loggerName, "@@@@@@@@@@@@ WARN");
   log.error("loggerName:", loggerName, "@@@@@@@@@@@@ ERROR");
-  console.log("#################### END TEST LOGS");
 }

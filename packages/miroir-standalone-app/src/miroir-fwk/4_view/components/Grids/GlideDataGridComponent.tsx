@@ -425,7 +425,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     //   widthSpecs = calculatedColumnWidths;
     // } else {
       // Defensive fallback: This should now rarely happen since EntityInstanceGrid always calculates widths
-      console.warn("GlideDataGridComponent: No calculated column widths provided, using simple fallback");
+      log.warn("GlideDataGridComponent: No calculated column widths provided, using simple fallback");
       
       const equalDistributionColumnWidth = Math.floor((containerWidth - toolsColumnDefinition.width) / columnDefs.columnDefs.length);
       widthSpecs = [

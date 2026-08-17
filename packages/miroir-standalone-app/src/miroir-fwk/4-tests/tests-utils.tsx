@@ -324,7 +324,7 @@ export async function createDeploymentGetPersistenceStoreController(
     );
 
     if (createDeploymentResult.status != "ok") {
-      console.error(
+      log.error(
         "Error createDeploymentGetPersistenceStoreController",
         JSON.stringify(createDeploymentResult, null, 2)
       );
@@ -349,7 +349,7 @@ export async function createDeploymentGetPersistenceStoreController(
     }
     return Promise.resolve(localPersistenceStoreController);
   } catch (error) {
-    console.error('Error createDeploymentGetPersistenceStoreController',error);
+    log.error('Error createDeploymentGetPersistenceStoreController',error);
     throw error;
   }
   // return Promise.resolve(undefined);
@@ -439,7 +439,7 @@ export async function deleteAndCloseApplicationDeployments(
       }
     }, applicationDeploymentMap);
     if (deletedStore?.status != "ok") {
-      console.error('Error afterEach',JSON.stringify(deletedStore, null, 2));
+      log.error('Error afterEach',JSON.stringify(deletedStore, null, 2));
     }
   
   }
@@ -459,7 +459,7 @@ export async function deleteAndCloseApplicationDeployments(
         applicationDeploymentMap
       );
       if (deletedStore?.status != "ok") {
-        console.error('Error afterAll',JSON.stringify(deletedStore, null, 2));
+        log.error('Error afterAll',JSON.stringify(deletedStore, null, 2));
       } else {
         log.info('deleteAndCloseApplicationDeployments closing deployment:', d.uuid, "DONE!"); // TODO: really???
       }

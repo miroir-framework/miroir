@@ -107,18 +107,18 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 // Argument parsing
 function printUsageAndExit(exitCode = 1): never {
   console.error(`Usage: node server.js [OPTIONS]`);
-  console.error(``);
+  myLogger.error(``);
   console.error(`OPTIONS:`);
   console.error(`  --config   <path>   Path to the server config JSON file`);
-  console.error(`                      (default: ../config/miroirConfig.server.json)`);
+  myLogger.error(`                      (default: ../config/miroirConfig.server.json)`);
   console.error(`  --certsdir <dir>    Directory containing TLS certificate files`);
-  console.error(`                      (default: <repo-root>/certs/)`);
+  myLogger.error(`                      (default: <repo-root>/certs/)`);
   console.error(`  --cert     <path>   Path to the TLS certificate file (.pem)`);
   console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_CERT`);
-  console.error(`                      (default: <certsdir>/localhost.pem)`);
+  myLogger.error(`                      (default: <certsdir>/localhost.pem)`);
   console.error(`  --key      <path>   Path to the TLS private key file (.pem)`);
   console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_KEY`);
-  console.error(`                      (default: <certsdir>/localhost-key.pem)`);
+  myLogger.error(`                      (default: <certsdir>/localhost-key.pem)`);
   console.error(`  -h, --help          Show this help message and exit`);
   process.exit(exitCode);
 }

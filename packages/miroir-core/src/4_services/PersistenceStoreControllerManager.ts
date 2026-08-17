@@ -257,7 +257,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
     if (testLocalMiroirPersistenceStoreController) {
       await testLocalMiroirPersistenceStoreController.clear();
       try {
-        console.log(
+        log.debug(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ initApplication",
           initApplicationParameters.dataStoreType,
           "START",
@@ -269,13 +269,13 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
           initApplicationParameters.applicationVersion,
           initApplicationParameters.metaModel,
         );
-        console.log(
+        log.debug(
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ deployModule initApplication",
           initApplicationParameters.dataStoreType,
           "END",
         );
       } catch (error) {
-        console.error(
+        log.error(
           "could not initApplication for",
           initApplicationParameters.dataStoreType,
           "datastore, can not go further!",

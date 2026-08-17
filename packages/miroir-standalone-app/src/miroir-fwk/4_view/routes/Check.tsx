@@ -69,7 +69,7 @@ export const CheckPage: React.FC<any> = (
         setTestResult(<div style={{ color: "green" }}>Input is valid!</div>);
         // log.info("Result:", result);
       } catch (error) {
-        console.error("Error processing input:", error);
+        log.error("Error processing input:", error);
         const zodParseError = error as ZodParseError;
         // const firstIssue = (error as any).issues[0];
         const firstIssue = zodErrorFirstIssueLeaf(zodParseError);

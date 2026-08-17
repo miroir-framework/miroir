@@ -3347,7 +3347,7 @@ export function getMiroirFundamentalJzodSchema(
     false, // alwaysPropagate
   );
 
-  console.log(
+  log.debug(
     "getMiroirFundamentalJzodSchema - extendedSchemasResolutionStore - localizedInnerResolutionStoreForExtendedSchemas",
     JSON.stringify(Object.keys(localizedInnerResolutionStoreForExtendedSchemas), null, 2),
   );
@@ -3372,7 +3372,7 @@ export function getMiroirFundamentalJzodSchema(
   _t_phase = Date.now();
 
 
-  console.log("getMiroirFundamentalJzodSchema - extractorOrCombiner templates START");
+  log.debug("getMiroirFundamentalJzodSchema - extractorOrCombiner templates START");
   const extractorOrCombiner = (miroirFundamentalJzodSchema as any).definition.context["extractorOrCombiner"]
 
   const queriesDependencySet = jzodTransitiveDependencySet(
@@ -3380,7 +3380,7 @@ export function getMiroirFundamentalJzodSchema(
     "extractorOrCombinerRecord",
     true, // includeExtend
   );
-  console.log(
+  log.debug(
     "getMiroirFundamentalJzodSchema - extractorOrCombiner templates - queriesDependencySet",
     JSON.stringify(Array.from(queriesDependencySet), null, 2),
   );
@@ -3400,7 +3400,7 @@ export function getMiroirFundamentalJzodSchema(
     localizedInnerResolutionStoreForExtendedSchemas, // skip already converted extended schemas
   );
 
-  console.log(
+  log.debug(
     "getMiroirFundamentalJzodSchema - extractorOrCombiner templates - queriesLocalizedInnerResolutionStorePlainReferences",
     JSON.stringify(Object.keys(queriesLocalizedInnerResolutionStorePlainReferences), null, 2),
   );
@@ -3419,11 +3419,11 @@ export function getMiroirFundamentalJzodSchema(
     ...localizedInnerResolutionStoreForExtendedSchemas,
     ...queriesLocalizedInnerResolutionStorePlainReferences,
   };
-  console.log(
+  log.debug(
     "getMiroirFundamentalJzodSchema - extractorOrCombiner templates - absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates",
     JSON.stringify(Object.keys(absoluteMiroirFundamentalJzodSchemaWithQueriesTemplates.definition.context), null, 2),
   );
-  console.log("getMiroirFundamentalJzodSchema - extractorOrCombiner templates END");
+  log.debug("getMiroirFundamentalJzodSchema - extractorOrCombiner templates END");
   _phaseTimings.push({phase: "queriesWithCarryOnContext", ms: Date.now() - _t_phase});
 
   // ##############################################################################################
@@ -3439,7 +3439,7 @@ export function getMiroirFundamentalJzodSchema(
     true, // includeExtend
     "miroirTemplate_", // filterPrefix
   );
-  console.log(
+  log.debug(
     "getMiroirFundamentalJzodSchema - domainAction templates - domainActionDependencySet",
     JSON.stringify(Array.from(domainActionDependencySet), null, 2),
   );

@@ -492,7 +492,7 @@ export function createLocalizedInnerResolutionStoreForExtendedSchemas(
 ): Record<string, any> {
   const _t0 = Date.now();
   // console.log("createLocalizedInnerResolutionStoreForExtendedSchemas called with localizedResolutionStore.context:", JSON.stringify(localizedResolutionStore.context, null, 2));
-  console.log(
+  log.debug(
     `createLocalizedInnerResolutionStoreForExtendedSchemas(${prefix}) called, extendedSchemas: ${extendedSchemas.length}, localizedResolutionStore.context keys: ${JSON.stringify(Object.keys(localizedResolutionStore.context ?? {}), null, 2)}`,
   );
   const result: Record<string, any> = {};

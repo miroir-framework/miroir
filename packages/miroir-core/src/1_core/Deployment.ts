@@ -551,7 +551,7 @@ export function dropApplicationAndDeploymentCompositeAction(
   applicationUuid: Uuid,
   deploymentUuid: Uuid
 ): CompositeActionSequence {
-  console.log(
+  log.debug(
     "dropApplicationAndDeploymentCompositeAction",
     deploymentUuid,
     JSON.stringify(miroirConfig, null, 2)
@@ -609,7 +609,7 @@ export function testUtils_deleteApplicationDeployment(
   application: Uuid,
   deploymentUuid: Uuid,
 ): CompositeActionSequence {
-  console.log(
+  log.debug(
     "testUtils_deleteApplicationDeployment",
     deploymentUuid,
     JSON.stringify(miroirConfig, null, 2),

@@ -1,8 +1,16 @@
 import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
 import type { MiroirConfigClient } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import { ConfigurationService } from "../3_controllers/ConfigurationService";
+import { packageName } from "../constants";
+import { cleanLevel } from "../1_core/constants";
+import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { PersistenceStoreControllerManager } from "./PersistenceStoreControllerManager";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceStoreControllerTools");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
 
 
 // ################################################################################################
@@ -18,7 +26,7 @@ export async function startLocalPersistenceStoreControllers(
       // defaultMiroirMetaModel.entityVersions,
     );
   } catch (error) {
-    console.log(
+    log.debug(
       "createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT: could not load persisted state from localMiroirPersistenceStoreController, datastore could be empty (this is not a problem)",
     );
   }
@@ -28,7 +36,7 @@ export async function startLocalPersistenceStoreControllers(
       // defaultMiroirMetaModel.entityVersions,
     );
   } catch (error) {
-    console.log(
+    log.debug(
       "createMiroirDeploymentGetPersistenceStoreControllerDEFUNCT: could not load persisted state from localAppPersistenceStoreController, datastore could be empty (this is not a problem)",
     );
   }
@@ -46,7 +54,7 @@ export async function mountApplicationDeployment(
     }
 
     // Create persistence store controller manager
-    console.log("4. Creating persistence store controller manager...");
+    log.debug("4. Creating persistence store controller manager...");
     const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
       ConfigurationService.configurationService.StoreSectionFactoryRegister,
@@ -60,7 +68,7 @@ export async function mountApplicationDeployment(
 
     // We need a domain controller to execute the deployment creation
     // Since we're in emulated server mode, we need to create both client and server controllers
-    console.log("6. Mounting filesystem stores...");
+    log.debug("6. Mounting filesystem stores...");
     // Get the persistence store controller for the library deployment
     let storeController = persistenceStoreControllerManager.getPersistenceStoreController(
       applicationDeploymentUuid
@@ -82,15 +90,15 @@ export async function mountApplicationDeployment(
       throw new Error("Failed to get persistence store controller after adding");
     }
 
-    console.log("   Store mounted successfully");
+    log.debug("   Store mounted successfully");
 
     return { storeController, persistenceStoreControllerManager };
   } catch (error) {
-    console.error("\n" + "!".repeat(80));
-    console.error("Error during application deployment mounting:");
-    console.error("!".repeat(80));
-    console.error(error);
-    console.error("!".repeat(80));
+    log.error("\n" + "!".repeat(80));
+    log.error("Error during application deployment mounting:");
+    log.error("!".repeat(80));
+    log.error(error);
+    log.error("!".repeat(80));
     throw error; // Rethrow to be caught by the main function
   }
 }

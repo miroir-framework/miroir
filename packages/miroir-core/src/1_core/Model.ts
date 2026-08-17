@@ -64,7 +64,15 @@ import {
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { Action2Error, Domain2ElementFailed } from "../0_interfaces/2_domain/DomainElement";
 import type { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
 // import { Endpoint } from "../3_controllers/Endpoint";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Model");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
 
 
 const genType = { // <X> -> X[]
@@ -349,7 +357,7 @@ export async function extractEntityInstances(
   entityUuid: string,
   entityName: string,
 ) {
-  console.log(`   - Reading ${entityName}...`);
+  log.debug(`   - Reading ${entityName}...`);
   const result = await storeController.getInstances(applicationSection, entityUuid);
 
   if (result instanceof Action2Error) {
@@ -362,7 +370,7 @@ export async function extractEntityInstances(
   }
 
   const instances = result.status === "ok" ? result.returnedDomainElement.instances : [];
-  console.log(`     Found ${instances.length} ${entityName}`);
+  log.debug(`     Found ${instances.length} ${entityName}`);
   return instances;
 }
 
@@ -379,7 +387,7 @@ export async function extractApplicationModel(
 ): Promise<MetaModel> {
   try {
     // Read all model elements from the store
-    console.log("\n7. Reading model elements from filesystem store...");
+    log.debug("\n7. Reading model elements from filesystem store...");
 
     // Extract all entities
     // #222 — section per concept (Miroir EntityVersion → data; Library MetaModel peers → model)
@@ -406,7 +414,7 @@ export async function extractApplicationModel(
     const applicationVersions = await extractEntityInstances(storeController, sectionFor(entitySelfApplicationVersion.uuid), entitySelfApplicationVersion.uuid, "application versions");
 
     // Assemble the MetaModel
-    console.log("\n8. Assembling MetaModel structure...");
+    log.debug("\n8. Assembling MetaModel structure...");
     const libraryMetaModel: MetaModel = {
       applicationUuid: applicationUuid,
       applicationName: applicationName,
@@ -442,7 +450,7 @@ export async function extractApplicationModel(
 
     return libraryMetaModel;
   } catch (error) {
-    console.error("Error extracting Library MetaModel:");
+    log.error("Error extracting Library MetaModel:");
     throw error;
   }
 }
@@ -454,7 +462,7 @@ export async function extractApplicationData(
   entities: Entity[],
 ): Promise<DataSet> {
   try {
-    console.log("\nExtracting data sets from filesystem store...");
+    log.debug("\nExtracting data sets from filesystem store...");
 
     const instances = await Promise.all(entities.map(entity => 
       extractEntityInstances(storeController, "data", entity.uuid, entity.name)
@@ -465,7 +473,7 @@ export async function extractApplicationData(
       instances: instances.flat() // Flatten the array of arrays into a single array of instances
     });
   } catch (error) {
-    console.error("Error extracting data sets:");
+    log.error("Error extracting data sets:");
     throw error;
   }
 }

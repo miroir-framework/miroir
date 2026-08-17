@@ -332,7 +332,7 @@ const codePointToEmoji = (codePoint: string): string => {
     
     return codePoint; // Return as-is if not a recognized format
   } catch (error) {
-    console.warn(`Failed to convert code point "${codePoint}" to emoji:`, error);
+    log.warn(`Failed to convert code point "${codePoint}" to emoji:`, error);
     return '❓'; // Question mark as fallback
   }
 };
@@ -666,7 +666,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
       const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
       return { type: 'symbol', content: fallbackIconName, error: 'Invalid icon format', color: undefined, superImpose: undefined };
     } catch (error) {
-      console.warn('Icon resolution error:', error);
+      log.warn('Icon resolution error:', error);
       const fallbackIconName = materialSymbolsIconMap[fallback] || fallback;
       return { 
         type: 'error', 
@@ -898,7 +898,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
 
   // Show deprecation warning for children usage
   if (children !== undefined && icon === undefined && process.env.NODE_ENV === 'development') {
-    console.warn(
+    log.warn(
       'ThemedIcon: Using "children" prop is deprecated. Please use the "icon" prop instead. ' +
       'This will be removed in a future version.'
     );

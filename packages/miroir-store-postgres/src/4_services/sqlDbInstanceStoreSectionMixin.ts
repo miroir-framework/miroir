@@ -279,7 +279,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           });
         } else {
           // TODO: indicate exact reason!
-          console.warn(this.logHeader, "getInstance", "could not find entityUuid", parentUuid);
+          log.warn(this.logHeader, "getInstance", "could not find entityUuid", parentUuid);
           return Promise.resolve(
             new Action2Error("FailedToGetInstance", "could not find entityUuid " + parentUuid)
           );
@@ -540,7 +540,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         !effectiveParentUuid ||
         !this.sqlSchemaTableAccess[effectiveParentUuid]
       ) {
-        console.warn(
+        log.warn(
           this.logHeader,
           "upsertInstance",
           "could not find entity in database: entityUuid",

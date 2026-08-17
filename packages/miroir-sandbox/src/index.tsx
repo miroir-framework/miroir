@@ -237,7 +237,7 @@ async function startDemoApp() {
 }
 
 startDemoApp().catch((err) => {
-  console.error("startDemoApp failed:", err);
+  log.error("startDemoApp failed:", err);
   root.render(
     <div style={{ padding: 32, color: "red" }}>
       <h2>Fatal startup error</h2>

@@ -221,13 +221,13 @@ export async function setupMiroirPlatform(
     localMiroirEventService,
     miroirConfig,
   );
-  console.log("setupMiroirPlatform miroirConfig", JSON.stringify(miroirConfig, null, 2));
-  console.log(
+  log.debug("setupMiroirPlatform miroirConfig", JSON.stringify(miroirConfig, null, 2));
+  log.debug(
     "setupMiroirPlatform import.meta.env",
     JSON.stringify((import.meta as any).env, null, 2),
   );
-  console.log("setupMiroirPlatform getMiroirEnvironmentMode", getMiroirEnvironmentMode());
-  console.log(
+  log.debug("setupMiroirPlatform getMiroirEnvironmentMode", getMiroirEnvironmentMode());
+  log.debug(
     "setupMiroirPlatform templateEvaluationParams",
     JSON.stringify(templateEvaluationParams, null, 2),
   );
@@ -361,11 +361,11 @@ async function startWebApp(root: Root) {
 
   theme.spacing(10);
 
-  console.warn("startWebApp start in mode", getMiroirEnvironmentMode(), "isElectron:", isElectron);
+  log.warn("startWebApp start in mode", getMiroirEnvironmentMode(), "isElectron:", isElectron);
   const filesystemDeploymentRootDirectory: string = electronRestClient
     ? await electronRestClient.getDefaultFilesystemFolder()
     : "no default filesystem folder because not in Electron";
-  console.log("startWebApp filesystemDeploymentRootDirectory:", filesystemDeploymentRootDirectory);
+  log.debug("startWebApp filesystemDeploymentRootDirectory:", filesystemDeploymentRootDirectory);
 
   const electronMiroirConfig: MiroirConfigClient = {
     miroirConfigType: "client",
@@ -420,7 +420,7 @@ async function startWebApp(root: Root) {
       [deployment_Miroir.uuid]: deployment_Miroir as Deployment,
     };
 
-    console.log("Electron mode: opening stores for configured deployments:", configurations);
+    log.debug("Electron mode: opening stores for configured deployments:", configurations);
     // open all configured stores
     for (const c of Object.entries(configurations)) {
       const openStoreAction: StoreOrBundleAction = {

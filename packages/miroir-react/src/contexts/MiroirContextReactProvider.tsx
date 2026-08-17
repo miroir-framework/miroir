@@ -664,7 +664,7 @@ export function MiroirContextReactProvider(props: {
       showActionTimeline,
       setShowActionTimeline: (value: boolean | ((prev: boolean) => boolean)) => {
         const newValue = typeof value === "function" ? value(showActionTimeline) : value;
-        console.log("setShowActionTimeline called:", {
+        log.debug("setShowActionTimeline called:", {
           oldValue: showActionTimeline,
           newValue: newValue,
           type: typeof value,

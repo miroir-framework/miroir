@@ -611,6 +611,8 @@ Miroir has a small set of **consolidated, named log presets** that work identica
 
 **Recommended troubleshooting workflow:** (1) run with `catch-all`, copy `runId`, `grep $RUNID`; (2) re-run the same leaf with the relevant `scope-*` config for payload detail (e.g. `scope-query-local` for a query leaf, `scope-query` if you also need DomainController hops). Set `MIROIR_TEST_VERBOSE_TRACKING=1` for tracker `🧪` console noise; `MIROIR_TEST_VERBOSE=1` for full env dump from the test launcher.
 
+**Bare `console.*` allowlist (#237):** Most runtime diagnostics use `LoggerInterface` (regulable via presets above). Intentional bare `console.*` remains only for: (1) **run/span hop lines** in `MiroirActivityTracker` (`formatRunBanner`, `formatSpanBoundaryLine`); (2) **operator CLI** in `miroir-cli`, `miroir-mcp`, `miroir-server` (usage text, startup banners); (3) **PreStartLogger** sink before `startRegisteredLoggers`; (4) optional debug utilities (`FoldedStateTreeDebug.ts`, icon extraction demos) and test-only helpers. Everything else should use module `log.*` at the appropriate level.
+
 Workflow reference (Path A vs B, grep recipes): [runQuery-emulated-server.md](../guides/architecture/workflows/runQuery-emulated-server.md).
 
 **Pilot leaf (default quiet logging)** (from repo root):

@@ -168,7 +168,7 @@ function registerCommands(
           // Parse inline JSON payload
           payload = JSON.parse(options.payload);
         } else {
-          console.error(`Error: Either --payload or --file is required`);
+          log.error(`Error: Either --payload or --file is required`);
           process.exit(1);
         }
 
@@ -179,7 +179,7 @@ function registerCommands(
         );
 
         // Output result as JSON
-        console.log(JSON.stringify(result, null, 2));
+        log.debug(JSON.stringify(result, null, 2));
 
         // Exit with appropriate code
         if (result.status === "error") {
@@ -194,7 +194,7 @@ function registerCommands(
             message: error instanceof Error ? error.message : String(error),
           },
         };
-        console.error(JSON.stringify(errorResult, null, 2));
+        log.error(JSON.stringify(errorResult, null, 2));
         process.exit(1);
       }
     });
@@ -233,7 +233,7 @@ async function main(): Promise<void> {
   try {
     config = loadMiroirCliConfig();
   } catch (error) {
-    console.error(`Failed to load configuration: ${error instanceof Error ? error.message : String(error)}`);
+    log.error(`Failed to load configuration: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
 
@@ -246,7 +246,7 @@ async function main(): Promise<void> {
     domainController = platform.domainController;
     applicationDeploymentMap = platform.applicationDeploymentMap;
   } catch (error) {
-    console.error(`Failed to initialize platform: ${error instanceof Error ? error.message : String(error)}`);
+    log.error(`Failed to initialize platform: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
   }
 
@@ -269,10 +269,10 @@ async function main(): Promise<void> {
     .description('List all available commands')
     .action(() => {
       const commands = getAllCommands();
-      console.log('\nAvailable commands:\n');
+      log.debug('\nAvailable commands:\n');
       for (const handler of commands) {
-        console.log(`  ${handler.commandDescription.name}`);
-        console.log(`    ${handler.commandDescription.description}\n`);
+        log.debug(`  ${handler.commandDescription.name}`);
+        log.debug(`    ${handler.commandDescription.description}\n`);
       }
     });
 
@@ -285,6 +285,6 @@ async function main(): Promise<void> {
 
 // Run CLI
 main().catch((error) => {
-  console.error(`Fatal error: ${error instanceof Error ? error.message : String(error)}`);
+  log.error(`Fatal error: ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
 });

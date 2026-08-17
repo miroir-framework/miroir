@@ -172,7 +172,7 @@ export const MiroirEventsPage: React.FC = () => {
 
   const handleExportEvents = () => {
     if (!miroirEventService) {
-      console.warn('MiroirEventService not available');
+      log.warn('MiroirEventService not available');
       return;
     }
 

@@ -458,7 +458,7 @@ export const RootComponent = (props: RootComponentProps) => {
         const escapedSelector = escapeCSS(rootLessListKey);
         targetElement = document.querySelector(`#${escapedSelector}`) as HTMLElement;
       } catch (e) {
-        console.warn("CSS selector failed:", e);
+        log.warn("CSS selector failed:", e);
       }
     }
 
@@ -485,7 +485,7 @@ export const RootComponent = (props: RootComponentProps) => {
         const id = (candidate as HTMLElement).id;
         if (id && id.includes(partialKey)) {
           targetElement = candidate as HTMLElement;
-          console.log("Found partial match:", id);
+          log.debug("Found partial match:", id);
           break;
         }
       }
@@ -499,7 +499,7 @@ export const RootComponent = (props: RootComponentProps) => {
         const id = (candidate as HTMLElement).id;
         if (id && id.endsWith(lastPart)) {
           targetElement = candidate as HTMLElement;
-          console.log("Found by last part match:", id);
+          log.debug("Found by last part match:", id);
           break;
         }
       }
@@ -564,15 +564,15 @@ export const RootComponent = (props: RootComponentProps) => {
         highlightTimeoutRef.current = null;
       }, 2000);
     } else {
-      console.warn("Element not found for path:", path, "rootLessListKey:", rootLessListKey);
+      log.warn("Element not found for path:", path, "rootLessListKey:", rootLessListKey);
 
       // List all elements with IDs to help with debugging
       const allElementsWithIds = document.querySelectorAll("[id]");
       const ids = Array.from(allElementsWithIds)
         .map((el) => el.id)
         .filter((id) => id);
-      console.log("Available element IDs (first 20):", ids.slice(0, 20));
-      console.log("Total elements with IDs:", ids.length);
+      log.debug("Available element IDs (first 20):", ids.slice(0, 20));
+      log.debug("Total elements with IDs:", ids.length);
 
       // Show IDs that might be related
       const relatedIds = ids.filter((id) => {
@@ -582,7 +582,7 @@ export const RootComponent = (props: RootComponentProps) => {
       });
 
       if (relatedIds.length > 0) {
-        console.log("Potentially related IDs:", relatedIds);
+        log.debug("Potentially related IDs:", relatedIds);
       }
     }
   }, [theme]);

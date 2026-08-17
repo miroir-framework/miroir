@@ -113,7 +113,7 @@ const DisplayTransformerEvent: React.FC<{
   }
   , [activity.transformerParams]);
 
-  console.log("Displayed parameters", displayedParameters);
+  log.debug("Displayed parameters", displayedParameters);
   const parametersSchema: JzodElement = useMemo(() => {
     if (!displayedParameters || !isExpanded) {
       return { type: "any" } as JzodElement;

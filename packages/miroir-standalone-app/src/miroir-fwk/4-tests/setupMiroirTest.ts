@@ -68,7 +68,9 @@ export async function setupMiroirTest(
     localMiroirEventService,
     miroirConfig
   );
-  console.log("setupMiroirTest miroirConfig", JSON.stringify(miroirConfig, null, 2));
+  if (process.env.MIROIR_TEST_VERBOSE === "1") {
+    log.debug("setupMiroirTest miroirConfig", JSON.stringify(miroirConfig, null, 2));
+  }
   let client: RestClientInterface | undefined = undefined;
   let remotePersistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined = undefined;
   if (miroirConfig.client.emulateServer) {
@@ -206,7 +208,7 @@ export async function setupMiroirTestAndDeployMiroirApp(
   domainController: DomainControllerInterface;
   persistenceStoreControllerManager: PersistenceStoreControllerManager;
 }> {
-  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll");
+  log.debug("beforeAll bootstrap starting");
   const executionEnvironment = await runAppStackIntegrationBootstrap({
     miroirConfig,
     applicationDeploymentMap,
@@ -222,7 +224,7 @@ export async function setupMiroirTestAndDeployMiroirApp(
     deployMiroirStrategy: "compositeAction",
     openAdminAndMiroirStoresOnServer: false,
   });
-  console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ beforeAll DONE");
+  log.debug("beforeAll bootstrap done");
 
   return {
     domainController: executionEnvironment.domainController,

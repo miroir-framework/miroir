@@ -12,7 +12,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 
 export function ErrorPage() {
   const error:any = useRouteError();
-  console.error(error);
+  log.error(error);
 
   return (
     <div id="error-page">

@@ -15,7 +15,7 @@ import { ACTION_OK } from "../1_core/constants";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
-MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger; console.log("ActionRunner logger started!!!", (log === console as any), MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner"))});
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 /**

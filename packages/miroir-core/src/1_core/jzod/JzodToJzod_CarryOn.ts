@@ -744,7 +744,7 @@ export function applyLimitedCarryOnSchemaOnLevel(
 
       if (baseSchema.definition.relativePath.startsWith(carryOnPrefix)) {
         if (process.env.MIROIR_TEST_VERBOSE_TRACKING === "1") {
-          console.log(
+          log.debug(
             "applyLimitedCarryOnSchemaOnLevel: start with carryOnPrefix",
             "relativePath",
             baseSchema.definition.relativePath,

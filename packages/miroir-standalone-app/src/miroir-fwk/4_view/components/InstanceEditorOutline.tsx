@@ -369,7 +369,7 @@ export const InstanceEditorOutline: React.FC<DocumentOutlineProps> = ({
       // return buildTreeFromObject(outlineContext.outlineData, [], rootObjectKey, 0, 10, outlineContext.typeCheckKeyMap);
       return buildTreeFromObject(outlineContext.reportInstance, [], rootObjectKey, 0, 10, outlineContext.typeCheckKeyMap);
     } catch (error) {
-      console.error('Error building tree structure:', error);
+      log.error('Error building tree structure:', error);
       return [];
     }
   // }, [outlineContext.outlineData, rootObjectKey, outlineContext.typeCheckKeyMap]);
