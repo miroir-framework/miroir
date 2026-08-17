@@ -16,6 +16,8 @@
 import {
   Action2Error,
   Domain2ElementFailed,
+  LoggerInterface,
+  MiroirLoggerFactory,
   PersistenceStoreControllerManager,
   type Entity,
   type EntityVersion,
@@ -24,6 +26,12 @@ import {
 } from "miroir-core";
 
 import { entityEntity } from "miroir-test-app_deployment-miroir";
+import { packageName } from "./constants.js";
+
+const cleanLevel = "5";
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "adminMigration");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 // ---------------------------------------------------------------------------
 // IndexedDB config for the writable admin deployment
 // ---------------------------------------------------------------------------
@@ -110,7 +118,7 @@ async function copyBundledToIndexedDb(
     for (const instance of (result.returnedDomainElement as EntityInstanceCollection).instances) {
       const writeResult = await idb.upsertInstance("model", instance);
       if (writeResult instanceof Action2Error) {
-        console.error(
+        log.error(
           "adminMigration copyBundledToIndexedDb: upsertInstance failed for model instance",
           instance,
           "error:",
@@ -142,7 +150,7 @@ async function copyBundledToIndexedDb(
     for (const instance of (result.returnedDomainElement as EntityInstanceCollection).instances) {
       const writeResult = await idb.upsertInstance("data", instance);
       if (writeResult instanceof Action2Error) {
-        console.error(
+        log.error(
           "adminMigration copyBundledToIndexedDb: upsertInstance failed for data instance",
           instance,
           "error:",
@@ -194,16 +202,16 @@ export async function migrateAdminToIndexedDbIfNeeded(
     !shouldReset && (await isAdminIndexedDbInitialized(storeManager, TEMP_IDB_UUID));
 
   if (!alreadyInitialized) {
-    console.info("adminMigration: copying bundled admin data to IndexedDB …");
+    log.info("adminMigration: copying bundled admin data to IndexedDB …");
     await copyBundledToIndexedDb(
       storeManager,
       TEMP_BUNDLED_UUID,
       TEMP_IDB_UUID,
       adminModelParentUuids,
     );
-    console.info("adminMigration: copy complete.");
+    log.info("adminMigration: copy complete.");
   } else {
-    console.info("adminMigration: IndexedDB admin data already present, skipping copy.");
+    log.info("adminMigration: IndexedDB admin data already present, skipping copy.");
   }
 
   // 4. Close and remove the temporary controllers.  The underlying Level dbs

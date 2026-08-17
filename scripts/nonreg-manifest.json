@@ -10,6 +10,16 @@
   ],
   "steps": [
     {
+      "id": "unit-check-bare-console",
+      "tier": "unit",
+      "title": "Guard — unallowlisted bare console.* in packages/*/src (#237)",
+      "requires": "none",
+      "argv": [
+        "python",
+        "scripts/check_bare_console.py"
+      ]
+    },
+    {
       "id": "unit-miroir-core",
       "tier": "unit",
       "title": "MiroirTest unit suites (miroir-core registry)",

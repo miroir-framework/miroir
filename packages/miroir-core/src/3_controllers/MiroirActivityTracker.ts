@@ -760,15 +760,13 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     testAssertionPath: TestAssertionPath,
     testAssertionResult?: TestAssertionResult
   ): void {
+  if (process.env.MIROIR_TEST_VERBOSE_TRACKING === "1") {
     console.log(
       "MiroirActivityTracker.setTestAssertionResult called for testAssertionPath",
       testAssertionPath,
       "testAssertionResult"
-      // "old this.testAssertionsResults",
-      // JSON.stringify(this.testAssertionsResults, null, 2)
     );
 
-    // Color output based on assertion result
     let coloredOutput;
     if (testAssertionResult?.assertionResult == "ok") {
       coloredOutput = chalk.green(JSON.stringify(testAssertionResult, null, 2));
@@ -778,8 +776,9 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
       coloredOutput = chalk.red(JSON.stringify(testAssertionResult, null, 2));
     }
     console.log(coloredOutput);
+  }
 
-    if (testAssertionPath.length === 0) {
+  if (testAssertionPath.length === 0) {
       throw new Error("testAssertionPath cannot be empty");
     }
 
@@ -1140,14 +1139,16 @@ export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
     this.currentActivityStack.push(activity);
     const eventsBefore = this.miroirEventService?.events.size ?? 0;
     this.miroirEventService?.pushEventFromActivity(activity);
-    console.log(
-      "MiroirActivityTracker.startTransformer transformerName:",
-      transformerName,
-      "eventsBefore:",
-      eventsBefore,
-      "eventsAfter:",
-      this.miroirEventService?.events.size ?? 0
-    );
+    if (isMiroirTestVerboseTracking()) {
+      console.log(
+        "MiroirActivityTracker.startTransformer transformerName:",
+        transformerName,
+        "eventsBefore:",
+        eventsBefore,
+        "eventsAfter:",
+        this.miroirEventService?.events.size ?? 0
+      );
+    }
     return activityId;
   }
 

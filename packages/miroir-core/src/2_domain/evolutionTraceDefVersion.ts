@@ -1,3 +1,20 @@
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "../1_core/constants";
+import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+
+const _evolutionTraceLoggerName = MiroirLoggerFactory.getLoggerName(
+  packageName,
+  cleanLevel,
+  "evolutionTraceDefVersion",
+);
+let evolutionTraceLog: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_evolutionTraceLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_evolutionTraceLoggerName).then(
+  (logger: LoggerInterface) => {
+    evolutionTraceLog = logger;
+  },
+);
+
 export type DefinitionVersionResolutionMethod =
   | "instanceParentDefinitionVersion"
   | "actionPayload"
@@ -25,7 +42,7 @@ export type ResolveDefinitionVersionInput = {
       entityUuid?: string;
     }>;
   };
-  /** Called on unresolved path — defaults to console.warn (no silent drop). */
+  /** Called on unresolved path — defaults to module logger warn (no silent drop). */
   warn?: (message: string) => void;
 };
 
@@ -81,7 +98,7 @@ export function resolveDefinitionVersionForTraceEvent(
   }
 
   // Path 4: unresolved — explicit warning, no silent drop.
-  const warn = input.warn ?? ((message: string) => console.warn(message));
+  const warn = input.warn ?? ((message: string) => evolutionTraceLog.warn(message));
   warn(
     "resolveDefinitionVersionForTraceEvent: could not resolve targetDefinitionVersionUuid (instance, action payload, and ApplicationVersionCrossEntityVersion lookup all empty)",
   );

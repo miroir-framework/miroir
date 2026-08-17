@@ -613,6 +613,8 @@ Miroir has a small set of **consolidated, named log presets** that work identica
 
 **Bare `console.*` allowlist (#237):** Most runtime diagnostics use `LoggerInterface` (regulable via presets above). Intentional bare `console.*` remains only for: (1) **run/span hop lines** in `MiroirActivityTracker` (`formatRunBanner`, `formatSpanBoundaryLine`); (2) **operator CLI** in `miroir-cli`, `miroir-mcp`, `miroir-server` (usage text, startup banners); (3) **PreStartLogger** sink before `startRegisteredLoggers`; (4) optional debug utilities (`FoldedStateTreeDebug.ts`, icon extraction demos) and test-only helpers. Everything else should use module `log.*` at the appropriate level.
 
+**CI guard:** from repo root, `npm run check:console` (also the first step in `nonreg` unit tier). Violations must be migrated to `log.*` or added explicitly to `scripts/check_bare_console.py` with justification.
+
 Workflow reference (Path A vs B, grep recipes): [runQuery-emulated-server.md](../guides/architecture/workflows/runQuery-emulated-server.md).
 
 **Pilot leaf (default quiet logging)** (from repo root):
