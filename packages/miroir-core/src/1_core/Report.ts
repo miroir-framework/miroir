@@ -5,10 +5,9 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Report")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Report");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export const defaultReport: Report = {
   uuid: "c0ba7e3d-3740-45a9-b183-20c3382b6419",

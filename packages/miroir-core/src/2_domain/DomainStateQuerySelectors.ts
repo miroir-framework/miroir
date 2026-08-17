@@ -49,10 +49,9 @@ import {
 import { transformer_extended_apply } from "./TransformersForRuntime";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // const emptyDomainObject: Domain2QueryReturnType<Record<string, any>> = { };
 const emptyDomainObject: Record<string, any> = { };

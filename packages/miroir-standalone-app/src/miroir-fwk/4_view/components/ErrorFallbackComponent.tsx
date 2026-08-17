@@ -8,9 +8,9 @@ import { packageName } from "../../../constants";
 import { cleanLevel } from "../constants";
 import { ThemedOnScreenHelper } from "miroir-react";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ErrorFallbackComponent"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ErrorFallbackComponent");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

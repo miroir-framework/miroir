@@ -47,9 +47,9 @@ import {
 } from "../Themes/index";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor"), "UI"
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

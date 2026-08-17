@@ -69,9 +69,9 @@ async function initializePlatform(
     loggerOptions,
   );
 
-  MiroirLoggerFactory.registerLoggerToStart(
-    MiroirLoggerFactory.getLoggerName(packageName, "info", "index")
-  ).then((logger: LoggerInterface) => {
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "index");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
     log = logger;
   });
 
@@ -95,7 +95,8 @@ async function initializePlatform(
 
     const openStoreAction: StoreOrBundleAction = {
       actionType: "storeManagementAction_openStore",
-      actionLabel: `Open stores for ${deploymentUuid}`,      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+      actionLabel: `Open stores for ${deploymentUuid}`,
+      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
       payload: {
         application: Object.keys(applicationDeploymentMap).find(
           (appUuid) => applicationDeploymentMap[appUuid] === deploymentUuid

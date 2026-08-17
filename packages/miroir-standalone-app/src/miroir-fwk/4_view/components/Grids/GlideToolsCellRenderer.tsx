@@ -6,9 +6,9 @@ import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideToolsCellRenderer"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideToolsCellRenderer");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export interface ToolsCellData {

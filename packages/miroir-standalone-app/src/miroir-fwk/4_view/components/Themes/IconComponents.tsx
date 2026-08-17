@@ -11,9 +11,9 @@ import { SymbolWithLetter } from './SymbolWithLetter';
 import { SvgWithLetter } from './SvgWithLetter';
 import { resolveMiroirIconColor } from './resolveMiroirIconColor';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IconComponents"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IconComponents");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################

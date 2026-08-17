@@ -10,9 +10,9 @@ import { cleanLevel } from "../../constants.js";
 import { StoredRunnerView } from "./RunnerView.js";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateEntity"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateEntity");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;

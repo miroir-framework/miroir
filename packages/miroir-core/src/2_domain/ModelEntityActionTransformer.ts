@@ -17,10 +17,9 @@ import { findEntityFromUuid } from "../tools";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ModelEntityActionTransformer")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ModelEntityActionTransformer");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 export class ModelEntityActionTransformer{

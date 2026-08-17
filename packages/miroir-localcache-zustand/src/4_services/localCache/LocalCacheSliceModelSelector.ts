@@ -48,10 +48,9 @@ import { ZustandStateWithUndoRedo } from "./localCacheZustandInterface.js";
 const packageName = "miroir-localcache-zustand";
 const cleanLevel = "4_services";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceModelSelector")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceModelSelector");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // Alias for compatibility
 type ReduxStateWithUndoRedo = ZustandStateWithUndoRedo;

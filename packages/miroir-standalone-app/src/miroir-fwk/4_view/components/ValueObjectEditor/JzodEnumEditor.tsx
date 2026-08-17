@@ -33,9 +33,9 @@ import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-r
 import { JsonDisplayHelper } from "miroir-react";
 
 // Common function to handle discriminator changes
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEnumEditor"), "UI"
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEnumEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

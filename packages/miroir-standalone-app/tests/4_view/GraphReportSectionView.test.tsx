@@ -32,10 +32,9 @@ vi.mock("miroir-react", async (importOriginal) => {
 });
 
 // Setup logger
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GraphReportSectionView.test")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GraphReportSectionView.test");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // Mock d3 to avoid DOM manipulation issues in tests (aligned with GraphComponent.test)
 vi.mock('d3', () => ({

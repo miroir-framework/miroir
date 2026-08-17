@@ -12,10 +12,9 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { MixedSqlDbInstanceStoreSection } from "./sqlDbInstanceStoreSectionMixin";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbDataStoreSection")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbDataStoreSection");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 

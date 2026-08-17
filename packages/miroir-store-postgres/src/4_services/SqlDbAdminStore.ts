@@ -12,10 +12,9 @@ import { packageName } from "../constants";
 import { SqlDbStore } from "./SqlDbStore";
 import { cleanLevel } from "./constants";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbAdminStore")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbAdminStore");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export class SqlDbAdminStore extends SqlDbStore implements PersistenceStoreAdminSectionInterface {
   // for the sake of uniformity, we follow the mixin pattern also for this class although it's not mixed in any other class

@@ -10,9 +10,9 @@ import { cleanLevel } from '../../constants.js';
 import type { TypedValueObjectEditorProps } from './TypedValueObjectEditor.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditorWithFormik"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditorWithFormik");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export interface TypedValueObjectEditorWithFormikProps extends TypedValueObjectEditorProps {

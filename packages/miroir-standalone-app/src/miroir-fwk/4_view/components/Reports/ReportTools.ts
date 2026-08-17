@@ -19,9 +19,9 @@ import { cleanLevel } from '../../constants.js';
 import { editedQueryParameterValueKey } from "./ReportSectionEntityInstance.js";
 
 import { entityQueryVersion } from "miroir-test-app_deployment-miroir";
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportTools"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportTools");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export const reportSectionsFormSchema = (

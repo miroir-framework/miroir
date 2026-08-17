@@ -48,8 +48,9 @@ export class ViewParamsUpdateQueue {
     this.log = console as any as LoggerInterface;
 
     // Initialize logger
-    MiroirLoggerFactory.registerLoggerToStart(
-      MiroirLoggerFactory.getLoggerName("miroir-standalone-app", "info", "ViewParamsUpdateQueue"), "UI"
+    const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("miroir-standalone-app", "info", "ViewParamsUpdateQueue");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI"
     ).then((logger: LoggerInterface) => {
       this.log = logger;
     });

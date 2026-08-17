@@ -4,9 +4,9 @@ import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "performanceMetrics"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "performanceMetrics");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

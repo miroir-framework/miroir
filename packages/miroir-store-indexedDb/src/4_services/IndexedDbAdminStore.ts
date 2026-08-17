@@ -11,10 +11,9 @@ import { IndexedDb } from "./IndexedDb.js";
 import { IndexedDbStore } from "./IndexedDbStore.js";
 import { cleanLevel } from "./constants.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbAdminStore")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbAdminStore");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export class IndexedDbAdminStore extends IndexedDbStore implements PersistenceStoreAdminSectionInterface {
   // for the sake of uniformity, we follow the mixin pattern also for this class although it's not mixed in any other class

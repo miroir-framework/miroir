@@ -27,9 +27,9 @@ import type { TransformerEditorFormikValueType } from './TransformerEditorInterf
 import { ThemedOnScreenHelper } from 'miroir-react';
 
 // ################################################################################################
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerResultPanel"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerResultPanel");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

@@ -21,10 +21,9 @@ import {
 import { ThemedBox } from '../Themes/LayoutComponents.js';
 import { ThemedText } from '../Themes/BasicComponents.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GraphReportSectionView")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GraphReportSectionView");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 // GraphReportSectionView Props

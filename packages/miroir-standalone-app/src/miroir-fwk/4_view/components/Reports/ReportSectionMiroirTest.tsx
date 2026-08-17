@@ -15,9 +15,9 @@ import { cleanLevel } from "../../constants.js";
 import { MiroirTestDisplay } from "./MiroirTestDisplay.js";
 import { MiroirTestListDisplay } from "./MiroirTestListDisplay.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionMiroirTest"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionMiroirTest");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;

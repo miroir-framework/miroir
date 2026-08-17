@@ -99,9 +99,9 @@ myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
 // let miroirConfig:any;
 // let loggerOptions:any;
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

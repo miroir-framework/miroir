@@ -34,9 +34,9 @@ import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportDisplay"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportDisplay");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;

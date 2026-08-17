@@ -34,10 +34,9 @@ import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { logStartupError } from 'miroir-react';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ConfigurationService")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ConfigurationService");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export interface ConfigurationServiceOptions {
   domainController: DomainControllerInterface;

@@ -17,10 +17,9 @@ import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { entityDefinitionEntityDefinition } from 'miroir-test-app_deployment-miroir';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDb")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDb");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 export class IndexedDb {

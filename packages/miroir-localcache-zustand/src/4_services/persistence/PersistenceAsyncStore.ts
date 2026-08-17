@@ -26,10 +26,9 @@ import type { LocalCache } from "../LocalCache.js";
 const packageName = "miroir-localcache-zustand";
 const cleanLevel = "5_view";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceAsyncStore")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceAsyncStore");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // ###############################################################################
 export interface PersistenceStoreAccessParams {

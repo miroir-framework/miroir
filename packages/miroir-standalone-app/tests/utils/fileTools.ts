@@ -6,10 +6,9 @@ import { packageName } from "../../src/constants";
 import { DEFAULT_LOG_CONFIG_NAME } from "../../src/config/logConfigPresets.js";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileTools")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileTools");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 function unwrapJsonModule<T>(moduleContents: T | { default: T }): T {
   if (

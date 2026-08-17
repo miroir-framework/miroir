@@ -23,9 +23,9 @@ import {
 import { SidebarSection } from './SidebarSection.js';
 
 import { menuDefaultMiroir, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 // ################################################################################################
 export const SidebarWidth = 200;

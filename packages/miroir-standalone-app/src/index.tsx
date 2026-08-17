@@ -110,9 +110,9 @@ const specificLoggerOptions: SpecificLoggerOptionsMap = {
 //   specificLoggerOptions
 // );
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "index.tsx"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "index.tsx");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;

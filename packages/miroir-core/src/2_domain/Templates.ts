@@ -10,9 +10,6 @@ import {
   ExtractorTemplateReturningObjectOrObjectList,
   ExtractorWrapper,
   QueryFailed,
-  Transformer_contextOrParameterReferenceTO_REMOVE,
-  type CoreTransformerForBuildPlusRuntime,
-  type ExtractorOrCombinerTemplateRecord,
   type ExtractorTemplateByExtractorWrapperReturningList,
   type ExtractorTemplateByExtractorWrapperReturningObject
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -23,10 +20,9 @@ import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Templates")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Templates");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 // ################################################################################################

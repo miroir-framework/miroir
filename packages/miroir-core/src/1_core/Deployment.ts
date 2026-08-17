@@ -103,9 +103,9 @@ export const defaultEndpointApplicationMap: EndpointApplicationMap = {
   [LIBRARY_TMP.lendingEndpointUuid]: LIBRARY_TMP.selfApplicationLibraryUuid,
 };
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Deployment"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Deployment");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "action"
 ).then((logger: LoggerInterface) => {
   log = logger;

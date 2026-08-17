@@ -26,9 +26,9 @@ import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
 import { ReportDisplay } from "./ReportDisplay.js";
 import { JsonDisplayHelper } from "miroir-react";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;

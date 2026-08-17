@@ -13,9 +13,9 @@ import { useMiroirContextService } from "miroir-react";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { ThemedStyledButton } from "../Themes/index.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEditorButton"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodEditorButton");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;

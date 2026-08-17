@@ -30,10 +30,9 @@ import { cleanLevel } from "../constants.js";
 import { selectDomainStateFromlocalCacheEntityZone } from "./LocalCacheSlice.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceSelector")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceSelector");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 // ################################################################################################

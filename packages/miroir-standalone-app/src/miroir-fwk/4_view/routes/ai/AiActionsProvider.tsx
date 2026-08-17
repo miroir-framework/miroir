@@ -58,9 +58,9 @@ const DEPLOYMENTS_SELECTOR_PARAMS = {
 
 const ENTITY_ENTITY_UUID = entityEntity.uuid;
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AiActionsProvider"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AiActionsProvider");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;

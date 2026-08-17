@@ -56,10 +56,9 @@ import { handleBoxedQueryAction } from "./QuerySelectors";
 import { transformer_extended_apply } from "./TransformersForRuntime";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ExtractorRunnerInMemory");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStoreRunner {
   private logHeader: string;

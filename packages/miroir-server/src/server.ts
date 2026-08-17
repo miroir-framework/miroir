@@ -3,7 +3,7 @@ import cors from 'cors';
 import express, { Request } from 'express';
 import { existsSync, readFileSync } from 'fs';
 import * as https from 'https';
-import log from 'loglevelnext'; // TODO: use this? or plain "console" log?
+import loglevelnextLib from 'loglevelnext'; // TODO: use this? or plain "console" log?
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -91,7 +91,7 @@ function resolveServerLogConfig(): LoggerOptions {
 
 const loggerOptions: LoggerOptions = resolveServerLogConfig();
 
-const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterface;
+const loglevelnext: LoggerFactoryInterface = loglevelnextLib as any as LoggerFactoryInterface;
 
 // MiroirLoggerFactory.setEffectiveLoggerFactoryWithLogLevelNext(
 //   loglevelnext,
@@ -100,10 +100,9 @@ const loglevelnext: LoggerFactoryInterface = log as any as LoggerFactoryInterfac
 //   specificLoggerOptions,
 // );
 
-let myLogger: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Server")
-).then((logger: LoggerInterface) => {myLogger = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Server");
+let myLogger: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { myLogger = logger; });
 
 // Argument parsing
 function printUsageAndExit(exitCode = 1): never {

@@ -54,10 +54,9 @@ let miroirConfig: any;
 let loggerOptions: LoggerOptions;
 
 const myConsoleLog = (...args: any[]) => console.log(pageLabel, ...args);
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName("tests", "5-tests", pageLabel)
-).then((logger: LoggerInterface) => {
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("tests", "5-tests", pageLabel);
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;
 });
 

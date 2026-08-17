@@ -39,10 +39,9 @@ import { cleanLevel } from "../4_view/constants";
 import { runAppStackIntegrationBootstrap } from "../../../tests/helpers/appStackIntegrationBootstrap.js";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "setupMiroirTest")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "setupMiroirTest");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 // ################################################################################################

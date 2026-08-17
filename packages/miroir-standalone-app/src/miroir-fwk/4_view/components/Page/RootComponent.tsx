@@ -84,9 +84,9 @@ import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 const AiActionsProvider = lazy(() => import("../../routes/ai/AiActionsProvider.js").then(m => ({ default: m.AiActionsProvider })));
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RootComponent"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RootComponent");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export const emptyDomainElementObject: Domain2QueryReturnType<Record<string,any>> = {}

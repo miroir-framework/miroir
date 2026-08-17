@@ -32,10 +32,9 @@ import {
   handleQueryTemplateAction
 } from "./QueryTemplateSelectors";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ExtractorTemplateRunnerInMemory");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export class ExtractorTemplateRunnerInMemory implements ExtractorTemplatePersistenceStoreRunner {
   private logHeader: string;

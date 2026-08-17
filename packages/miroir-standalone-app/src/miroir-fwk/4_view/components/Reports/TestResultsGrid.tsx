@@ -15,9 +15,9 @@ import {
 import { extractUnitTestLabelFromTestPath } from "./unitTestKindUi.js";
 import { useReportPageContext } from "./ReportPageContext.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestResultsGrid"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestResultsGrid");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;

@@ -48,9 +48,9 @@ import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.
 import { resolveRunnerDefinitionApplication } from "./runnerDefinitionApplication.js";
 
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;

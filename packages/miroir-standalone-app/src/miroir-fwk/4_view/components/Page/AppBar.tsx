@@ -26,9 +26,9 @@ import { SidebarWidth } from './SidebarSection.js';
 import { reportMiroirRunners, reportVersioning } from 'miroir-test-app_deployment-miroir';
 import { resolveAppBarReportLinkApplication } from './appBarReportNavigation.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];

@@ -14,10 +14,9 @@ import { cleanLevel } from "./constants.js";
 import { MongoDb } from "./MongoDb.js";
 import { MixedMongoDbEntityAndInstanceStoreSection } from "./MongoDbEntityStoreSectionMixin.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MongoDbModelStoreSection")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MongoDbModelStoreSection");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 /**
  * MongoDB Model Store Section.

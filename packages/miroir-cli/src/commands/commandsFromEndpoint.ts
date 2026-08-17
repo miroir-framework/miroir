@@ -25,10 +25,9 @@ import {
 
 import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-test-app_deployment-miroir";
 const packageName = "miroir-cli";
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, "info", "commandsFromEndpoint")
-).then((logger: LoggerInterface) => {
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "commandsFromEndpoint");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;
 });
 

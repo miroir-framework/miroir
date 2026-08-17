@@ -35,10 +35,9 @@ import { handlePromiseActionForSaga } from '../../sagaTools.js';
 import { LocalCache } from '../LocalCache.js';
 import { cleanLevel } from '../constants.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceReduxSaga");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export const delay = (ms:number) => new Promise(res => setTimeout(res, ms))
 

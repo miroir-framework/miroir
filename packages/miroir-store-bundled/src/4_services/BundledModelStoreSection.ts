@@ -28,10 +28,9 @@ import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { BundledStore } from "./BundledStore.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "BundledModelStoreSection")
-).then((logger: LoggerInterface) => {
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "BundledModelStoreSection");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;
 });
 

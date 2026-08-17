@@ -11,10 +11,9 @@ import { packageName } from "../constants";
 import { EntityUuidIndexedSequelizeModel } from "../utils";
 import { cleanLevel } from "./constants";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbStore")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbStore");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export class SqlDbStore implements PersistenceStoreAbstractInterface {
   public sqlSchemaTableAccess: EntityUuidIndexedSequelizeModel = {};

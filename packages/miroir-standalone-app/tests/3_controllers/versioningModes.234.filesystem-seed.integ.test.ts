@@ -42,9 +42,9 @@ const SELF_ENTITY_VERSION_UUID = "bdd7ad43-f0fc-4716-90c1-87454c40dd95";
 const env = process.env;
 const fileName = "versioningModes.234.filesystem-seed.integ.test";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

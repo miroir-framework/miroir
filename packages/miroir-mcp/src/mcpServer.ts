@@ -350,8 +350,9 @@ export class MiroirMcpServer {
     }) as LoggerOptions;
 
     // Register logger for this module
-    MiroirLoggerFactory.registerLoggerToStart(
-      MiroirLoggerFactory.getLoggerName(packageName, "info", "mcpServer"),
+    const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "mcpServer");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
     ).then((logger: LoggerInterface) => {
       log = logger;
     });

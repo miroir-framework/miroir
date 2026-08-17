@@ -14,10 +14,9 @@ import { cleanLevel } from "./constants.js";
 import { IndexedDb } from "./IndexedDb.js";
 import { MixedIndexedDbEntityAndInstanceStoreSection } from "./IndexedDbEntityStoreSectionMixin.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDbModelStoreSection")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDbModelStoreSection");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 export class IndexedDbModelStoreSection

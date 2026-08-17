@@ -13,10 +13,9 @@ import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
 import { ACTION_OK } from "../1_core/constants";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner")
-).then((logger: LoggerInterface) => {log = logger; console.log("ActionRunner logger started!!!", (log === console as any), MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner"))});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger; console.log("ActionRunner logger started!!!", (log === console as any), MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner"))});
 
 // ################################################################################################
 /**

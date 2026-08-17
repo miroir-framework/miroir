@@ -2,10 +2,9 @@ import { expect } from "vitest";
 import { Action2ReturnType, DomainElementType, Action2Error, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { packageName, cleanLevel } from "../../constants";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "vitests-utils")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "vitests-utils");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 export const chainVitestSteps = async (

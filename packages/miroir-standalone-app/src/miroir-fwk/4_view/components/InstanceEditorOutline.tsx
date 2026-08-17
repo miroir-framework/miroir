@@ -33,9 +33,9 @@ import { exclusivelyUnfoldPath } from './Reports/FoldedStateTreeUtils.js';
 import { useDocumentOutlineContext } from './ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { getFoldedDisplayValue } from './ValueObjectEditor/JzodElementEditorHooks.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InstanceEditorOutline"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InstanceEditorOutline");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

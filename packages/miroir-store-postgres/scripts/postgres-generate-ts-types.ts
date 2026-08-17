@@ -10,10 +10,9 @@ import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { packageName } from "../src/constants";
 import { cleanLevel } from "../src/4_services/constants";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PostgresGenerateTsTypes")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PostgresGenerateTsTypes");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 async function fileExists(filePath: string): Promise<boolean> {

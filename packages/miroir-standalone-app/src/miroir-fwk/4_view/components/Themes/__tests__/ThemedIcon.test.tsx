@@ -13,8 +13,9 @@ import { MiroirThemeProvider } from '../../../contexts/MiroirThemeContext';
 // ################################################################################################
 const pageLabel = "ThemedIcon.test";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName("miroir-standalone-app", "info", pageLabel)).then(
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("miroir-standalone-app", "info", pageLabel);
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then(
   (logger: LoggerInterface) => {
     log = logger;
   }

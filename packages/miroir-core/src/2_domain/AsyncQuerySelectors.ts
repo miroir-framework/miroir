@@ -36,10 +36,9 @@ import { applyTransformerDEFUNCT } from "./TransformersForRuntime";
 import { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { getApplicationSection } from "../1_core/Model";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AsyncQuerySelectors")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AsyncQuerySelectors");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 const emptyAsyncSelectorMap:AsyncBoxedExtractorOrQueryRunnerMap = {

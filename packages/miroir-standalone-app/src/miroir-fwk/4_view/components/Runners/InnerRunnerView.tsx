@@ -20,9 +20,9 @@ import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import type { RunnerProps } from "./RunnerInterface.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;

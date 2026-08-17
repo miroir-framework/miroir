@@ -27,9 +27,9 @@ import { UiIntegrationTestRunInspectorSummary } from './UiIntegrationTestRunInsp
 import { getMiroirTestSuiteKey, sortMiroirTestInstances } from './miroirTestSuiteKey.js';
 import type { TestResultDataAndSelect } from './testSelectionUtils.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'MiroirTestListDisplay'),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'MiroirTestListDisplay');
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   'UI',
 ).then((logger: LoggerInterface) => {
   log = logger;

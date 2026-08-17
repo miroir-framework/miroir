@@ -41,10 +41,9 @@ import {
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { actionsWithDeploymentInPayload } from "../1_core/Instance";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestServer")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestServer");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 // function wrapResults(instances: string[]): HttpResponseBodyFormat {

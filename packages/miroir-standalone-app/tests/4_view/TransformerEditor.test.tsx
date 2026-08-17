@@ -28,8 +28,9 @@ import { book1, entityBook } from "miroir-test-app_deployment-library";
 // ################################################################################################
 const pageLabel = "TransformerEditor.test";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, pageLabel)).then(
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, pageLabel);
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then(
   (logger: LoggerInterface) => {
     log = logger;
   }

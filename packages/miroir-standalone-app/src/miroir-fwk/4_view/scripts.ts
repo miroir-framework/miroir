@@ -19,9 +19,9 @@ import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 import type { ExtractorTemplateInstancesByEntity } from "miroir-core";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Scripts");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 /** Map of referencing-entity-uuid → FK attribute name pointing at targetEntityUuid. */

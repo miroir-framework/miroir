@@ -27,10 +27,9 @@ import { LocalCacheSliceState, ZustandStateWithUndoRedo } from "./localCacheZust
 const packageName = "miroir-localcache-zustand";
 const cleanLevel = "4_services";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceSelectors")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceSelectors");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################
 // Type aliases for compatibility with Redux selectors

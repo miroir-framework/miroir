@@ -46,20 +46,11 @@ function isMiroirEntityRunnerSuite(suiteKey: string): boolean {
   );
 }
 
-let log: LoggerInterface = console as unknown as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName("tests", "5-tests", pageLabel),
-).then((logger: LoggerInterface) => {
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("tests", "5-tests", pageLabel);
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;
 });
-
-miroirAppStartup();
-miroirCoreStartup();
-miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
-miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
-miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
-miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
-ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
 const config = parseMiroirRunnerTestCliConfig(process.env, process.argv.slice(2));
 const { miroirConfig, logConfig } = await loadTestConfigFiles(env);
@@ -73,6 +64,14 @@ await MiroirLoggerFactory.startRegisteredLoggers(
   loglevelnext,
   loggerOptions,
 );
+
+miroirAppStartup();
+miroirCoreStartup();
+miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
+miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
+miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
+ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 log.info("miroir-runner-tests.integ started", JSON.stringify(config, null, 2));
 if (config.filter?.testList) {
   log.info(

@@ -50,10 +50,9 @@ import { getForeignKeyValue } from "../1_core/Entity/EntityPrimaryKey";
 import { defaultApplicationSection } from "../0_interfaces/1_core/Model";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReduxDeploymentsStateQuerySelector")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReduxDeploymentsStateQuerySelector");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 // ################################################################################################

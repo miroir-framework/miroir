@@ -33,10 +33,9 @@ import {
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FilesystemExtractorRunner");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceStoreRunner {
   private logHeader: string;

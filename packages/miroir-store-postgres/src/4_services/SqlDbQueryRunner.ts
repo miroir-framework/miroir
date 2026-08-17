@@ -42,10 +42,9 @@ import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
 import { SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbQueryRunner")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbQueryRunner");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 

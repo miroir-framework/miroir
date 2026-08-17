@@ -22,10 +22,9 @@ export const actionHttpMethods: { [P in string]: HttpMethod } = {
   delete: "delete",
 };
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestPersistenceClientAndRestClient")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestPersistenceClientAndRestClient");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 /**
  * Facade / decorator for restClient and GraphQL client.

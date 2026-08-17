@@ -46,9 +46,9 @@ import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
 import { ThemedPaper } from './Themes/index.js';
 
 import { entityEndpointVersion, selfApplicationMiroir } from 'miroir-test-app_deployment-miroir';
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EndpointActionCaller"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EndpointActionCaller");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export interface EndpointActionCallerProps {}

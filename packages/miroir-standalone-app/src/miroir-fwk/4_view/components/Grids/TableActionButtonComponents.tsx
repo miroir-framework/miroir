@@ -8,9 +8,9 @@ import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { ThemedSmallIconButton } from '../Themes/index.js';
 import { TableComponentRow } from './EntityInstanceGridInterface.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtonComponents"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtonComponents");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 export interface BaseActionButtonProps {

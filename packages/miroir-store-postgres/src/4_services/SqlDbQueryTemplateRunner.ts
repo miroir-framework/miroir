@@ -19,10 +19,9 @@ import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
 import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbQueryTemplateRunner")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SqlDbQueryTemplateRunner");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export type RecursiveStringRecords = string | { [x: string]: RecursiveStringRecords };
 

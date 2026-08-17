@@ -5,14 +5,37 @@ import {
   LoggerInterface,
   LoggerOptions,
   SpecificLoggerOptionsMap,
+  defaultLevels,
   type LogTopic
 } from "../0_interfaces/4-services/LoggerInterface";
 import type { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import type { MiroirEventService } from "../3_controllers/MiroirEventService";
 import { defaultLoggerContextElement, LoggerGlobalContext } from "./LoggerContext";
 import { MiroirLogger } from "./MiroirLogger";
+import { PreStartLogger } from "./PreStartLogger.js";
 
 const testSeparator = "-";
+
+/** Default level for pre-start loggers (matches catch-all preset). */
+const PRE_START_DEFAULT_LEVEL: keyof typeof defaultLevels = "WARN";
+
+function resolvePreStartDefaultLevel(): keyof typeof defaultLevels {
+  const selection =
+    (typeof process !== "undefined" && process.env?.MIROIR_LOG_CONFIG) ||
+    (typeof process !== "undefined" && process.env?.VITE_MIROIR_LOG_CONFIG) ||
+    (typeof process !== "undefined" && process.env?.VITE_MIROIR_LOG_CONFIG_FILENAME);
+  if (!selection) {
+    return PRE_START_DEFAULT_LEVEL;
+  }
+  const base = String(selection).split(/[\\/]/).pop()!.replace(/\.json$/i, "");
+  if (base === "full-debug") {
+    return "DEBUG";
+  }
+  if (base === "catch-all-detailed") {
+    return "INFO";
+  }
+  return PRE_START_DEFAULT_LEVEL;
+}
 // ################################################################################################
 export function templateLogLevelOptionsFactory(
   loggerName: string,
@@ -69,6 +92,7 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   static defaultTemplate: string;
 
   static registeredLoggersToStart: { [k: string]: RegisteredLoggerToStart } = {};
+  static preStartLoggers: Record<string, PreStartLogger> = {};
   static activityTracker: MiroirActivityTracker | undefined;
   static eventService: MiroirEventService | undefined;
   private static startPromise: Promise<void> | undefined;
@@ -95,6 +119,20 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
     return MiroirLoggerFactory.startPromise ?? Promise.resolve();
   }
 
+  /**
+   * Level-aware tagged logger for module scope before `startRegisteredLoggers` (#43).
+   * Use instead of `console as any as LoggerInterface`.
+   */
+  static getPreStartLogger(loggerName: string): LoggerInterface {
+    if (!MiroirLoggerFactory.preStartLoggers[loggerName]) {
+      MiroirLoggerFactory.preStartLoggers[loggerName] = new PreStartLogger(
+        loggerName,
+        defaultLevels[resolvePreStartDefaultLevel()],
+      );
+    }
+    return MiroirLoggerFactory.preStartLoggers[loggerName];
+  }
+
   // ##############################################################################################
   // If called after startRegisteredLoggers, the logger is started immediately (#43).
   static registerLoggerToStart(
@@ -103,15 +141,16 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
     logLevel?: string | number,
     template?: string
   ): Promise<LoggerInterface> {
+    MiroirLoggerFactory.getPreStartLogger(loggerName);
     if (
       MiroirLoggerFactory.activityTracker &&
       MiroirLoggerFactory.eventService &&
       MiroirLoggerFactory.logLevelNextAsFactory &&
       MiroirLoggerFactory.loggerOptions
     ) {
-      return Promise.resolve(
-        MiroirLoggerFactory.createLogger(loggerName, topic, logLevel, template),
-      );
+      const logger = MiroirLoggerFactory.createLogger(loggerName, topic, logLevel, template);
+      MiroirLoggerFactory.preStartLoggers[loggerName]?.bind(logger);
+      return Promise.resolve(logger);
     }
     const result = new Promise<LoggerInterface>((resolve) => {
       MiroirLoggerFactory.registeredLoggersToStart[loggerName] = {
@@ -201,12 +240,16 @@ export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
         if (l[1].started) {
           continue;
         }
-        await l[1].returnLoggerContinuation(
-          MiroirLoggerFactory.createLogger(l[0], l[1].topic, l[1].logLevel, l[1].template),
+        const logger = MiroirLoggerFactory.createLogger(
+          l[0],
+          l[1].topic,
+          l[1].logLevel,
+          l[1].template,
         );
+        MiroirLoggerFactory.preStartLoggers[l[0]]?.bind(logger);
+        await l[1].returnLoggerContinuation(logger);
         l[1].started = true;
       }
-      console.log("MiroirLoggerFactory.startRegisteredLoggers DONE!");
     };
 
     if (!MiroirLoggerFactory.startPromise) {

@@ -38,9 +38,9 @@ import {
 } from '../Reports/miroirTestSuiteKey.js';
 import { generateTestReport, type TestResultData } from './testResultReport.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'RunAllMiroirTestsButton'),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'RunAllMiroirTestsButton');
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   'UI',
 ).then((logger: LoggerInterface) => {
   log = logger;

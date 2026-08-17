@@ -19,9 +19,9 @@ import { cleanLevel } from '../../constants.js';
 import { ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InlineReportEditor"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InlineReportEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ################################################################################################

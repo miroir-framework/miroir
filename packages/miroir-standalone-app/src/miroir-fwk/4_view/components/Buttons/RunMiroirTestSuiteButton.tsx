@@ -29,9 +29,9 @@ import { ActionButtonWithSnackbar } from "../../components/Page/ActionButtonWith
 import { cleanLevel } from "../../constants.js";
 import { generateTestReport, type TestResultData } from "./testResultReport.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunMiroirTestSuiteButton"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunMiroirTestSuiteButton");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;

@@ -82,9 +82,9 @@ export async function extractApplicationAndData(
     miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
     ConfigurationService.configurationService.registerTestImplementation({ expect: {} as any });
 
-    MiroirLoggerFactory.registerLoggerToStart(
-      MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "extract-application-model-and-data")
-    ).then((logger: LoggerInterface) => {
+    const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "extract-application-model-and-data");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
       log = logger;
     });
 

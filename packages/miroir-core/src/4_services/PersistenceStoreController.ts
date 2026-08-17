@@ -52,10 +52,9 @@ import { resolveInstanceParentUuid } from "../1_core/Entity/EntityPrimaryKey";
 import { versionHistoryEntityUuids } from "../1_core/Model.js";
 import { getVersionHistoryEntityDefinition } from "../1_core/Model.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceStoreController")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceStoreController");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 // #######################################################################################################################

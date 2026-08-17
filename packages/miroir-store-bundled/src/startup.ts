@@ -20,10 +20,9 @@ import { BundledModelStoreSection } from "./4_services/BundledModelStoreSection.
 import { BundledUnsupportedModelVersionStore } from "./4_services/BundledUnsupportedModelVersionStore.js";
 import { packageName } from "./constants.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "startup")
-).then((logger: LoggerInterface) => {
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "startup");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
   log = logger;
 });
 

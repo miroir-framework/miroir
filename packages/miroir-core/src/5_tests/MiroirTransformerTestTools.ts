@@ -48,9 +48,9 @@ import { packageName } from "../constants";
 
 chalk.level = 3;
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirTransformerTestTools"),
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirTransformerTestTools");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 ).then((logger: LoggerInterface) => {
   log = logger;
 });

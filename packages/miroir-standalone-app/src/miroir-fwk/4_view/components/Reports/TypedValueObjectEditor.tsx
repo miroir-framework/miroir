@@ -61,9 +61,9 @@ import { JzodElementEditor } from '../ValueObjectEditor/JzodElementEditor.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // const codeMirrorExtensions = [javascript()];

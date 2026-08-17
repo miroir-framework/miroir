@@ -35,9 +35,9 @@ import { useReportQueryLoadService } from './useReportQueryLoadService.js';
 
 import { reportReportDetails, entityReport } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from 'miroir-test-app_deployment-admin';
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportViewWithEditor"), "UI",
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportViewWithEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
 // ###############################################################################################

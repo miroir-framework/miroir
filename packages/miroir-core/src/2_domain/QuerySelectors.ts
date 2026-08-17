@@ -42,10 +42,9 @@ import { applyExtractorFilterAndOrderBy, instanceMatchesFilter } from "./Extract
 import { resolveExtractorTemplate } from "./Templates";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "QuerySelectors")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "QuerySelectors");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 const emptySelectorMap:SyncBoxedExtractorOrQueryRunnerMap<any> = {

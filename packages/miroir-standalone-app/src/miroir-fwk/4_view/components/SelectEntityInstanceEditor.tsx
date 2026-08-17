@@ -19,10 +19,9 @@ import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { TableComponentRow } from "./Grids/EntityInstanceGridInterface.js";
 
-let log: LoggerInterface = console as any as LoggerInterface;
-MiroirLoggerFactory.registerLoggerToStart(
-  MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SelectEntityInstanceEditor")
-).then((logger: LoggerInterface) => {log = logger});
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SelectEntityInstanceEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
 // backspace starts the editor on Windows
