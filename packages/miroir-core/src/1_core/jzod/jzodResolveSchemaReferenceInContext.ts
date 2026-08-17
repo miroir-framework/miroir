@@ -9,6 +9,14 @@ import {
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer";
 import type { ReduxDeploymentsState } from "../../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { ResolveBuildTransformersTo, Step } from "../../2_domain/Transformers";
+import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
+import { packageName } from "../../constants";
+import { cleanLevel } from "../constants";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "jzodResolveSchemaReferenceInContext");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
 
 // ################################################################################################
 export function resolveSchemaReferenceInContextTransformer<T extends MiroirModelEnvironment>(
@@ -183,7 +191,7 @@ export function resolveJzodSchemaReference(
 
 
   if (!targetJzodSchema) {
-    console.error(
+    log.error(
       "resolveJzodSchemaReference failed for mlSchema",
       jzodReference,
       "result",

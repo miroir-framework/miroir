@@ -3,6 +3,14 @@
  * These settings can be adjusted at startup or runtime
  */
 
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "performanceConfig");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
+
 export interface PerformanceConfig {
   enabled: boolean;
   renderThresholdMs: number;
@@ -42,7 +50,7 @@ export function initializePerformanceConfig(): void {
         const parsed = JSON.parse(savedConfig);
         performanceConfig = { ...performanceConfig, ...parsed };
       } catch (e) {
-        console.warn('Failed to parse saved performance config:', e);
+        log.warn('Failed to parse saved performance config:', e);
       }
     }
   }
@@ -59,7 +67,7 @@ export function initializePerformanceConfig(): void {
     }
   }
   
-  console.info('Performance tracking initialized:', performanceConfig);
+  log.debug('Performance tracking initialized:', performanceConfig);
 }
 
 /**
@@ -79,7 +87,7 @@ export function updatePerformanceConfig(updates: Partial<PerformanceConfig>, per
     localStorage.setItem('miroir-performance-config', JSON.stringify(performanceConfig));
   }
   
-  console.info('Performance config updated:', performanceConfig);
+  log.debug('Performance config updated:', performanceConfig);
 }
 
 /**
@@ -92,5 +100,5 @@ export function resetPerformanceConfig(): void {
     localStorage.removeItem('miroir-performance-config');
   }
   
-  console.info('Performance config reset to defaults:', performanceConfig);
+  log.debug('Performance config reset to defaults:', performanceConfig);
 }

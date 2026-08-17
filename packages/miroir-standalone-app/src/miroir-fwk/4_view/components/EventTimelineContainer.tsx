@@ -1,6 +1,13 @@
 import { useMiroirContextService } from 'miroir-react';
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../../constants.js';
 import { DraggableContainer } from './DraggableContainer.js';
 import { MiroirEventTimeLine } from './MiroirEventTimeline.js';
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EventTimelineContainer");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
 // Separate component to manage action timeline display state independently
 export const EventTimelineContainer = () => {
@@ -18,7 +25,7 @@ export const EventTimelineContainer = () => {
     return null;
   }
 
-  console.log('EventTimelineContainer rendering DraggableContainer (timeline should be visible)');
+  log.debug('EventTimelineContainer rendering DraggableContainer (timeline should be visible)');
   return (
     <DraggableContainer
       title="Action Timeline"
@@ -26,7 +33,7 @@ export const EventTimelineContainer = () => {
       defaultPosition={{ x: window.innerWidth - 520, y: 60 }}
       defaultSize={{ width: 500, height: 600 }}
       onClose={() => {
-        console.log('Action Timeline close button clicked');
+        log.debug('Action Timeline close button clicked');
         context.setShowActionTimeline?.(false);
       }}
     >

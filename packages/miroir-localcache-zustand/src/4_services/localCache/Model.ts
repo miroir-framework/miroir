@@ -7,6 +7,8 @@ import {
   getApplicationSection,
   getMiroirFundamentalSchemaForDeployment,
   getReduxDeploymentsStateIndex,
+  LoggerInterface,
+  MiroirLoggerFactory,
   type ApplicationDeploymentMap,
   type ApplicationVersion,
   type Entity,
@@ -41,7 +43,13 @@ import {
   entityTest,
   entityTheme,
 } from "miroir-test-app_deployment-miroir";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../constants.js";
 import type { LocalCacheSliceState } from "./localCacheZustandInterface.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheModel");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
 
 // #########################################################################################
 export function currentModel(
@@ -204,7 +212,7 @@ export function currentModelEnvironment(
   state: LocalCacheSliceState
 ): MiroirModelEnvironment {
   if (process.env.MIROIR_UI_CONTEXT === "1") {
-    console.warn(
+    log.warn(
       "[currentModelEnvironment] deprecated for UI schema access — use React context schemasPerDeployment instead.",
     );
   }

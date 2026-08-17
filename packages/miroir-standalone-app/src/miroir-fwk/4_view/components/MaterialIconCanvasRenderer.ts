@@ -5,6 +5,14 @@
  * These paths are from the official Material Design Icons library (24x24 viewBox).
  */
 
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../constants';
+import { cleanLevel } from '../constants';
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MaterialIconCanvasRenderer");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
+
 // Pre-defined SVG paths for Material Design icons (from official Material Design Icons)
 // These are the exact paths from @mui/icons-material
 const MATERIAL_ICON_PATHS: Record<string, string> = {
@@ -53,7 +61,7 @@ export function renderMaterialIconToCanvas(
   const pathData = getMaterialIconPath(iconName);
   
   if (!pathData) {
-    console.warn(`Material icon "${String(iconName)}" not found`);
+    log.warn(`Material icon "${String(iconName)}" not found`);
     return;
   }
 

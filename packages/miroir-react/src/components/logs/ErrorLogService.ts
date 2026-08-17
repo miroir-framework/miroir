@@ -2,6 +2,13 @@
 // Global Error Log Service for consistent error handling and tracking
 // ##############################################################################################
 
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { packageName, cleanLevel } from "../../constants.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ErrorLogService");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
+
 export interface ErrorLogEntry {
   id: string;
   timestamp: string;
@@ -194,13 +201,13 @@ export class ErrorLogServiceClass {
     switch (errorEntry.severity) {
       case 'critical':
       case 'error':
-        console.error(`❌ ${logMessage}`, errorEntry);
+        log.error(`${logMessage}`, errorEntry);
         break;
       case 'warning':
-        console.warn(`⚠️ ${logMessage}`, errorEntry);
+        log.warn(`${logMessage}`, errorEntry);
         break;
       case 'info':
-        console.info(`ℹ️ ${logMessage}`, errorEntry);
+        log.info(`${logMessage}`, errorEntry);
         break;
     }
   }
@@ -210,7 +217,7 @@ export class ErrorLogServiceClass {
       try {
         callback(errorEntry);
       } catch (error) {
-        console.error('Error in error log subscriber:', error);
+        log.error('Error in error log subscriber:', error);
       }
     });
   }

@@ -4,7 +4,13 @@ import React from "react";
 import ReactCodeMirror from "@uiw/react-codemirror";
 import { EditorView } from "@codemirror/view";
 import { javascript } from '@codemirror/lang-javascript';
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext';
+import { packageName, cleanLevel } from '../../constants.js';
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CodeBlock_ReadOnly");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
 const codeMirrorExtensions = [javascript()];
 
@@ -57,7 +63,7 @@ export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value, copyButton
     try {
       await navigator.clipboard.writeText(jsonString);
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+      log.error('Failed to copy to clipboard:', err);
     }
   };
   

@@ -21,6 +21,14 @@ import {
   testUtils_resetApplicationDeployment
 } from "./Deployment";
 import { defaultMiroirMetaModel } from "./defaultMiroirMetaModel";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
 
 // ################################################################################################
 export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
@@ -59,7 +67,7 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
     delete (actionTemplateWithoutTemplates as any).payload.templates;
   }
 
-  console.log(
+  log.debug(
     "testBuildPlusRuntimeCompositeActionSuiteForRunner called with",
     "pageLabel",
     pageLabel,

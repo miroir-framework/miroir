@@ -7,8 +7,14 @@ import React from "react";
 
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider";
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
+import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { packageName, cleanLevel } from "../../constants.js";
 import type { ThemedComponentProps } from "./BaseTypes";
 import { CodeBlock_ReadOnly } from '../CodeBlock_ReadOnly';
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ThemedHelper");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
 // On-screen debug/helper component for displaying structured data
 export const ThemedOnScreenDebug: React.FC<ThemedComponentProps & {
@@ -126,7 +132,7 @@ export const ThemedOnScreenHelper: React.FC<ThemedComponentProps & {
     try {
       await navigator.clipboard.writeText(jsonString);
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+      log.error('Failed to copy to clipboard:', err);
     }
   };
 

@@ -3,6 +3,9 @@ import { css } from '@emotion/react';
 import * as d3 from 'd3';
 import React, { useEffect, useRef } from 'react';
 
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { 
   BarChartData, 
@@ -12,6 +15,10 @@ import {
   LineChartData, 
   PieChartData 
 } from './GraphInterfaces';
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GraphComponent");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
 // ################################################################################################
 // Graph Component Props
@@ -628,7 +635,7 @@ export const GraphComponent: React.FC<GraphComponentProps> = ({
         renderPieChart(svgRef.current, graphData, config, currentTheme);
         break;
       default:
-        console.warn('Unknown graph type:', (graphData as any).type);
+        log.warn('Unknown graph type:', (graphData as any).type);
     }
 
     // Cleanup function to remove tooltips when component unmounts

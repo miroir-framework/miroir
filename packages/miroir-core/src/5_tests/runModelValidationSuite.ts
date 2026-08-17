@@ -16,6 +16,14 @@ import {
   type ModelValidationInstanceCheck,
   type ModelValidationPlan,
 } from "./ModelValidationTools.js";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
+import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "../3_controllers/constants.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "runModelValidationSuite");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "test").then((logger: LoggerInterface) => { log = logger; });
 
 export type ModelValidationVitest = Pick<
   VitestNamespace,
@@ -68,7 +76,7 @@ export function buildModelValidationRunnableSuites(
   } = params;
 
   if (logFoundEntities && logFoundEntities.length > 0) {
-    console.log("Found Entities:", logFoundEntities.join(", "));
+    log.info("Found Entities:", logFoundEntities.join(", "));
   }
 
   const failedModelValidationCases: ModelValidationFailedCase[] = [];
@@ -97,7 +105,7 @@ export function buildModelValidationRunnableSuites(
                 label: check.label,
                 filter: check.filter,
               });
-              console.error(
+              log.error(
                 `Validation error for instance ${check.label}:`,
                 JSON.stringify(check.innermostError, null, 2),
               );
@@ -120,7 +128,7 @@ export function buildModelValidationRunnableSuites(
         plan.entitiesWithZeroInstances,
       );
       if (zeroReport) {
-        console.log(zeroReport);
+        log.info(zeroReport);
       }
       const rerunReport = formatFailedModelValidationRerunCommands({
         npmWorkspacePackage,
@@ -128,7 +136,7 @@ export function buildModelValidationRunnableSuites(
         testFileFilter,
       });
       if (rerunReport) {
-        console.log(rerunReport);
+        log.info(rerunReport);
       }
     },
     testCases: [],

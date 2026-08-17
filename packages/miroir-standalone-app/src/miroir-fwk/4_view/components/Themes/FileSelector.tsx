@@ -5,7 +5,14 @@ import { Box, Button, Typography, Alert } from '@mui/material';
 import { CloudUploadIcon, CheckCircle as CheckCircleIcon, Clear as ClearIcon } from './MaterialSymbolWrappers';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
 import { ThemedComponentProps } from 'miroir-react';
+import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { packageName } from '../../../../constants.js';
+import { cleanLevel } from '../../constants.js';
 // import { devRelativePathPrefix } from 'miroir-core';
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileSelector");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
 // ################################################################################################
 export interface FileSelectorProps extends Omit<ThemedComponentProps, 'children'> {
@@ -85,7 +92,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   // const uploadFile = useCallback((fileOrPath: File | string) => {
   const uploadFile = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const fileOrPath = event.target.files?.[0];
-    console.log('FileSelector - upload Selected file:', fileOrPath, event.target);
+    log.debug('FileSelector - upload Selected file:', fileOrPath, event.target);
 
     // Since upload=true, we should always receive a File object
     if (typeof fileOrPath === 'string') {
@@ -136,7 +143,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
   // Handle file input change
   const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    console.log('FileSelector - Selected file:', file, event.target);
+    log.debug('FileSelector - Selected file:', file, event.target);
     if (!folder) {
         setSelectedFileName(undefined);
         setSelectedFileContents(undefined);
@@ -144,7 +151,7 @@ export const FileSelector: React.FC<FileSelectorProps> = ({
     } else {
       if (file && onFileSelect) {
         if (folder) {
-          console.warn("Folder selection is not fully supported in all browsers.", file.webkitRelativePath);
+          log.warn("Folder selection is not fully supported in all browsers.", file.webkitRelativePath);
           const dir = file.webkitRelativePath ? getDirectoryFromWebkitPath(file.webkitRelativePath) : "";
           onFileSelect(dir || file.name);
           setSelectedFileName(dir || file.name);

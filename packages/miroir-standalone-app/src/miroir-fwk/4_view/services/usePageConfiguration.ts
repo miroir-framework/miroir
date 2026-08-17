@@ -6,14 +6,20 @@
  * manually triggered by user actions.
  */
 
-import { MiroirConfigClient } from 'miroir-core';
+import { LoggerInterface, MiroirConfigClient, MiroirLoggerFactory } from 'miroir-core';
 import {
   useDomainControllerService,
   useMiroirContextService,
   useSnackbar,
 } from 'miroir-react';
 import { useCallback, useEffect, useRef } from 'react';
+import { packageName } from '../../../constants.js';
+import { cleanLevel } from '../constants.js';
 import { fetchMiroirAndAppConfigurations } from './ConfigurationService.js';
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "usePageConfiguration");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
 // Application-wide state to track if configurations have been loaded
 // This ensures we only load once across the entire SPA lifecycle
@@ -108,7 +114,7 @@ export function usePageConfiguration(
       hasFetchedRef.current = true;
       appConfigState.hasLoadedConfigurations = true;
       fetchConfigurations().catch((error) => {
-        console.error("Failed to auto-fetch configurations on mount:", error);
+        log.error("Failed to auto-fetch configurations on mount:", error);
         // Reset both local and global state so it can be retried
         hasFetchedRef.current = false;
         appConfigState.hasLoadedConfigurations = false;

@@ -12,8 +12,16 @@ import type {
   MlSchema,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
+import { packageName } from "../../constants";
+import { cleanLevel } from "../constants";
 import { computeCombinedSchemaRevision } from "./schemaChangeKind";
 import { resolveEffectiveSchemaMode } from "./schemaModePolicy";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "schemaForDeployment");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => { log = logger; });
 
 export type SchemaResolutionMode = "static" | "extended" | "auto";
 
@@ -101,7 +109,7 @@ function buildAppActionBranches(
       const actionParameters = action.actionParameters;
       const actionTypeKey = actionTypeKeyFromLiteral(actionParameters.actionType);
       if (actionTypeKey && existingActionTypes.has(actionTypeKey)) {
-        console.warn(
+        log.warn(
           `[getMiroirFundamentalSchemaForDeployment] Skipping duplicate domainAction branch for actionType "${actionTypeKey}" (endpoint ${endpoint.uuid})`,
         );
         continue;

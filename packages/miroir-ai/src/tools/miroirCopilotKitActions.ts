@@ -10,6 +10,8 @@ import {
   Action2Error,
   jzodToCopilotKitParameter,
   jzodToJsonSchema,
+  LoggerInterface,
+  MiroirLoggerFactory,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EndpointDefinition,
@@ -24,6 +26,12 @@ import {
 } from "miroir-test-app_deployment-library";
 // Convenience alias for a typed Action with known parameters
 type MiroirAction = Action<Parameter[]>;
+
+const packageName = "miroir-ai";
+const cleanLevel = "5";
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "miroirCopilotKitActions");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
 const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
   defaultMiroirMetaModel,
@@ -91,7 +99,7 @@ export function createLendDocumentExecutor(
   );
 
   return async ({ user, book, startDate, note }: Record<string, any>) => {
-    console.log("[lendDocument] executor called with:", { user, book, startDate, note });
+    log.debug("[lendDocument] executor called with:", { user, book, startDate, note });
     try {
       const action = {
         actionType: "lendDocument",
@@ -99,22 +107,22 @@ export function createLendDocumentExecutor(
         endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
         payload: { user, book, startDate, note },
       };
-      console.log("[lendDocument] calling domainController.handleAction with action:", JSON.stringify(action));
+      log.debug("[lendDocument] calling domainController.handleAction with action:", JSON.stringify(action));
       const result = await domainController.handleAction(
         action as any,
         libraryAwareDeploymentMap,
         libraryModelEnvironment as any as MiroirModelEnvironment,
       );
-      console.log("[lendDocument] handleAction result:", JSON.stringify(result));
+      log.debug("[lendDocument] handleAction result:", JSON.stringify(result));
       if (result instanceof Action2Error) {
         const msg = `lendDocument failed [${result.errorType}]: ${result.errorMessage ?? "unknown error"}`;
-        console.error("[lendDocument]", msg, result);
+        log.error("[lendDocument]", msg, result);
         return { status: "error", message: msg };
       }
       return { status: "success", summary: "Document lent successfully." };
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error("[lendDocument] unexpected error:", err);
+      log.error("[lendDocument] unexpected error:", err);
       return { status: "error", message: `Unexpected error: ${msg}` };
     }
   };
@@ -132,7 +140,7 @@ export function createLendDocumentTool(
   };
 }
 
-console.log("lendDocumentTool lendDocumentActionCopilotKitParameters:", JSON.stringify(lendDocumentActionCopilotKitParameters, null, 2));
+log.debug("lendDocumentTool lendDocumentActionCopilotKitParameters:", JSON.stringify(lendDocumentActionCopilotKitParameters, null, 2));
 // console.log("lendDocumentTool lendDocumentActionJsonSchema:", JSON.stringify(lendDocumentActionJsonSchema, null, 2));
 // console.log("lendDocumentTool parameters:", JSON.stringify(lendDocumentTool.parameters, null, 2));
 

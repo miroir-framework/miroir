@@ -314,14 +314,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       )
   );
 
-  const { availableReports, entities, entityVersions } = useMemo(() => {
-    return props.deploymentUuid &&
+  const entities  = useMemo(() => {
+    const result = props.deploymentUuid &&
       context.deploymentUuidToReportsEntitiesMapping &&
       context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid]
       ? context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid][
         props.chosenApplicationSection
         ]
-      : { availableReports: [], entities: [], entityVersions: [] };
+      : undefined;
+      return result?.entities ?? [];
   }, [
     props.deploymentUuid,
     context.deploymentUuidToReportsEntitiesMapping,

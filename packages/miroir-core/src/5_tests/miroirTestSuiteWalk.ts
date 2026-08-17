@@ -9,6 +9,9 @@ import type {
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
+import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "../3_controllers/constants.js";
 import type { MiroirTestRunFilter, TestSuiteListFilter } from "../0_interfaces/5-tests/miroirTestTypes";
 import { miroirTestGlobalTimeOut } from "./MiroirTransformerTestTools.js";
 import { isMiroirTestLeafSelected, resolveSuiteInnerFilter } from "./miroirTestFilter.js";
@@ -17,6 +20,10 @@ import type {
   RunMiroirTests,
   VitestNamespace,
 } from "./MiroirTestTools.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "miroirTestSuiteWalk");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "test").then((logger: LoggerInterface) => { log = logger; });
 
 function miroirTestLeafLabel(leaf: MiroirTestLeaf): string {
   return leaf.miroirTestLabel;
@@ -89,7 +96,7 @@ export async function runMiroirTestSuiteWalk(
   const innerFilter: { testList: TestSuiteListFilter | undefined } = { testList: innerTestList };
 
   if (filterProvidedButEmpty) {
-    console.warn(
+    log.warn(
       `MiroirTest filter matched no tests in suite "${miroirTestSuite.miroirTestLabel}". ` +
         `Filter keys must be the suite miroirTestLabel (e.g. "runner.library" for --suites runner_library), ` +
         `not the registry key or a bare leaf label at the wrong level. ` +

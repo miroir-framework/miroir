@@ -22,9 +22,11 @@
 import React, { Suspense, useEffect, useMemo } from "react";
 import { Navigate, type Params, useParams, useSearchParams } from "react-router-dom";
 
-import { type ApplicationSection } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, type ApplicationSection } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
 
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "./constants.js";
 import { PageContainer } from "./components/Page/PageContainer.js";
 import { CenteredSpinner } from "./components/CenteredSpinner.js";
 
@@ -42,6 +44,10 @@ const MiroirEventsPage     = React.lazy(() => import("./pages/MiroirEventsPage.j
 const ErrorLogsPageDEFUNCT = React.lazy(() => import("./ErrorLogsPageDEFUNCT.js").then(m => ({ default: m.ErrorLogsPageDEFUNCT })));
 import type { ReportUrlParamKeys } from "../../constants.js";
 import { usePageConfiguration } from "./services/index.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PageDispatcher");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
 // ---------------------------------------------------------------------------
 // ReportWrapper
@@ -99,7 +105,7 @@ function PageContent(): React.JSX.Element {
     } satisfies Params<ReportUrlParamKeys>;
   }, [page, application, deploymentUuid, applicationSection, reportUuid, instanceUuid]);
 
-  console.log("[PageDispatcher] render: wildcardPath=", wildcardPath, "page=", page, "search=", searchParams.toString());
+  log.debug("[PageDispatcher] render: wildcardPath=", wildcardPath, "page=", page, "search=", searchParams.toString());
 
   // ── Primary: query-param mode ─────────────────────────────────────────
   if (page) {
