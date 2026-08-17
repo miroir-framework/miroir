@@ -21552,6 +21552,31 @@ export const miroirFundamentalJzodSchema = {
                     }
                   }
                 }
+              },
+              "actionDefinition": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                  "relativePath": "jzodObject"
+                },
+                "tag": {
+                  "value": {
+                    "id": 11,
+                    "defaultLabel": "Endpoint Definition",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                }
+              },
+              "actionTransformer": {
+                "type": "any",
+                "optional": true
+              },
+              "actionMigrations": {
+                "type": "any",
+                "optional": true
               }
             }
           }

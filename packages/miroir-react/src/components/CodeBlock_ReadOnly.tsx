@@ -6,7 +6,7 @@ import { EditorView } from "@codemirror/view";
 import { javascript } from '@codemirror/lang-javascript';
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext';
-import { packageName, cleanLevel } from '../../constants.js';
+import { cleanLevel, packageName } from '../constants';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "CodeBlock_ReadOnly");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
