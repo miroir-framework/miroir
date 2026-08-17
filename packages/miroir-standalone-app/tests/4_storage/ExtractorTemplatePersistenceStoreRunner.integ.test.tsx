@@ -90,7 +90,6 @@ const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 const fileName = "ExtractorTemplatePersistenceStoreRunner.integ.test";
 myConsoleLog(fileName, "received env", JSON.stringify(env, null, 2));
 
-let log:LoggerInterface = console as any as LoggerInterface;
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
