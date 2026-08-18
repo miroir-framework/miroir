@@ -12,7 +12,7 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/240
 
-**Resume note:** Slice 4 ✅ — next: Slice 5 (Postgres menu cleanup).
+**Resume note:** Slice 5 ✅ — next: Slice 6 (CreateApplication runner cleanup).
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** implement multi-application sidebar rendering, Evolution 
 | 2 | Helper module: merge + gate + suppression | ✅ | `applicationModelScopeMenu` unit suite GREEN |
 | 3 | SidebarSection wiring (injection + suppression) | ✅ | helper suite GREEN + manual tracer |
 | 4 | Library menu cleanup | ✅ | library `modelValidation` + tracer parity with Slice 3 |
-| 5 | Postgres menu cleanup | ⬜ | postgres `modelValidation` |
+| 5 | Postgres menu cleanup | ✅ | postgres `modelValidation` |
 | 6 | CreateApplication runner: data-only default menu | ⬜ | `Runner_Miroir.integ` GREEN + menu assertion |
 | 7 | Designer menu annotation | ⬜ | designer build + manual tracer |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg + AC checklist |
@@ -390,7 +390,7 @@ npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240
 
 ## Slice 5 — Postgres menu cleanup
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -420,7 +420,10 @@ npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+- Trimmed `postgres_model/.../dd168e5a-….json` from 11 → **3 items**: Postgres Schemas, Postgres Tables, Postgres Table Columns (all `menuItemScope: "data"`).
+- Removed 7 model-marked links + 1 model divider.
+- Updated Slice 0 Postgres inventory lock to post-cleanup shape.
+- **Validation:** postgres build + `modelValidation` 12/12 GREEN; `modelScopeMenu.240` 8/8 GREEN (2026-08-18).
 
 ---
 

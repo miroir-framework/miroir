@@ -98,15 +98,19 @@ describe("#240 phase0 — menu asset inventories (pre-refactor locks)", () => {
     );
     const items = allComplexMenuItems(menu);
 
-    it("has 11 items", () => {
-      expect(items).toHaveLength(11);
+    it("has 3 data-scoped items (post–slice 5 cleanup)", () => {
+      expect(items).toHaveLength(3);
     });
 
-    it("has 7 model-marked links, 1 model divider, 3 data-scoped links", () => {
-      expect(countModelReportLinks(items)).toBe(7);
-      expect(items.filter((item) => isDivider(item) && item.menuItemScope === "model")).toHaveLength(1);
+    it("contains only data-scoped report links — no model items or dividers", () => {
+      expect(items.every((item) => isReportLink(item) && item.section === "data")).toBe(true);
       expect(countDataScopedReportLinks(items)).toBe(3);
-      expect(countModelMarked(items)).toBe(8);
+      expect(countModelReportLinks(items)).toBe(0);
+      expect(countModelMarked(items)).toBe(0);
+      expect(items.filter((item) => isDivider(item))).toHaveLength(0);
+      expect(
+        items.map((item) => (isReportLink(item) ? item.label : undefined)),
+      ).toEqual(["Postgres Schemas", "Postgres Tables", "Postgres Table Columns"]);
     });
   });
 
