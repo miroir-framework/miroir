@@ -12,7 +12,7 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/240
 
-**Resume note:** — (no slice started)
+**Resume note:** Slice 0 ✅ — next: Slice 1 (template Menu asset + export).
 
 ---
 
@@ -33,7 +33,7 @@ This plan does **not** implement multi-application sidebar rendering, Evolution 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize current menus & filter behavior | ⬜ | inventory locks GREEN (transitional) |
+| 0 | Characterize current menus & filter behavior | ✅ | inventory locks GREEN (transitional) |
 | 1 | Template Menu asset + export (applicative contract) | ⬜ | miroir `modelValidation` + build |
 | 2 | Helper module: merge + gate + suppression | ⬜ | `applicationModelScopeMenu` unit suite GREEN |
 | 3 | SidebarSection wiring (injection + suppression) | ⬜ | helper suite GREEN + manual tracer |
@@ -140,7 +140,7 @@ export function shouldShowAppMenuItem(
 
 ## Slice 0 — Characterize current menus & filter behavior
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -169,7 +169,14 @@ npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE: what was actually done, deviations, problems met & solved.>
+- Added transitional inventory locks in `packages/miroir-standalone-app/tests/4_view/issues/240-model-scope-menu/modelScopeMenu.240.phase0.unit.test.ts` (8 tests).
+- **Library** (`menuDefaultLibrary`): 18 items — 7 core `menuItemScope: "model"` report links (evolution trace links excluded from core count), 1 unscoped `Library Tests` link, 2 model dividers, 6 data links, 2 evolution model links.
+- **Postgres** (fs-read `postgres_model/.../dd168e5a-….json`): 11 items — 7 model links, 1 model divider, 3 data-scoped links.
+- **Designer** (fs-read `designer_model/.../dd168e5a-….json`): Requirements section 4 unscoped data links; Designer section — Entities/Reports `section: "model"` without `menuItemScope`, Applications `section: "data"`.
+- **CreateApplication runner** (`Runner_CreateApplication.tsx` `appDefaultMenu` source slice): 8 model-marked report links + 1 model divider (includes Entity Definitions `f9aff35d-…`), no data items.
+- Filter baseline (§0.2): deferred to Slice 2.3 truth-table rows with `injectionActive: false` — no separate test in this slice.
+- **Deviation:** Designer assertions use `expect(item?.menuItemScope).toBeUndefined()` instead of `toMatchObject({ menuItemScope: undefined })` — Vitest treats explicit `undefined` in `toMatchObject` as a required property.
+- **Validation:** `npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240` — 8/8 GREEN (2026-08-18).
 
 ---
 
