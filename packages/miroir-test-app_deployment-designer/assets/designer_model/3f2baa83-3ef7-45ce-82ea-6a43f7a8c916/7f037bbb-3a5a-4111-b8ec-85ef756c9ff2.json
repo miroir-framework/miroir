@@ -9,10 +9,10 @@
   "definition": {
     "reportParameters": {},
     "extractors": {
-      "useCases": {
+      "userStories": {
         "extractorOrCombinerType": "extractorInstancesByEntity",
-        "label": "UserStoryList_useCases",
-        "parentName": "UseCase",
+        "label": "UserStoryList_userStories",
+        "parentName": "UserStory",
         "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d"
       },
       "roles": {
@@ -33,24 +33,24 @@
         },
         "indexAttribute": "uuid"
       },
-      "useCasesWithUserStory": {
+      "userStoriesWithUserStory": {
         "transformerType": "mapList",
         "interpolation": "runtime",
         "applyTo": {
           "transformerType": "getFromContext",
           "interpolation": "runtime",
-          "referenceName": "useCases"
+          "referenceName": "userStories"
         },
-        "referenceToOuterObject": "currentUseCase",
+        "referenceToOuterObject": "currentUserStory",
         "elementTransformer": {
           "transformerType": "mergeIntoObject",
           "interpolation": "runtime",
           "applyTo": {
             "transformerType": "getFromContext",
             "interpolation": "runtime",
-            "referenceName": "currentUseCase"
+            "referenceName": "currentUserStory"
           },
-          "referenceToOuterObject": "currentUseCase",
+          "referenceToOuterObject": "currentUserStory",
           "definition": {
             "transformerType": "dataflowObject",
             "interpolation": "runtime",
@@ -71,7 +71,7 @@
                       {
                         "transformerType": "getFromContext",
                         "interpolation": "runtime",
-                        "referenceName": "currentUseCase"
+                        "referenceName": "currentUserStory"
                       },
                       "role"
                     ]
@@ -82,7 +82,7 @@
               "userStory": {
                 "transformerType": "mustacheStringTemplate",
                 "interpolation": "runtime",
-                "definition": "In order to {{currentUseCase.benefit}} as a {{roleName}}, I can {{currentUseCase.goal}}"
+                "definition": "In order to {{currentUserStory.benefit}} as a {{roleName}}, I can {{currentUserStory.goal}}"
               }
             }
           }
@@ -96,9 +96,9 @@
           "type": "objectListReportSection",
           "definition": {
             "label": "User Stories",
-            "parentName": "UseCase",
+            "parentName": "UserStory",
             "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
-            "fetchedDataReference": "useCasesWithUserStory",
+            "fetchedDataReference": "userStoriesWithUserStory",
             "sortByAttribute": "name"
           }
         }

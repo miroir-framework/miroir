@@ -1,6 +1,6 @@
 {
   "uuid": "468a20d4-4f2b-435c-9299-6b74ee7da254",
-  "parentName": "UseCase",
+  "parentName": "UserStory",
   "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
   "name": "Create Data Entities",
   "defaultLabel": "Create Data Entities",

@@ -1,6 +1,6 @@
 {
   "uuid": "9be0f11b-2ca3-431a-af6c-71359885810a",
-  "parentName": "UseCase",
+  "parentName": "UserStory",
   "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
   "name": "Identify User Roles",
   "defaultLabel": "Identify User Roles",
