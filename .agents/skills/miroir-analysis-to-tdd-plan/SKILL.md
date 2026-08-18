@@ -62,11 +62,22 @@ Existing plans too often produced shallow slices (a module + its unit test, no o
 
 Slice 0 is the only exception to "observable behavior": when modifying existing code, Slice 0 **characterizes current behavior** (lock contracts, fixtures, asset inventories — see #234 Slice 0, #225 Phase 0) so refactors in later slices have a safety net.
 
+**Helper-module grouping.** When confirmed decisions restrict automated coverage to a pure helper module (e.g. "unit tests for helper only"), do **not** spawn one slice per helper function — that stacks shallow module slices. Group the helper's RED → GREEN cycles into **one slice** (several cycles inside it), and make its tests import the *real* applicative assets (template JSON), not inline fixture copies.
+
+**Pure-data slices** (asset creation / cleanup) have no behavioral unit test by nature — but "no automated test" is **not** acceptable when `modelValidation` exists: their proof is the touched deployment package's `modelValidation` plus rebuild, plus the Slice 0 inventory lock that makes the diff reviewable.
+
 ### 5. Refactoring is planned, not hoped for — the corpus's second weakness
 
 - The analysis's **"Current state (misaligned)"** subsections are the refactor backlog: each misalignment must appear in the plan either as a slice's refactor checkpoint or as an explicit non-goal.
 - Every slice ends with a **Refactor checkpoint**: duplication extraction, module deepening, dead code revealed by the slice (see `tdd/refactoring.md`).
 - The final slice includes a **cleanup pass**: migrate still-valuable issue-scoped assertions into feature-named suites and delete the `issues/<NNN>-*` test directory per `docs/contributing/testing.md` (#238 rule).
+
+## Execution model — human-in-the-loop by default
+
+- **No commit steps in the plan.** A slice never ends with a `**Commit:**` line. Commits happen only when the user explicitly asks for them, at whatever granularity they choose. Do not pre-write commit messages.
+- Every slice carries a **`**Status:**`** line: `⬜ pending` at plan time, `✅ DONE` only on success.
+- On successful completion of a slice, **append its `### Realization` summary** (what was actually done, deviations, problems met & solved) and set Status to `✅ DONE` + update the progress table row. The plan is a living resume document (`**Resume note:**` in the header).
+- Every slice carries a **`### Validation`** block with the exact commands proving the slice (test run, modelValidation, rebuild, typecheck). A slice without validation commands is incomplete.
 
 ## Plan structure
 
@@ -80,7 +91,7 @@ Use [plan-template.md](plan-template.md). Required sections, in order:
 6. **Allocated UUIDs / keys** — every new model element's uuid and every MiroirTest suite key, allocated up front.
 7. **Test execution conventions** — command table (`testMiroir`, `testByFile`, `modelValidation`, schema rebuild, `tsc` per touched package).
 8. **Slice 0** — characterization (when touching existing behavior).
-9. **Slices 1…N** — each: Goal / **RED** (exact test file or suite + behavior assertions) / **GREEN** (minimal implementation notes) / **Refactor checkpoint** / **Validation** (commands). After completion: **Realization** subsection recording what was actually done and problems met & solved (corpus habit — invaluable for resume/handoff).
+9. **Slices 1…N** — each: `**Status:**` line / Goal / **RED** (exact test file or suite + behavior assertions) / **GREEN** (minimal implementation notes) / **Refactor checkpoint** / **Validation** (exact commands — mandatory). On success: append **Realization** (what was done, deviations, problems met & solved) and flip Status to ✅ DONE. No `**Commit:**` lines — see Execution model.
 10. **Final slice** — nonreg manifest step (`scripts/nonreg-manifest.json`), docs updates, tracer-bullet narrative (manual + automated equivalent), issue-directory cleanup, and the **AC checklist** mapping each issue acceptance criterion to its proving test.
 
 ## Conventions
@@ -100,13 +111,17 @@ Use [plan-template.md](plan-template.md). Required sections, in order:
 ## Checklist
 
 - [ ] Analysis read; decisions carried into "Locked implementation defaults" unchanged or explicitly re-flagged
-- [ ] Every slice delivers one observable behavior and cuts all touched layers (no shallow module slices)
+- [ ] Every slice delivers one observable behavior and cuts all touched layers (no shallow module slices); helper cycles grouped into one slice when coverage is helper-only
 - [ ] Slice 0 characterizes current behavior when modifying existing code
 - [ ] Every behavior assigned MiroirTest type or justified vitest exception
-- [ ] No mocks anywhere; real DomainController/localCache/store profiles used
-- [ ] Applicative interfaces (JSON/schema/uuids) locked in Slice 0; schema rebuild step planned where needed
-- [ ] Each slice has RED (named test + assertions), GREEN (minimal notes), Refactor checkpoint, Validation commands
+- [ ] No mocks anywhere; real DomainController/localCache/store profiles used; helper tests import real applicative assets, not fixture copies
+- [ ] Applicative interfaces (JSON/schema/uuids) locked early; schema rebuild step planned where needed
+- [ ] Each slice has: Status line, RED (named test + assertions), GREEN (minimal notes), Refactor checkpoint, **Validation commands** — no exceptions
+- [ ] Pure-data slices validate via the touched package's `modelValidation` + rebuild (not "no automated test")
+- [ ] **No commit steps anywhere in the plan** (human-in-the-loop; commits only on explicit user request)
+- [ ] Realization subsection placeholder present per slice; Status flips to ✅ DONE only on success, with Realization appended
+- [ ] Progress summary table present and kept in sync with slice statuses
 - [ ] Analysis misalignments mapped to refactor checkpoints or explicit non-goals
-- [ ] Final slice: nonreg step, docs, tracer narrative, issue-directory cleanup, AC checklist
+- [ ] Final slice: nonreg step (or justified nonreg coverage), docs, tracer narrative, issue-directory cleanup, AC checklist
 - [ ] UUIDs / suite keys allocated up front
 - [ ] User confirmed slice order, priorities, and interface changes before implementation

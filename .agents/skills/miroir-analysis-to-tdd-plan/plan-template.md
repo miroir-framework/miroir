@@ -4,6 +4,10 @@
 > tests exercise the real <DomainController / local cache / emulated server / store profile>,
 > through <the applicative interface — name it: endpoint / runner / report / transformer / public TS API>.
 > No mocks. <One line on what the tracer bullet proves.>
+>
+> **Execution model:** human-in-the-loop. No slice contains a commit step — commits happen
+> only when the user explicitly asks. Each slice ends with its Validation commands; on
+> success its Realization summary is appended and its Status flips to ✅ DONE.
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/<NNN>
 Prerequisite: [`../<NNN>-<slug>/`](../<NNN>-<slug>/) ✅ <or remove>
@@ -68,6 +72,8 @@ This plan does **not** <excluded work> (owned by #<NNN> / deferred).
 
 ## Slice 0 — Characterize <what exists>
 
+**Status:** ⬜ pending
+
 ### Goal
 
 Lock current contracts / fixtures / asset layout so later refactors have a safety net.
@@ -85,9 +91,15 @@ Behavior asserted:
 <commands>
 ```
 
+### Realization
+
+<Appended on completion, together with Status ✅ DONE: what was actually done, deviations, problems met & solved.>
+
 ---
 
 ## Slice 1 — <tracer bullet: first observable behavior>
+
+**Status:** ⬜ pending
 
 ### Goal
 
@@ -118,7 +130,7 @@ Behavior asserted:
 
 ### Realization
 
-<Filled after completion: what was actually done, deviations from plan, problems met & solved.>
+<Appended on completion, together with Status ✅ DONE: what was actually done, deviations, problems met & solved.>
 
 ---
 
@@ -127,6 +139,8 @@ Behavior asserted:
 ---
 
 ## Slice N — Nonreg, docs, cleanup, AC
+
+**Status:** ⬜ pending
 
 ### N.1 Nonreg
 
