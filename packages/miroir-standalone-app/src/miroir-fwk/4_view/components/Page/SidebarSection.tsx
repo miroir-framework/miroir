@@ -29,6 +29,7 @@ import {
   SyncQueryRunnerExtractorAndParams,
   Uuid,
   type ApplicationDeploymentMap,
+  type Menu,
   type MiroirMenuItem,
 } from "miroir-core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-react';
@@ -38,11 +39,18 @@ import { useMiroirContextService } from 'miroir-react';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { JsonDisplayHelper } from 'miroir-react';
-import type { MiroirMenuItemDivider, MiroirMenuReportLink } from 'miroir-core';
 import { pageUrl, reportUrl } from '../../navigation.js';
 
-import { entityMenu } from "miroir-test-app_deployment-miroir";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
+import {
+  entityMenu,
+  menuApplicationModelScopeTemplate,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
+import {
+  isApplicationModelScopeInjectionActive,
+  mergeApplicationModelScopeMenuItems,
+  shouldShowAppMenuItem,
+} from "./applicationModelScopeMenu.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
@@ -207,6 +215,56 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
   );
 
+  const injectionActive = isApplicationModelScopeInjectionActive(
+    context.viewParams.generalEditMode,
+    props.applicationUuid,
+  );
+
+  const injectedItems = useMemo(
+    () =>
+      injectionActive
+        ? mergeApplicationModelScopeMenuItems(
+            menuApplicationModelScopeTemplate as Menu,
+            props.applicationUuid,
+          )
+        : [],
+    [injectionActive, props.applicationUuid],
+  );
+
+  const menuItemFilterCtx = useMemo(
+    () => ({
+      generalEditMode: context.viewParams.generalEditMode,
+      showModelTools: context.showModelTools,
+      sectionApplicationUuid: props.applicationUuid,
+      injectionActive,
+      adminSelfApplicationUuid: adminSelfApplication.uuid,
+      miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+    }),
+    [
+      context.viewParams.generalEditMode,
+      context.showModelTools,
+      props.applicationUuid,
+      injectionActive,
+    ],
+  );
+
+  const applicationDeploymentMap =
+    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+
+  const isVisibleMenuItem = (curr: MiroirMenuItem) =>
+    curr.miroirMenuItemType !== "miroirMenuPageLink" &&
+    shouldShowAppMenuItem(curr, menuItemFilterCtx);
+
+  const renderMenuItem = (item: MiroirMenuItem, keyValue: string, showPadding = false) => (
+    <MenuItemDisplay
+      key={keyValue}
+      menuItem={item}
+      applicationDeploymentMap={applicationDeploymentMap}
+      keyValue={keyValue}
+      showPadding={showPadding}
+    />
+  );
+
   // log.info("SidebarSection deploymentEntityStateDomainElementObject",miroirMenusDomainElementObject)
   // console.log(
   //   "SidebarSection refresh",
@@ -287,64 +345,30 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
             ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.menuType ==
               "simpleMenu" ? (
               <ThemedList disablePadding dense>
+                {injectedItems.map((item, index) =>
+                  renderMenuItem(item, `injected-${item.label}-${index}`, true),
+                )}
                 {(
                   ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.definition ??
                   sideBarDefaultItems
                 )
-                  .filter((curr: MiroirMenuItem) => curr.miroirMenuItemType != "miroirMenuPageLink")
-                  .filter(
-                    (curr: MiroirMenuReportLink | MiroirMenuItemDivider) =>
-                      // context.viewParams.generalEditMode
-                      ((curr.selfApplication === adminSelfApplication.uuid ||
-                        curr.selfApplication === deployment_Miroir.uuid) &&
-                        context.showModelTools) ||
-                      (curr.selfApplication !== adminSelfApplication.uuid &&
-                        curr.selfApplication !== deployment_Miroir.uuid &&
-                        (!curr.menuItemScope ||
-                          curr.menuItemScope == "data" ||
-                          context.viewParams.generalEditMode)),
-                  )
-                  .map((i: MiroirMenuItem, index: number) => (
-                    <MenuItemDisplay
-                      key={i.label}
-                      menuItem={i}
-                      applicationDeploymentMap={
-                        props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-                      }
-                      keyValue={i.label}
-                      showPadding={true}
-                    />
-                  ))}
+                  .filter(isVisibleMenuItem)
+                  .map((i: MiroirMenuItem) => renderMenuItem(i, i.label, true))}
               </ThemedList>
             ) : (
               <ThemedList disablePadding dense>
+                {injectedItems.map((item, index) =>
+                  renderMenuItem(item, `injected-${item.label}-${index}`),
+                )}
                 {(
                   ((miroirMenusDomainElementObject as any)?.menus as any)?.definition?.definition ??
                   []
                 ).flatMap((menuSection: any, index: number) =>
                   menuSection.items
-                  .filter((curr: MiroirMenuItem) => curr.miroirMenuItemType != "miroirMenuPageLink")
-                    .filter(
-                      (curr: MiroirMenuReportLink | MiroirMenuItemDivider) =>
-                        ((curr.selfApplication === adminSelfApplication.uuid ||
-                          curr.selfApplication === deployment_Miroir.uuid) &&
-                          context.showModelTools) ||
-                        (curr.selfApplication !== adminSelfApplication.uuid &&
-                          curr.selfApplication !== deployment_Miroir.uuid &&
-                          (!curr.menuItemScope ||
-                            curr.menuItemScope == "data" ||
-                            context.viewParams.generalEditMode)),
+                    .filter(isVisibleMenuItem)
+                    .map((curr: MiroirMenuItem, itemIndex: number) =>
+                      renderMenuItem(curr, curr.label + itemIndex),
                     )
-                    .map((curr: any, index: number) => (
-                      <MenuItemDisplay
-                        key={curr.label + index}
-                        menuItem={curr}
-                        applicationDeploymentMap={
-                          props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-                        }
-                        keyValue={curr.label + index}
-                      />
-                    ))
                     .concat([<ThemedDivider key={menuSection.label + "Divider"} />]),
                 )}
               </ThemedList>

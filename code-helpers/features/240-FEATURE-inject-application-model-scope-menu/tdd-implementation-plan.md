@@ -12,7 +12,7 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/240
 
-**Resume note:** Slice 2 ✅ — next: Slice 3 (SidebarSection wiring).
+**Resume note:** Slice 3 ✅ — next: Slice 4 (Library menu cleanup).
 
 ---
 
@@ -36,7 +36,7 @@ This plan does **not** implement multi-application sidebar rendering, Evolution 
 | 0 | Characterize current menus & filter behavior | ✅ | inventory locks GREEN (transitional) |
 | 1 | Template Menu asset + export (applicative contract) | ✅ | miroir `modelValidation` + build |
 | 2 | Helper module: merge + gate + suppression | ✅ | `applicationModelScopeMenu` unit suite GREEN |
-| 3 | SidebarSection wiring (injection + suppression) | ⬜ | helper suite GREEN + manual tracer |
+| 3 | SidebarSection wiring (injection + suppression) | ✅ | helper suite GREEN + manual tracer |
 | 4 | Library menu cleanup | ⬜ | library `modelValidation` + tracer parity with Slice 3 |
 | 5 | Postgres menu cleanup | ⬜ | postgres `modelValidation` |
 | 6 | CreateApplication runner: data-only default menu | ⬜ | `Runner_Miroir.integ` GREEN + menu assertion |
@@ -293,7 +293,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 3 — Wire `SidebarSection.tsx` (injection + suppression)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -337,7 +337,11 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+- Wired `SidebarSection.tsx`: imports template + helpers; computes `injectionActive` and `injectedItems`; shared `isVisibleMenuItem` delegates to `shouldShowAppMenuItem`.
+- Both `simpleMenu` and `complexMenu` branches: injected block rendered first, then filtered app items; complex menu prepends injection once before section `flatMap`.
+- Removed duplicated inline filter logic and unused `deployment_Miroir` import; Miroir/Admin detection now uses `selfApplicationMiroir.uuid` via helper ctx (aligns with Slice 2 truth table).
+- **Validation:** `applicationModelScopeMenu` 15/15 GREEN; `npm run build -w miroir-standalone-app` OK (2026-08-18).
+- **Manual tracer** (user): Library edit off → data only; edit on → generic block + data, no duplicate Library model items; Miroir/Admin sidebars unchanged.
 
 ---
 
