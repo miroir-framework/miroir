@@ -4,7 +4,7 @@
   "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
   "name":"DesignerApplicationFilesystemDeployment",
   "defaultLabel":"DesignerApplicationFilesystemDeployment",
-  "selfApplication":"5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "selfApplication":"880831db-4f76-40b1-97c0-6a2f3f4ffccb",
   "description": "The default Filesystem Deployment for SelfApplication Designer",
   "configuration": {
     "admin": {
