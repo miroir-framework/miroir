@@ -123,7 +123,7 @@ describe("#240 phase0 — menu asset inventories (pre-refactor locks)", () => {
       expect(requirements.every((item) => isReportLink(item) && item.section === "data" && !item.menuItemScope)).toBe(true);
     });
 
-    it("Designer section: Entities and Reports are model section without menuItemScope; Applications is data", () => {
+    it("Designer section: Entities and Reports are model-scoped; Applications is unscoped data", () => {
       const designer = sectionItems(menu, "designer");
       expect(designer).toHaveLength(3);
 
@@ -131,14 +131,11 @@ describe("#240 phase0 — menu asset inventories (pre-refactor locks)", () => {
       const applications = designer.find((item) => item.label === "Designer Applications");
       const reports = designer.find((item) => item.label === "Designer Reports");
 
-      expect(entities).toMatchObject({ section: "model" });
+      expect(entities).toMatchObject({ section: "model", menuItemScope: "model" });
+      expect(reports).toMatchObject({ section: "model", menuItemScope: "model" });
       expect(applications).toMatchObject({ section: "data" });
-      expect(reports).toMatchObject({ section: "model" });
-      for (const item of [entities, applications, reports]) {
-        expect(item).toBeDefined();
-        expect(isReportLink(item!)).toBe(true);
-        expect((item as MiroirMenuReportLink).menuItemScope).toBeUndefined();
-      }
+      expect(isReportLink(applications!)).toBe(true);
+      expect((applications as MiroirMenuReportLink).menuItemScope).toBeUndefined();
     });
   });
 

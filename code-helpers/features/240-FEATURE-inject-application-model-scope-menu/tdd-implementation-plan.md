@@ -12,7 +12,7 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/240
 
-**Resume note:** Slice 6 ✅ — next: Slice 7 (Designer menu annotation).
+**Resume note:** Slice 7 ✅ — next: Slice 8 (nonreg, docs, cleanup, AC).
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** implement multi-application sidebar rendering, Evolution 
 | 4 | Library menu cleanup | ✅ | library `modelValidation` + tracer parity with Slice 3 |
 | 5 | Postgres menu cleanup | ✅ | postgres `modelValidation` |
 | 6 | CreateApplication runner: data-only default menu | ✅ | `Runner_Miroir.integ` GREEN + menu assertion |
-| 7 | Designer menu annotation | ⬜ | designer build + manual tracer |
+| 7 | Designer menu annotation | ✅ | designer build + manual tracer |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg + AC checklist |
 
 ---
@@ -466,7 +466,7 @@ npm run build -w miroir-standalone-app
 
 ## Slice 7 — Designer menu: annotate model links
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -497,7 +497,11 @@ npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+- Added `menuItemScope: "model"` to `"Designer Entities"` and `"Designer Reports"` in `designer_model/.../dd168e5a-….json`; `"Designer Applications"` unchanged (data, unscoped).
+- Updated Slice 0 Designer inventory lock accordingly.
+- **Validation:** designer build OK; `DesignerMenu` modelValidation case GREEN; `modelScopeMenu.240` 8/8 GREEN (2026-08-18).
+- **Pre-existing:** full designer `modelValidation` suite still fails on `SelfApplication Designer` (`versioningMode` vs schema) — unrelated to this slice.
+- **Manual tracer:** Designer edit off → Requirements only; edit on → injected generic block + Requirements + Designer Applications (no duplicate Entities/Reports).
 
 ---
 
