@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   IconButton,
   Toolbar,
   Tooltip
@@ -8,12 +7,12 @@ import {
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
 import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
+import type { MouseEvent, ReactNode } from 'react';
 
 import { defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
 
 import { useMiroirContextService } from 'miroir-react';
-import { adminApplication_Miroir } from 'miroir-test-app_deployment-admin';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { pageUrl, reportUrl } from '../../navigation.js';
 import { cleanLevel } from '../../constants.js';
@@ -21,7 +20,7 @@ import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { applyPerformanceDisplayGate } from '../../tools/performanceDisplayGate.js';
 import { applyLocalCacheMonitorGate } from '../../tools/localCacheMonitorGate.js';
-import { ThemedIcon, ThemedIconButton } from '../Themes/IconComponents.js';
+import { ThemedIcon } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { reportMiroirRunners, reportVersioning } from 'miroir-test-app_deployment-miroir';
 import { resolveAppBarReportLinkApplication } from './appBarReportNavigation.js';
@@ -33,6 +32,55 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 
 const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
 
+const APP_BAR_ICON_HOVER = 'rgba(255, 255, 255, 0.08)';
+const APP_BAR_ICON_ACTIVE = 'rgba(255, 255, 255, 0.12)';
+
+type AppBarIconButtonProps = {
+  title: string;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+  children: ReactNode;
+  'aria-label'?: string;
+  color?: string;
+  style?: React.CSSProperties;
+  disabled?: boolean;
+};
+
+function AppBarIconButton({
+  title,
+  onClick,
+  children,
+  'aria-label': ariaLabel,
+  color,
+  style,
+  disabled = false,
+}: AppBarIconButtonProps) {
+  const miroirTheme = useMiroirTheme();
+  const defaultColor = miroirTheme.currentTheme.components.appBar.textColor;
+
+  return (
+    <Tooltip title={title}>
+      <IconButton
+        color="inherit"
+        onClick={onClick}
+        aria-label={ariaLabel ?? title}
+        disabled={disabled}
+        style={style}
+        sx={{
+          color: color ?? defaultColor,
+          transition: 'background-color 0.2s ease-in-out',
+          '&:hover': {
+            backgroundColor: APP_BAR_ICON_HOVER,
+          },
+          '&:active': {
+            backgroundColor: APP_BAR_ICON_ACTIVE,
+          },
+        }}
+      >
+        {children}
+      </IconButton>
+    </Tooltip>
+  );
+}
 
 export interface AppBarProps extends MuiAppBarProps {
   // open?: boolean;
@@ -98,21 +146,19 @@ export function AppBar(props:AppBarProps) {
   }
   const appbarItems: (MiroirMenuItem | JSX.Element)[] = [
     /* HOME */
-    <Link to={pageUrl("home")}>
-      <IconButton
-        sx={{
-          // mr: 2,
-          color: miroirTheme.currentTheme.components.appBar.textColor,
+    <AppBarIconButton
+      key="home"
+      title="Home"
+      onClick={() => navigate(pageUrl("home"))}
+      aria-label="Home"
+    >
+      <ThemedIcon
+        icon={{
+          iconType: "mui",
+          name: "home",
         }}
-      >
-        <ThemedIcon
-          icon={{
-            iconType: "mui",
-            name: "home",
-          }}
-        />
-      </IconButton>
-    </Link>,
+      />
+    </AppBarIconButton>,
     // {
     //   miroirMenuItemType: "miroirMenuReportLink",
     //   label: "Tools",
@@ -125,151 +171,138 @@ export function AppBar(props:AppBarProps) {
     //   },
     // },
     props.onEditModeToggle ? (
-      <Tooltip
+      <AppBarIconButton
+        key="edit-report-mode"
         title={
           props.generalEditMode
             ? "Edit Report Mode: ON (click to disable)"
             : "Edit Report Mode: OFF (click to enable)"
         }
+        onClick={props.onEditModeToggle}
+        aria-label="Edit Report Mode"
+        color={
+          props.generalEditMode
+            ? miroirTheme.currentTheme.colors.warningLight || "orange"
+            : undefined
+        }
       >
-        <IconButton
-          color="inherit"
-          onClick={props.onEditModeToggle}
-          sx={{
-            mr: 1,
-            color: props.generalEditMode
-              ? miroirTheme.currentTheme.colors.warningLight || "orange"
-              : miroirTheme.currentTheme.components.appBar.textColor,
-            transition: "all 0.3s ease-in-out",
-            "&:hover": {
-              backgroundColor: miroirTheme.currentTheme.colors.hover,
-            },
-          }}
-        >
-          {props.generalEditMode ? <EditOff /> : <Edit />}
-        </IconButton>
-      </Tooltip>
+        {props.generalEditMode ? <EditOff /> : <Edit />}
+      </AppBarIconButton>
     ) : (
       <> </>
     ),
     context.setShowModelTools ? (
-      <Tooltip
+      <AppBarIconButton
+        key="model-tools"
         title={
           context.showModelTools
             ? "Model Tools: ON (click to disable)"
             : "Model Tools: OFF (click to enable)"
         }
+        onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
+        aria-label="Model Tools"
       >
-        <ThemedIconButton
-          onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
-          aria-label="Model Tools"
-        >
-          <ThemedIcon
-            icon={
-              context.showModelTools
-                ? {
-                    iconType: "mui",
-                    name: "wbIncandescent",
-                    color: {
-                      colorType: "themeColor",
-                      currentThemeColorPath: "colors.warning",
-                    },
-                  }
-                : {
-                    iconType: "mui",
-                    name: "lightbulb",
-                  }
-            }
-          />
-        </ThemedIconButton>
-      </Tooltip>
+        <ThemedIcon
+          icon={
+            context.showModelTools
+              ? {
+                  iconType: "mui",
+                  name: "wbIncandescent",
+                  color: {
+                    colorType: "themeColor",
+                    currentThemeColorPath: "colors.warning",
+                  },
+                }
+              : {
+                  iconType: "mui",
+                  name: "lightbulb",
+                }
+          }
+        />
+      </AppBarIconButton>
     ) : (
       <> </>
     ),
     !(import.meta as any).env?.MIROIR_IS_SANDBOX ? (
-      <Tooltip
+      <AppBarIconButton
+        key="ai-assistant"
         title={
           context.showAiSidebar
             ? "AI Assistant: ON (click to hide)"
             : "AI Assistant: OFF (click to show)"
         }
+        onClick={() => {
+          log.info(
+            "Toggling AI Sidebar. Current state: ",
+            context.showAiSidebar,
+            " -> ",
+            !context.showAiSidebar,
+            "context.setShowAiSidebar: ",
+            !!context.setShowAiSidebar,
+          );
+          return context.setShowAiSidebar?.(!context.showAiSidebar) as any}
+        }
+        aria-label="AI Assistant"
       >
-        <ThemedIconButton
-          onClick={() => {
-            log.info(
-              "Toggling AI Sidebar. Current state: ",
-              context.showAiSidebar,
-              " -> ",
-              !context.showAiSidebar,
-              "context.setShowAiSidebar: ",
-              !!context.setShowAiSidebar,
-            );
-            return context.setShowAiSidebar?.(!context.showAiSidebar) as any}
+        <ThemedIcon
+          icon={
+            context.showAiSidebar
+              ? {
+                  iconType: "mui",
+                  name: "auto_awesome",
+                  color: {
+                    colorType: "themeColor",
+                    currentThemeColorPath: "colors.warning",
+                  },
+                }
+              : {
+                  iconType: "mui",
+                  name: "auto_awesome",
+                }
           }
-          aria-label="AI Assistant"
-        >
-          <ThemedIcon
-            icon={
-              context.showAiSidebar
-                ? {
-                    iconType: "mui",
-                    name: "auto_awesome",
-                    color: {
-                      colorType: "themeColor",
-                      currentThemeColorPath: "colors.warning",
-                    },
-                  }
-                : {
-                    iconType: "mui",
-                    name: "auto_awesome",
-                  }
-            }
-          />
-        </ThemedIconButton>
-      </Tooltip>
+        />
+      </AppBarIconButton>
     ) : (
       <> </>
     ),
     !(import.meta as any).env?.MIROIR_IS_SANDBOX ? (
-      <Tooltip
+      <AppBarIconButton
+        key="ai-dev-console"
         title={
           context.showCopilotDevConsole
             ? "AI Dev Console: ON (click to hide)"
             : "AI Dev Console: OFF (click to show)"
         }
+        onClick={() => {
+          log.info(
+            "Toggling AI Dev Console. Current state: ",
+            context.showCopilotDevConsole,
+            " -> ",
+            !context.showCopilotDevConsole,
+            "context.setShowCopilotDevConsole: ",
+            !!context.setShowCopilotDevConsole,
+          );
+          return context.setShowCopilotDevConsole?.(!context.showCopilotDevConsole) as any}}
+        aria-label="AI Dev Console"
       >
-        <ThemedIconButton
-          onClick={() => {
-            log.info(
-              "Toggling AI Dev Console. Current state: ",
-              context.showCopilotDevConsole,
-              " -> ",
-              !context.showCopilotDevConsole,
-              "context.setShowCopilotDevConsole: ",
-              !!context.setShowCopilotDevConsole,
-            );
-            return context.setShowCopilotDevConsole?.(!context.showCopilotDevConsole) as any}}
-          aria-label="AI Dev Console"
-        >
-          <ThemedIcon
-            icon={
-              context.showCopilotDevConsole
-                ? {
-                    iconType: "mui",
-                    name: "terminal",
-                    color: {
-                      colorType: "themeColor",
-                      currentThemeColorPath: "colors.warning",
-                    },
-                  }
-                : {
-                    iconType: "mui",
-                    name: "terminal",
-                  }
-            }
-          />
-        </ThemedIconButton>
-      </Tooltip>
+        <ThemedIcon
+          icon={
+            context.showCopilotDevConsole
+              ? {
+                  iconType: "mui",
+                  name: "terminal",
+                  color: {
+                    colorType: "themeColor",
+                    currentThemeColorPath: "colors.warning",
+                  },
+                }
+              : {
+                  iconType: "mui",
+                  name: "terminal",
+                }
+          }
+        />
+      </AppBarIconButton>
     ) : (
       <> </>
     ),
@@ -352,7 +385,10 @@ export function AppBar(props:AppBarProps) {
       label: "events",
       targetRoot: "events",
       section: "model",
-      // "icon": "event_note"
+      icon: {
+        iconType: "mui",
+        name: "event_note",
+      },
     },
     {
       miroirMenuItemType: "miroirMenuPageLink",
@@ -414,32 +450,32 @@ export function AppBar(props:AppBarProps) {
     >
       {" "}
       <Box sx={{ display: "flex" }}>
-        <Toolbar disableGutters>
+        <Toolbar disableGutters sx={{ alignItems: "center", minHeight: "48px" }}>
           {/* <Box sx={{display:"flex"}}> */}
           {/* sidebar opener */}
           {!props.sidebarIsOpen && (
-            <ThemedIconButton
-              aria-label="open sidebar"
+            <AppBarIconButton
               title="Open sidebar"
+              aria-label="Open sidebar"
               onClick={props.handleSidebarOpen}
             >
               <ChevronRightIcon />
-            </ThemedIconButton>
+            </AppBarIconButton>
           )}
           {/* sidebar closer */}
           {props.sidebarIsOpen && (
-            <ThemedIconButton
+            <AppBarIconButton
+              title="Close sidebar"
+              aria-label="Close sidebar"
               style={{ padding: 0 }}
               onClick={() => props.setSidebarOpen(false)}
-              aria-label="Close sidebar"
-              title="Close sidebar"
             >
               <ChevronLeftIcon />
-            </ThemedIconButton>
+            </AppBarIconButton>
           )}
           
           {/* MAIN APPBAR ITEMS */}
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, alignItems: "center" }}>
             {/* TODO: dividers are ignored  */}
             {appbarItems.map((item) => {
               if (!("miroirMenuItemType" in item)) {
@@ -447,25 +483,32 @@ export function AppBar(props:AppBarProps) {
               }
               switch (item.miroirMenuItemType) {
                 case "miroirMenuPageLink": {
+                  const tooltipTitle =
+                    item.label.charAt(0).toUpperCase() + item.label.slice(1).replace(/-/g, " ");
                   return (
-                    <Button
+                    <AppBarIconButton
                       key={item.label}
-                      onClick={(e: any) => goToLabelPage(e, item.targetRoot ?? item.label)}
-                      sx={{
-                        my: 2,
-                        color: miroirTheme.currentTheme.components.appBar.textColor,
-                        display: "block",
-                      }}
+                      title={tooltipTitle}
+                      aria-label={tooltipTitle}
+                      onClick={(e) => goToLabelPage(e, item.targetRoot ?? item.label)}
                     >
-                      {item.icon ? <ThemedIcon icon={item.icon} /> : item.label}
-                    </Button>
+                      {item.icon ? (
+                        <ThemedIcon icon={item.icon} />
+                      ) : (
+                        item.label
+                      )}
+                    </AppBarIconButton>
                   );
                 }
                 case "miroirMenuReportLink":
                   {
+                    const tooltipTitle =
+                      item.label.charAt(0).toUpperCase() + item.label.slice(1);
                     return (
-                       <Button
+                       <AppBarIconButton
                          key={item.label}
+                         title={tooltipTitle}
+                         aria-label={tooltipTitle}
                          onClick={() => {
                            const applicationUuid = resolveAppBarReportLinkApplication({
                              reportUuid: item.reportUuid ?? "",
@@ -484,14 +527,9 @@ export function AppBar(props:AppBarProps) {
                              )
                            );
                          }}
-                         sx={{
-                           my: 2,
-                           color: miroirTheme.currentTheme.components.appBar.textColor,
-                           display: "block",
-                         }}
                        >
                          {item.icon ? <ThemedIcon icon={item.icon} /> : item.label}
-                       </Button>
+                       </AppBarIconButton>
                       // </Link>
                       // <Button
                       //   key={item.label}
@@ -548,15 +586,15 @@ export function AppBar(props:AppBarProps) {
               </IconButton>
             </Tooltip>
           )} */}
-          <Box sx={{ flexGrow: 0, display: "flex" }}>
+          <Box sx={{ flexGrow: 0, display: "flex", alignItems: "center" }}>
             {/* Fetch Configurations Button */}
-            <ThemedIconButton
-              onClick={fetchConfigurations}
-              aria-label="Fetch configurations"
+            <AppBarIconButton
               title="Fetch Miroir & App configurations from database"
+              aria-label="Fetch configurations"
+              onClick={fetchConfigurations}
             >
               <ThemedIcon icon={{ iconType: "mui", name: "sync" }} />
-            </ThemedIconButton>
+            </AppBarIconButton>
             {/* Action Timeline Indicator */}
             {/* {context.setShowActionTimeline && (
                 <Tooltip
@@ -585,98 +623,88 @@ export function AppBar(props:AppBarProps) {
               )} */}
             {/* Debug Info Indicator */}
             {context.setShowDebugInfo && (
-              <Tooltip
+              <AppBarIconButton
                 title={
                   context.showDebugInfo
                     ? "Debug Info: ON (click to disable)"
                     : "Debug Info: OFF (click to enable)"
                 }
+                aria-label="Debug Info"
+                onClick={() => context.setShowDebugInfo?.(!context.showDebugInfo) as any}
               >
-                <ThemedIconButton
-                  onClick={() => context.setShowDebugInfo?.(!context.showDebugInfo) as any}
-                  aria-label="Debug Info"
-                >
-                  <ThemedIcon
-                    icon={
-                      context.showDebugInfo
-                        ? {
-                            iconType: "mui",
-                            name: "bug_report",
-                            color: {
-                              colorType: "themeColor",
-                              currentThemeColorPath: "colors.warning",
-                            },
-                          }
-                        : {
-                            iconType: "mui",
-                            name: "bug_report",
-                          }
-                    }
-                  />
-                </ThemedIconButton>
-              </Tooltip>
+                <ThemedIcon
+                  icon={
+                    context.showDebugInfo
+                      ? {
+                          iconType: "mui",
+                          name: "bug_report",
+                          color: {
+                            colorType: "themeColor",
+                            currentThemeColorPath: "colors.warning",
+                          },
+                        }
+                      : {
+                          iconType: "mui",
+                          name: "bug_report",
+                        }
+                  }
+                />
+              </AppBarIconButton>
             )}
             {/* Performance Monitor Indicator */}
             {context.setShowPerformanceDisplay && (
-                <Tooltip
+                <AppBarIconButton
                   title={
                     context.showPerformanceDisplay
                       ? "Performance Monitor: ON (click to disable)"
                       : "Performance Monitor: OFF (click to enable)"
                   }
+                  aria-label="Performance Monitor"
+                  onClick={() => {
+                    const next = !context.showPerformanceDisplay;
+                    applyPerformanceDisplayGate(next);
+                    context.setShowPerformanceDisplay?.(next);
+                  }}
                 >
-                  <ThemedIconButton
-                    onClick={() => {
-                      const next = !context.showPerformanceDisplay;
-                      applyPerformanceDisplayGate(next);
-                      context.setShowPerformanceDisplay?.(next);
-                    }}
-                    aria-label="Performance Monitor"
-                    // title="Fetch Miroir & App configurations from database"
-                  >
-                    <ThemedIcon
-                      icon={
-                        context.showPerformanceDisplay
-                          ? { iconType: "mui", name: "timer_off" }
-                          : { iconType: "mui", name: "timer" }
-                      }
-                    />
-                  </ThemedIconButton>
-                </Tooltip>
+                  <ThemedIcon
+                    icon={
+                      context.showPerformanceDisplay
+                        ? { iconType: "mui", name: "timer_off" }
+                        : { iconType: "mui", name: "timer" }
+                    }
+                  />
+                </AppBarIconButton>
               )}
             {/* LocalCache Monitor Indicator (#211) */}
             {context.setShowLocalCacheMonitor && (
-                <Tooltip
+                <AppBarIconButton
                   title={
                     context.showLocalCacheMonitor
                       ? "LocalCache Monitor: ON (click to disable)"
                       : "LocalCache Monitor: OFF (click to enable)"
                   }
+                  aria-label="LocalCache Monitor"
+                  onClick={() => {
+                    const next = !context.showLocalCacheMonitor;
+                    applyLocalCacheMonitorGate(next);
+                    context.setShowLocalCacheMonitor?.(next);
+                    try {
+                      context.domainController
+                        ?.getLocalCache?.()
+                        ?.setLocalCacheMonitorEnabled(next);
+                    } catch {
+                      // DomainController / LocalCache may be unavailable in some shells.
+                    }
+                  }}
                 >
-                  <ThemedIconButton
-                    onClick={() => {
-                      const next = !context.showLocalCacheMonitor;
-                      applyLocalCacheMonitorGate(next);
-                      context.setShowLocalCacheMonitor?.(next);
-                      try {
-                        context.domainController
-                          ?.getLocalCache?.()
-                          ?.setLocalCacheMonitorEnabled(next);
-                      } catch {
-                        // DomainController / LocalCache may be unavailable in some shells.
-                      }
-                    }}
-                    aria-label="LocalCache Monitor"
-                  >
-                    <ThemedIcon
-                      icon={
-                        context.showLocalCacheMonitor
-                          ? { iconType: "mui", name: "memory" }
-                          : { iconType: "mui", name: "storage" }
-                      }
-                    />
-                  </ThemedIconButton>
-                </Tooltip>
+                  <ThemedIcon
+                    icon={
+                      context.showLocalCacheMonitor
+                        ? { iconType: "mui", name: "memory" }
+                        : { iconType: "mui", name: "storage" }
+                    }
+                  />
+                </AppBarIconButton>
               )}
             {/* Document Outline Toggle */}
             {/* {props.onOutlineToggle && (
