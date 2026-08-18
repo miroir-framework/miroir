@@ -8,23 +8,19 @@ import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 
 import type {
   Entity,
-  EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges
-} from "../../src/1_core/modelEntityDualWrite.js";
+} from "../../src/1_core/Entity/modelEntityDualWrite.js";
 
 const bookEntity = defaultLibraryAppModel.entities.find(
   (entity: Entity) => entity.uuid === "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
 )!;
-const bookDefinition = defaultLibraryAppModel.entityVersions.find(
-  (definition: EntityVersion) => definition.entityUuid === bookEntity.uuid,
-)!;
 
 describe("217 Phase 5 — applyMlSchemaColumnChanges", () => {
   it("adds and removes attributes", () => {
-    const next = applyMlSchemaColumnChanges(bookDefinition.mlSchema, {
+    const next = applyMlSchemaColumnChanges(bookEntity.mlSchema, {
       removeColumns: ["year"],
       addColumns: [{ name: "isbn", definition: { type: "string" } }],
     });

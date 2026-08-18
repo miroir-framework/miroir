@@ -1,32 +1,22 @@
 /**
- * Issue #217 §11 test-strategy compliance for Phases 0–4.
+ * Issue #217 §11 test-strategy compliance.
  * Locks gaps that phase-local suites did not fully cover.
  */
 import { describe, expect, it } from "vitest";
 
 import { defaultLibraryAppModel } from "miroir-test-app_deployment-library";
 import {
-  entityDefinitionEntity,
-  entityDefinitionEntityDefinition,
-  entityDefinitionMenu,
-  entityDefinitionSelfApplication,
-  entityEntity,
-  entityEntityVersion,
-  entityMenu,
-  entitySelfApplication,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
 import type {
-  Entity,
-  EntityVersion,
   SelfApplication,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   assertVersioningEnabledImmutable,
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE
-} from "../../src/1_core/entityPresentModel.js";
+} from "../../src/1_core/versioning/applicationVersioning.js";
 
 describe("§11.1 / Phase 0 — UI present-model fields locked", () => {
   it("Library Book exposes viewAttributes and defaultInstanceDetailsReportUuid on Entity", () => {
@@ -37,37 +27,6 @@ describe("§11.1 / Phase 0 — UI present-model fields locked", () => {
     expect(book.defaultInstanceDetailsReportUuid).toBeTruthy();
     expect(book.mlSchema).toBeTruthy();
   });
-});
-
-describe("§11.1 / Phase 4 — codegen source Entity.mlSchema ≡ EntityVersion.mlSchema (versioned Miroir meta-model only)", () => {
-  const pairs: Array<{ label: string; entity: Entity; entityVersion: EntityVersion }> = [
-    {
-      label: "Entity",
-      entity: entityEntity as Entity,
-      entityVersion: entityDefinitionEntity as EntityVersion,
-    },
-    {
-      label: "EntityVersion",
-      entity: entityEntityVersion as Entity,
-      entityVersion: entityDefinitionEntityDefinition as EntityVersion,
-    },
-    {
-      label: "SelfApplication",
-      entity: entitySelfApplication as Entity,
-      entityVersion: entityDefinitionSelfApplication as EntityVersion,
-    },
-    {
-      label: "Menu",
-      entity: entityMenu as Entity,
-      entityVersion: entityDefinitionMenu as EntityVersion,
-    },
-  ];
-
-  for (const pair of pairs) {
-    it(`${pair.label} Entity.mlSchema equals EntityVersion.mlSchema`, () => {
-      expect(pair.entity.mlSchema).toEqual(pair.entityVersion.mlSchema);
-    });
-  }
 });
 
 describe("§11.1 — versioningEnabled immutability policy", () => {

@@ -10,14 +10,12 @@ import type {
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   getEntityPrimaryKeyAttribute,
-} from "../../src/1_core/EntityPrimaryKey.js";
-import { shouldCacheAllInstancesOnRefresh } from "../../src/1_core/cacheRefreshPolicy.js";
+} from "../../src/1_core/Entity/EntityPrimaryKey.js";
+import { shouldCacheAllInstancesOnRefresh } from "../../src/1_core/localCache/cacheRefreshPolicy.js";
 import {
-  ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
-  projectEntityPresentModelDefinition,
   UNVERSIONED_APPLICATION_FIXTURE,
   VERSIONED_APPLICATION_FIXTURE
-} from "../../src/1_core/entityPresentModel.js";
+} from "../../src/1_core/versioning/applicationVersioning.js";
 
 function entityVersion(
   overrides: Partial<EntityVersion> &
