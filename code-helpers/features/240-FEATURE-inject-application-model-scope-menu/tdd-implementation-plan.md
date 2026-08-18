@@ -12,7 +12,7 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/240
 
-**Resume note:** Slice 7 ✅ — next: Slice 8 (nonreg, docs, cleanup, AC).
+**Resume note:** Slice 8 ✅ — feature #240 complete.
 
 ---
 
@@ -41,7 +41,7 @@ This plan does **not** implement multi-application sidebar rendering, Evolution 
 | 5 | Postgres menu cleanup | ✅ | postgres `modelValidation` |
 | 6 | CreateApplication runner: data-only default menu | ✅ | `Runner_Miroir.integ` GREEN + menu assertion |
 | 7 | Designer menu annotation | ✅ | designer build + manual tracer |
-| 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg + AC checklist |
+| 8 | Nonreg, docs, cleanup, AC | ✅ | nonreg + AC checklist |
 
 ---
 
@@ -69,7 +69,7 @@ Carried from the analysis decision record (confirmed 2026-08-18); binding for th
 |---|---|
 | `menuApplicationModelScopeTemplate` Menu | `a4ed0b44-57c2-45ee-a33c-c7c09bde969d` (under `miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/`) |
 | Helper unit suite (permanent, feature-named) | `packages/miroir-standalone-app/tests/4_view/applicationModelScopeMenu.unit.test.ts` |
-| Slice 0 inventory locks (transitional, issue-scoped) | `packages/miroir-standalone-app/tests/4_view/issues/240-model-scope-menu/modelScopeMenu.240.phase0.unit.test.ts` |
+| ~~Slice 0 inventory locks~~ | deleted in Slice 8 (served diff-review during slices 4–7) |
 
 Locked constants (from analysis §3.5–§3.6):
 
@@ -129,8 +129,7 @@ export function shouldShowAppMenuItem(
 
 | Purpose | Command |
 |---|---|
-| Helper unit tests (Slices 2–3, gate Slice 8) | `npm run testByFile -w miroir-standalone-app -- applicationModelScopeMenu` |
-| Slice 0 inventory locks | `npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240` |
+| Helper unit tests (Slices 2–8 gate) | `npm run testByFile -w miroir-standalone-app -- applicationModelScopeMenu` |
 | Deployment validation (per touched package) | `npm run testByFile -w miroir-test-app_deployment-<miroir\|library\|designer\|postgres> -- tests/modelValidation.unit.test.ts` |
 | Runner regression (Slice 6) | `VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json npm run testByFile -w miroir-standalone-app -- Runner_Miroir.integ` |
 | Rebuild after data edits | `npm run build -w miroir-test-app_deployment-<pkg>` |
@@ -507,7 +506,7 @@ npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240
 
 ## Slice 8 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 8.1 Nonreg coverage
 
@@ -535,18 +534,23 @@ npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240
 
 | # | Acceptance criterion | Proven by | Status |
 |---|---|---|---|
-| 1 | Single template Menu in Miroir data + export | Slice 1 (`modelValidation`) | ⬜ |
-| 2 | Helper rewrites `selfApplication` / `instanceUuid` | Slice 2 (unit suite) | ⬜ |
-| 3 | Sidebar injects block when `generalEditMode` (non-Miroir/Admin) | Slice 3 (tracer) | ⬜ |
-| 4 | App `menuItemScope: "model"` items suppressed during injection | Slices 2.3, 3 | ⬜ |
-| 5 | Library / Postgres menus cleaned | Slices 4–5 (`modelValidation` + lock diff) | ⬜ |
-| 6 | CreateApplication runner cleaned | Slice 6 (`Runner_Miroir.integ`) | ⬜ |
-| 7 | Designer model links annotated | Slice 7 (tracer) | ⬜ |
-| 8 | Unit tests for helper module | Slice 2 | ⬜ |
+| 1 | Single template Menu in Miroir data + export | Slice 1 (`modelValidation`) | ✅ |
+| 2 | Helper rewrites `selfApplication` / `instanceUuid` | Slice 2 (unit suite) | ✅ |
+| 3 | Sidebar injects block when `generalEditMode` (non-Miroir/Admin) | Slice 3 (tracer) | ✅ |
+| 4 | App `menuItemScope: "model"` items suppressed during injection | Slices 2.3, 3 | ✅ |
+| 5 | Library / Postgres menus cleaned | Slices 4–5 (`modelValidation` + lock diff) | ✅ |
+| 6 | CreateApplication runner cleaned | Slice 6 (source lock + integ GREEN) | ✅ |
+| 7 | Designer model links annotated | Slice 7 (tracer) | ✅ |
+| 8 | Unit tests for helper module | Slice 2 (`applicationModelScopeMenu`) | ✅ |
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+- **Nonreg:** `npm run nonreg -- --only default-miroir-modelValidation,default-library-modelValidation` — 2/2 PASS (2026-08-18).
+- **Helper gate:** `applicationModelScopeMenu` — 15/15 GREEN.
+- **Docs:** `analysis.md` status → implemented; helper filename corrected in decision record.
+- **Cleanup:** deleted `tests/4_view/issues/240-model-scope-menu/` (transitional Slice 0 locks).
+- **Testing docs:** no new suite keys — no edits to `docs/contributing/testing.md` / `docs/reference/testing.md`.
+- **AC:** all 8 criteria ✅ (see table above).
 
 ---
 

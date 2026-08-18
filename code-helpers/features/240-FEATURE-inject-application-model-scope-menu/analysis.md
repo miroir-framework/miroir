@@ -14,7 +14,7 @@ Key sources:
 - [`packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication.tsx)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed (grill-me 2026-08-18) — [`tdd-implementation-plan.md`](./tdd-implementation-plan.md) ready.
+**Status:** **implemented** (slices 0–8, 2026-08-18) — see [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 **Document history:** reviewed 2026-08-18 against the codebase — corrected Library / Postgres menu inventories (§3.2), link counts (8 links + 1 divider), snippet branch attribution (§3.1), and edit-mode suppression semantics (§5.3 step 3 is new filter logic, not existing behaviour).
 
 ---
@@ -29,7 +29,7 @@ Key sources:
 | Merge strategy | **Inject + suppress + cleanup** — prepend template when edit mode on; hide app items with `menuItemScope: "model"`; remove duplicated items from Library / CreateApplication runner |
 | Placement | **Top of each application's menu** — structure `<model scope> → divider → data scope>`; scales to future multi-app sidebar |
 | Deduplication | **`menuItemScope: "model"` on app model links** — no report-UUID-based dedup |
-| Helper location | **Standalone-app view layer** (`mergeApplicationModelScopeMenuItems.ts`) |
+| Helper location | **Standalone-app view layer** (`applicationModelScopeMenu.ts`) |
 | CreateApplication runner | **Remove model-scope generation now** |
 | Tests | **Unit tests for helper only** |
 
@@ -195,9 +195,9 @@ Menu entity uuid: `dde4c883-ae6d-47c3-b6df-26bc6e3c1842`.
 - `menuType: "complexMenu"` with one section; items use generic labels, canonical report UUIDs from §3.6, `menuItemScope: "model"`, `selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15"` as placeholder.
 - Application item includes `instanceUuid` placeholder (rewritten to target app uuid).
 
-### 5.2 Helper `mergeApplicationModelScopeMenuItems`
+### 5.2 Helper module (`applicationModelScopeMenu.ts`)
 
-Location: `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/mergeApplicationModelScopeMenuItems.ts`
+Location: `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/applicationModelScopeMenu.ts` — exports `mergeApplicationModelScopeMenuItems`, `isApplicationModelScopeInjectionActive`, `shouldShowAppMenuItem`.
 
 ```
 Input:  template Menu, targetApplicationUuid
