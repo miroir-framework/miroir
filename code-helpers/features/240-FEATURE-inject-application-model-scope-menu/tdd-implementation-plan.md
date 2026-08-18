@@ -12,7 +12,7 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/240
 
-**Resume note:** Slice 1 ✅ — next: Slice 2 (helper module + unit tests).
+**Resume note:** Slice 2 ✅ — next: Slice 3 (SidebarSection wiring).
 
 ---
 
@@ -35,7 +35,7 @@ This plan does **not** implement multi-application sidebar rendering, Evolution 
 |---|---|---|---|
 | 0 | Characterize current menus & filter behavior | ✅ | inventory locks GREEN (transitional) |
 | 1 | Template Menu asset + export (applicative contract) | ✅ | miroir `modelValidation` + build |
-| 2 | Helper module: merge + gate + suppression | ⬜ | `applicationModelScopeMenu` unit suite GREEN |
+| 2 | Helper module: merge + gate + suppression | ✅ | `applicationModelScopeMenu` unit suite GREEN |
 | 3 | SidebarSection wiring (injection + suppression) | ⬜ | helper suite GREEN + manual tracer |
 | 4 | Library menu cleanup | ⬜ | library `modelValidation` + tracer parity with Slice 3 |
 | 5 | Postgres menu cleanup | ⬜ | postgres `modelValidation` |
@@ -226,7 +226,7 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation
 
 ## Slice 2 — Helper module: merge + gate + suppression
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -282,7 +282,12 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+- Added `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/applicationModelScopeMenu.ts` with three exports: `isApplicationModelScopeInjectionActive`, `mergeApplicationModelScopeMenuItems`, `shouldShowAppMenuItem`.
+- `mergeApplicationModelScopeMenuItems`: deep-clones template section items via `structuredClone`, rewrites `selfApplication` on all items, sets Application link `instanceUuid`; invalid/empty template → `[]`.
+- `isApplicationModelScopeInjectionActive`: uses `adminSelfApplication` / `selfApplicationMiroir` imports (2-param public API per plan).
+- `shouldShowAppMenuItem`: encodes existing Sidebar filter + injection suppression when `menuItemScope === "model"` and `injectionActive`.
+- Unit suite `tests/4_view/applicationModelScopeMenu.unit.test.ts` — 15 tests importing real `menuApplicationModelScopeTemplate`.
+- **Validation:** `applicationModelScopeMenu` 15/15 GREEN; new module typechecks clean (2026-08-18).
 
 ---
 
