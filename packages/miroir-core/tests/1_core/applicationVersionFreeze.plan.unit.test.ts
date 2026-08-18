@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildFreezeApplicationVersionPlan,
   planFreezeApplicationVersion,
+  type FreezeApplicationVersionPlan,
 } from "../../src/1_core/versioning/applicationVersionFreeze.js";
 import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 
@@ -157,4 +158,246 @@ describe("216 Phase 2 — planFreezeApplicationVersion gate wrapper", () => {
     expect(plan.entityVersions).toHaveLength(1);
     expect(plan.crossEntityVersions).toHaveLength(1);
   });
+});
+
+type PlanElementCase = {
+  element: string;
+  inputKey: string;
+  versionsKey: keyof FreezeApplicationVersionPlan;
+  crossVersionsKey: keyof FreezeApplicationVersionPlan;
+  crossLinkKey: string;
+  items: unknown[];
+};
+
+const planElementCases: PlanElementCase[] = [
+  {
+    element: "Endpoint",
+    inputKey: "endpoints",
+    versionsKey: "endpointVersions",
+    crossVersionsKey: "crossEndpointVersions",
+    crossLinkKey: "endpointVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "Books",
+        version: "1",
+        application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        definition: { actions: [] },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        name: "Lend",
+        version: "1",
+        application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        definition: { actions: [{ actionType: "lend" }] },
+        transactionalEndpoint: true,
+      },
+    ],
+  },
+  {
+    element: "Menu",
+    inputKey: "menus",
+    versionsKey: "menuVersions",
+    crossVersionsKey: "crossMenuVersions",
+    crossLinkKey: "menuVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "LibraryMenu",
+        defaultLabel: "Library Menu",
+        definition: { menuType: "simpleMenu", definition: [] },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        name: "AltMenu",
+        definition: { menuType: "complexMenu", definition: [] },
+      },
+    ],
+  },
+  {
+    element: "Query",
+    inputKey: "storedQueries",
+    versionsKey: "queryVersions",
+    crossVersionsKey: "crossQueryVersions",
+    crossLinkKey: "queryVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "BookCount",
+        definition: {
+          runtimeTransformers: { main: { transformerType: "returnValue", value: [] } },
+        },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        name: "AuthorList",
+        definition: {
+          runtimeTransformers: { main: { transformerType: "returnValue", value: [] } },
+        },
+      },
+    ],
+  },
+  {
+    element: "Report",
+    inputKey: "reports",
+    versionsKey: "reportVersions",
+    crossVersionsKey: "crossReportVersions",
+    crossLinkKey: "reportVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "CountryList",
+        defaultLabel: "Countries",
+        definition: { reportParameters: {}, section: { type: "list", definition: [] } },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        name: "BookList",
+        defaultLabel: "Books",
+        definition: { reportParameters: {}, section: { type: "list", definition: [] } },
+      },
+    ],
+  },
+  {
+    element: "Runner",
+    inputKey: "runners",
+    versionsKey: "runnerVersions",
+    crossVersionsKey: "crossRunnerVersions",
+    crossLinkKey: "runnerVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "returnDocument",
+        application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        defaultLabel: "Return Document",
+        definition: {
+          runnerType: "actionRunner",
+          endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+          action: "returnDocument",
+        },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        name: "lendDocument",
+        application: "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        defaultLabel: "Lend Document",
+        definition: {
+          runnerType: "actionRunner",
+          endpoint: "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+          action: "lendDocument",
+        },
+      },
+    ],
+  },
+  {
+    element: "Theme",
+    inputKey: "themes",
+    versionsKey: "themeVersions",
+    crossVersionsKey: "crossThemeVersions",
+    crossLinkKey: "themeVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "defaultMiroirTheme",
+        defaultLabel: "Default Miroir Theme",
+        definition: { id: "default", name: "Default Light", colors: { primary: "#7c67bcff" } },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        name: "darkTheme",
+        defaultLabel: "Dark Theme",
+        definition: { id: "dark", name: "Dark", colors: { primary: "#111111" } },
+      },
+    ],
+  },
+  {
+    element: "TransformerDefinition",
+    inputKey: "transformerDefinitions",
+    versionsKey: "transformerDefinitionVersions",
+    crossVersionsKey: "crossTransformerDefinitionVersions",
+    crossLinkKey: "transformerDefinitionVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "transformer_menu_addItem",
+        defaultLabel: "Add menu item",
+        transformerInterface: {
+          transformerParameterSchema: {
+            transformerType: { type: "literal", definition: "transformer_menu_addItem" },
+            transformerDefinition: { type: "object", definition: {} },
+          },
+          transformerResultSchema: {
+            returns: "mlSchema",
+            definition: { type: "string" },
+          },
+        },
+        transformerImplementation: {
+          transformerImplementationType: "libraryImplementation",
+          inMemoryImplementationFunctionName: "handleTransformer_menu_AddItem",
+        },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        name: "transformer_copy",
+        defaultLabel: "Copy transformer",
+        transformerInterface: {
+          transformerParameterSchema: {
+            transformerType: { type: "literal", definition: "transformer_menu_addItem" },
+            transformerDefinition: { type: "object", definition: {} },
+          },
+          transformerResultSchema: {
+            returns: "mlSchema",
+            definition: { type: "string" },
+          },
+        },
+        transformerImplementation: {
+          transformerImplementationType: "libraryImplementation",
+          inMemoryImplementationFunctionName: "handleTransformer_menu_AddItem",
+        },
+      },
+    ],
+  },
+];
+
+describe("freeze plan — non-Entity model elements", () => {
+  for (const testCase of planElementCases) {
+    describe(testCase.element, () => {
+      it(`assembles ${testCase.element}Versions and Cross rows alongside the Entity freeze`, () => {
+        const input: Record<string, unknown> = {
+          selfApplicationUuid: APP_UUID,
+          branchUuid: BRANCH_UUID,
+          versionName: `V1-${testCase.element}s`,
+          entities: [makeEntity("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "Book")],
+          newUuid: sequentialUuid(),
+        };
+        input[testCase.inputKey] = testCase.items;
+        const plan = buildFreezeApplicationVersionPlan(input as any);
+
+        const versions = plan[testCase.versionsKey] as unknown as { uuid: string }[];
+        const crosses = plan[testCase.crossVersionsKey] as unknown as Record<string, string>[];
+        expect(versions).toHaveLength(2);
+        expect(crosses).toHaveLength(2);
+        const versionUuids = new Set(versions.map((v) => v.uuid));
+        expect(versionUuids.size).toBe(2);
+        for (const cross of crosses) {
+          expect(cross.applicationVersion).toBe(plan.selfApplicationVersion.uuid);
+          expect(versionUuids.has(cross[testCase.crossLinkKey])).toBe(true);
+        }
+      });
+
+      it(`omits ${testCase.element}Version rows when no ${testCase.element} is provided`, () => {
+        const input: Record<string, unknown> = {
+          selfApplicationUuid: APP_UUID,
+          branchUuid: BRANCH_UUID,
+          versionName: `V1-No${testCase.element}s`,
+          entities: [makeEntity("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "Book")],
+          newUuid: sequentialUuid(),
+        };
+        input[testCase.inputKey] = [];
+        const plan = buildFreezeApplicationVersionPlan(input as any);
+        expect(plan[testCase.versionsKey]).toEqual([]);
+        expect(plan[testCase.crossVersionsKey]).toEqual([]);
+      });
+    });
+  }
 });

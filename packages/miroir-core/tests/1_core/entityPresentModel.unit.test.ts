@@ -4,6 +4,13 @@ import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { entityEntity } from "miroir-test-app_deployment-miroir";
+
+import {
+  entityMLSchema,
+  entityWithResolvedMLSchema,
+} from "../../src/0_interfaces/1_core/EntityVersion.js";
 import type {
   Entity,
   EntityVersion,
@@ -113,3 +120,34 @@ function loadDeploymentEntityJoinInputs(modelRootRelativePath: string): {
     ) as EntityVersion[],
   };
 }
+
+describe("Entity mlSchema resolution", () => {
+  it("resolves Entity.mlSchema extending entityDefinitionRoot", () => {
+    const entity = entityEntity as Entity;
+    const resolved = entityMLSchema(entity);
+    expect(resolved.type).toBe("object");
+    expect(resolved.definition).toHaveProperty("name");
+    expect(resolved.definition).toHaveProperty("mlSchema");
+    // root identity fields come from entityDefinitionRoot extend
+    expect(resolved.definition).toHaveProperty("uuid");
+    expect(resolved.definition).toHaveProperty("parentUuid");
+  });
+
+  it("returns Entity with inlined resolved mlSchema", () => {
+    const entity = entityEntity as Entity;
+    const withResolved = entityWithResolvedMLSchema(entity);
+    expect(withResolved.uuid).toBe(entity.uuid);
+    expect(withResolved.mlSchema?.extend).toBeUndefined();
+    expect(withResolved.mlSchema?.definition).toHaveProperty("uuid");
+    expect(withResolved.mlSchema?.definition).toHaveProperty("mlSchema");
+  });
+
+  it("throws when Entity has no mlSchema", () => {
+    const incomplete: Entity = {
+      uuid: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      name: "Incomplete",
+      parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+    };
+    expect(() => entityMLSchema(incomplete)).toThrow(/mlSchema/);
+  });
+});
