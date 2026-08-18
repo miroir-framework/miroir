@@ -9,6 +9,7 @@
   "description": "A User Story belonging to an Activity and associated with a Designer Application",
   "defaultInstanceDetailsReportUuid": "ee31f325-3e77-46b7-a3dd-025ed33c4b0d",
   "viewAttributes": [
+    "designerApplication",
     "name",
     "defaultLabel",
     "description",
@@ -17,7 +18,6 @@
     "goal",
     "userStory",
     "activity",
-    "designerApplication",
     "uuid"
   ],
   "icon": "PlaylistAddCheck",

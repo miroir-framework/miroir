@@ -81,6 +81,21 @@
       ]
     },
     {
+      "id": "default-designer-modelValidation",
+      "tier": "default",
+      "title": "Deployment modelValidation \u2014 designer",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-test-app_deployment-designer",
+        "--",
+        "modelValidation"
+      ]
+    },
+    {
       "id": "unit-RunAllMiroirTestsButton",
       "tier": "unit",
       "title": "T2 \u2014 RunAllMiroirTestsButton runMode (unit/integ batch)",

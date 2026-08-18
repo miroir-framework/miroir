@@ -6,7 +6,7 @@ This package contains the designer application data model and data.
 
 ## Contents
 
-- **designer_model**: Applications, Activities, User Stories
+- **designer_model**: Applications, Activities, User Stories (scoped per DesignerApplication)
 - **admin_data**: Instance data for designer deployment, mainly for the Miroir Application
 
 ## Usage

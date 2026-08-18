@@ -39,6 +39,21 @@ import {
 import entityApplicationVersionAdmin from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ff3d211b-7eb6-473a-afbf-503bb70a5c26.json" with {
   type: "json",
 };
+import entityApplicationForDesigner from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/25d935e7-9e93-42c2-aade-0472b883492b.json" with {
+  type: "json",
+};
+import entityActivity from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/fd622624-1a7e-46fa-9964-c4ecfb543de3.json" with {
+  type: "json",
+};
+import entityUserStory from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/59debf06-405d-4def-a7eb-3db45360310d.json" with {
+  type: "json",
+};
+import entityRole from "../assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/702535cd-e6fa-49d6-aa6f-b5874821e5a3.json" with {
+  type: "json",
+};
+import deployment_Designer from "../assets/deployment/f0359240-e849-4546-8158-75f4a8ae5831.json" with {
+  type: "json",
+};
 
 // Admin app self-application and deployment (for environment setup)
 // import adminSelfApplication from "../assets/designer_model/a659d350-dd97-4da9-91de-524fa01745dc/55af124e-8c05-4bae-a3ef-0933d41daa92.json" with {
@@ -112,6 +127,61 @@ const adminModelEnvironment: MiroirModelEnvironment = {
 };
 
 // ================================================================================================
+// Designer MetaModel (for validating designer data instances)
+// ================================================================================================
+
+const designerMetaModel: MetaModel = {
+  applicationUuid: "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  applicationName: "Designer",
+  entities: [
+    entityApplicationForDesigner,
+    entityActivity,
+    entityUserStory,
+    entityRole,
+    entityApplicationVersionAdmin,
+  ] as unknown as Entity[],
+  entityVersions: [],
+  endpoints: [],
+  jzodSchemas: [],
+  menus: [],
+  applicationVersions: [],
+  reports: [],
+  transformerDefinitions: [],
+  runners: [],
+  storedQueries: [],
+  applicationVersionCrossEntityVersion: [],
+  applicationVersionCrossQueryVersion: [],
+  queryVersions: [],
+  applicationVersionCrossReportVersion: [],
+  reportVersions: [],
+  applicationVersionCrossMenuVersion: [],
+  menuVersions: [],
+  applicationVersionCrossEndpointVersion: [],
+  endpointVersions: [],
+  applicationVersionCrossRunnerVersion: [],
+  runnerVersions: [],
+  applicationVersionCrossThemeVersion: [],
+  themeVersions: [],
+  applicationVersionCrossTransformerDefinitionVersion: [],
+  transformerDefinitionVersions: [],
+  tests: [],
+  themes: [],
+  applications: [],
+};
+
+const designerModelEnvironment: MiroirModelEnvironment = {
+  miroirFundamentalJzodSchema: resolveFundamentalSchemaForDeployment(
+    deployment_Designer.uuid,
+    designerMetaModel,
+    "static",
+  ),
+  miroirMetaModel: defaultMiroirMetaModel,
+  endpointsByUuid: {},
+  deploymentUuid: deployment_Designer.uuid,
+  currentModel: designerMetaModel,
+};
+
+// ================================================================================================
 // Eagerly load all instances via import.meta.glob
 // ================================================================================================
 
@@ -181,6 +251,30 @@ const applicationVersionDataInstances = import.meta.glob(
   { eager: true },
 ) as Record<string, { default: any }>;
 
+// Data: DesignerApplications (parentUuid = entityApplicationForDesigner = 25d935e7)
+const designerApplicationInstances = import.meta.glob(
+  "../assets/designer_data/25d935e7-9e93-42c2-aade-0472b883492b/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: Activities (parentUuid = entityActivity = fd622624)
+const activityDataInstances = import.meta.glob(
+  "../assets/designer_data/fd622624-1a7e-46fa-9964-c4ecfb543de3/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: UserStories (parentUuid = entityUserStory = 59debf06)
+const userStoryDataInstances = import.meta.glob(
+  "../assets/designer_data/59debf06-405d-4def-a7eb-3db45360310d/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
+// Data: Roles (parentUuid = entityRole = 702535cd)
+const roleDataInstances = import.meta.glob(
+  "../assets/designer_data/702535cd-e6fa-49d6-aa6f-b5874821e5a3/*.json",
+  { eager: true },
+) as Record<string, { default: any }>;
+
 // ================================================================================================
 // Helpers
 // ================================================================================================
@@ -196,6 +290,9 @@ function describeEntityGroup(
   instances: Record<string, { default: any }>,
   modelEnv: MiroirModelEnvironment,
 ): void {
+  if (Object.keys(instances).length === 0) {
+    return;
+  }
   describe(groupName, () => {
     for (const [path, module] of Object.entries(instances)) {
       const instance = module.default;
@@ -302,6 +399,38 @@ describeEntityGroup(
   (entityImport as unknown as Entity).mlSchema as unknown as JzodElement,
   applicationVersionDataInstances,
   adminModelEnvironment,
+);
+
+// ================================================================================================
+// Test suites — Designer data instances (validated against the designer model)
+// ================================================================================================
+
+describeEntityGroup(
+  "DesignerApplication",
+  (entityApplicationForDesigner as unknown as Entity).mlSchema as unknown as JzodElement,
+  designerApplicationInstances,
+  designerModelEnvironment,
+);
+
+describeEntityGroup(
+  "Activity",
+  (entityActivity as unknown as Entity).mlSchema as unknown as JzodElement,
+  activityDataInstances,
+  designerModelEnvironment,
+);
+
+describeEntityGroup(
+  "UserStory",
+  (entityUserStory as unknown as Entity).mlSchema as unknown as JzodElement,
+  userStoryDataInstances,
+  designerModelEnvironment,
+);
+
+describeEntityGroup(
+  "Role",
+  (entityRole as unknown as Entity).mlSchema as unknown as JzodElement,
+  roleDataInstances,
+  designerModelEnvironment,
 );
 
 describe("static schema mode (199)", () => {

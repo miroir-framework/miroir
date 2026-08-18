@@ -9,10 +9,10 @@
   "description": "An Activity associated with a Designer Application",
   "defaultInstanceDetailsReportUuid": "27204998-2a4c-4ae0-b867-c145df0e599b",
   "viewAttributes": [
+    "designerApplication",
     "name",
     "defaultLabel",
     "description",
-    "designerApplication",
     "uuid"
   ],
   "icon": "Task",

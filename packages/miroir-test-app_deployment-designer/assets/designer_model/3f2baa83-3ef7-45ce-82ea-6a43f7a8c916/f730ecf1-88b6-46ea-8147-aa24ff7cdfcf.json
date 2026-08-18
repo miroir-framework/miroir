@@ -1,21 +1,152 @@
 {
   "uuid": "f730ecf1-88b6-46ea-8147-aa24ff7cdfcf",
-  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
-  "parentName":"Report",
-  "parentUuid":"3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-  "conceptLevel":"Model",
-  "name":"ApplicationDetails",
-  "defaultLabel": "Detailed information about an Admin Application",
+  "selfApplication": "880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "DesignerApplicationDetails",
+  "defaultLabel": "Detailed information about a Designer Application",
   "definition": {
     "extractorTemplates": {
-      "application": {
+      "designerApplication": {
         "extractorOrCombinerType": "extractorByPrimaryKey",
-        "parentName": "Application",
+        "parentName": "DesignerApplication",
         "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
         "instanceUuid": {
           "transformerType": "getFromParameters",
           "interpolation": "build",
           "referenceName": "instanceUuid"
+        }
+      },
+      "roles": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "Role",
+        "parentUuid": "702535cd-e6fa-49d6-aa6f-b5874821e5a3"
+      }
+    },
+    "combinerTemplates": {
+      "activitiesOfDesignerApplication": {
+        "extractorOrCombinerType": "combinerOneToMany",
+        "parentName": "Activity",
+        "parentUuid": "fd622624-1a7e-46fa-9964-c4ecfb543de3",
+        "objectReference": "designerApplication",
+        "AttributeOfListObjectToCompareToReferenceUuid": "designerApplication"
+      },
+      "userStoriesOfDesignerApplication": {
+        "extractorOrCombinerType": "combinerOneToMany",
+        "parentName": "UserStory",
+        "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
+        "objectReference": "designerApplication",
+        "AttributeOfListObjectToCompareToReferenceUuid": "designerApplication"
+      }
+    },
+    "runtimeTransformers": {
+      "rolesIndex": {
+        "transformerType": "indexListBy",
+        "interpolation": "runtime",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "roles"
+        },
+        "indexAttribute": "uuid"
+      },
+      "userStoriesOfDesignerApplicationWithUserStory": {
+        "transformerType": "mapList",
+        "interpolation": "runtime",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "userStoriesOfDesignerApplication"
+        },
+        "referenceToOuterObject": "currentUserStory",
+        "elementTransformer": {
+          "transformerType": "mergeIntoObject",
+          "interpolation": "runtime",
+          "applyTo": {
+            "transformerType": "getFromContext",
+            "interpolation": "runtime",
+            "referenceName": "currentUserStory"
+          },
+          "referenceToOuterObject": "currentUserStory",
+          "definition": {
+            "transformerType": "dataflowObject",
+            "interpolation": "runtime",
+            "definition": {
+              "roleName": {
+                "transformerType": "accessDynamicPath",
+                "interpolation": "runtime",
+                "objectAccessPath": [
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rolesIndex"
+                  },
+                  {
+                    "transformerType": "accessDynamicPath",
+                    "interpolation": "runtime",
+                    "objectAccessPath": [
+                      {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "currentUserStory"
+                      },
+                      "role"
+                    ]
+                  },
+                  "name"
+                ]
+              },
+              "userStory": {
+                "transformerType": "mustacheStringTemplate",
+                "interpolation": "runtime",
+                "definition": "In order to {{currentUserStory.benefit}} as a {{roleName}}, I can {{currentUserStory.goal}}"
+              }
+            }
+          }
+        }
+      },
+      "roleUuidsFromUserStories": {
+        "transformerType": "getUniqueValues",
+        "interpolation": "runtime",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "userStoriesOfDesignerApplication"
+        },
+        "attribute": "role"
+      },
+      "rolesUsedByUserStories": {
+        "transformerType": "mapList",
+        "interpolation": "runtime",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "roleUuidsFromUserStories"
+        },
+        "referenceToOuterObject": "currentRoleRef",
+        "elementTransformer": {
+          "transformerType": "accessDynamicPath",
+          "interpolation": "runtime",
+          "objectAccessPath": [
+            {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referenceName": "rolesIndex"
+            },
+            {
+              "transformerType": "accessDynamicPath",
+              "interpolation": "runtime",
+              "objectAccessPath": [
+                {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "currentRoleRef"
+                },
+                "role"
+              ]
+            }
+          ]
         }
       }
     },
@@ -23,10 +154,40 @@
       "type": "list",
       "definition": [
         {
-          "type":"objectInstanceReportSection",
+          "type": "objectInstanceReportSection",
           "definition": {
             "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
-            "fetchedDataReference": "application"
+            "fetchedDataReference": "designerApplication"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Activities for Designer Application (${designerApplication.name})",
+            "parentName": "Activity",
+            "parentUuid": "fd622624-1a7e-46fa-9964-c4ecfb543de3",
+            "fetchedDataReference": "activitiesOfDesignerApplication",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "User Stories for Designer Application (${designerApplication.name})",
+            "parentName": "UserStory",
+            "parentUuid": "59debf06-405d-4def-a7eb-3db45360310d",
+            "fetchedDataReference": "userStoriesOfDesignerApplicationWithUserStory",
+            "sortByAttribute": "name"
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Roles used by User Stories (${designerApplication.name})",
+            "parentName": "Role",
+            "parentUuid": "702535cd-e6fa-49d6-aa6f-b5874821e5a3",
+            "fetchedDataReference": "rolesUsedByUserStories",
+            "sortByAttribute": "name"
           }
         }
       ]

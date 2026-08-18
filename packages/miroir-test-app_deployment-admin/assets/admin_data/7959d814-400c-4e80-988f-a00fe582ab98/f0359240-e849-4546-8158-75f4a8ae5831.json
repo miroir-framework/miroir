@@ -1,0 +1,23 @@
+{
+  "uuid":"f0359240-e849-4546-8158-75f4a8ae5831",
+  "parentName":"Deployment",
+  "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
+  "name":"DesignerApplicationFilesystemDeployment",
+  "defaultLabel":"DesignerApplicationFilesystemDeployment",
+  "selfApplication":"880831db-4f76-40b1-97c0-6a2f3f4ffccb",
+  "description": "The default Filesystem Deployment for SelfApplication Designer",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory":"miroir-test-app_deployment-designer/assets"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory":"miroir-test-app_deployment-designer/assets/designer_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory":"miroir-test-app_deployment-designer/assets/designer_data"
+    }
+  }
+}

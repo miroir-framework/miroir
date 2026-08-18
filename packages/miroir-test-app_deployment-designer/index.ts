@@ -5,12 +5,12 @@ export { default as entityRole } from "./assets/designer_model/16dbfe28-e1d7-4f2
 export { default as entityActivity } from "./assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/fd622624-1a7e-46fa-9964-c4ecfb543de3.json" with { type: "json" };
 export { default as entityApplicationVersionForDesigner } from "./assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ff3d211b-7eb6-473a-afbf-503bb70a5c26.json" with { type: "json" };
 
-// Admin Model - Reports
+// Designer Model - Reports
 export { default as reportRoleList } from "./assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/87f62ef5-913a-4652-b331-c126ff0e4fdb.json" with { type: "json" };
-export { default as reportApplicationList } from "./assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/951d74b2-a3e9-4e07-8850-1d7d12909f11.json" with { type: "json" };
+export { default as reportDesignerApplicationList } from "./assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/951d74b2-a3e9-4e07-8850-1d7d12909f11.json" with { type: "json" };
 export { default as reportRoleDetails } from "./assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/b061a485-ff8f-4273-ae03-9c699c370258.json" with { type: "json" };
 export { default as reportUserStoryDetails } from "./assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ee31f325-3e77-46b7-a3dd-025ed33c4b0d.json" with { type: "json" };
-export { default as reportApplicationDetails } from "./assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f730ecf1-88b6-46ea-8147-aa24ff7cdfcf.json" with { type: "json" };
+export { default as reportDesignerApplicationDetails } from "./assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/f730ecf1-88b6-46ea-8147-aa24ff7cdfcf.json" with { type: "json" };
 
 // Designer data - Roles
 export { default as roleAnalyst } from "./assets/designer_data/702535cd-e6fa-49d6-aa6f-b5874821e5a3/059cd2b6-81a2-4882-bd0e-074539877711.json" with { type: "json" };
@@ -28,4 +28,3 @@ export { default as userStoryDefineUserStories } from "./assets/designer_data/59
 export { default as activityRequirementsAnalysis } from "./assets/designer_data/fd622624-1a7e-46fa-9964-c4ecfb543de3/15087491-e519-420f-8f1e-3226cc91b243.json" with { type: "json" };
 export { default as activityApplicationDesign } from "./assets/designer_data/fd622624-1a7e-46fa-9964-c4ecfb543de3/56669790-bde1-46e8-8444-fc0cdff3b08e.json" with { type: "json" };
 export { default as activityDataModelDesign } from "./assets/designer_data/fd622624-1a7e-46fa-9964-c4ecfb543de3/59453a54-96bf-40fc-bddd-1e17154372aa.json" with { type: "json" };
-

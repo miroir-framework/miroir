@@ -9,10 +9,10 @@
   "description": "A Role associated with a Designer Application",
   "defaultInstanceDetailsReportUuid": "b061a485-ff8f-4273-ae03-9c699c370258",
   "viewAttributes": [
+    "designerApplication",
     "name",
     "defaultLabel",
     "description",
-    "designerApplication",
     "uuid"
   ],
   "icon": "ManageAccounts",
