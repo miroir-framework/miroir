@@ -14,87 +14,6 @@
         "items": [
           {
             "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Application",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
-            "icon": "category",
-            "menuItemScope": "model",
-            "instanceUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Entities",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
-            "icon": "category",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Queries",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
-            "icon": "saved_search",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Reports",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
-            "icon": "newspaper",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Menus",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
-            "icon": "list",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Endpoints",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
-            "icon": "list",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Runners",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "3c26c31e-c988-40b2-af47-d7380e35ba80",
-            "icon": "directions_run",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Library Tests",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "58dc6706-0473-468c-90ee-61b54b157140",
-            "icon": {
-              "iconType": "mui",
-              "name": "playlist_add_check"
-            }
-          },
-          {
-            "miroirMenuItemType": "miroirMenuItemDivider",
-            "label": "Library Model-Data Divider",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Library Books",
             "section": "data",
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -140,30 +59,6 @@
             "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
             "reportUuid": "cee26a1e-be58-497c-9d15-fa6832787907",
             "icon": "history"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuItemDivider",
-            "label": "Library Data-Evolution Divider",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Application Evolution Traces",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
-            "icon": "timeline",
-            "menuItemScope": "model"
-          },
-          {
-            "miroirMenuItemType": "miroirMenuReportLink",
-            "label": "Application Evolution Trace Events",
-            "section": "model",
-            "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-            "reportUuid": "230467a6-ecc3-4945-bd05-5d9e826c44fb",
-            "icon": "history",
-            "menuItemScope": "model"
           }
         ]
       }

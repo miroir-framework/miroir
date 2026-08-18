@@ -12,7 +12,7 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/240
 
-**Resume note:** Slice 3 ✅ — next: Slice 4 (Library menu cleanup).
+**Resume note:** Slice 4 ✅ — next: Slice 5 (Postgres menu cleanup).
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** implement multi-application sidebar rendering, Evolution 
 | 1 | Template Menu asset + export (applicative contract) | ✅ | miroir `modelValidation` + build |
 | 2 | Helper module: merge + gate + suppression | ✅ | `applicationModelScopeMenu` unit suite GREEN |
 | 3 | SidebarSection wiring (injection + suppression) | ✅ | helper suite GREEN + manual tracer |
-| 4 | Library menu cleanup | ⬜ | library `modelValidation` + tracer parity with Slice 3 |
+| 4 | Library menu cleanup | ✅ | library `modelValidation` + tracer parity with Slice 3 |
 | 5 | Postgres menu cleanup | ⬜ | postgres `modelValidation` |
 | 6 | CreateApplication runner: data-only default menu | ⬜ | `Runner_Miroir.integ` GREEN + menu assertion |
 | 7 | Designer menu annotation | ⬜ | designer build + manual tracer |
@@ -347,7 +347,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 4 — Library menu cleanup
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -381,7 +381,10 @@ npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+- Trimmed `library_model/.../dd168e5a-….json` from 18 → **6 items**: Books, Authors, Publishers, countries, Users, Lending History (data section only).
+- Removed 7 model-marked links, unscoped Tests link, 2 model dividers, 2 evolution trace links.
+- Updated Slice 0 Library inventory lock to post-cleanup shape (6 data-only items).
+- **Validation:** library build + `modelValidation` 139/139 GREEN; `modelScopeMenu.240` 8/8 GREEN (2026-08-18).
 
 ---
 

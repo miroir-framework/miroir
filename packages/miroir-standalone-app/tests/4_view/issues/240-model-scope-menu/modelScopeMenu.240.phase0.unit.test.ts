@@ -2,12 +2,11 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import type { Menu, MiroirMenuItem } from "miroir-core";
+import type { Menu, MiroirMenuItem, MiroirMenuReportLink } from "miroir-core";
 import { menuDefaultLibrary } from "miroir-test-app_deployment-library";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
-const MIROIR_TEST_LIST_REPORT = "58dc6706-0473-468c-90ee-61b54b157140";
 const ENTITY_DEFINITIONS_REPORT = "f9aff35d-8636-4519-8361-c7648e0ddc68";
 
 function readJsonMenu(relativePathFromRepoRoot: string): Menu {
@@ -16,8 +15,11 @@ function readJsonMenu(relativePathFromRepoRoot: string): Menu {
 }
 
 function complexMenuSections(menu: Menu) {
-  expect(menu.definition.menuType).toBe("complexMenu");
-  return menu.definition.definition;
+  const menuDefinition = menu.definition;
+  if (menuDefinition.menuType !== "complexMenu") {
+    throw new Error(`expected complexMenu, got ${menuDefinition.menuType}`);
+  }
+  return menuDefinition.definition;
 }
 
 function sectionItems(menu: Menu, sectionLabel: string): MiroirMenuItem[] {
@@ -30,7 +32,7 @@ function allComplexMenuItems(menu: Menu): MiroirMenuItem[] {
   return complexMenuSections(menu).flatMap((section) => section.items);
 }
 
-function isReportLink(item: MiroirMenuItem): item is MiroirMenuItem & { reportUuid?: string } {
+function isReportLink(item: MiroirMenuItem): item is MiroirMenuReportLink {
   return item.miroirMenuItemType === "miroirMenuReportLink";
 }
 
@@ -39,7 +41,7 @@ function isDivider(item: MiroirMenuItem): boolean {
 }
 
 function countModelMarked(items: MiroirMenuItem[]) {
-  return items.filter((item) => item.menuItemScope === "model").length;
+  return items.filter((item) => "menuItemScope" in item && item.menuItemScope === "model").length;
 }
 
 function countModelReportLinks(items: MiroirMenuItem[]) {
@@ -67,39 +69,26 @@ describe("#240 phase0 — menu asset inventories (pre-refactor locks)", () => {
   describe("Library menuDefaultLibrary", () => {
     const items = allComplexMenuItems(menuDefaultLibrary as Menu);
 
-    it("has 18 items in the Library section", () => {
+    it("has 6 data-only items in the Library section (post–slice 4 cleanup)", () => {
       expect(complexMenuSections(menuDefaultLibrary as Menu)).toHaveLength(1);
-      expect(items).toHaveLength(18);
+      expect(items).toHaveLength(6);
     });
 
-    it("splits into 7 core model links, 1 unscoped Tests link, 2 model dividers, 6 data links, 2 evolution model links", () => {
-      const coreModelReportLinks = items.filter(
-        (item) =>
-          isReportLink(item) &&
-          item.menuItemScope === "model" &&
-          item.label !== "Application Evolution Traces" &&
-          item.label !== "Application Evolution Trace Events",
-      );
-      expect(coreModelReportLinks).toHaveLength(7);
+    it("contains only unscoped data report links — no model-scope or divider items", () => {
+      expect(items.every((item) => isReportLink(item) && item.section === "data")).toBe(true);
+      expect(items.every((item) => isReportLink(item) && item.menuItemScope === undefined)).toBe(true);
+      expect(items.filter((item) => isDivider(item))).toHaveLength(0);
+      expect(countModelMarked(items)).toBe(0);
       expect(
-        items.filter(
-          (item) =>
-            isReportLink(item) &&
-            item.reportUuid === MIROIR_TEST_LIST_REPORT &&
-            item.menuItemScope === undefined,
-        ),
-      ).toHaveLength(1);
-      expect(items.filter((item) => isDivider(item) && item.menuItemScope === "model")).toHaveLength(2);
-      expect(items.filter((item) => isReportLink(item) && item.menuItemScope === undefined && item.section === "data")).toHaveLength(6);
-      expect(
-        items.filter(
-          (item) =>
-            isReportLink(item) &&
-            item.menuItemScope === "model" &&
-            (item.label === "Application Evolution Traces" ||
-              item.label === "Application Evolution Trace Events"),
-        ),
-      ).toHaveLength(2);
+        items.map((item) => (isReportLink(item) ? item.label : undefined)),
+      ).toEqual([
+        "Library Books",
+        "Library Authors",
+        "Library Publishers",
+        "Library countries",
+        "Library Users",
+        "Library Lending History",
+      ]);
     });
   });
 
@@ -143,9 +132,11 @@ describe("#240 phase0 — menu asset inventories (pre-refactor locks)", () => {
       expect(entities).toMatchObject({ section: "model" });
       expect(applications).toMatchObject({ section: "data" });
       expect(reports).toMatchObject({ section: "model" });
-      expect(entities?.menuItemScope).toBeUndefined();
-      expect(applications?.menuItemScope).toBeUndefined();
-      expect(reports?.menuItemScope).toBeUndefined();
+      for (const item of [entities, applications, reports]) {
+        expect(item).toBeDefined();
+        expect(isReportLink(item!)).toBe(true);
+        expect((item as MiroirMenuReportLink).menuItemScope).toBeUndefined();
+      }
     });
   });
 
