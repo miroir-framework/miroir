@@ -12,7 +12,7 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/240
 
-**Resume note:** Slice 5 ✅ — next: Slice 6 (CreateApplication runner cleanup).
+**Resume note:** Slice 6 ✅ — next: Slice 7 (Designer menu annotation).
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** implement multi-application sidebar rendering, Evolution 
 | 3 | SidebarSection wiring (injection + suppression) | ✅ | helper suite GREEN + manual tracer |
 | 4 | Library menu cleanup | ✅ | library `modelValidation` + tracer parity with Slice 3 |
 | 5 | Postgres menu cleanup | ✅ | postgres `modelValidation` |
-| 6 | CreateApplication runner: data-only default menu | ⬜ | `Runner_Miroir.integ` GREEN + menu assertion |
+| 6 | CreateApplication runner: data-only default menu | ✅ | `Runner_Miroir.integ` GREEN + menu assertion |
 | 7 | Designer menu annotation | ⬜ | designer build + manual tracer |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg + AC checklist |
 
@@ -429,7 +429,7 @@ npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240
 
 ## Slice 6 — CreateApplication runner: data-only default menu
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -457,7 +457,10 @@ npm run build -w miroir-standalone-app
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+- `Runner_CreateApplication.tsx` `appDefaultMenu`: replaced 8 model links + divider with `items: []`; kept valid `complexMenu` section shell (title/label mustache templates).
+- Updated Slice 0 CreateApplication source lock: no `menuItemScope: "model"`, asserts `items: []` and complexMenu shell preserved.
+- **Note:** `Runner_Miroir.integ` currently runs library lend/return only (no createApplication path active) — proof is source lock + integ suite staying GREEN; integ assertion deferred until that suite exercises createApplication.
+- **Validation:** `modelScopeMenu.240` 8/8 GREEN; `Runner_Miroir.integ` GREEN; build OK (2026-08-18).
 
 ---
 

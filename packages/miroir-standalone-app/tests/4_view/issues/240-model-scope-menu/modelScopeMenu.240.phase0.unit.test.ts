@@ -7,8 +7,6 @@ import { menuDefaultLibrary } from "miroir-test-app_deployment-library";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
-const ENTITY_DEFINITIONS_REPORT = "f9aff35d-8636-4519-8361-c7648e0ddc68";
-
 function readJsonMenu(relativePathFromRepoRoot: string): Menu {
   const absolutePath = path.join(resolveRepoRoot(), relativePathFromRepoRoot);
   return JSON.parse(readFileSync(absolutePath, "utf8")) as Menu;
@@ -147,22 +145,17 @@ describe("#240 phase0 — menu asset inventories (pre-refactor locks)", () => {
   describe("CreateApplication runner appDefaultMenu source", () => {
     const appDefaultMenuSource = readCreateApplicationAppDefaultMenuSource();
 
-    it("generates 8 model-marked report links and 1 model-marked divider, no data items", () => {
-      const modelScopeCount = (appDefaultMenuSource.match(/menuItemScope: "model"/g) ?? []).length;
-      const reportLinkCount = (appDefaultMenuSource.match(/miroirMenuItemType: "miroirMenuReportLink"/g) ?? []).length;
-      const dividerCount = (appDefaultMenuSource.match(/miroirMenuItemType: "miroirMenuItemDivider"/g) ?? []).length;
-      const dataScopeCount = (appDefaultMenuSource.match(/menuItemScope: "data"/g) ?? []).length;
-      const sectionDataCount = (appDefaultMenuSource.match(/section: "data"/g) ?? []).length;
-
-      expect(modelScopeCount).toBe(9);
-      expect(reportLinkCount).toBe(8);
-      expect(dividerCount).toBe(1);
-      expect(dataScopeCount).toBe(0);
-      expect(sectionDataCount).toBe(0);
+    it("generates an empty items array — no model-scope menu items", () => {
+      expect(appDefaultMenuSource).toContain("items: []");
+      expect(appDefaultMenuSource.match(/menuItemScope: "model"/g) ?? []).toHaveLength(0);
+      expect(appDefaultMenuSource.match(/miroirMenuItemType: "miroirMenuReportLink"/g) ?? []).toHaveLength(0);
+      expect(appDefaultMenuSource.match(/miroirMenuItemType: "miroirMenuItemDivider"/g) ?? []).toHaveLength(0);
     });
 
-    it("includes Entity Definitions report uuid f9aff35d-…", () => {
-      expect(appDefaultMenuSource).toContain(`reportUuid: "${ENTITY_DEFINITIONS_REPORT}"`);
+    it("keeps a valid complexMenu section shell", () => {
+      expect(appDefaultMenuSource).toContain('menuType: "complexMenu"');
+      expect(appDefaultMenuSource).toContain("{{createApplicationAndDeployment.applicationName}} Menu");
+      expect(appDefaultMenuSource).toContain("{{createApplicationAndDeployment.applicationName}}");
     });
   });
 });
