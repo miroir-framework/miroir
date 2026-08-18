@@ -12,7 +12,7 @@
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/240
 
-**Resume note:** Slice 0 ✅ — next: Slice 1 (template Menu asset + export).
+**Resume note:** Slice 1 ✅ — next: Slice 2 (helper module + unit tests).
 
 ---
 
@@ -34,7 +34,7 @@ This plan does **not** implement multi-application sidebar rendering, Evolution 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize current menus & filter behavior | ✅ | inventory locks GREEN (transitional) |
-| 1 | Template Menu asset + export (applicative contract) | ⬜ | miroir `modelValidation` + build |
+| 1 | Template Menu asset + export (applicative contract) | ✅ | miroir `modelValidation` + build |
 | 2 | Helper module: merge + gate + suppression | ⬜ | `applicationModelScopeMenu` unit suite GREEN |
 | 3 | SidebarSection wiring (injection + suppression) | ⬜ | helper suite GREEN + manual tracer |
 | 4 | Library menu cleanup | ⬜ | library `modelValidation` + tracer parity with Slice 3 |
@@ -182,7 +182,7 @@ npm run testByFile -w miroir-standalone-app -- modelScopeMenu.240
 
 ## Slice 1 — Template Menu asset + export (applicative contract)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -214,7 +214,13 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+- Added `packages/miroir-test-app_deployment-miroir/assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/a4ed0b44-57c2-45ee-a33c-c7c09bde969d.json` — `ApplicationModelScopeTemplate`, one `complexMenu` section, 9 items (8 generic model-scoped report links + 1 model divider).
+- Order: Application (`cd24df86-…`, with `instanceUuid` placeholder), Entities, Queries, Reports, Menus, Endpoints, Runners, Tests (`58dc6706-…`, **marked** `menuItemScope: "model"`), Model-Data Divider.
+- Excluded Entity Definitions and Evolution Trace items per locked defaults.
+- Placeholder `selfApplication` / Application `instanceUuid`: `360fcf1f-f0d4-4f8a-9262-07886e70fa15`.
+- Exported `menuApplicationModelScopeTemplate` from `index.ts` + `index.d.ts` (alongside `menuDefaultMiroir`).
+- **Not** added to `Model.ts` `menus` array — consumed via standalone-app import only.
+- **Validation:** `npm run build -w miroir-test-app_deployment-miroir` + `modelValidation.unit.test.ts` — 147/147 GREEN (2026-08-18).
 
 ---
 

@@ -207,6 +207,7 @@ export declare const deploymentEndpointV1: any;
 export declare const queryVersionBundleProducerV1: any;
 export declare const queryVersionEntityList: any;
 export declare const menuDefaultMiroir: any;
+export declare const menuApplicationModelScopeTemplate: any;
 export declare const miroirJzodSchemaBootstrap: any;
 export declare const transformerJzodSchema: any;
 export declare const jzodSchemajzodMiroirBootstrapSchema: any;

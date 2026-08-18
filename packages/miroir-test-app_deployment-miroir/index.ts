@@ -244,6 +244,7 @@ export { default as queryVersionEntityList } from "./assets/miroir_data/e4320b9e
 // Miroir Data - Menu (parentUuid = entityMenu = dde4c883)
 // ################################################################################################
 export { default as menuDefaultMiroir } from "./assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json" with { type: "json" };
+export { default as menuApplicationModelScopeTemplate } from "./assets/miroir_data/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/a4ed0b44-57c2-45ee-a33c-c7c09bde969d.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - JzodSchemas (parentUuid = entityJzodSchema = 5e81e1b9)

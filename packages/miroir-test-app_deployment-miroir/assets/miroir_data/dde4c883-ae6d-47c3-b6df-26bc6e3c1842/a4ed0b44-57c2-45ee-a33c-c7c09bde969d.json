@@ -1,0 +1,101 @@
+{
+  "uuid": "a4ed0b44-57c2-45ee-a33c-c7c09bde969d",
+  "parentName": "Menu",
+  "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  "name": "ApplicationModelScopeTemplate",
+  "defaultLabel": "Application Model Scope Template",
+  "description": "Canonical model-scope menu block injected in edit mode for non-Miroir, non-Admin applications.",
+  "definition": {
+    "menuType": "complexMenu",
+    "definition": [
+      {
+        "title": "Model Scope",
+        "label": "modelScope",
+        "items": [
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Application",
+            "section": "model",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "cd24df86-204c-4a72-9ac0-87f2b92f25fe",
+            "icon": "category",
+            "menuItemScope": "model",
+            "instanceUuid": "360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Entities",
+            "section": "model",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "c9ea3359-690c-4620-9603-b5b402e4a2b9",
+            "icon": "category",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Queries",
+            "section": "model",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "32e52150-ac95-4d96-91b7-f231b85fe76e",
+            "icon": "saved_search",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Reports",
+            "section": "model",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "1fc7e12e-90f2-4c0a-8ed9-ed35ce3a7855",
+            "icon": "newspaper",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Menus",
+            "section": "model",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "ecfd8787-09cc-417d-8d2c-173633c9f998",
+            "icon": "list",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Endpoints",
+            "section": "model",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "ace3d5c9-b6a7-43e6-a277-595329e7532a",
+            "icon": "list",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Runners",
+            "section": "model",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "3c26c31e-c988-40b2-af47-d7380e35ba80",
+            "icon": "directions_run",
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Tests",
+            "section": "model",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "58dc6706-0473-468c-90ee-61b54b157140",
+            "icon": {
+              "iconType": "mui",
+              "name": "playlist_add_check"
+            },
+            "menuItemScope": "model"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuItemDivider",
+            "label": "Model-Data Divider",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "menuItemScope": "model"
+          }
+        ]
+      }
+    ]
+  }
+}
