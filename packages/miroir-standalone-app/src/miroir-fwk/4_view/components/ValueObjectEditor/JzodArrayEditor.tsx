@@ -208,7 +208,9 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   ...props
 }) => {
   // Viewport-gated — same policy as ProgressiveAttribute.
-  const { ref: viewportRef, revealed: isRendered } = useViewportReveal();
+  const { ref: viewportRef, revealed: isRendered } = useViewportReveal({
+    disabled: maxRenderDepth === Infinity,
+  });
 
   const itemRootLessListKey = rootLessListKey.length > 0 ? rootLessListKey + "." + index : "" + index;
   const itemListKey = listKey + "." + index;

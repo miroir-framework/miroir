@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import {
-  EntityInstance,
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid,
@@ -22,9 +21,51 @@ import {
   ThemedHeaderSection,
   ThemedTitle
 } from "../Themes/index";
-import { useFormikContext } from 'formik';
-import type { TransformerEditorFormikValueType } from './TransformerEditorInterface';
 import { ThemedOnScreenHelper } from 'miroir-react';
+
+export function hasDisplayableTransformationResult(
+  result: TransformerReturnType<any>,
+): boolean {
+  if (result === undefined || result === null) {
+    return false;
+  }
+  if (Array.isArray(result)) {
+    return result.some((item) => item !== undefined && item !== null);
+  }
+  return true;
+}
+
+const TransformationResultValueEditor: React.FC<{
+  transformationResult: TransformerReturnType<any>;
+  transformationResultSchema?: JzodElement;
+  inputApplication: Uuid;
+  inputDeploymentUuid: Uuid;
+}> = React.memo(({ transformationResult, transformationResultSchema, inputApplication, inputDeploymentUuid }) => {
+  const initialValueObject = useMemo(
+    () => ({ transformationResult }),
+    [safeStringify(transformationResult)],
+  );
+
+  return (
+    <TypedValueObjectEditorWithFormik
+      labelElement={<div>target:</div>}
+      initialValueObject={initialValueObject}
+      formValueMLSchema={transformationResultSchema ?? ({ type: "any" } as JzodElement)}
+      formikValuePathAsString="transformationResult"
+      application={inputApplication}
+      applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+      deploymentUuid={inputDeploymentUuid}
+      applicationSection={"data"}
+      formLabel={"Transformation Result Viewer"}
+      onSubmit={async () => {}}
+      valueObjectEditMode="create"
+      maxRenderDepth={3}
+      readonly={true}
+    />
+  );
+});
+
+TransformationResultValueEditor.displayName = "TransformationResultValueEditor";
 
 // ################################################################################################
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerResultPanel");
@@ -62,7 +103,7 @@ export const TransformationResultPanel: React.FC<{
     inputDeploymentUuid,
   }) => {
     log.info("Rendering TransformationResultPanel with result:", transformationResult);
-    const formikContext = useFormikContext<TransformerEditorFormikValueType>();
+    const showResultEditor = hasDisplayableTransformationResult(transformationResult);
     return (
       <ThemedContainer style={{ flex: 1 }}>
         <ThemedHeaderSection>
@@ -82,33 +123,14 @@ export const TransformationResultPanel: React.FC<{
         typeof transformationResult === "object" &&
         "queryFailure" in transformationResult ? (
           <ThemedOnScreenHelper label="result" data={transformationResult} />
-        ) : transformationResult !== null ? (
-          <TypedValueObjectEditorWithFormik
-            labelElement={<div>target:</div>}
-            initialValueObject={{ transformationResult }}
-            formValueMLSchema={
-              // {
-              //   type: "object",
-              //   definition: {
-              //     transformationResult:
-              transformationResultSchema ?? ({ type: "any" } as JzodElement)
-                // },
-              // } // TODO: ILL-TYPED!!
-            }
-            formikValuePathAsString="transformationResult"
-            application={inputApplication}
-            applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
-            deploymentUuid={inputDeploymentUuid}
-            applicationSection={"data"}
-            formLabel={"Transformation Result Viewer"}
-            onSubmit={async () => {}} // No-op for readonly
-            valueObjectEditMode="create"
-            maxRenderDepth={3}
-            readonly={true}
+        ) : showResultEditor ? (
+          <TransformationResultValueEditor
+            transformationResult={transformationResult}
+            transformationResultSchema={transformationResultSchema}
+            inputApplication={inputApplication}
+            inputDeploymentUuid={inputDeploymentUuid}
           />
-        ) : // ) : (showAllInstances ? entityInstances.length > 0 : selectedEntityInstance) ? (
-        // ) : (showAllInstances ? formikContext.values.entityInstances?.length > 0 : formikContext.values.selectedEntityInstance) ? (
-        inputSelectorMode !== "instance" ? (
+        ) : inputSelectorMode !== "instance" ? (
           <div>
             <div
               style={{

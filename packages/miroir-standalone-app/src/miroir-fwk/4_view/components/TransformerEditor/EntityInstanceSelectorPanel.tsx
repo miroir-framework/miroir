@@ -12,6 +12,7 @@ import {
   metaMetaModelEntityUuids,
   noValue,
   findEntityFromUuid,
+  safeStringify,
   type ApplicationDeploymentMap,
   type ApplicationSection,
   type Entity,
@@ -463,7 +464,10 @@ export function EntityInstanceSelectorPanel(props:{
       });
     }
     if (formikContext.values[formikPath_TransformerEditorInputModeSelector].mode == "instance") {
-      formikContext.setFieldValue("transformerEditor_input", inputSelectorData);
+      const currentInput = formikContext.values.transformerEditor_input;
+      if (safeStringify(currentInput) !== safeStringify(inputSelectorData)) {
+        formikContext.setFieldValue("transformerEditor_input", inputSelectorData);
+      }
       if (showAllInstances) {
         formikContext.setFieldValue(
           "entityInstances", entityInstances

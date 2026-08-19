@@ -10,6 +10,7 @@ import {
   MiroirLoggerFactory,
   MiroirModelEnvironment,
   resolvePathOnObject,
+  TransformerFailure,
   type ApplicationDeploymentMap,
   type JzodObject,
   type JzodUnion,
@@ -18,7 +19,7 @@ import {
   type SyncBoxedExtractorOrQueryRunnerMap,
   type Uuid
 } from "miroir-core";
-import React, { FC, useCallback, useMemo } from "react";
+import React, { FC, useCallback, useMemo, useState } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
@@ -39,6 +40,35 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI"
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+function resolveDiscriminatorParentValue(
+  formikValues: Record<string, unknown>,
+  reportSectionPathAsString: string,
+  valuePath: KeyMapEntry["valuePath"],
+  rootLessListKeyArray: (string | number)[],
+  selectedValue: string,
+): Record<string, unknown> {
+  const reportSectionValues = formikValues[reportSectionPathAsString];
+  if (reportSectionValues == null) {
+    throw new Error(
+      `Cannot update discriminator: form section "${reportSectionPathAsString}" is missing`,
+    );
+  }
+  try {
+    return {
+      ...resolvePathOnObject(reportSectionValues, valuePath),
+      [rootLessListKeyArray[rootLessListKeyArray.length - 1]]: selectedValue,
+    };
+  } catch (error) {
+    if (error instanceof TransformerFailure) {
+      throw new Error(
+        `Cannot update "${reportSectionPathAsString}.${valuePath.join(".")}": current value does not contain that path`,
+        { cause: error },
+      );
+    }
+    throw error;
+  }
+}
 
 // Common function to handle discriminator changes
 const handleDiscriminatorChange = (
@@ -103,10 +133,13 @@ const handleDiscriminatorChange = (
         `handleDiscriminatorChange could not find discriminator type for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`,
       );
     }
-    const newParentValue = {
-      ...resolvePathOnObject(formik.values, parentKeyMap.valuePath),
-      [rootLessListKeyArray[rootLessListKeyArray.length - 1]]: selectedValue,
-    };
+    const newParentValue = resolveDiscriminatorParentValue(
+      formik.values,
+      reportSectionPathAsString,
+      parentKeyMap.valuePath,
+      rootLessListKeyArray,
+      selectedValue,
+    );
     log.info(
       "handleDiscriminatorChange newParentValue",
       newParentValue,
@@ -190,7 +223,7 @@ const handleDiscriminatorChange = (
         ...getDefaultValueForJzodSchemaWithResolutionNonHook(
           "build",
           newJzodSchemaWithOptional,
-          formik.values,
+          formik.values[reportSectionPathAsString],
           rootLessListKey,
           undefined, // currentDefaultValue
           [], // currentValuePath
@@ -262,6 +295,7 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
   onChangeVector,
 }: JzodEnumEditorProps) => {
   const formik = useFormikContext<Record<string, any>>();
+  const [discriminatorChangeError, setDiscriminatorChangeError] = useState<string | undefined>();
 
   const parentKey = rootLessListKey.includes(".")
     ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf("."))
@@ -319,24 +353,32 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
       if (!parentKeyMap) {
         throw new Error("handleSelectEnumChange called but parentKeyMap is undefined!");
       }
-      handleDiscriminatorChange(
-        event.target.value,
-        "enum",
-        parentKeyMap,
-        rootLessListKey,
-        rootLessListKeyArray,
-        // formikRootLessListKey,
-        reportSectionPathAsString,
-        currentApplication,
-        applicationDeploymentMap,
-        currentDeploymentUuid,
-        defaultValueParams,
-        currentMiroirModelEnvironment,
-        deploymentEntityState,
-        formik,
-        log,
-        onChangeCallback
-      );
+      try {
+        setDiscriminatorChangeError(undefined);
+        handleDiscriminatorChange(
+          event.target.value,
+          "enum",
+          parentKeyMap,
+          rootLessListKey,
+          rootLessListKeyArray,
+          // formikRootLessListKey,
+          reportSectionPathAsString,
+          currentApplication,
+          applicationDeploymentMap,
+          currentDeploymentUuid,
+          defaultValueParams,
+          currentMiroirModelEnvironment,
+          deploymentEntityState,
+          formik,
+          log,
+          onChangeCallback
+        );
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to apply enum discriminator change";
+        log.error("JzodEnumEditor handleSelectEnumChange failed", error);
+        setDiscriminatorChangeError(message);
+      }
     },
     [
       parentKeyMap,
@@ -394,24 +436,32 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         if (!parentKeyMap) {
           throw new Error("handleFilterableSelectEnumChange called but parentKeyMap is undefined!");
         }
-        handleDiscriminatorChange(
-          selectedValue,
-          "enum",
-          parentKeyMap,
-          rootLessListKey,
-          rootLessListKeyArray,
-          // formikRootLessListKey,
-          reportSectionPathAsString,
-          currentApplication,
-          applicationDeploymentMap,
-          currentDeploymentUuid,
-          defaultValueParams,
-          currentMiroirModelEnvironment,
-          deploymentEntityState,
-          formik,
-          log,
-          onChangeCallback
-        );
+        try {
+          setDiscriminatorChangeError(undefined);
+          handleDiscriminatorChange(
+            selectedValue,
+            "enum",
+            parentKeyMap,
+            rootLessListKey,
+            rootLessListKeyArray,
+            // formikRootLessListKey,
+            reportSectionPathAsString,
+            currentApplication,
+            applicationDeploymentMap,
+            currentDeploymentUuid,
+            defaultValueParams,
+            currentMiroirModelEnvironment,
+            deploymentEntityState,
+            formik,
+            log,
+            onChangeCallback
+          );
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : "Failed to apply enum discriminator change";
+          log.error("JzodEnumEditor handleFilterableSelectEnumChange failed", error);
+          setDiscriminatorChangeError(message);
+        }
       } else {
         // For non-discriminator enums, just set the field value
         // Invoke onChangeVector callback if registered for this field
@@ -533,6 +583,11 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
         labelElement={labelElement ?? <></>}
         editor={editor}
       />
+      {discriminatorChangeError ? (
+        <div style={{ color: "#c62828", fontSize: "0.9em", marginTop: "4px" }}>
+          {discriminatorChangeError}
+        </div>
+      ) : null}
     </div>
   );
 };

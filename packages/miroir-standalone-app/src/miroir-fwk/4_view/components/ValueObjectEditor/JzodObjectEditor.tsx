@@ -237,7 +237,9 @@ const ProgressiveAttribute: FC<{
   // Viewport-gated: cheap placeholder until this attribute intersects the
   // scrollport. Unfolding a huge parent then only mounts editors that are
   // actually (nearly) visible — avoids multi-second click freezes.
-  const { ref: viewportRef, revealed: isRendered } = useViewportReveal();
+  const { ref: viewportRef, revealed: isRendered } = useViewportReveal({
+    disabled: maxRenderDepth === Infinity,
+  });
 
   const currentAttributeDefinition =
     localResolvedElementJzodSchemaBasedOnValue.definition[attribute[0]];
