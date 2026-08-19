@@ -84,4 +84,13 @@ describe("progressiveRevealScheduler (document order / depth-first)", () => {
     flushProgressiveRevealQueueForTests();
     expect(order).toEqual(["a", "b", "c"]);
   });
+
+  it("drains visible-in-viewport jobs before off-screen look-ahead jobs", () => {
+    const order: number[] = [];
+    scheduleProgressiveReveal(10, () => order.push(10));
+    scheduleProgressiveReveal(20, () => order.push(20), { visibleInViewport: true });
+    scheduleProgressiveReveal(30, () => order.push(30));
+    flushProgressiveRevealQueueForTests();
+    expect(order).toEqual([20, 10, 30]);
+  });
 });

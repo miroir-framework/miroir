@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   PROGRESSIVE_RENDER_FALLBACK_TIMEOUT_MS,
   PROGRESSIVE_RENDER_ROOT_MARGIN,
+  PROGRESSIVE_RENDER_VISIBLE_STUCK_TIMEOUT_MS,
 } from "./progressiveRenderConfig.js";
 import { scheduleProgressiveReveal } from "./progressiveRevealScheduler.js";
 
@@ -48,6 +49,13 @@ export function findScrollParent(element: Element | null): Element | null {
   return null;
 }
 
+function isRectVisibleInViewport(rect: DOMRectReadOnly): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  return rect.top < window.innerHeight && rect.bottom > 0;
+}
+
 export function useViewportReveal(
   options: UseViewportRevealOptions = {}
 ): UseViewportRevealResult {
@@ -68,15 +76,47 @@ export function useViewportReveal(
       return;
     }
 
+    const queuedRef = { current: false };
+
     const doReveal = () => {
+      queuedRef.current = false;
       if (!revealedRef.current) {
         setRevealed(true);
       }
     };
 
+    const enqueueReveal = (rect: DOMRectReadOnly | DOMRect) => {
+      if (queuedRef.current || revealedRef.current) {
+        return;
+      }
+      queuedRef.current = true;
+      scheduleProgressiveReveal(rect.top, doReveal, {
+        visibleInViewport: isRectVisibleInViewport(rect),
+      });
+    };
+
+    let stuckTimeout: ReturnType<typeof setTimeout> | undefined;
+
+    const scheduleVisibleStuckFallback = (rect: DOMRectReadOnly | DOMRect) => {
+      if (!isRectVisibleInViewport(rect)) {
+        return;
+      }
+      stuckTimeout = setTimeout(() => {
+        if (revealedRef.current || !ref.current) {
+          return;
+        }
+        const currentRect = ref.current.getBoundingClientRect();
+        if (isRectVisibleInViewport(currentRect)) {
+          doReveal();
+        }
+      }, PROGRESSIVE_RENDER_VISIBLE_STUCK_TIMEOUT_MS);
+    };
+
     if (typeof IntersectionObserver === "undefined") {
       const t = setTimeout(() => {
-        scheduleProgressiveReveal(node.getBoundingClientRect().top, doReveal);
+        const rect = node.getBoundingClientRect();
+        enqueueReveal(rect);
+        scheduleVisibleStuckFallback(rect);
       }, PROGRESSIVE_RENDER_FALLBACK_TIMEOUT_MS);
       return () => clearTimeout(t);
     }
@@ -88,14 +128,19 @@ export function useViewportReveal(
         if (!entry) {
           return;
         }
-        // Document order: smaller top mounts first → depth-first for vertical trees
-        scheduleProgressiveReveal(entry.boundingClientRect.top, doReveal);
+        enqueueReveal(entry.boundingClientRect);
+        scheduleVisibleStuckFallback(entry.boundingClientRect);
         observer.disconnect();
       },
       { root: scrollRoot, rootMargin, threshold: 0 }
     );
     observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (stuckTimeout) {
+        clearTimeout(stuckTimeout);
+      }
+    };
   }, [disabled, revealed, rootMargin]);
 
   return { ref, revealed };

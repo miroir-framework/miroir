@@ -47,3 +47,10 @@ export const PROGRESSIVE_RENDER_ROOT_MARGIN = buildProgressiveRenderRootMargin()
 
 /** Fallback when IntersectionObserver is unavailable. */
 export const PROGRESSIVE_RENDER_FALLBACK_TIMEOUT_MS = 0;
+
+/**
+ * If a sentinel is on-screen but still a placeholder after this long, reveal
+ * immediately (bypasses the queue). Prevents permanent "Loading …" when the
+ * queue is backed up on large unfolded trees.
+ */
+export const PROGRESSIVE_RENDER_VISIBLE_STUCK_TIMEOUT_MS = 500;
