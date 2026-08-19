@@ -23,7 +23,7 @@ import {
 
 import { TransformerEditor } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
 import { cleanLevel, packageName } from "../3_controllers/constants";
-import { book1, entityBook } from "miroir-test-app_deployment-library";
+import { book1, entityBook, selfApplicationLibrary } from "miroir-test-app_deployment-library";
 
 // ################################################################################################
 const pageLabel = "TransformerEditor.test";
@@ -100,6 +100,10 @@ function createMockStore() {
 function renderTransformerEditor(props: Partial<React.ComponentProps<typeof TransformerEditor>> = {}) {
   const store = createMockStore();
   const defaultProps = {
+    application: selfApplicationLibrary.uuid,
+    applicationDeploymentMap: {
+      [selfApplicationLibrary.uuid]: mockDeploymentUuid,
+    },
     deploymentUuid: mockDeploymentUuid,
     entityUuid: mockEntityUuid,
     ...props

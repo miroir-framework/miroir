@@ -273,13 +273,32 @@ const ProgressiveAttribute: FC<{
 
 
   if (!currentRawSchema) {
-    throw new Error(
-      "JzodElementEditor currentKeyMap?.rawSchema undefined for object " +
-        listKey +
-        " attribute " +
-        attribute[0] +
-        " attributeListKey " +
-        attributeListKey
+    // Typecheck failed upstream (e.g. invalid union value like mlSchema={}).
+    // Render a raw-JSON fallback instead of throwing into the ErrorBoundary loop.
+    return (
+      <div key={attributeListKey} ref={viewportRef}>
+        <ThemedLoadingCard
+          message={`${attribute[0]}: type resolution failed (invalid value)`}
+        />
+        <JsonDisplayHelper
+          debug={true}
+          componentName={`ProgressiveAttribute fallback for ${attributeRootLessListKey}`}
+          elements={[
+            {
+              label: `ProgressiveAttribute fallback: ${attributeRootLessListKey}`,
+              data: {
+                rootLessListKey: attributeRootLessListKey,
+                currentValue,
+                typeCheckKeyMap,
+                currentKeyMap,
+                atttributeKeyMap,
+              },
+              copyButton: true,
+              useCodeBlock: true,
+            },
+          ]}
+        />
+      </div>
     );
   }
 

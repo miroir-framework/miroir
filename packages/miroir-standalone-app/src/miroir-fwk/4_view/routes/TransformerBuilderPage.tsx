@@ -1,4 +1,4 @@
-// import { ReactCodeMirror } from "@uiw/react-codemirror";
+import { useMemo } from "react";
 import { PageContainer } from "../components/Page/PageContainer";
 
 // const MyReactCodeMirror: React.Component = ReactCodeMirror
@@ -11,7 +11,7 @@ import {
   MiroirLoggerFactory,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
-  type Deployment,
+  noValue,
   type Domain2QueryReturnType,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap
@@ -35,22 +35,18 @@ import {
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
 import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
 
-import { entityMiroirTest, miroirTest_resolveConditionalSchema, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import {
+  entityMiroirTest,
+  entityTransformerDefinition,
+  miroirTest_resolveConditionalSchema,
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 // ################################################################################################
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerBuilderPage");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
 
-const deployment_Library: Deployment = {
-  "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
-  "parentName":"Deployment",
-  "parentUuid":"7959d814-400c-4e80-988f-a00fe582ab98",
-  "name":"LibraryApplicationFilesystemDeployment",
-  "defaultLabel":"LibraryApplicationFilesystemDeployment",
-  "selfApplication":"5af03c98-fe5e-490b-b08f-e1230971c57f",
-  "description": "The default Filesystem Deployment for SelfApplication Library",
-}
 export const emptyString = ""
 export const dataSection = "data"
 export const emptyList:any[] = []
@@ -63,17 +59,6 @@ export const defaultObject: JzodObject = {
   definition: {}
 } as JzodObject
 
-// const initialValues = {
-//   newApplicationName: "placeholder...",
-//   newAdminAppApplicationUuid: applicationParis.uuid,
-//   newSelfApplicationUuid: applicationParis.selfApplication,
-//   newDeploymentUuid: adminConfigurationDeploymentParis.uuid,
-// }
-
-// export interface MiroirForm {
-//   formSchema: JzodElement,
-//   formAction: DomainAction,
-// }
 
 // ################################################################################################
 // ################################################################################################
@@ -96,9 +81,27 @@ export const TransformerBuilderPage: React.FC<any> = (
   
   // const errorLog = useErrorLogService();
   const context = useMiroirContextService();
-  // const domainController: DomainControllerInterface = useDomainControllerService();
   
   const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+
+  const editorApplication = useMemo(() => {
+    const fromSelector = context.toolsPageState?.applicationSelector;
+    if (fromSelector && fromSelector !== noValue.uuid) {
+      return fromSelector;
+    }
+    if (context.application) {
+      return context.application;
+    }
+    return selfApplicationMiroir.uuid;
+  }, [context.toolsPageState?.applicationSelector, context.application]);
+
+  const editorDeploymentUuid =
+    currentApplicationDeploymentMap[editorApplication] ?? deployment_Miroir.uuid;
+
+  const editorEntityUuid =
+    editorApplication === selfApplicationLibrary.uuid
+      ? entityBook.uuid
+      : entityTransformerDefinition.uuid;
 
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
       getMemoizedReduxDeploymentsStateSelectorMap();
@@ -372,10 +375,10 @@ export const TransformerBuilderPage: React.FC<any> = (
         {/* Transformer Editor */}
         <div style={{ margin: "20px 0" }}>
           <TransformerEditor
-            application={selfApplicationLibrary.uuid}
+            application={editorApplication}
             applicationDeploymentMap={currentApplicationDeploymentMap}
-            deploymentUuid={deployment_Library.uuid}
-            entityUuid={entityBook.uuid}
+            deploymentUuid={editorDeploymentUuid}
+            entityUuid={editorEntityUuid}
           />
         </div>
       </PageContainer>

@@ -1,11 +1,10 @@
-import React, { useCallback } from "react";
 import {
   type TransformerTest,
   type TransformerTestSuite,
-  type ViewParams,
+  type ViewParams
 } from "miroir-core";
+import React from "react";
 
-import { TestResultsGrid } from "./TestResultsGrid.js";
 import {
   defaultResetTestSelections,
   type TestResultDataAndSelect,
@@ -65,32 +64,3 @@ export function createTransformerResetSelections(
     return !currentTest?.skip;
   });
 }
-
-/** @deprecated Prefer TestExecutionPanel + TestResultsGrid — kept for direct imports */
-export const TransformerTestResults: React.FC<TransformerTestResultsProps> = ({
-  transformerTestSuite,
-  transformerTestResultsData,
-  testLabel = "Test Results",
-  testSelectionsState,
-  setTestSelectionsState,
-  gridType,
-}) => {
-  const onResetSelections = useCallback(() => {
-    setTestSelectionsState(
-      createTransformerResetSelections(transformerTestSuite, transformerTestResultsData),
-    );
-  }, [transformerTestSuite, transformerTestResultsData, setTestSelectionsState]);
-
-  return (
-    <TestResultsGrid
-      testResultsData={transformerTestResultsData}
-      testLabel={testLabel}
-      gridType={gridType}
-      enableSelection={true}
-      testSelectionsState={testSelectionsState}
-      setTestSelectionsState={setTestSelectionsState}
-      onResetSelections={onResetSelections}
-      linkResultsToEditor={true}
-    />
-  );
-};
