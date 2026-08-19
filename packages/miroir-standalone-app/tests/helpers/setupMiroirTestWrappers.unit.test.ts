@@ -13,7 +13,7 @@ vi.mock("./appStackIntegrationBootstrap.js", () => ({
 import {
   setupMiroirTestAndCreateMiroirDeployment,
   setupMiroirTestAndDeployMiroirApp,
-} from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+} from "./setupMiroirTestWrappers.js";
 import { MiroirActivityTracker, MiroirEventService } from "miroir-core";
 import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {

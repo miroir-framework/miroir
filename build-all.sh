@@ -99,6 +99,7 @@ STAGE_CACHES_STORES=(
 )
 STAGE_UI_SERVICES=(miroir-react miroir-mcp miroir-diagram-class)
 STAGE_APPS=(miroir-cli miroir-ai miroir-mcp)
+STAGE_STANDALONE_DEPS=(miroir-test-app_deployment-library miroir-test-app_deployment-appForTest)
 STAGE_STANDALONE=(miroir-standalone-app)
 STAGE_DEPLOY_TEST=(miroir-test-app_deployment-library miroir-test-app_deployment-appForTest miroir-test-app_deployment-postgres)
 
@@ -651,8 +652,9 @@ record_time "7/9  miroir-cli, miroir-ai, miroir-mcp" "$t0"
 # ---------------------------------------------------------------------------
 # Step 8 – Application-level packages
 # ---------------------------------------------------------------------------
-step "8/9 · miroir-standalone-app"
+step "8/9 · miroir-standalone-app (deps + app)"
 t0=$(now_secs)
+run_stage_packages "standalone-deps" "${STAGE_STANDALONE_DEPS[@]}"
 run_stage_packages "standalone-app" "${STAGE_STANDALONE[@]}"
 record_time "8/9  miroir-standalone-app" "$t0"
 

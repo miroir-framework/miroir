@@ -93,23 +93,21 @@ npx miroir-mcp
 
 ### 3. Use with MCP Clients
 
-The server runs on stdio transport and can be integrated with any MCP-compatible client (Claude Desktop, VS Code extensions, etc.).
+The server exposes a **stateless Streamable HTTP** endpoint at `/mcp` (default port `4080`, configurable via `mcpUrl` in config).
 
-Example Claude Desktop configuration (`claude_desktop_config.json`):
+Example Cursor / VS Code configuration (`.vscode/mcp.json` or `.cursor/mcp.json`):
 
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "miroir": {
-      "command": "npx",
-      "args": ["miroir-mcp"],
-      "env": {
-        "MIROIR_MCP_CONFIG_PATH": "/path/to/your/miroirMcpConfig.json"
-      }
+      "url": "http://localhost:4080/mcp"
     }
   }
 }
 ```
+
+When embedded in `miroir-server`, the MCP app listens on the port from `server.mcpUrl` in the server config.
 
 ## Configuration
 
@@ -282,7 +280,7 @@ The MCP server follows Miroir's layered architecture:
 
 1. **Configuration Layer** (`src/config/`): Schema validation and loading
 2. **Startup Layer** (`src/startup/`): Conditional store initialization
-3. **MCP Server** (`src/mcpServer.ts`): Framework initialization and MCP protocol handling
+3. **MCP Server** (`src/mcpServer.ts`): Framework initialization and stateless Streamable HTTP MCP protocol handling
 4. **Tools Layer** (`src/tools/`): Tool definitions and handlers
 
 All actions are executed through `DomainController.handleAction()`, ensuring consistency with the rest of the Miroir framework.

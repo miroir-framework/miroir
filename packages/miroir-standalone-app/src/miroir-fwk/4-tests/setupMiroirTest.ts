@@ -1,20 +1,10 @@
-import crossFetch from "cross-fetch";
-
 import {
-  getBootstrapPhasesForSessionKind,
   MiroirActivityTracker,
   MiroirEventService,
-  type ApplicationDeploymentMap,
-  type Deployment,
   type DomainControllerInterface,
   type LocalCacheInterface,
   type MiroirConfigClient,
-  type StoreUnitConfiguration
 } from "miroir-core";
-import {
-  selfApplicationMiroir,
-} from "miroir-test-app_deployment-miroir";
-import { selfApplicationLibrary } from "miroir-test-app_deployment-library";
 import {
   ConfigurationService,
   LoggerInterface,
@@ -36,8 +26,6 @@ import {
 
 import { packageName } from "../../constants";
 import { cleanLevel } from "../4_view/constants";
-import { runAppStackIntegrationBootstrap } from "../../../tests/helpers/appStackIntegrationBootstrap.js";
-import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "setupMiroirTest");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -148,87 +136,5 @@ export async function setupMiroirTest(
     persistenceStoreControllerManagerForClient,
     persistenceStoreControllerManagerForServer: undefined,
     localCache,
-  };
-}
-
-// ################################################################################################
-/**
- * Common beforeAll setup: creates Miroir test environment and Miroir application deployment.
- * Reduces boilerplate in integration test beforeAll hooks.
- *
- * @deprecated Prefer `DomainControllerIntegrationTestSession` (Gap E). Thin wrapper around
- * `runAppStackIntegrationBootstrap` with phases `[wireEmulatedStack, deployMiroir]`.
- * @see packages/miroir-standalone-app/tests/helpers/DomainControllerIntegrationTestSession.ts
- */
-export async function setupMiroirTestAndCreateMiroirDeployment(
-  miroirConfig: MiroirConfigClient,
-  miroirActivityTracker: MiroirActivityTracker,
-  miroirEventService: MiroirEventService,
-  miroirDeploymentUuid: string,
-  miroirSelfApplicationUuid: string,
-  adminDeployment: Deployment,
-  miroirDeploymentStorageConfiguration: StoreUnitConfiguration,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  customFetch?: any,
-): Promise<{
-  domainController: DomainControllerInterface;
-}> {
-  const { domainController } = await runAppStackIntegrationBootstrap({
-    miroirConfig,
-    applicationDeploymentMap,
-    adminDeployment,
-    miroirDeploymentStorageConfiguration,
-    miroirDeploymentUuid,
-    miroirSelfApplicationUuid,
-    phases: ["wireEmulatedStack", "deployMiroir"],
-    miroirActivityTracker,
-    miroirEventService,
-    customFetch: customFetch ?? crossFetch,
-    testApplicationUuid: selfApplicationLibrary.uuid,
-    deployMiroirStrategy: "compositeAction",
-    openAdminAndMiroirStoresOnServer: true,
-  });
-  return { domainController };
-}
-
-// ################################################################################################
-/**
- * @deprecated Prefer `RunnerTestSession` (Gap E). Thin wrapper around
- * `runAppStackIntegrationBootstrap` with `getBootstrapPhasesForSessionKind("runner")`.
- * @see packages/miroir-standalone-app/tests/helpers/RunnerTestSession.ts
- */
-export async function setupMiroirTestAndDeployMiroirApp(
-  miroirConfig: MiroirConfigClient,
-  miroirActivityTracker: MiroirActivityTracker,
-  miroirEventService: MiroirEventService,
-  adminDeployment: Deployment,
-  miroirDeploymentStorageConfiguration: StoreUnitConfiguration,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-): Promise<{
-  domainController: DomainControllerInterface;
-  persistenceStoreControllerManager: PersistenceStoreControllerManager;
-}> {
-  log.debug("beforeAll bootstrap starting");
-  const executionEnvironment = await runAppStackIntegrationBootstrap({
-    miroirConfig,
-    applicationDeploymentMap,
-    adminDeployment,
-    miroirDeploymentStorageConfiguration,
-    miroirDeploymentUuid: deployment_Miroir.uuid,
-    miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-    phases: getBootstrapPhasesForSessionKind("runner"),
-    miroirActivityTracker,
-    miroirEventService,
-    customFetch: crossFetch,
-    testApplicationUuid: selfApplicationLibrary.uuid,
-    deployMiroirStrategy: "compositeAction",
-    openAdminAndMiroirStoresOnServer: false,
-  });
-  log.debug("beforeAll bootstrap done");
-
-  return {
-    domainController: executionEnvironment.domainController,
-    persistenceStoreControllerManager:
-      executionEnvironment.persistenceStoreControllerManager as PersistenceStoreControllerManager,
   };
 }
