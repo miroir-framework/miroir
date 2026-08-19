@@ -1,5 +1,5 @@
 import type { EntityInstance, CoreTransformerForBuildPlusRuntime, Uuid } from "miroir-core";
-import { noValue } from "miroir-core";
+import { noValue, safeStringify } from "miroir-core";
 import type { formikPath_EntityInstanceSelectorPanel, ToolsPageState } from "miroir-react";
 
 
@@ -38,6 +38,13 @@ export interface TransformerEditorProps {
 
 export const formikPath_TransformerEditorInputModeSelector = "transformerEditor_inputModeSelector";
 
+/** Default in-editor transformer when none is persisted (Transformer Builder / editor). */
+export const DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER: CoreTransformerForBuildPlusRuntime = {
+  transformerType: "returnValue",
+  mlSchema: { type: "string" },
+  value: "seize value...",
+};
+
 export type TransformerSelectorFormikValue =
   TransformerEditorFormikValueType["transformerEditor_transformer_selector"] & {
     application?: Uuid;
@@ -48,7 +55,7 @@ export type TransformerSelectorFormikValue =
 export function buildInitialTransformerSelectorFromPersistedState(
   persistedState: ToolsPageState["transformerEditor"] | undefined,
   pageApplication: Uuid,
-  defaultTransformer: CoreTransformerForBuildPlusRuntime,
+  defaultTransformer: CoreTransformerForBuildPlusRuntime = DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER,
 ): TransformerSelectorFormikValue {
   const transformer =
     persistedState?.currentTransformerDefinition ?? defaultTransformer;
@@ -141,13 +148,7 @@ export function buildTransformerEditorPersistedUpdate(
         }
       : {
           mode: "here",
-          transformer: selectorValues.transformer ?? {
-            transformerType: "returnValue",
-            mlSchema: {
-              type: "string"
-            },
-            value: "seize value...",
-          },
+          transformer: selectorValues.transformer ?? DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER,
         };
 
   const inputSelector = values[formikPath_TransformerEditorInputModeSelector];
@@ -164,4 +165,23 @@ export function buildTransformerEditorPersistedUpdate(
         ? (selectorValues as TransformerSelectorFormikValue).application
         : undefined,
   };
+}
+
+/** True when a would-be persist payload matches what is already in session state. */
+export function transformerEditorPersistedUpdateMatchesPersistedState(
+  update: Partial<NonNullable<ToolsPageState["transformerEditor"]>>,
+  persistedState: ToolsPageState["transformerEditor"] | undefined,
+): boolean {
+  if (!persistedState) {
+    return false;
+  }
+  return (
+    safeStringify(update.currentTransformerDefinition) ===
+      safeStringify(persistedState.currentTransformerDefinition) &&
+    safeStringify(update.selector) === safeStringify(persistedState.selector) &&
+    safeStringify(update.input_selector) === safeStringify(persistedState.input_selector) &&
+    update.mode === persistedState.mode &&
+    safeStringify(update.selectedApplicationUuid) ===
+      safeStringify(persistedState.selectedApplicationUuid)
+  );
 }

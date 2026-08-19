@@ -50,6 +50,8 @@ import {
   buildInitialTransformerSelectorFromPersistedState,
   buildInitialInputSelectorFromPersistedState,
   buildTransformerEditorPersistedUpdate,
+  DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER,
+  transformerEditorPersistedUpdateMatchesPersistedState,
   type TransformerEditorFormikValueType,
   type TransformerEditorProps,
 } from "./TransformerEditorInterface";
@@ -89,7 +91,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   // Get persisted state from context
   const persistedState = context.toolsPageState.transformerEditor;
   const currentHereTransformerDefinition: CoreTransformerForBuildPlusRuntime =
-    persistedState?.currentTransformerDefinition ?? { transformerType: "returnValue", mlSchema: { type: "string" }, value: "seize value..." };
+    persistedState?.currentTransformerDefinition ?? DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER;
   // ##############################################################################################
 
   const showAllInstances = persistedState?.showAllInstances || false;
@@ -140,15 +142,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   }, [currentHereTransformerDefinition]);
 
   const clearTransformerDefinition = useCallback(() => {
-    // Assumption: a 'returnValue' transformer has shape { transformerType: 'returnValue', value: ... }
-    const defaultConstantTransformer: any = {
-      transformerType: "returnValue",
-      interpolation: "runtime",
-      value: "enter the wanted value here...", // Default to undefined value
-    };
-
     context.updateTransformerEditorState({
-      currentTransformerDefinition: defaultConstantTransformer,
+      currentTransformerDefinition: DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER,
     });
     // Clear previous transformation outputs
     // setTransformationResult(null);
@@ -223,7 +218,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
         return;
       }
       const update = buildTransformerEditorPersistedUpdate(values);
-      if (update) {
+      if (update && !transformerEditorPersistedUpdateMatchesPersistedState(update, persistedState)) {
         context.updateTransformerEditorState(update);
       }
     };
@@ -398,14 +393,32 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 return;
               }
 
+              const pendingUpdate = buildTransformerEditorPersistedUpdate(formikContext.values);
+              if (
+                !pendingUpdate ||
+                transformerEditorPersistedUpdateMatchesPersistedState(
+                  pendingUpdate,
+                  persistedState,
+                )
+              ) {
+                return;
+              }
+
               // Debounce the update - only push to context after 2 seconds of no changes
               transformerUpdateTimeoutRef.current = setTimeout(() => {
-                log.info(
-                  "TransformerEditor: debounced update - pushing transformer to context:",
-                  formikContext.values.transformerEditor_transformer_selector.transformer
-                );
-                const update = buildTransformerEditorPersistedUpdate(formikContext.values);
-                if (update) {
+                const values = latestFormValuesRef.current;
+                if (!values) {
+                  return;
+                }
+                const update = buildTransformerEditorPersistedUpdate(values);
+                if (
+                  update &&
+                  !transformerEditorPersistedUpdateMatchesPersistedState(update, persistedState)
+                ) {
+                  log.info(
+                    "TransformerEditor: debounced update - pushing transformer to context:",
+                    update.selector,
+                  );
                   context.updateTransformerEditorState(update);
                 }
               }, 2000); // 2 second debounce
@@ -418,10 +431,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               };
             }, [
               formikContext.values.transformerEditor_transformer_selector.mode,
-              formikContext.values.transformerEditor_transformer_selector.transformer,
+              safeStringify(formikContext.values.transformerEditor_transformer_selector.transformer),
               formikContext.values[formikPath_TransformerEditorInputModeSelector].mode,
-              formikContext.values[formikPath_TransformerEditorInputModeSelector].input,
-              // formikContext.values.transformerEditor_editor.currentTransformerDefinition,
+              safeStringify(formikContext.values[formikPath_TransformerEditorInputModeSelector].input),
+              safeStringify(formikContext.values.transformerEditor_input),
+              persistedState,
+              context,
             ]);
 
             // ###############################################################################################
@@ -443,34 +458,49 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
               ]
             );
 
+            const transformationInputFingerprint = useMemo(
+              () =>
+                safeStringify({
+                  mode: formikContext.values[formikPath_TransformerEditorInputModeSelector].mode,
+                  input: formikContext.values[formikPath_TransformerEditorInputModeSelector].input,
+                  transformerEditor_input: formikContext.values.transformerEditor_input,
+                }),
+              [
+                formikContext.values[formikPath_TransformerEditorInputModeSelector].mode,
+                safeStringify(formikContext.values[formikPath_TransformerEditorInputModeSelector].input),
+                safeStringify(formikContext.values.transformerEditor_input),
+              ],
+            );
+
+            const transformerDefinitionFingerprint = useMemo(
+              () =>
+                safeStringify(
+                  formikContext.values.transformerEditor_transformer_selector.transformer ??
+                    DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER,
+                ),
+              [safeStringify(formikContext.values.transformerEditor_transformer_selector.transformer)],
+            );
+
             const transformationResult = useMemo(() => {
-              const currentFormikTransformerDefinition: CoreTransformerForBuildPlusRuntime = formikContext.values
-                .transformerEditor_transformer_selector.transformer ?? {
-                transformerType: "returnValue",
-                mlSchema: {
-                  type: "string"
-                },
-                value: "seize value...",
-              };
+              const currentFormikTransformerDefinition: CoreTransformerForBuildPlusRuntime =
+                formikContext.values.transformerEditor_transformer_selector.transformer ??
+                DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER;
               const transformerParams = {
-                // ...currentMiroirModelEnvironment, // TODO: effectively get the currentMiroirModelEnvironment from the deploymentUuid selected as input
                 ...transformerInput,
               };
 
               return transformer_extended_apply_wrapper(
-                context.miroirContext.miroirActivityTracker, // activityTracker
+                undefined, // preview only — avoid global activity/event churn on each render
                 "runtime", // step
                 ["rootTransformer"], // transformerPath
                 "TransformerEditor", // label
                 currentFormikTransformerDefinition, // transformer
                 "value", // resolveBuildTransformersTo
-                defaultMiroirModelEnvironment,// currentMiroirModelEnvironment, // TODO: effectively get the currentMiroirModelEnvironment from the deploymentUuid selected as input
+                defaultMiroirModelEnvironment,
                 transformerParams,
-                // inputSelectorData, // contextResults - pass the instance to transform
-                transformerInput, // contextResults - pass the input to transform
+                transformerInput,
               );
-              // }, [formikContext.values.transformerEditor_editor.currentTransformerDefinition]);
-            }, [formikContext.values.transformerEditor_transformer_selector.transformer, transformerInput]);
+            }, [transformerDefinitionFingerprint, transformationInputFingerprint]);
 
             const innermostError = useMemo(
               () =>
