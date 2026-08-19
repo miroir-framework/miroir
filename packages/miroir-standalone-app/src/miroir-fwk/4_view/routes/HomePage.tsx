@@ -24,6 +24,7 @@ import { JsonDisplayHelper } from "miroir-react";
 import {
   entitySelfApplication,
   reportMiroirSandboxHome,
+  reportMiroirWebAppOrDesktopHome,
   selfApplicationMiroir
 } from "miroir-test-app_deployment-miroir";
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
@@ -69,7 +70,9 @@ export const HomePage = (props: RootComponentProps) => {
   const context = useMiroirContextService();
   const pageParams: Params<ReportUrlParamKeys> = useParams<ReportUrlParamKeys>();
 
-  const currentApplication = context.toolsPageState?.applicationSelector ?? context.application;
+  // HomePage always resolves the Miroir platform SelfApplication — not the sidebar
+  // Application selector (toolsPageState.applicationSelector), which defaults to noValue.
+  const currentApplication = selfApplicationMiroir.uuid;
   // Auto-fetch configurations when the page loads
   // const { fetchConfigurations } = usePageConfiguration({
   //   autoFetchOnMount: true,
@@ -154,11 +157,13 @@ export const HomePage = (props: RootComponentProps) => {
       application: selfApplicationMiroir.uuid,
       applicationSection: "data",
       deploymentUuid: deployment_Miroir.uuid,
-      reportUuid: reportMiroirSandboxHome.uuid,
+      reportUuid:
+        context.clientEnvironment === "sandbox"
+          ? reportMiroirSandboxHome.uuid
+          : reportMiroirWebAppOrDesktopHome.uuid,
       instanceUuid: "none",
     };
-  // }, [context?.application, context?.applicationSection, context?.deploymentUuid]);
-  }, []);
+  }, [context.clientEnvironment]);
   
   return (
     <PageContainer

@@ -119,14 +119,15 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath ?? 'root'}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
-  const { availableReports, entities, entityVersions } = useMemo(() => {
-    return props.deploymentUuid &&
+  const entities = useMemo(() => {
+    const result = props.deploymentUuid &&
       context.deploymentUuidToReportsEntitiesMapping &&
       context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid]
       ? context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid][
         props.applicationSection
         ]
-      : { availableReports: [], entities: [], entityVersions: [] };
+      : {entities: []};
+    return (result?.entities??[]) as Entity[];
   }, [context.deploymentUuidToReportsEntitiesMapping, props.deploymentUuid, props.applicationSection]);
 
   const currentListReportTargetEntity: Entity | undefined =

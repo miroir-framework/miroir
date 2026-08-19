@@ -3197,8 +3197,60 @@ export const miroirFundamentalJzodSchema = {
             "definition": "returnValue"
           },
           "mlSchema": {
-            "type": "any",
-            "optional": true
+            "type": "union",
+            "discriminator": "type",
+            "optInDiscriminator": true,
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Return type (mlSchema)",
+                "description": "Optional Jzod schema describing the type of the returned value.",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "number"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "boolean"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "uuid"
+                  }
+                }
+              }
+            ]
           },
           "value": {
             "type": "any",
@@ -30796,8 +30848,61 @@ export const miroirFundamentalJzodSchema = {
             "definition": "returnValue"
           },
           "mlSchema": {
-            "type": "any",
-            "optional": true
+            "type": "union",
+            "discriminator": "type",
+            "optInDiscriminator": true,
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Return type (mlSchema)",
+                "description": "Optional Jzod schema describing the type of the returned value.",
+                "initializeTo": {
+                  "initializeToType": "value",
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "number"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "boolean"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "type": {
+                    "type": "literal",
+                    "definition": "uuid"
+                  }
+                }
+              }
+            ]
           },
           "value": {
             "type": "any",
