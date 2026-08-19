@@ -619,7 +619,7 @@ export const ThemedIcon: React.FC<ThemedIconProps> = ({
   // Memoized icon resolution logic
   const resolvedIcon = useMemo(() => {
     try {
-      log.debug('Resolving icon:', icon );
+      // log.debug('Resolving icon:', icon );
       // Priority: icon prop > children (deprecated)
       const iconSource = icon ?? (typeof children === 'string' ? children : null);
       

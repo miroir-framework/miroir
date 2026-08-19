@@ -30,8 +30,80 @@ export const LOG_CONFIG_PRESETS: Record<string, LoggerOptions> = {
   "scope-ui": scopeUi as unknown as LoggerOptions,
 };
 
+/** Valid values for `VITE_MIROIR_LOG_CONFIG` and `VITE_MIROIR_LOG_CONFIG_FILENAME`. */
+export const VITE_MIROIR_LOG_CONFIG_VALUES = Object.keys(LOG_CONFIG_PRESETS);
+
 /** Default preset used when nothing is specified. Low-noise catch-all. */
 export const DEFAULT_LOG_CONFIG_NAME = "catch-all";
+
+export interface WebLogConfigResolution {
+  presetName: string;
+  loggerOptions: LoggerOptions;
+  rawSelection: string | undefined;
+  usedFallback: boolean;
+}
+
+function normalizePresetKey(raw: string): string {
+  return String(raw).split(/[\\/]/).pop()!.replace(/\.json$/i, "");
+}
+
+/** Raw env selection for the web app (Vite `import.meta.env` or Node `process.env`). */
+export function getWebLogConfigSelection(): string | undefined {
+  const fromImportMeta =
+    typeof import.meta !== "undefined"
+      ? (import.meta as any).env?.VITE_MIROIR_LOG_CONFIG ??
+        (import.meta as any).env?.VITE_MIROIR_LOG_CONFIG_FILENAME
+      : undefined;
+  if (fromImportMeta) {
+    return String(fromImportMeta);
+  }
+  if (typeof process !== "undefined") {
+    const fromProcess =
+      process.env?.VITE_MIROIR_LOG_CONFIG ?? process.env?.VITE_MIROIR_LOG_CONFIG_FILENAME;
+    if (fromProcess) {
+      return fromProcess;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Resolve a log config for the web app, including which preset was chosen.
+ *
+ * Accepts either a preset name (e.g. "catch-all", "scope-query") or a
+ * config file basename (e.g. "scope-query.json"). Falls back to the default
+ * preset when the selection is unknown. Selection source:
+ * `VITE_MIROIR_LOG_CONFIG` / `VITE_MIROIR_LOG_CONFIG_FILENAME`.
+ */
+export function resolveWebLogConfigWithMeta(
+  selection?: string | undefined,
+): WebLogConfigResolution {
+  const rawSelection = selection ?? getWebLogConfigSelection();
+  if (!rawSelection) {
+    return {
+      presetName: DEFAULT_LOG_CONFIG_NAME,
+      loggerOptions: LOG_CONFIG_PRESETS[DEFAULT_LOG_CONFIG_NAME],
+      rawSelection: undefined,
+      usedFallback: false,
+    };
+  }
+  const presetName = normalizePresetKey(rawSelection);
+  const loggerOptions = LOG_CONFIG_PRESETS[presetName];
+  if (loggerOptions) {
+    return {
+      presetName,
+      loggerOptions,
+      rawSelection,
+      usedFallback: false,
+    };
+  }
+  return {
+    presetName: DEFAULT_LOG_CONFIG_NAME,
+    loggerOptions: LOG_CONFIG_PRESETS[DEFAULT_LOG_CONFIG_NAME],
+    rawSelection,
+    usedFallback: true,
+  };
+}
 
 /**
  * Resolve a log config for the web app.
@@ -41,15 +113,5 @@ export const DEFAULT_LOG_CONFIG_NAME = "catch-all";
  * preset. Selection source: `VITE_MIROIR_LOG_CONFIG` / `VITE_MIROIR_LOG_CONFIG_FILENAME`.
  */
 export function resolveWebLogConfig(selection?: string | undefined): LoggerOptions {
-  const raw =
-    selection ??
-    (typeof import.meta !== "undefined"
-      ? (import.meta as any).env?.VITE_MIROIR_LOG_CONFIG ??
-        (import.meta as any).env?.VITE_MIROIR_LOG_CONFIG_FILENAME
-      : undefined);
-  if (!raw) {
-    return LOG_CONFIG_PRESETS[DEFAULT_LOG_CONFIG_NAME];
-  }
-  const base = String(raw).split(/[\\/]/).pop()!.replace(/\.json$/i, "");
-  return LOG_CONFIG_PRESETS[base] ?? LOG_CONFIG_PRESETS[DEFAULT_LOG_CONFIG_NAME];
+  return resolveWebLogConfigWithMeta(selection).loggerOptions;
 }
