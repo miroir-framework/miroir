@@ -12,9 +12,7 @@ import {
   isRealServerTransformerSessionOptions,
 } from "miroir-core";
 
-import {
-  RunnerTestSession,
-} from "../../../tests/helpers/RunnerTestSession.js";
+import { RunnerTestSession } from "./RunnerTestSession.js";
 import {
   IntegrationTestSession,
 } from "./IntegrationTestSession.js";

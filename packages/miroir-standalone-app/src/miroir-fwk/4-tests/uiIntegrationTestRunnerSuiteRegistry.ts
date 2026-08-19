@@ -60,8 +60,8 @@ import {
   publisherAndCountryTestMetaModel,
   publisherOnlyTestMetaModel,
   type TestbedSetupParameters
-} from "../../../tests/helpers/libraryPlayfieldSeeds.js";
-import { appForTestFreezePlayfieldSeed } from "../../../tests/helpers/appForTestPlayfieldSeeds.js";
+} from "./uiIntegrationPlayfieldSeeds.js";
+import { appForTestFreezePlayfieldSeed } from "./uiIntegrationAppForTestPlayfieldSeed.js";
 
 
 export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
