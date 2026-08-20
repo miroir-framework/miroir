@@ -1377,6 +1377,10 @@ export {
 /** @deprecated Phase 0 draft — use `miroirTestForAction` from fundamental types. */
 export { miroirTestForAction as miroirTestForActionDraft } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 export {
+  collectRunnerTestLeaves,
+  resolveRunnerFromMiroirTestSuite,
+  resolveRunnerFromRunnerRef,
+  resolveRunnerRefFromMiroirTestSuite,
   resolveRunnerTestLeaf,
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,

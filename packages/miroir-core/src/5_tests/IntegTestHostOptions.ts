@@ -3,6 +3,7 @@ import type {
   EntityInstance,
   MetaModel,
   MiroirConfigClient,
+  Runner,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion.js";
@@ -161,6 +162,8 @@ export type RunnerIntegrationSessionOptions = IntegTestHostOptions & {
   suiteTestParams?: Record<string, unknown>;
   skipRunTargetPlayfieldReset?: boolean;
   libraryPlayfieldSeed?: RunnerLibraryPlayfieldSeed;
+  /** Runner definitions keyed by Runner uuid for leaf `runnerRef` lookup. */
+  runnerUuidIndex?: Record<string, Runner>;
 };
 
 // export type IntegrationTestSessionOptionsByKind = {

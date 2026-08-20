@@ -6,6 +6,7 @@ import type {
   Deployment,
   MiroirConfigClient,
   MiroirTestForRunner,
+  MiroirTestSuite,
   Runner,
   StoreUnitConfiguration,
   TestCompositeActionParams,
@@ -30,6 +31,58 @@ export {
   mergeRunnerTestParamBank,
   expandGetFromParametersInParamBank,
 } from "./TestbedUuids.js";
+
+export function collectRunnerTestLeaves(suite: MiroirTestSuite): MiroirTestForRunner[] {
+  const leaves: MiroirTestForRunner[] = [];
+  for (const test of suite.miroirTests) {
+    if (test.miroirTestType === "runnerTest") {
+      leaves.push(test);
+    } else if (test.miroirTestType === "miroirTestSuite") {
+      leaves.push(...collectRunnerTestLeaves(test));
+    }
+  }
+  return leaves;
+}
+
+export function resolveRunnerRefFromMiroirTestSuite(suite: MiroirTestSuite): string {
+  const leaves = collectRunnerTestLeaves(suite);
+  if (leaves.length === 0) {
+    throw new Error(
+      `MiroirTestSuite "${suite.miroirTestLabel}" has no runnerTest leaves — cannot resolve runnerRef`,
+    );
+  }
+  const runnerRef = leaves[0].runnerRef;
+  for (const leaf of leaves.slice(1)) {
+    if (leaf.runnerRef !== runnerRef) {
+      throw new Error(
+        `MiroirTestSuite "${suite.miroirTestLabel}" has inconsistent runnerRef values across runnerTest leaves`,
+      );
+    }
+  }
+  return runnerRef;
+}
+
+export function resolveRunnerFromRunnerRef(
+  runnerRef: string,
+  runnerUuidIndex: Record<string, Runner>,
+): Runner {
+  const runner = runnerUuidIndex[runnerRef];
+  if (!runner) {
+    throw new Error(`runnerRef "${runnerRef}" not found in runnerUuidIndex`);
+  }
+  return runner;
+}
+
+/** Resolves the suite Runner via its runnerTest leaves' `runnerRef` and the host index. */
+export function resolveRunnerFromMiroirTestSuite(
+  suite: MiroirTestSuite,
+  runnerUuidIndex: Record<string, Runner>,
+): Runner {
+  return resolveRunnerFromRunnerRef(
+    resolveRunnerRefFromMiroirTestSuite(suite),
+    runnerUuidIndex,
+  );
+}
 
 export type ResolveRunnerTestLeafBuildContext = {
   internalMiroirConfig: MiroirConfigClient;
@@ -138,9 +191,14 @@ export async function runMiroirRunnerTest(
       "runMiroirRunnerTest: executionEnvironment.runnerTestContext is required for runnerTest leaves",
     );
   }
-  if (runnerContext.resolvedRunner === undefined) {
+  const runnerUuidIndex = runnerContext.runnerUuidIndex;
+  const resolvedRunner =
+    runnerUuidIndex !== undefined
+      ? resolveRunnerFromRunnerRef(leaf.runnerRef, runnerUuidIndex)
+      : runnerContext.resolvedRunner;
+  if (resolvedRunner === undefined) {
     throw new Error(
-      "runMiroirRunnerTest: runnerTestContext.resolvedRunner is required for runnerTest leaves",
+      "runMiroirRunnerTest: runnerTestContext.runnerUuidIndex or resolvedRunner is required for runnerTest leaves",
     );
   }
 
@@ -154,7 +212,7 @@ export async function runMiroirRunnerTest(
     },
     runTarget: runnerContext.runTarget,
     sessionTestParams: runnerContext.testParams,
-    resolvedRunner: runnerContext.resolvedRunner,
+    resolvedRunner,
   });
 
   const result = await runRunnerTestCompositeAction(

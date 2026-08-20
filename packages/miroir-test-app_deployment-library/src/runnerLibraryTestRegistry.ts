@@ -5,8 +5,8 @@ import returnDocument from "../assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf
 
 /**
  * Typed Runners for the single-leaf library runner MiroirTest suites.
- * Each suite (`miroirTest_runner_lend_document` / `miroirTest_runner_return_document`)
- * passes its Runner directly as `resolvedRunner` — no uuid-keyed runnerRegistry.
+ * Each runnerTest leaf declares `runnerRef`; the host passes `runnerUuidIndex`
+ * for lookup at session / execution time.
  */
 export const lendDocumentRunner = lendDocument as unknown as Runner;
 export const returnDocumentRunner = returnDocument as unknown as Runner;

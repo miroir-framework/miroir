@@ -26,9 +26,9 @@ import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
 import {
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+  UI_INTEGRATION_RUNNER_UUID_INDEX,
   buildUiIntegrationOrchestratorCreateSessionParams,
   resolveUiIntegrationDefaultApplicationName,
-  resolveUiIntegrationRunnerFromEntry,
 } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { miroirAppStartup } from "../src/startup.js";
 import {
@@ -97,6 +97,7 @@ function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
     pageLabel,
     runTarget,
     suite.testParams,
+    UI_INTEGRATION_RUNNER_UUID_INDEX,
   );
 }
 
@@ -114,6 +115,5 @@ if (config.suiteKeys.length > 0) {
     config,
     miroirActivityTracker,
     testSession,
-    (suiteKey) => resolveUiIntegrationRunnerFromEntry(UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey]!),
   );
 }

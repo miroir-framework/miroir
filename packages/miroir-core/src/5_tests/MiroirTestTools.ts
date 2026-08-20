@@ -59,6 +59,8 @@ export type CompositeActionTestContext = {
 /** Runner context = composite-action context + optional resolved Runner (runnerTest leaves only). */
 export type RunnerTestContext = CompositeActionTestContext & {
   resolvedRunner?: Runner;
+  /** Runner definitions keyed by uuid; used to resolve leaf `runnerRef` at execution time. */
+  runnerUuidIndex?: Record<string, Runner>;
 };
 
 export type MiroirTestExecutionEnvironment = {

@@ -12,6 +12,7 @@ import {
   listUiIntegrationRunnerSuiteKeys,
   resolveUiIntegrationOrchestratorSessionKind,
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+  UI_INTEGRATION_RUNNER_UUID_INDEX,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
@@ -52,10 +53,14 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       "test",
       runTarget,
       {},
+      UI_INTEGRATION_RUNNER_UUID_INDEX,
     );
     expect(runnerParams.kind).toBe("runner");
     if (runnerParams.kind === "runner") {
       expect(runnerParams.resolvedRunner).toBeDefined();
+      expect(runnerParams.sessionSpecificOptions?.runnerUuidIndex).toBe(
+        UI_INTEGRATION_RUNNER_UUID_INDEX,
+      );
     }
 
     const actionParams = buildUiIntegrationOrchestratorCreateSessionParams(
@@ -64,6 +69,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       "test",
       runTarget,
       {},
+      UI_INTEGRATION_RUNNER_UUID_INDEX,
     );
     expect(actionParams.kind).toBe("action");
     if (actionParams.kind === "action") {

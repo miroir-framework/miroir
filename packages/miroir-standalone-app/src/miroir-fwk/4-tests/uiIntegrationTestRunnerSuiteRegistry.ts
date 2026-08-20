@@ -10,6 +10,7 @@ import type {
   Runner,
   TestbedUuids,
 } from "miroir-core";
+import { resolveRunnerFromMiroirTestSuite } from "miroir-core";
 import {
   author1,
   author2,
@@ -25,8 +26,8 @@ import {
   entityAuthor,
   entityBook,
   entityPublisher,
-  lendDocument,
-  returnDocument,
+  lendDocumentRunner,
+  returnDocumentRunner,
   miroirTest_runner_lend_document,
   miroirTest_runner_return_document,
   defaultLibraryAppModel,
@@ -44,11 +45,7 @@ import {
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
   miroirTest_runner_freeze_application_version,
-  // miroirTest_runner_freeze_application_version,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
-  runnerCreateEntity,
-  runnerDropEntity,
-  runnerFreezeApplicationVersion,
 } from "miroir-test-app_deployment-miroir";
 
 import {
@@ -81,10 +78,16 @@ export const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_drop_entity.name;
 export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY =
   miroirTest_runner_freeze_application_version.name;
 
+/** Runners keyed by uuid for UI integration runnerTest resolution via leaf `runnerRef`. */
+export const UI_INTEGRATION_RUNNER_UUID_INDEX: Record<string, Runner> = {
+  ...RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+  [lendDocumentRunner.uuid]: lendDocumentRunner,
+  [returnDocumentRunner.uuid]: returnDocumentRunner,
+};
+
 export type UiIntegrationRunnerTestSuiteEntry = {
   kind: "runnerTest";
   suiteDefinition: MiroirTestSuite;
-  resolvedRunner: Runner;
   skipRunTargetPlayfieldReset: boolean;
   /** Ephemeral runTarget applicationName when suite omits `runTarget`. */
   defaultApplicationName: string;
@@ -133,12 +136,6 @@ export function resolveUiIntegrationDefaultApplicationName(
   return entry.kind === "runnerTest" ? entry.defaultApplicationName : undefined;
 }
 
-export function resolveUiIntegrationRunnerFromEntry(
-  entry: UiIntegrationRunnerSuiteEntry,
-): Runner | undefined {
-  return entry.kind === "runnerTest" ? entry.resolvedRunner : undefined;
-}
-
 export function resolveUiIntegrationOrchestratorSessionKind(
   entry: UiIntegrationRunnerSuiteEntry,
 ): "runner" | "action" {
@@ -151,17 +148,20 @@ export function buildUiIntegrationOrchestratorCreateSessionParams(
   pageLabel: string,
   runTarget: TestbedUuids,
   suiteTestParams: Record<string, unknown> | undefined,
+  runnerUuidIndex: Record<string, Runner>,
 ): IntegrationTestSessionFactoryCreateParams {
   if (entry.kind === "runnerTest") {
+    const resolvedRunner = resolveRunnerFromMiroirTestSuite(entry.suiteDefinition, runnerUuidIndex);
     return {
       kind: "runner",
       context,
-      resolvedRunner: entry.resolvedRunner,
+      resolvedRunner,
       sessionSpecificOptions: buildUiIntegrationRunnerSessionSpecificOptions(
         entry,
         pageLabel,
         runTarget,
         suiteTestParams,
+        runnerUuidIndex,
       ),
     };
   }
@@ -171,6 +171,7 @@ export function buildUiIntegrationOrchestratorCreateSessionParams(
     pageLabel,
     runTarget,
     suiteTestParams,
+    runnerUuidIndex,
   );
   if (sessionSpecificOptions.libraryPlayfieldSeed === undefined) {
     throw new Error(
@@ -190,10 +191,12 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
   pageLabel: string,
   runTarget: TestbedUuids,
   suiteTestParams: Record<string, unknown> | undefined,
+  runnerUuidIndex: Record<string, Runner>,
 ): {
   pageLabel: string;
   runTarget: TestbedUuids;
   suiteTestParams: Record<string, unknown> | undefined;
+  runnerUuidIndex: Record<string, Runner>;
   libraryPlayfieldSeed?: TestbedSetupParameters;
   skipRunTargetPlayfieldReset?: boolean;
 } {
@@ -203,6 +206,7 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
         pageLabel,
         runTarget,
         suiteTestParams,
+        runnerUuidIndex,
         ...(entry.libraryPlayfieldSeed !== null
           ? { libraryPlayfieldSeed: entry.libraryPlayfieldSeed }
           : {}),
@@ -214,6 +218,7 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
         pageLabel,
         runTarget,
         suiteTestParams,
+        runnerUuidIndex,
         libraryPlayfieldSeed: entry.libraryPlayfieldSeed,
       };
     default: {
@@ -228,7 +233,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    resolvedRunner: lendDocument as Runner,
     skipRunTargetPlayfieldReset: false,
     defaultApplicationName: "Library",
     libraryPlayfieldSeed: null,
@@ -238,7 +242,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    resolvedRunner: returnDocument as Runner,
     skipRunTargetPlayfieldReset: false,
     defaultApplicationName: "Library",
     libraryPlayfieldSeed: null,
@@ -248,7 +251,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[runnerCreateEntity.uuid],
     skipRunTargetPlayfieldReset: true,
     defaultApplicationName: "testApplication_CreateEntity",
     libraryPlayfieldSeed: null,
@@ -258,7 +260,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[runnerDropEntity.uuid],
     skipRunTargetPlayfieldReset: true,
     defaultApplicationName: "testApplication_DropEntity",
     libraryPlayfieldSeed: null,
@@ -268,7 +269,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[runnerFreezeApplicationVersion.uuid],
     skipRunTargetPlayfieldReset: false,
     libraryPlayfieldSeed: appForTestFreezePlayfieldSeed,
     defaultApplicationName: "appForTest",

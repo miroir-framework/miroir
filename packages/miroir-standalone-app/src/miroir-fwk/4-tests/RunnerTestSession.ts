@@ -55,6 +55,8 @@ export type RunnerTestSessionOptions = IntegTestHostOptions & {
   suiteTestParams?: Record<string, unknown>;
   /** Runner executed by the suite's runnerTest leaf; omitted for actionTest-only sessions. */
   resolvedRunner?: Runner;
+  /** Runner definitions keyed by uuid for per-leaf `runnerRef` lookup at execution time. */
+  runnerUuidIndex?: Record<string, Runner>;
   /**
    * Optional playfield seed applied in `beforeEach` after reset
    * (Action Data.CRUD MiroirTest suites).
@@ -193,6 +195,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       miroirEventService,
       runTarget,
       resolvedRunner,
+      runnerUuidIndex,
     } = this.options;
     const pageLabel = this.options.pageLabel ?? "miroir-runner-tests.integ";
 
@@ -301,6 +304,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       testDeploymentStorageConfiguration,
       runTarget,
       resolvedRunner,
+      runnerUuidIndex,
       testParams: sessionTestParams,
       runtimeContext: {},
     };

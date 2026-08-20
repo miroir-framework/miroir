@@ -27,6 +27,7 @@ import { emptyApplicationModel } from "../../src/1_core/Model";
 import { remapLibraryAppModelForRunTarget } from "../../src/1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
 import {
   buildRunnerTestSessionParamBank,
+  resolveRunnerFromMiroirTestSuite,
   resolveRunnerTestLeaf
 } from "../../src/5_tests/RunnerTestTools";
 import { getTestbedUuidsForTestSuite } from "../../src/5_tests/TestbedUuids";
@@ -106,7 +107,14 @@ describe("runnerTest tools", () => {
     expect(parsed.fixtureRef).toBeUndefined();
   });
 
-  it("library runner suite leaves reference their Runner via runnerRef (resolvedRunner, no registry)", () => {
+  it("resolveRunnerFromMiroirTestSuite looks up Runner via leaf runnerRef + runnerUuidIndex", () => {
+    const suite = runnerLendDocumentSuite();
+    const runnerUuidIndex = { [lendDocument.uuid]: lendDocument };
+    expect(resolveRunnerFromMiroirTestSuite(suite, runnerUuidIndex)).toBe(lendDocument);
+    expect(runnerLibraryLeaf(suite).runnerRef).toBe(lendDocument.uuid);
+  });
+
+  it("library runner suite leaves reference their Runner via runnerRef (resolved via runnerUuidIndex)", () => {
     expect(runnerLibraryLeaf(runnerLendDocumentSuite()).runnerRef).toBe(lendDocument.uuid);
     expect(runnerLibraryLeaf(runnerReturnDocumentSuite()).runnerRef).toBe(returnDocument.uuid);
     expect(lendDocument.uuid).toBe("cc853632-f158-43fa-b9ed-437c9c25f539");

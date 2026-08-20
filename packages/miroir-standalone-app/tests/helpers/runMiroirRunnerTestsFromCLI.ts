@@ -10,7 +10,6 @@ import {
   type MiroirTestExecutionOptions,
   type MiroirTestSuite,
   type RunMiroirTests,
-  type Runner,
   type RunnerTestSessionInterface,
   type VitestNamespace,
 } from "miroir-core";
@@ -75,7 +74,6 @@ export async function runMiroirRunnerTestsFromCLI(
   config: MiroirTestCliConfig,
   miroirActivityTracker: MiroirActivityTracker,
   testSession: RunnerTestSessionInterface,
-  resolveSuiteRunner?: (suiteKey: string, suite: MiroirTestSuite) => Runner | undefined,
 ): Promise<void> {
   const executionEnvironment: MiroirTestExecutionEnvironment = await testSession.initSession();
   const executionOptions: MiroirTestExecutionOptions = {
@@ -104,30 +102,28 @@ export async function runMiroirRunnerTestsFromCLI(
     );
   });
 
+  const runnerTestContext = executionEnvironment.runnerTestContext;
+
   for (const suiteKey of config.suiteKeys) {
     const suiteExport = loadRunnerOrActionMiroirTestSuite(suiteKey);
     loadedSuites.push({
       suiteKey,
       definition: suiteExport,
     });
-    // The session is built once from the primary suite, but each suite may target a
-    // different runner (e.g. runner_lend_document + runner_return_document in one
-    // invocation). Leaves execute after registration, so give each suite its own
-    // executionOptions capturing its own resolvedRunner / suite testParams.
-    const suiteRunner = resolveSuiteRunner?.(suiteKey, suiteExport);
-    const runnerTestContext = executionEnvironment.runnerTestContext;
+    // The session is built once from the primary suite. Each suite may carry its
+    // own testParams bank; runner resolution uses each leaf's runnerRef + session
+    // runnerUuidIndex at execution time.
     const suiteExecutionOptions: MiroirTestExecutionOptions =
-      suiteRunner && runnerTestContext
+      runnerTestContext && suiteExport.testParams
         ? {
             ...executionOptions,
             executionEnvironment: {
               ...executionEnvironment,
               runnerTestContext: {
                 ...runnerTestContext,
-                resolvedRunner: suiteRunner,
                 testParams: {
                   ...runnerTestContext.testParams,
-                  ...(suiteExport.testParams ?? {}),
+                  ...suiteExport.testParams,
                 },
               },
             },
