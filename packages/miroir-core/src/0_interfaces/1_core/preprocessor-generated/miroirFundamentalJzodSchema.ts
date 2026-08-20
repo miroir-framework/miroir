@@ -6846,6 +6846,14 @@ export const miroirFundamentalJzodSchema = {
             "type": "boolean",
             "optional": true
           },
+          "defaultApplicationName": {
+            "type": "string",
+            "optional": true
+          },
+          "skipRunTargetPlayfieldReset": {
+            "type": "boolean",
+            "optional": true
+          },
           "miroirTestType": {
             "type": "literal",
             "definition": "runnerTest"
@@ -7541,6 +7549,14 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true
                   },
                   "skipDropDeployment": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "defaultApplicationName": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "skipRunTargetPlayfieldReset": {
                     "type": "boolean",
                     "optional": true
                   },

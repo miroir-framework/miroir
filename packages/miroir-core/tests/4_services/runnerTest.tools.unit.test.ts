@@ -27,8 +27,10 @@ import { emptyApplicationModel } from "../../src/1_core/Model";
 import { remapLibraryAppModelForRunTarget } from "../../src/1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
 import {
   buildRunnerTestSessionParamBank,
+  resolveDefaultApplicationNameFromMiroirTestSuite,
   resolveRunnerFromMiroirTestSuite,
-  resolveRunnerTestLeaf
+  resolveRunnerTestLeaf,
+  resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
 } from "../../src/5_tests/RunnerTestTools";
 import { getTestbedUuidsForTestSuite } from "../../src/5_tests/TestbedUuids";
 
@@ -105,6 +107,21 @@ describe("runnerTest tools", () => {
     });
     expect(parsed.runnerRef).toBe(lendDocumentUuid);
     expect(parsed.fixtureRef).toBeUndefined();
+  });
+
+  it("runner create/drop entity leaves declare skipRunTargetPlayfieldReset", () => {
+    const createSuite = (miroirTest_runner_create_entity as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    const dropSuite = (miroirTest_runner_drop_entity as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    expect(resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(createSuite)).toBe(true);
+    expect(resolveDefaultApplicationNameFromMiroirTestSuite(createSuite)).toBe(
+      "testApplication_CreateEntity",
+    );
+    expect(resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(dropSuite)).toBe(true);
+    expect(resolveDefaultApplicationNameFromMiroirTestSuite(dropSuite)).toBe(
+      "testApplication_DropEntity",
+    );
   });
 
   it("resolveRunnerFromMiroirTestSuite looks up Runner via leaf runnerRef + runnerUuidIndex", () => {

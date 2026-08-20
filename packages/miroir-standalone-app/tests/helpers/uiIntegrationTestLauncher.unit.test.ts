@@ -7,6 +7,7 @@ import {
   isUiIntegrationSuiteRunSuccessful,
   resolveUiIntegrationTestRunTarget,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
+import { resolveDefaultApplicationNameFromMiroirTestSuite } from "miroir-core";
 import {
   buildUiIntegrationOrchestratorCreateSessionParams,
   listUiIntegrationRunnerSuiteKeys,
@@ -114,13 +115,14 @@ describe("resolveUiIntegrationTestRunTarget (B3)", () => {
     expect(resolved.deploymentUuid).toBe(suite.runTarget?.deploymentUuid);
   });
 
-  it("ephemeral mode ignores suite pins", () => {
+  it("ephemeral mode ignores suite pins and uses leaf defaultApplicationName", () => {
     const suite = runnerReturnDocumentSuite();
     const pinned = resolveUiIntegrationTestRunTarget("pinned", suite);
     const ephemeral = resolveUiIntegrationTestRunTarget("ephemeral", suite);
 
     expect(ephemeral.applicationUuid).not.toBe(pinned.applicationUuid);
     expect(ephemeral.deploymentUuid).not.toBe(pinned.deploymentUuid);
+    expect(ephemeral.applicationName).toBe(resolveDefaultApplicationNameFromMiroirTestSuite(suite));
   });
 });
 

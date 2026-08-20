@@ -10,7 +10,7 @@ import type {
   Runner,
   TestbedUuids,
 } from "miroir-core";
-import { resolveRunnerFromMiroirTestSuite } from "miroir-core";
+import { resolveRunnerFromMiroirTestSuite, resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite } from "miroir-core";
 import {
   author1,
   author2,
@@ -88,9 +88,6 @@ export const UI_INTEGRATION_RUNNER_UUID_INDEX: Record<string, Runner> = {
 export type UiIntegrationRunnerTestSuiteEntry = {
   kind: "runnerTest";
   suiteDefinition: MiroirTestSuite;
-  skipRunTargetPlayfieldReset: boolean;
-  /** Ephemeral runTarget applicationName when suite omits `runTarget`. */
-  defaultApplicationName: string;
   /** Playfield seed for runner suites that need a custom testbed (e.g. freeze); `null` otherwise. */
   libraryPlayfieldSeed: TestbedSetupParameters | null;
 };
@@ -128,12 +125,6 @@ export function isUiIntegrationActionTestSuiteEntry(
   entry: UiIntegrationRunnerSuiteEntry,
 ): entry is UiIntegrationActionTestSuiteEntry {
   return entry.kind === "actionTest";
-}
-
-export function resolveUiIntegrationDefaultApplicationName(
-  entry: UiIntegrationRunnerSuiteEntry,
-): string | undefined {
-  return entry.kind === "runnerTest" ? entry.defaultApplicationName : undefined;
 }
 
 export function resolveUiIntegrationOrchestratorSessionKind(
@@ -210,7 +201,9 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
         ...(entry.libraryPlayfieldSeed !== null
           ? { libraryPlayfieldSeed: entry.libraryPlayfieldSeed }
           : {}),
-        ...(entry.skipRunTargetPlayfieldReset ? { skipRunTargetPlayfieldReset: true } : {}),
+        ...(resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition)
+          ? { skipRunTargetPlayfieldReset: true }
+          : {}),
       };
     case "domainControllerTest":
     case "actionTest":
@@ -233,8 +226,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    skipRunTargetPlayfieldReset: false,
-    defaultApplicationName: "Library",
     libraryPlayfieldSeed: null,
   },
   // ###############################################################################
@@ -242,8 +233,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    skipRunTargetPlayfieldReset: false,
-    defaultApplicationName: "Library",
     libraryPlayfieldSeed: null,
   },
   // ###############################################################################
@@ -251,8 +240,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    skipRunTargetPlayfieldReset: true,
-    defaultApplicationName: "testApplication_CreateEntity",
     libraryPlayfieldSeed: null,
   },
   // ###############################################################################
@@ -260,8 +247,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    skipRunTargetPlayfieldReset: true,
-    defaultApplicationName: "testApplication_DropEntity",
     libraryPlayfieldSeed: null,
   },
   // ###############################################################################
@@ -269,9 +254,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    skipRunTargetPlayfieldReset: false,
     libraryPlayfieldSeed: appForTestFreezePlayfieldSeed,
-    defaultApplicationName: "appForTest",
   },
   // ###############################################################################
   [miroirTest_domain_controller_data_crud.name]: {

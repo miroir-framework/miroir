@@ -621,6 +621,14 @@
                 "type": "boolean",
                 "optional": true
               },
+              "defaultApplicationName": {
+                "type": "string",
+                "optional": true
+              },
+              "skipRunTargetPlayfieldReset": {
+                "type": "boolean",
+                "optional": true
+              },
               "miroirTestType": {
                 "type": "literal",
                 "definition": "runnerTest"

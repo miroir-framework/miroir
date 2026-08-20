@@ -4,6 +4,7 @@ import type {
   MiroirTestForRunner,
   MiroirTestSuite,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { resolveDefaultApplicationNameFromMiroirTestSuite } from "./runnerTestSuiteResolve.js";
 
 export type TestbedUuids = {
   applicationUuid: string;
@@ -14,8 +15,9 @@ export type TestbedUuids = {
 export type RunnerTestRunTargetOverride = Partial<TestbedUuids>;
 
 export type ResolveRunnerTestRunTargetParams = {
-  suite: Pick<MiroirTestSuite, "runTarget" | "miroirTestLabel">;
+  suite: Pick<MiroirTestSuite, "runTarget" | "miroirTestLabel" | "miroirTests">;
   callerOverride?: RunnerTestRunTargetOverride;
+  /** Fallback when runTarget and runnerTest leaves omit defaultApplicationName. */
   defaultApplicationName?: string;
   generateUuid?: () => string;
 };
@@ -35,9 +37,12 @@ export function getTestbedUuidsForTestSuite({
 }: ResolveRunnerTestRunTargetParams): TestbedUuids {
   const fromSuite = suite.runTarget;
 
+  const fromLeaves = resolveDefaultApplicationNameFromMiroirTestSuite(suite as MiroirTestSuite);
+
   const resolved: TestbedUuids = {
     applicationUuid: fromSuite?.applicationUuid ?? generateUuid(),
-    applicationName: fromSuite?.applicationName ?? defaultApplicationName,
+    applicationName:
+      fromSuite?.applicationName ?? fromLeaves ?? defaultApplicationName,
     deploymentUuid: fromSuite?.deploymentUuid ?? generateUuid(),
   };
 

@@ -32,7 +32,6 @@ import {
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
   UI_INTEGRATION_RUNNER_UUID_INDEX,
   buildUiIntegrationOrchestratorCreateSessionParams,
-  resolveUiIntegrationDefaultApplicationName,
   type UiIntegrationRunnerSuiteEntry,
 } from "./uiIntegrationTestRunnerSuiteRegistry.js";
 import { resolveUiIntegrationTransformerSuite } from "./uiIntegrationTestTransformerSuiteRegistry.js";
@@ -78,18 +77,16 @@ export type UiIntegrationTestLauncherEnvironment = {
 export function resolveUiIntegrationTestRunTarget(
   runTargetMode: UiIntegrationTestRunTargetMode,
   suite: MiroirTestSuite,
-  defaultApplicationName?: string,
 ): TestbedUuids {
   if (runTargetMode === "ephemeral") {
     return getTestbedUuidsForTestSuite({
-      suite: { miroirTestLabel: suite.miroirTestLabel },
-      ...(defaultApplicationName ? { defaultApplicationName } : {}),
+      suite: {
+        miroirTestLabel: suite.miroirTestLabel,
+        miroirTests: suite.miroirTests,
+      },
     });
   }
-  return getTestbedUuidsForTestSuite({
-    suite,
-    ...(defaultApplicationName ? { defaultApplicationName } : {}),
-  });
+  return getTestbedUuidsForTestSuite({ suite });
 }
 
 export function resolveUiIntegrationTransformerApplicationIdentity(
@@ -376,7 +373,6 @@ export async function runUiIntegrationTestSuite(
   const runTarget = resolveUiIntegrationTestRunTarget(
     request.runTargetMode,
     request.suiteDefinition,
-    resolveUiIntegrationDefaultApplicationName(suiteEntry),
   );
 
   return coordinator.runExclusive(() =>

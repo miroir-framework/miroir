@@ -248,7 +248,9 @@
               }
             }
           }
-        ]
+        ],
+        "defaultApplicationName": "testApplication_CreateEntity",
+        "skipRunTargetPlayfieldReset": true
       },
       {
         "miroirTestType": "runnerTest",
@@ -534,7 +536,9 @@
               }
             }
           }
-        ]
+        ],
+        "defaultApplicationName": "testApplication_CreateEntity",
+        "skipRunTargetPlayfieldReset": true
       }
     ]
   }

@@ -144,7 +144,8 @@
             }
           }
         ],
-        "preRunnerCompositeActions": []
+        "preRunnerCompositeActions": [],
+        "defaultApplicationName": "Library"
       }
     ]
   }

@@ -735,7 +735,9 @@
               }
             }
           }
-        ]
+        ],
+        "defaultApplicationName": "testApplication_DropEntity",
+        "skipRunTargetPlayfieldReset": true
       }
     ]
   }

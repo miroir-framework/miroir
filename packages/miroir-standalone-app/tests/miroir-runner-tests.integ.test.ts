@@ -19,16 +19,12 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import {
-  miroirTest_runner_freeze_application_version,
-} from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
 import {
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
   UI_INTEGRATION_RUNNER_UUID_INDEX,
   buildUiIntegrationOrchestratorCreateSessionParams,
-  resolveUiIntegrationDefaultApplicationName,
 } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { miroirAppStartup } from "../src/startup.js";
 import {
@@ -79,14 +75,7 @@ function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   if (!registryEntry) {
     throw new Error(`Unknown runner/action suite key: ${suiteKey}`);
   }
-  const runTarget = getTestbedUuidsForTestSuite({
-    suite,
-    defaultApplicationName:
-      resolveUiIntegrationDefaultApplicationName(registryEntry) ??
-      (suiteKey === miroirTest_runner_freeze_application_version.name
-        ? "appForTest"
-        : "Library"),
-  });
+  const runTarget = getTestbedUuidsForTestSuite({ suite });
   return buildUiIntegrationOrchestratorCreateSessionParams(
     registryEntry,
     {

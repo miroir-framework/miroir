@@ -24,6 +24,7 @@ import type { MiroirTestRunFilter } from "../0_interfaces/5-tests/miroirTestType
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
 import type { TestbedUuids } from "./TestbedUuids";
 import { mergeRunnerTestParamBank, expandGetFromParametersInParamBank } from "./TestbedUuids.js";
+import { resolveRunnerRefFromMiroirTestSuite } from "./runnerTestSuiteResolve.js";
 
 export { miroirTestForRunner as runnerTestJzodSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 export {
@@ -32,35 +33,12 @@ export {
   expandGetFromParametersInParamBank,
 } from "./TestbedUuids.js";
 
-export function collectRunnerTestLeaves(suite: MiroirTestSuite): MiroirTestForRunner[] {
-  const leaves: MiroirTestForRunner[] = [];
-  for (const test of suite.miroirTests) {
-    if (test.miroirTestType === "runnerTest") {
-      leaves.push(test);
-    } else if (test.miroirTestType === "miroirTestSuite") {
-      leaves.push(...collectRunnerTestLeaves(test));
-    }
-  }
-  return leaves;
-}
-
-export function resolveRunnerRefFromMiroirTestSuite(suite: MiroirTestSuite): string {
-  const leaves = collectRunnerTestLeaves(suite);
-  if (leaves.length === 0) {
-    throw new Error(
-      `MiroirTestSuite "${suite.miroirTestLabel}" has no runnerTest leaves — cannot resolve runnerRef`,
-    );
-  }
-  const runnerRef = leaves[0].runnerRef;
-  for (const leaf of leaves.slice(1)) {
-    if (leaf.runnerRef !== runnerRef) {
-      throw new Error(
-        `MiroirTestSuite "${suite.miroirTestLabel}" has inconsistent runnerRef values across runnerTest leaves`,
-      );
-    }
-  }
-  return runnerRef;
-}
+export {
+  collectRunnerTestLeaves,
+  resolveDefaultApplicationNameFromMiroirTestSuite,
+  resolveRunnerRefFromMiroirTestSuite,
+  resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
+} from "./runnerTestSuiteResolve.js";
 
 export function resolveRunnerFromRunnerRef(
   runnerRef: string,

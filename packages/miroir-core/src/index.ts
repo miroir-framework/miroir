@@ -1378,10 +1378,12 @@ export {
 export { miroirTestForAction as miroirTestForActionDraft } from "./0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 export {
   collectRunnerTestLeaves,
+  resolveDefaultApplicationNameFromMiroirTestSuite,
   resolveRunnerFromMiroirTestSuite,
   resolveRunnerFromRunnerRef,
   resolveRunnerRefFromMiroirTestSuite,
   resolveRunnerTestLeaf,
+  resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
   runMiroirRunnerTest as runMiroirRunnerTestInMemory,
   runRunnerTestCompositeAction,
   runnerTestJzodSchema,
