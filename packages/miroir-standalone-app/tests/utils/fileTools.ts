@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { MiroirConfigClient, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import { MiroirConfigClient, MiroirLoggerFactory, type LoggerInterface, type LoggerOptions } from "miroir-core";
 import path from "path";
 import { cleanLevel } from "../3_controllers/constants";
 import { packageName } from "../../src/constants";
@@ -48,7 +48,7 @@ function applyPortableFilesystemDeploymentRoot(
 }
 
 // ################################################################################################
-export async function loadTestSingleConfigFile(fileName:string): Promise<MiroirConfigClient> {
+export async function loadTestSingleConfigFile<T>(fileName:string): Promise<T> {
   try {
     const ext = fileName.split('.').pop();
     if(ext !== "json") {
@@ -64,8 +64,10 @@ export async function loadTestSingleConfigFile(fileName:string): Promise<MiroirC
     const configFileContents = unwrapJsonModule(await import(configFilePath));
     log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile configFileContents", configFileContents);
   
-    const miroirConfig:MiroirConfigClient = configFileContents as MiroirConfigClient;
-  
+    const miroirConfig:T = configFileContents as T;
+    if (!miroirConfig) {
+      throw new Error(`Config file ${fileName} returned undefined`);
+    }
     log.info("@@@@@@@@@@@@@@@@@@ loadTestSingleConfigFile miroirConfig", JSON.stringify(miroirConfig, null, 2));
     return Promise.resolve(miroirConfig);
   } catch (error) {
@@ -92,27 +94,38 @@ function resolveLogConfigPath(selection: string): string {
 }
 
 // ################################################################################################
-export async function loadTestConfigFiles(env:any) {
+export async function loadTestConfigFiles(
+  env: any,
+): Promise<{ miroirConfig: MiroirConfigClient | undefined; logConfig: LoggerOptions | undefined }> {
   try {
-    let miroirConfig:MiroirConfigClient
+    let miroirConfig: MiroirConfigClient | undefined = undefined;
     if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
       miroirConfig = applyPortableFilesystemDeploymentRoot(
-        await loadTestSingleConfigFile(env.VITE_MIROIR_TEST_CONFIG_FILENAME??""),
+        await loadTestSingleConfigFile<MiroirConfigClient>(
+          env.VITE_MIROIR_TEST_CONFIG_FILENAME ?? "",
+        ),
         env,
       );
     } else {
-      throw new Error("Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file");
+      throw new Error(
+        "Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file",
+      );
     }
 
     // Log config: default to the low-noise catch-all preset so nonreg / plain
     // test runs don't drown. Override explicitly via VITE_MIROIR_LOG_CONFIG_FILENAME
     // (preset name or path) when troubleshooting.
     const logSelection = env.VITE_MIROIR_LOG_CONFIG_FILENAME ?? DEFAULT_LOG_CONFIG_NAME;
-    const logConfig = await loadTestSingleConfigFile(resolveLogConfigPath(logSelection));
-    log.info("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles config file contents:", JSON.stringify(miroirConfig, null, 2));
-    return Promise.resolve({miroirConfig,logConfig})
+    const logConfig = await loadTestSingleConfigFile<LoggerOptions>(
+      resolveLogConfigPath(logSelection),
+    );
+    log.info(
+      "@@@@@@@@@@@@@@@@@@ loadTestConfigFiles config file contents:",
+      JSON.stringify(miroirConfig, null, 2),
+    );
+    return Promise.resolve({ miroirConfig, logConfig });
   } catch (error) {
     console.error("@@@@@@@@@@@@@@@@@@ loadTestConfigFiles error", error);
-    throw error;    
+    throw error;
   }
 }

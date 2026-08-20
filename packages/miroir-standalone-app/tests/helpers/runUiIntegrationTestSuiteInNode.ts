@@ -34,7 +34,7 @@ export function createNodeUiIntegrationTestLauncherEnvironment(
       process.env.PWD = resolveRepoRoot();
       try {
         const { miroirConfig, logConfig } = await loadTestConfigFiles(process.env);
-        return { miroirConfig, logConfig: logConfig as LoggerOptions };
+        return { miroirConfig, logConfig: logConfig as any as LoggerOptions };
       } finally {
         if (previousPwd !== undefined) {
           process.env.PWD = previousPwd;

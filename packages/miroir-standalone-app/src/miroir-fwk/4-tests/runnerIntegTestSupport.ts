@@ -28,7 +28,10 @@ export async function beforeEachTest(
   },
   options?: {
     clearDocumentBody?: boolean;
-    resetMiroirPlatform?: boolean;
+    resetMiroirPlatform?: {
+      miroirDeploymentUuid: Uuid;
+      miroirSelfApplicationUuid: Uuid;
+    };
     testbedEntitiesAndInstances?: ApplicationEntitiesAndInstances;
     testbedInitApplicationParameters?: InitApplicationParameters;
     testbedModel?: MetaModel;
@@ -41,9 +44,10 @@ export async function beforeEachTest(
       libraryRunTarget?.deploymentUuid ?? deployment_Library_DO_NO_USE.uuid,
     librarySelfApplicationUuid:
       libraryRunTarget?.applicationUuid ?? selfApplicationLibrary.uuid,
-    miroirDeploymentUuid: deployment_Miroir.uuid,
-    miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
-    resetMiroirPlatform: options?.resetMiroirPlatform ?? true,
+    resetMiroirPlatform: options?.resetMiroirPlatform ?? {
+      miroirDeploymentUuid: deployment_Miroir.uuid,
+      miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+    },
     testbedEntitiesAndInstances: options?.testbedEntitiesAndInstances,
     testbedInitApplicationParameters: options?.testbedInitApplicationParameters,
     testbedModel: options?.testbedModel,

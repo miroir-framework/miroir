@@ -328,30 +328,38 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       return;
     }
     const emulateServer = this.runnerTestContext.internalMiroirConfig.client.emulateServer === true;
-    const playfieldSeed = this.options.libraryPlayfieldSeed;
+    const playfieldSeed: RunnerLibraryPlayfieldSeed | undefined = this.options.libraryPlayfieldSeed;
     const { canonicalApplicationUuid, canonicalDeploymentUuid } =
       this.resolveCanonicalModelRemap(this.runnerTestContext.runTarget);
-    await beforeEachTest(this.domainController, this.applicationDeploymentMap, {
-      applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
-      deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
-    }, {
-      clearDocumentBody: false, // Keep UI mounted during browser-triggered integration runs.
-      resetMiroirPlatform: emulateServer,
-      ...(playfieldSeed
-        ? {
-            ...playfieldSeed,
-            // Remap the *provided* seed metaModel for ephemeral runTargets.
-            // Do not replace with defaultLibraryAppModel — Action suites may seed
-            // custom entities (e.g. composite-PK TestEntityCompositePK).
-            testbedModel: remapLibraryAppModelForRunTarget(
-              playfieldSeed.testbedModel,
-              canonicalApplicationUuid,
-              canonicalDeploymentUuid,
-              this.runnerTestContext.runTarget,
-            ),
-          }
-        : {}),
-    });
+    await beforeEachTest(
+      this.domainController,
+      this.applicationDeploymentMap,
+      {
+        applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
+        deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
+      },
+      {
+        clearDocumentBody: false, // Keep UI mounted during browser-triggered integration runs.
+        resetMiroirPlatform: emulateServer ? {
+          miroirDeploymentUuid: deployment_Miroir.uuid,
+          miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+        } : undefined,
+        ...(playfieldSeed
+          ? {
+              ...playfieldSeed,
+              // Remap the *provided* seed metaModel for ephemeral runTargets.
+              // Do not replace with defaultLibraryAppModel — Action suites may seed
+              // custom entities (e.g. composite-PK TestEntityCompositePK).
+              testbedModel: remapLibraryAppModelForRunTarget(
+                playfieldSeed.testbedModel,
+                canonicalApplicationUuid,
+                canonicalDeploymentUuid,
+                this.runnerTestContext.runTarget,
+              ),
+            }
+          : {}),
+      },
+    );
     if (this.runnerTestContext) {
       this.runnerTestContext.runtimeContext = {};
     }

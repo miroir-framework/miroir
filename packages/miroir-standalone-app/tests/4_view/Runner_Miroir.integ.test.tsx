@@ -1,5 +1,5 @@
 /**
- * Runner_DropEntity.integ.test.tsx
+ * Runner_Miroir.integ.test.tsx
  */
 import "@testing-library/jest-dom";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -26,20 +26,20 @@ import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
-import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite.ts";
+import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 
 import {
   afterAllTests,
   type RunnerTestParams,
-} from "./RunnerIntegTestTools";
+} from "./RunnerIntegTestTools.js";
 
 import { RunnerTestSession } from "../helpers/RunnerTestSession.js";
 import {
   libraryLendBookRunnerTest,
-  libraryReturnBookRunnerTest
-} from "./Runner_Library.ts";
+  libraryReturnBookRunnerTest,
+} from "./Runner_Library.js";
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
 
@@ -63,7 +63,7 @@ ConfigurationService.configurationService.registerTestImplementation({ expect: e
 
 const { miroirConfig: miroirConfigParam, logConfig } = await loadTestConfigFiles(env);
 miroirConfig = miroirConfigParam;
-loggerOptions = logConfig;
+loggerOptions = logConfig as unknown as LoggerOptions;
 myConsoleLog("received miroirConfig", JSON.stringify(miroirConfig, null, 2));
 myConsoleLog("received miroirConfig.client", JSON.stringify(miroirConfig.client, null, 2));
 myConsoleLog("received loggerOptions", JSON.stringify(loggerOptions, null, 2));

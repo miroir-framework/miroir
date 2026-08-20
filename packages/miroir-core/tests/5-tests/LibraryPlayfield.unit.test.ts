@@ -147,9 +147,10 @@ describe("LibraryPlayfield (Gap B L1/L2)", () => {
         applicationDeploymentMap: {} as ApplicationDeploymentMap,
         libraryDeploymentUuid: LIBRARY_DEPLOYMENT_UUID,
         librarySelfApplicationUuid: LIBRARY_APP_UUID,
-        resetMiroirPlatform: true,
-        miroirDeploymentUuid: MIROIR_DEPLOYMENT_UUID,
-        miroirSelfApplicationUuid: MIROIR_APP_UUID,
+        resetMiroirPlatform: {
+          miroirDeploymentUuid: MIROIR_DEPLOYMENT_UUID,
+          miroirSelfApplicationUuid: MIROIR_APP_UUID,
+        }
       });
 
       expect(handleAction).toHaveBeenCalled();

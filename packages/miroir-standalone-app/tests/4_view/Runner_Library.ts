@@ -22,7 +22,7 @@ import {
   getTestConfig,
   testApplicationStorageConfiguration,
   type RunnerTestParams
-} from "./RunnerIntegTestTools";
+} from "./RunnerIntegTestTools.js";
 
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";

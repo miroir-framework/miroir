@@ -85,6 +85,12 @@ const env:any = process.env
 
 const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 
+if (!miroirConfig) {
+  throw new Error("miroirConfig is undefined");
+}
+if (!loggerOptions) {
+  throw new Error("loggerOptions is undefined");
+}
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 // const {miroirConfig, logConfig:loggerOptions} = await loadTestConfigFiles(env);
 const fileName = "ExtractorTemplatePersistenceStoreRunner.integ.test";
@@ -194,11 +200,7 @@ beforeEach(
         document.body.innerHTML = '';
         await addEntitiesAndInstances(
           localAppPersistenceStoreController,
-          domainController,
-          localCache,
           miroirConfig,
-          deployment_Library_DO_NO_USE,
-          applicationDeploymentMap,
           [
             // authors
             {

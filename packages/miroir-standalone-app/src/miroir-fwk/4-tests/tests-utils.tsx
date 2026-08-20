@@ -218,7 +218,8 @@ export const DisplayLoadingInfo:FC<{reportUuid?:string}> = (props:{reportUuid?:s
 // ################################################################################################
 async function seedEntitiesAndInstancesOnEmulatedServer(
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-  entities: { entity: Entity; entityVersion: EntityVersion; instances: EntityInstance[] }[],
+  // entities: { entity: Entity; entityVersion: EntityVersion; instances: EntityInstance[] }[],
+  entities: { entity: Entity; instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
 ) {
   for (const entity of entities) {
@@ -235,12 +236,8 @@ async function seedEntitiesAndInstancesOnEmulatedServer(
 // ################################################################################################
 export async function addEntitiesAndInstances(
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
-  domainController: DomainControllerInterface,
-  localCache: LocalCacheInterface,
   miroirConfig: MiroirConfigClient,
-  deployment_Library_DO_NO_USE: EntityInstance,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  entities: { entity: Entity; entityVersion: EntityVersion; instances: EntityInstance[] }[],
+  entities: { entity: Entity; instances: EntityInstance[] }[],
   reportBookList: EntityInstance,
   act?: unknown,
 ) {

@@ -85,6 +85,12 @@ const env: any = process.env;
 // console.log("@@@@@@@@@@@@@@@@@@ env", env);
 
 const { miroirConfig, logConfig: importedLoggerOptions } = await loadTestConfigFiles(env);
+if (!miroirConfig) {
+  throw new Error("miroirConfig is undefined");
+}
+if (!importedLoggerOptions) {
+  throw new Error("importedLoggerOptions is undefined");
+}
 const loggerOptions: LoggerOptions = importedLoggerOptions ?? {
   defaultLevel: "INFO",
   defaultTemplate: "[{{time}}] {{level}} ({{name}}) -",
@@ -219,7 +225,6 @@ beforeEach(async () => {
     libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
     librarySelfApplicationUuid: selfApplicationLibrary.uuid,
     deploymentsToReset: selfApplicationDeploymentConfigurationsTO_REMOVE,
-    // testbedEntitiesAndInstances:libraryEntitiesAndInstancesPublisherAndCountry,
     testbedEntitiesAndInstances:libraryEntitiesAndInstances,
     testbedInitApplicationParameters: libraryTestbedInitParams,
     testbedModel: defaultLibraryModelEnvironment.currentModel as any,

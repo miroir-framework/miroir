@@ -44,12 +44,13 @@ export type ResetIntegTestbedParams = {
   applicationDeploymentMap: ApplicationDeploymentMap;
   libraryDeploymentUuid: Uuid;
   librarySelfApplicationUuid: Uuid;
-  miroirDeploymentUuid?: Uuid;
-  miroirSelfApplicationUuid?: Uuid;
+  resetMiroirPlatform?: {
+    miroirDeploymentUuid: Uuid;
+    miroirSelfApplicationUuid: Uuid;
+  };
   testbedEntitiesAndInstances?: ApplicationEntitiesAndInstances;
   testbedInitApplicationParameters?: InitApplicationParameters;
   testbedModel?: MetaModel;
-  resetMiroirPlatform?: boolean;
   /** When set, used for resetAndInitApplicationDeployment instead of library/miroir defaults */
   deploymentsToReset?: Deployment[];
   postResetHook?: () => Promise<void>;
@@ -70,6 +71,12 @@ function asDeployment(uuid: Uuid, selfApplication: Uuid): Deployment {
   return { uuid, selfApplication } as Deployment;
 }
 
+// ################################################################################################
+/**
+ * Ensure the library playfield exists.
+ * @param params - The parameters for the ensureLibraryPlayfield function.
+ * @returns A promise that resolves when the library playfield is ensured.
+ */
 export async function ensureLibraryPlayfield(
   params: EnsureLibraryPlayfieldParams,
 ): Promise<{ created: boolean }> {
@@ -136,8 +143,6 @@ export async function resetIntegTestbed(
     testbedInitApplicationParameters,
     testbedModel,
     resetMiroirPlatform,
-    miroirDeploymentUuid,
-    miroirSelfApplicationUuid,
     deploymentsToReset: explicitDeploymentsToReset,
     postResetHook,
   } = params;
@@ -148,12 +153,12 @@ export async function resetIntegTestbed(
     deploymentsToReset = explicitDeploymentsToReset;
   } else {
     if (resetMiroirPlatform) {
-      if (!miroirDeploymentUuid || !miroirSelfApplicationUuid) {
+      if (!resetMiroirPlatform.miroirDeploymentUuid || !resetMiroirPlatform.miroirSelfApplicationUuid) {
         throw new Error(
           "resetIntegTestbed: miroirDeploymentUuid and miroirSelfApplicationUuid required when resetMiroirPlatform is true",
         );
       }
-      deploymentsToReset.push(asDeployment(miroirDeploymentUuid, miroirSelfApplicationUuid));
+      deploymentsToReset.push(asDeployment(resetMiroirPlatform.miroirDeploymentUuid, resetMiroirPlatform.miroirSelfApplicationUuid));
     }
 
     if (testbedEntitiesAndInstances || !resetMiroirPlatform) {
