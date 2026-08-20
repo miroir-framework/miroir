@@ -19,7 +19,7 @@ import {
   type MiroirTestSuite,
   type Runner
 } from "miroir-core";
-import { miroirTest_runner_library, RUNNER_LIBRARY_RUNNER_REGISTRY } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_return_document, returnDocument } from "miroir-test-app_deployment-library";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -86,8 +86,8 @@ const globalTimeOut = 30000;
 // Fixed UUID for the test menu used in the withReports test
 const testMenuUuid = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
 
-const runnerLibrarySuite = miroirTest_runner_library.definition as MiroirTestSuite;
-const runnerTestRunTarget = getTestbedUuidsForTestSuite({ suite: runnerLibrarySuite });
+const runnerReturnDocumentSuite = miroirTest_runner_return_document.definition as MiroirTestSuite;
+const runnerTestRunTarget = getTestbedUuidsForTestSuite({ suite: runnerReturnDocumentSuite });
 
 const runnerTestSession = new RunnerTestSession({
   miroirConfig,
@@ -95,8 +95,8 @@ const runnerTestSession = new RunnerTestSession({
   miroirEventService,
   pageLabel,
   runTarget: runnerTestRunTarget,
-  suiteTestParams: runnerLibrarySuite.testParams,
-  runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
+  suiteTestParams: runnerReturnDocumentSuite.testParams,
+  resolvedRunner: returnDocument as unknown as Runner,
 });
 
 let domainController: DomainControllerInterface;

@@ -98,7 +98,7 @@ export async function runMiroirTestSuiteWalk(
   if (filterProvidedButEmpty) {
     log.warn(
       `MiroirTest filter matched no tests in suite "${miroirTestSuite.miroirTestLabel}". ` +
-        `Filter keys must be the suite miroirTestLabel (e.g. "runner.library" for --suites runner_library), ` +
+        `Filter keys must be the suite miroirTestLabel (e.g. "runner.returnDocument" for --suites runner_return_document), ` +
         `not the registry key or a bare leaf label at the wrong level. ` +
         `Available leaves: ${availableLeafLabels.join(", ")}`,
     );

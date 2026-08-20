@@ -22,7 +22,7 @@ Legacy `UnitTest` and `TransformerTest` entities remain in the deployment for ba
 | **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | All miroir-core registry suites except `miroirCoreTransformers` |
 | **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `miroirCoreTransformers`, etc. via `MIROIR_TEST_*` |
 | **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD (Data.CRUD deprecated), PersistenceStoreController (incl. attribute projection), extractors |
-| **Runner / Action integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | `runner_library`, `domain_controller_data_crud` |
+| **Runner / Action integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | `runner_lend_document`, `runner_return_document`, `domain_controller_data_crud` |
 
 The UI always runs **unit** mode.
 
@@ -85,7 +85,7 @@ MiroirTest integration runs in `miroir-standalone-app` via `testMiroir`. Prefer 
 | Kind | `--suites` | Session | Example |
 |------|------------|---------|---------|
 | **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` | see below |
-| **Runner** | `runner_library` | `RunnerTestSession` | see below |
+| **Runner** | `runner_lend_document`, `runner_return_document` | `RunnerTestSession` | see below |
 
 ```bash
 # Transformer integ
@@ -94,7 +94,7 @@ npm run testMiroir -w miroir-standalone-app -- \
 
 # Runner integ
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites runner_library --mode integ
+  --profile emulatedServer-sql --suites runner_return_document --mode integ
 
 # Legacy — explicit env (transformer)
 MIROIR_TEST_SUITES=miroirCoreTransformers MIROIR_TEST_MODE=integ \
@@ -109,10 +109,10 @@ Invalid configuration prints a full usage message before any test runs. See [ref
 Filter by suite **`miroirTestLabel`**, not the registry key:
 
 ```bash
-# Runner — key is runner.library
+# Runner — key is runner.returnDocument
 npm run testMiroir -w miroir-standalone-app -- \
-  --suites runner_library --mode integ --profile emulatedServer-sql \
-  --filter '{"runner.library":["Return Book Test Composite Action"]}'
+  --suites runner_return_document --mode integ --profile emulatedServer-sql \
+  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
 
 # Transformer — nested suite labels
 npm run testMiroir -w miroir-standalone-app -- \
@@ -161,7 +161,7 @@ npm run testByFile -w miroir-standalone-app -- JzodElementEditor.test
 
 Filter one editor: `npm run testByFile -w miroir-standalone-app -- 4_view/JzodElementEditor.test.tsx -t "JzodObjectEditor"`. Full detail: [reference/testing.md](../../reference/testing.md#jzodelementeditortesttsx--component-integration-suite).
 
-**MiroirTestDisplay integration launch (B6-d1)** — RTL proof for the **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.library`; Postgres required (Node SQL mock env):
+**MiroirTestDisplay integration launch (B6-d1)** — RTL proof for the **Run Integration Tests** button (`tests/4_view/MiroirTestDisplayIntegrationLaunch.integ.test.tsx`). Return Book leaf on `runner.returnDocument`; Postgres required (Node SQL mock env):
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
@@ -185,7 +185,7 @@ Full catalogue, config matrix, and architecture comparison with `testMiroir`: [r
 
 | Suite | How to launch integ in the UI |
 |-------|-------------------------------|
-| **`runner_library`** | Open suite → profile `emulatedServer-indexedDb` or `realServer-*` → ephemeral/pinned → **Run Integration Tests** |
+| **`runner_return_document`** | Open suite → profile `emulatedServer-indexedDb` or `realServer-*` → ephemeral/pinned → **Run Integration Tests** |
 | **`miroirCoreTransformers`** | Open suite → profile **`emulatedServer-indexedDb`** → ephemeral/pinned → **Run Integration Tests** |
 
 CLI equivalents and Node proofs: [reference/testing.md — Running tests in the UI](../../reference/testing.md#running-tests-in-the-ui) and [UI launcher Node proofs](../../reference/testing.md#ui-launcher-node-proofs-testshelpers).

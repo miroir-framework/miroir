@@ -42,7 +42,7 @@ npm run nonreg -- --tier full --run-all
 | Tier | Contents |
 |------|----------|
 | `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` + LocalCache memory measure (pure `localCacheMemoryMeasure` / attributed + static redux/zustand images) |
-| `default` | `unit` + deployment `modelValidation` for **miroir**, **admin**, **library** (right after miroir-core unit) + MiroirTest integ (`miroirCoreTransformers`, `runner_library`, `domain_controller_data_crud`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
+| `default` | `unit` + deployment `modelValidation` for **miroir**, **admin**, **library** (right after miroir-core unit) + MiroirTest integ (`miroirCoreTransformers`, `runner_lend_document`, `runner_return_document`, `domain_controller_data_crud`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
 | `full` | `default` + deployment `modelValidation` for **postgres** |
 
 Modes: `--run-all` (continue after failures; default) or `--fail-fast`.
@@ -261,7 +261,7 @@ Use **`--profile`** so one preset sets both `VITE_MIROIR_*` (app-stack / runner)
 | Kind | Suite key (`--suites`) | Session | Typical profile |
 |------|------------------------|---------|-----------------|
 | **Transformer** | `miroirCoreTransformers` | `IntegrationTestSession` (synthetic `testApplication`) | `emulatedServer-sql` |
-| **Runner** | `runner_library`, `runner_create_entity`, `runner_drop_entity`, `runner_freeze_application_version` | `RunnerTestSession` (library / Miroir entity registries) | `emulatedServer-sql` (freeze runner also green on `emulatedServer-filesystem`) |
+| **Runner** | `runner_lend_document`, `runner_return_document`, `runner_create_entity`, `runner_drop_entity`, `runner_freeze_application_version` | `RunnerTestSession` (library / Miroir entity runners) | `emulatedServer-sql` (freeze runner also green on `emulatedServer-filesystem`) |
 | **Action** | `domain_controller_data_crud`, `domain_controller_model_crud`, `domain_controller_composite_pk_crud`, `domain_controller_non_uuid_pk_{model,data}_crud`, `domain_controller_no_parent_uuid_crud`, `domain_controller_model_undo_redo`, `domain_controller_application_version_freeze` (all Miroir `miroir_data`) | `RunnerTestSession` + `libraryPlayfieldSeed` (`actionTest` leaves); Library is `runTarget`/testbed | `emulatedServer-sql` (also green on `emulatedServer-filesystem` for freeze) |
 
 
@@ -272,7 +272,7 @@ npm run testMiroir -w miroir-standalone-app -- \
 
 # Runner integ
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites runner_library --mode integ
+  --profile emulatedServer-sql --suites runner_return_document --mode integ
 
 # Action Data CRUD integ — Miroir-owned suite; Library is runTarget only
 # (preferred over DomainController.integ.Data.CRUD.test.tsx)
@@ -310,10 +310,10 @@ npm run testMiroir -w miroir-standalone-app -- \
 Filter keys use the suite **`miroirTestLabel`**, not the registry key (see [Filtering](#filtering-miroirtest-cases)):
 
 ```bash
-# One runner leaf — key is runner.library
+# One runner leaf — key is runner.returnDocument
 npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites runner_library --mode integ \
-  --filter '{"runner.library":["Return Book Test Composite Action"]}'
+  --profile emulatedServer-sql --suites runner_return_document --mode integ \
+  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
 
 # One transformer leaf — nested labels under miroirCoreTransformers
 npm run testMiroir -w miroir-standalone-app -- \
@@ -391,7 +391,7 @@ jobs:
         run: |
           npm run testMiroir -w miroir-standalone-app -- \
             --profile ${{ matrix.profile }} \
-            --suites runner_library --mode integ
+            --suites runner_return_document --mode integ
 ```
 
 Pick the profile that matches how Postgres is reachable in that job (host vs Docker). Paths inside JSON are repo-root relative (`PWD` at monorepo root when `npm run testMiroir` runs from the workspace).
@@ -508,18 +508,18 @@ npm run testByFile -w miroir-standalone-app -- miroir-runner-tests.integ.test
 Alternatively, `testMiroir` routes to this entry when the requested suite keys are **not** all in the miroir-core registry. With `--profile`, manual `VITE_MIROIR_*` is not required.
 
 ```bash
-# All runner_library leaves — profile sets VITE_MIROIR_* + MIROIR_TEST_*
+# All runner_return_document leaves — profile sets VITE_MIROIR_* + MIROIR_TEST_*
 npm run testMiroir -w miroir-standalone-app -- \
-  --suites runner_library --mode integ --profile emulatedServer-sql
+  --suites runner_return_document --mode integ --profile emulatedServer-sql
 
 # Return leaf only — preferred form (suite miroirTestLabel → leaf miroirTestLabel)
 npm run testMiroir -w miroir-standalone-app -- \
-  --suites runner_library --mode integ --profile emulatedServer-sql \
-  --filter '{"runner.library":["Return Book Test Composite Action"]}'
+  --suites runner_return_document --mode integ --profile emulatedServer-sql \
+  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
 
 # Same run — shorthand when the suite has a single level of leaves (leaf key only; value ignored)
 npm run testMiroir -w miroir-standalone-app -- \
-  --suites runner_library --mode integ --profile emulatedServer-sql \
+  --suites runner_return_document --mode integ --profile emulatedServer-sql \
   --filter '{"Return Book Test Composite Action":["*"]}'
 ```
 
@@ -528,7 +528,7 @@ Legacy form (manual `VITE_MIROIR_*` without `--profile`):
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
-npm run testMiroir -w miroir-standalone-app -- --suites runner_library --mode integ
+npm run testMiroir -w miroir-standalone-app -- --suites runner_return_document --mode integ
 ```
 
 Filter rules and common mistakes: [Filtering MiroirTest cases](#filtering-miroirtest-cases).
@@ -791,7 +791,7 @@ npm run testByFile -w miroir-standalone-app -- \
 
 ##### `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` — UI integration launch
 
-RTL coverage for the **Run Integration Tests** button and its success inspector. It runs the `Return Book Test Composite Action` leaf in `runner.library`.
+RTL coverage for the **Run Integration Tests** button and its success inspector. It runs the `Return Book Test Composite Action` leaf in `runner.returnDocument`.
 
 ```bash
 npm run testByFile -w miroir-standalone-app -- \
@@ -1066,7 +1066,7 @@ npm run testMiroir -w miroir-core
 | File | Role |
 |------|------|
 | `tests/miroir-core-tests.integ.test.ts` | MiroirTest integration entry (`testMiroir`) |
-| `tests/miroir-runner-tests.integ.test.ts` | Runner / Action MiroirTest integration entry (`runner_library` from library; `domain_controller_*_crud` from Miroir `miroir_data`) |
+| `tests/miroir-runner-tests.integ.test.ts` | Runner / Action MiroirTest integration entry (`runner_lend_document`, `runner_return_document` from library; `domain_controller_*_crud` from Miroir `miroir_data`) |
 | `tests/helpers/IntegrationTestSession.ts` | Transformer + app-stack PersistenceStoreController sessions |
 | `tests/helpers/DomainControllerIntegrationTestSession.ts` | DomainController CRUD / undo-redo bootstrap |
 | `tests/helpers/appStackIntegrationBootstrap.ts` | Shared `runAppStackIntegrationBootstrap` |
@@ -1168,11 +1168,11 @@ await session.teardown();
 
 | Name | Example | Used in |
 |------|---------|---------|
-| **Registry key** | `runner_library`, `domain_controller_data_crud`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI suite key |
-| **Suite `miroirTestLabel`** | `runner.library`, `miroirCoreTransformers`, nested `plus` | Filter object **keys** (when nested) |
+| **Registry key** | `runner_return_document`, `domain_controller_data_crud`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI suite key |
+| **Suite `miroirTestLabel`** | `runner.returnDocument`, `miroirCoreTransformers`, nested `plus` | Filter object **keys** (when nested) |
 | **Leaf `miroirTestLabel`** | `Return Book Test Composite Action`, `plus with empty args fails` | Filter object **values** (string array) |
 
-For **runner** suites the registry key and suite label often differ: `--suites runner_library` but filter key `runner.library`. For **transformer** suites such as `miroirCoreTransformers` they usually match; nest intermediate suite labels in the filter JSON.
+For **runner** suites the registry key and suite label often differ: `--suites runner_return_document` but filter key `runner.returnDocument`. For **transformer** suites such as `miroirCoreTransformers` they usually match; nest intermediate suite labels in the filter JSON.
 
 Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) and each leaf’s `miroirTestLabel`.
 
@@ -1181,13 +1181,13 @@ Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) an
 **Recommended — shorthand** (suite label → leaf labels):
 
 ```json
-{ "runner.library": ["Return Book Test Composite Action"] }
+{ "runner.returnDocument": ["Return Book Test Composite Action"] }
 ```
 
 **Canonical** (explicit `testList`):
 
 ```json
-{ "testList": { "runner.library": ["Return Book Test Composite Action"] } }
+{ "testList": { "runner.returnDocument": ["Return Book Test Composite Action"] } }
 ```
 
 **Single flat suite — leaf key only** (when every filter key matches a leaf label in that suite; array values are ignored):
@@ -1210,14 +1210,19 @@ Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) an
 
 ```bash
 npm run testMiroir -w miroir-standalone-app -- \
-  --suites runner_library --mode integ --profile emulatedServer-sql \
-  --filter '{"runner.library":["Return Book Test Composite Action"]}'
+  --suites runner_return_document --mode integ --profile emulatedServer-sql \
+  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
 ```
 
-#### 2. Two leaves in the same suite
+#### 2. One leaf per library runner suite
+
+The library runner suites are single-leaf: `runner_lend_document` (label `runner.lendDocument`)
+and `runner_return_document` (label `runner.returnDocument`). To run both, list both suites
+(no filter needed since each suite has exactly one leaf):
 
 ```bash
---filter '{"runner.library":["Lend Book Test Composite Action","Return Book Test Composite Action"]}'
+npm run testMiroir -w miroir-standalone-app -- \
+  --suites runner_lend_document,runner_return_document --mode integ --profile emulatedServer-sql
 ```
 
 #### 3. One transformer integ leaf inside a large suite
@@ -1240,9 +1245,9 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
 #### 5. Legacy environment-variable form
 
 ```bash
-MIROIR_TEST_FILTER='{"runner.library":["Return Book Test Composite Action"]}' \
+MIROIR_TEST_FILTER='{"runner.returnDocument":["Return Book Test Composite Action"]}' \
   npm run testMiroir -w miroir-standalone-app -- \
-  --profile emulatedServer-sql --suites runner_library --mode integ
+  --profile emulatedServer-sql --suites runner_return_document --mode integ
 ```
 
 ### Common mistakes
@@ -1250,8 +1255,8 @@ MIROIR_TEST_FILTER='{"runner.library":["Return Book Test Composite Action"]}' \
 | What you typed | What happens |
 |----------------|--------------|
 | `'{"Return Book Test Composite Action": "*"}'` (no `testList`, leaf as top-level key) | **Works** after fix — treated as leaf-key shorthand when the label exists in the suite |
-| `'{"runner_library":["Return Book Test Composite Action"]}'` | **No match** — key must be `runner.library` (suite label), not registry key |
-| `'{"testList":{"Return Book Test Composite Action":["*"]}}'` with wrong nesting | **No match** + console warning — use `runner.library` as the key unless using leaf-key shorthand |
+| `'{"runner_return_document":["Return Book Test Composite Action"]}'` | **No match** — key must be `runner.returnDocument` (suite label), not registry key |
+| `'{"testList":{"Return Book Test Composite Action":["*"]}}'` with wrong nesting | **No match** + console warning — use `runner.returnDocument` as the key unless using leaf-key shorthand |
 | Wildcard `"*"` as a leaf name | **Not supported** — list explicit leaf labels or omit `--filter` |
 
 When the filter matches nothing, Vitest still runs the file but all cases are **skipped**; the runner logs a warning listing available leaf labels.
@@ -1312,9 +1317,9 @@ List **Run All Unit Tests** never launches integration sessions. List/details in
 ### Manual checklist (webApp)
 
 1. Miroir deployment → Miroir Tests **list** → **Run All Unit Tests** completes; label is unambiguous (not “Run All Miroir Tests”).
-2. Same list → profile `emulatedServer-indexedDb` → **Run All Integration Tests** runs launchable suites only (expect `miroirCoreTransformers` and/or `runner_library` when present in the fetched list).
+2. Same list → profile `emulatedServer-indexedDb` → **Run All Integration Tests** runs launchable suites only (expect `miroirCoreTransformers` and/or `runner_return_document` when present in the fetched list).
 3. Details `miroirCoreTransformers` → both unit and integ buttons; run unit then integ.
-4. Details `runner_library` → integ only (no unit button).
+4. Details `runner_return_document` → integ only (no unit button).
 5. Details unit-only suite (e.g. `EntityPrimaryKey`) → unit only.
 
 ### Runner vs transformer from the UI
@@ -1323,12 +1328,12 @@ Both use the same **Run Integration Tests** affordance (details button, or list 
 
 | Suite (instance name) | Session | What to select | Browser profile |
 |-----------------------|---------|----------------|-----------------|
-| `runner_library` (label `runner.library`) | `RunnerTestSession` | Ephemeral or pinned run target | `emulatedServer-indexedDb` (default) or `realServer-*` |
+| `runner_return_document` (label `runner.returnDocument`) | `RunnerTestSession` | Ephemeral or pinned run target | `emulatedServer-indexedDb` (default) or `realServer-*` |
 | `miroirCoreTransformers` | `IntegrationTestSession` / `RealServerTransformerTestSession` | Ephemeral or pinned `testApplication` identity | `emulatedServer-indexedDb` or `realServer-sql` (server up) |
 
 **Runner**
 
-1. Open **runner_library** / `runner.library` (or use list **Run All Integration Tests** when the suite is in the list).
+1. Open **runner_return_document** / `runner.returnDocument` (or use list **Run All Integration Tests** when the suite is in the list).
 2. Choose profile (`emulatedServer-indexedDb` or a `realServer-*` profile with `miroir-server` up).
 3. Choose **Ephemeral run** (fresh UUIDs) or **Pinned suite targets**.
 4. Click **Run Integration Tests** — inspector should show `sessionKind: runner`.

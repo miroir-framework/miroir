@@ -326,9 +326,9 @@
       ]
     },
     {
-      "id": "integ-runner-runner_library",
+      "id": "integ-runner-runner_lend_document",
       "tier": "default",
-      "title": "MiroirTest integ \u2014 runner_library",
+      "title": "MiroirTest integ \u2014 runner_lend_document",
       "requires": "postgres",
       "argv": [
         "npm",
@@ -340,7 +340,27 @@
         "--profile",
         "{profile}",
         "--suites",
-        "runner_library",
+        "runner_lend_document",
+        "--mode",
+        "integ"
+      ]
+    },
+    {
+      "id": "integ-runner-runner_return_document",
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 runner_return_document",
+      "requires": "postgres",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "runner_return_document",
         "--mode",
         "integ"
       ]

@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
+import {
+  miroirTest_runner_lend_document,
+  miroirTest_runner_return_document,
+} from "miroir-test-app_deployment-library";
 import { miroirTest_miroirCoreTransformers } from "miroir-test-app_deployment-miroir";
 
 import type {
@@ -15,8 +18,12 @@ import {
   walkMiroirTestLeaves,
 } from "../../src/5_tests/inferIntegrationSessionKind";
 
-function runnerLibrarySuite(): MiroirTestSuite {
-  return (miroirTest_runner_library as MiroirTestDefinition).definition as MiroirTestSuite;
+function runnerLendDocumentSuite(): MiroirTestSuite {
+  return (miroirTest_runner_lend_document as MiroirTestDefinition).definition as MiroirTestSuite;
+}
+
+function runnerReturnDocumentSuite(): MiroirTestSuite {
+  return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 function miroirCoreTransformersSuite(): MiroirTestSuite {
@@ -85,8 +92,11 @@ describe("transformerTestLeafRequiresIntegration (B0)", () => {
 });
 
 describe("inferIntegrationSessionKind (B0)", () => {
-  it("returns runner for runner_library suite", () => {
-    expect(inferIntegrationSessionKind(runnerLibrarySuite())).toBe("runner");
+  it.each([
+    ["runner_lend_document", runnerLendDocumentSuite],
+    ["runner_return_document", runnerReturnDocumentSuite],
+  ])("returns runner for %s suite", (_name, suiteGetter) => {
+    expect(inferIntegrationSessionKind(suiteGetter())).toBe("runner");
   });
 
   it("returns transformer for miroirCoreTransformers suite", () => {
@@ -152,8 +162,11 @@ describe("inferIntegrationSessionKind (B0)", () => {
 });
 
 describe("classifyMiroirTestSuiteExecutionCapabilities (B0)", () => {
-  it("marks runner_library as integration-only", () => {
-    const caps = classifyMiroirTestSuiteExecutionCapabilities(runnerLibrarySuite());
+  it.each([
+    ["runner_lend_document", runnerLendDocumentSuite],
+    ["runner_return_document", runnerReturnDocumentSuite],
+  ])("marks %s as integration-only", (_name, suiteGetter) => {
+    const caps = classifyMiroirTestSuiteExecutionCapabilities(suiteGetter());
 
     expect(caps).toEqual({
       hasUnitLeaves: false,

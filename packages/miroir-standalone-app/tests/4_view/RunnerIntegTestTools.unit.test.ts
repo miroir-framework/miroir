@@ -75,7 +75,7 @@ describe("testApplicationStorageConfiguration", () => {
           database: "library",
         },
       },
-      "runner_library_ephemeral",
+      "runner_return_document_ephemeral",
     );
 
     expect(configuration).toMatchObject({
@@ -86,17 +86,17 @@ describe("testApplicationStorageConfiguration", () => {
       model: {
         emulatedServerType: "mongodb",
         connectionString: "mongodb://localhost:27017",
-        database: "runner_library_ephemeral",
+        database: "runner_return_document_ephemeral",
       },
       data: {
         emulatedServerType: "mongodb",
         connectionString: "mongodb://localhost:27017",
-        database: "runner_library_ephemeral",
+        database: "runner_return_document_ephemeral",
       },
       modelVersion: {
         emulatedServerType: "mongodb",
         connectionString: "mongodb://localhost:27017",
-        database: "runner_library_ephemeral_modelVersion",
+        database: "runner_return_document_ephemeral_modelVersion",
       },
     });
   });

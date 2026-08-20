@@ -5,13 +5,13 @@ import { getMiroirFundamentalSchemaForDeployment, jzodTypeCheck } from "miroir-c
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
-  miroirTest_runner_library,
+  miroirTest_runner_return_document,
 } from "miroir-test-app_deployment-library";
 
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 /**
  * TypedValueObjectEditor resolves jzod against useCurrentModelEnvironment(application, …).
- * Model-section Library instances (e.g. runner_library) must use the Library application so
+ * Model-section Library instances (e.g. runner_return_document) must use the Library application so
  * getMiroirFundamentalSchemaForDeployment extends actionTemplate with lendDocument.
  */
 describe("TypedValueObjectEditor schema resolution (Feature 198)", () => {
@@ -34,10 +34,10 @@ describe("TypedValueObjectEditor schema resolution (Feature 198)", () => {
     },
   };
 
-  it("runner_library MiroirTest validates when model environment uses Library deployment schema", () => {
+  it("runner_return_document MiroirTest validates when model environment uses Library deployment schema", () => {
     const result = jzodTypeCheck(
       miroirTestDefinitionSchema,
-      miroirTest_runner_library,
+      miroirTest_runner_return_document,
       [],
       [],
       libraryModelEnvironment,

@@ -10,11 +10,15 @@ import {
   type MiroirTestExecutionOptions,
   type MiroirTestSuite,
   type RunMiroirTests,
+  type Runner,
   type RunnerTestSessionInterface,
   type VitestNamespace,
 } from "miroir-core";
 import { onFailedRunExport } from "./writeFailedRunExport.js";
-import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
+import {
+  miroirTest_runner_lend_document,
+  miroirTest_runner_return_document,
+} from "miroir-test-app_deployment-library";
 import {
   miroirTest_domain_controller_composite_pk_crud,
   miroirTest_domain_controller_data_crud,
@@ -31,7 +35,8 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 const SUITE_BY_KEY: Record<string, MiroirTestDefinition> = {
-  runner_library: miroirTest_runner_library as MiroirTestDefinition,
+  runner_lend_document: miroirTest_runner_lend_document as MiroirTestDefinition,
+  runner_return_document: miroirTest_runner_return_document as MiroirTestDefinition,
   runner_create_entity: miroirTest_runner_create_entity as MiroirTestDefinition,
   runner_drop_entity: miroirTest_runner_drop_entity as MiroirTestDefinition,
   runner_freeze_application_version:
@@ -70,6 +75,7 @@ export async function runMiroirRunnerTestsFromCLI(
   config: MiroirTestCliConfig,
   miroirActivityTracker: MiroirActivityTracker,
   testSession: RunnerTestSessionInterface,
+  resolveSuiteRunner?: (suiteKey: string, suite: MiroirTestSuite) => Runner | undefined,
 ): Promise<void> {
   const executionEnvironment: MiroirTestExecutionEnvironment = await testSession.initSession();
   const executionOptions: MiroirTestExecutionOptions = {
@@ -104,6 +110,29 @@ export async function runMiroirRunnerTestsFromCLI(
       suiteKey,
       definition: suiteExport,
     });
+    // The session is built once from the primary suite, but each suite may target a
+    // different runner (e.g. runner_lend_document + runner_return_document in one
+    // invocation). Leaves execute after registration, so give each suite its own
+    // executionOptions capturing its own resolvedRunner / suite testParams.
+    const suiteRunner = resolveSuiteRunner?.(suiteKey, suiteExport);
+    const runnerTestContext = executionEnvironment.runnerTestContext;
+    const suiteExecutionOptions: MiroirTestExecutionOptions =
+      suiteRunner && runnerTestContext
+        ? {
+            ...executionOptions,
+            executionEnvironment: {
+              ...executionEnvironment,
+              runnerTestContext: {
+                ...runnerTestContext,
+                resolvedRunner: suiteRunner,
+                testParams: {
+                  ...runnerTestContext.testParams,
+                  ...(suiteExport.testParams ?? {}),
+                },
+              },
+            },
+          }
+        : executionOptions;
     await runMiroirTests._runMiroirTestSuite(
       vitest,
       [suiteKey],
@@ -114,7 +143,7 @@ export async function runMiroirRunnerTestsFromCLI(
       undefined,
       true,
       runMiroirTests,
-      executionOptions,
+      suiteExecutionOptions,
     );
   }
 }

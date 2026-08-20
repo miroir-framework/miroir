@@ -5,7 +5,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 
-import { miroirTest_runner_library } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
 import {
   ConfigurationService,
   MiroirActivityTracker,
@@ -31,7 +31,7 @@ import {
 } from '../../src/miroir-fwk/4-tests/uiIntegrationTestRunState.js';
 import { miroirAppStartup } from '../../src/startup.js';
 
-import { RUNNER_LIBRARY_LABEL } from '../helpers/miroirTestDisplayIntegrationLaunchMocks.js';
+import { RUNNER_RETURN_DOCUMENT_LABEL } from '../helpers/miroirTestDisplayIntegrationLaunchMocks.js';
 import '../helpers/miroirTestDisplayIntegrationLaunchMocks.js';
 import { ReportPageContextProvider } from '../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js';
 
@@ -52,8 +52,8 @@ function renderMiroirTestDisplay(renderKey = 'initial') {
       <ReportPageContextProvider>
         <MiroirTestDisplay
           key={renderKey}
-          miroirTest={miroirTest_runner_library as never}
-          testLabel={RUNNER_LIBRARY_LABEL}
+          miroirTest={miroirTest_runner_return_document as never}
+          testLabel={RUNNER_RETURN_DOCUMENT_LABEL}
           gridType="glide-data-grid"
         />
       </ReportPageContextProvider>
@@ -86,7 +86,7 @@ describe('MiroirTestDisplay integration launch (B6-d1)', () => {
     renderMiroirTestDisplay();
 
     const integrationButton = screen.getByRole('button', {
-      name: `Run ${RUNNER_LIBRARY_LABEL} Integration Tests`,
+      name: `Run ${RUNNER_RETURN_DOCUMENT_LABEL} Integration Tests`,
     });
 
     expect(integrationButton).toBeEnabled();
@@ -97,7 +97,7 @@ describe('MiroirTestDisplay integration launch (B6-d1)', () => {
       () => {
         const lastRun = getLastUiIntegrationTestRunResult();
         expect(lastRun?.success).toBe(true);
-        expect(lastRun?.suiteKey).toBe('runner_library');
+        expect(lastRun?.suiteKey).toBe('runner_return_document');
       },
       { timeout: 180_000 },
     );
@@ -107,7 +107,7 @@ describe('MiroirTestDisplay integration launch (B6-d1)', () => {
     const inspector = document.getElementById('integration-test-inspector');
     expect(inspector).toBeInTheDocument();
     expect(inspector).toHaveTextContent(/Result: passed/);
-    expect(inspector).toHaveTextContent(/Suite: runner_library/);
+    expect(inspector).toHaveTextContent(/Suite: runner_return_document/);
     expect(inspector).toHaveTextContent(/Profile: emulatedServer-indexedDb/);
     expect(inspector).toHaveTextContent(/Run target: Library/);
     expect(inspector).toHaveTextContent(/Assertions: \d+\/\d+ passed/);

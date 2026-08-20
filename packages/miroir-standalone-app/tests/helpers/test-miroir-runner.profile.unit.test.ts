@@ -41,7 +41,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
       "--profile",
       "emulatedServer-sql",
       "--suites",
-      "runner_library",
+      "runner_return_document",
       "--mode",
       "integ",
     ]);
@@ -61,7 +61,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
       "--profile",
       "emulatedServer-sql",
       "--suites",
-      "runner_library",
+      "runner_return_document",
       "--mode",
       "integ",
     ]);
@@ -104,7 +104,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
       "--profile",
       "emulatedServer-sql",
       "--suites",
-      "runner_library",
+      "runner_return_document",
       "--mode",
       "integ",
     ]);
@@ -120,7 +120,7 @@ describe("testMiroirLauncher profile (Gap D1)", () => {
 
     const { spawnEnv } = resolveVitestEntry(process.env, [
       "--suites",
-      "runner_library",
+      "runner_return_document",
       "--mode",
       "integ",
     ]);

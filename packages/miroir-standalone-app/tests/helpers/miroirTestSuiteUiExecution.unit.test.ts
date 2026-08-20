@@ -5,7 +5,7 @@ import type {
   MiroirTestForTransformer,
   MiroirTestSuite,
 } from 'miroir-core';
-import { miroirTest_runner_library } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
   miroirTest_miroirCoreTransformers,
@@ -60,8 +60,8 @@ function isSupportedInstance(instance: MiroirTestDefinition) {
 }
 
 describe('miroirTestSuiteUiExecution (B5)', () => {
-  it('classifies runner_library as integration-only UI mode', () => {
-    expect(resolveMiroirTestSuiteUiExecutionMode(suiteDefinition(miroirTest_runner_library))).toBe(
+  it('classifies runner_return_document as integration-only UI mode', () => {
+    expect(resolveMiroirTestSuiteUiExecutionMode(suiteDefinition(miroirTest_runner_return_document))).toBe(
       'integration',
     );
   });
@@ -78,10 +78,10 @@ describe('miroirTestSuiteUiExecution (B5)', () => {
     ).toBe('unit');
   });
 
-  it('marks runner_library instance as UI integration supported (not miroirTestLabel alone)', () => {
-    expect(isSupportedKey('runner_library')).toBe(true);
-    expect(isSupportedKey('runner.library')).toBe(false);
-    expect(isSupportedInstance(asMiroirTest(miroirTest_runner_library))).toBe(true);
+  it('marks runner_return_document instance as UI integration supported (not miroirTestLabel alone)', () => {
+    expect(isSupportedKey('runner_return_document')).toBe(true);
+    expect(isSupportedKey('runner.returnDocument')).toBe(false);
+    expect(isSupportedInstance(asMiroirTest(miroirTest_runner_return_document))).toBe(true);
   });
 
   it('marks runner_create_entity instance as UI integration supported', () => {
@@ -111,7 +111,7 @@ describe('miroirTestSuiteUiExecution (B5)', () => {
 describe('classifyMiroirTestListExecutionCapabilities (T1)', () => {
   it('aggregates mixed list: unit + integ suites and launchable integ keys', () => {
     const caps = classifyList([
-      asMiroirTest(miroirTest_runner_library),
+      asMiroirTest(miroirTest_runner_return_document),
       asMiroirTest(miroirTest_EntityPrimaryKey),
       asMiroirTest(miroirTest_miroirCoreTransformers),
     ]);
@@ -119,10 +119,10 @@ describe('classifyMiroirTestListExecutionCapabilities (T1)', () => {
     expect(caps.hasUnitLeaves).toBe(true);
     expect(caps.hasIntegrationLeaves).toBe(true);
     expect(caps.unitSuiteKeys).toEqual(['EntityPrimaryKey', 'miroirCoreTransformers']);
-    expect(caps.integrationSuiteKeys).toEqual(['miroirCoreTransformers', 'runner_library']);
+    expect(caps.integrationSuiteKeys).toEqual(['miroirCoreTransformers', 'runner_return_document']);
     expect(caps.launchableIntegrationSuiteKeys).toEqual([
       'miroirCoreTransformers',
-      'runner_library',
+      'runner_return_document',
     ]);
   });
 
@@ -139,14 +139,14 @@ describe('classifyMiroirTestListExecutionCapabilities (T1)', () => {
   });
 
   it('integ-only launchable list (runner) has no unit keys', () => {
-    const caps = classifyList([asMiroirTest(miroirTest_runner_library)]);
+    const caps = classifyList([asMiroirTest(miroirTest_runner_return_document)]);
 
     expect(caps).toEqual({
       hasUnitLeaves: false,
       hasIntegrationLeaves: true,
       unitSuiteKeys: [],
-      integrationSuiteKeys: ['runner_library'],
-      launchableIntegrationSuiteKeys: ['runner_library'],
+      integrationSuiteKeys: ['runner_return_document'],
+      launchableIntegrationSuiteKeys: ['runner_return_document'],
     });
   });
 

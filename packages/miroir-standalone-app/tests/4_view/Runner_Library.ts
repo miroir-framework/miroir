@@ -1,5 +1,5 @@
 
-/** @deprecated Imperative parity reference — canonical definitions live in `miroirTest_runner_library` (deployment-library). */
+/** @deprecated Imperative parity reference — canonical definitions live in `miroirTest_runner_lend_document` / `miroirTest_runner_return_document` (deployment-library). */
 import {
   extendMiroirConfigWithExtraDeploymentConfiguration,
   type Runner,
@@ -27,7 +27,7 @@ import {
 // ################################################################################################
 const pageLabel = "Runner_Miroir.integ.test";
 
-/** @deprecated Use `miroirTest_runner_library.definition.runTarget` — single triple for legacy harness. */
+/** @deprecated Use `miroirTest_runner_return_document.definition.runTarget` — single triple for legacy harness. */
 const runTarget = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,

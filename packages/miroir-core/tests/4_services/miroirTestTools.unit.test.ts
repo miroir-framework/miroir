@@ -19,7 +19,7 @@ import {
   runMiroirTests,
   runMiroirTestSuite,
 } from "../../src";
-import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
 import type {
   MiroirTestForFunctionCall,
   MiroirTestForQuery,
@@ -328,7 +328,7 @@ describe("runMiroirTestInMemory — queryTest", () => {
 describe("runMiroirTestInMemory — runnerTest", () => {
   it("requires executionMode integration", async () => {
     const leaf = (
-      (miroirTest_runner_library as MiroirTestDefinition).definition as MiroirTestSuite
+      (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite
     ).miroirTests[0] as MiroirTestForRunner;
     await expect(
       runMiroirTest(
@@ -430,7 +430,7 @@ describe("runMiroirTestInMemory — actionTest (Phase 0 stub)", () => {
                 applicationName: "Library",
                 deploymentUuid: "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
               },
-              runnerRegistry: {},
+              resolvedRunner: {} as any,
               testParams: {},
               runtimeContext: {},
             },

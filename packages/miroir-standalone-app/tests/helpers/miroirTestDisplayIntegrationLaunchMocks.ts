@@ -5,10 +5,10 @@ import {
   defaultUiIntegrationFilterForSuite,
   hasIntegrationTestFilterSelection,
   RETURN_BOOK_LEAF,
-  RUNNER_LIBRARY_LABEL,
+  RUNNER_RETURN_DOCUMENT_LABEL,
 } from './uiIntegrationTestLaunchFilterHelpers.js';
 
-export { RETURN_BOOK_LEAF, RUNNER_LIBRARY_LABEL };
+export { RETURN_BOOK_LEAF, RUNNER_RETURN_DOCUMENT_LABEL };
 
 vi.mock('../../src/miroir-fwk/4_view/components/Reports/TestExecutionPanel.js', () => ({
   TestExecutionPanel: () => null,
@@ -53,7 +53,7 @@ vi.mock('../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js', async (impo
           filter: hasIntegrationTestFilterSelection(request.filter)
             ? request.filter
             : defaultUiIntegrationFilterForSuite(request.suiteKey) ?? {
-                testList: { [RUNNER_LIBRARY_LABEL]: [RETURN_BOOK_LEAF] },
+                testList: { [RUNNER_RETURN_DOCUMENT_LABEL]: [RETURN_BOOK_LEAF] },
               },
         },
         env,

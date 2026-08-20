@@ -1,7 +1,7 @@
 import type { UiIntegrationTestRunRequest } from '../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js';
 
 export const RETURN_BOOK_LEAF = 'Return Book Test Composite Action';
-export const RUNNER_LIBRARY_LABEL = 'runner.library';
+export const RUNNER_RETURN_DOCUMENT_LABEL = 'runner.returnDocument';
 export const TRANSFORMER_SUITE_KEY = 'miroirCoreTransformers';
 
 export const TRANSFORMER_LEAF_FILTER = {
@@ -31,10 +31,10 @@ export function hasIntegrationTestFilterSelection(
 export function defaultUiIntegrationFilterForSuite(
   suiteKey: string,
 ): UiIntegrationTestRunRequest['filter'] | undefined {
-  if (suiteKey === 'runner_library') {
+  if (suiteKey === 'runner_return_document') {
     return {
       testList: {
-        [RUNNER_LIBRARY_LABEL]: [RETURN_BOOK_LEAF],
+        [RUNNER_RETURN_DOCUMENT_LABEL]: [RETURN_BOOK_LEAF],
       },
     };
   }

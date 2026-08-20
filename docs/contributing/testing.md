@@ -114,7 +114,7 @@ Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`
 | Kind | Command |
 |------|---------|
 | **Transformer** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integ` |
-| **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_library --mode integ` |
+| **Runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites runner_return_document --mode integ` |
 | **Freeze runner** | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites runner_freeze_application_version --mode integ` |
 
 Legacy env form:
@@ -185,7 +185,7 @@ No Postgres required (in-memory `LocalCache`). See [reference/testing.md § Jzod
 
 ### MiroirTestDisplay UI integration launch (B6-d1)
 
-RTL proof for **Run Integration Tests** from the Miroir Tests report (`MiroirTestDisplay` → inspector). Single leaf: Return Book on `runner.library`.
+RTL proof for **Run Integration Tests** from the Miroir Tests report (`MiroirTestDisplay` → inspector). Single leaf: Return Book on `runner.returnDocument`.
 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \

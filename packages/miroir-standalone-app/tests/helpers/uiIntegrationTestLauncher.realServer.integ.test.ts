@@ -55,7 +55,7 @@ beforeAll(() => {
 });
 
 describe(`runUiIntegrationTestSuite ${profileName}`, () => {
-  it(`runs runner_library Return Book leaf against live miroir-server (${storage}, ephemeral)`, async () => {
+  it(`runs runner_return_document Return Book leaf against live miroir-server (${storage}, ephemeral)`, async () => {
     try {
       await assertMiroirServerReachable(REAL_SERVER_ROOT_API_URL, {
         fetchImpl: crossFetch as unknown as typeof fetch,
@@ -71,18 +71,18 @@ describe(`runUiIntegrationTestSuite ${profileName}`, () => {
       throw error;
     }
 
-    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner_library"].suiteDefinition;
+    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner_return_document"].suiteDefinition;
 
     const result = await runUiIntegrationTestSuiteInNode(
       {
-        suiteKey: "runner_library",
+        suiteKey: "runner_return_document",
         suiteDefinition,
         profileName,
         runTargetMode: "ephemeral",
         hostMode: "isolated",
         filter: {
           testList: {
-            "runner.library": [RETURN_BOOK_LEAF],
+            "runner.returnDocument": [RETURN_BOOK_LEAF],
           },
         },
       },
@@ -90,7 +90,7 @@ describe(`runUiIntegrationTestSuite ${profileName}`, () => {
     );
 
     expect(result).toMatchObject({
-      suiteKey: "runner_library",
+      suiteKey: "runner_return_document",
       sessionKind: "runner",
       profileName,
       hostMode: "isolated",

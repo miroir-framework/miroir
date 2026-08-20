@@ -6,7 +6,7 @@ import type {
   MiroirTestDefinition,
   MiroirTestForTransformer,
 } from 'miroir-core';
-import { miroirTest_runner_library } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
   miroirTest_miroirCoreTransformers,
@@ -87,7 +87,7 @@ describe('MiroirTestListDisplay dual bar (T3)', () => {
     render(
       <MiroirTestListDisplay
         miroirTests={[
-          asMiroirTest(miroirTest_runner_library),
+          asMiroirTest(miroirTest_runner_return_document),
           asMiroirTest(miroirTest_EntityPrimaryKey),
           asMiroirTest(miroirTest_miroirCoreTransformers),
         ]}
@@ -134,7 +134,7 @@ describe('MiroirTestListDisplay dual bar (T3)', () => {
   it('shows integ-only chrome when the list has launchable integ and no unit suites', () => {
     render(
       <MiroirTestListDisplay
-        miroirTests={[asMiroirTest(miroirTest_runner_library)]}
+        miroirTests={[asMiroirTest(miroirTest_runner_return_document)]}
         gridType="ag-grid"
         useSnackBar={false}
       />,

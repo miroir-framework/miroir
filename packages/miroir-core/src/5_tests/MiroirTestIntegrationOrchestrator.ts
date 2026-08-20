@@ -56,8 +56,7 @@ export type IntegrationTestSessionFactoryCreateParams =
   | {
       kind: "runner";
       context: IntegrationTestOrchestratorContext;
-      runnerRegistry: Record<string, Runner>;
-      resolvedRunner?: Runner;
+      resolvedRunner: Runner;
       sessionSpecificOptions?: RunnerIntegrationSessionOptions;
     };
 

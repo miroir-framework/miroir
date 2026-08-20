@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { defaultLibraryAppModel, deployment_Library_DO_NO_USE, miroirTest_runner_library, RUNNER_LIBRARY_RUNNER_REGISTRY, selfApplicationLibrary } from "miroir-test-app_deployment-library";
+import {
+  defaultLibraryAppModel,
+  deployment_Library_DO_NO_USE,
+  lendDocument,
+  miroirTest_runner_lend_document,
+  miroirTest_runner_return_document,
+  returnDocument,
+  selfApplicationLibrary,
+} from "miroir-test-app_deployment-library";
 import {
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
@@ -14,15 +22,14 @@ import {
   type MiroirTestForRunner,
   type MiroirTestSuite,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment.js";
 import { emptyApplicationModel } from "../../src/1_core/Model";
+import { remapLibraryAppModelForRunTarget } from "../../src/1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
 import {
   buildRunnerTestSessionParamBank,
-  mergeRunnerTestParamBank,
-  resolveRunnerTestLeaf,
+  resolveRunnerTestLeaf
 } from "../../src/5_tests/RunnerTestTools";
 import { getTestbedUuidsForTestSuite } from "../../src/5_tests/TestbedUuids";
-import { remapLibraryAppModelForRunTarget } from "../../src/1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
-import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../../src/1_core/Deployment.js";
 
 const getFromParameters = (referenceName: string) => ({
   transformerType: "getFromParameters" as const,
@@ -30,16 +37,24 @@ const getFromParameters = (referenceName: string) => ({
   referenceName,
 });
 
-function runnerLibrarySuite(): MiroirTestSuite {
-  return (miroirTest_runner_library as MiroirTestDefinition).definition as MiroirTestSuite;
+function runnerLendDocumentSuite(): MiroirTestSuite {
+  return (miroirTest_runner_lend_document as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
-function runnerLibraryLeaf(index: number): MiroirTestForRunner {
-  return runnerLibrarySuite().miroirTests[index] as MiroirTestForRunner;
+function runnerReturnDocumentSuite(): MiroirTestSuite {
+  return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
-function runnerLibrarySessionContext() {
-  const suite = runnerLibrarySuite();
+function runnerLibrarySuites(): MiroirTestSuite[] {
+  return [runnerLendDocumentSuite(), runnerReturnDocumentSuite()];
+}
+
+/** Single-leaf suites: the only runnerTest leaf of the given suite. */
+function runnerLibraryLeaf(suite: MiroirTestSuite): MiroirTestForRunner {
+  return suite.miroirTests[0] as MiroirTestForRunner;
+}
+
+function runnerLibrarySessionContext(suite: MiroirTestSuite) {
   const runTarget = getTestbedUuidsForTestSuite({ suite });
   const sessionTestParams = buildRunnerTestSessionParamBank(suite.testParams, runTarget, {
     defaultLibraryAppModel,
@@ -47,7 +62,7 @@ function runnerLibrarySessionContext() {
   return { suite, runTarget, sessionTestParams };
 }
 
-const RUNNER_LIBRARY_SUITE_STATIC_TEST_PARAM_KEYS = [
+const RUNNER_SUITE_STATIC_TEST_PARAM_KEYS = [
   "user1Uuid",
   "book1Uuid",
   "lendStartDate",
@@ -91,29 +106,25 @@ describe("runnerTest tools", () => {
     expect(parsed.fixtureRef).toBeUndefined();
   });
 
-  it("RUNNER_LIBRARY_RUNNER_REGISTRY is indexed by Runner uuid", () => {
-    const lendDocumentUuid = "cc853632-f158-43fa-b9ed-437c9c25f539";
-    const returnDocumentUuid = "98a38a84-e702-4540-a056-c7676a193a2b";
-    expect(Object.keys(RUNNER_LIBRARY_RUNNER_REGISTRY).sort()).toEqual(
-      [lendDocumentUuid, returnDocumentUuid].sort(),
-    );
-    expect(RUNNER_LIBRARY_RUNNER_REGISTRY[lendDocumentUuid]?.uuid).toBe(lendDocumentUuid);
-    expect(RUNNER_LIBRARY_RUNNER_REGISTRY[returnDocumentUuid]?.uuid).toBe(returnDocumentUuid);
-    expect(RUNNER_LIBRARY_RUNNER_REGISTRY).not.toHaveProperty("lendDocument");
-    expect(RUNNER_LIBRARY_RUNNER_REGISTRY).not.toHaveProperty("returnDocument");
+  it("library runner suite leaves reference their Runner via runnerRef (resolvedRunner, no registry)", () => {
+    expect(runnerLibraryLeaf(runnerLendDocumentSuite()).runnerRef).toBe(lendDocument.uuid);
+    expect(runnerLibraryLeaf(runnerReturnDocumentSuite()).runnerRef).toBe(returnDocument.uuid);
+    expect(lendDocument.uuid).toBe("cc853632-f158-43fa-b9ed-437c9c25f539");
+    expect(returnDocument.uuid).toBe("98a38a84-e702-4540-a056-c7676a193a2b");
   });
 
-  it("runner_library leaves are inline runnerTests without fixtureRef", () => {
-    for (const test of runnerLibrarySuite().miroirTests) {
-      const leaf = test as MiroirTestForRunner;
-      expect(leaf.fixtureRef).toBeUndefined();
-      expect(leaf.initialModel).toEqual(getFromParameters("defaultLibraryAppModel"));
-      expect(RUNNER_LIBRARY_RUNNER_REGISTRY[leaf.runnerRef]?.uuid).toBe(leaf.runnerRef);
+  it("runner_lend_document / runner_return_document leaves are inline runnerTests without fixtureRef", () => {
+    for (const suite of runnerLibrarySuites()) {
+      for (const test of suite.miroirTests) {
+        const leaf = test as MiroirTestForRunner;
+        expect(leaf.fixtureRef).toBeUndefined();
+        expect(leaf.initialModel).toEqual(getFromParameters("defaultLibraryAppModel"));
+      }
     }
   });
 
-  it("runner_library lend leaf encodes getFromParameters transformers in JSON", () => {
-    const leaf = runnerLibraryLeaf(0);
+  it("runner_lend_document leaf encodes getFromParameters transformers in JSON", () => {
+    const leaf = runnerLibraryLeaf(runnerLendDocumentSuite());
     const lendParams = leaf.testParams!.lendDocument as {
       payload: Record<string, { referenceName: string }>;
     };
@@ -122,8 +133,11 @@ describe("runnerTest tools", () => {
     expect(lendParams.payload.startDate).toEqual(getFromParameters("lendStartDate"));
   });
 
-  it("runner_library suite exposes suite-level testParams (R6-A)", () => {
-    const suite = runnerLibrarySuite();
+  it.each([
+    ["runner_lend_document", runnerLendDocumentSuite],
+    ["runner_return_document", runnerReturnDocumentSuite],
+  ])("%s suite exposes suite-level testParams (R6-A)", (_name, suiteGetter) => {
+    const suite = suiteGetter();
     expect(suite.testParams).toBeDefined();
 
     const parsedShell = miroirTestSuiteSchema.parse({
@@ -134,7 +148,7 @@ describe("runnerTest tools", () => {
     });
     expect(parsedShell.testParams).toBeDefined();
 
-    for (const key of RUNNER_LIBRARY_SUITE_STATIC_TEST_PARAM_KEYS) {
+    for (const key of RUNNER_SUITE_STATIC_TEST_PARAM_KEYS) {
       expect(parsedShell.testParams![key]).toBeDefined();
     }
 
@@ -144,8 +158,8 @@ describe("runnerTest tools", () => {
   });
 
   it("resolveRunnerTestLeaf expands ephemeral defaultLibraryAppModel with new application uuid", () => {
-    const leaf = runnerLibraryLeaf(0);
-    const suite = runnerLibrarySuite();
+    const suite = runnerLendDocumentSuite();
+    const leaf = runnerLibraryLeaf(suite);
     const ephemeralApplicationUuid = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
     const ephemeralDeploymentUuid = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
     const runTarget = getTestbedUuidsForTestSuite({
@@ -171,7 +185,7 @@ describe("runnerTest tools", () => {
       buildContext,
       runTarget,
       sessionTestParams,
-      runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
+      resolvedRunner: lendDocument,
     });
 
     const expandedBeforeEach = expandResolvableResetAndinitializeDeploymentCompositeAction(
@@ -195,10 +209,11 @@ describe("runnerTest tools", () => {
     );
   });
 
-  it("resolveRunnerTestLeaf prefers resolvedRunner over runnerRegistry lookup", () => {
-    const leaf = runnerLibraryLeaf(0);
-    const { runTarget, sessionTestParams } = runnerLibrarySessionContext();
-    const resolvedRunner = RUNNER_LIBRARY_RUNNER_REGISTRY[leaf.runnerRef];
+  // ##############################################################################################
+  it("resolveRunnerTestLeaf resolves the suite Runner via resolvedRunner", () => {
+    const suite = runnerLendDocumentSuite();
+    const leaf = runnerLibraryLeaf(suite);
+    const { runTarget, sessionTestParams } = runnerLibrarySessionContext(suite);
 
     const resolved = resolveRunnerTestLeaf({
       leaf,
@@ -206,43 +221,28 @@ describe("runnerTest tools", () => {
       buildContext,
       runTarget,
       sessionTestParams,
-      runnerRegistry: {},
-      resolvedRunner,
+      resolvedRunner: lendDocument,
     });
 
     expect(resolved.testActionType).toBe("testBuildPlusRuntimeCompositeActionSuite");
     expect(resolved.application).toBe(runTarget.applicationUuid);
   });
 
-  it("resolveRunnerTestLeaf throws when runner is missing from registry and resolvedRunner is absent", () => {
-    const leaf = runnerLibraryLeaf(0);
-    const { runTarget, sessionTestParams } = runnerLibrarySessionContext();
-
-    expect(() =>
-      resolveRunnerTestLeaf({
-        leaf,
-        pageLabel: "Runner_Miroir.integ.test",
-        buildContext,
-        runTarget,
-        sessionTestParams,
-        runnerRegistry: {},
-      }),
-    ).toThrow(/no Runner for leaf/);
-  });
-
+  // ##############################################################################################
   it.each([
-    ["Lend Book Test Composite Action", 0],
-    ["Return Book Test Composite Action", 1],
-  ])("resolveRunnerTestLeaf builds suite from session context — %s (R6-D/E)", (_label, index) => {
-    const leaf = runnerLibraryLeaf(index);
-    const { runTarget, sessionTestParams } = runnerLibrarySessionContext();
+    ["Lend Book Test Composite Action", runnerLendDocumentSuite, lendDocument],
+    ["Return Book Test Composite Action", runnerReturnDocumentSuite, returnDocument],
+  ])("resolveRunnerTestLeaf builds suite from session context — %s (R6-D/E)", (_label, suiteGetter, runner) => {
+    const suite = suiteGetter();
+    const leaf = runnerLibraryLeaf(suite);
+    const { runTarget, sessionTestParams } = runnerLibrarySessionContext(suite);
     const resolved = resolveRunnerTestLeaf({
       leaf,
       pageLabel: "Runner_Miroir.integ.test",
       buildContext,
       runTarget,
       sessionTestParams,
-      runnerRegistry: RUNNER_LIBRARY_RUNNER_REGISTRY,
+      resolvedRunner: runner,
     });
 
     expect(resolved.testActionType).toBe("testBuildPlusRuntimeCompositeActionSuite");
@@ -287,6 +287,7 @@ describe("runnerTest tools", () => {
     ).toEqual(leaf.testCompositeActionAssertions);
   });
 
+  // ##############################################################################################
   it("runner_create_entity suite omits runTarget and uses emptyApplicationModel initialModel", () => {
     const suite = (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
@@ -301,6 +302,7 @@ describe("runnerTest tools", () => {
     }
   });
 
+  // ##############################################################################################
   it("resolveRunnerTestLeaf builds createEntity suite with ephemeral runTarget + empty model", () => {
     const suite = (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite;
@@ -324,7 +326,7 @@ describe("runnerTest tools", () => {
       buildContext,
       runTarget,
       sessionTestParams,
-      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[leaf.runnerRef]!,
     });
     expect(resolved.testActionType).toBe("testBuildPlusRuntimeCompositeActionSuite");
     expect(resolved.application).toBe(runTarget.applicationUuid);
@@ -372,7 +374,7 @@ describe("runnerTest tools", () => {
       buildContext,
       runTarget,
       sessionTestParams,
-      runnerRegistry: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
+      resolvedRunner: RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY[leaf.runnerRef]!,
     });
     expect(resolved.testActionType).toBe("testBuildPlusRuntimeCompositeActionSuite");
     const dropParams = resolved.testParams.dropEntity as {

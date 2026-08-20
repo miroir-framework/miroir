@@ -128,7 +128,7 @@ export function isUiIntegrationSuiteRunSuccessful(
     return false;
   }
   // Nested transformer suites store leaves under testsSuiteResults, not only
-  // top-level testsResults (runner_library is flat; miroirCoreTransformers is nested).
+  // top-level testsResults (runner_return_document is flat; miroirCoreTransformers is nested).
   const leafResults = collectLeafTestResults(suiteResult);
   if (leafResults.length === 0) {
     return false;
@@ -195,8 +195,7 @@ async function runRunnerIntegrationSuite(
       miroirEventService: trackerBundle.miroirEventService,
       hostMode,
     },
-    runnerRegistry: runnerEntry.runnerRegistry,
-    ...(runnerEntry.resolvedRunner ? { resolvedRunner: runnerEntry.resolvedRunner } : {}),
+    resolvedRunner: runnerEntry.resolvedRunner!,
     sessionSpecificOptions: {
       pageLabel: "ui-integration-test",
       runTarget,

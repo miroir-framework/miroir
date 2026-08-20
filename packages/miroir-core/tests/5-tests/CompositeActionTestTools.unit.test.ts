@@ -64,7 +64,7 @@ describe("CompositeActionTestContext (Phase 1.2)", () => {
       },
       testParams: {},
       runtimeContext: {},
-      runnerRegistry: {},
+      resolvedRunner: {} as any,
     } satisfies RunnerTestContext;
 
     const asComposite: CompositeActionTestContext = runnerContext;

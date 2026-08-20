@@ -166,7 +166,7 @@ describe("runMiroirActionTest", () => {
           applicationName: "Library",
           deploymentUuid: canonicalDeploymentUuid,
         },
-        runnerRegistry: {},
+        resolvedRunner: {} as any,
         testParams: {},
         runtimeContext: {},
       },
@@ -222,7 +222,7 @@ describe("runMiroirActionTest", () => {
           applicationName: "Library",
           deploymentUuid: ephemeralDep,
         },
-        runnerRegistry: {},
+        resolvedRunner: {} as any,
         testParams: {
           testApplicationUuid: ephemeralApp,
           testApplicationDeploymentUuid: ephemeralDep,

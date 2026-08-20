@@ -14,8 +14,8 @@ function listAllUiIntegrationSuiteKeys(
 }
 
 /**
- * Registry key for UI launcher (e.g. `runner_library`, `miroirCoreTransformers`),
- * not `miroirTestLabel` (`runner.library`).
+ * Registry key for UI launcher (e.g. `runner_return_document`, `miroirCoreTransformers`),
+ * not `miroirTestLabel` (`runner.returnDocument`).
  */
 export function resolveUiIntegrationRunnerSuiteKey(
   miroirTest: MiroirTestDefinition,

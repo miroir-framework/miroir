@@ -54,7 +54,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 
 const config = parseMiroirRunnerTestCliConfig(process.env, process.argv.slice(2));
 const { miroirConfig, logConfig } = await loadTestConfigFiles(env);
-const loggerOptions = logConfig as LoggerOptions;
+const loggerOptions = logConfig as any as LoggerOptions;
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -94,8 +94,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
       throw new Error(`Playfield seed not found for suite key: ${suiteKey}`);
     }
     return {
-      runnerRegistry: registryEntry?.runnerRegistry,
-      resolvedRunner: registryEntry?.resolvedRunner,
+      resolvedRunner: registryEntry.resolvedRunner,
       sessionSpecificOptions: {
         pageLabel,
         runTarget,
@@ -106,8 +105,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   }
   if (suiteKey === miroirTest_runner_freeze_application_version.name) {
     return {
-      runnerRegistry: registryEntry?.runnerRegistry,
-      resolvedRunner: registryEntry?.resolvedRunner,
+      resolvedRunner: registryEntry.resolvedRunner,
       sessionSpecificOptions: {
         pageLabel,
         runTarget,
@@ -118,8 +116,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   }
   if (isMiroirEntityRunnerSuite(suiteKey)) {
     return {
-      runnerRegistry: registryEntry?.runnerRegistry,
-      resolvedRunner: registryEntry?.resolvedRunner,
+      resolvedRunner: registryEntry.resolvedRunner,
       sessionSpecificOptions: {
         pageLabel,
         runTarget,
@@ -129,8 +126,7 @@ function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
     };
   }
   return {
-    runnerRegistry: registryEntry?.runnerRegistry,
-    resolvedRunner: registryEntry?.resolvedRunner,
+    resolvedRunner: registryEntry.resolvedRunner,
     sessionSpecificOptions: {
       pageLabel,
       runTarget,
@@ -151,8 +147,7 @@ if (config.suiteKeys.length > 0) {
       miroirActivityTracker,
       miroirEventService,
     },
-    runnerRegistry: sessionParams.runnerRegistry,
-    ...(sessionParams.resolvedRunner ? { resolvedRunner: sessionParams.resolvedRunner } : {}),
+    resolvedRunner: sessionParams.resolvedRunner!,
     sessionSpecificOptions: sessionParams.sessionSpecificOptions,
   });
 
@@ -162,5 +157,6 @@ if (config.suiteKeys.length > 0) {
     config,
     miroirActivityTracker,
     testSession,
+    (suiteKey) => UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey]?.resolvedRunner,
   );
 }

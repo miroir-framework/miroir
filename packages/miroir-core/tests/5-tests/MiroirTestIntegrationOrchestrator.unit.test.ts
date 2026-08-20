@@ -146,7 +146,7 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
     expect(() => orchestrator.createSession({
       kind: "runner",
       context: baseContext(),
-      runnerRegistry: {},
+      resolvedRunner: {} as any,
       sessionSpecificOptions: {
         pageLabel: "test",
         runTarget: "test" as unknown as TestbedUuids,

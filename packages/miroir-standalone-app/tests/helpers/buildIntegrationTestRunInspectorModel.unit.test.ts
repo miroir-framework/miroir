@@ -1,20 +1,20 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
 import type { MiroirTestDefinition, MiroirTestSuite } from "miroir-core";
 
 import { buildIntegrationTestRunInspectorModel } from "../../src/miroir-fwk/4-tests/buildIntegrationTestRunInspectorModel.js";
 import type { UiIntegrationTestRunResult } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js";
 
-function runnerLibrarySuite(): MiroirTestSuite {
-  return (miroirTest_runner_library as MiroirTestDefinition).definition as MiroirTestSuite;
+function runnerReturnDocumentSuite(): MiroirTestSuite {
+  return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 describe("buildIntegrationTestRunInspectorModel (B6)", () => {
   it("builds inspector model from a mock run result", () => {
-    const suite = runnerLibrarySuite();
+    const suite = runnerReturnDocumentSuite();
     const result: UiIntegrationTestRunResult = {
-      suiteKey: "runner_library",
+      suiteKey: "runner_return_document",
       sessionKind: "runner",
       runTarget: {
         applicationUuid: "app-uuid",

@@ -27,19 +27,19 @@ beforeAll(() => {
 });
 
 describe("runUiIntegrationTestSuite (B3)", () => {
-  it("runs runner_library Return Book leaf via in-process launcher", async () => {
-    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner_library"].suiteDefinition;
+  it("runs runner_return_document Return Book leaf via in-process launcher", async () => {
+    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY["runner_return_document"].suiteDefinition;
 
     const result = await runUiIntegrationTestSuiteInNode(
       {
-        suiteKey: "runner_library",
+        suiteKey: "runner_return_document",
         suiteDefinition,
         profileName: "emulatedServer-sql",
         runTargetMode: "pinned",
         hostMode: "isolated",
         filter: {
           testList: {
-            "runner.library": [RETURN_BOOK_LEAF],
+            "runner.returnDocument": [RETURN_BOOK_LEAF],
           },
         },
       },
@@ -47,7 +47,7 @@ describe("runUiIntegrationTestSuite (B3)", () => {
     );
 
     expect(result).toMatchObject({
-      suiteKey: "runner_library",
+      suiteKey: "runner_return_document",
       sessionKind: "runner",
       profileName: "emulatedServer-sql",
       hostMode: "isolated",

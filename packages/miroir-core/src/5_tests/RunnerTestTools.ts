@@ -43,9 +43,8 @@ export type ResolveRunnerTestLeafParams = {
   buildContext: ResolveRunnerTestLeafBuildContext;
   runTarget: TestbedUuids;
   sessionTestParams: Record<string, unknown>;
-  runnerRegistry: Record<string, Runner>;
-  /** When set, used instead of `runnerRegistry[leaf.runnerRef]`. */
-  resolvedRunner?: Runner;
+  /** Runner executed by the leaf (single-runner suites pass it directly). */
+  resolvedRunner: Runner;
 };
 
 // ################################################################################################
@@ -55,7 +54,6 @@ export function resolveRunnerTestLeaf({
   buildContext,
   runTarget,
   sessionTestParams,
-  runnerRegistry,
   resolvedRunner,
 }: ResolveRunnerTestLeafParams): TestCompositeActionParams {
   if (leaf.initialModel === undefined) {
@@ -68,12 +66,7 @@ export function resolveRunnerTestLeaf({
     mergeRunnerTestParamBank(sessionTestParams, leaf),
   );
 
-  const runner = resolvedRunner ?? runnerRegistry[leaf.runnerRef];
-  if (!runner) {
-    throw new Error(
-      `resolveRunnerTestLeaf: no Runner for leaf "${leaf.miroirTestLabel}" (runnerRef=${leaf.runnerRef})`,
-    );
-  }
+  const runner = resolvedRunner;
 
   return testBuildPlusRuntimeCompositeActionSuiteForRunner(
     pageLabel,
@@ -125,9 +118,9 @@ export async function runMiroirRunnerTest(
   _filter: MiroirTestRunFilter | undefined,
   leaf: MiroirTestForRunner,
   miroirActivityTracker: MiroirActivityTrackerInterface,
+  executionEnvironment: MiroirTestExecutionEnvironment,
   testAssertionPath?: TestAssertionPath,
   parentSkip?: boolean,
-  executionEnvironment?: MiroirTestExecutionEnvironment,
 ): Promise<void> {
   if (!localVitest.expect) {
     throw new Error("runMiroirRunnerTestInMemory called without vitest.expect");
@@ -139,10 +132,10 @@ export async function runMiroirRunnerTest(
     throw new Error("runMiroirRunnerTestInMemory called without testAssertionPath");
   }
 
-  const runnerContext = executionEnvironment?.runnerTestContext;
+  const runnerContext = executionEnvironment.runnerTestContext;
   if (!runnerContext) {
     throw new Error(
-      "runMiroirRunnerTestInMemory: runnerTestContext is required in executionEnvironment",
+      "runMiroirRunnerTest: executionEnvironment.runnerTestContext is required for runnerTest leaves",
     );
   }
 
@@ -156,7 +149,6 @@ export async function runMiroirRunnerTest(
     },
     runTarget: runnerContext.runTarget,
     sessionTestParams: runnerContext.testParams,
-    runnerRegistry: runnerContext.runnerRegistry,
     resolvedRunner: runnerContext.resolvedRunner,
   });
 

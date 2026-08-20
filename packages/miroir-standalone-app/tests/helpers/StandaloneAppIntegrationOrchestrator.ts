@@ -138,7 +138,7 @@ function createStandaloneAppSession(params: IntegrationTestSessionFactoryCreateP
       );
     }
     case "runner": {
-      const { runnerRegistry, resolvedRunner, sessionSpecificOptions } = params;
+      const { resolvedRunner, sessionSpecificOptions } = params;
       if (!context.miroirActivityTracker || !context.miroirEventService) {
         throw new Error(
           "StandaloneAppIntegrationOrchestrator: runner session requires miroirActivityTracker and miroirEventService in context",
@@ -158,7 +158,6 @@ function createStandaloneAppSession(params: IntegrationTestSessionFactoryCreateP
         miroirEventService: context.miroirEventService,
         customFetch: crossFetch as unknown as typeof fetch,
         ...hostBootstrap,
-        runnerRegistry,
         resolvedRunner,
         hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
       });

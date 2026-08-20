@@ -8,7 +8,8 @@ export const MIROIR_RUNNER_TEST_VITEST_ENTRY = "miroir-runner-tests.integ.test" 
 
 /** Registry keys for runner / action MiroirTest suites (not `Object.keys` on suite JSON). */
 export const MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES = [
-  "runner_library",
+  "runner_lend_document",
+  "runner_return_document",
   "runner_create_entity",
   "runner_drop_entity",
   "domain_controller_data_crud",

@@ -56,11 +56,10 @@ export type CompositeActionTestContext = {
   runtimeContext: Record<string, unknown>;
 };
 
-/** Runner context = composite-action context + Runner registry. */
+/** Runner context = composite-action context + the suite's resolved Runner. */
 export type RunnerTestContext = CompositeActionTestContext & {
-  runnerRegistry: Record<string, Runner>;
-  /** When set, `resolveRunnerTestLeaf` uses this instead of `runnerRegistry[leaf.runnerRef]`. */
-  resolvedRunner?: Runner;
+  /** Runner executed by the suite's runnerTest leaf (single-runner suites). */
+  resolvedRunner: Runner;
 };
 
 export type MiroirTestExecutionEnvironment = {
@@ -70,7 +69,7 @@ export type MiroirTestExecutionEnvironment = {
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;
   /** Action integ (and optionally Runner) shared param/runTarget bank. */
   compositeActionTestContext?: CompositeActionTestContext;
-  /** Runner integ; also usable as Action context under 1.3-a (registry unused). */
+  /** Runner integ; also usable as Action context under 1.3-a. Absent on transformer-only sessions. */
   runnerTestContext?: RunnerTestContext;
 };
 
@@ -262,9 +261,9 @@ export async function runMiroirTest(
         filter,
         leaf as MiroirTestForRunner,
         miroirActivityTracker,
+        executionOptions.executionEnvironment,
         testAssertionPath,
         parentSkip,
-        executionOptions.executionEnvironment,
       );
     default: {
       const _exhaustive: never = leaf;

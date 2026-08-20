@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirTest_runner_library } from "miroir-test-app_deployment-library";
+import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
 import type { MiroirTestDefinition, MiroirTestSuite } from "miroir-core";
 
 import {
@@ -11,14 +11,15 @@ import {
   listUiIntegrationRunnerSuiteKeys,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 
-function runnerLibrarySuite(): MiroirTestSuite {
-  return (miroirTest_runner_library as MiroirTestDefinition).definition as MiroirTestSuite;
+function runnerReturnDocumentSuite(): MiroirTestSuite {
+  return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
 }
 
 describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
-  it("lists runner_library, runner_create_entity, runner_drop_entity, and domain_controller action suites", () => {
+  it("lists runner_lend_document, runner_return_document, runner_create_entity, runner_drop_entity, and domain_controller action suites", () => {
     const keys = listUiIntegrationRunnerSuiteKeys();
-    expect(keys).toContain("runner_library");
+    expect(keys).toContain("runner_lend_document");
+    expect(keys).toContain("runner_return_document");
     expect(keys).toContain("runner_create_entity");
     expect(keys).toContain("runner_drop_entity");
     expect(keys).toContain("domain_controller_data_crud");
@@ -41,7 +42,7 @@ describe("uiIntegrationTestTransformerSuiteRegistry (B7)", () => {
 
 describe("resolveUiIntegrationTestRunTarget (B3)", () => {
   it("pinned mode uses suite runTarget", () => {
-    const suite = runnerLibrarySuite();
+    const suite = runnerReturnDocumentSuite();
     const resolved = resolveUiIntegrationTestRunTarget("pinned", suite);
 
     expect(resolved.applicationUuid).toBe(suite.runTarget?.applicationUuid);
@@ -49,7 +50,7 @@ describe("resolveUiIntegrationTestRunTarget (B3)", () => {
   });
 
   it("ephemeral mode ignores suite pins", () => {
-    const suite = runnerLibrarySuite();
+    const suite = runnerReturnDocumentSuite();
     const pinned = resolveUiIntegrationTestRunTarget("pinned", suite);
     const ephemeral = resolveUiIntegrationTestRunTarget("ephemeral", suite);
 
@@ -65,7 +66,7 @@ describe("isUiIntegrationSuiteRunSuccessful (B3)", () => {
         {
           getTestAssertionsResults: () => ({}),
         } as never,
-        "runner_library",
+        "runner_return_document",
       ),
     ).toBe(false);
   });

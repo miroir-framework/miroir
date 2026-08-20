@@ -25,7 +25,7 @@ describe("getTestbedUuidsForTestSuite (R6-B)", () => {
     const generateUuid = sequentialUuidFactory();
 
     const resolved = getTestbedUuidsForTestSuite({
-      suite: { miroirTestLabel: "runner.library" },
+      suite: { miroirTestLabel: "runner.returnDocument" },
       generateUuid,
     });
 
@@ -41,7 +41,7 @@ describe("getTestbedUuidsForTestSuite (R6-B)", () => {
 
     const resolved = getTestbedUuidsForTestSuite({
       suite: {
-        miroirTestLabel: "runner.library",
+        miroirTestLabel: "runner.returnDocument",
         runTarget: {
           applicationUuid: PINNED_APPLICATION_UUID,
           applicationName: "Library",
@@ -61,7 +61,7 @@ describe("getTestbedUuidsForTestSuite (R6-B)", () => {
   it("caller override wins over suite runTarget", () => {
     const resolved = getTestbedUuidsForTestSuite({
       suite: {
-        miroirTestLabel: "runner.library",
+        miroirTestLabel: "runner.returnDocument",
         runTarget: {
           applicationUuid: PINNED_APPLICATION_UUID,
           applicationName: "Library",
@@ -84,7 +84,7 @@ describe("getTestbedUuidsForTestSuite (R6-B)", () => {
 
   it("caller override alone supplies run target without suite pins", () => {
     const resolved = getTestbedUuidsForTestSuite({
-      suite: { miroirTestLabel: "runner.library" },
+      suite: { miroirTestLabel: "runner.returnDocument" },
       callerOverride: {
         applicationUuid: OVERRIDE_APPLICATION_UUID,
         applicationName: "OverrideApp",
@@ -103,7 +103,7 @@ describe("getTestbedUuidsForTestSuite (R6-B)", () => {
   it("miroirTestSuite schema accepts optional runTarget", () => {
     const parsed = miroirTestSuite.parse({
       miroirTestType: "miroirTestSuite",
-      miroirTestLabel: "runner.library",
+      miroirTestLabel: "runner.returnDocument",
       runTarget: {
         applicationUuid: PINNED_APPLICATION_UUID,
         applicationName: "Library",

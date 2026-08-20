@@ -6,30 +6,36 @@ import {
   resolveSuiteInnerFilter,
 } from "../../src/5_tests/miroirTestFilter";
 
-const RUNNER_SUITE_LABEL = "runner.library";
-const LEAVES = [
-  "Lend Book Test Composite Action",
-  "Return Book Test Composite Action",
-] as const;
+const LEND_SUITE_LABEL = "runner.lendDocument";
+const LEND_LEAVES = ["Lend Book Test Composite Action"] as const;
+const RETURN_SUITE_LABEL = "runner.returnDocument";
+const RETURN_LEAVES = ["Return Book Test Composite Action"] as const;
 
-describe("miroirTestFilter (runner_library)", () => {
+describe("miroirTestFilter (runner_lend_document / runner_return_document)", () => {
   it("normalizes suite-label shorthand", () => {
     expect(
       normalizeMiroirTestRunFilter({
-        "runner.library": ["Return Book Test Composite Action"],
+        "runner.returnDocument": ["Return Book Test Composite Action"],
       }),
     ).toEqual({
-      testList: { "runner.library": ["Return Book Test Composite Action"] },
+      testList: { "runner.returnDocument": ["Return Book Test Composite Action"] },
     });
   });
 
   it("selects return leaf via suite label key", () => {
     const filter = normalizeMiroirTestRunFilter({
-      "runner.library": ["Return Book Test Composite Action"],
+      "runner.returnDocument": ["Return Book Test Composite Action"],
     });
-    const { testList } = resolveSuiteInnerFilter(filter, RUNNER_SUITE_LABEL, LEAVES);
-    expect(isMiroirTestLeafSelected(LEAVES[0], testList)).toBe(false);
-    expect(isMiroirTestLeafSelected(LEAVES[1], testList)).toBe(true);
+    const { testList } = resolveSuiteInnerFilter(filter, RETURN_SUITE_LABEL, RETURN_LEAVES);
+    expect(isMiroirTestLeafSelected(RETURN_LEAVES[0], testList)).toBe(true);
+  });
+
+  it("selects lend leaf via suite label key", () => {
+    const filter = normalizeMiroirTestRunFilter({
+      "runner.lendDocument": ["Lend Book Test Composite Action"],
+    });
+    const { testList } = resolveSuiteInnerFilter(filter, LEND_SUITE_LABEL, LEND_LEAVES);
+    expect(isMiroirTestLeafSelected(LEND_LEAVES[0], testList)).toBe(true);
   });
 
   it("selects return leaf when filter keys are leaf labels (values ignored)", () => {
@@ -38,30 +44,38 @@ describe("miroirTestFilter (runner_library)", () => {
     });
     const { testList, filterProvidedButEmpty } = resolveSuiteInnerFilter(
       filter,
-      RUNNER_SUITE_LABEL,
-      LEAVES,
+      RETURN_SUITE_LABEL,
+      RETURN_LEAVES,
     );
     expect(filterProvidedButEmpty).toBe(false);
-    expect(isMiroirTestLeafSelected(LEAVES[0], testList)).toBe(false);
-    expect(isMiroirTestLeafSelected(LEAVES[1], testList)).toBe(true);
+    expect(isMiroirTestLeafSelected(RETURN_LEAVES[0], testList)).toBe(true);
   });
 
   it("warns when registry key used instead of suite label", () => {
     const filter = normalizeMiroirTestRunFilter({
-      runner_library: ["Return Book Test Composite Action"],
+      runner_return_document: ["Return Book Test Composite Action"],
     });
     const { testList, filterProvidedButEmpty } = resolveSuiteInnerFilter(
       filter,
-      RUNNER_SUITE_LABEL,
-      LEAVES,
+      RETURN_SUITE_LABEL,
+      RETURN_LEAVES,
     );
     expect(filterProvidedButEmpty).toBe(true);
     expect(testList).toEqual([]);
   });
 
   it("runs all leaves when filter omitted", () => {
-    const { testList } = resolveSuiteInnerFilter(undefined, RUNNER_SUITE_LABEL, LEAVES);
-    expect(isMiroirTestLeafSelected(LEAVES[0], testList)).toBe(true);
-    expect(isMiroirTestLeafSelected(LEAVES[1], testList)).toBe(true);
+    const { testList: returnTestList } = resolveSuiteInnerFilter(
+      undefined,
+      RETURN_SUITE_LABEL,
+      RETURN_LEAVES,
+    );
+    expect(isMiroirTestLeafSelected(RETURN_LEAVES[0], returnTestList)).toBe(true);
+    const { testList: lendTestList } = resolveSuiteInnerFilter(
+      undefined,
+      LEND_SUITE_LABEL,
+      LEND_LEAVES,
+    );
+    expect(isMiroirTestLeafSelected(LEND_LEAVES[0], lendTestList)).toBe(true);
   });
 });

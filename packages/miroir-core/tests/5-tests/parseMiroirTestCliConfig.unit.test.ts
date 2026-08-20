@@ -68,10 +68,10 @@ describe("parseMiroirTestCliConfig (Phase 2)", () => {
   it("normalizeMiroirTestRunFilter preserves explicit testList", () => {
     expect(
       normalizeMiroirTestRunFilter({
-        testList: { "runner.library": ["Return Book Test Composite Action"] },
+        testList: { "runner.returnDocument": ["Return Book Test Composite Action"] },
       }),
     ).toEqual({
-      testList: { "runner.library": ["Return Book Test Composite Action"] },
+      testList: { "runner.returnDocument": ["Return Book Test Composite Action"] },
     });
   });
 

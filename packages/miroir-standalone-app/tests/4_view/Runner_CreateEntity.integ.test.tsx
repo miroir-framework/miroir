@@ -113,9 +113,7 @@ const runnerTestSession = new RunnerTestSession({
   pageLabel,
   runTarget,
   suiteTestParams: {},
-  runnerRegistry: {
-    [runnerCreateEntity.uuid]: runnerCreateEntity as unknown as Runner,
-  },
+  resolvedRunner: runnerCreateEntity as unknown as Runner,
 });
 
 let domainController: DomainControllerInterface;

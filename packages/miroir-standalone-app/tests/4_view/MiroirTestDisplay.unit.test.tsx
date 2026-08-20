@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 import type { MiroirTestDefinition } from 'miroir-core';
-import { miroirTest_runner_library } from 'miroir-test-app_deployment-library';
+import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
 import {
   miroirTest_EntityPrimaryKey,
   miroirTest_domain_controller_data_crud,
@@ -57,11 +57,11 @@ afterEach(() => {
 });
 
 describe('MiroirTestDisplay capability chrome (T4)', () => {
-  it('shows integ-only chrome for runner_library', () => {
+  it('shows integ-only chrome for runner_return_document', () => {
     render(
       <MiroirTestDisplay
-        miroirTest={asMiroirTest(miroirTest_runner_library)}
-        testLabel="runner_library"
+        miroirTest={asMiroirTest(miroirTest_runner_return_document)}
+        testLabel="runner_return_document"
         gridType="ag-grid"
         useSnackBar={false}
       />,
@@ -70,7 +70,7 @@ describe('MiroirTestDisplay capability chrome (T4)', () => {
     expect(screen.getByText('integration')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Unit Tests/i })).not.toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Run runner_library Integration Tests' }),
+      screen.getByRole('button', { name: 'Run runner_return_document Integration Tests' }),
     ).toBeEnabled();
     expect(screen.getByText('Integration run settings')).toBeInTheDocument();
   });

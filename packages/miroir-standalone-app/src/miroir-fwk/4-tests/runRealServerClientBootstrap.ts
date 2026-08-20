@@ -10,6 +10,7 @@
 import type {
   ApplicationDeploymentMap,
   Deployment,
+  IntegTestHostOptions,
   MiroirActivityTracker,
   MiroirConfigClient,
   MiroirEventService,
@@ -19,9 +20,6 @@ import type {
 } from "miroir-core";
 import { ensureMiroirPlatform } from "miroir-core";
 
-import {
-  type IntegTestHostOptions,
-} from "./IntegTestHostOptions.js";
 import { setupMiroirTest } from "./setupMiroirTest.js";
 
 export type RealServerClientBootstrapOptions = IntegTestHostOptions & {

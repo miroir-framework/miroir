@@ -1,0 +1,151 @@
+{
+  "uuid": "f8e7d6c5-b4a3-4291-8765-43210fedcba0",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "runner_lend_document",
+  "description": "library runner integration tests — lendDocument",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "runner.lendDocument",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "testParams": {
+      "user1Uuid": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+      "book1Uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+      "lendStartDate": "2024-01-01T00:00:00.000Z",
+      "lendEndDate": "2024-01-01T00:00:00.000Z",
+      "lendingHistoryItemEntityUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "lendingHistoryItemEntityName": "LendingHistoryItem"
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "runnerTest",
+        "miroirTestLabel": "Lend Book Test Composite Action",
+        "environmentRef": "libraryRunnerTestEnvironment",
+        "runnerRef": "cc853632-f158-43fa-b9ed-437c9c25f539",
+        "deploymentRef": "libraryTestIdentifiers",
+        "testCompositeActionLabel": "Lend Book Test Composite Action",
+        "initialModel": {
+          "transformerType": "getFromParameters",
+          "interpolation": "build",
+          "referenceName": "defaultLibraryAppModel"
+        },
+        "testParams": {
+          "lendDocument": {
+            "actionType": "lendDocument",
+            "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+            "payload": {
+              "user": {
+                "transformerType": "getFromParameters",
+                "interpolation": "build",
+                "referenceName": "user1Uuid"
+              },
+              "book": {
+                "transformerType": "getFromParameters",
+                "interpolation": "build",
+                "referenceName": "book1Uuid"
+              },
+              "startDate": {
+                "transformerType": "getFromParameters",
+                "interpolation": "build",
+                "referenceName": "lendStartDate"
+              }
+            }
+          }
+        },
+        "preTestCompositeActions": [
+          {
+            "actionType": "compositeRunBoxedQueryAction",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "fetchLendingHistory",
+            "nameGivenToResult": "LendingHistoryList",
+            "payload": {
+              "actionType": "runBoxedQueryAction",
+              "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              "payload": {
+                "application": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "build",
+                  "referenceName": "testApplicationUuid"
+                },
+                "applicationSection": "data",
+                "query": {
+                  "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                  "application": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "testApplicationUuid"
+                  },
+                  "pageParams": {
+                    "currentDeploymentUuid": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "build",
+                      "referenceName": "testApplicationDeploymentUuid"
+                    }
+                  },
+                  "extractors": {
+                    "items": {
+                      "extractorOrCombinerType": "extractorInstancesByEntity",
+                      "applicationSection": "data",
+                      "parentName": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "lendingHistoryItemEntityName"
+                      },
+                      "parentUuid": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "lendingHistoryItemEntityUuid"
+                      },
+                      "orderBy": {
+                        "attributeName": "name",
+                        "direction": "ASC"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "checkNumberOfLendingHistoryItems",
+            "nameGivenToResult": "checkNumberOfLendingHistoryItems",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "checkNumberOfLendingHistoryItems",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "LendingHistoryList",
+                      "items"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 1
+                }
+              }
+            }
+          }
+        ],
+        "preRunnerCompositeActions": []
+      }
+    ]
+  }
+}

@@ -75,7 +75,10 @@ export declare const Country4: any;
 export declare const user1: any;
 export declare const user2: any;
 export declare const user3: any;
-export declare const miroirTest_runner_library: any;
+export declare const miroirTest_runner_lend_document: any;
+export declare const miroirTest_runner_return_document: any;
+export declare const lendDocumentRunner: any;
+export declare const returnDocumentRunner: any;
 export declare const defaultLibraryAppModel: MetaModel;
 export declare function getDefaultLibraryModelEnvironmentDEFUNCT(
   defaultMiroirMetaModelParam: MetaModel,
@@ -84,4 +87,3 @@ export declare function getDefaultLibraryModelEnvironmentDEFUNCT(
 ): MiroirModelEnvironment;
 export declare const resolveLibraryDeploymentUuid: any;
 export declare const libraryApplicationInstances: any;
-export declare const RUNNER_LIBRARY_RUNNER_REGISTRY: any;

@@ -85,8 +85,10 @@ export { default as user2 } from "./assets/library_data/ca794e28-b2dc-45b3-8137-
 export { default as user3 } from "./assets/library_data/ca794e28-b2dc-45b3-8137-00151557eea8/9b957235-1202-4c31-a33f-7eb3258b70bb.json" with { type: "json" };
 
 // Library Model - MiroirTest instances (parentUuid = entityMiroirTest = a311f363-…)
-export { default as miroirTest_runner_library } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/b7e4a901-2c3d-4f5a-b6c7-8d9e0f1a2b3c.json" with { type: "json" };
+export { default as miroirTest_runner_lend_document } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/f8e7d6c5-b4a3-4291-8765-43210fedcba0.json" with { type: "json" };
+export { default as miroirTest_runner_return_document } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/a1b2c3d4-e5f6-4789-a012-3456789abcde.json" with { type: "json" };
 
 export {
-  RUNNER_LIBRARY_RUNNER_REGISTRY,
+  lendDocumentRunner,
+  returnDocumentRunner,
 } from "./src/runnerLibraryTestRegistry.js";
