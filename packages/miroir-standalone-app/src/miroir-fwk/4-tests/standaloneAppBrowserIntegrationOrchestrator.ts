@@ -105,40 +105,42 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
       return new IntegrationTestSession(options);
     }
 
-    if (kind !== "runner") {
-      throw new Error(
-        `Browser integration orchestrator supports runner and transformer sessions only (got "${kind}")`,
-      );
+    if (kind === "runner" || kind === "action") {
+      const { sessionSpecificOptions } = params;
+      const resolvedRunner = kind === "runner" ? params.resolvedRunner : undefined;
+      if (!context.miroirActivityTracker || !context.miroirEventService) {
+        throw new Error(
+          "Browser integration orchestrator: runner/action session requires miroirActivityTracker and miroirEventService",
+        );
+      }
+      if (!sessionSpecificOptions?.runTarget) {
+        throw new Error("Browser integration orchestrator: runner/action session requires runTarget");
+      }
+      if (kind === "action" && !sessionSpecificOptions.libraryPlayfieldSeed) {
+        throw new Error(
+          "Browser integration orchestrator: action session requires libraryPlayfieldSeed",
+        );
+      }
+      const runnerOptions = sessionSpecificOptions;
+      const hostBootstrap = resolveBootstrapHostOptions(context, runnerOptions);
+      return new RunnerTestSession({
+        ...runnerOptions,
+        miroirConfig: context.miroirConfig,
+        miroirActivityTracker: context.miroirActivityTracker,
+        miroirEventService: context.miroirEventService,
+        ...(resolvedRunner !== undefined ? { resolvedRunner } : {}),
+        customFetch:
+          typeof window !== "undefined" && typeof window.fetch === "function"
+            ? (window.fetch.bind(window) as typeof fetch)
+            : undefined,
+        ...hostBootstrap,
+        hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
+      });
     }
-    const { resolvedRunner, sessionSpecificOptions } = params;
-    if (!context.miroirActivityTracker || !context.miroirEventService) {
-      throw new Error(
-        "Browser integration orchestrator: runner session requires miroirActivityTracker and miroirEventService",
-      );
-    }
-    if (!sessionSpecificOptions?.runTarget) {
-      throw new Error("Browser integration orchestrator: runner session requires runTarget");
-    }
-    if (!resolvedRunner && !sessionSpecificOptions.libraryPlayfieldSeed) {
-      throw new Error(
-        "Browser integration orchestrator: runner session requires resolvedRunner or libraryPlayfieldSeed",
-      );
-    }
-    const runnerOptions = sessionSpecificOptions;
-    const hostBootstrap = resolveBootstrapHostOptions(context, runnerOptions);
-    return new RunnerTestSession({
-      ...runnerOptions,
-      miroirConfig: context.miroirConfig,
-      miroirActivityTracker: context.miroirActivityTracker,
-      miroirEventService: context.miroirEventService,
-      resolvedRunner,
-      customFetch:
-        typeof window !== "undefined" && typeof window.fetch === "function"
-          ? (window.fetch.bind(window) as typeof fetch)
-          : undefined,
-      ...hostBootstrap,
-      hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
-    });
+
+    throw new Error(
+      `Browser integration orchestrator supports runner, action, and transformer sessions only (got "${kind}")`,
+    );
   },
 };
 

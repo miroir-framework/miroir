@@ -88,6 +88,7 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
       "transformer",
       "appStackPersistenceStoreController",
       "runner",
+      "action",
     ];
 
     for (const kind of catalogKinds) {
@@ -100,6 +101,7 @@ describe("MiroirTestIntegrationOrchestrator (Gap E O)", () => {
     expect(orchestrator.describeSession("transformer").playfield).toBe("testApplication");
     expect(orchestrator.describeSession("appStackPersistenceStoreController").playfield).toBe("libraryDeployment");
     expect(orchestrator.describeSession("runner").playfield).toBe("libraryDeployment");
+    expect(orchestrator.describeSession("action").playfield).toBe("libraryDeployment");
   });
 
   it("createSession forwards playfieldMode in orchestrator context to factory", () => {

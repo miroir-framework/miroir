@@ -74,20 +74,20 @@ function miroirTestLeafRequiresIntegrationExecution(leaf: MiroirTestLeaf): boole
 
 /**
  * Session kind for UI/CLI integ launchers.
- * Locked 1.3-a: `actionTest` reuses `"runner"` (same bootstrap / library playfield;
- * registry unused for Action leaves).
+ * `runnerTest` leaves → `"runner"` (requires a resolved Runner entity).
+ * `actionTest` leaves → `"action"` (composite actions; no Runner entity).
  */
 export function inferIntegrationSessionKind(
   suite: MiroirTestSuite,
 ): IntegrationTestSessionKind | undefined {
   const leaves = walkMiroirTestLeaves(suite);
 
-  if (
-    leaves.some(
-      (leaf) => leaf.miroirTestType === "runnerTest" || leaf.miroirTestType === "actionTest",
-    )
-  ) {
+  if (leaves.some((leaf) => leaf.miroirTestType === "runnerTest")) {
     return "runner";
+  }
+
+  if (leaves.some((leaf) => leaf.miroirTestType === "actionTest")) {
+    return "action";
   }
 
   if (

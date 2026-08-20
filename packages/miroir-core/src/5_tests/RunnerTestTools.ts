@@ -138,6 +138,11 @@ export async function runMiroirRunnerTest(
       "runMiroirRunnerTest: executionEnvironment.runnerTestContext is required for runnerTest leaves",
     );
   }
+  if (runnerContext.resolvedRunner === undefined) {
+    throw new Error(
+      "runMiroirRunnerTest: runnerTestContext.resolvedRunner is required for runnerTest leaves",
+    );
+  }
 
   const testAction = resolveRunnerTestLeaf({
     leaf,

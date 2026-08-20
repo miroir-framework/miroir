@@ -8,6 +8,8 @@ import type {
   LibraryPlayfieldEnsureMode,
   MiroirTestIntegrationOrchestrator,
   RealServerTransformerIntegrationSessionOptions,
+  Runner,
+  RunnerIntegrationSessionOptions,
 } from "miroir-core";
 import {
   createDefaultMiroirTestIntegrationOrchestrator,
@@ -61,6 +63,37 @@ function resolveHostExecutionEnvironment(
     ...hostBootstrap.hostExecutionEnvironment,
     applicationDeploymentMap: context.hostApplicationDeploymentMap,
   };
+}
+
+/**
+ * Shared bootstrap for runnerTest and actionTest MiroirTest integ sessions (both use RunnerTestSession).
+ */
+function createRunnerOrActionSession(
+  context: IntegrationTestOrchestratorContext,
+  sessionSpecificOptions: RunnerIntegrationSessionOptions,
+  resolvedRunner?: Runner,
+) {
+  if (!context.miroirActivityTracker || !context.miroirEventService) {
+    throw new Error(
+      "StandaloneAppIntegrationOrchestrator: runner/action session requires miroirActivityTracker and miroirEventService in context",
+    );
+  }
+  if (!sessionSpecificOptions.runTarget) {
+    throw new Error(
+      "StandaloneAppIntegrationOrchestrator: runner/action session requires runTarget in sessionSpecificOptions",
+    );
+  }
+  const hostBootstrap = resolveBootstrapHostOptions(context, sessionSpecificOptions);
+  return new RunnerTestSession({
+    ...sessionSpecificOptions,
+    miroirConfig: context.miroirConfig,
+    miroirActivityTracker: context.miroirActivityTracker,
+    miroirEventService: context.miroirEventService,
+    customFetch: crossFetch as unknown as typeof fetch,
+    ...hostBootstrap,
+    ...(resolvedRunner !== undefined ? { resolvedRunner } : {}),
+    hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
+  });
 }
 
 /**
@@ -139,28 +172,16 @@ function createStandaloneAppSession(params: IntegrationTestSessionFactoryCreateP
     }
     case "runner": {
       const { resolvedRunner, sessionSpecificOptions } = params;
-      if (!context.miroirActivityTracker || !context.miroirEventService) {
-        throw new Error(
-          "StandaloneAppIntegrationOrchestrator: runner session requires miroirActivityTracker and miroirEventService in context",
-        );
-      }
       if (!sessionSpecificOptions?.runTarget) {
         throw new Error(
           "StandaloneAppIntegrationOrchestrator: runner session requires runTarget in sessionSpecificOptions",
         );
       }
-      const runnerOptions = sessionSpecificOptions;
-      const hostBootstrap = resolveBootstrapHostOptions(context, runnerOptions);
-      return new RunnerTestSession({
-        ...runnerOptions,
-        miroirConfig: context.miroirConfig,
-        miroirActivityTracker: context.miroirActivityTracker,
-        miroirEventService: context.miroirEventService,
-        customFetch: crossFetch as unknown as typeof fetch,
-        ...hostBootstrap,
-        resolvedRunner,
-        hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
-      });
+      return createRunnerOrActionSession(context, sessionSpecificOptions, resolvedRunner);
+    }
+    case "action": {
+      const { sessionSpecificOptions } = params;
+      return createRunnerOrActionSession(context, sessionSpecificOptions);
     }
     default: {
       const exhaustive: never = kind;

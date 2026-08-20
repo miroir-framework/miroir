@@ -53,8 +53,8 @@ export type RunnerTestSessionOptions = IntegTestHostOptions & {
   pageLabel?: string;
   runTarget: TestbedUuids;
   suiteTestParams?: Record<string, unknown>;
-  /** Runner executed by the suite's runnerTest leaf (single-runner suites). */
-  resolvedRunner: Runner;
+  /** Runner executed by the suite's runnerTest leaf; omitted for actionTest-only sessions. */
+  resolvedRunner?: Runner;
   /**
    * Optional playfield seed applied in `beforeEach` after reset
    * (Action Data.CRUD MiroirTest suites).

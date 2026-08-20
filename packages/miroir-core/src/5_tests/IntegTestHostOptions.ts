@@ -148,6 +148,13 @@ export type RunnerLibraryPlayfieldSeed = {
   testbedModel: MetaModel;
 };
 
+export type ActionIntegrationSessionOptions = IntegTestHostOptions & {
+  pageLabel?: string;
+  runTarget: TestbedUuids;
+  suiteTestParams?: Record<string, unknown>;
+  libraryPlayfieldSeed: RunnerLibraryPlayfieldSeed;
+};
+
 export type RunnerIntegrationSessionOptions = IntegTestHostOptions & {
   pageLabel?: string;
   runTarget: TestbedUuids;

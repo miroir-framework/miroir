@@ -56,10 +56,9 @@ export type CompositeActionTestContext = {
   runtimeContext: Record<string, unknown>;
 };
 
-/** Runner context = composite-action context + the suite's resolved Runner. */
+/** Runner context = composite-action context + optional resolved Runner (runnerTest leaves only). */
 export type RunnerTestContext = CompositeActionTestContext & {
-  /** Runner executed by the suite's runnerTest leaf (single-runner suites). */
-  resolvedRunner: Runner;
+  resolvedRunner?: Runner;
 };
 
 export type MiroirTestExecutionEnvironment = {

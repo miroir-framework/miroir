@@ -145,7 +145,7 @@ describe("inferIntegrationSessionKind (B0)", () => {
     expect(inferIntegrationSessionKind(suite)).toBe("runner");
   });
 
-  it("returns runner for actionTest-only suites (1.3-a)", () => {
+  it("returns action for actionTest-only suites", () => {
     const suite: MiroirTestSuite = {
       miroirTestType: "miroirTestSuite",
       miroirTestLabel: "domainController.data.crud",
@@ -157,7 +157,7 @@ describe("inferIntegrationSessionKind (B0)", () => {
       ],
     };
 
-    expect(inferIntegrationSessionKind(suite)).toBe("runner");
+    expect(inferIntegrationSessionKind(suite)).toBe("action");
   });
 });
 
@@ -237,7 +237,7 @@ describe("classifyMiroirTestSuiteExecutionCapabilities (B0)", () => {
     });
   });
 
-  it("marks actionTest suites as integration-only with runner session kind", () => {
+  it("marks actionTest suites as integration-only with action session kind", () => {
     const suite: MiroirTestSuite = {
       miroirTestType: "miroirTestSuite",
       miroirTestLabel: "action suite",
@@ -252,7 +252,7 @@ describe("classifyMiroirTestSuiteExecutionCapabilities (B0)", () => {
     expect(classifyMiroirTestSuiteExecutionCapabilities(suite)).toEqual({
       hasUnitLeaves: false,
       hasIntegrationLeaves: true,
-      integrationSessionKind: "runner",
+      integrationSessionKind: "action",
       uiExecutionMode: "integration",
     });
   });

@@ -11,6 +11,7 @@ import {
 } from "./IntegrationTestBootstrap.js";
 import type {
   AppStackIntegrationSessionOptions,
+  ActionIntegrationSessionOptions,
   DomainControllerOrchestratorSessionOptions,
   RunnerIntegrationSessionOptions,
   TransformerIntegrationSessionOptions
@@ -58,6 +59,11 @@ export type IntegrationTestSessionFactoryCreateParams =
       context: IntegrationTestOrchestratorContext;
       resolvedRunner: Runner;
       sessionSpecificOptions?: RunnerIntegrationSessionOptions;
+    }
+  | {
+      kind: "action";
+      context: IntegrationTestOrchestratorContext;
+      sessionSpecificOptions: ActionIntegrationSessionOptions;
     };
 
 export interface IntegrationTestSessionFactory {

@@ -30,6 +30,8 @@ import {
 import { transformerIdentityToRunTarget } from "./resolveTransformerTestSessionOptions.js";
 import {
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+  buildUiIntegrationOrchestratorCreateSessionParams,
+  resolveUiIntegrationDefaultApplicationName,
   type UiIntegrationRunnerSuiteEntry,
 } from "./uiIntegrationTestRunnerSuiteRegistry.js";
 import { resolveUiIntegrationTransformerSuite } from "./uiIntegrationTestTransformerSuiteRegistry.js";
@@ -175,11 +177,12 @@ async function assertRealServerReachableIfNeeded(
   });
 }
 
-async function runRunnerIntegrationSuite(
+async function runRunnerOrActionIntegrationSuite(
   request: UiIntegrationTestRunRequest,
   environment: UiIntegrationTestLauncherEnvironment,
-  runnerEntry: UiIntegrationRunnerSuiteEntry,
+  suiteEntry: UiIntegrationRunnerSuiteEntry,
   runTarget: TestbedUuids,
+  sessionKind: "runner" | "action",
   hostMode: NonNullable<UiIntegrationTestRunRequest["hostMode"]>,
 ): Promise<UiIntegrationTestRunResult> {
   const { miroirConfig, logConfig } = await environment.loadConfigForProfile(request.profileName);
@@ -187,25 +190,20 @@ async function runRunnerIntegrationSuite(
 
   const trackerBundle = await environment.createActivityTracker(logConfig);
   const orchestrator = environment.createOrchestrator();
-  const testSession = orchestrator.createSession({
-    kind: "runner",
-    context: {
-      miroirConfig,
-      miroirActivityTracker: trackerBundle.miroirActivityTracker,
-      miroirEventService: trackerBundle.miroirEventService,
-      hostMode,
-    },
-    resolvedRunner: runnerEntry.resolvedRunner!,
-    sessionSpecificOptions: {
-      pageLabel: "ui-integration-test",
+  const testSession = orchestrator.createSession(
+    buildUiIntegrationOrchestratorCreateSessionParams(
+      suiteEntry,
+      {
+        miroirConfig,
+        miroirActivityTracker: trackerBundle.miroirActivityTracker,
+        miroirEventService: trackerBundle.miroirEventService,
+        hostMode,
+      },
+      "ui-integration-test",
       runTarget,
-      suiteTestParams: request.suiteDefinition.testParams,
-      ...(runnerEntry.libraryPlayfieldSeed
-        ? { libraryPlayfieldSeed: runnerEntry.libraryPlayfieldSeed }
-        : {}),
-      ...(runnerEntry.skipRunTargetPlayfieldReset ? { skipRunTargetPlayfieldReset: true } : {}),
-    },
-  });
+      request.suiteDefinition.testParams,
+    ),
+  );
 
   let success = false;
   try {
@@ -244,13 +242,13 @@ async function runRunnerIntegrationSuite(
 
   return {
     suiteKey: request.suiteKey,
-    sessionKind: "runner",
+    sessionKind,
     runTarget,
     runTargetMode: request.runTargetMode,
     profileName: request.profileName,
     hostMode,
     success,
-    inspector: buildInspectorSnapshot(request, "runner", runTarget),
+    inspector: buildInspectorSnapshot(request, sessionKind, runTarget),
     testSuiteResults,
   };
 }
@@ -360,14 +358,14 @@ export async function runUiIntegrationTestSuite(
     );
   }
 
-  if (sessionKind !== "runner") {
+  if (sessionKind !== "runner" && sessionKind !== "action") {
     throw new Error(
       `UI integration launcher does not support session kind "${sessionKind}" yet`,
     );
   }
 
-  const runnerEntry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[request.suiteKey];
-  if (!runnerEntry) {
+  const suiteEntry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[request.suiteKey];
+  if (!suiteEntry) {
     throw new Error(
       `Unknown UI integration runner suite: ${request.suiteKey}. ` +
         `Valid keys: ${Object.keys(UI_INTEGRATION_RUNNER_SUITE_REGISTRY).sort().join(", ")}`,
@@ -376,10 +374,17 @@ export async function runUiIntegrationTestSuite(
   const runTarget = resolveUiIntegrationTestRunTarget(
     request.runTargetMode,
     request.suiteDefinition,
-    runnerEntry.defaultApplicationName,
+    resolveUiIntegrationDefaultApplicationName(suiteEntry),
   );
 
   return coordinator.runExclusive(() =>
-    runRunnerIntegrationSuite(request, environment, runnerEntry, runTarget, hostMode),
+    runRunnerOrActionIntegrationSuite(
+      request,
+      environment,
+      suiteEntry,
+      runTarget,
+      sessionKind,
+      hostMode,
+    ),
   );
 }

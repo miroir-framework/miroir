@@ -9,7 +9,8 @@ export type IntegrationTestSessionKind =
   | "transformer"
   | "appStackPersistenceStoreController"
   | "domainController"
-  | "runner";
+  | "runner"
+  | "action";
 
 export type DomainControllerSessionProfile = "miroirPlatform" | "miroirAndLibrary";
 
@@ -39,6 +40,7 @@ export function getPlayfieldForSessionKind(
       return "testApplication";
     case "appStackPersistenceStoreController":
     case "runner":
+    case "action":
       return "libraryDeployment";
     case "domainController":
       throw new Error(
@@ -73,6 +75,7 @@ export function getEmbeddedCapableForSessionKind(
     case "appStackPersistenceStoreController":
     case "domainController":
     case "runner":
+    case "action":
       return true;
   }
 }
@@ -92,6 +95,7 @@ export function getBootstrapPhasesForSessionKind(
         "getBootstrapPhasesForSessionKind: use getBootstrapPhasesForDomainControllerProfile for kind domainController",
       );
     case "runner":
+    case "action":
       return ["wireEmulatedStack", "deployMiroir"];
   }
 }

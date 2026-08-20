@@ -8,7 +8,10 @@ import {
   resolveUiIntegrationTestRunTarget,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
 import {
+  buildUiIntegrationOrchestratorCreateSessionParams,
   listUiIntegrationRunnerSuiteKeys,
+  resolveUiIntegrationOrchestratorSessionKind,
+  UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
@@ -24,6 +27,62 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     expect(keys).toContain("runner_drop_entity");
     expect(keys).toContain("domain_controller_data_crud");
     expect(keys).toContain("domain_controller_model_crud");
+  });
+
+  it("registry entries use discriminated union kinds", () => {
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_lend_document.kind).toBe("runnerTest");
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_return_document.kind).toBe("runnerTest");
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_create_entity.kind).toBe("runnerTest");
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.domain_controller_data_crud.kind).toBe(
+      "domainControllerTest",
+    );
+    expect(UI_INTEGRATION_RUNNER_SUITE_REGISTRY.evolutionTraceWP1.kind).toBe("actionTest");
+  });
+
+  it("buildUiIntegrationOrchestratorCreateSessionParams distinguishes runner vs action kinds", () => {
+    const context = { miroirConfig: {} as never };
+    const runTarget = {
+      applicationUuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      applicationName: "Library",
+    };
+    const runnerParams = buildUiIntegrationOrchestratorCreateSessionParams(
+      UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_lend_document,
+      context,
+      "test",
+      runTarget,
+      {},
+    );
+    expect(runnerParams.kind).toBe("runner");
+    if (runnerParams.kind === "runner") {
+      expect(runnerParams.resolvedRunner).toBeDefined();
+    }
+
+    const actionParams = buildUiIntegrationOrchestratorCreateSessionParams(
+      UI_INTEGRATION_RUNNER_SUITE_REGISTRY.domain_controller_data_crud,
+      context,
+      "test",
+      runTarget,
+      {},
+    );
+    expect(actionParams.kind).toBe("action");
+    if (actionParams.kind === "action") {
+      expect(actionParams.sessionSpecificOptions.libraryPlayfieldSeed).toBeDefined();
+      expect("resolvedRunner" in actionParams).toBe(false);
+    }
+  });
+
+  it("resolveUiIntegrationOrchestratorSessionKind maps registry entry kinds", () => {
+    expect(
+      resolveUiIntegrationOrchestratorSessionKind(
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_return_document,
+      ),
+    ).toBe("runner");
+    expect(
+      resolveUiIntegrationOrchestratorSessionKind(
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY.domain_controller_data_crud,
+      ),
+    ).toBe("action");
   });
 
 });

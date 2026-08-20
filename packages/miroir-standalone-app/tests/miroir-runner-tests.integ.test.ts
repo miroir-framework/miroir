@@ -20,17 +20,17 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import {
-  miroirTest_runner_create_entity,
-  miroirTest_runner_drop_entity,
   miroirTest_runner_freeze_application_version,
 } from "miroir-test-app_deployment-miroir";
 import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
-import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
-import { miroirAppStartup } from "../src/startup.js";
 import {
-  domainControllerIntegTestNames
-} from "./helpers/libraryPlayfieldSeeds.js";
+  UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
+  buildUiIntegrationOrchestratorCreateSessionParams,
+  resolveUiIntegrationDefaultApplicationName,
+  resolveUiIntegrationRunnerFromEntry,
+} from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import { miroirAppStartup } from "../src/startup.js";
 import {
   loadRunnerOrActionMiroirTestSuite,
   runMiroirRunnerTestsFromCLI,
@@ -39,12 +39,6 @@ import { createStandaloneAppIntegrationOrchestrator } from "./helpers/Standalone
 import { loadTestConfigFiles } from "./utils/fileTools.js";
 
 const pageLabel = "miroir-runner-tests.integ";
-
-function isMiroirEntityRunnerSuite(suiteKey: string): boolean {
-  return (
-    suiteKey === miroirTest_runner_create_entity.name || suiteKey === miroirTest_runner_drop_entity.name
-  );
-}
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("tests", "5-tests", pageLabel);
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -80,76 +74,39 @@ if (config.filter?.testList) {
   );
 }
 
-function sessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
+function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
   const registryEntry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey];
+  if (!registryEntry) {
+    throw new Error(`Unknown runner/action suite key: ${suiteKey}`);
+  }
   const runTarget = getTestbedUuidsForTestSuite({
     suite,
-    defaultApplicationName: isMiroirEntityRunnerSuite(suiteKey)
-      ? "testApplication_CreateEntity"
-      : "Library",
+    defaultApplicationName:
+      resolveUiIntegrationDefaultApplicationName(registryEntry) ??
+      (suiteKey === miroirTest_runner_freeze_application_version.name
+        ? "appForTest"
+        : "Library"),
   });
-  if (domainControllerIntegTestNames.includes(suiteKey)) {
-    const playfieldSeed = registryEntry?.libraryPlayfieldSeed;
-    if (!playfieldSeed) {
-      throw new Error(`Playfield seed not found for suite key: ${suiteKey}`);
-    }
-    return {
-      resolvedRunner: registryEntry.resolvedRunner,
-      sessionSpecificOptions: {
-        pageLabel,
-        runTarget,
-        suiteTestParams: suite.testParams,
-        libraryPlayfieldSeed: playfieldSeed,
-      },
-    };
-  }
-  if (suiteKey === miroirTest_runner_freeze_application_version.name) {
-    return {
-      resolvedRunner: registryEntry.resolvedRunner,
-      sessionSpecificOptions: {
-        pageLabel,
-        runTarget,
-        suiteTestParams: suite.testParams,
-        libraryPlayfieldSeed: registryEntry?.libraryPlayfieldSeed,
-      },
-    };
-  }
-  if (isMiroirEntityRunnerSuite(suiteKey)) {
-    return {
-      resolvedRunner: registryEntry.resolvedRunner,
-      sessionSpecificOptions: {
-        pageLabel,
-        runTarget,
-        suiteTestParams: suite.testParams,
-        skipRunTargetPlayfieldReset: true,
-      },
-    };
-  }
-  return {
-    resolvedRunner: registryEntry.resolvedRunner,
-    sessionSpecificOptions: {
-      pageLabel,
-      runTarget,
-      suiteTestParams: suite.testParams,
+  return buildUiIntegrationOrchestratorCreateSessionParams(
+    registryEntry,
+    {
+      miroirConfig,
+      miroirActivityTracker,
+      miroirEventService,
     },
-  };
+    pageLabel,
+    runTarget,
+    suite.testParams,
+  );
 }
 
 if (config.suiteKeys.length > 0) {
   const primarySuiteKey = config.suiteKeys[0];
   const primarySuite = loadRunnerOrActionMiroirTestSuite(primarySuiteKey);
   const orchestrator = createStandaloneAppIntegrationOrchestrator();
-  const sessionParams = sessionParamsForSuite(primarySuiteKey, primarySuite);
-  const testSession = orchestrator.createSession({
-    kind: "runner",
-    context: {
-      miroirConfig,
-      miroirActivityTracker,
-      miroirEventService,
-    },
-    resolvedRunner: sessionParams.resolvedRunner!,
-    sessionSpecificOptions: sessionParams.sessionSpecificOptions,
-  });
+  const testSession = orchestrator.createSession(
+    createSessionParamsForSuite(primarySuiteKey, primarySuite),
+  );
 
   await runMiroirRunnerTestsFromCLI(
     runMiroirTests,
@@ -157,6 +114,6 @@ if (config.suiteKeys.length > 0) {
     config,
     miroirActivityTracker,
     testSession,
-    (suiteKey) => UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey]?.resolvedRunner,
+    (suiteKey) => resolveUiIntegrationRunnerFromEntry(UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey]!),
   );
 }

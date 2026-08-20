@@ -1328,6 +1328,7 @@ export {
   type IntegrationTestBundledDeploymentData,
   type IntegrationTestBundledSectionData,
   // type IntegrationTestSessionOptionsByKind,
+  type ActionIntegrationSessionOptions,
   type RealServerTransformerIntegrationSessionOptions,
   type RunnerIntegrationSessionOptions,
   type RunnerLibraryPlayfieldSeed,

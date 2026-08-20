@@ -76,6 +76,7 @@ describe("IntegrationTestBootstrap host mode (Gap A A0)", () => {
     "appStackPersistenceStoreController",
     "domainController",
     "runner",
+    "action",
   ];
 
   it("defaultHostMode is isolated for every session kind", () => {
@@ -89,6 +90,7 @@ describe("IntegrationTestBootstrap host mode (Gap A A0)", () => {
     expect(getEmbeddedCapableForSessionKind("appStackPersistenceStoreController")).toBe(true);
     expect(getEmbeddedCapableForSessionKind("domainController")).toBe(true);
     expect(getEmbeddedCapableForSessionKind("runner")).toBe(true);
+    expect(getEmbeddedCapableForSessionKind("action")).toBe(true);
   });
 
   it("describeIntegrationTestSession includes host mode metadata", () => {
@@ -108,6 +110,7 @@ describe("IntegrationTestBootstrap playfield (Gap B L0)", () => {
     expect(getPlayfieldForSessionKind("transformer")).toBe("testApplication");
     expect(getPlayfieldForSessionKind("appStackPersistenceStoreController")).toBe("libraryDeployment");
     expect(getPlayfieldForSessionKind("runner")).toBe("libraryDeployment");
+    expect(getPlayfieldForSessionKind("action")).toBe("libraryDeployment");
     expect(() => getPlayfieldForSessionKind("domainController")).toThrow(
       /getPlayfieldForDomainControllerProfile/,
     );
