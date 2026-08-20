@@ -188,6 +188,18 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
                       },
                     ]),
                 ...(preRunnerCompositeActions ?? []),
+                ...(preRunnerCompositeActions?.length
+                  ? [
+                      {
+                        actionType: "commit",
+                        actionLabel: "commitPreRunnerModelChanges",
+                        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                        payload: {
+                          application: testApplicationUuid,
+                        },
+                      },
+                    ]
+                  : []),
                 actionTemplateWithoutTemplates as any, // TODO: fix type!!
                 {
                   actionType: "commit",

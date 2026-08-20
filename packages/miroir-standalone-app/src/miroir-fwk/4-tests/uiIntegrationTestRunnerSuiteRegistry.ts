@@ -69,6 +69,7 @@ import {
   noParentUuidTestMetaModel,
   publisherAndCountryTestMetaModel,
   publisherOnlyTestMetaModel,
+  runnerLibraryDocumentPlayfieldSeed,
   type TestbedSetupParameters,
 } from "./uiIntegrationPlayfieldSeeds.js";
 import { appForTestFreezePlayfieldSeed } from "./uiIntegrationAppForTestPlayfieldSeed.js";
@@ -88,7 +89,11 @@ export const UI_INTEGRATION_RUNNER_UUID_INDEX: Record<string, Runner> = {
 export type UiIntegrationRunnerTestSuiteEntry = {
   kind: "runnerTest";
   suiteDefinition: MiroirTestSuite;
-  /** Playfield seed for runner suites that need a custom testbed (e.g. freeze); `null` otherwise. */
+  /**
+   * Playfield seed for runner suites that reset/seed the runTarget in `beforeEach`.
+   * `null` for create/drop-entity suites (`skipRunTargetPlayfieldReset`) that manage
+   * their own ephemeral deployment inside the composite action.
+   */
   libraryPlayfieldSeed: TestbedSetupParameters | null;
 };
 
@@ -226,14 +231,14 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: null,
+    libraryPlayfieldSeed: runnerLibraryDocumentPlayfieldSeed,
   },
   // ###############################################################################
   [miroirTest_runner_return_document.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: null,
+    libraryPlayfieldSeed: runnerLibraryDocumentPlayfieldSeed,
   },
   // ###############################################################################
   [miroirTest_runner_create_entity.name]: {

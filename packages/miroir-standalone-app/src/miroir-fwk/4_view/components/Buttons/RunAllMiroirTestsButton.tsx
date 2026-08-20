@@ -62,6 +62,7 @@ interface RunAllMiroirTestsButtonProps {
   [key: string]: unknown;
 }
 
+// ################################################################################################
 /** Nested launcher calls must not re-acquire the shared mutex while the list batch holds it. */
 function createBatchNestedCoordinator(): IntegTestRunCoordinator {
   const nested = {
@@ -76,6 +77,7 @@ function createBatchNestedCoordinator(): IntegTestRunCoordinator {
   return nested as unknown as IntegTestRunCoordinator;
 }
 
+// ################################################################################################
 function selectLaunchableIntegrationInstances(
   miroirTests: MiroirTestDefinition[],
 ): MiroirTestDefinition[] {
@@ -103,6 +105,7 @@ function selectLaunchableIntegrationInstances(
   });
 }
 
+// ################################################################################################
 async function runLaunchableIntegrationBatch(params: {
   miroirTests: MiroirTestDefinition[];
   integrationProfileName?: string;
@@ -170,6 +173,7 @@ async function runLaunchableIntegrationBatch(params: {
   return { resultsBySuiteKey, failures };
 }
 
+// ################################################################################################
 export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = ({
   miroirTests,
   useSnackBar,

@@ -154,6 +154,23 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
 
   constructor(private readonly options: RunnerTestSessionOptions) {}
 
+  // ##############################################################################################
+  // ##############################################################################################
+  private resolveRemappedPlayfieldSeedModel(runTarget: TestbedUuids): MetaModel | undefined {
+    const seed = this.options.libraryPlayfieldSeed;
+    if (!seed) {
+      return undefined;
+    }
+    const { canonicalApplicationUuid, canonicalDeploymentUuid } =
+      this.resolveCanonicalModelRemap(runTarget);
+    return remapLibraryAppModelForRunTarget(
+      seed.testbedModel,
+      canonicalApplicationUuid,
+      canonicalDeploymentUuid,
+      runTarget,
+    );
+  }
+
   private resolveTestAppModelForRunTarget(runTarget: TestbedUuids): MetaModel {
     if (runTarget.applicationName === "appForTest") {
       return remapLibraryAppModelForRunTarget(
@@ -171,6 +188,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     );
   }
 
+  // ##############################################################################################
   private resolveCanonicalModelRemap(runTarget: TestbedUuids): {
     canonicalApplicationUuid: string;
     canonicalDeploymentUuid: string;
@@ -184,6 +202,55 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     return {
       canonicalApplicationUuid: selfApplicationLibrary.uuid as string,
       canonicalDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+    };
+  }
+
+  private resolveSessionModelForRunTarget(runTarget: TestbedUuids): MetaModel {
+    return (
+      this.resolveRemappedPlayfieldSeedModel(runTarget) ??
+      this.resolveTestAppModelForRunTarget(runTarget)
+    );
+  }
+
+  private buildSessionParamBankSeed(runTarget: TestbedUuids): Record<string, unknown> {
+    const remappedLibraryAppModel = remapLibraryAppModelForRunTarget(
+      defaultLibraryAppModel as MetaModel,
+      selfApplicationLibrary.uuid as string,
+      deployment_Library_DO_NO_USE.uuid,
+      runTarget,
+    );
+    const remappedAppForTestModel = remapLibraryAppModelForRunTarget(
+      defaultAppForTestModel as MetaModel,
+      selfApplicationAppForTest.uuid as string,
+      deployment_AppForTest_DO_NO_USE.uuid,
+      runTarget,
+    );
+    const remappedSeedModel = this.resolveRemappedPlayfieldSeedModel(runTarget);
+    if (!remappedSeedModel) {
+      return {
+        defaultLibraryAppModel: remappedLibraryAppModel,
+        defaultAppForTestModel: remappedAppForTestModel,
+        emptyApplicationModel,
+      };
+    }
+    if (runTarget.applicationName === "appForTest") {
+      return {
+        defaultLibraryAppModel: remappedLibraryAppModel,
+        defaultAppForTestModel: remappedSeedModel,
+        emptyApplicationModel,
+      };
+    }
+    if (this.options.skipRunTargetPlayfieldReset) {
+      return {
+        defaultLibraryAppModel: remappedLibraryAppModel,
+        defaultAppForTestModel: remappedAppForTestModel,
+        emptyApplicationModel,
+      };
+    }
+    return {
+      defaultLibraryAppModel: remappedSeedModel,
+      defaultAppForTestModel: remappedAppForTestModel,
+      emptyApplicationModel,
     };
   }
 
@@ -254,7 +321,11 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     // composite action over REST here — mirroring the vitest suite's `beforeAll`
     // createDeployment. Admin is already open on the shared server, so skip its openStore.
     // Action Data.CRUD suites also need ensure on emulated when seeding (playfield create).
-    if (!internalMiroirConfig.client.emulateServer || this.options.libraryPlayfieldSeed) {
+    // Create/drop-entity runner suites skip playfield reset and manage deployment in-test.
+    if (
+      !internalMiroirConfig.client.emulateServer ||
+      (this.options.libraryPlayfieldSeed && !this.options.skipRunTargetPlayfieldReset)
+    ) {
       await ensureLibraryPlayfield({
         domainController,
         applicationDeploymentMap: testApplicationDeploymentMap,
@@ -268,28 +339,13 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       });
     }
 
-    const libraryModelForSession = remapLibraryAppModelForRunTarget(
-      defaultLibraryAppModel as MetaModel,
-      selfApplicationLibrary.uuid as string,
-      deployment_Library_DO_NO_USE.uuid,
-      runTarget,
-    );
-    const testAppModelForSession = this.resolveTestAppModelForRunTarget(runTarget);
+    const testAppModelForSession = this.resolveSessionModelForRunTarget(runTarget);
     this.libraryModelForSession = testAppModelForSession;
 
     const sessionTestParams = buildRunnerTestSessionParamBank(
       this.options.suiteTestParams,
       runTarget,
-      {
-        defaultLibraryAppModel: libraryModelForSession,
-        defaultAppForTestModel: remapLibraryAppModelForRunTarget(
-          defaultAppForTestModel as MetaModel,
-          selfApplicationAppForTest.uuid as string,
-          deployment_AppForTest_DO_NO_USE.uuid,
-          runTarget,
-        ),
-        emptyApplicationModel,
-      },
+      this.buildSessionParamBankSeed(runTarget),
     );
 
     this.domainController = domainController;
@@ -324,6 +380,27 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       throw new Error("RunnerTestSession.beforeEach: initSession not called");
     }
     if (this.options.skipRunTargetPlayfieldReset) {
+      const emulateServer =
+        this.runnerTestContext.internalMiroirConfig.client.emulateServer === true;
+      // Create/drop-entity suites manage the runTarget inside the composite action, but
+      // rollback still reads the Miroir platform model — reset Miroir only (no playfield seed).
+      await beforeEachTest(
+        this.domainController,
+        this.applicationDeploymentMap,
+        {
+          applicationUuid: this.runnerTestContext.runTarget.applicationUuid,
+          deploymentUuid: this.runnerTestContext.runTarget.deploymentUuid,
+        },
+        {
+          clearDocumentBody: false,
+          resetMiroirPlatform: emulateServer
+            ? {
+                miroirDeploymentUuid: deployment_Miroir.uuid,
+                miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+              }
+            : undefined,
+        },
+      );
       this.runnerTestContext.runtimeContext = {};
       return;
     }
@@ -379,8 +456,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     const currentModel =
       runTarget.applicationUuid === selfApplicationMiroir.uuid
         ? defaultMiroirMetaModel
-        : (this.libraryModelForSession ??
-          this.resolveTestAppModelForRunTarget(runTarget));
+        : (this.libraryModelForSession ?? this.resolveSessionModelForRunTarget(runTarget));
     const modelEnvironment = buildTestSessionModelEnvironment(
       runTarget.deploymentUuid,
       currentModel,

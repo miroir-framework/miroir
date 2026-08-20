@@ -23,7 +23,6 @@ import {
   selfApplicationAppForTest,
 } from "miroir-test-app_deployment-appForTest";
 import {
-  defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   miroirTest_runner_return_document,
   returnDocument,
@@ -73,6 +72,7 @@ vi.mock("../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js", async (importO
 });
 
 import { getTestSessionConfig, RunnerTestSession } from "./RunnerTestSession.js";
+import { runnerLibraryDocumentPlayfieldSeed } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
@@ -81,6 +81,31 @@ function runnerReturnDocumentSuite(): MiroirTestSuite {
 
 function runnerLibraryRunTarget() {
   return getTestbedUuidsForTestSuite({ suite: runnerReturnDocumentSuite() });
+}
+
+function runnerSessionOptions(
+  runTarget: ReturnType<typeof runnerLibraryRunTarget>,
+  overrides: Record<string, unknown> = {},
+) {
+  return {
+    miroirConfig: baseMiroirConfig(runTarget),
+    miroirActivityTracker: new MiroirActivityTracker(),
+    miroirEventService: new MiroirEventService(new MiroirActivityTracker()),
+    runTarget,
+    suiteTestParams: runnerReturnDocumentSuite().testParams,
+    resolvedRunner: returnDocument as Runner,
+    libraryPlayfieldSeed: runnerLibraryDocumentPlayfieldSeed,
+    ...overrides,
+  };
+}
+
+function remappedRunnerLibraryDocumentModel(runTarget: ReturnType<typeof runnerLibraryRunTarget>) {
+  return remapLibraryAppModelForRunTarget(
+    runnerLibraryDocumentPlayfieldSeed.testbedModel,
+    selfApplicationLibrary.uuid as string,
+    deployment_Library_DO_NO_USE.uuid,
+    runTarget,
+  );
 }
 
 function baseMiroirConfig(runTarget = runnerLibraryRunTarget()): MiroirConfigClient {
@@ -141,9 +166,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     expect(config.testDeploymentStorageConfiguration).toBeDefined();
   });
 
-  it("initSession seeds remapped defaultLibraryAppModel for ephemeral runTarget (B6-d2)", async () => {
-    const tracker = new MiroirActivityTracker();
-    const eventService = new MiroirEventService(tracker);
+  it("initSession seeds remapped playfield seed model for ephemeral runTarget (B6-d2)", async () => {
     const suite = runnerReturnDocumentSuite();
     const ephemeralApplicationUuid = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
     const ephemeralDeploymentUuid = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";
@@ -155,14 +178,7 @@ describe("RunnerTestSession (Gap E R)", () => {
           index++ === 0 ? ephemeralApplicationUuid : ephemeralDeploymentUuid;
       })(),
     });
-    const session = new RunnerTestSession({
-      miroirConfig: baseMiroirConfig(runTarget),
-      miroirActivityTracker: tracker,
-      miroirEventService: eventService,
-      runTarget,
-      suiteTestParams: suite.testParams,
-      resolvedRunner: returnDocument as Runner,
-    });
+    const session = new RunnerTestSession(runnerSessionOptions(runTarget));
 
     const env = await session.initSession();
     const sessionModel = env.runnerTestContext?.testParams
@@ -170,29 +186,13 @@ describe("RunnerTestSession (Gap E R)", () => {
 
     expect(sessionModel.applicationUuid).toBe(runTarget.applicationUuid);
     expect(sessionModel.applicationUuid).not.toBe(selfApplicationLibrary.uuid);
-    expect(sessionModel).toEqual(
-      remapLibraryAppModelForRunTarget(
-        defaultLibraryAppModel as MetaModel,
-        selfApplicationLibrary.uuid as string,
-        deployment_Library_DO_NO_USE.uuid,
-        runTarget,
-      ),
-    );
+    expect(sessionModel).toEqual(remappedRunnerLibraryDocumentModel(runTarget));
   });
 
   it("initSession seeds runnerTestContext from suite testParams and runTarget (R6-C)", async () => {
-    const tracker = new MiroirActivityTracker();
-    const eventService = new MiroirEventService(tracker);
     const suite = runnerReturnDocumentSuite();
     const runTarget = runnerLibraryRunTarget();
-    const session = new RunnerTestSession({
-      miroirConfig: baseMiroirConfig(runTarget),
-      miroirActivityTracker: tracker,
-      miroirEventService: eventService,
-      runTarget,
-      suiteTestParams: suite.testParams,
-      resolvedRunner: returnDocument as Runner,
-    });
+    const session = new RunnerTestSession(runnerSessionOptions(runTarget));
 
     const env = await session.initSession();
 
@@ -200,12 +200,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     expect(env.runnerTestContext?.resolvedRunner).toBe(returnDocument);
     expect(env.runnerTestContext?.testParams).toEqual(
       buildRunnerTestSessionParamBank(suite.testParams, runTarget, {
-        defaultLibraryAppModel: remapLibraryAppModelForRunTarget(
-          defaultLibraryAppModel as MetaModel,
-          selfApplicationLibrary.uuid as string,
-          deployment_Library_DO_NO_USE.uuid,
-          runTarget,
-        ),
+        defaultLibraryAppModel: remappedRunnerLibraryDocumentModel(runTarget),
         defaultAppForTestModel: remapLibraryAppModelForRunTarget(
           defaultAppForTestModel as MetaModel,
           selfApplicationAppForTest.uuid as string,
@@ -218,17 +213,8 @@ describe("RunnerTestSession (Gap E R)", () => {
   });
 
   it("initSession calls runAppStackIntegrationBootstrap with runner phases", async () => {
-    const tracker = new MiroirActivityTracker();
-    const eventService = new MiroirEventService(tracker);
     const runTarget = runnerLibraryRunTarget();
-    const session = new RunnerTestSession({
-      miroirConfig: baseMiroirConfig(runTarget),
-      miroirActivityTracker: tracker,
-      miroirEventService: eventService,
-      runTarget,
-      suiteTestParams: runnerReturnDocumentSuite().testParams,
-      resolvedRunner: returnDocument as Runner,
-    });
+    const session = new RunnerTestSession(runnerSessionOptions(runTarget));
 
     await session.initSession();
 
@@ -277,14 +263,9 @@ describe("RunnerTestSession (Gap E R)", () => {
       },
     } as MiroirConfigClient;
 
-    const session = new RunnerTestSession({
-      miroirConfig: realServerConfig,
-      miroirActivityTracker: tracker,
-      miroirEventService: eventService,
-      runTarget,
-      suiteTestParams: runnerReturnDocumentSuite().testParams,
-      resolvedRunner: returnDocument as Runner,
-    });
+    const session = new RunnerTestSession(
+      runnerSessionOptions(runTarget, { miroirConfig: realServerConfig }),
+    );
 
     await session.initSession();
 
@@ -299,17 +280,8 @@ describe("RunnerTestSession (Gap E R)", () => {
   });
 
   it("beforeEach delegates to beforeEachTest", async () => {
-    const tracker = new MiroirActivityTracker();
-    const eventService = new MiroirEventService(tracker);
     const runTarget = runnerLibraryRunTarget();
-    const session = new RunnerTestSession({
-      miroirConfig: baseMiroirConfig(runTarget),
-      miroirActivityTracker: tracker,
-      miroirEventService: eventService,
-      runTarget,
-      suiteTestParams: runnerReturnDocumentSuite().testParams,
-      resolvedRunner: returnDocument as Runner,
-    });
+    const session = new RunnerTestSession(runnerSessionOptions(runTarget));
 
     await session.initSession();
     await session.beforeEach();
@@ -346,7 +318,10 @@ describe("RunnerTestSession (Gap E R)", () => {
       },
       expect.objectContaining({
         clearDocumentBody: false,
-        resetMiroirPlatform: true,
+        resetMiroirPlatform: {
+          miroirDeploymentUuid: deployment_Miroir.uuid,
+          miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
+        },
         testbedEntitiesAndInstances:
           domainControllerDataCrudLibraryPlayfieldSeed.testbedEntitiesAndInstances,
         testbedInitApplicationParameters:
@@ -396,19 +371,15 @@ describe("RunnerTestSession (Gap E R)", () => {
       transformerDefinitionVersions: [],
       applications: [],
     } as unknown as MetaModel;
-    const session = new RunnerTestSession({
-      miroirConfig: baseMiroirConfig(runTarget),
-      miroirActivityTracker: tracker,
-      miroirEventService: eventService,
-      runTarget,
-      suiteTestParams: runnerReturnDocumentSuite().testParams,
-      resolvedRunner: returnDocument as Runner,
-      libraryPlayfieldSeed: {
-        testbedEntitiesAndInstances: [],
-        testbedInitApplicationParameters: libraryTestbedInitParams,
-        testbedModel: customMetaModel,
-      },
-    });
+    const session = new RunnerTestSession(
+      runnerSessionOptions(runTarget, {
+        libraryPlayfieldSeed: {
+          testbedEntitiesAndInstances: [],
+          testbedInitApplicationParameters: libraryTestbedInitParams,
+          testbedModel: customMetaModel,
+        },
+      }),
+    );
 
     await session.initSession();
     await session.beforeEach();
@@ -439,14 +410,7 @@ describe("RunnerTestSession (Gap E R)", () => {
       },
     });
 
-    const session = new RunnerTestSession({
-      miroirConfig: baseMiroirConfig(runTarget),
-      miroirActivityTracker: tracker,
-      miroirEventService: eventService,
-      runTarget,
-      suiteTestParams: runnerReturnDocumentSuite().testParams,
-      resolvedRunner: returnDocument as Runner,
-    });
+    const session = new RunnerTestSession(runnerSessionOptions(runTarget));
 
     await session.initSession();
     vi.mocked(domainController.handleCompositeAction).mockClear();
@@ -475,14 +439,11 @@ describe("RunnerTestSession (Gap E R)", () => {
       objects: [{ uuid: runTarget.applicationUuid }],
     });
     expect(applicationDeploymentMapArg[runTarget.applicationUuid]).toBe(runTarget.deploymentUuid);
-    const remappedLibraryModel = remapLibraryAppModelForRunTarget(
-      defaultLibraryAppModel as MetaModel,
-      selfApplicationLibrary.uuid as string,
-      deployment_Library_DO_NO_USE.uuid,
-      runTarget,
-    );
     expect(modelEnvironmentArg).toEqual(
-      buildTestSessionModelEnvironment(runTarget.deploymentUuid, remappedLibraryModel),
+      buildTestSessionModelEnvironment(
+        runTarget.deploymentUuid,
+        remappedRunnerLibraryDocumentModel(runTarget),
+      ),
     );
     expect(optionsArg).toEqual({});
 

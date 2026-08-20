@@ -27,6 +27,7 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite";
+import { runnerLibraryDocumentPlayfieldSeed } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 
@@ -97,6 +98,7 @@ const runnerTestSession = new RunnerTestSession({
   runTarget: runnerTestRunTarget,
   suiteTestParams: runnerReturnDocumentSuite.testParams,
   resolvedRunner: returnDocument as unknown as Runner,
+  libraryPlayfieldSeed: runnerLibraryDocumentPlayfieldSeed,
 });
 
 let domainController: DomainControllerInterface;

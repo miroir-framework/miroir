@@ -62,6 +62,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       expect(runnerParams.sessionSpecificOptions?.runnerUuidIndex).toBe(
         UI_INTEGRATION_RUNNER_UUID_INDEX,
       );
+      expect(runnerParams.sessionSpecificOptions?.libraryPlayfieldSeed).toBeDefined();
     }
 
     const actionParams = buildUiIntegrationOrchestratorCreateSessionParams(

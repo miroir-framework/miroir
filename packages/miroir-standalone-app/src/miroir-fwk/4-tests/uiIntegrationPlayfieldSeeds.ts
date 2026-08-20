@@ -6,19 +6,34 @@ import type {
   MetaModel,
   SelfApplication,
 } from "miroir-core";
+import { emptyApplicationModel } from "miroir-core";
 
 import {
+  author1,
+  author2,
+  author3,
+  book1,
+  book2,
+  book3,
+  book4,
+  book5,
+  book6,
   Country1,
   Country2,
   Country3,
+  defaultLibraryAppModel,
+  entityAuthor,
+  entityBook,
   entityCountry,
   entityPublisher,
+  entityUser,
   folio as publisher1,
   penguin as publisher2,
   springer as publisher3,
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
+  user1,
 } from "miroir-test-app_deployment-library";
 
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
@@ -352,6 +367,53 @@ export const libraryTestbedInitParams: InitApplicationParameters = {
   selfApplication: selfApplicationLibrary as SelfApplication,
   applicationModelBranch: selfApplicationModelBranchLibraryMasterBranch,
   applicationVersion: selfApplicationVersionLibraryInitialVersion,
+};
+
+/** Library seed for lendDocument / returnDocument runner suites (users + catalog data). */
+export const runnerLibraryDocumentEntitiesAndInstances: ApplicationEntitiesAndInstances = [
+  {
+    entity: entityAuthor as Entity,
+    instances: [author1 as EntityInstance, author2 as EntityInstance, author3 as EntityInstance],
+  },
+  {
+    entity: entityBook as Entity,
+    instances: [
+      book1 as EntityInstance,
+      book2 as EntityInstance,
+      book3 as EntityInstance,
+      book4 as EntityInstance,
+      book5 as EntityInstance,
+      book6 as EntityInstance,
+    ],
+  },
+  {
+    entity: entityPublisher as Entity,
+    instances: [
+      publisher1 as EntityInstance,
+      publisher2 as EntityInstance,
+      publisher3 as EntityInstance,
+    ],
+  },
+  {
+    entity: entityUser as Entity,
+    instances: [user1 as EntityInstance],
+  },
+];
+
+export const runnerLibraryDocumentPlayfieldSeed: TestbedSetupParameters = {
+  testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+  testbedInitApplicationParameters: libraryTestbedInitParams,
+  testbedModel: defaultLibraryAppModel as MetaModel,
+};
+
+/**
+ * Placeholder seed for create/drop-entity runner suites (`skipRunTargetPlayfieldReset`).
+ * Ensures ephemeral deployment stores exist; beforeEach does not apply this seed.
+ */
+export const runnerEmptyApplicationPlayfieldSeed: TestbedSetupParameters = {
+  testbedEntitiesAndInstances: [],
+  testbedInitApplicationParameters: libraryTestbedInitParams,
+  testbedModel: emptyApplicationModel as MetaModel,
 };
 
 /** Publisher + Country only — Model.CRUD beforeEach seed. */

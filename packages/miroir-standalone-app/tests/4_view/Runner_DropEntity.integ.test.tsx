@@ -108,6 +108,7 @@ const runnerTestSession = new RunnerTestSession({
   runTarget,
   suiteTestParams: {},
   resolvedRunner: runnerDropEntity as unknown as Runner,
+  skipRunTargetPlayfieldReset: true,
 });
 
 let domainController: DomainControllerInterface;

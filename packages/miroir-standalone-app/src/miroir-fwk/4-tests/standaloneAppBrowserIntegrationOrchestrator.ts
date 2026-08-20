@@ -46,6 +46,7 @@ function resolveHostExecutionEnvironment(
   };
 }
 
+// ################################################################################################
 function assertBrowserSafeTransformerOptions(options: TestSessionForIntegOptions): void {
   const appType = options.testApplicationStore.emulatedServerType;
   const adminType = options.adminStore.emulatedServerType;
@@ -66,6 +67,7 @@ function assertBrowserSafeTransformerOptions(options: TestSessionForIntegOptions
   }
 }
 
+// ################################################################################################
 const browserSessionFactory: IntegrationTestSessionFactory = {
   createSession(params: IntegrationTestSessionFactoryCreateParams) {
     const { kind, context } = params;
@@ -144,6 +146,7 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
   },
 };
 
+// ################################################################################################
 export function createStandaloneAppBrowserIntegrationOrchestrator(): MiroirTestIntegrationOrchestrator {
   return createDefaultMiroirTestIntegrationOrchestrator(browserSessionFactory);
 }

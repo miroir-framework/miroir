@@ -204,26 +204,6 @@
         },
         "actionSequence": [
           {
-            "actionType": "createEntity",
-            "actionLabel": "Create Entity",
-            "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
-            "payload": {
-              "application": {
-                "transformerType": "mustacheStringTemplate",
-                "definition": "{{createEntity.application}}"
-              },
-              "entities": [
-                {
-                  "transformerType": "getFromParameters",
-                  "referencePath": [
-                    "createEntity",
-                    "entity"
-                  ]
-                }
-              ]
-            }
-          },
-          {
             "actionType": "compositeRunBoxedQueryAction",
             "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "getMenusForMenuLink",
@@ -249,6 +229,13 @@
                       "application"
                     ]
                   },
+                  "pageParams": {
+                    "currentDeploymentUuid": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "build",
+                      "referenceName": "testApplicationDeploymentUuid"
+                    }
+                  },
                   "extractors": {
                     "menuList": {
                       "extractorOrCombinerType": "extractorInstancesByEntity",
@@ -259,6 +246,26 @@
                   }
                 }
               }
+            }
+          },
+          {
+            "actionType": "createEntity",
+            "actionLabel": "Create Entity",
+            "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+            "payload": {
+              "application": {
+                "transformerType": "mustacheStringTemplate",
+                "definition": "{{createEntity.application}}"
+              },
+              "entities": [
+                {
+                  "transformerType": "getFromParameters",
+                  "referencePath": [
+                    "createEntity",
+                    "entity"
+                  ]
+                }
+              ]
             }
           },
           {
@@ -472,15 +479,56 @@
                     "label": "00_firstMenu Check if addMenuLink is true and if there is at least one menu to add the link to",
                     "if": {
                       "transformerType": "boolExpr",
-                      "operator": "==",
-                      "left": {
-                        "transformerType": "getFromParameters",
-                        "referencePath": [
-                          "createEntity",
-                          "addMenuLink"
-                        ]
-                      },
-                      "right": true
+                      "operator": "&&",
+                      "args": [
+                        {
+                          "transformerType": "boolExpr",
+                          "operator": "==",
+                          "left": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "createEntity",
+                              "addMenuLink"
+                            ]
+                          },
+                          "right": true
+                        },
+                        {
+                          "transformerType": "boolExpr",
+                          "operator": ">",
+                          "left": {
+                            "transformerType": "aggregate",
+                            "interpolation": "runtime",
+                            "applyTo": {
+                              "transformerType": "ifThenElse",
+                              "interpolation": "runtime",
+                              "if": {
+                                "transformerType": "boolExpr",
+                                "operator": "==",
+                                "left": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "menuQueryResult",
+                                    "menuList"
+                                  ]
+                                },
+                                "right": null
+                              },
+                              "then": [],
+                              "else": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "menuQueryResult",
+                                  "menuList"
+                                ]
+                              }
+                            }
+                          },
+                          "right": 0
+                        }
+                      ]
                     },
                     "then": {
                       "transformerType": "pickFromList",
