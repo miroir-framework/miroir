@@ -1,5 +1,6 @@
 import type {
   ActionIntegrationSessionOptions,
+  ApplicationVersion,
   Entity,
   EntityInstance,
   IntegrationTestOrchestratorContext,
@@ -8,6 +9,7 @@ import type {
   MiroirTestDefinition,
   MiroirTestSuite,
   Runner,
+  SelfApplication,
   TestbedUuids,
 } from "miroir-core";
 import { resolveRunnerFromMiroirTestSuite, resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite } from "miroir-core";
@@ -20,9 +22,13 @@ import {
   book4,
   book5,
   book6,
+  Country1,
+  Country2,
+  Country3,
   defaultLibraryAppModel,
   entityAuthor,
   entityBook,
+  entityCountry,
   entityPublisher,
   lendDocumentRunner,
   miroirTest_runner_lend_document,
@@ -31,6 +37,7 @@ import {
   penguin as publisher2,
   springer as publisher3,
   returnDocumentRunner,
+  selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import {
   miroirTest_domain_controller_application_version_freeze,
@@ -48,21 +55,17 @@ import {
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 
+import { appForTestInitialApplicationVersion, selfApplicationAppForTest } from "miroir-test-app_deployment-appForTest";
 import {
-  appForTestEntitiesAndInstancesPublisherAndCountry,
-  appForTestPublisherAndCountryMetaModel,
-  appForTestTestbedInitParams,
+  appForTestTestbedInitParams
 } from "./uiIntegrationAppForTestPlayfieldSeed.js";
 import {
   codeItem1,
   codeItem2,
   codeItem3,
-  codeNumberTestMetaModel,
   compositeItem1,
   compositeItem2,
   compositeItem3,
-  compositePKTestMetaModel,
-  emptyLibraryPlayfieldModel,
   entityCodeNumber,
   entityCompositePK,
   entityNoParentUuid,
@@ -71,15 +74,12 @@ import {
   noParentItem1,
   noParentItem2,
   noParentItem3,
-  noParentUuidTestMetaModel,
-  publisherAndCountryTestModel,
-  publisherOnlyTestMetaModel,
   runnerLibraryDocumentEntitiesAndInstances,
-  type TestbedSetupParameters,
+  type TestbedSetupParameters
 } from "./uiIntegrationPlayfieldSeeds.js";
 
 export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
-export const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_drop_entity.name;
+// export const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_drop_entity.name;
 export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY =
   miroirTest_runner_freeze_application_version.name;
 
@@ -262,7 +262,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     libraryPlayfieldSeed: null,
   },
   // ###############################################################################
-  [RUNNER_DROP_ENTITY_SUITE_KEY]: {
+  [miroirTest_runner_drop_entity.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
@@ -274,9 +274,32 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
       .definition as MiroirTestSuite,
     libraryPlayfieldSeed: {
-      testbedEntitiesAndInstances: appForTestEntitiesAndInstancesPublisherAndCountry,
+      testbedEntitiesAndInstances: [
+        {
+          entity: entityPublisher as Entity,
+          instances: [
+            publisher1 as EntityInstance,
+            publisher2 as EntityInstance,
+            publisher3 as EntityInstance,
+          ],
+        },
+        {
+          entity: entityCountry as Entity,
+          instances: [
+            Country1 as EntityInstance,
+            Country2 as EntityInstance,
+            Country3 as EntityInstance,
+          ],
+        },
+      ],
       testbedInitApplicationParameters: appForTestTestbedInitParams,
-      testbedModel: appForTestPublisherAndCountryMetaModel,
+      testbedModel: {
+        applicationUuid: selfApplicationAppForTest.uuid,
+        applicationName: selfApplicationAppForTest.name,
+        entities: [entityPublisher as Entity, entityCountry as Entity],
+        applicationVersions: [appForTestInitialApplicationVersion as ApplicationVersion], // does it make sense?
+        applications: [selfApplicationAppForTest as SelfApplication],
+      },
     },
   },
   // ###############################################################################
@@ -323,7 +346,11 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     libraryPlayfieldSeed: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: publisherAndCountryTestModel,
+      testbedModel: {
+        applicationUuid: selfApplicationLibrary.uuid,
+        applicationName: selfApplicationLibrary.name,
+        entities: [entityPublisher as Entity, entityCountry as Entity],
+      },
     },
   },
   // ###############################################################################
@@ -338,7 +365,11 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
         },
       ],
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: compositePKTestMetaModel,
+      testbedModel: {
+        applicationUuid: selfApplicationLibrary.uuid,
+        applicationName: selfApplicationLibrary.name,
+        entities: [entityCompositePK],
+      },
     },
   },
   // ###############################################################################
@@ -358,7 +389,11 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
         },
       ],
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: publisherOnlyTestMetaModel,
+      testbedModel: {
+        applicationUuid: selfApplicationLibrary.uuid,
+        applicationName: selfApplicationLibrary.name,
+        entities: [entityPublisher as Entity],
+      },
     },
   },
   // ###############################################################################
@@ -374,7 +409,11 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
         },
       ],
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: codeNumberTestMetaModel,
+      testbedModel: {
+        applicationUuid: selfApplicationLibrary.uuid,
+        applicationName: selfApplicationLibrary.name,
+        entities: [entityCodeNumber],
+      },
     },
   },
   // ###############################################################################
@@ -397,7 +436,11 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
         },
       ],
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: noParentUuidTestMetaModel,
+      testbedModel: {
+        applicationUuid: selfApplicationLibrary.uuid,
+        applicationName: selfApplicationLibrary.name,
+        entities: [entityPublisher as Entity, entityNoParentUuid],
+      },
     },
   },
   // ###############################################################################
@@ -407,7 +450,10 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     libraryPlayfieldSeed: {
       testbedEntitiesAndInstances: [],
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: emptyLibraryPlayfieldModel,
+      testbedModel: {
+        applicationUuid: selfApplicationLibrary.uuid,
+        applicationName: selfApplicationLibrary.name,
+      },
     },
   },
   // ###############################################################################
@@ -418,7 +464,11 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     libraryPlayfieldSeed: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: publisherAndCountryTestModel,
+      testbedModel: {
+        applicationUuid: selfApplicationLibrary.uuid,
+        applicationName: selfApplicationLibrary.name,
+        entities: [entityPublisher as Entity, entityCountry as Entity],
+      },
     },
   },
   // ###############################################################################
@@ -428,7 +478,11 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     libraryPlayfieldSeed: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: publisherAndCountryTestModel,
+      testbedModel: {
+        applicationUuid: selfApplicationLibrary.uuid,
+        applicationName: selfApplicationLibrary.name,
+        entities: [entityPublisher as Entity, entityCountry as Entity],
+      },
     },
   },
 };

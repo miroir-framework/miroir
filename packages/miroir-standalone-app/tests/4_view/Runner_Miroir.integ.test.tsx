@@ -17,9 +17,10 @@ import {
   type LoggerInterface,
   type LoggerOptions,
   type MiroirTestSuite,
-  type Runner
+  type Runner,
+  type MetaModelPartial
 } from "miroir-core";
-import { miroirTest_runner_return_document, returnDocument } from "miroir-test-app_deployment-library";
+import { defaultLibraryAppModel, miroirTest_runner_return_document, returnDocument } from "miroir-test-app_deployment-library";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -27,7 +28,6 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite";
-import { runnerLibraryDocumentPlayfieldSeed } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
 import { miroirAppStartup } from "../../src/startup";
 import { loadTestConfigFiles } from "../utils/fileTools";
 
@@ -35,6 +35,8 @@ import {
   afterAllTests,
   type RunnerTestParams,
 } from "./RunnerIntegTestTools.js";
+
+import { runnerLibraryDocumentEntitiesAndInstances, libraryTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
 
 import { RunnerTestSession } from "../helpers/RunnerTestSession.js";
 import {
@@ -98,7 +100,11 @@ const runnerTestSession = new RunnerTestSession({
   runTarget: runnerTestRunTarget,
   suiteTestParams: runnerReturnDocumentSuite.testParams,
   resolvedRunner: returnDocument as unknown as Runner,
-  libraryPlayfieldSeed: runnerLibraryDocumentPlayfieldSeed,
+  libraryPlayfieldSeed: {
+      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+      testbedInitApplicationParameters: libraryTestbedInitParams,
+      testbedModel: defaultLibraryAppModel as MetaModelPartial,
+    },
 });
 
 let domainController: DomainControllerInterface;
@@ -168,7 +174,7 @@ describe.sequential(
           runnerTestParams.adminDeployment,
           runnerTestParams.testDeploymentStorageConfiguration,
           runnerTestParams.initialModel,
-          runnerTestParams.preRunnerCompositeActions,
+          runnerTestParams.preRunnerCompositeActions as any, // TODO: fix type!
           runnerTestParams.testCompositeActionLabel,
           runnerTestParams.skipCreateDeployment,
           runnerTestParams.skipDropDeployment,

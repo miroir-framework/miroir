@@ -4,7 +4,7 @@ import {
   type Deployment,
   type DomainControllerInterface,
   type InitApplicationParameters,
-  type MetaModel,
+  type MetaModelPartial,
   type MiroirConfigClient,
   type StoreUnitConfiguration,
   type Uuid,
@@ -34,7 +34,7 @@ export async function beforeEachTest(
     };
     testbedEntitiesAndInstances?: ApplicationEntitiesAndInstances;
     testbedInitApplicationParameters?: InitApplicationParameters;
-    testbedModel?: MetaModel;
+    testbedModel?: MetaModelPartial;
   },
 ): Promise<void> {
   await resetIntegTestbed({

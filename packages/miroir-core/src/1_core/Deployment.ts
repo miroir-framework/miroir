@@ -9,6 +9,7 @@ import type {
   Entity,
   EntityInstance,
   MetaModel,
+  MetaModelPartial,
   MiroirConfigClient,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
@@ -266,8 +267,54 @@ export const emptyMetaModel: MetaModel = {
   tests: [],
   themes: [],
   transformerDefinitions: [],
+};
+
+const META_MODEL_ARRAY_KEYS = [
+  "applicationVersions",
+  "applicationVersionCrossEntityVersion",
+  "applicationVersionCrossQueryVersion",
+  "applicationVersionCrossReportVersion",
+  "applicationVersionCrossMenuVersion",
+  "applicationVersionCrossEndpointVersion",
+  "applicationVersionCrossRunnerVersion",
+  "applicationVersionCrossThemeVersion",
+  "applicationVersionCrossTransformerDefinitionVersion",
+  "applications",
+  "entities",
+  "tests",
+  "entityVersions",
+  "endpoints",
+  "jzodSchemas",
+  "menus",
+  "storedQueries",
+  "queryVersions",
+  "reportVersions",
+  "menuVersions",
+  "endpointVersions",
+  "runnerVersions",
+  "themeVersions",
+  "transformerDefinitionVersions",
+  "reports",
+  "runners",
+  "themes",
+  "transformerDefinitions",
+] as const satisfies readonly (keyof MetaModel)[];
+
+/** Fill omitted MetaModel array fields with `[]`; scalar fields fall back to {@link emptyMetaModel}. */
+export function resolveMetaModelPartial(partial: MetaModelPartial): MetaModel {
+  const arrayDefaults = Object.fromEntries(
+    META_MODEL_ARRAY_KEYS.map((key) => [key, partial[key] ?? []]),
+  ) as Pick<MetaModel, (typeof META_MODEL_ARRAY_KEYS)[number]>;
+  return {
+    ...emptyMetaModel,
+    ...partial,
+    ...arrayDefaults,
+  };
 }
-export type ResolvableAppMetaModel = MetaModel | CoreTransformerForBuildPlusRuntime_getFromParameters;
+
+export type ResolvableAppMetaModel =
+  | MetaModelPartial
+  | CoreTransformerForBuildPlusRuntime_getFromParameters;
 
 export type RunnerTestResetAndinitializeInitConfig = {
   applicationUuid: Uuid;
@@ -284,7 +331,7 @@ export type ResetAndinitializeDeploymentCompositeActionPayload = {
 };
 
 export function isResolvableAppMetaModelTransformer(
-  value: MetaModel | CoreTransformerForBuildPlusRuntime,
+  value: MetaModelPartial | CoreTransformerForBuildPlusRuntime,
 ): value is CoreTransformerForBuildPlusRuntime_getFromParameters {
   return (
     typeof value === "object" &&
@@ -311,7 +358,7 @@ export function resolveAppMetaModelFromParamBank(
       `resolveAppMetaModelFromParamBank: missing param bank key "${key}" for initialModel`,
     );
   }
-  return value as MetaModel;
+  return resolveMetaModelPartial(value as MetaModelPartial);
 }
 
 export function expandResolvableResetAndinitializeDeploymentCompositeAction(
@@ -354,12 +401,13 @@ export function buildResetAndinitializeDeploymentActionSequence(
   deploymentUuid: Uuid,
   initApplicationParameters: InitApplicationParameters,
   appEntitesAndInstances: ApplicationEntitiesDefinitionAndInstances[],
-  appMetaModel: MetaModel,
+  appMetaModel: MetaModelPartial,
   filterEntities?: Uuid[],
 ): CompositeActionSequence {
+  const resolvedMetaModel = resolveMetaModelPartial(appMetaModel);
   const entities = filterEntities
-    ? appMetaModel.entities.filter((entity) => filterEntities.includes(entity.uuid))
-    : appMetaModel.entities;
+    ? resolvedMetaModel.entities.filter((entity) => filterEntities.includes(entity.uuid))
+    : resolvedMetaModel.entities;
 
   log.info(
     "resetAndinitializeDeploymentCompositeAction for application=",
@@ -430,16 +478,16 @@ export function buildResetAndinitializeDeploymentActionSequence(
         // add reports, menus, etc. from metaModel (#222 — section per parentEntity via getApplicationSection)
         ...(() => {
           const metaModelObjects: EntityInstance[] = [
-            ...appMetaModel.menus as EntityInstance[],
-            ...appMetaModel.reports as EntityInstance[],
-            ...appMetaModel.storedQueries as EntityInstance[],
-            ...appMetaModel.runners as EntityInstance[],
-            ...appMetaModel.themes as EntityInstance[],
-            ...appMetaModel.jzodSchemas as EntityInstance[],
-            ...appMetaModel.endpoints as EntityInstance[],
-            ...appMetaModel.applicationVersionCrossEntityVersion as EntityInstance[],
-            ...appMetaModel.applicationVersions as EntityInstance[],
-            ...appMetaModel.applications as EntityInstance[],
+            ...resolvedMetaModel.menus as EntityInstance[],
+            ...resolvedMetaModel.reports as EntityInstance[],
+            ...resolvedMetaModel.storedQueries as EntityInstance[],
+            ...resolvedMetaModel.runners as EntityInstance[],
+            ...resolvedMetaModel.themes as EntityInstance[],
+            ...resolvedMetaModel.jzodSchemas as EntityInstance[],
+            ...resolvedMetaModel.endpoints as EntityInstance[],
+            ...resolvedMetaModel.applicationVersionCrossEntityVersion as EntityInstance[],
+            ...resolvedMetaModel.applicationVersions as EntityInstance[],
+            ...resolvedMetaModel.applications as EntityInstance[],
           ];
           const bySection: Partial<Record<ApplicationSection, EntityInstance[]>> = {};
           for (const obj of metaModelObjects) {
@@ -505,7 +553,7 @@ export function resetAndinitializeDeploymentCompositeAction(
   deploymentUuid: Uuid,
   initApplicationParameters: InitApplicationParameters,
   appEntitesAndInstances: ApplicationEntitiesDefinitionAndInstances[],
-  appMetaModel: MetaModel | CoreTransformerForBuildPlusRuntime,
+  appMetaModel: MetaModelPartial | CoreTransformerForBuildPlusRuntime,
   filterEntities?: Uuid[],
 ): CompositeActionSequence {
   if (isResolvableAppMetaModelTransformer(appMetaModel)) {
@@ -540,7 +588,7 @@ export function resetAndinitializeDeploymentCompositeAction(
     deploymentUuid,
     initApplicationParameters,
     appEntitesAndInstances,
-    appMetaModel as MetaModel,
+    appMetaModel as MetaModelPartial,
     filterEntities,
   );
 }

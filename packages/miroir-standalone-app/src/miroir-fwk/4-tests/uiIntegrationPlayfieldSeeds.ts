@@ -4,6 +4,7 @@ import type {
   EntityInstance,
   InitApplicationParameters,
   MetaModel,
+  MetaModelPartial,
   SelfApplication,
 } from "miroir-core";
 import { emptyApplicationModel } from "miroir-core";
@@ -44,7 +45,7 @@ import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 export type TestbedSetupParameters = {
   testbedEntitiesAndInstances: ApplicationEntitiesAndInstances;
   testbedInitApplicationParameters: InitApplicationParameters;
-  testbedModel: MetaModel;
+  testbedModel: MetaModelPartial;
 };
 
 /** Composite-PK test entity — PK is `["region", "code"]` (matches legacy integ file). */
@@ -117,38 +118,6 @@ export const compositeItem3: EntityInstance = {
  * MetaModel for composite-PK Action seed — only TestEntityCompositePK
  * (matches legacy filterEntities=[entityCompositePKUuid]).
  */
-export const compositePKTestMetaModel: MetaModel = {
-  applicationUuid: selfApplicationLibrary.uuid,
-  applicationName: selfApplicationLibrary.name,
-  entities: [entityCompositePK],
-  entityVersions: [],
-  endpoints: [],
-  jzodSchemas: [],
-  menus: [],
-  runners: [],
-  themes: [],
-  transformerDefinitions: [],
-  applicationVersions: [],
-  reports: [],
-  storedQueries: [],
-  applicationVersionCrossEntityVersion: [],
-  applicationVersionCrossQueryVersion: [],
-  queryVersions: [],
-  applicationVersionCrossReportVersion: [],
-  reportVersions: [],
-  applicationVersionCrossMenuVersion: [],
-  menuVersions: [],
-  applicationVersionCrossEndpointVersion: [],
-  endpointVersions: [],
-  applicationVersionCrossRunnerVersion: [],
-  runnerVersions: [],
-  applicationVersionCrossThemeVersion: [],
-  themeVersions: [],
-  applicationVersionCrossTransformerDefinitionVersion: [],
-  transformerDefinitionVersions: [],
-  applications: [],
-  tests: [],
-};
 
 /** Non-UUID number PK test entity — `idAttribute: "code"` (matches legacy integ file). */
 const ENTITY_CODE_NUMBER_UUID = "4bbf4d19-7ac5-4fff-88ee-63ee49c7802f";
@@ -210,38 +179,6 @@ export const codeItem3: EntityInstance = {
 } as EntityInstance;
 
 /** MetaModel for non-UUID PK Data seed — TestEntityCodeNumber only. */
-export const codeNumberTestMetaModel: MetaModel = {
-  applicationUuid: selfApplicationLibrary.uuid,
-  applicationName: selfApplicationLibrary.name,
-  entities: [entityCodeNumber],
-  entityVersions: [],
-  endpoints: [],
-  jzodSchemas: [],
-  menus: [],
-  runners: [],
-  themes: [],
-  transformerDefinitions: [],
-  applicationVersions: [],
-  reports: [],
-  storedQueries: [],
-  applicationVersionCrossEntityVersion: [],
-  applicationVersionCrossQueryVersion: [],
-  queryVersions: [],
-  applicationVersionCrossReportVersion: [],
-  reportVersions: [],
-  applicationVersionCrossMenuVersion: [],
-  menuVersions: [],
-  applicationVersionCrossEndpointVersion: [],
-  endpointVersions: [],
-  applicationVersionCrossRunnerVersion: [],
-  runnerVersions: [],
-  applicationVersionCrossThemeVersion: [],
-  themeVersions: [],
-  applicationVersionCrossTransformerDefinitionVersion: [],
-  transformerDefinitionVersions: [],
-  applications: [],
-  tests: [],
-};
 
 export const publisherOnlyTestMetaModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
@@ -328,38 +265,6 @@ export const noParentItem3: EntityInstance = {
  * MetaModel for no-parentUuid suite — Publisher + TestEntityNoParentUuid
  * (Model leaf expects count 2 after recreate; Data leaves use NoParentUuid instances).
  */
-export const noParentUuidTestMetaModel: MetaModel = {
-  applicationUuid: selfApplicationLibrary.uuid,
-  applicationName: selfApplicationLibrary.name,
-  entities: [entityPublisher as Entity, entityNoParentUuid],
-  entityVersions: [],
-  endpoints: [],
-  jzodSchemas: [],
-  menus: [],
-  runners: [],
-  themes: [],
-  transformerDefinitions: [],
-  applicationVersions: [],
-  reports: [],
-  storedQueries: [],
-  applicationVersionCrossEntityVersion: [],
-  applicationVersionCrossQueryVersion: [],
-  queryVersions: [],
-  applicationVersionCrossReportVersion: [],
-  reportVersions: [],
-  applicationVersionCrossMenuVersion: [],
-  menuVersions: [],
-  applicationVersionCrossEndpointVersion: [],
-  endpointVersions: [],
-  applicationVersionCrossRunnerVersion: [],
-  runnerVersions: [],
-  applicationVersionCrossThemeVersion: [],
-  themeVersions: [],
-  applicationVersionCrossTransformerDefinitionVersion: [],
-  transformerDefinitionVersions: [],
-  applications: [],
-  tests: [],
-};
 
 export const libraryTestbedInitParams: InitApplicationParameters = {
   dataStoreType: "app",
@@ -437,72 +342,8 @@ export const libraryEntitiesAndInstancesPublisherAndCountry: ApplicationEntities
 ];
 
 /** MetaModel for Model.CRUD — Publisher + Country only (legacy filterEntities). */
-export const publisherAndCountryTestModel: MetaModel = {
-  applicationUuid: selfApplicationLibrary.uuid,
-  applicationName: selfApplicationLibrary.name,
-  entities: [entityPublisher as Entity, entityCountry as Entity],
-  entityVersions: [],
-  endpoints: [],
-  jzodSchemas: [],
-  menus: [],
-  runners: [],
-  themes: [],
-  transformerDefinitions: [],
-  applicationVersions: [],
-  reports: [],
-  storedQueries: [],
-  applicationVersionCrossEntityVersion: [],
-  applicationVersionCrossQueryVersion: [],
-  queryVersions: [],
-  applicationVersionCrossReportVersion: [],
-  reportVersions: [],
-  applicationVersionCrossMenuVersion: [],
-  menuVersions: [],
-  applicationVersionCrossEndpointVersion: [],
-  endpointVersions: [],
-  applicationVersionCrossRunnerVersion: [],
-  runnerVersions: [],
-  applicationVersionCrossThemeVersion: [],
-  themeVersions: [],
-  applicationVersionCrossTransformerDefinitionVersion: [],
-  transformerDefinitionVersions: [],
-  applications: [],
-  tests: [],
-};
 
 /**
  * Empty Library playfield — Model undo/redo starts with no Author/Book entities
  * (matches imperative undo-redo `resetIntegTestbed` without seed instances).
  */
-export const emptyLibraryPlayfieldModel: MetaModel = {
-  applicationUuid: selfApplicationLibrary.uuid,
-  applicationName: selfApplicationLibrary.name,
-  entities: [],
-  entityVersions: [],
-  endpoints: [],
-  jzodSchemas: [],
-  menus: [],
-  runners: [],
-  themes: [],
-  transformerDefinitions: [],
-  applicationVersions: [],
-  reports: [],
-  storedQueries: [],
-  applicationVersionCrossEntityVersion: [],
-  applicationVersionCrossQueryVersion: [],
-  queryVersions: [],
-  applicationVersionCrossReportVersion: [],
-  reportVersions: [],
-  applicationVersionCrossMenuVersion: [],
-  menuVersions: [],
-  applicationVersionCrossEndpointVersion: [],
-  endpointVersions: [],
-  applicationVersionCrossRunnerVersion: [],
-  runnerVersions: [],
-  applicationVersionCrossThemeVersion: [],
-  themeVersions: [],
-  applicationVersionCrossTransformerDefinitionVersion: [],
-  transformerDefinitionVersions: [],
-  applications: [],
-  tests: [],
-};

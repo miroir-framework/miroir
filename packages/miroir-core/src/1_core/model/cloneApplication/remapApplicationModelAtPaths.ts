@@ -4,8 +4,12 @@
  * deployment) identity for ephemeral integration runs.
  */
 
-import type { MetaModel } from "../../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type {
+  MetaModel,
+  MetaModelPartial,
+} from "../../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { Uuid } from "../../../0_interfaces/1_core/EntityVersion.js";
+import { resolveMetaModelPartial } from "../../Deployment.js";
 import {
   formatRelativePath,
   listSelfApplicationUuidPaths,
@@ -209,15 +213,15 @@ export function remapSelfApplicationUuidModel(
  * runner runTarget. No-op when runTarget already uses the canonical application uuid.
  */
 export function remapLibraryAppModelForRunTarget(
-  sourceModel: MetaModel,
+  sourceModel: MetaModelPartial,
   canonicalApplicationUuid: Uuid,
   canonicalDeploymentUuid: Uuid,
   runTarget: TestbedUuids,
 ): MetaModel {
   if (runTarget.applicationUuid === canonicalApplicationUuid) {
-    return sourceModel;
+    return resolveMetaModelPartial(sourceModel);
   }
-  return remapSelfApplicationUuidModel(sourceModel, {
+  return remapSelfApplicationUuidModel(resolveMetaModelPartial(sourceModel), {
     oldApplicationUuid: canonicalApplicationUuid,
     newApplicationUuid: runTarget.applicationUuid,
     oldDeploymentUuid: canonicalDeploymentUuid,

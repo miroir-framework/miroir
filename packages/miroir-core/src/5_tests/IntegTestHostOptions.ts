@@ -1,7 +1,7 @@
 import type {
   Deployment,
   EntityInstance,
-  MetaModel,
+  MetaModelPartial,
   MiroirConfigClient,
   Runner,
   StoreUnitConfiguration,
@@ -146,7 +146,7 @@ export type DomainControllerOrchestratorSessionOptions =
 export type RunnerLibraryPlayfieldSeed = {
   testbedEntitiesAndInstances: ApplicationEntitiesAndInstances;
   testbedInitApplicationParameters: InitApplicationParameters;
-  testbedModel: MetaModel;
+  testbedModel: MetaModelPartial;
 };
 
 export type ActionIntegrationSessionOptions = IntegTestHostOptions & {

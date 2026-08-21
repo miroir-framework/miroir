@@ -1,6 +1,6 @@
 import type {
   Deployment,
-  MetaModel,
+  MetaModelPartial,
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
@@ -50,7 +50,7 @@ export type ResetIntegTestbedParams = {
   };
   testbedEntitiesAndInstances?: ApplicationEntitiesAndInstances;
   testbedInitApplicationParameters?: InitApplicationParameters;
-  testbedModel?: MetaModel;
+  testbedModel?: MetaModelPartial;
   /** When set, used for resetAndInitApplicationDeployment instead of library/miroir defaults */
   deploymentsToReset?: Deployment[];
   postResetHook?: () => Promise<void>;
