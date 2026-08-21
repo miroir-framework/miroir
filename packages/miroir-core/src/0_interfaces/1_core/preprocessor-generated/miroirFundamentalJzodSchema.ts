@@ -549,6 +549,7 @@ export const miroirFundamentalJzodSchema = {
               "bigint",
               "boolean",
               "never",
+              "null",
               "uuid",
               "undefined",
               "unknown",
@@ -28070,6 +28071,7 @@ export const miroirFundamentalJzodSchema = {
               "bigint",
               "boolean",
               "never",
+              "null",
               "uuid",
               "undefined",
               "unknown",
@@ -37881,6 +37883,7 @@ export const miroirFundamentalJzodSchema = {
               "bigint",
               "boolean",
               "never",
+              "null",
               "uuid",
               "undefined",
               "unknown",
@@ -40892,6 +40895,18 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         }
+      },
+      "metaModelPartial": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "partial": true,
+            "eager": true,
+            "relativePath": "metaModel"
+          }
+        },
+        "definition": {}
       },
       "extractorTemplateCombinerOneToOne": {
         "type": "schemaReference",

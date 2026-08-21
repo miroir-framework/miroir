@@ -400,11 +400,11 @@ export const runnerLibraryDocumentEntitiesAndInstances: ApplicationEntitiesAndIn
   },
 ];
 
-export const runnerLibraryDocumentPlayfieldSeed: TestbedSetupParameters = {
-  testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
-  testbedInitApplicationParameters: libraryTestbedInitParams,
-  testbedModel: defaultLibraryAppModel as MetaModel,
-};
+// export const runnerLibraryDocumentPlayfieldSeed: TestbedSetupParameters = {
+//   testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+//   testbedInitApplicationParameters: libraryTestbedInitParams,
+//   testbedModel: defaultLibraryAppModel as MetaModel,
+// };
 
 /**
  * Placeholder seed for create/drop-entity runner suites (`skipRunTargetPlayfieldReset`).
@@ -437,7 +437,7 @@ export const libraryEntitiesAndInstancesPublisherAndCountry: ApplicationEntities
 ];
 
 /** MetaModel for Model.CRUD — Publisher + Country only (legacy filterEntities). */
-export const publisherAndCountryTestMetaModel: MetaModel = {
+export const publisherAndCountryTestModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [entityPublisher as Entity, entityCountry as Entity],
@@ -474,7 +474,7 @@ export const publisherAndCountryTestMetaModel: MetaModel = {
  * Empty Library playfield — Model undo/redo starts with no Author/Book entities
  * (matches imperative undo-redo `resetIntegTestbed` without seed instances).
  */
-export const emptyLibraryPlayfieldMetaModel: MetaModel = {
+export const emptyLibraryPlayfieldModel: MetaModel = {
   applicationUuid: selfApplicationLibrary.uuid,
   applicationName: selfApplicationLibrary.name,
   entities: [],

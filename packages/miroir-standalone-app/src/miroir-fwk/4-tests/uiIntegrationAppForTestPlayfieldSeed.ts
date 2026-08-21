@@ -84,9 +84,3 @@ export const appForTestPublisherAndCountryMetaModel: MetaModel = {
   applications: [selfApplicationAppForTest as SelfApplication],
   tests: [],
 };
-
-export const appForTestFreezePlayfieldSeed = {
-  testbedEntitiesAndInstances: appForTestEntitiesAndInstancesPublisherAndCountry,
-  testbedInitApplicationParameters: appForTestTestbedInitParams,
-  testbedModel: appForTestPublisherAndCountryMetaModel,
-};

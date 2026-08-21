@@ -37,7 +37,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.25.7",
     "@jest/globals": "^29.3.1",
-    "@miroir-framework/jzod-ts": "0.8.3",
+    "@miroir-framework/jzod-ts": "0.8.5",
     "@types/jest": "^29.2.4",
     "copyfiles": "^2.4.1",
     "loglevelnext": "^6.0.0",

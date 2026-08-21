@@ -28,7 +28,7 @@
     "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "dependencies": {
-    "@miroir-framework/jzod": "0.8.3",
+    "@miroir-framework/jzod": "0.8.5",
     "commander": "^12.1.0",
     "loglevelnext": "^6.0.0",
     "miroir-core": "*",

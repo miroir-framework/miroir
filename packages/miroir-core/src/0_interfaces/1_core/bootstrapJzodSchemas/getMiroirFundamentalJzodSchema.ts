@@ -3490,8 +3490,9 @@ export function getMiroirFundamentalJzodSchema(
         ______________________________________________queriesLocalizedInnerResolutionStorePlainReferences_______________________:
           { type: "any" },
         ...queriesLocalizedInnerResolutionStorePlainReferences,
-        ______________________________________________queries_______________________:
-          { type: "any" },
+        ______________________________________________queries_______________________: {
+          type: "any",
+        },
         buildPlusRuntimeQuery: queriesSchemaBuilder.resultSchema,
         ______________________________________________buildPlusRuntimeDomainActionLocalizedInnerResolutionStorePlainReferences_______________________:
           { type: "any" },
@@ -4052,6 +4053,20 @@ export function getMiroirFundamentalJzodSchema(
             },
           },
         },
+        metaModelPartial: {
+          type: "object",
+          extend: {
+            type: "schemaReference",
+            definition: {
+              partial: true,
+              eager: true,
+              // absolutePath: miroirFundamentalJzodSchemaUuid,
+              relativePath: "metaModel",
+            },
+          },
+          definition: {
+          }
+        },
         // extractorOrCombinerTemplate: {
         //   type: "schemaReference",
         //   definition: {
@@ -4070,18 +4085,19 @@ export function getMiroirFundamentalJzodSchema(
         //   },
         // },
         extractorTemplateCombinerOneToOne: {
-          "type": "schemaReference",
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerOneToOne",
-          }
+          type: "schemaReference",
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerOneToOne",
+          },
         },
         extractorTemplateExtractorByPrimaryKey: {
-          "type": "schemaReference",
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorByPrimaryKey",
-          }
+          type: "schemaReference",
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath:
+              "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorByPrimaryKey",
+          },
         },
         extractorTemplateReturningObject: {
           type: "union",
@@ -4105,7 +4121,8 @@ export function getMiroirFundamentalJzodSchema(
           type: "schemaReference",
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorInstancesByEntity",
+            relativePath:
+              "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorInstancesByEntity",
           },
         },
         extractorTemplateReturningObjectList: {
@@ -4151,39 +4168,42 @@ export function getMiroirFundamentalJzodSchema(
           ],
         },
         combinerTemplateOneToMany: {
-          "type": "schemaReference",
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerOneToMany",
-          }
+          type: "schemaReference",
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerOneToMany",
+          },
         },
         combinerTemplateManyToMany: {
-          "type": "schemaReference",
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerManyToMany",
-          }
+          type: "schemaReference",
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerManyToMany",
+          },
         },
         combinerTemplateByHeteronomousManyToMany: {
-          "type": "schemaReference",
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByHeteronomousManyToMany",
-          }
+          type: "schemaReference",
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath:
+              "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_combinerByHeteronomousManyToMany",
+          },
         },
         extractorTemplateByExtractorWrapperReturningObject: {
-          "type": "schemaReference",
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningObject"
-          }
+          type: "schemaReference",
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath:
+              "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningObject",
+          },
         },
         extractorTemplateByExtractorWrapperReturningList: {
-          "type": "schemaReference",
-          "definition": {
-            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningList"
-          }
+          type: "schemaReference",
+          definition: {
+            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            relativePath:
+              "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorWrapperReturningList",
+          },
         },
         extractorTemplateByExtractorWrapper: {
           type: "union",
@@ -4218,12 +4238,13 @@ export function getMiroirFundamentalJzodSchema(
             absolutePath: miroirFundamentalJzodSchemaUuid,
             relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction",
           },
-        }, 
+        },
         compositeActionSequenceTemplate: {
           type: "schemaReference",
           definition: {
             absolutePath: miroirFundamentalJzodSchemaUuid,
-            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
+            relativePath:
+              "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeActionSequence",
           },
         }, // compositeActionTemplate: THAT's THE RESULT OF THE WHOLE MOVEMENT!
         compositeActionTemplate: {

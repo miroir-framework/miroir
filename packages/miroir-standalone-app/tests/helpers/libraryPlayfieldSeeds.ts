@@ -45,7 +45,7 @@ import {
   compositeItem1,
   compositeItem2,
   compositeItem3,
-  emptyLibraryPlayfieldMetaModel,
+  emptyLibraryPlayfieldModel,
   entityCompositePK,
   libraryTestbedInitParams,
   type TestbedSetupParameters,
@@ -234,7 +234,7 @@ export const domainControllerDataCrudLibraryPlayfieldSeed: TestbedSetupParameter
 export const domainControllerModelUndoRedoLibraryPlayfieldSeed: TestbedSetupParameters = {
   testbedEntitiesAndInstances: [],
   testbedInitApplicationParameters: libraryTestbedInitParams,
-  testbedModel: emptyLibraryPlayfieldMetaModel,
+  testbedModel: emptyLibraryPlayfieldModel,
 };
 
 export function isDomainControllerActionCrudSuite(suiteKey: string): boolean {

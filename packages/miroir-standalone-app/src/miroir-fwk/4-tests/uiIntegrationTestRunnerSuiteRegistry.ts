@@ -20,17 +20,17 @@ import {
   book4,
   book5,
   book6,
-  folio as publisher1,
-  penguin as publisher2,
-  springer as publisher3,
+  defaultLibraryAppModel,
   entityAuthor,
   entityBook,
   entityPublisher,
   lendDocumentRunner,
-  returnDocumentRunner,
   miroirTest_runner_lend_document,
   miroirTest_runner_return_document,
-  defaultLibraryAppModel,
+  folio as publisher1,
+  penguin as publisher2,
+  springer as publisher3,
+  returnDocumentRunner,
 } from "miroir-test-app_deployment-library";
 import {
   miroirTest_domain_controller_application_version_freeze,
@@ -49,6 +49,11 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import {
+  appForTestEntitiesAndInstancesPublisherAndCountry,
+  appForTestPublisherAndCountryMetaModel,
+  appForTestTestbedInitParams,
+} from "./uiIntegrationAppForTestPlayfieldSeed.js";
+import {
   codeItem1,
   codeItem2,
   codeItem3,
@@ -57,7 +62,7 @@ import {
   compositeItem2,
   compositeItem3,
   compositePKTestMetaModel,
-  emptyLibraryPlayfieldMetaModel,
+  emptyLibraryPlayfieldModel,
   entityCodeNumber,
   entityCompositePK,
   entityNoParentUuid,
@@ -67,12 +72,11 @@ import {
   noParentItem2,
   noParentItem3,
   noParentUuidTestMetaModel,
-  publisherAndCountryTestMetaModel,
+  publisherAndCountryTestModel,
   publisherOnlyTestMetaModel,
-  runnerLibraryDocumentPlayfieldSeed,
+  runnerLibraryDocumentEntitiesAndInstances,
   type TestbedSetupParameters,
 } from "./uiIntegrationPlayfieldSeeds.js";
-import { appForTestFreezePlayfieldSeed } from "./uiIntegrationAppForTestPlayfieldSeed.js";
 
 export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
 export const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_drop_entity.name;
@@ -138,6 +142,7 @@ export function resolveUiIntegrationOrchestratorSessionKind(
   return entry.kind === "runnerTest" ? "runner" : "action";
 }
 
+// ################################################################################################
 export function buildUiIntegrationOrchestratorCreateSessionParams(
   entry: UiIntegrationRunnerSuiteEntry,
   context: IntegrationTestOrchestratorContext,
@@ -181,7 +186,7 @@ export function buildUiIntegrationOrchestratorCreateSessionParams(
     sessionSpecificOptions: sessionSpecificOptions as ActionIntegrationSessionOptions,
   };
 }
-
+// ################################################################################################
 export function buildUiIntegrationRunnerSessionSpecificOptions(
   entry: UiIntegrationRunnerSuiteEntry,
   pageLabel: string,
@@ -226,19 +231,28 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
   }
 }
 
+// ################################################################################################
 export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationRunnerSuiteEntry> = {
   [miroirTest_runner_lend_document.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: runnerLibraryDocumentPlayfieldSeed,
+    libraryPlayfieldSeed: {
+      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+      testbedInitApplicationParameters: libraryTestbedInitParams,
+      testbedModel: defaultLibraryAppModel as MetaModel,
+    },
   },
   // ###############################################################################
   [miroirTest_runner_return_document.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: runnerLibraryDocumentPlayfieldSeed,
+    libraryPlayfieldSeed: {
+      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+      testbedInitApplicationParameters: libraryTestbedInitParams,
+      testbedModel: defaultLibraryAppModel as MetaModel,
+    },
   },
   // ###############################################################################
   [miroirTest_runner_create_entity.name]: {
@@ -259,7 +273,11 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: appForTestFreezePlayfieldSeed,
+    libraryPlayfieldSeed: {
+      testbedEntitiesAndInstances: appForTestEntitiesAndInstancesPublisherAndCountry,
+      testbedInitApplicationParameters: appForTestTestbedInitParams,
+      testbedModel: appForTestPublisherAndCountryMetaModel,
+    },
   },
   // ###############################################################################
   [miroirTest_domain_controller_data_crud.name]: {
@@ -305,7 +323,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     libraryPlayfieldSeed: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: publisherAndCountryTestMetaModel,
+      testbedModel: publisherAndCountryTestModel,
     },
   },
   // ###############################################################################
@@ -389,7 +407,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     libraryPlayfieldSeed: {
       testbedEntitiesAndInstances: [],
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: emptyLibraryPlayfieldMetaModel,
+      testbedModel: emptyLibraryPlayfieldModel,
     },
   },
   // ###############################################################################
@@ -400,7 +418,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     libraryPlayfieldSeed: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: publisherAndCountryTestMetaModel,
+      testbedModel: publisherAndCountryTestModel,
     },
   },
   // ###############################################################################
@@ -410,7 +428,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     libraryPlayfieldSeed: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: publisherAndCountryTestMetaModel,
+      testbedModel: publisherAndCountryTestModel,
     },
   },
 };
