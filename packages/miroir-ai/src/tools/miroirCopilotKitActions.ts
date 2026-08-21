@@ -41,7 +41,7 @@ const defaultLibraryAppModel = getDefaultLibraryModelEnvironmentDEFUNCT(
 
 
 const endpointDefinition: EndpointDefinition[] | undefined =
-    defaultLibraryAppModel.currentModel.endpoints.filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") as EndpointDefinition[]; // lendingEndpoint UUID
+    defaultLibraryAppModel.currentModel.endpoints.filter((endpoint: EndpointDefinition) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") as EndpointDefinition[]; // lendingEndpoint UUID
   
 if (!endpointDefinition || endpointDefinition.length === 0) {
   throw new Error("Lending endpoint definition not found: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
@@ -65,17 +65,19 @@ const lendDocumentActionJsonSchema = jzodToJsonSchema(
   endpointDefinition[0].definition.actions[0].actionParameters.payload as JzodObject,
 );
 
-const lendDocumentActionJsonSchemaParameters = lendDocumentActionJsonSchema.properties ? Object.entries(lendDocumentActionJsonSchema.properties).map(([key, value]) => ({
-  name: key,
-  ...value,
-})) : [];
-// const lendDocumentActionJsonSchemaParameters = lendDocumentActionJzodParameters.map(([key, value]) =>
-//     jzodToJsonSchema(
-//       value,
-//       (endpointDefinition[0].definition.actions[0].actionParameters.payload as JzodObject)
-//         .definition,
-//     ),
-//   )
+// const lendDocumentActionJsonSchemaParameters = lendDocumentActionJsonSchema.properties
+//   ? Object.entries(lendDocumentActionJsonSchema.properties).map(([key, value]) => ({
+//       name: key,
+//       ...(value as any), // TODO: fix type!
+//     }))
+//   : [];
+// // const lendDocumentActionJsonSchemaParameters = lendDocumentActionJzodParameters.map(([key, value]) =>
+// //     jzodToJsonSchema(
+// //       value,
+// //       (endpointDefinition[0].definition.actions[0].actionParameters.payload as JzodObject)
+// //         .definition,
+// //     ),
+// //   )
 
 /**
  * Returns an async executor function for the lendDocument action.

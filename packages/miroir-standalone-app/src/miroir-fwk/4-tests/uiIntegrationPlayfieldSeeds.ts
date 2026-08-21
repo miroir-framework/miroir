@@ -40,7 +40,7 @@ import {
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
 /**
- * Seed payload for UI integration runner registry `libraryPlayfieldSeed` entries.
+ * Seed payload for UI integration runner registry `testBedModelAndInstances` entries.
  */
 export type TestbedSetupParameters = {
   testbedEntitiesAndInstances: ApplicationEntitiesAndInstances;

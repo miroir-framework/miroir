@@ -153,7 +153,7 @@ export type ActionIntegrationSessionOptions = IntegTestHostOptions & {
   pageLabel?: string;
   runTarget: TestbedUuids;
   suiteTestParams?: Record<string, unknown>;
-  libraryPlayfieldSeed: RunnerLibraryPlayfieldSeed;
+  testBedModelAndInstances: RunnerLibraryPlayfieldSeed;
 };
 
 export type RunnerIntegrationSessionOptions = IntegTestHostOptions & {
@@ -161,7 +161,7 @@ export type RunnerIntegrationSessionOptions = IntegTestHostOptions & {
   runTarget: TestbedUuids;
   suiteTestParams?: Record<string, unknown>;
   skipRunTargetPlayfieldReset?: boolean;
-  libraryPlayfieldSeed?: RunnerLibraryPlayfieldSeed;
+  testBedModelAndInstances?: RunnerLibraryPlayfieldSeed;
   /** Runner definitions keyed by Runner uuid for leaf `runnerRef` lookup. */
   runnerUuidIndex?: Record<string, Runner>;
 };

@@ -118,9 +118,9 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
       if (!sessionSpecificOptions?.runTarget) {
         throw new Error("Browser integration orchestrator: runner/action session requires runTarget");
       }
-      if (kind === "action" && !sessionSpecificOptions.libraryPlayfieldSeed) {
+      if (kind === "action" && !sessionSpecificOptions.testBedModelAndInstances) {
         throw new Error(
-          "Browser integration orchestrator: action session requires libraryPlayfieldSeed",
+          "Browser integration orchestrator: action session requires testBedModelAndInstances",
         );
       }
       const runnerOptions = sessionSpecificOptions;

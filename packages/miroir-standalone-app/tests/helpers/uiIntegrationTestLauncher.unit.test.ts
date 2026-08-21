@@ -62,7 +62,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       expect(runnerParams.sessionSpecificOptions?.runnerUuidIndex).toBe(
         UI_INTEGRATION_RUNNER_UUID_INDEX,
       );
-      expect(runnerParams.sessionSpecificOptions?.libraryPlayfieldSeed).toBeDefined();
+      expect(runnerParams.sessionSpecificOptions?.testBedModelAndInstances).toBeDefined();
     }
 
     const actionParams = buildUiIntegrationOrchestratorCreateSessionParams(
@@ -75,7 +75,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     );
     expect(actionParams.kind).toBe("action");
     if (actionParams.kind === "action") {
-      expect(actionParams.sessionSpecificOptions.libraryPlayfieldSeed).toBeDefined();
+      expect(actionParams.sessionSpecificOptions.testBedModelAndInstances).toBeDefined();
       expect("resolvedRunner" in actionParams).toBe(false);
     }
   });

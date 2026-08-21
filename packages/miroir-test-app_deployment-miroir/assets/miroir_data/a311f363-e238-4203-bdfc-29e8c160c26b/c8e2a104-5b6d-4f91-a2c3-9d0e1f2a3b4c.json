@@ -5,7 +5,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "domain_controller_data_crud",
-  "description": "DomainController Data CRUD action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session libraryPlayfieldSeed (no suite hooks).",
+  "description": "DomainController Data CRUD action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session testBedModelAndInstances (no suite hooks).",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "domainController.data.crud",

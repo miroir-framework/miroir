@@ -238,7 +238,7 @@ export async function handleMcpAction(
     log.info(
       `${toolName} - constructed defaultLibraryModelEnvironment.currentModel.endpoints:`,
       JSON.stringify(
-        defaultLibraryModelEnvironment.currentModel.endpoints.map((e) => e.uuid),
+        defaultLibraryModelEnvironment.currentModel.endpoints.map((e: EndpointDefinition) => e.uuid),
         null,
         2,
       ),

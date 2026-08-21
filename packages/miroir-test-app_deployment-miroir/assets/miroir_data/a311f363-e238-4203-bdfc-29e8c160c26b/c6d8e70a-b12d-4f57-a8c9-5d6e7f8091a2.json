@@ -5,7 +5,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "domain_controller_model_undo_redo",
-  "description": "DomainController Model undo/redo action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Domain-action coverage of createEntity + undo/redo + commit (React UI / currentTransaction checks remain on the deprecated legacy file). Lifecycle: session libraryPlayfieldSeed (empty Library).",
+  "description": "DomainController Model undo/redo action integration tests (Feature 197). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Domain-action coverage of createEntity + undo/redo + commit (React UI / currentTransaction checks remain on the deprecated legacy file). Lifecycle: session testBedModelAndInstances (empty Library).",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "domainController.model.undoRedo",

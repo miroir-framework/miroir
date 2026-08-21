@@ -98,19 +98,19 @@ export type UiIntegrationRunnerTestSuiteEntry = {
    * `null` for create/drop-entity suites (`skipRunTargetPlayfieldReset`) that manage
    * their own ephemeral deployment inside the composite action.
    */
-  libraryPlayfieldSeed: TestbedSetupParameters | null;
+  testBedModelAndInstances: TestbedSetupParameters | null;
 };
 
 export type UiIntegrationDomainControllerTestSuiteEntry = {
   kind: "domainControllerTest";
   suiteDefinition: MiroirTestSuite;
-  libraryPlayfieldSeed: TestbedSetupParameters;
+  testBedModelAndInstances: TestbedSetupParameters;
 };
 
 export type UiIntegrationActionTestSuiteEntry = {
   kind: "actionTest";
   suiteDefinition: MiroirTestSuite;
-  libraryPlayfieldSeed: TestbedSetupParameters;
+  testBedModelAndInstances: TestbedSetupParameters;
 };
 
 export type UiIntegrationRunnerSuiteEntry =
@@ -174,9 +174,9 @@ export function buildUiIntegrationOrchestratorCreateSessionParams(
     suiteTestParams,
     runnerUuidIndex,
   );
-  if (sessionSpecificOptions.libraryPlayfieldSeed === undefined) {
+  if (sessionSpecificOptions.testBedModelAndInstances === undefined) {
     throw new Error(
-      `action session requires libraryPlayfieldSeed (suite entry kind: ${entry.kind})`,
+      `action session requires testBedModelAndInstances (suite entry kind: ${entry.kind})`,
     );
   }
 
@@ -198,7 +198,7 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
   runTarget: TestbedUuids;
   suiteTestParams: Record<string, unknown> | undefined;
   runnerUuidIndex: Record<string, Runner>;
-  libraryPlayfieldSeed?: TestbedSetupParameters;
+  testBedModelAndInstances?: TestbedSetupParameters;
   skipRunTargetPlayfieldReset?: boolean;
 } {
   switch (entry.kind) {
@@ -208,8 +208,8 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
         runTarget,
         suiteTestParams,
         runnerUuidIndex,
-        ...(entry.libraryPlayfieldSeed !== null
-          ? { libraryPlayfieldSeed: entry.libraryPlayfieldSeed }
+        ...(entry.testBedModelAndInstances !== null
+          ? { testBedModelAndInstances: entry.testBedModelAndInstances }
           : {}),
         ...(resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition)
           ? { skipRunTargetPlayfieldReset: true }
@@ -222,7 +222,7 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
         runTarget,
         suiteTestParams,
         runnerUuidIndex,
-        libraryPlayfieldSeed: entry.libraryPlayfieldSeed,
+        testBedModelAndInstances: entry.testBedModelAndInstances,
       };
     default: {
       const exhaustive: never = entry;
@@ -237,7 +237,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
       testbedInitApplicationParameters: libraryTestbedInitParams,
       testbedModel: defaultLibraryAppModel as MetaModel,
@@ -248,7 +248,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
       testbedInitApplicationParameters: libraryTestbedInitParams,
       testbedModel: defaultLibraryAppModel as MetaModel,
@@ -259,21 +259,21 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: null,
+    testBedModelAndInstances: null,
   },
   // ###############################################################################
   [miroirTest_runner_drop_entity.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: null,
+    testBedModelAndInstances: null,
   },
   // ###############################################################################
   [miroirTest_runner_freeze_application_version.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
           entity: entityPublisher as Entity,
@@ -306,7 +306,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_data_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_data_crud.definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
           entity: entityAuthor as Entity,
@@ -343,7 +343,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_model_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_model_crud.definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
       testbedModel: {
@@ -357,7 +357,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_composite_pk_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_composite_pk_crud.definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
           entity: entityCompositePK,
@@ -377,7 +377,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_model_crud.definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
           entity: entityPublisher as Entity,
@@ -401,7 +401,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_data_crud.definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
           entity: entityCodeNumber,
@@ -420,7 +420,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_no_parent_uuid_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_no_parent_uuid_crud.definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
           entity: entityPublisher as Entity,
@@ -447,7 +447,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_model_undo_redo.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_model_undo_redo.definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: [],
       testbedInitApplicationParameters: libraryTestbedInitParams,
       testbedModel: {
@@ -461,7 +461,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_application_version_freeze.definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
       testbedModel: {
@@ -475,7 +475,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_evolutionTraceWP1.name]: {
     kind: "actionTest",
     suiteDefinition: miroirTest_evolutionTraceWP1.definition as MiroirTestSuite,
-    libraryPlayfieldSeed: {
+    testBedModelAndInstances: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
       testbedModel: {

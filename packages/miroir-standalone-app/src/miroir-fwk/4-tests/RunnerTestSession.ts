@@ -61,7 +61,7 @@ export type RunnerTestSessionOptions = IntegTestHostOptions & {
    * Optional playfield seed applied in `beforeEach` after reset
    * (Action Data.CRUD MiroirTest suites).
    */
-  libraryPlayfieldSeed?: RunnerLibraryPlayfieldSeed;
+  testBedModelAndInstances?: RunnerLibraryPlayfieldSeed;
   /**
    * When true, `beforeEach` does **not** reset/seed the session runTarget with
    * remapped library model. Used by CreateEntity / DropEntity MiroirTests that
@@ -157,7 +157,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
   // ##############################################################################################
   // ##############################################################################################
   private resolveRemappedPlayfieldSeedModel(runTarget: TestbedUuids): MetaModel | undefined {
-    const seed = this.options.libraryPlayfieldSeed;
+    const seed = this.options.testBedModelAndInstances;
     if (!seed) {
       return undefined;
     }
@@ -324,7 +324,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     // Create/drop-entity runner suites skip playfield reset and manage deployment in-test.
     if (
       !internalMiroirConfig.client.emulateServer ||
-      (this.options.libraryPlayfieldSeed && !this.options.skipRunTargetPlayfieldReset)
+      (this.options.testBedModelAndInstances && !this.options.skipRunTargetPlayfieldReset)
     ) {
       await ensureLibraryPlayfield({
         domainController,
@@ -405,7 +405,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       return;
     }
     const emulateServer = this.runnerTestContext.internalMiroirConfig.client.emulateServer === true;
-    const playfieldSeed: RunnerLibraryPlayfieldSeed | undefined = this.options.libraryPlayfieldSeed;
+    const playfieldSeed: RunnerLibraryPlayfieldSeed | undefined = this.options.testBedModelAndInstances;
     const { canonicalApplicationUuid, canonicalDeploymentUuid } =
       this.resolveCanonicalModelRemap(this.runnerTestContext.runTarget);
     await beforeEachTest(

@@ -5,7 +5,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "domain_controller_application_version_freeze",
-  "description": "DomainController freezeApplicationVersion action integration tests (#216, #227). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session libraryPlayfieldSeed (Publisher+Country). Covers EntityVersion freeze/migration plus Query, Report, Menu, Endpoint, Runner, Theme, and TransformerDefinition version snapshots. Duplicate versionName rejection remains unit-covered (actionTest cannot express expected Action failure).",
+  "description": "DomainController freezeApplicationVersion action integration tests (#216, #227). Owned by the Miroir meta-application; Library is only the runTarget/testbed. Lifecycle: session testBedModelAndInstances (Publisher+Country). Covers EntityVersion freeze/migration plus Query, Report, Menu, Endpoint, Runner, Theme, and TransformerDefinition version snapshots. Duplicate versionName rejection remains unit-covered (actionTest cannot express expected Action failure).",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "domainController.applicationVersion.freeze",

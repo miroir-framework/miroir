@@ -94,7 +94,7 @@ function runnerSessionOptions(
     runTarget,
     suiteTestParams: runnerReturnDocumentSuite().testParams,
     resolvedRunner: returnDocument as Runner,
-    libraryPlayfieldSeed: runnerLibraryDocumentPlayfieldSeed,
+    testBedModelAndInstances: runnerLibraryDocumentPlayfieldSeed,
     ...overrides,
   };
 }
@@ -289,7 +289,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     expect(beforeEachTestMock).toHaveBeenCalledTimes(1);
   });
 
-  it("beforeEach forwards libraryPlayfieldSeed and remaps its metaModel for runTarget", async () => {
+  it("beforeEach forwards testBedModelAndInstances and remaps its metaModel for runTarget", async () => {
     const { domainControllerDataCrudLibraryPlayfieldSeed } = await import(
       "./libraryPlayfieldSeeds.js"
     );
@@ -303,7 +303,7 @@ describe("RunnerTestSession (Gap E R)", () => {
       runTarget,
       suiteTestParams: runnerReturnDocumentSuite().testParams,
       resolvedRunner: returnDocument as Runner,
-      libraryPlayfieldSeed: domainControllerDataCrudLibraryPlayfieldSeed,
+      testBedModelAndInstances: domainControllerDataCrudLibraryPlayfieldSeed,
     });
 
     await session.initSession();
@@ -373,7 +373,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     } as unknown as MetaModel;
     const session = new RunnerTestSession(
       runnerSessionOptions(runTarget, {
-        libraryPlayfieldSeed: {
+        testBedModelAndInstances: {
           testbedEntitiesAndInstances: [],
           testbedInitApplicationParameters: libraryTestbedInitParams,
           testbedModel: customMetaModel,
