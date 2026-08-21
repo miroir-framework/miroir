@@ -27,11 +27,10 @@
     "dist/index.js.map",
     "dist/index.cjs",
     "dist/index.cjs.map",
-    "dist/index.d.ts",
-    "dist/index.d.cts",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
     "dist/model-validation-fs.js",
     "dist/model-validation-fs.js.map",
-    "dist/model-validation-fs.d.ts",
     "dist/src/worker.js"
   ],
   "scripts": {

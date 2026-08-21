@@ -557,22 +557,21 @@ export function resetAndinitializeDeploymentCompositeAction(
   filterEntities?: Uuid[],
 ): CompositeActionSequence {
   if (isResolvableAppMetaModelTransformer(appMetaModel)) {
-    const deferredPayload: ResetAndinitializeDeploymentCompositeActionPayload = {
-      _resolvableAppMetaModel: appMetaModel,
-      _runnerTestInitConfig: {
-        applicationUuid,
-        deploymentUuid,
-        initApplicationParameters,
-        appEntitesAndInstances,
-        filterEntities,
-      },
-      actionSequence: [],
-    };
     return {
       actionType: "compositeActionSequence",
       actionLabel: "resetAndinitializeDeploymentCompositeAction",
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-      payload: deferredPayload as CompositeActionSequence["payload"],
+      payload: {
+        _resolvableAppMetaModel: appMetaModel,
+        _runnerTestInitConfig: {
+          applicationUuid,
+          deploymentUuid,
+          initApplicationParameters,
+          appEntitesAndInstances,
+          filterEntities,
+        },
+        actionSequence: [],
+      } as CompositeActionSequence["payload"],
     };
   }
 

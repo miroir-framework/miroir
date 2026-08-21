@@ -3,6 +3,7 @@
   "typescript.native-preview.tsdk": "./node_modules/@typescript/typescript-win32-x64/lib",
   "js/ts.tsserver.maxMemory": 8192,
   "js/ts.preferences.includePackageJsonAutoImports": "on",
+  "typescript.preferGoToSourceDefinition": true,
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,

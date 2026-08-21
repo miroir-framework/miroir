@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "skipLibCheck": true
+  },
+  "include": ["./src/**/*.ts", "./src/**/*.tsx", "./src/**/*.json"],
+  "exclude": [
+    "dist",
+    "./node_modules/**",
+    "./tests/**",
+    "./src/**/*.spec.js",
+    "./src/**/*.spec.jsx",
+    "./src/**/*.spec.ts",
+    "./src/**/*.spec.tsx",
+    "./src/**/*.unit.test.ts",
+    "./src/**/*.integ.test.ts"
+  ]
+}

@@ -1,3 +1,5 @@
+import { execSync } from 'node:child_process'
+import { writeFileSync } from 'node:fs'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
@@ -11,7 +13,10 @@ export default defineConfig({
   bundle: true,
   splitting: false,
   clean: true,
-  dts: true,
+  // rollup-plugin-dts (tsup `dts: true`) cannot emit `.d.ts.map` files, which are
+  // required for Go to Definition to jump from consumers into `src/`. Emit
+  // declarations + declaration maps with tsc in onSuccess instead.
+  dts: false,
   sourcemap: true,
   treeshake: true,
   minify: true,
@@ -34,4 +39,15 @@ export default defineConfig({
     'fs/promises',
     'path',
   ],
-});
+  onSuccess: async () => {
+    execSync(
+      'tsc --emitDeclarationOnly --declaration --declarationMap -p tsconfig.declarations.json',
+      { stdio: 'inherit' },
+    )
+    // Keep the package.json exports subpath types entry stable.
+    writeFileSync(
+      'dist/model-validation-fs.d.ts',
+      "export * from './5_tests/ModelValidationToolsFilesystem.js';\n",
+    )
+  },
+})
