@@ -1,9 +1,10 @@
 /**
  * AiActionsProvider
  *
- * Always-mounted component that registers all CopilotKit useCopilotAction hooks
- * and renders a CopilotSidebar whose visibility is controlled by
- * context.showAiSidebar (toggled from the AppBar).
+ * Lazy-loaded from RootComponent when ViewParams.agents is enabled and
+ * context.showAiSidebar is true (#244). Registers CopilotKit useCopilotAction
+ * hooks and renders CopilotSidebar (toggled from the AppBar when agents are
+ * enabled via Settings → Appearance).
  *
  * The effective deployment UUID is derived from
  *   context.toolsPageState.applicationSelector → context.applicationDeploymentMap

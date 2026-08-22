@@ -76,12 +76,13 @@ import {
 import { ModelEnvironmentSync } from "../../ModelEnvironmentSync.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
-const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));
 import { ReportPageContextProvider } from '../Reports/ReportPageContext';
 import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEditorOutlineContext';
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
+
+const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));
 const AiActionsProvider = lazy(() => import("../../routes/ai/AiActionsProvider.js").then(m => ({ default: m.AiActionsProvider })));
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RootComponent");
@@ -621,6 +622,24 @@ export const RootComponent = (props: RootComponentProps) => {
   );
 
   const currentThemeId = defaultViewParamsFromAdminStorage?.appTheme || "default";
+  const agentsEnabled = defaultViewParamsFromAdminStorage?.agents === true;
+
+  useEffect(() => {
+    if (!agentsEnabled) {
+      if (context.showAiSidebar) {
+        context.setShowAiSidebar?.(false);
+      }
+      if (context.showCopilotDevConsole) {
+        context.setShowCopilotDevConsole?.(false);
+      }
+    }
+  }, [
+    agentsEnabled,
+    context.showAiSidebar,
+    context.showCopilotDevConsole,
+    context.setShowAiSidebar,
+    context.setShowCopilotDevConsole,
+  ]);
 
   // log.info(
   //   "RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults",
@@ -870,6 +889,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 onOutlineToggle={handleToggleOutline}
                 gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
                 onGridTypeToggle={handleGridTypeToggle}
+                agentsEnabled={agentsEnabled}
                 generalEditMode={context.viewParams.generalEditMode}
                 onEditModeToggle={() =>
                   context.viewParams.updateEditMode(!context.viewParams.generalEditMode)
@@ -898,8 +918,12 @@ export const RootComponent = (props: RootComponentProps) => {
                 <Outlet></Outlet>
               </ThemedMainPanel>
             </ThemedGrid>
-            {/* AI Sidebar — always in DOM to preserve chat history; visibility via showAiSidebar */}
-            <Suspense fallback={null}><AiActionsProvider /></Suspense>
+            {/* AI Sidebar — lazy chunk when agents enabled and sidebar open (#244) */}
+            {agentsEnabled && context.showAiSidebar && (
+              <Suspense fallback={null}>
+                <AiActionsProvider />
+              </Suspense>
+            )}
             {/* Document Outline - Full height on right side */}
             <Suspense fallback={null}>
               <InstanceEditorOutline
