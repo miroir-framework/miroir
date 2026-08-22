@@ -52,7 +52,15 @@ export default defineConfig({
       'react/jsx-runtime',
       '@emotion/react', 
       '@emotion/styled', 
-      '@mui/material/Tooltip'
+      '@mui/material/Tooltip',
+      // Named prebundle entries help dev chunk-load tracing (chunkLoadTrace.ts URL matching).
+      '@mui/material',
+      '@mui/icons-material',
+      '@copilotkit/react-core',
+      '@copilotkit/react-ui',
+      'ag-grid-community',
+      'ag-grid-react',
+      'd3',
     ],
     // Node-only store drivers — pulled via dynamic import from IntegrationTestSession
     // for CLI/Vitest. Must not be prebundled into the webApp (MongoDB driver crashes

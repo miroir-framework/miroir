@@ -2,6 +2,7 @@
  * AiActionsProvider
  *
  * Lazy-loaded from RootComponent when ViewParams.agents is enabled and
+ * AgentsCopilotKit mounts this when ViewParams.agents is enabled and
  * context.showAiSidebar is true (#244). Registers CopilotKit useCopilotAction
  * hooks and renders CopilotSidebar (toggled from the AppBar when agents are
  * enabled via Settings → Appearance).

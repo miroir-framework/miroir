@@ -83,7 +83,7 @@ import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 
 const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));
-const AiActionsProvider = lazy(() => import("../../routes/ai/AiActionsProvider.js").then(m => ({ default: m.AiActionsProvider })));
+const AgentsCopilotKit = lazy(() => import("../../routes/ai/AgentsCopilotKit.js").then(m => ({ default: m.AgentsCopilotKit })));
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RootComponent");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -621,20 +621,33 @@ export const RootComponent = (props: RootComponentProps) => {
     [defaultViewParamsFromAdminStorageFetchQueryResults]
   );
 
+  const viewParamsFromAdminStorage = defaultViewParamsFromAdminStorageFetchQueryResults?.[
+    "viewParams"
+  ] as ViewParamsData | undefined;
+  const viewParamsLoadedFromStorage = viewParamsFromAdminStorage != null;
+  const agentsEnabled =
+    viewParamsLoadedFromStorage && viewParamsFromAdminStorage.agents === true;
+  const copilotUiRequested =
+    context.showAiSidebar === true || context.showCopilotDevConsole === true;
+  const shouldMountCopilotKit = agentsEnabled && copilotUiRequested;
+
   const currentThemeId = defaultViewParamsFromAdminStorage?.appTheme || "default";
-  const agentsEnabled = defaultViewParamsFromAdminStorage?.agents === true;
 
   useEffect(() => {
-    if (!agentsEnabled) {
-      if (context.showAiSidebar) {
-        context.setShowAiSidebar?.(false);
-      }
-      if (context.showCopilotDevConsole) {
-        context.setShowCopilotDevConsole?.(false);
-      }
+    const agentsDisabledKnown =
+      viewParamsLoadedFromStorage && viewParamsFromAdminStorage.agents !== true;
+    if (!agentsDisabledKnown) {
+      return;
+    }
+    if (context.showAiSidebar) {
+      context.setShowAiSidebar?.(false);
+    }
+    if (context.showCopilotDevConsole) {
+      context.setShowCopilotDevConsole?.(false);
     }
   }, [
-    agentsEnabled,
+    viewParamsLoadedFromStorage,
+    viewParamsFromAdminStorage?.agents,
     context.showAiSidebar,
     context.showCopilotDevConsole,
     context.setShowAiSidebar,
@@ -918,10 +931,10 @@ export const RootComponent = (props: RootComponentProps) => {
                 <Outlet></Outlet>
               </ThemedMainPanel>
             </ThemedGrid>
-            {/* AI Sidebar — lazy chunk when agents enabled and sidebar open (#244) */}
-            {agentsEnabled && context.showAiSidebar && (
+            {/* CopilotKit — lazy vendor-copilotkit when agents enabled + AI AppBar action (#244) */}
+            {shouldMountCopilotKit && (
               <Suspense fallback={null}>
-                <AiActionsProvider />
+                <AgentsCopilotKit />
               </Suspense>
             )}
             {/* Document Outline - Full height on right side */}
