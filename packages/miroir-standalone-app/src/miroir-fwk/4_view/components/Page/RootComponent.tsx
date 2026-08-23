@@ -621,21 +621,31 @@ export const RootComponent = (props: RootComponentProps) => {
     [defaultViewParamsFromAdminStorageFetchQueryResults]
   );
 
-  const viewParamsFromAdminStorage = defaultViewParamsFromAdminStorageFetchQueryResults?.[
-    "viewParams"
-  ] as ViewParamsData | undefined;
-  const viewParamsLoadedFromStorage = viewParamsFromAdminStorage != null;
+  const viewParamsLoadedFromStorage =
+    defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] != null;
+  // When loaded, defaultViewParamsFromAdminStorage is the storage row (see useMemo above).
   const agentsEnabled =
-    viewParamsLoadedFromStorage && viewParamsFromAdminStorage.agents === true;
+    viewParamsLoadedFromStorage && defaultViewParamsFromAdminStorage?.agents === true;
   const copilotUiRequested =
     context.showAiSidebar === true || context.showCopilotDevConsole === true;
-  const shouldMountCopilotKit = agentsEnabled && copilotUiRequested;
+  // Latch: defer vendor-copilotkit until first AI AppBar open, then keep
+  // CopilotKit mounted while agents stay enabled so chat state survives closing
+  // both controls (AiActionsProvider still toggles visibility inside the shell).
+  const [copilotKitSessionActive, setCopilotKitSessionActive] = useState(false);
+  if (agentsEnabled && copilotUiRequested && !copilotKitSessionActive) {
+    setCopilotKitSessionActive(true);
+  }
+  if (!agentsEnabled && copilotKitSessionActive) {
+    setCopilotKitSessionActive(false);
+  }
+  const shouldMountCopilotKit =
+    agentsEnabled && (copilotUiRequested || copilotKitSessionActive);
 
   const currentThemeId = defaultViewParamsFromAdminStorage?.appTheme || "default";
 
   useEffect(() => {
     const agentsDisabledKnown =
-      viewParamsLoadedFromStorage && viewParamsFromAdminStorage.agents !== true;
+      viewParamsLoadedFromStorage && defaultViewParamsFromAdminStorage?.agents !== true;
     if (!agentsDisabledKnown) {
       return;
     }
@@ -647,7 +657,7 @@ export const RootComponent = (props: RootComponentProps) => {
     }
   }, [
     viewParamsLoadedFromStorage,
-    viewParamsFromAdminStorage?.agents,
+    defaultViewParamsFromAdminStorage?.agents,
     context.showAiSidebar,
     context.showCopilotDevConsole,
     context.setShowAiSidebar,
@@ -931,7 +941,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 <Outlet></Outlet>
               </ThemedMainPanel>
             </ThemedGrid>
-            {/* CopilotKit — lazy vendor-copilotkit when agents enabled + AI AppBar action (#244) */}
+            {/* CopilotKit — lazy on first AI AppBar open; stay mounted while agents enabled (#244) */}
             {shouldMountCopilotKit && (
               <Suspense fallback={null}>
                 <AgentsCopilotKit />

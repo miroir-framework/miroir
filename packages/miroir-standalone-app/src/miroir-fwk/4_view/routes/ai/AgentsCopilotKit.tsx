@@ -1,11 +1,12 @@
 /**
  * Lazy-loaded CopilotKit shell (#244).
  *
- * Bundles @copilotkit/react-core (provider) and, when the sidebar is open,
- * AiActionsProvider (@copilotkit/react-ui). RootComponent mounts this only when
- * ViewParams.agents is enabled and the user opens an AI AppBar control
- * (assistant sidebar or dev console). RootComponent mounts this only when both
- * conditions hold so vendor-copilotkit is not fetched at startup.
+ * Bundles @copilotkit/react-core (provider) and, when an AI AppBar control is
+ * open, AiActionsProvider (@copilotkit/react-ui). RootComponent first mounts
+ * this when ViewParams.agents is enabled and the user opens the assistant
+ * sidebar or dev console (so vendor-copilotkit is not fetched at startup), then
+ * keeps it mounted while agents stay enabled so CopilotKit chat state survives
+ * closing both controls.
  */
 import React from "react";
 import { CopilotKit } from "@copilotkit/react-core";
