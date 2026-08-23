@@ -61,16 +61,16 @@ export const ReportDisplay: React.FC<{
   const currentModel: MetaModel = useCurrentModel(application, currentApplicationDeploymentMap);
 
 
-  const { availableReports, entities, entityVersions } = useMemo(() => {
+  const availableReports = useMemo(() => {
     const result = pageParams.applicationSection &&
       context.deploymentUuidToReportsEntitiesMapping &&
       context.deploymentUuidToReportsEntitiesMapping[currentApplicationDeploymentMap[application]]
       ? context.deploymentUuidToReportsEntitiesMapping[
           currentApplicationDeploymentMap[application]
-        ][pageParams.applicationSection as ApplicationSection]
-      : { availableReports: [], entities: [], entityVersions: [] };
+        ][pageParams.applicationSection as ApplicationSection]?.availableReports
+      : [] as Report[];
     log.info("ReportDisplay new availableReports", result);
-    return result;
+    return result ?? [] as Report[];
   }, [
     currentApplicationDeploymentMap,
     application,
@@ -117,7 +117,7 @@ export const ReportDisplay: React.FC<{
           },
           {
             label: "availableReports",
-            data: availableReports.map((r) => ({ uuid: r.uuid, name: r.name })),
+            data: availableReports.map((r: Report) => ({ uuid: r.uuid, name: r.name })),
             useCodeBlock: true,
           },
           { label: "currentMiroirReport", data: currentMiroirReport },
