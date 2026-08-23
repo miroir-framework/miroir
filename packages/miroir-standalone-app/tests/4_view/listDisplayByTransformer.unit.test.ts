@@ -1,0 +1,51 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  defaultMiroirModelEnvironment,
+  defaultTransformerInput,
+  TransformerFailure,
+  transformer_extended_apply_wrapper,
+  type CoreTransformerForBuildPlusRuntime,
+} from "miroir-core";
+import { book1, book2 } from "miroir-test-app_deployment-library";
+
+const identityRowTransformer: CoreTransformerForBuildPlusRuntime = {
+  interpolation: "runtime",
+  transformerType: "getFromContext",
+  referenceName: "row",
+};
+
+const mapListIdentityTransformer: CoreTransformerForBuildPlusRuntime = {
+  interpolation: "runtime",
+  transformerType: "mapList",
+  referenceToOuterObject: "row",
+  elementTransformer: identityRowTransformer,
+};
+
+describe("listDisplayByTransformer — mapList on uuid-indexed list input", () => {
+  it("applies mapList with getFromContext row to a uuid-indexed book index (identity per row)", () => {
+    const bookIndex = {
+      [book1.uuid]: book1,
+      [book2.uuid]: book2,
+    };
+
+    const result = transformer_extended_apply_wrapper(
+      undefined,
+      "runtime",
+      ["rootTransformer"],
+      "mapList-lock",
+      mapListIdentityTransformer,
+      "value",
+      defaultMiroirModelEnvironment,
+      {},
+      { [defaultTransformerInput]: bookIndex },
+    );
+
+    expect(result).not.toBeInstanceOf(TransformerFailure);
+    expect(Array.isArray(result)).toBe(true);
+
+    const rows = result as typeof book1[];
+    expect(rows).toHaveLength(2);
+    expect(rows).toEqual(expect.arrayContaining([book1, book2]));
+  });
+});

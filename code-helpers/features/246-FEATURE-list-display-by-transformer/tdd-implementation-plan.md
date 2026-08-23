@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/246
 Working branch: `master`
 
-**Resume note:** plan written 2026-08-23 — no slice started.
+**Resume note:** plan written 2026-08-23 — Slice 0 done.
 
 ---
 
@@ -40,7 +40,7 @@ This plan does **not** persist the entered transformer into the report definitio
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize list header & mapList-on-object-input | ⬜ | phase0 lock + helper suite first GREEN |
+| 0 | Characterize list header & mapList-on-object-input | ✅ | phase0 lock + helper suite first GREEN |
 | 1 | Tracer: toggle + panel + identity-transformed second list | ⬜ | `ListTransformerPanel` + `listDisplayByTransformer` suites |
 | 2 | Editing the transformer updates the result; failure inline | ⬜ | component + helper suites |
 | 3 | Loop-safety locks (reinit survival, no report-bag pollution) | ⬜ | component suite |
@@ -128,7 +128,7 @@ No schema rebuild step anywhere in this plan: no asset under `miroir-test-app_de
 
 ## Slice 0 — Characterize list header & mapList-on-object-input
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -155,7 +155,10 @@ npm run testByFile -w miroir-standalone-app -- listDisplayByTransformer
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE: what was actually done, deviations, problems met & solved.>
+- Added phase0 lock: `listDisplayByTransformer.246.phase0.unit.test.tsx` — renders `ReportSectionListDisplay` with Library `reportBookList` + Formik bag (`books` index with `book1`), preloaded redux store (TransformerEditor-style), and targeted mocks (`EntityInstanceGrid`, `JsonObjectEditFormDialog`, `JsonDisplayHelper`) to avoid pulling `miroir-diagram-class` / svg-toolbelt and to keep the test focused on the header row.
+- Added permanent helper-suite first test: `listDisplayByTransformer.unit.test.ts` — calls `transformer_extended_apply_wrapper` with `mapList` + identity `getFromContext row` on a uuid-indexed `{ book1, book2 }` input wrapped under `defaultTransformerInput` in `contextResults` (required by `resolveApplyTo_legacy` when `applyTo` is absent).
+- **Deviation from plan wording:** runtime returns an **array** of row values (identity books), not a uuid-keyed object — consistent with `transformerForBuild_list_listMapperToList_apply` implementation; assertion uses `arrayContaining([book1, book2])`.
+- Both validation commands green (2026-08-23).
 
 ---
 
