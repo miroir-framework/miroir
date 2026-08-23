@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
 import type { MouseEvent, ReactNode } from 'react';
 
-import { defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, MiroirMenuItem } from 'miroir-core';
+import { defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, type MiroirMenuItem, type MiroirMenuPageLink } from 'miroir-core';
 
 import { useMiroirContextService } from 'miroir-react';
 import { useNavigate } from 'react-router-dom';
@@ -97,6 +97,8 @@ export interface AppBarProps extends MuiAppBarProps {
   // Grid type display and toggle
   gridType?: string,
   onGridTypeToggle?: () => void,
+  /** ViewParams.agents — AI AppBar icons and CopilotKit sidebar (#244). */
+  agentsEnabled?: boolean,
   // Edit mode display and toggle
   generalEditMode?: boolean,
   onEditModeToggle?: () => void,
@@ -138,12 +140,28 @@ export function AppBar(props:AppBarProps) {
   const miroirTheme = useMiroirTheme();
   const context = useMiroirContextService();
   const { fetchConfigurations } = usePageConfiguration();
+  const agentsEnabled = props.agentsEnabled === true;
+  const showAgentUi = agentsEnabled && !(import.meta as any).env?.MIROIR_IS_SANDBOX;
 
 
   const goToLabelPage = (event: any, l: string) => {
     log.info("goToLabelPage: ", l, " event: ", event);
     navigate(pageUrl(l))
   }
+  const transformerBuilderMenuItem: MiroirMenuPageLink = {
+    miroirMenuItemType: "miroirMenuPageLink",
+    label: "Transformer Builder",
+    targetRoot: "transformerBuilder",
+    section: "model",
+    icon: {
+      iconType: "mui",
+      name: "build",
+      superImpose: {
+        letter: "T",
+        color: "#FF0000",
+      },
+    },
+  };
   const appbarItems: (MiroirMenuItem | JSX.Element)[] = [
     /* HOME */
     <AppBarIconButton
@@ -223,7 +241,7 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    !(import.meta as any).env?.MIROIR_IS_SANDBOX ? (
+    showAgentUi ? (
       <AppBarIconButton
         key="ai-assistant"
         title={
@@ -265,7 +283,7 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    !(import.meta as any).env?.MIROIR_IS_SANDBOX ? (
+    showAgentUi ? (
       <AppBarIconButton
         key="ai-dev-console"
         title={
@@ -326,20 +344,7 @@ export function AppBar(props:AppBarProps) {
         name: "search",
       },
     },
-    {
-      miroirMenuItemType: "miroirMenuPageLink",
-      label: "Transformer Builder",
-      targetRoot: "transformerBuilder",
-      section: "model",
-      icon: {
-        iconType: "mui",
-        name: "build",
-        superImpose: {
-          letter: "T",
-          color: "#FF0000",
-        },
-      },
-    },
+    ...(showAgentUi ? [transformerBuilderMenuItem] : []),
     // {
     //   "label": "runners",
     //   "section": "model",

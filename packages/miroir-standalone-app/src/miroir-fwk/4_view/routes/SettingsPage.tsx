@@ -2,11 +2,13 @@ import {
   Box,
   Container,
   FormControl,
+  FormControlLabel,
   InputLabel,
   MenuItem,
   Paper,
   Select,
   SelectChangeEvent,
+  Switch,
   Typography,
 } from "@mui/material";
 import {
@@ -100,6 +102,7 @@ export const SettingsPage: React.FC<any> = (props: any) => {
   );
 
   const currentGridType = viewParamsData?.gridType || "ag-grid";
+  const agentsEnabled = viewParamsData?.agents === true;
 
   // Initialize the ViewParamsUpdateQueue
   const updateQueue = useMemo(() => {
@@ -143,6 +146,24 @@ export const SettingsPage: React.FC<any> = (props: any) => {
       log.info("SettingsPage: Queued grid type change (immediate)", {
         from: currentGridType,
         to: newGridType,
+      });
+    }
+  };
+
+  const handleAgentsChange = (_event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    if (viewParamsData && updateQueue) {
+      updateQueue.queueUpdate(
+        {
+          currentValue: viewParamsData,
+          updates: {
+            agents: checked,
+          },
+        },
+        true
+      );
+      log.info("SettingsPage: Queued agents change (immediate)", {
+        from: agentsEnabled,
+        to: checked,
       });
     }
   };
@@ -209,6 +230,23 @@ export const SettingsPage: React.FC<any> = (props: any) => {
                 <MenuItem value="glide-data-grid">Glide Data Grid</MenuItem>
               </Select>
             </FormControl>
+          </Box>
+
+          <Box sx={{ mb: 2, mt: 3 }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={agentsEnabled}
+                  onChange={handleAgentsChange}
+                  inputProps={{ "aria-label": "Agents" }}
+                />
+              }
+              label="Agents"
+              sx={{ color: miroirTheme.currentTheme.colors.text }}
+            />
+            <Typography variant="body2" sx={{ mt: 0.5, opacity: 0.8 }}>
+              Show AI Assistant, AI Dev Console, and Transformer Builder in the app bar.
+            </Typography>
           </Box>
 
           {/* <Box>

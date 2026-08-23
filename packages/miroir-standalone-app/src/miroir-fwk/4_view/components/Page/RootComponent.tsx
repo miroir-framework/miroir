@@ -76,13 +76,14 @@ import {
 import { ModelEnvironmentSync } from "../../ModelEnvironmentSync.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
-const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));
 import { ReportPageContextProvider } from '../Reports/ReportPageContext';
 import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEditorOutlineContext';
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
-const AiActionsProvider = lazy(() => import("../../routes/ai/AiActionsProvider.js").then(m => ({ default: m.AiActionsProvider })));
+
+const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));
+const AgentsCopilotKit = lazy(() => import("../../routes/ai/AgentsCopilotKit.js").then(m => ({ default: m.AgentsCopilotKit })));
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RootComponent");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -620,7 +621,48 @@ export const RootComponent = (props: RootComponentProps) => {
     [defaultViewParamsFromAdminStorageFetchQueryResults]
   );
 
+  const viewParamsLoadedFromStorage =
+    defaultViewParamsFromAdminStorageFetchQueryResults?.["viewParams"] != null;
+  // When loaded, defaultViewParamsFromAdminStorage is the storage row (see useMemo above).
+  const agentsEnabled =
+    viewParamsLoadedFromStorage && defaultViewParamsFromAdminStorage?.agents === true;
+  const copilotUiRequested =
+    context.showAiSidebar === true || context.showCopilotDevConsole === true;
+  // Latch: defer vendor-copilotkit until first AI AppBar open, then keep
+  // CopilotKit mounted while agents stay enabled so chat state survives closing
+  // both controls (AiActionsProvider still toggles visibility inside the shell).
+  const [copilotKitSessionActive, setCopilotKitSessionActive] = useState(false);
+  if (agentsEnabled && copilotUiRequested && !copilotKitSessionActive) {
+    setCopilotKitSessionActive(true);
+  }
+  if (!agentsEnabled && copilotKitSessionActive) {
+    setCopilotKitSessionActive(false);
+  }
+  const shouldMountCopilotKit =
+    agentsEnabled && (copilotUiRequested || copilotKitSessionActive);
+
   const currentThemeId = defaultViewParamsFromAdminStorage?.appTheme || "default";
+
+  useEffect(() => {
+    const agentsDisabledKnown =
+      viewParamsLoadedFromStorage && defaultViewParamsFromAdminStorage?.agents !== true;
+    if (!agentsDisabledKnown) {
+      return;
+    }
+    if (context.showAiSidebar) {
+      context.setShowAiSidebar?.(false);
+    }
+    if (context.showCopilotDevConsole) {
+      context.setShowCopilotDevConsole?.(false);
+    }
+  }, [
+    viewParamsLoadedFromStorage,
+    defaultViewParamsFromAdminStorage?.agents,
+    context.showAiSidebar,
+    context.showCopilotDevConsole,
+    context.setShowAiSidebar,
+    context.setShowCopilotDevConsole,
+  ]);
 
   // log.info(
   //   "RootComponent: defaultViewParamsFromAdminStorageFetchQueryResults",
@@ -870,6 +912,7 @@ export const RootComponent = (props: RootComponentProps) => {
                 onOutlineToggle={handleToggleOutline}
                 gridType={defaultViewParamsFromAdminStorage?.gridType || "ag-grid"}
                 onGridTypeToggle={handleGridTypeToggle}
+                agentsEnabled={agentsEnabled}
                 generalEditMode={context.viewParams.generalEditMode}
                 onEditModeToggle={() =>
                   context.viewParams.updateEditMode(!context.viewParams.generalEditMode)
@@ -898,8 +941,12 @@ export const RootComponent = (props: RootComponentProps) => {
                 <Outlet></Outlet>
               </ThemedMainPanel>
             </ThemedGrid>
-            {/* AI Sidebar — always in DOM to preserve chat history; visibility via showAiSidebar */}
-            <Suspense fallback={null}><AiActionsProvider /></Suspense>
+            {/* CopilotKit — lazy on first AI AppBar open; stay mounted while agents enabled (#244) */}
+            {shouldMountCopilotKit && (
+              <Suspense fallback={null}>
+                <AgentsCopilotKit />
+              </Suspense>
+            )}
             {/* Document Outline - Full height on right side */}
             <Suspense fallback={null}>
               <InstanceEditorOutline

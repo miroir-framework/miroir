@@ -24,6 +24,8 @@ export const viewParams: JzodElement = {
     defaultFilesystemFolder: { type: "string", optional: true },
     postgresConnectionString: { type: "string", optional: true },
     mongoConnectionString: { type: "string", optional: true },
+    /** When true, show AI-related AppBar icons (assistant, dev console, transformer builder). Default false. */
+    agents: { type: "boolean", optional: true },
     toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
@@ -58,6 +60,8 @@ export interface ViewParamsData {
   defaultFilesystemFolder?: string;
   postgresConnectionString?: string;
   mongoConnectionString?: string;
+  /** AI / agent UI in AppBar and CopilotKit sidebar (#244). Absent or false = hidden. */
+  agents?: boolean;
   toolsPage?: ToolsPageState;
   generalEditMode?: boolean;
 }

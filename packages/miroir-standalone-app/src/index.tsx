@@ -1,3 +1,5 @@
+import "./chunkLoadTrace.js";
+
 declare global {
   interface Window {
     process?: any;
@@ -44,7 +46,7 @@ import {
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController,
 } from "miroir-react";
-import { MiroirContextReactProvider, useMiroirContextService } from "miroir-react";
+import { MiroirContextReactProvider } from "miroir-react";
 
 import { loglevelnext } from "./loglevelnextImporter.js";
 import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
@@ -56,27 +58,6 @@ import {
 } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
 import { miroirAppStartup } from "./startup.js";
-
-import React from "react";
-import { CopilotKit } from "@copilotkit/react-core";
-
-/**
- * Reads showCopilotDevConsole from MiroirContext and forwards it to CopilotKit
- * as enableInspector, so the AppBar terminal button controls the dev console.
- * Must be rendered inside MiroirContextReactProvider.
- */
-function CopilotKitWrapper({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const { showCopilotDevConsole } = useMiroirContextService();
-  return (
-    <CopilotKit
-      runtimeUrl="/api/copilotkit"
-      showDevConsole={false}
-      enableInspector={showCopilotDevConsole}
-    >
-      {children}
-    </CopilotKit>
-  );
-}
 
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
@@ -541,9 +522,7 @@ async function startWebApp(root: Root) {
                 miroirContext={miroirContext}
                 domainController={domainControllerForClient}
               >
-                <CopilotKitWrapper>
-                  <RouterProvider router={router} />
-                </CopilotKitWrapper>
+                <RouterProvider router={router} />
               </MiroirContextReactProvider>
             </LocalCacheProvider>
           </StyledEngineProvider>

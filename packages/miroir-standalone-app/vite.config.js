@@ -7,6 +7,9 @@ import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 
+import { miroirManualChunkLoadLogger } from "./vite/chunkLoadLoggerPlugin.js";
+import { resolveManualChunk } from "./vite/manualChunks.js";
+
 // Resolve certificate paths (same defaults as miroir-server)
 const __viteFilename = fileURLToPath(import.meta.url);
 const __viteDirname = path.dirname(__viteFilename);
@@ -35,17 +38,7 @@ export default defineConfig({
       output: {
         // Pin heavy vendor libraries to stable named chunks so the browser
         // can cache them independently of app code changes.
-        manualChunks(id) {
-          // React must live in its own chunk so lazy-loaded modules (e.g. ReportHooks)
-          // never pick up a second copy re-exported from vendor-mui / vendor-copilotkit.
-          if (id.includes("node_modules/react-dom") || id.includes("node_modules/react/")) {
-            return "vendor-react";
-          }
-          if (id.includes("node_modules/@copilotkit")) return "vendor-copilotkit";
-          if (id.includes("node_modules/d3") || id.includes("node_modules/miroir-diagram-class")) return "vendor-d3";
-          if (id.includes("node_modules/ag-grid")) return "vendor-ag-grid";
-          if (id.includes("node_modules/@mui/material") || id.includes("node_modules/@mui/icons-material")) return "vendor-mui";
-        },
+        manualChunks: resolveManualChunk,
       },
     },
   },
@@ -59,7 +52,15 @@ export default defineConfig({
       'react/jsx-runtime',
       '@emotion/react', 
       '@emotion/styled', 
-      '@mui/material/Tooltip'
+      '@mui/material/Tooltip',
+      // Named prebundle entries help dev chunk-load tracing (chunkLoadTrace.ts URL matching).
+      '@mui/material',
+      '@mui/icons-material',
+      '@copilotkit/react-core',
+      '@copilotkit/react-ui',
+      'ag-grid-community',
+      'ag-grid-react',
+      'd3',
     ],
     // Node-only store drivers — pulled via dynamic import from IntegrationTestSession
     // for CLI/Vitest. Must not be prebundled into the webApp (MongoDB driver crashes
@@ -73,6 +74,7 @@ export default defineConfig({
     ],
   },
   plugins: [
+    miroirManualChunkLoadLogger(),
     nodePolyfills({
       include: [ "crypto" ],
       // To exclude specific polyfills, add them to this list. Note: if include is provided, this has no effect
