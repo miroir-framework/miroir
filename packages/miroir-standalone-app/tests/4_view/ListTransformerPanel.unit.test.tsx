@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import React from "react";
 import { Formik } from "formik";
@@ -21,17 +21,31 @@ import {
   type ReduxStateWithUndoRedo,
 } from "miroir-react";
 
-import { ReportSectionListDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";
-import { TableComponentTypeSchema } from "../../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
-import { MiroirThemeProvider } from "../../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { ReportSectionListDisplay } from "../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";
+import { TableComponentTypeSchema } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
+import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
 import { defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
 
-vi.mock("../../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js", () => ({
+vi.mock("../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js", () => ({
   EntityInstanceGrid: () => <div data-testid="entity-instance-grid-stub" />,
 }));
 
-vi.mock("../../../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
+vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
   JsonObjectEditFormDialog: () => null,
+}));
+
+vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.js", () => ({
+  TypedValueObjectEditor: ({ formikValuePathAsString }: { formikValuePathAsString: string }) => (
+    <div data-testid={`tvo-editor-${formikValuePathAsString}`} />
+  ),
+}));
+
+vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditorWithFormik.js", () => ({
+  TypedValueObjectEditorWithFormik: ({ initialValueObject }: { initialValueObject: { transformationResult?: unknown } }) => (
+    <div data-testid="list-transformer-result-viewer">
+      {JSON.stringify(initialValueObject.transformationResult)}
+    </div>
+  ),
 }));
 
 vi.mock("miroir-react", async (importOriginal) => {
@@ -148,11 +162,27 @@ function renderBookListSection() {
   );
 }
 
-describe("246 phase0 — ReportSectionListDisplay list header baseline", () => {
-  it("shows section title and add button (pre-transformer-toggle baseline)", () => {
+describe("ListTransformerPanel — list section integration", () => {
+  const getTransformerToggle = () => screen.getByRole("button", { name: /functions/i });
+
+  it("shows transformer toggle in the header; panel hidden by default", () => {
     renderBookListSection();
 
-    expect(screen.getByRole("heading", { level: 3, name: "Books" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button").length).toBeGreaterThanOrEqual(1);
+    expect(getTransformerToggle()).toBeInTheDocument();
+    expect(screen.queryByTestId("list-transformer-panel")).not.toBeInTheDocument();
+    expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
+  });
+
+  it("mounts the panel below the grid and shows identity-transformed rows", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+
+    expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
+    expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("list-transformer-result")).toBeInTheDocument();
+    const resultText = screen.getByTestId("list-transformer-result-viewer").textContent ?? "";
+    expect(resultText).toContain(book1.uuid);
+    expect(resultText).toContain(book1.name);
   });
 });

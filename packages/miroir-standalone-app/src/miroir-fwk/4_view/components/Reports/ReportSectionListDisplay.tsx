@@ -68,6 +68,8 @@ import { JsonObjectEditFormDialog, JsonObjectEditFormDialogInputs } from "../Jso
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { AddBox } from "../Themes/MaterialSymbolWrappers";
 import { ThemedBox, ThemedButton, ThemedSpan } from "../Themes/index.js";
+import { ListTransformerPanel } from "./ListTransformerPanel.js";
+import { ListTransformerToggle } from "./ListSectionTransformerControls.js";
 
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionListDisplay");
@@ -190,6 +192,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   
   // ##############################################################################################
   const [addObjectdialogFormIsOpen, setAddObjectdialogFormIsOpen] = useState(false);
+  const [transformerPanelEnabled, setTransformerPanelEnabled] = useState(false);
   const setAddObjectdialogFormIsOpenCallback = useCallback((a:boolean) => {
     // log.info("ReportSectionListDisplay setAddObjectdialogFormIsOpen called with",a);
     setAddObjectdialogFormIsOpen(a);
@@ -708,6 +711,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
               >
                 <AddBox style={{ fontSize: "1em", display: "block" }} />
               </ThemedButton>
+              <ListTransformerToggle
+                enabled={transformerPanelEnabled}
+                onToggle={() => setTransformerPanelEnabled((on) => !on)}
+              />
             </div>
             {addObjectdialogFormIsOpen ? (
               <JsonObjectEditFormDialog
@@ -762,6 +769,15 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
                   setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpenCallback}
                 ></EntityInstanceGrid>
+                {transformerPanelEnabled ? (
+                  <ListTransformerPanel
+                    instancesToDisplay={instancesToDisplay}
+                    application={props.application}
+                    applicationDeploymentMap={props.applicationDeploymentMap}
+                    deploymentUuid={props.deploymentUuid}
+                    sectionLabel={defaultLabel ?? currentReportTargetEntity?.name}
+                  />
+                ) : null}
               </div>
             ) : (
               <div></div>

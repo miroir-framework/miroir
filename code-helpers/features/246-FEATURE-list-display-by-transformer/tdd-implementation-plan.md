@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/246
 Working branch: `master`
 
-**Resume note:** plan written 2026-08-23 — Slice 0 done.
+**Resume note:** plan written 2026-08-23 — Slice 0 done; Slice 1 done 2026-08-23.
 
 ---
 
@@ -41,7 +41,7 @@ This plan does **not** persist the entered transformer into the report definitio
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize list header & mapList-on-object-input | ✅ | phase0 lock + helper suite first GREEN |
-| 1 | Tracer: toggle + panel + identity-transformed second list | ⬜ | `ListTransformerPanel` + `listDisplayByTransformer` suites |
+| 1 | Tracer: toggle + panel + identity-transformed second list | ✅ | `ListTransformerPanel` + `listDisplayByTransformer` suites |
 | 2 | Editing the transformer updates the result; failure inline | ⬜ | component + helper suites |
 | 3 | Loop-safety locks (reinit survival, no report-bag pollution) | ⬜ | component suite |
 | 4 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step + tracer narrative |
@@ -164,7 +164,7 @@ npm run testByFile -w miroir-standalone-app -- listDisplayByTransformer
 
 ## Slice 1 — Tracer: toggle + panel + identity-transformed second list
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -206,7 +206,14 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE: what was actually done, deviations, problems met & solved.>
+- Added `listDisplayByTransformer.ts`: `DEFAULT_ROW_IDENTITY_TRANSFORMER`, `buildRowMapListTransformer`, `applyTransformerToListRows` (runtime call pattern from `TransformerEditor.tsx`; list input wrapped under `defaultTransformerInput` in `contextResults`).
+- Added `ListTransformerPanel.tsx`: panel-owned Formik, `TypedValueObjectEditor` for transformer input (`coreTransformerForBuildPlusRuntimeSchemaReference`), derived result via `applyTransformerToListRows` + read-only `TypedValueObjectEditorWithFormik`; exported shared schema ref constant.
+- Added `ListSectionTransformerControls.tsx`: `ListTransformerToggle` (functions icon, primary/secondary variant).
+- Wired `ReportSectionListDisplay.tsx`: `transformerPanelEnabled` state, toggle in header row, `ListTransformerPanel` below `EntityInstanceGrid` when enabled.
+- Helper suite extended (4 tests); component suite `ListTransformerPanel.unit.test.tsx` (2 tests) via `ReportSectionListDisplay` rig — mocks `EntityInstanceGrid`, `TypedValueObjectEditor` / `TypedValueObjectEditorWithFormik` (avoids full `ReportPageContextProvider` stack); toggle queried by role (`Functions icon`).
+- Phase0 lock updated: still asserts title + add button (no longer asserts absence of toggle).
+- **Deviations:** `applyTransformerToListRows` returns an array (same as Slice 0 mapList note); `ThemedButton` does not forward `data-testid`/`type` — omitted; standalone-app `tsc` still reports pre-existing errors in unrelated files (`RootComponent`, `ReportSectionEntityInstance`, …) — no new errors in slice 1 files.
+- Validation green (2026-08-23): `listDisplayByTransformer` (4 tests), `ListTransformerPanel` (2 tests).
 
 ---
 

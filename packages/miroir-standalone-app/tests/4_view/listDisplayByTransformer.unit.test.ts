@@ -1,5 +1,3 @@
-import { describe, expect, it } from "vitest";
-
 import {
   defaultMiroirModelEnvironment,
   defaultTransformerInput,
@@ -8,6 +6,13 @@ import {
   type CoreTransformerForBuildPlusRuntime,
 } from "miroir-core";
 import { book1, book2 } from "miroir-test-app_deployment-library";
+import { describe, expect, it } from "vitest";
+
+import {
+  applyTransformerToListRows,
+  buildRowMapListTransformer,
+  DEFAULT_ROW_IDENTITY_TRANSFORMER,
+} from "../../src/miroir-fwk/4_view/components/Reports/listDisplayByTransformer.js";
 
 const identityRowTransformer: CoreTransformerForBuildPlusRuntime = {
   interpolation: "runtime",
@@ -47,5 +52,28 @@ describe("listDisplayByTransformer — mapList on uuid-indexed list input", () =
     const rows = result as typeof book1[];
     expect(rows).toHaveLength(2);
     expect(rows).toEqual(expect.arrayContaining([book1, book2]));
+  });
+});
+
+describe("listDisplayByTransformer — helper API", () => {
+  it("buildRowMapListTransformer wraps the element transformer in mapList", () => {
+    expect(buildRowMapListTransformer(identityRowTransformer)).toEqual({
+      interpolation: "runtime",
+      transformerType: "mapList",
+      referenceToOuterObject: "row",
+      elementTransformer: identityRowTransformer,
+    });
+  });
+
+  it("applyTransformerToListRows returns identity-projected books from a uuid index", () => {
+    const bookIndex = {
+      [book1.uuid]: book1,
+      [book2.uuid]: book2,
+    };
+
+    const result = applyTransformerToListRows(bookIndex, DEFAULT_ROW_IDENTITY_TRANSFORMER);
+
+    expect(result).not.toBeInstanceOf(TransformerFailure);
+    expect(result).toEqual(expect.arrayContaining([book1, book2]));
   });
 });
