@@ -1,15 +1,12 @@
 # Issue #246 — TDD Implementation Plan
 
-> Vertical TDD slices (RED → GREEN each), integration-first per `docs/contributing/testing.md`:
-> tests exercise the real transformer runtime (`transformer_extended_apply_wrapper` +
-> `defaultMiroirModelEnvironment`) and the real redux local cache (preloaded store,
-> `TransformerEditor.test.tsx` rig), through two confirmed seams — the **helper seam**
-> (pure build/apply functions, vitest unit) and the **component seam** (testing-library
-> render of the panel and the list section, vitest + happy-dom). Both are justified vitest
-> exceptions: the feature is pure view-layer, not reachable through the Miroir ML.
-> No mocks (preloaded state is real deployment assets, not collaborator fakes).
-> The tracer bullet (Slice 1) proves: a user clicks the toggle on a list section and sees
-> a second list below showing each row passed through the default identity transformer.
+> Vertical TDD slices (RED → GREEN each), **integration-first** per `docs/contributing/testing.md`:
+> **Primary validation scaffold:** `listDisplayByTransformer.integ.test.tsx` — full app-stack rig
+> (`getWrapperLoadingLocalCache`, `MiroirContextReactProvider`, `ReportPageContextProvider`, real
+> `EntityInstanceGrid`, real `TypedValueObjectEditor`, real transformer runtime). Supplementary
+> **unit** suites (`listDisplayByTransformer.unit.test.ts`, `ListTransformerPanel.unit.test.tsx`)
+> keep fast helper contracts and wiring checks with targeted mocks where the full stack is redundant.
+> No MiroirTest — pure view-layer feature, not ML-reachable.
 >
 > **Execution model:** human-in-the-loop. No slice contains a commit step — commits happen
 > only when the user explicitly asks. Each slice ends with its Validation commands; on
@@ -18,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/246
 Working branch: `master`
 
-**Resume note:** plan written 2026-08-23 — Slice 0 done; Slice 1 done 2026-08-23.
+**Resume note:** plan written 2026-08-23 — Slice 0–3 done; integ scaffold added 2026-08-23.
 
 ---
 
@@ -42,8 +39,8 @@ This plan does **not** persist the entered transformer into the report definitio
 |---|---|---|---|
 | 0 | Characterize list header & mapList-on-object-input | ✅ | phase0 lock + helper suite first GREEN |
 | 1 | Tracer: toggle + panel + identity-transformed second list | ✅ | `ListTransformerPanel` + `listDisplayByTransformer` suites |
-| 2 | Editing the transformer updates the result; failure inline | ⬜ | component + helper suites |
-| 3 | Loop-safety locks (reinit survival, no report-bag pollution) | ⬜ | component suite |
+| 2 | Editing the transformer updates the result; failure inline | ✅ | component + helper suites |
+| 3 | Loop-safety locks (reinit survival, no report-bag pollution) | ✅ | integ suite loop-safety block |
 | 4 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step + tracer narrative |
 
 ---
@@ -59,7 +56,7 @@ Carried from the analysis decision record (confirmed 2026-08-23); binding for th
 | D3 — State ownership | **Panel-owned Formik + `useState` toggle** — no report-bag pollution, no wipe on report Formik reinit; list data flows in as props (nearest-Formik shadowing makes `useFormikContext` unusable inside the panel) |
 | D4 — Result display | **Read-only schema-driven value editor** — `TransformationResultValueEditor` pattern: read-only `TypedValueObjectEditorWithFormik`, `{type:"any"}` fallback schema, `TransformerFailure` surfaced inline |
 | Default transformer | `{ interpolation: "runtime", transformerType: "getFromContext", referenceName: "row" }` (identity row projection) |
-| Coverage | **Helper seam + component seam** (confirmed 2026-08-23); no MiroirTest — pure view-layer feature, not ML-reachable |
+| Coverage | **Integ scaffold** (`listDisplayByTransformer.integ.test.tsx`) + helper unit + wiring unit; no MiroirTest — pure view-layer feature, not ML-reachable |
 | Meta-model | **No schema change** — no new model elements, no migration |
 
 ---
@@ -72,10 +69,12 @@ No new model elements (D-record: no meta-model change). Keys are vitest suite na
 |---|---|
 | Helper module | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/listDisplayByTransformer.ts` |
 | Panel component | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ListTransformerPanel.tsx` |
-| Helper suite (permanent, feature-named) | `packages/miroir-standalone-app/tests/4_view/listDisplayByTransformer.unit.test.ts` |
-| Component suite (permanent, feature-named) | `packages/miroir-standalone-app/tests/4_view/ListTransformerPanel.unit.test.tsx` |
+| Helper suite (permanent, runtime contracts) | `packages/miroir-standalone-app/tests/4_view/listDisplayByTransformer.unit.test.ts` |
+| **Integration scaffold (primary gate, Slices 1–4)** | `packages/miroir-standalone-app/tests/4_view/listDisplayByTransformer.integ.test.tsx` |
+| Integ rig helper | `packages/miroir-standalone-app/tests/4_view/helpers/listTransformerIntegRig.tsx` |
+| Wiring unit suite (supplementary) | `packages/miroir-standalone-app/tests/4_view/ListTransformerPanel.unit.test.tsx` |
 | Slice 0 transitional lock | `packages/miroir-standalone-app/tests/4_view/issues/246-list-display-by-transformer/listDisplayByTransformer.246.phase0.unit.test.tsx` — deleted in Slice 4 |
-| Nonreg step | `unit-listDisplayByTransformer` (tier `unit`) in `scripts/nonreg-manifest.json` |
+| Nonreg steps | `integ-listDisplayByTransformer` + `unit-listDisplayByTransformer` in `scripts/nonreg-manifest.json` |
 
 Reused existing uuids (no allocation needed): `mapList` TransformerDefinition `3ec73049-5e54-40aa-bc86-4c4906d00baa`; transformer input schema reference target `fe9b7d99-f216-44de-bb6e-60e1a1ebb739` → `coreTransformerForBuildPlusRuntime`.
 
@@ -116,8 +115,9 @@ Component seam: `ListTransformerPanel` (props: `instancesToDisplay`, `deployment
 
 | Purpose | Command |
 |---|---|
-| Helper suite (Slices 0–4 gate) | `npm run testByFile -w miroir-standalone-app -- listDisplayByTransformer` |
-| Component suite (Slices 1–4 gate) | `npm run testByFile -w miroir-standalone-app -- ListTransformerPanel` |
+| **Integration scaffold (primary gate, Slices 1–4)** | `npm run testByFile -w miroir-standalone-app -- listDisplayByTransformer.integ` |
+| Helper + phase0 suites | `npm run testByFile -w miroir-standalone-app -- listDisplayByTransformer` |
+| Wiring unit suite (supplementary) | `npm run testByFile -w miroir-standalone-app -- ListTransformerPanel` |
 | Slice 0 transitional lock | `npm run testByFile -w miroir-standalone-app -- listDisplayByTransformer.246.phase0` |
 | Type check | `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` |
 | Full safety net (Slice 4) | `npm run nonreg` |
@@ -219,7 +219,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 2 — Editing the transformer updates the result; failure inline
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -258,13 +258,18 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE: what was actually done, deviations, problems met & solved.>
+- Added `getListTransformationFailure()` in `listDisplayByTransformer.ts` — detects top-level or per-row failures in mapList array results (`TransformerFailure` / `queryFailure`).
+- Updated `ListTransformerPanel.tsx` to use it: failure → `ThemedOnScreenHelper`; success editor hidden when any row failed.
+- Helper suite: `returnValue` → `[42, 42]`; missing-context row transformer → array of `TransformerFailure` (no throw).
+- Component suite: interactive `TypedValueObjectEditor` mock (`set-return-value-42`, `set-failing-transformer` buttons via panel Formik); `ThemedOnScreenHelper` mock for failure assertion.
+- Slice 1 `useMemo` recomputation was sufficient for edit path — no debounce, no submit.
+- Validation green (2026-08-23): `listDisplayByTransformer` (6 unit tests), `ListTransformerPanel` (4 wiring tests); integ scaffold added afterward (see Slice 3 / integ block).
 
 ---
 
 ## Slice 3 — Loop-safety locks (reinit survival, no report-bag pollution)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -274,7 +279,7 @@ Lock the two feedback-loop guarantees from `docs/internals/report-display.md` th
 
 ### 3.1 RED
 
-**Test:** component suite `ListTransformerPanel.unit.test.tsx`
+**Test:** integ suite `listDisplayByTransformer.integ.test.tsx` (loop-safety block)
 
 Behavior asserted:
 - Render the list section inside a parent Formik mimicking RVWE (`enableReinitialize`, bag keyed like a report section). Enable the panel, edit the transformer to a non-default value, then re-render the parent with a **new `initialValues` reference** (simulated `reportData` refresh): the panel still holds the edited transformer and the result region still shows it.
@@ -292,13 +297,18 @@ Behavior asserted:
 ### Validation
 
 ```bash
-npm run testByFile -w miroir-standalone-app -- ListTransformerPanel
+npm run testByFile -w miroir-standalone-app -- listDisplayByTransformer.integ
+npm run testByFile -w miroir-standalone-app -- listDisplayByTransformer
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE: what was actually done, deviations, problems met & solved.>
+- Added `tests/4_view/helpers/listTransformerIntegRig.tsx` — shared rig: `getWrapperLoadingLocalCache`, `MemoryRouter`, `SeedLibraryDeploymentMapping` (mirrors `RootComponent` entity/report mapping), `MiroirThemeProvider`.
+- Added `listDisplayByTransformer.integ.test.tsx` (6 tests): full-stack list section (toggle, real grid, identity result), real `TypedValueObjectEditor` edit + failure, loop-safety (reinit keeps `returnValue` selection; parent bag keys unchanged).
+- Passed by construction (panel-owned Formik + toggle); no production fixes required.
+- Toggle-off unmount lock deferred to integ follow-up (Slice 4 cleanup) — not blocking AC.
+- Validation green (2026-08-23): integ (6 tests).
 
 ---
 
@@ -308,7 +318,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### 4.1 Nonreg
 
-- Add step `unit-listDisplayByTransformer` (tier `unit`, argv `["npm","run","testByFile","-w","miroir-standalone-app","--","listDisplayByTransformer"]` — plus a second step or a combined pattern for `ListTransformerPanel` if the manifest supports only one match per step, add both) to `scripts/nonreg-manifest.json`.
+- Add steps `integ-listDisplayByTransformer` (tier `integ` or `unit` per manifest convention, argv `listDisplayByTransformer.integ`) and `unit-listDisplayByTransformer` (argv `listDisplayByTransformer`, excludes integ by filename) to `scripts/nonreg-manifest.json`.
 
 ### 4.2 Docs
 
@@ -329,7 +339,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 5. Refresh the page data (re-run the report query) with the panel open and an edited transformer → the edited transformer survives.
 6. Toggle off → panel gone, grid untouched.
 
-Automated equivalent: `ListTransformerPanel.unit.test.tsx` (steps 2–4, 6) + Slice 3 reinit lock (step 5) + `listDisplayByTransformer.unit.test.ts` (result correctness).
+Automated equivalent: `listDisplayByTransformer.integ.test.tsx` (primary) + `listDisplayByTransformer.unit.test.ts` (runtime contracts) + supplementary `ListTransformerPanel.unit.test.tsx` (wiring).
 
 ### AC checklist (#246)
 

@@ -15,6 +15,7 @@ import { TypedValueObjectEditorWithFormik } from "./TypedValueObjectEditorWithFo
 import {
   applyTransformerToListRows,
   DEFAULT_ROW_IDENTITY_TRANSFORMER,
+  getListTransformationFailure,
 } from "./listDisplayByTransformer.js";
 import { hasDisplayableTransformationResult } from "../TransformerEditor/TransformationResultPanel.js";
 import { ThemedContainer, ThemedHeaderSection, ThemedTitle } from "../Themes/index.js";
@@ -87,7 +88,13 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
     [instancesToDisplay, formik.values[TRANSFORMER_INPUT_FORMIK_KEY]],
   );
 
-  const showResultEditor = hasDisplayableTransformationResult(transformationResult);
+  const transformationFailure = useMemo(
+    () => getListTransformationFailure(transformationResult),
+    [transformationResult],
+  );
+
+  const showResultEditor =
+    !transformationFailure && hasDisplayableTransformationResult(transformationResult);
 
   return (
     <div data-testid="list-transformer-panel">
@@ -112,10 +119,8 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         displaySubmitButton="noDisplay"
       />
 
-      {transformationResult &&
-      typeof transformationResult === "object" &&
-      "queryFailure" in transformationResult ? (
-        <ThemedOnScreenHelper label="transformer result error" data={transformationResult} />
+      {transformationFailure ? (
+        <ThemedOnScreenHelper label="transformer result error" data={transformationFailure} />
       ) : showResultEditor ? (
         <div data-testid="list-transformer-result">
           <ListTransformerResultViewer

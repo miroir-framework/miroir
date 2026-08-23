@@ -35,9 +35,45 @@ vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", ()
 }));
 
 vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.js", () => ({
-  TypedValueObjectEditor: ({ formikValuePathAsString }: { formikValuePathAsString: string }) => (
-    <div data-testid={`tvo-editor-${formikValuePathAsString}`} />
-  ),
+  TypedValueObjectEditor: ({
+    formikValuePathAsString,
+  }: {
+    formikValuePathAsString: string;
+  }) => {
+    const { useFormikContext } = require("formik") as typeof import("formik");
+    const formik = useFormikContext<Record<string, unknown>>();
+
+    return (
+      <div data-testid={`tvo-editor-${formikValuePathAsString}`}>
+        <button
+          type="button"
+          data-testid="set-return-value-42"
+          onClick={() =>
+            formik.setFieldValue(formikValuePathAsString, {
+              interpolation: "runtime",
+              transformerType: "returnValue",
+              value: 42,
+            })
+          }
+        >
+          Set returnValue 42
+        </button>
+        <button
+          type="button"
+          data-testid="set-failing-transformer"
+          onClick={() =>
+            formik.setFieldValue(formikValuePathAsString, {
+              interpolation: "runtime",
+              transformerType: "getFromContext",
+              referenceName: "missingRef",
+            })
+          }
+        >
+          Set failing transformer
+        </button>
+      </div>
+    );
+  },
 }));
 
 vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditorWithFormik.js", () => ({
@@ -72,6 +108,11 @@ vi.mock("miroir-react", async (importOriginal) => {
       handleAsyncAction: vi.fn(async (action: () => Promise<unknown>) => action()),
       isActionRunning: false,
     }),
+    ThemedOnScreenHelper: ({ label, data }: { label: string; data: unknown }) => (
+      <div data-testid="list-transformer-failure" data-label={label}>
+        {JSON.stringify(data)}
+      </div>
+    ),
     useDomainControllerService: () => ({
       handleActionFromUI: vi.fn(),
     }),
@@ -184,5 +225,29 @@ describe("ListTransformerPanel — list section integration", () => {
     const resultText = screen.getByTestId("list-transformer-result-viewer").textContent ?? "";
     expect(resultText).toContain(book1.uuid);
     expect(resultText).toContain(book1.name);
+  });
+
+  it("recomputes the result when the transformer is edited (returnValue)", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+    fireEvent.click(screen.getByTestId("set-return-value-42"));
+
+    const resultText = screen.getByTestId("list-transformer-result-viewer").textContent ?? "";
+    expect(resultText).toContain("42");
+    expect(resultText).not.toContain(book1.uuid);
+    expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
+  });
+
+  it("surfaces transformer failure inline and keeps the grid rendered", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+    fireEvent.click(screen.getByTestId("set-failing-transformer"));
+
+    expect(screen.getByTestId("list-transformer-failure")).toBeInTheDocument();
+    expect(screen.getByTestId("list-transformer-failure").textContent).toContain("ReferenceNotFound");
+    expect(screen.queryByTestId("list-transformer-result")).not.toBeInTheDocument();
+    expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
   });
 });

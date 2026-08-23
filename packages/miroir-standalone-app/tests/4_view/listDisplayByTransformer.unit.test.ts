@@ -76,4 +76,37 @@ describe("listDisplayByTransformer — helper API", () => {
     expect(result).not.toBeInstanceOf(TransformerFailure);
     expect(result).toEqual(expect.arrayContaining([book1, book2]));
   });
+
+  it("applyTransformerToListRows maps every row through returnValue", () => {
+    const bookIndex = {
+      [book1.uuid]: book1,
+      [book2.uuid]: book2,
+    };
+
+    const result = applyTransformerToListRows(bookIndex, {
+      interpolation: "runtime",
+      transformerType: "returnValue",
+      value: 42,
+    });
+
+    expect(result).not.toBeInstanceOf(TransformerFailure);
+    expect(result).toEqual([42, 42]);
+  });
+
+  it("applyTransformerToListRows returns per-row TransformerFailure without throwing", () => {
+    const bookIndex = {
+      [book1.uuid]: book1,
+      [book2.uuid]: book2,
+    };
+
+    const result = applyTransformerToListRows(bookIndex, {
+      interpolation: "runtime",
+      transformerType: "getFromContext",
+      referenceName: "missingRef",
+    });
+
+    expect(Array.isArray(result)).toBe(true);
+    expect(result).toHaveLength(2);
+    expect(result.every((item) => item instanceof TransformerFailure)).toBe(true);
+  });
 });

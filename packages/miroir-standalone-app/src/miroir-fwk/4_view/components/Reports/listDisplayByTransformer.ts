@@ -1,6 +1,7 @@
 import {
   defaultMiroirModelEnvironment,
   defaultTransformerInput,
+  TransformerFailure,
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
   type TransformerReturnType,
@@ -49,4 +50,27 @@ export function applyTransformerToListRows(
     transformerParams,
     { [defaultTransformerInput]: instancesToDisplay },
   );
+}
+
+function isTransformerFailureValue(value: unknown): value is TransformerFailure {
+  return (
+    value instanceof TransformerFailure ||
+    (typeof value === "object" &&
+      value !== null &&
+      "queryFailure" in value &&
+      typeof (value as TransformerFailure).queryFailure === "string")
+  );
+}
+
+/** First failure in a list-transform result (top-level or per-row in a mapList array). */
+export function getListTransformationFailure(
+  result: TransformerReturnType<any>,
+): TransformerFailure | null {
+  if (isTransformerFailureValue(result)) {
+    return result;
+  }
+  if (Array.isArray(result)) {
+    return result.find((item) => isTransformerFailureValue(item)) ?? null;
+  }
+  return null;
 }
