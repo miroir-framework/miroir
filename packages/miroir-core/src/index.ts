@@ -1177,6 +1177,14 @@ export {
   transformer_resolveReference
 } from "./2_domain/TransformersForRuntime";
 export {
+  isFailedTransformerInterfaceFromDefinition,
+  resolveTransformerResultSchema,
+  type FailedTransformerInterfaceFromDefinition,
+  type FailedTransformerInterfaceFromDefinitionFailureKind,
+  type ResolveTransformerResultSchemaReturnType,
+  type TransformerResultSchemaContext,
+} from "./2_domain/Transformer_ResultSchema.js";
+export {
   storeActionOrBundleActionStoreRunner
 } from "./3_controllers/ActionRunner.js";
 export {

@@ -38,7 +38,7 @@
     {
       "id": "unit-transformerResultSchema",
       "tier": "unit",
-      "title": "#88 — resolveTransformerResultSchema (static-output MiroirTest)",
+      "title": "#88 — resolveTransformerResultSchema (MiroirTest suite)",
       "requires": "none",
       "argv": [
         "npm",

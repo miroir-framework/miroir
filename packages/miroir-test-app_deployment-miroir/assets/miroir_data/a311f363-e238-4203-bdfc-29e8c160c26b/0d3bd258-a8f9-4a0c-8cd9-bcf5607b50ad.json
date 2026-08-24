@@ -5,7 +5,7 @@
   "name": "transformerResultSchema",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Issue #88 slice 1 — resolveTransformerResultSchema for static-output transformers",
+  "description": "Issue #88 — resolveTransformerResultSchema (slices 1–10)",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "transformerResultSchema",
@@ -60,16 +60,1036 @@
             "expectedValue": {
               "type": "boolean"
             }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "generateUuid returns uuid schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "generateUuid",
+                "interpolation": "runtime"
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "uuid"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "currentTimestamp returns string schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "currentTimestamp",
+                "interpolation": "runtime"
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "string"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "numericOp returns number schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "numericOp",
+                "interpolation": "runtime",
+                "op": "*",
+                "args": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 2
+                  },
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 3
+                  }
+                ]
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "number"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "plus returns number|string|bigint union schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "+",
+                "interpolation": "runtime",
+                "args": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 1
+                  },
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 2
+                  }
+                ]
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "union",
+              "definition": [
+                { "type": "number" },
+                { "type": "string" },
+                { "type": "bigint" }
+              ]
+            }
           }
         ]
       },
       {
         "miroirTestType": "miroirTestSuite",
-        "miroirTestLabel": "errors",
+        "miroirTestLabel": "returnValue",
         "miroirTests": [
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "throws for unknown transformerType",
+            "miroirTestLabel": "returnValue uses instance mlSchema when present",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "interpolation": "runtime",
+                "mlSchema": { "type": "string" },
+                "value": "hello"
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "string"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "returnValue falls back to any when mlSchema absent",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "interpolation": "runtime",
+                "value": 42
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "any"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "getFromContext",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getFromContext resolves referenceName from context",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referenceName": "price"
+              },
+              {
+                "price": { "type": "number" }
+              }
+            ],
+            "expectedValue": {
+              "type": "number"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getFromContext returns failure when reference missing",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referenceName": "price"
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "contextMissingReference",
+              "error": "resolveTransformerResultSchema: context missing reference \"price\"",
+              "transformerType": "getFromContext",
+              "referenceName": "price",
+              "typePath": ["getFromContext", "referenceName"]
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "mlSchemaTransformer",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "pickFromList unwraps array element schema via mlSchemaTransformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "pickFromList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "list"
+                },
+                "index": 0
+              },
+              {
+                "list": {
+                  "type": "array",
+                  "definition": { "type": "string" }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "mapList",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mapList wraps element transformer result in array schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "elementTransformer": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "number" },
+                  "value": 0
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": { "type": "number" }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "dataflowObject",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "dataflowObject composes step schemas with context threading",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "date": {
+                    "transformerType": "currentDate",
+                    "interpolation": "runtime"
+                  },
+                  "len": {
+                    "transformerType": "stringOp",
+                    "interpolation": "runtime",
+                    "op": "length",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "date"
+                    }
+                  }
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "object",
+              "definition": {
+                "date": { "type": "string" },
+                "len": { "type": "string" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "ifThenElse",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "ifThenElse unions then and else branch schemas",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "interpolation": "runtime",
+                "if": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "boolean" },
+                  "value": true
+                },
+                "then": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "string" },
+                  "value": "yes"
+                },
+                "else": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "number" },
+                  "value": 0
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "union",
+              "definition": [
+                { "type": "string" },
+                { "type": "number" }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "ifThenElse returns then schema when else omitted",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "interpolation": "runtime",
+                "if": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "boolean" },
+                  "value": true
+                },
+                "then": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "string" },
+                  "value": "yes"
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "createObject",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "createObject builds object schema from nested transformers",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "a": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "x"
+                  },
+                  "b": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
+                    "value": 1
+                  }
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "object",
+              "definition": {
+                "a": { "type": "string" },
+                "b": { "type": "number" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "listPreserving",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "filterList preserves applyTo element schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "filterList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "items"
+                },
+                "predicate": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "boolean" },
+                  "value": true
+                }
+              },
+              {
+                "items": { "type": "array", "definition": { "type": "string" } }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": { "type": "string" }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "sortList preserves applyTo element schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "sortList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "items"
+                }
+              },
+              {
+                "items": { "type": "array", "definition": { "type": "number" } }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": { "type": "number" }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "concatLists merges homogeneous list schemas",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "concatLists",
+                "interpolation": "runtime",
+                "lists": [
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "a"
+                  },
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "b"
+                  }
+                ]
+              },
+              {
+                "a": { "type": "array", "definition": { "type": "number" } },
+                "b": { "type": "array", "definition": { "type": "number" } }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": { "type": "number" }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "listLength returns number when applyTo is array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "listLength",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "items"
+                }
+              },
+              {
+                "items": { "type": "array", "definition": { "type": "string" } }
+              }
+            ],
+            "expectedValue": { "type": "number" }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "listProjection",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "find returns element schema from applyTo array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "find",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                },
+                "predicate": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "boolean" },
+                  "value": true
+                }
+              },
+              {
+                "rows": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "id": { "type": "number" },
+                      "name": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "object",
+              "definition": {
+                "id": { "type": "number" },
+                "name": { "type": "string" }
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getUniqueValues returns array schema for attribute",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "getUniqueValues",
+                "interpolation": "runtime",
+                "attribute": "code",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                }
+              },
+              {
+                "rows": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "code": { "type": "string" },
+                      "qty": { "type": "number" }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": { "type": "string" }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "objectArray",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getObjectValues returns union of object attribute schemas",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "getObjectValues",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "row"
+                }
+              },
+              {
+                "row": {
+                  "type": "object",
+                  "definition": {
+                    "a": { "type": "string" },
+                    "b": { "type": "number" }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": {
+                "type": "union",
+                "definition": [{ "type": "string" }, { "type": "number" }]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "getObjectEntries returns array schema for object applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "getObjectEntries",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "row"
+                }
+              },
+              {
+                "row": {
+                  "type": "object",
+                  "definition": {
+                    "a": { "type": "string" }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": { "type": "any" }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "listToRecord",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "indexListBy maps array element schema to record value schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "indexListBy",
+                "interpolation": "runtime",
+                "indexAttribute": "id",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                }
+              },
+              {
+                "rows": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "id": { "type": "string" },
+                      "label": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "record",
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "id": { "type": "string" },
+                  "label": { "type": "string" }
+                }
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "listReducerToSpreadObject maps array element to record",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "listReducerToSpreadObject",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                }
+              },
+              {
+                "rows": {
+                  "type": "array",
+                  "definition": { "type": "string" }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "record",
+              "definition": { "type": "string" }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "recordMerge",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mergeIntoObject merges base applyTo with definition object",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "mergeIntoObject",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "base"
+                },
+                "definition": {
+                  "transformerType": "createObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "y": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": { "type": "string" },
+                      "value": "added"
+                    }
+                  }
+                }
+              },
+              {
+                "base": {
+                  "type": "object",
+                  "definition": {
+                    "x": { "type": "number" }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "object",
+              "definition": {
+                "x": { "type": "number" },
+                "y": { "type": "string" }
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "createObjectFromPairs builds object from pair definitions",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObjectFromPairs",
+                "interpolation": "runtime",
+                "definition": [
+                  {
+                    "attributeKey": "name",
+                    "attributeValue": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": { "type": "string" },
+                      "value": "n"
+                    }
+                  },
+                  {
+                    "attributeKey": "count",
+                    "attributeValue": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": { "type": "number" },
+                      "value": 1
+                    }
+                  }
+                ]
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "object",
+              "definition": {
+                "name": { "type": "string" },
+                "count": { "type": "number" }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "case",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "case unions then branch schemas",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "case",
+                "interpolation": "runtime",
+                "discriminator": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "string" },
+                  "value": "a"
+                },
+                "whens": [
+                  {
+                    "when": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "a"
+                    },
+                    "then": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": { "type": "string" },
+                      "value": "A"
+                    }
+                  },
+                  {
+                    "when": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "b"
+                    },
+                    "then": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "mlSchema": { "type": "number" },
+                      "value": 2
+                    }
+                  }
+                ]
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "union",
+              "definition": [{ "type": "string" }, { "type": "number" }]
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "instanceSchema",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "constantAsExtractor reads valueJzodSchema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "constantAsExtractor",
+                "interpolation": "runtime",
+                "valueJzodSchema": { "type": "boolean" },
+                "value": true
+              },
+              {}
+            ],
+            "expectedValue": { "type": "boolean" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mustacheStringTemplate returns string schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "mustacheStringTemplate",
+                "interpolation": "runtime",
+                "definition": "Hello {{name}}"
+              },
+              {}
+            ],
+            "expectedValue": { "type": "string" }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "aggregate",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "aggregate returns static group schema when applyTo is array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "aggregate",
+                "interpolation": "runtime",
+                "function": "count",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "rows"
+                }
+              },
+              {
+                "rows": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": { "id": { "type": "number" } }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "type": "array",
+              "definition": {
+                "type": "object",
+                "definition": {
+                  "aggregate": { "type": "number" }
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "failures",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "returns failure for unknown transformerType",
             "functionRef": {
               "module": "miroir-core/2_domain/Transformer_ResultSchema",
               "export": "resolveTransformerResultSchema"
@@ -81,7 +1101,198 @@
               },
               {}
             ],
-            "expectedError": "unknown transformerType \"nonExistentTransformer\""
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "unknownTransformerType",
+              "error": "resolveTransformerResultSchema: unknown transformerType \"nonExistentTransformer\"",
+              "transformerType": "nonExistentTransformer",
+              "typePath": ["transformerType"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "pickFromList fails when applyTo schema is not array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "pickFromList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "list"
+                },
+                "index": 0
+              },
+              {
+                "list": { "type": "number" }
+              }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: pickFromList expected applyTo schema type \"array\" but got \"number\"",
+              "transformerType": "pickFromList",
+              "referenceName": "list",
+              "expectedSchema": {
+                "type": "array",
+                "definition": { "type": "any" }
+              },
+              "actualSchema": { "type": "number" },
+              "typePath": ["pickFromList", "applyTo"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mapList fails when getFromParameters binding is not array",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "build",
+                  "referenceName": "items"
+                },
+                "elementTransformer": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "number" },
+                  "value": 0
+                }
+              },
+              {
+                "items": { "type": "number" }
+              }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: mapList expected applyTo schema type \"array\" but got \"number\"",
+              "transformerType": "mapList",
+              "referenceName": "items",
+              "expectedSchema": {
+                "type": "array",
+                "definition": { "type": "any" }
+              },
+              "actualSchema": { "type": "number" },
+              "typePath": ["mapList", "applyTo"]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "boolExpr && fails when left operand schema is not boolean",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "boolExpr",
+                "interpolation": "runtime",
+                "operator": "&&",
+                "left": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "string" },
+                  "value": "yes"
+                },
+                "right": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "boolean" },
+                  "value": true
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: boolExpr operand \"left\" must resolve to boolean schema but got \"string\"",
+              "transformerType": "boolExpr",
+              "typePath": ["boolExpr", "left"],
+              "expectedSchema": { "type": "boolean" },
+              "actualSchema": { "type": "string" }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "ifThenElse fails when if branch schema is not boolean",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "interpolation": "runtime",
+                "if": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "active"
+                },
+                "then": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "mlSchema": { "type": "string" },
+                  "value": "on"
+                }
+              },
+              {
+                "active": { "type": "number" }
+              }
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: ifThenElse operand \"if\" must resolve to boolean schema but got \"number\"",
+              "transformerType": "ifThenElse",
+              "referenceName": "active",
+              "typePath": ["ifThenElse", "if"],
+              "expectedSchema": { "type": "boolean" },
+              "actualSchema": { "type": "number" }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "numericOp fails when arg schema is not number",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "numericOp",
+                "interpolation": "runtime",
+                "op": "*",
+                "args": [
+                  {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "mlSchema": { "type": "string" },
+                    "value": "x"
+                  }
+                ]
+              },
+              {}
+            ],
+            "expectedValue": {
+              "status": "error",
+              "failureKind": "schemaShapeMismatch",
+              "error": "resolveTransformerResultSchema: numericOp arg 0 must resolve to number schema but got \"string\"",
+              "transformerType": "numericOp",
+              "typePath": ["numericOp", "args", 0],
+              "expectedSchema": { "type": "number" },
+              "actualSchema": { "type": "string" }
+            }
           }
         ]
       }

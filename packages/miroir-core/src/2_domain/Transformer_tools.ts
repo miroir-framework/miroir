@@ -44,6 +44,14 @@ export function substituteTransformerReferencesInJzodElement<T>(
 }
 
 // ################################################################################################
+/**
+ * 
+ * @param transformerDefinition - The transformer definition to convert to a JzodElement.
+ * @param target - The target environment to convert the transformer to.
+ * @param referenceMap - A map of reference paths to the transformer definition.
+ * @param optionalInterpolation - Whether to include the optional interpolation in the transformer definition.
+ * @returns The transformer definition as a JzodElement.
+ */
 export function transformerInterfaceFromDefinition(
   transformerDefinition: TransformerDefinition,
   target: "build" | "buildPlusRuntime" | "coreBuildPlusRuntime",

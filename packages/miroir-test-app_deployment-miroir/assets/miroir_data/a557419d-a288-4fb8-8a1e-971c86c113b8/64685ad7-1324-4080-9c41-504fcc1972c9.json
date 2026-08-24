@@ -42,9 +42,18 @@
       }
     },
     "transformerResultSchema": {
-      "returns": "mlSchema",
+      "returns": "mlSchemaTransformer",
       "definition": {
-        "type": "any"
+        "transformerType": "accessDynamicPath",
+        "interpolation": "runtime",
+        "objectAccessPath": [
+          {
+            "transformerType": "getFromContext",
+            "interpolation": "runtime",
+            "referenceName": "applyTo"
+          },
+          "definition"
+        ]
       }
     }
   },

@@ -265,3 +265,5 @@ A pragmatic staged approach:
 3. **Consider Proposal A** only if full generics are needed—e.g., for higher-order transformers, or if the framework exposes user-defined generic types. At that point, the unification engine from stage 2 provides a foundation.
 
 This avoids large upfront investment while progressively building toward richer type relationships, each stage subsuming the previous without wasted work.
+
+**Implementation status (Proposal B tracer):** `resolveTransformerResultSchema` in `miroir-core` covers the full `miroirCoreTransformers` catalog. See [`docs/reference/transformer-result-schema.md`](../reference/transformer-result-schema.md) and the TDD plan at [`code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md`](../../code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md).

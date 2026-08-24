@@ -126,7 +126,7 @@ The registry maps short string keys → deployment exports:
 packages/miroir-core/src/5_tests/miroirCoreTestSuiteRegistry.ts
 ```
 
-Current registered suites (35 total, sorted):
+Current registered suites (36 total, sorted):
 
 ```
 adminTransformers, alterObject, ansiColumnsToJzodSchema, buildAnyKeyMap,
@@ -139,9 +139,11 @@ localizeJzodSchemaReferenceContext, menu, mergePositionBased,
 metaModelTransformers, miroirCoreTransformers, modelUpdates, mustache,
 pilot_transformer_plus, queries_library, resolveConditionalSchema,
 resolveQueryTemplates, resolveSchemaReferenceInContext,
-selectUnionBranchFromDiscriminator, tools, unfoldSchemaOnce,
-unionArrayChoices, unionObjectChoices
+selectUnionBranchFromDiscriminator, tools, transformerResultSchema,
+unfoldSchemaOnce, unionArrayChoices, unionObjectChoices
 ```
+
+**`transformerResultSchema`** — issue #88: `functionCallTest` leaves call `resolveTransformerResultSchema` (pure schema inference, no transformer runtime). Reference: [transformer-result-schema.md](./transformer-result-schema.md). Nonreg step: `unit-transformerResultSchema`.
 
 `miroirCoreTransformers` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). All other registry suites are unit-safe unless they declare integ expectations.
 

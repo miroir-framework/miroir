@@ -14,7 +14,7 @@ Issue: https://github.com/miroir-framework/miroir/issues/88
 Design reference: [`docs/proposals/dependent-types-for-transformer-composition.md`](../../../docs/proposals/dependent-types-for-transformer-composition.md) (Proposal B — schema derivation, incremental)  
 Working branch: *(current feature branch)*
 
-**Resume note:** Slice 1 ✅ (2026-08-24). Slices 2–N pending.
+**Resume note:** Slices 1–12 ✅ (2026-08-24). Issue #88 implementation complete; optional asset tightening remains backlog.
 
 ---
 
@@ -41,17 +41,19 @@ Out of scope (this plan / separate issues):
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize `transformerResultSchema` on built-ins | ⬜ | inventory `functionCallTest` or vitest lock |
+| 0 | Characterize `transformerResultSchema` on built-ins | ✅ | inventory vitest lock |
 | 1 | Tracer: static-output transformers (`currentDate`, `boolExpr`) | ✅ | `transformerResultSchema` MiroirTest |
-| 2 | All static `mlSchema` built-ins (no context) | ⬜ | suite `staticOutput` expanded |
-| 3 | `returnValue` reads instance `mlSchema` | ⬜ | functionCallTest |
-| 4 | `getFromContext` resolves from `context` | ⬜ | functionCallTest |
-| 5 | `mlSchemaTransformer` evaluation + `pickFromList` asset | ⬜ | asset + functionCallTest |
-| 6 | `applyTo`-input dependents (`mapList`, `pickFromList` element) | ⬜ | functionCallTest |
-| 7 | `dataflowObject` record composition | ⬜ | functionCallTest |
-| 8 | `ifThenElse` branch union | ⬜ | functionCallTest |
-| 9 | `createObject` structural output | ⬜ | functionCallTest |
-| 10 | Export, docs, nonreg, AC | ⬜ | `miroir-core` export + docs + AC table |
+| 2 | All static `mlSchema` built-ins (no context) | ✅ | suite `staticOutput` expanded |
+| 3 | `returnValue` reads instance `mlSchema` | ✅ | functionCallTest |
+| 4 | `getFromContext` resolves from `context` | ✅ | functionCallTest |
+| 5 | `mlSchemaTransformer` evaluation + `pickFromList` asset | ✅ | asset + functionCallTest |
+| 6 | `applyTo`-input dependents (`mapList`, `pickFromList` element) | ✅ | functionCallTest |
+| 7 | `dataflowObject` record composition | ✅ | functionCallTest |
+| 8 | `ifThenElse` branch union | ✅ | functionCallTest |
+| 9 | `createObject` structural output | ✅ | functionCallTest |
+| 10 | Remaining core transformers (17) | ✅ | MiroirTest sub-suites + vitest failures |
+| 11 | Export, docs, nonreg, AC | ✅ | export + `transformer-result-schema.md` + nonreg |
+| 12 | Structured failures (`FailedTransformerInterfaceFromDefinition`) | ✅ | vitest + MiroirTest `failures` sub-suite |
 
 ---
 
@@ -66,7 +68,7 @@ Decisions from design review (2026-08-24); binding for this plan. Deviations go 
 | Test vehicle | **`functionCallTest`** (not `transformerTest`) — no runtime evaluation |
 | Slice 1 static outputs | Ignore `_context` and nested operand transformers; return static `transformerResultSchema.definition` only |
 | `mlSchemaTransformer` | Slice 5+: recursively run **`resolveTransformerResultSchema`** on the derivation transformer (schema-level evaluation, still no value evaluation) |
-| Errors | Throw `Error` with message prefix `resolveTransformerResultSchema:` (design-time helper, not `TransformerFailure`) |
+| Errors | Return `FailedTransformerInterfaceFromDefinition` (`status: "error"`, `failureKind`, …); use `isFailedTransformerInterfaceFromDefinition` guard. Message prefix `resolveTransformerResultSchema:` preserved on `error` field (Slice 12+) |
 | Module location | `packages/miroir-core/src/2_domain/Transformer_ResultSchema.ts` |
 | UUID policy | RFC 4122 **v4 only** for new model elements |
 | Nonreg | Dedicated `unit-transformerResultSchema` step **plus** inclusion in `unit-miroir-core` registry sweep |
@@ -117,6 +119,8 @@ export function resolveTransformerResultSchema(
 |---|---|
 | Suite (direct) | `RUN_TEST=transformerResultSchema.test npm run testByFile -w miroir-core -- transformerResultSchema` |
 | Suite (MiroirTest CLI) | `npm run testMiroir -w miroir-core -- --suites transformerResultSchema --mode unit` |
+| Failure cases (vitest) | `RUN_TEST=Transformer_ResultSchema.failures npm run testByFile -w miroir-core -- Transformer_ResultSchema.failures` |
+| Inventory lock | `RUN_TEST=transformerResultSchema.inventory npm run testByFile -w miroir-core -- transformerResultSchema.inventory` |
 | Nonreg (targeted) | `npm run nonreg -- --only unit-transformerResultSchema` |
 | Deployment validation (when assets change) | `npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts` |
 | Schema rebuild (when meta-model assets change) | `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` |
@@ -131,46 +135,23 @@ Map from codebase audit — each must land in a slice or explicit non-goal:
 | Transformer | Declared `transformerResultSchema` | Actual output dependency |
 |---|---|---|
 | `returnValue` | `{ type: "any" }` | Instance `mlSchema` when present |
-| `pickFromList`, `find`, `mapList`, … | `{ type: "any" }` or coarse array | Element type of `applyTo` input |
-| `getFromContext` | `{ type: "any" }` | Schema at `referencePath` in `context` |
-| `ifThenElse` | `{ type: "any" }` | Union of `then` / `else` branch schemas |
-| `dataflowObject` | `record(any)` | Record of per-step resolved schemas |
-| `createObject` | `record(any)` | Object with keys from `definition`, values from nested transformers |
-| All built-ins | No deployment uses `returns: "mlSchemaTransformer"` yet | Meta-model supports it; Proposal B expects derivation transformers |
+| `pickFromList`, `find`, `mapList`, … | `{ type: "any" }` or coarse array | ✅ Slice 10 — operand-aware inference for remaining list/object transformers |
+| `getFromContext` | `{ type: "any" }` | ✅ Slice 4 — schema at `referencePath` in `context` |
+| `ifThenElse` | `{ type: "any" }` | ✅ Slice 8 — union of `then` / `else` branch schemas |
+| `dataflowObject` | `record(any)` | ✅ Slice 7 — record of per-step resolved schemas |
+| `createObject` | `record(any)` | ✅ Slice 9 — object with keys from `definition` |
+| `pickFromList` | was static `{ type: "any" }` | ✅ Slice 5 — `mlSchemaTransformer` + `accessDynamicPath` derivation |
+| 17 core transformers (see Slice 10) | Coarse static `mlSchema` | ✅ Slice 10 |
 
 ---
 
 ## Slice 0 — Characterize `transformerResultSchema` inventory
 
-**Status:** ⬜ pending
-
-### Goal
-
-Lock a baseline inventory of built-in transformers: which already declare truthful static schemas vs `{ type: "any" }`, so asset-tightening slices have a diff target.
-
-### 0.1 RED → GREEN
-
-**Test:** vitest `packages/miroir-core/tests/2_domain/transformerResultSchema.inventory.unit.test.ts` *(justified: one-shot structural audit, not ML-reachable)*
-
-Behavior asserted:
-
-- `applicationTransformerDefinitions` contains `currentDate`, `boolExpr`, `returnValue`, `pickFromList`.
-- Count of definitions with `transformerResultSchema.returns === "mlSchema"` and `definition.type !== "any"` is ≥ 2 (locks that static schemas exist and the inventory helper works).
-- Count with `definition.type === "any"` is documented via snapshot or explicit minimum (captures misalignment scale).
-
-### Refactor checkpoint
-
-- None (characterization only).
-
-### Validation
-
-```bash
-RUN_TEST=transformerResultSchema.inventory npm run testByFile -w miroir-core -- transformerResultSchema.inventory
-```
+**Status:** ✅ DONE
 
 ### Realization
 
-*(pending)*
+- Added `packages/miroir-core/tests/2_domain/transformerResultSchema.inventory.unit.test.ts` with baseline key presence, non-`any` static schema count, inline snapshot of `{ type: "any" }` transformers, and `mlSchemaTransformer` tracking (`pickFromList`). Four tests green (2026-08-24).
 
 ---
 
@@ -221,54 +202,17 @@ npm run nonreg -- --only unit-transformerResultSchema
 
 ## Slice 2 — All static `mlSchema` built-ins
 
-**Status:** ⬜ pending
-
-### Goal
-
-Every built-in whose output type does **not** depend on inputs or context returns its declared static schema.
-
-**Layers cut:** MiroirTest cases only (definitions already correct in assets).
-
-### 2.1 RED
-
-**Test:** expand suite `staticOutput` with one `functionCallTest` per transformer:
-
-| Transformer | Expected schema (from asset) |
-|---|---|
-| `generateUuid` | `{ type: "uuid" }` |
-| `currentTimestamp` | `{ type: "string" }` *(or documented ISO timestamp shape)* |
-| `numericOp` | `{ type: "number" }` |
-| `+` (`plus`) | union `number \| string \| bigint` |
-| `boolExpr` | *(already covered)* |
-| `currentDate` | *(already covered)* |
-
-Add cases incrementally RED → GREEN in one slice (grouped helper expansion per skill §4).
-
-### 2.2 GREEN
-
-- No code change expected if assets are already truthful — tests prove it.
-- If any asset `transformerResultSchema` is wrong, fix the **asset** first, then rebuild deployment.
-
-### Refactor checkpoint
-
-- Extract shared `functionCallTest` JSON pattern into sub-suite per transformer family if the suite grows large.
-
-### Validation
-
-```bash
-RUN_TEST=transformerResultSchema.test npm run testByFile -w miroir-core -- transformerResultSchema
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
-```
+**Status:** ✅ DONE
 
 ### Realization
 
-*(pending)*
+- Added `generateUuid`, `currentTimestamp`, `numericOp`, `+` cases to `staticOutput` sub-suite. No code changes required — assets already truthful. All 6 static-output tests green (2026-08-24).
 
 ---
 
 ## Slice 3 — `returnValue` reads instance `mlSchema`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -300,13 +244,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-*(pending)*
+- `returnValue` branch prefers instance `mlSchema`; falls back to static `{ type: "any" }`. Two functionCallTests green (2026-08-24).
 
 ---
 
 ## Slice 4 — `getFromContext` from `context`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -339,13 +283,13 @@ RUN_TEST=transformerResultSchema.test npm run testByFile -w miroir-core -- trans
 
 ### Realization
 
-*(pending)*
+- `getFromContext` resolves `referenceName` / `referencePath` from context; throws on missing key. Two functionCallTests green (2026-08-24).
 
 ---
 
 ## Slice 5 — `mlSchemaTransformer` evaluation + `pickFromList` asset
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -396,13 +340,13 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation
 
 ### Realization
 
-*(pending)*
+- Migrated `pickFromList` `transformerResultSchema` to `mlSchemaTransformer` with `accessDynamicPath` derivation (`getFromContext applyTo` → `"definition"`). Implemented `mlSchemaTransformer` recursion, `accessDynamicPath`, and `applyTo` binding in derivation context. One functionCallTest green (2026-08-24).
 
 ---
 
 ## Slice 6 — `applyTo` dependents (`mapList`, list element typing)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -428,13 +372,13 @@ RUN_TEST=transformerResultSchema.test npm run testByFile -w miroir-core -- trans
 
 ### Realization
 
-*(pending)*
+- `mapList` composes `{ type: "array", definition: elementSchema }` from resolved `elementTransformer`. One functionCallTest green (2026-08-24).
 
 ---
 
 ## Slice 7 — `dataflowObject` record composition
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -460,13 +404,13 @@ RUN_TEST=transformerResultSchema.test npm run testByFile -w miroir-core -- trans
 
 ### Realization
 
-*(pending)*
+- `dataflowObject` walks `definition` in key order, threading each step schema into context for downstream steps. **Deviation:** `stringOp` `length` uses static `{ type: "string" }` result schema (not number). One functionCallTest green (2026-08-24).
 
 ---
 
 ## Slice 8 — `ifThenElse` branch union
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -491,13 +435,13 @@ RUN_TEST=transformerResultSchema.test npm run testByFile -w miroir-core -- trans
 
 ### Realization
 
-*(pending)*
+- Both branches present → union; only `then` → `then` schema; neither → `{ type: "boolean" }`. Two functionCallTests green (2026-08-24).
 
 ---
 
 ## Slice 9 — `createObject` structural output
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -521,29 +465,203 @@ RUN_TEST=transformerResultSchema.test npm run testByFile -w miroir-core -- trans
 
 ### Realization
 
-*(pending)*
+- `createObject` builds `{ type: "object", definition: { key: resolvedSchema } }` without cross-key context threading. One functionCallTest green (2026-08-24).
 
 ---
 
-## Slice 10 — Export, docs, nonreg, AC
+## Slice 10 — Remaining core transformers (catalog completion)
 
-**Status:** ⬜ pending *(nonreg step partially done in Slice 1)*
+**Status:** ✅ DONE
 
-### 10.1 Export
+### Goal
+
+Every compositional transformer in `miroirCoreTransformers` that still **falls through** to a coarse static `transformerResultSchema.definition` gets operand-aware inference in `resolveTransformerResultSchema`, with **≥1 success** and **≥2 failure** tests per compositional transformer (MiroirTest + vitest, same pattern as Slice 12).
+
+**Out of scope for this slice:** admin / MLS / meta transformers (`getActiveDeployment`, `resolveConditionalSchema`, …), `dataflowSequence` (structural container only), and static-only built-ins (`+`, `generateUuid`, `currentDate`, `currentTimestamp`) — already covered by Slice 2.
+
+**Layers cut:** domain resolver branches → MiroirTest `functionCallTest` sub-suites → vitest failure inventory → optional `transformerResultSchema` asset tightening where static `{ type: "any" }` can be replaced by truthful coarse schema or `mlSchemaTransformer`.
+
+### Catalog gap (baseline — Slice 0 inventory, 2026-08-24)
+
+| Transformer | Current declared result | Target inference rule |
+|---|---|---|
+| `filterList` | `array(any)` | `array(X) → array(X)`; `predicate` must resolve to `boolean` |
+| `sortList` | `array(any)` | `array(X) → array(X)` |
+| `concatLists` | `array(any)` | `array(X) + array(Y) → array(union(X,Y))` when both operands typed; else `array(any)` |
+| `listLength` | `number` | `array(?) → number`; `applyTo` must be `array` |
+| `find` | `any` | `array(X) → X` (element schema of `applyTo`); `predicate` boolean |
+| `getObjectEntries` | `array(any)` | `object/record → array(tuple(string, attrSchema))` per Proposal B |
+| `getObjectValues` | `array(any)` | `object/record → array(attrSchemaUnion)` |
+| `getUniqueValues` | `array(any)` | `array(object) → array(scalarTypeOfAttribute)` — defer precise attribute typing to static `array(any)` if attribute path unknown |
+| `indexListBy` | `record(any)` | `array(object) → record(objectElementSchema)` |
+| `listReducerToSpreadObject` | `record(any)` | `array(object) → record(objectElementSchema)` |
+| `object_fromEntries` | `record(any)` | `array(tuple) → record(valueSchemaUnion)` — start with `record(any)` keyed inference when entries typed |
+| `mergeIntoObject` | `record(any)` | base `applyTo` object schema merged with keys from nested `definition` transformer |
+| `createObjectFromPairs` | `record(any)` | like `createObject` over pair `definition` entries + `applyTo` list context |
+| `case` | `any` | union of all `then` branch schemas + optional `else` (mirror Slice 8 `ifThenElse`) |
+| `mustacheStringTemplate` | `string` | static `{ type: "string" }` — validate referenced context keys exist when inferrable |
+| `constantAsExtractor` | `any` | prefer instance `valueJzodSchema` when present; else static `any` |
+| `aggregate` | `array(object{aggregate:number})` | validate `applyTo` is `array`; refine group row schema by `function` when feasible (`count/sum/…`) — minimum: array shape check |
+
+### 10.0 Characterize gap (RED lock)
+
+**Test:** extend `transformerResultSchema.inventory.unit.test.ts`
+
+- Add inline snapshot `coreTransformersWithoutCustomResolver` listing the 17 keys above (sorted).
+- After each sub-cycle below, shrink the snapshot as transformers move to `handled`.
+
+### 10.1 RED → GREEN — list-preserving
+
+**MiroirTest sub-suite `listPreserving`** (new section in asset `0d3bd258-…`):
+
+| Test | Transformer | Input context / instance | Expected schema |
+|---|---|---|---|
+| filter preserves element type | `filterList` | `applyTo` via context: `{ type: "array", definition: { type: "string" } }` | `{ type: "array", definition: { type: "string" } }` |
+| sort preserves element type | `sortList` | same | same |
+| concat homogeneous lists | `concatLists` | two `getFromContext` refs both `array(number)` in context | `{ type: "array", definition: { type: "number" } }` |
+| listLength static number | `listLength` | `applyTo` `array(string)` | `{ type: "number" }` |
+
+**Vitest failures** (`Transformer_ResultSchema.failures.unit.test.ts`), ≥2 each:
+
+- `filterList`: `applyTo` not array; `predicate` resolves to non-boolean
+- `sortList`: `applyTo` not array
+- `concatLists`: operand not array
+- `listLength`: `applyTo` not array
+
+**GREEN:** shared helper `resolveApplyToArrayElementSchema(...)` (reuse `validateApplyToSchemaShape` + unwrap `definition`); add `switch` cases; propagate failures with `transformerPath`.
+
+### 10.2 RED → GREEN — list element projection
+
+**MiroirTest sub-suite `listProjection`:**
+
+| Test | Expected |
+|---|---|
+| `find` on `array({ type: "object", definition: { id: number, name: string } })` | element object schema (not `any`) |
+| `getUniqueValues` on array of objects + `attribute: "code"` | `{ type: "array", definition: { type: "any" } }` until attribute schema walk lands — document in Realization |
+
+**Vitest failures:** `find` applyTo not array; predicate non-boolean. `getUniqueValues` applyTo not array.
+
+**GREEN:** `find` returns `applyToSchema.definition` when root is `array`; predicate boolean validation mirrors `filterList`.
+
+### 10.3 RED → GREEN — object ↔ array
+
+**MiroirTest sub-suite `objectArray`:**
+
+| Test | Expected |
+|---|---|
+| `getObjectValues` on `{ type: "object", definition: { a: string, b: number } }` | `{ type: "array", definition: { type: "union", definition: [string, number] } }` or ordered union per implementation choice — lock in test |
+| `getObjectEntries` on same object | `{ type: "array", definition: { type: "tuple", … } }` or pragmatic `{ type: "array", definition: { type: "any" } }` if tuple not in Jzod subset — **decide at RED**, document deviation |
+
+**Vitest failures:** applyTo not object/record (×2 each).
+
+**GREEN:** resolve `applyTo` schema; require root `object` or `record`; derive value/entry schemas from `definition` map.
+
+### 10.4 RED → GREEN — list → record
+
+**MiroirTest sub-suite `listToRecord`:**
+
+| Test | Expected |
+|---|---|
+| `indexListBy` on `array(object{…})` | `{ type: "record", definition: objectElementSchema }` |
+| `listReducerToSpreadObject` on same | same |
+| `object_fromEntries` on `array` of `[string, value]` pairs | `{ type: "record", definition: valueUnion }` — minimum `{ type: "record", definition: { type: "any" } }` if pair typing deferred |
+
+**Vitest failures:** applyTo not array (×2 each).
+
+### 10.5 RED → GREEN — record merge / pairs
+
+**MiroirTest sub-suite `recordMerge`:**
+
+| Test | Expected |
+|---|---|
+| `mergeIntoObject` base object `{ x: number }` + definition adding `{ y: string }` | merged object schema with both keys |
+| `createObjectFromPairs` with pair definition mirroring Slice 9 `createObject` | object schema from resolved pair attribute transformers |
+
+**Vitest failures:** applyTo not object when required; nested definition resolution failure propagation.
+
+**GREEN:** walk nested transformers; for `mergeIntoObject`, spread base `applyTo` definition with overlay keys (same semantics as runtime shallow merge at schema level).
+
+### 10.6 RED → GREEN — branch union (`case`)
+
+**MiroirTest sub-suite `case`:**
+
+| Test | Expected |
+|---|---|
+| two `then` branches `string` / `number`, no `else` | union schema |
+| with `else` boolean | union of three |
+
+**Vitest failures:** (none required if no operand shape constraints beyond nested resolution — optional: empty `whens` array returns static `any`)
+
+**GREEN:** mirror Slice 8 `ifThenElse` union builder over `whens[i].then` + `else`.
+
+### 10.7 RED → GREEN — instance schema readers
+
+**MiroirTest sub-suite `instanceSchema`:**
+
+| Test | Expected |
+|---|---|
+| `constantAsExtractor` with `valueJzodSchema: { type: "boolean" }` | `{ type: "boolean" }` |
+| `mustacheStringTemplate` | `{ type: "string" }` regardless of template holes |
+
+**Vitest failures:** `constantAsExtractor` without `valueJzodSchema` → static `any` (success path, not failure). Optional: missing context key for mustache ref when testable without runtime.
+
+### 10.8 RED → GREEN — `aggregate`
+
+**MiroirTest sub-suite `aggregate`:**
+
+| Test | Expected |
+|---|---|
+| `aggregate` + `function: "count"` + `applyTo` `array(object)` | declared static group schema `{ type: "array", definition: { type: "object", definition: { aggregate: number } } }` |
+| `applyTo` not array | structured failure |
+
+**Non-goal (document in Realization):** full `groupBy` / `attributeObject` row-shape inference — defer to follow-up issue if RED reveals combinatorial explosion.
+
+### Refactor checkpoint
+
+- Extract shared **`resolveApplyToSchema`** / **`unwrapArrayElementSchema`** helpers used by `mapList`, `pickFromList`, `filterList`, `find`, `sortList`, `listLength`, `concatLists`, `getUniqueValues`, `indexListBy`, …
+- Consider migrating `filterList` / `find` assets to `mlSchemaTransformer` (like `pickFromList`) only if resolver logic duplicates derivation transformers — prefer code-first in this slice, asset migration optional.
+- Update inventory inline snapshot; shrink `mlSchemaAnyNames` list.
+- Extend MiroirTest asset `description` to `#88 slices 1–10`.
+
+### Validation
+
+```bash
+RUN_TEST=transformerResultSchema.inventory npm run testByFile -w miroir-core -- transformerResultSchema.inventory
+RUN_TEST=transformerResultSchema.test npm run testByFile -w miroir-core -- transformerResultSchema
+RUN_TEST=Transformer_ResultSchema.failures npm run testByFile -w miroir-core -- Transformer_ResultSchema.failures
+npm run testMiroir -w miroir-core -- --suites transformerResultSchema --mode unit
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npm run nonreg -- --only unit-transformerResultSchema
+```
+
+### Realization
+
+- Added shared helpers (`resolveApplyToArrayElementSchema`, `resolveApplyToObjectSchema`, `buildUnionSchema`, `mergeObjectSchemas`, …) and `switch` branches for all 17 remaining core transformers.
+- MiroirTest sub-suites: `listPreserving`, `listProjection`, `objectArray`, `listToRecord`, `recordMerge`, `case`, `instanceSchema`, `aggregate` — 15 new functionCallTests (37 total in suite).
+- Vitest failures extended for `filterList`, `sortList`, `listLength`, `find`, `concatLists`, `getObjectValues`, `aggregate` — 41 failure tests total.
+- Inventory test locks full core catalog as handled. All green (2026-08-24).
+
+---
+
+## Slice 11 — Export, docs, nonreg, AC
+
+**Status:** ✅ DONE
+
+### 11.1 Export
 
 - Export `resolveTransformerResultSchema` and `TransformerResultSchemaContext` from `packages/miroir-core/src/index.ts` when editor/MCP consumers need it.
 
-### 10.2 Docs
+### 11.2 Docs
 
-- Short reference blurb in `docs/reference/testing.md` (suite key) and/or new `docs/reference/transformer-result-schema.md` describing `context` conventions and slice coverage.
+- Short reference blurb in `docs/reference/testing.md` (suite key) and/or new `docs/reference/transformer-result-schema.md` describing `context` conventions and slice coverage (Slices 1–10 catalog table).
 - Link from `docs/proposals/dependent-types-for-transformer-composition.md` to this plan.
 
-### 10.3 Nonreg
+### 11.3 Nonreg
 
 - ✅ `unit-transformerResultSchema` already in `scripts/nonreg-manifest.json`.
 - Confirm full `npm run nonreg:unit` green after all slices.
 
-### 10.4 Tracer bullet (narrative)
+### 11.4 Tracer bullet (narrative)
 
 1. Open MiroirTest UI → run **`transformerResultSchema`** suite (unit).
 2. Add a `dataflowObject` in the transformer editor (future): each step's inferred output type constrains the next step's picker.
@@ -554,10 +672,11 @@ Automated equivalent: full `transformerResultSchema` MiroirTest suite + `unit-tr
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Transformers have inferable output ML schemas without runtime evaluation | `resolveTransformerResultSchema` + MiroirTest | ✅ slice 1; ⬜ full catalog |
-| Static built-ins (`currentDate`, `boolExpr`, …) return correct Jzod | suite `staticOutput` | ✅ partial |
-| Context-aware resolution for composition | slices 4–9 | ⬜ |
-| `transformerResultSchema` on definitions is source of truth | asset migrations slice 5+ | ⬜ |
+| Transformers have inferable output ML schemas without runtime evaluation | `resolveTransformerResultSchema` + MiroirTest | ✅ Slice 10 (full core catalog) |
+| Static built-ins (`currentDate`, `boolExpr`, …) return correct Jzod | suite `staticOutput` | ✅ |
+| Context-aware resolution for composition | slices 4–10 | ✅ |
+| `transformerResultSchema` on definitions is source of truth | asset migrations slice 5+ | ⬜ optional asset tightening (non-blocking) |
+| Operand validation failures are structured, not throws | Slice 12 + Slice 10 failures | ✅ |
 | Nonreg coverage | `unit-transformerResultSchema` | ✅ |
 
 ### Validation
@@ -570,4 +689,25 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-*(pending)*
+- Exported `resolveTransformerResultSchema`, `TransformerResultSchemaContext`, failure types, and `isFailedTransformerInterfaceFromDefinition` from `packages/miroir-core/src/index.ts`.
+- Added [`docs/reference/transformer-result-schema.md`](../../../docs/reference/transformer-result-schema.md) (API, context conventions, catalog coverage, failure kinds, test commands).
+- Updated [`docs/reference/testing.md`](../../../docs/reference/testing.md) suite registry (36 suites, `transformerResultSchema` blurb).
+- Linked proposal doc to reference + TDD plan.
+- Nonreg step `unit-transformerResultSchema` title updated; step green (2026-08-24).
+
+---
+
+## Slice 12 — Structured failures (`FailedTransformerInterfaceFromDefinition`)
+
+**Status:** ✅ DONE
+
+### Goal
+
+Return structured failures instead of throws from `resolveTransformerResultSchema`; propagate operand shape mismatches with `failureKind`, `typePath`, `transformerPath`, and `innerError`.
+
+### Realization
+
+- Added `FailedTransformerInterfaceFromDefinition` type and `isFailedTransformerInterfaceFromDefinition` guard in `TransformerResultSchemaInterface.ts`.
+- Operand validation for `boolExpr`, `ifThenElse`, `numericOp`, `pickFromList`, `mapList`, `stringOp`, nested `dataflowObject` / `createObject` propagation.
+- `packages/miroir-core/tests/2_domain/Transformer_ResultSchema.failures.unit.test.ts` — 27 tests initially; extended to 41 in Slice 10.
+- MiroirTest `failures` sub-suite — 6 cases. All green (2026-08-24).
