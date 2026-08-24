@@ -102,6 +102,28 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
       const resultRegion = screen.getByTestId("list-transformer-result");
       expect(within(resultRegion).getByText(book1.name, { exact: false })).toBeInTheDocument();
     });
+
+    it("unmounts the panel when toggled off and leaves the list grid rendered", async () => {
+      renderBookListSectionInteg();
+      await waitForProgressiveRendering();
+
+      await act(async () => {
+        fireEvent.click(getTransformerToggle());
+      });
+      await waitForProgressiveRendering();
+      expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
+
+      await act(async () => {
+        fireEvent.click(getTransformerToggle());
+      });
+      await waitForProgressiveRendering();
+
+      expect(screen.queryByTestId("list-transformer-panel")).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByRole("heading", { name: "Books" })).toBeInTheDocument();
+      });
+      expect(screen.getByText(book1.name, { exact: false })).toBeInTheDocument();
+    });
   });
 
   describe("ListTransformerPanel + real TypedValueObjectEditor", () => {

@@ -15,7 +15,7 @@ Key sources:
 - [`packages/miroir-core/src/2_domain/TransformersForRuntime.ts`](../../../packages/miroir-core/src/2_domain/TransformersForRuntime.ts)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed (2026-08-23).
+**Status:** implemented (2026-08-23). TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 ---
 
@@ -168,4 +168,4 @@ Per-section, additive UI inside `ReportSectionListDisplay` (no meta-model change
 
 ## Next step
 
-Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (written 2026-08-23, following the `miroir-analysis-to-tdd-plan` skill).
+Implemented. Tests: `listDisplayByTransformer.integ.test.tsx` (primary), `listDisplayByTransformer.unit.test.ts`, `ListTransformerPanel.unit.test.tsx`.

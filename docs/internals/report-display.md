@@ -58,7 +58,8 @@ Nested `storedReportDisplay` sections mount another `ReportDisplay` → another 
 | Report embeds another via `storedReportDisplay` | **1 + 1 per nested RVWE** (separate trees) |
 | List “add/edit” dialog (`JsonObjectEditFormDialog`) | **0 extra** — reuses the parent report Formik (`useFormikContext`); injects its draft into the shared bag via `setValues` (see “The dialog exception” below) |
 | TVOE inside a report section | **0 extra** — consumes parent Formik |
-| TVOE+Formik (transformer UI, app selector, …) | Separate Formik; **out of report-display scope** |
+| List transformer panel (`ListTransformerPanel`, toggled from `ReportSectionListDisplay`) | **+1 per open panel** — own small Formik (`TypedValueObjectEditor` for input, read-only TVOE+Formik for result); list rows arrive via **props** (`instancesToDisplay`), not parent `useFormikContext` (inner Formik shadows it) |
+| TVOE+Formik elsewhere (transformer builder, app selector, …) | Separate Formik; **out of report-display scope** unless noted above |
 
 Creation site in RVWE:
 
@@ -96,7 +97,7 @@ Layout sections (`list`, `grid`, `accordion`) recurse into RSVWE with a longer `
 | Leaf | Can update Formik? | How feedback leaves the UI |
 |---|---|---|
 | **objectInstance** (TVOE) | Yes — field editors call `formik.setFieldValue` | Explicit submit → RVWE `onSubmit` → `domainController` create/update (path selected via `lastSubmitButtonClicked`) |
-| **objectList** | Add/edit dialog injects its draft into the parent Formik (`setValues` at a fixed key) and edits it there; grid itself is mostly navigation (inline cell edits are not wired to persistence) | Create/update: the dialog’s inner TVOE submit goes through the **shared report Formik submit** (`lastSubmitButtonClicked` → injected draft key). Delete: separate `JsonObjectDeleteFormDialog` → direct `deleteCascade` domain action, bypasses Formik |
+| **objectList** | Add/edit dialog injects its draft into the parent Formik (`setValues` at a fixed key) and edits it there; grid itself is mostly navigation (inline cell edits are not wired to persistence). Optional **transformer panel** (toggle): read-only transformed rows below the grid; panel-owned Formik; does not mutate the list payload in the report bag | Create/update: the dialog’s inner TVOE submit goes through the **shared report Formik submit** (`lastSubmitButtonClicked` → injected draft key). Delete: separate `JsonObjectDeleteFormDialog` → direct `deleteCascade` domain action, bypasses Formik. Transformer panel: derived `useMemo` only — no writes to parent Formik |
 | **inputReportSection** | Yes — TVOE with no submit button | Optional `onChangeVector` (e.g. `application` → `navigate` to same report under another app) |
 | **Query instance** (params editor) | Yes — `editedQueryParameterValue` | Changing params re-runs the in-page query selector (derived from Formik), no domain write until the Query instance itself is submitted |
 | **markdown** | Reads the report definition from Formik; edited content lives in modal-local state | `MarkdownEditorModal` save = direct domain action (`transactionalInstanceAction` → `updateInstance` of the Report instance), then local state update. **Not** the Formik submit path. Caveat: content path is hard-coded (`definition.section.definition.0…`, marked TODO) |
@@ -234,7 +235,10 @@ All under `packages/miroir-standalone-app/src/miroir-fwk/4_view/`:
 | `components/Reports/ReportTools.ts` | `reportSectionsFormValue` / schema helpers |
 | `components/Reports/ReportSectionViewWithEditor.tsx` | Section-type switch; nested `ReportDisplay` guard |
 | `components/Reports/ReportSectionEntityInstance.tsx` | Instance leaf; outline uuid guard; query-param editor |
-| `components/Reports/ReportSectionListDisplay.tsx` | Grid + add dialog wiring; delete → direct domain action |
+| `components/Reports/ReportSectionListDisplay.tsx` | Grid + add dialog wiring; delete → direct domain action; list transformer toggle + panel mount |
+| `components/Reports/ListTransformerPanel.tsx` | Panel-owned Formik; per-row `mapList` transform; read-only result |
+| `components/Reports/ListSectionTransformerControls.tsx` | Toggle control in list header |
+| `components/Reports/listDisplayByTransformer.ts` | `buildRowMapListTransformer` / `applyTransformerToListRows` helpers |
 | `components/Grids/EntityInstanceGrid.tsx` | Row edit/delete → opens dialogs |
 | `components/JsonObjectEditFormDialog.tsx` | Add/edit dialog; injects draft into shared Formik |
 | `components/Reports/ReportSectionMarkdown.tsx` + `MarkdownEditorModal.tsx` | Markdown leaf; save = direct domain action |

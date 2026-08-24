@@ -15,7 +15,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/246
 Working branch: `master`
 
-**Resume note:** plan written 2026-08-23 — Slice 0–3 done; integ scaffold added 2026-08-23.
+**Resume note:** plan written 2026-08-23 — all slices ✅ (integ scaffold added 2026-08-23).
 
 ---
 
@@ -41,7 +41,7 @@ This plan does **not** persist the entered transformer into the report definitio
 | 1 | Tracer: toggle + panel + identity-transformed second list | ✅ | `ListTransformerPanel` + `listDisplayByTransformer` suites |
 | 2 | Editing the transformer updates the result; failure inline | ✅ | component + helper suites |
 | 3 | Loop-safety locks (reinit survival, no report-bag pollution) | ✅ | integ suite loop-safety block |
-| 4 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step + tracer narrative |
+| 4 | Nonreg, docs, cleanup, AC | ✅ | nonreg steps + docs + AC table |
 
 ---
 
@@ -73,7 +73,7 @@ No new model elements (D-record: no meta-model change). Keys are vitest suite na
 | **Integration scaffold (primary gate, Slices 1–4)** | `packages/miroir-standalone-app/tests/4_view/listDisplayByTransformer.integ.test.tsx` |
 | Integ rig helper | `packages/miroir-standalone-app/tests/4_view/helpers/listTransformerIntegRig.tsx` |
 | Wiring unit suite (supplementary) | `packages/miroir-standalone-app/tests/4_view/ListTransformerPanel.unit.test.tsx` |
-| Slice 0 transitional lock | `packages/miroir-standalone-app/tests/4_view/issues/246-list-display-by-transformer/listDisplayByTransformer.246.phase0.unit.test.tsx` — deleted in Slice 4 |
+| Slice 0 transitional lock | ~~deleted in Slice 4~~ |
 | Nonreg steps | `integ-listDisplayByTransformer` + `unit-listDisplayByTransformer` in `scripts/nonreg-manifest.json` |
 
 Reused existing uuids (no allocation needed): `mapList` TransformerDefinition `3ec73049-5e54-40aa-bc86-4c4906d00baa`; transformer input schema reference target `fe9b7d99-f216-44de-bb6e-60e1a1ebb739` → `coreTransformerForBuildPlusRuntime`.
@@ -314,7 +314,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 4 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 4.1 Nonreg
 
@@ -345,7 +345,16 @@ Automated equivalent: `listDisplayByTransformer.integ.test.tsx` (primary) + `lis
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Enable/disable a transformer-seizing interface on any list section (any user, normal mode) | Slice 1 component test (toggle in header, panel mounts/unmounts) | ⬜ |
-| When enabled, the original list section is still displayed unchanged | Slice 1 component test (grid still rendered) + Slice 2 (grid interactive under failure) | ⬜ |
-| A second list below shows each row transformed by the given transformer | Slice 1 (identity default) + Slice 2 (edited transformer, helper correctness on real assets) | ⬜ |
-| Ephemeral, loop-safe panel (no report-bag pollution, survives query refresh) | Slice 3 locks | ⬜ |
+| Enable/disable a transformer-seizing interface on any list section (any user, normal mode) | integ: toggle + panel mount/unmount | ✅ |
+| When enabled, the original list section is still displayed unchanged | integ: grid + book row visible with panel open; failure path keeps grid | ✅ |
+| A second list below shows each row transformed by the given transformer | integ identity result + unit `applyTransformerToListRows` | ✅ |
+| Ephemeral, loop-safe panel (no report-bag pollution, survives query refresh) | integ loop-safety block | ✅ |
+
+### Realization
+
+- Nonreg: `integ-listDisplayByTransformer` + `unit-listDisplayByTransformer` in `scripts/nonreg-manifest.json`.
+- Docs: `analysis.md` → implemented; `report-display.md` — Formik table row, objectList feedback row, key-files entries for panel/helpers.
+- Deleted `tests/4_view/issues/246-list-display-by-transformer/` (phase0 lock superseded by integ).
+- Integ: added toggle-off unmount test (tracer step 6).
+- `docs/contributing/testing.md` unchanged (no suite catalogue section).
+- Validation green (2026-08-23): integ (7 tests), `listDisplayByTransformer.unit` (6 tests), `ListTransformerPanel` (4 tests).

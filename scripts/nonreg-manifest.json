@@ -682,6 +682,36 @@
       ]
     },
     {
+      "id": "integ-listDisplayByTransformer",
+      "tier": "unit",
+      "title": "#246 list transformer panel — app-stack integration",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "listDisplayByTransformer.integ"
+      ]
+    },
+    {
+      "id": "unit-listDisplayByTransformer",
+      "tier": "unit",
+      "title": "#246 list transformer — helper + wiring unit suites",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "listDisplayByTransformer.unit"
+      ]
+    },
+    {
       "id": "full-postgres-modelValidation",
       "tier": "full",
       "title": "Deployment modelValidation \u2014 postgres",
