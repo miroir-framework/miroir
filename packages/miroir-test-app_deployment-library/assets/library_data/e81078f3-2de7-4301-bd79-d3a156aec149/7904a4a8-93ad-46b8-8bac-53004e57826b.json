@@ -1,0 +1,10 @@
+{
+  "uuid": "7904a4a8-93ad-46b8-8bac-53004e57826b",
+  "parentName": "LendingHistoryItem",
+  "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+  "user": "9b957235-1202-4c31-a33f-7eb3258b70bb",
+  "book": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+  "startDate": "2025-02-06T00:00:00.000Z",
+  "endDate": "2025-03-20T00:00:00.000Z",
+  "note": "returned"
+}

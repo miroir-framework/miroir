@@ -1,0 +1,9 @@
+{
+  "uuid": "e4585441-c0f9-449c-8098-128b21ea5e2c",
+  "parentName": "LendingHistoryItem",
+  "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+  "user": "9b957235-1202-4c31-a33f-7eb3258b70bb",
+  "book": "9672b6cd-a9f7-438a-9a6f-e128d2d851bd",
+  "startDate": "2026-07-13T00:00:00.000Z",
+  "note": "current loan"
+}
