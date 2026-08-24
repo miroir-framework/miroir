@@ -353,7 +353,7 @@ export const TestResultsGrid: React.FC<TestResultsGridProps> = ({
             height: "400px",
             width: "100%",
           }}
-          maxRows={50}
+          pageSize={50}
           sortByAttribute="testName"
           displayTools={false}
           gridType={gridType}

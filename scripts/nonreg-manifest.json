@@ -712,6 +712,36 @@
       ]
     },
     {
+      "id": "integ-gridPagination",
+      "tier": "unit",
+      "title": "#247 grid pagination — app-stack integration",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "gridPagination.integ"
+      ]
+    },
+    {
+      "id": "unit-gridPagination",
+      "tier": "unit",
+      "title": "#247 grid pagination — primitives + viewport unit suites",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "gridPagination.unit"
+      ]
+    },
+    {
       "id": "full-postgres-modelValidation",
       "tier": "full",
       "title": "Deployment modelValidation \u2014 postgres",

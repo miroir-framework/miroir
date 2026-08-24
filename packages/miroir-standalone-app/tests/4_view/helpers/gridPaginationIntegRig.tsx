@@ -176,6 +176,61 @@ export function renderEntityInstanceGridHarness(
   );
 }
 
+type JsonArrayGridHarnessProps = {
+  count: number;
+  pageSize?: number;
+  maxRows?: number;
+};
+
+function useJsonArrayColumnDefs() {
+  return useMemo(
+    () => ({
+      columnDefs: [
+        { field: "testName", headerName: "Test Name", type: "text" as const },
+        { field: "status", headerName: "Status", type: "text" as const },
+      ],
+    }),
+    [],
+  );
+}
+
+export function JsonArrayGridHarness({ count, pageSize, maxRows }: JsonArrayGridHarnessProps) {
+  const [addOpen, setAddOpen] = useState(false);
+  const rows = useMemo(() => buildManyTestResults(count), [count]);
+  const columnDefs = useJsonArrayColumnDefs();
+
+  return (
+    <EntityInstanceGrid
+      type={TableComponentTypeSchema.enum.JSON_ARRAY}
+      application={selfApplicationLibrary.uuid}
+      deploymentUuid={deployment_Library_DO_NO_USE.uuid}
+      columnDefs={columnDefs}
+      {...({ rowData: rows } as any)}
+      styles={{}}
+      children={null}
+      displayTools={true}
+      applicationDeploymentMap={libraryApplicationDeploymentMap}
+      currentModel={defaultLibraryAppModel}
+      currentEntity={entityBook}
+      defaultFormValuesObject={{}}
+      paramsAsdomainElements={{}}
+      foreignKeyObjects={{}}
+      maxRows={maxRows}
+      pageSize={pageSize}
+      addObjectdialogFormIsOpen={addOpen}
+      setAddObjectdialogFormIsOpen={setAddOpen}
+    />
+  );
+}
+
+export function renderJsonArrayGridHarness(props: JsonArrayGridHarnessProps): RenderResult {
+  return render(
+    <GridPaginationIntegShell>
+      <JsonArrayGridHarness {...props} />
+    </GridPaginationIntegShell>,
+  );
+}
+
 type GlideGridHarnessProps = {
   bookCount: number;
   maxRows?: number;

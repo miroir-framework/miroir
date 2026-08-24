@@ -34,9 +34,9 @@ import { DeepPartial, TableTheme } from "../Themes/TableTheme.js";
 import { ToolsCellRenderer } from "./GenderCellRenderer.js";
 import { GlideDataGridComponent } from "./GlideDataGridComponent.js";
 import {
-  agGridPaginationProps,
-  resolvePageSize,
-  shouldUseFixedAgGridViewport,
+  agGridModeProps,
+  computeAgGridScrollHeight,
+  resolveGridSizingMode,
 } from "./gridPagination.js";
 import { defaultColDef } from "./GridTools.js";
 import {
@@ -464,14 +464,15 @@ export const ValueObjectGrid: FC<any> = (
   );
 
   // ##############################################################################################
-  const resolvedPageSize = resolvePageSize(props.pageSize);
+  // Sizing mode (D2-d): paged (pageSize, default 50) XOR scroll (maxRows)
+  const sizingMode = resolveGridSizingMode(props.pageSize, props.maxRows);
   const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
-  const visiblePageRowCount = Math.min(resolvedPageSize, rowCount);
-  const useFixedAgGridViewport = shouldUseFixedAgGridViewport(
-    visiblePageRowCount,
-    props.maxRows,
-  );
-  const agPagination = agGridPaginationProps(props.pageSize);
+  const agGridMode = agGridModeProps(sizingMode);
+  // Paged mode: domLayout="autoHeight" — ag-grid sizes itself to the page's rows, no explicit height.
+  const agGridContainerHeight =
+    sizingMode.mode === "scroll"
+      ? `${computeAgGridScrollHeight(rowCount, sizingMode.maxRows, contextTheme.components.table.maxHeight)}px`
+      : undefined;
 
   return (
     <div
@@ -509,16 +510,8 @@ export const ValueObjectGrid: FC<any> = (
           id="valueObjectGrid"
           className="ag-theme-alpine"
           style={{
-            ...(useFixedAgGridViewport
-              ? {
-                  ...props.styles,
-                  height: "50vh",
-                  maxHeight: contextTheme.components.table.maxHeight,
-                }
-              : {
-                  ...props.styles,
-                  minHeight: contextTheme.components.table.minHeight,
-                }),
+            ...props.styles,
+            height: agGridContainerHeight,
             width: "100%",
             maxWidth: "100%",
             overflow: "auto",
@@ -528,9 +521,9 @@ export const ValueObjectGrid: FC<any> = (
           }}
         >
           <AgGridReact
-            domLayout={agPagination.domLayout}
-            pagination={agPagination.pagination}
-            paginationPageSize={agPagination.paginationPageSize}
+            domLayout={agGridMode.domLayout}
+            pagination={agGridMode.pagination}
+            paginationPageSize={agGridMode.paginationPageSize}
             columnDefs={columnDefs}
             rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
             getRowId={(params) => {

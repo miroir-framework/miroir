@@ -131,6 +131,39 @@ describe("gridPagination — Glide custom pager", () => {
   });
 });
 
+describe("gridPagination — Glide sizing modes (D2-d)", () => {
+  it("paged mode renders a full page at exact uncapped height (no 600px cap)", async () => {
+    renderGlideDataGridHarness({ bookCount: 60 });
+    await waitForProgressiveRendering();
+
+    expect(screen.getByTestId("grid-pagination-range")).toHaveTextContent(
+      "Showing 1–50 of 60",
+    );
+    const container = document.querySelector(".glide-data-grid-grid-container") as HTMLElement;
+    expect(container).toHaveAttribute("data-page-rows", "50");
+    expect(container.style.height).toBe(`${50 * 34 + 36}px`);
+  });
+
+  it("scroll mode binds the full set, caps height at maxRows rows, hides the pager", async () => {
+    renderGlideDataGridHarness({ bookCount: 60, maxRows: 10 });
+    await waitForProgressiveRendering();
+
+    expect(screen.queryByTestId("grid-pagination-toolbar")).not.toBeInTheDocument();
+    const container = document.querySelector(".glide-data-grid-grid-container") as HTMLElement;
+    expect(container).toHaveAttribute("data-page-rows", "60");
+    expect(container.style.height).toBe(`${10 * 34 + 36}px`);
+  });
+
+  it("scroll mode caps height at the theme maxHeight for large maxRows", async () => {
+    renderGlideDataGridHarness({ bookCount: 200, maxRows: 100 });
+    await waitForProgressiveRendering();
+
+    const container = document.querySelector(".glide-data-grid-grid-container") as HTMLElement;
+    expect(container).toHaveAttribute("data-page-rows", "200");
+    expect(container.style.height).toBe("600px");
+  });
+});
+
 describe("gridPagination — ValueObjectGrid both backends", () => {
   it("pages on ag-grid with native pager", async () => {
     renderValueObjectGridHarness({ count: 60, gridType: "ag-grid" });
@@ -176,6 +209,22 @@ describe("gridPagination — ValueObjectGrid both backends", () => {
     await waitForProgressiveRendering();
     expect(screen.getByTestId("grid-pagination-range")).toHaveTextContent(
       "Showing 1–20 of 60",
+    );
+  });
+
+  it("scroll mode on both backends: maxRows={10} shows no pager", async () => {
+    renderValueObjectGridHarness({ count: 60, gridType: "ag-grid", maxRows: 10 });
+    await waitForProgressiveRendering();
+    // ag-grid keeps the panel node mounted but hidden (ag-hidden) when pagination is off
+    const agPanel = document.querySelector(".ag-paging-panel");
+    expect(agPanel === null || agPanel.classList.contains("ag-hidden")).toBe(true);
+
+    renderValueObjectGridHarness({ count: 60, gridType: "glide-data-grid", maxRows: 10 });
+    await waitForProgressiveRendering();
+    expect(screen.queryByTestId("grid-pagination-toolbar")).not.toBeInTheDocument();
+    expect(document.querySelector(".glide-data-grid-grid-container")).toHaveAttribute(
+      "data-page-rows",
+      "60",
     );
   });
 });

@@ -18,9 +18,11 @@ Key sources:
 [`ViewParams.ts`](../../../packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts)
 
 **Document role:** analysis and architectural decision record.  
-**Status:** **Implemented** (2026-08-24). All decisions **Accepted** (user, 2026-08-24): D1-C, **D2-c**, D3-a, D4-a, **D5-b** — D2 and D5 resolved **against** the original proposals (kept below with rejection rationale). TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** **Implemented** (2026-08-24). All decisions **Accepted** (user): D1-C, **D2-d** (supersedes D2-c), D3-a, D4-a, **D5-b**. TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (Slices 0–5 ✅ = D2-c build; Slices 6–9 ✅ = D2-d revision).
 
-**Document history:** first revision (2026-08-24) — confirmation round flipped D2 to **D2-c** (independent props, no alias) and D5 to **D5-b** (backend-native chrome), and fixed state/pager placement **per backend**. §5 (target design), §6 (verdicts) and Goal 3 updated accordingly; the originally proposed D2-b / D5-a frames are preserved as rejected options.
+**Document history:**
+- First revision (2026-08-24) — confirmation round flipped D2 to **D2-c** (independent props, no alias) and D5 to **D5-b** (backend-native chrome), and fixed state/pager placement **per backend**. §5 (target design), §6 (verdicts) and Goal 3 updated accordingly; the originally proposed D2-b / D5-a frames are preserved as rejected options.
+- Second revision (2026-08-24) — after the D2-c build landed (Slices 0–5) and [sizing internals](../../../../docs/internals/list-report-section-sizing.md) exposed the interaction matrix (P1 hybrid paged+scrolling state, P2 Glide full pages still scrolling at defaults), the user proposed and accepted **D2-d: mutually exclusive sizing modes** (paged XOR scroll) with **uncapped** paged-mode height. D2-c is preserved below as a superseded option.
 
 ---
 
@@ -29,7 +31,7 @@ Key sources:
 | Decision | Choice |
 |---|---|
 | D1 — Implementation shape | **Accepted: shared Miroir pagination layer (Option C)** — shared page math / hook / pager primitives; chrome split per D5-b |
-| D2 — `maxRows` vs `pageSize` | **Accepted: D2-c — keep both independent** (user): `pageSize` pages, `maxRows` stays a viewport-height hint and gets wired to height |
+| D2 — `maxRows` vs `pageSize` | **Accepted: D2-d — mutually exclusive sizing modes** (user, supersedes D2-c): `pageSize` ⇒ paged mode (exact page height, pager, no in-grid scrollbar); `maxRows` ⇒ scroll mode (height capped at that many rows, full set scrolls, no pager) |
 | D3 — Where page size is configured (v1) | **Accepted: D3-a — grid props only** — callers pass `pageSize`; no Report schema / ViewParams |
 | D4 — Client vs server paging (v1) | **Accepted: D4-a — client-side only** — page the already-loaded sorted/filtered row set |
 | D5 — Pagination chrome | **Accepted: D5-b — backend-native chrome** (user): ag-grid native community pager; custom Miroir pager on Glide |
@@ -50,15 +52,16 @@ Key sources:
 
 ### D2 — `maxRows` vs `pageSize`
 
-**Status:** Accepted — **D2-c** (user, 2026-08-24).
+**Status:** Accepted — **D2-d** (user, 2026-08-24; supersedes D2-c accepted earlier the same day).
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | D2-a. Repurpose `maxRows` as page size | Rename semantics in place | Minimal API churn at call sites | Comment today says “controls table height”; prop is unused for height (see §3.3) |
 | D2-b. Add `pageSize`; `maxRows` aliases it | New prop is the source of truth; existing `maxRows={50}` keeps working | Clear naming; backward compatible | Two names briefly — **Rejected** (user): alias muddies the split |
-| **D2-c. Keep both independent** ★ | `pageSize` for paging, `maxRows` for viewport height | Orthogonality; each prop has one honest meaning | Height already uses hardcoded `50` / `50vh` — so D2-c requires actually wiring `maxRows` to viewport height (planned, Slice 4) |
+| D2-c. Keep both independent | `pageSize` for paging, `maxRows` for viewport height | Orthogonality; each prop has one honest meaning — **Superseded** (user, after D2-c build landed): the 2×2 interaction matrix is the confusing part — the hybrid cell (`pageSize > maxRows` ⇒ paged *and* in-page scroll) has no known caller need, and Glide full pages still scrolled at defaults (sizing doc P1/P2) | — |
+| **D2-d. Mutually exclusive sizing modes** ★ | `pageSize` ⇒ **paged mode**: exact height for the current page's rows, pager, **no in-grid scrollbar, no height cap**. `maxRows` ⇒ **scroll mode**: no paging, full set bound, height = `min(maxRows, total)` rows (theme `maxHeight` as outer px cap), in-grid scrollbar. XOR enforced at the prop schema; default = paged 50 | One behavior per prop; no interaction matrix; Glide finally delivers “no full-list scrollbar”; each branch simpler | Hybrid “paged + short viewport” becomes inexpressible (workarounds: smaller `pageSize`, or scroll mode); call sites must flip `maxRows={50}` → `pageSize={50}`; D2-c slices partially reworked |
 
-**Decision:** D2-c. Default `pageSize = 50` to match today’s call sites and magic thresholds; `maxRows` keeps its documented height role and is wired to it (fixing the §3.3 misalignment) rather than aliased.
+**Decision:** D2-d. Default (neither prop set) = paged mode, `pageSize = 50`. Paged mode height is **uncapped** (user): `pageSize` is the only height control — want a shorter grid, show fewer rows per page; the outer page scrolls instead of the grid. Scroll mode keeps the theme `maxHeight` px cap as the admin-safety net.
 
 ### D3 — Config locus (v1)
 
@@ -194,19 +197,19 @@ Sections that go through `ReportSectionListDisplay` → `EntityInstanceGrid` wit
 
 ---
 
-## 5. Target design (Option C, chrome split per D5-b)
+## 5. Target design (Option C, chrome per D5-b, sizing modes per D2-d)
 
-### 5.1 Shared module (conceptual)
-
-Introduce a small **view-layer** module (names illustrative):
+### 5.1 Shared module (`Grids/gridPagination.ts`, landed)
 
 | Export | Role |
 |--------|------|
+| `resolveGridSizingMode(pageSize?, maxRows?)` | Pure mode resolution: `pageSize` set ⇒ `{ mode: "paged", pageSize }`; else `maxRows` set ⇒ `{ mode: "scroll", maxRows }`; else paged `50`. (Prop schemas reject “both set” — XOR encoded as a union of paged / scroll / default variants inside `tableComponentCorePropsSchema` / `valueObjectGridPropsSchema` themselves, composed from shared `gridPaged/Scroll/DefaultSizingPropsSchema` blocks; `gridSizingModePropsSchema` re-exports the union for standalone validation.) |
 | `paginateRows(rows, pageIndex, pageSize)` | Pure: `{ pageRows, pageCount, from, to, total }` |
-| `useClientPagination({ totalCount \| rows, pageSize, resetKey? })` | Page index state; `next` / `prev`; clamp on `total` / `pageSize` / `resetKey` change |
-| `GridPaginationToolbar` | Theme-aware Prev / Next + range (or page) label; hidden when `pageCount ≤ 1` — **Glide-side chrome** (D5-b) |
+| `useClientPagination({ totalCount, pageSize, resetKey? })` | Page index state; `next` / `prev`; render-phase clamp/reset (no `useEffect`) |
+| `GridPaginationToolbar` | Theme-aware Prev / Next + “Showing *a–b* of *total*”; hidden when `pageCount ≤ 1` — **Glide-side chrome** (D5-b) |
+| height helpers | Paged: exact px for the current page’s rows, **uncapped**. Scroll: px for `min(maxRows, total)` rows, capped by theme `maxHeight` |
 
-No dependency on ag-grid or Glide packages inside the pure helpers. The ag-grid side consumes only `pageSize`, mapped onto its native pager config.
+No dependency on ag-grid or Glide packages inside the pure helpers. The ag-grid side consumes the resolved mode + `pageSize`, mapped onto its native pager config.
 
 ### 5.2 Where the slice applies (critical)
 
@@ -215,32 +218,36 @@ Issue text suggested slicing **before** handing rows to either backend. That is 
 - Glide **re-filters/re-sorts** the full `tableComponentRows` internally.
 - ag-grid **re-sorts** the full `rowData` via column headers.
 
-**Placement for v1 (per-backend state, confirmed with user):**
+**Placement (per-backend state, confirmed with user), per mode:**
 
-1. **ag-grid branches** (`EntityInstanceGrid`, `ValueObjectGrid`): keep full `rowData`; enable native community pagination (`pagination`, `paginationPageSize = pageSize ?? 50`, `domLayout="normal"` when paging). The native pager pages **after** ag-grid’s own sort/filter, so interactive sort/filter stays correct across the whole set for free.
-2. **Glide branch** (`GlideDataGridComponent`, used by both façades): `useClientPagination` + `GridPaginationToolbar` live **inside** the component, keyed on the real effective total `sortedAndFilteredTableRows.length`; the page slice is taken **after** sort/filter and feeds `rows=` / `getCellContent`. State is per-backend — no child→parent count-reporting callback, no new `useEffect` (repo rule).
+1. **ag-grid branches** (`EntityInstanceGrid`, `ValueObjectGrid`):
+   - *Paged:* full `rowData` + native community pagination (`paginationPageSize = pageSize`) with **`domLayout="autoHeight"`** — the grid sizes itself to the current page’s rows (no estimate, no virtualization window, no in-grid scrollbar; short last pages and filter shrink re-size natively). Native pager pages **after** ag-grid’s own sort/filter. (First D2-d attempt used `domLayout="normal"` + px estimate tracked via `onPaginationChanged`; replaced after the real browser showed ag-grid’s virtualization latching onto a stale viewport height — see sizing doc §3.)
+   - *Scroll:* no pagination, `domLayout="normal"`, full `rowData`, container height = scroll-mode px (capped by theme `maxHeight`); ag-grid scrolls natively.
+2. **Glide branch** (`GlideDataGridComponent`, used by both façades):
+   - *Paged:* `useClientPagination` keyed on `sortedAndFilteredTableRows.length`; slice **after** sort/filter feeds `rows=` / `getCellContent`; `GridPaginationToolbar`; height = exact px for `pagedRows.length`, uncapped.
+   - *Scroll:* no slice, no toolbar; `rows=` the full sorted/filtered set; height = scroll-mode px.
 
 **Accepted constraint for v1:** (a) initial `sortByAttribute` order is respected before paging; (b) Glide’s existing filter/sort still runs on the **full** set, then the page slice is taken; (c) page index resets/clamps when Glide filter/sort or input row identity/`resetKey` changes. (The earlier “ag-grid sorts within the page” caveat is dissolved by D5-b: the native pager pages ag-grid’s post-sort/filter row set.)
 
-### 5.3 Height after paging
+### 5.3 Height per sizing mode (D2-d)
 
-With at most `pageSize` rows in the grid:
+- **Paged mode:** exact height for the **current page's** row count, on both backends — **no cap, no in-grid scrollbar** (user, 2026-08-24). `pageSize` is the only height control; a large `pageSize` yields a tall grid and the *outer page* scrolls. Last short pages shrink the grid; Glide filter shrink shrinks it too (ag-grid likewise once height tracks the current page). Theme `maxHeight` / `minHeight` do **not** apply to paged grids.
+- **Scroll mode:** height = px for `min(maxRows, total)` rows, with theme `maxHeight` (600px default) as the outer cap; the grid scrolls internally over the **full** set. This preserves the pre-#247 admin-grid behavior with the threshold parameterized (`maxRows` instead of the hardcoded `50`).
+- The D2-c hybrid (`pageSize > maxRows` ⇒ paged + capped viewport) no longer exists; the `50vh` / `window.innerHeight` code path is removed.
 
-- Prefer **exact height** for `min(pageSize, remaining)` rows (Glide already does exact height when `rowCount ≤ 50`).
-- Replace hardcoded `> 50` thresholds with logic keyed on the **page** row count; per D2-c, `maxRows` (when provided) becomes the viewport-height threshold basis (`maxRows ?? 50`), finally matching its documented role (§3.3).
-- Full-list scrollbar as primary navigation goes away; in-page scroll only if a single page still exceeds the viewport cap (edge case, e.g. `pageSize` large or `maxRows` small).
-
-### 5.4 Prop flow (confirmed)
+### 5.4 Prop flow (D2-d)
 
 ```
 ReportSectionListDisplay / TestResultsGrid
-  maxRows={50}              // unchanged call sites; height hint (D2-c)
+  pageSize={50}             // call sites flipped from maxRows={50} (selects paged mode)
     → EntityInstanceGrid / ValueObjectGrid
-         pageSize?: number  // new prop, default 50 (D3-a: props only)
-         → ag-grid branch:  AgGridReact pagination paginationPageSize={pageSize}  (full rowData; native pager)
-         → Glide branch:    GlideDataGridComponent pageSize={pageSize}
-                              → useClientPagination(totalCount = sortedAndFiltered.length)
-                              → GridPaginationToolbar + rows={pageRows}
+         pageSize?: number  // paged mode (XOR with maxRows; default 50)
+         maxRows?: number   // scroll mode
+         → ag-grid branch:  paged ⇒ native pager + page-tracking height
+                            scroll ⇒ domLayout="normal" + capped px height, no pager
+         → Glide branch:    GlideDataGridComponent pageSize|maxRows
+                              paged ⇒ useClientPagination + GridPaginationToolbar + rows={pageRows}, exact uncapped height
+                              scroll ⇒ rows={sortedAndFiltered full set}, capped height
 ```
 
 ---
@@ -259,12 +266,13 @@ ReportSectionListDisplay / TestResultsGrid
 
 ## 7. Acceptance criteria (from issue, refined)
 
-- [ ] Report list sections (Lending History–style `objectListReportSection`) show Prev/Next when filtered total `> pageSize`.
-- [ ] Only the current page’s rows are bound into the active grid backend; full-list scrollbar is not the primary navigation.
-- [ ] Works for `gridType: "ag-grid"` and `gridType: "glide-data-grid"`.
-- [ ] Sort/filter (Glide) or input data changes reset/clamp page so the UI never shows an empty page while `total > 0`.
-- [ ] `pageSize` configurable via grid props; default `50`; existing `maxRows` call sites keep working (independent height hint, D2-c).
-- [ ] Integration-oriented check covering first page, last short page, and `pageCount ≤ 1` (toolbar hidden or controls disabled).
+- [x] Report list sections (Lending History–style `objectListReportSection`) show Prev/Next when filtered total `> pageSize`.
+- [x] Only the current page’s rows are bound into the active grid backend; full-list scrollbar is not the primary navigation.
+- [x] Works for `gridType: "ag-grid"` and `gridType: "glide-data-grid"`.
+- [x] Sort/filter (Glide) or input data changes reset/clamp page so the UI never shows an empty page while `total > 0`.
+- [x] `pageSize` configurable via grid props; default `50`; sizing modes mutually exclusive (D2-d): `pageSize` ⇒ paged (exact uncapped height, no in-grid scrollbar), `maxRows` ⇒ scroll (height capped at that many rows, full set scrolls, no pager); report call sites migrated `maxRows={50}` → `pageSize={50}`.
+- [x] A full page on **either** backend renders at exact height without in-grid scroll (Glide no longer caps full pages at theme `maxHeight`).
+- [x] Integration-oriented check covering first page, last short page, and `pageCount ≤ 1` (toolbar hidden or controls disabled).
 
 ---
 
@@ -278,9 +286,11 @@ ReportSectionListDisplay / TestResultsGrid
 | D5 | **D5-b** — backend-native chrome (proposal was D5-a shared toolbar) |
 | State / pager placement | **Per backend** (hook + pager inside each backend branch, from shared primitives); no child→parent count callback, no new `useEffect` |
 | Goals §1 | Confirmed; Goal 3 reworded for D5-b (capability parity, not chrome identity) |
+| D2 revisited (2026-08-24, post-implementation) | **D2-d** — mutually exclusive sizing modes; supersedes D2-c (interaction matrix judged more confusing than valuable) |
+| Paged-mode height cap | **No cap** — `pageSize` is the only height control in paged mode; outer page scrolls |
 
 ---
 
 ## Next step
 
-Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (written via the `miroir-analysis-to-tdd-plan` skill; slices 0–5, tracer = Slice 1).
+Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md): Slices 0–5 ✅ (D2-c build) delivered paging; Slices 6–9 implement the **D2-d mode fork** (paged XOR scroll).

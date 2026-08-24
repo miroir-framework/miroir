@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/247
 Working branch: `master` (implemented uncommitted / WIP on mainline checkout).
 
-**Resume note:** all slices complete (2026-08-24); Realization filled for slices 0–5.
+**Resume note:** all slices complete (2026-08-24): 0–5 = D2-c build, 6–9 = D2-d revision (mutually exclusive sizing modes). Realization filled for all slices.
 
 ---
 
@@ -44,6 +44,10 @@ This plan does **not** implement server-side / extractor page fetch (#214 / #208
 | 3 | `ValueObjectGrid` both backends (TestResultsGrid path) | ✅ | `gridPagination.integ` |
 | 4 | Height alignment + `maxRows` wired as viewport-height basis (D2-c completion) | ✅ | `gridPagination.unit` |
 | 5 | Nonreg, docs, cleanup, AC | ✅ | nonreg `unit-gridPagination` + `integ-gridPagination` |
+| 6 | D2-d: mode resolver + Glide paged (uncapped) / scroll fork | ✅ | `gridPagination.unit` + `.integ` (Glide mode cases) |
+| 7 | D2-d: ag-grid mode fork — paged page-tracking height, scroll capped no-pager | ✅ | `gridPagination.unit` (ag-grid mode cases) + `.integ` |
+| 8 | D2-d: prop-schema XOR + positive `pageSize`, call-site flip, JSON_ARRAY `pageSize` forward | ✅ | `gridPagination.unit` (prop contracts) |
+| 9 | D2-d: dead-code cleanup, docs (analysis, sizing internals), nonreg, AC | ✅ | nonreg `unit-gridPagination` + `integ-gridPagination` |
 
 ---
 
@@ -54,7 +58,7 @@ Copied from the analysis decision record as confirmed with the user (2026-08-24)
 | Decision | Choice |
 |---|---|
 | D1 — Implementation shape | **Option C**: shared Miroir pagination primitives (pure page math + hook + pager component); amended by D5-b for chrome (see analysis §5, revised) |
-| D2 — `maxRows` vs `pageSize` | **D2-c (user)**: keep both independent — `pageSize` (new, default `50`) drives paging; `maxRows` stays a separate viewport-height hint and gets wired to height in Slice 4. No alias |
+| D2 — `maxRows` vs `pageSize` | **D2-d (user, supersedes D2-c)**: mutually exclusive sizing modes — `pageSize` ⇒ paged (exact **uncapped** page height, pager, no in-grid scrollbar); `maxRows` ⇒ scroll (height = `min(maxRows,total)` rows capped by theme `maxHeight`, full set, no pager); XOR enforced at prop schemas; default = paged `50`; report call sites flip `maxRows={50}` → `pageSize={50}`. Slices 0–5 are the landed D2-c build, kept for history; Slices 6–9 implement D2-d |
 | D3 — Config locus (v1) | **D3-a**: grid props only. No Report / `objectListReportSection` schema change, no `ViewParams` change ⇒ no Jzod/codegen step anywhere in this plan |
 | D4 — Client vs server | **D4-a**: client-side only, paging the already-loaded row set |
 | D5 — Pagination chrome | **D5-b (user)**: ag-grid uses its **native community pager** (`pagination` / `paginationPageSize`, ag-grid-community ^31.2.0 — community feature, no new dependency); Glide gets the custom Miroir `GridPaginationToolbar`. Capability parity, not chrome identity |
@@ -383,3 +387,207 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 - Docs: `analysis.md` → **Implemented**; `docs/contributing/testing.md` + `docs/reference/testing.md` enumerate the new suites; progress table + AC checklist marked ✅; `graphify update .` run.
 - **Skipped:** full `npm run nonreg` (entire default tier) — targeted nonreg + `gridPagination` suite (26/26) treated as sufficient for this slice; package `tsc` still reports unrelated pre-existing errors outside #247 files.
 - Manual Lending History / Miroir Tests tracer remains a human smoke check; automated equivalent is `gridPagination.integ`.
+
+---
+
+# D2-d revision — mutually exclusive sizing modes (Slices 6–9)
+
+> User decision (2026-08-24, after the D2-c build landed and the sizing-internals doc exposed the
+> interaction matrix): `pageSize` and `maxRows` become **mutually exclusive modes** instead of
+> independent knobs. Paged mode = exact uncapped page height + pager, no in-grid scrollbar.
+> Scroll mode = height capped at `maxRows` rows (theme `maxHeight` as outer px cap), full set
+> bound, no pager. See analysis §D2 (D2-d) and §5.3.
+
+## Slice 6 — Mode resolver + Glide paged/scroll fork
+
+**Status:** ✅ DONE (2026-08-24)
+
+### Goal
+
+A maintainer gets one behavior per prop on Glide: `pageSize` ⇒ paged grid whose height exactly fits the current page (a full 50-row page renders 1736px, **no** 600px cap, no in-page scroll — fixes sizing-doc P2 on Glide); `maxRows` ⇒ scroll grid with the full sorted/filtered set bound and no toolbar.
+
+**Layers cut:** view only (`gridPagination.ts`, `GlideDataGridComponent.tsx`).
+
+### 6.1 RED
+
+**Unit (`gridPagination.unit.test.tsx`, new "sizing modes (D2-d)" describe):**
+- `resolveGridSizingMode`: `(50, undefined)` → paged 50; `(undefined, 10)` → scroll 10; `(undefined, undefined)` → paged 50 (default); `(20, 10)` → paged 20 (defensive precedence — façades reject this case at the schema, Slice 8).
+- Paged Glide height: `computeGlideGridHeight(50, …)` ⇒ `50*34+36` (1736), **not** `Math.min(…, 600)` — cap removed in paged mode; short page `10` ⇒ 376.
+- Scroll Glide height: total 60, `maxRows={10}` ⇒ `10*34+36` = 376; `maxRows={100}` ⇒ capped at theme `maxHeight` (600).
+
+**Integ (`gridPagination.integ.test.tsx`, Glide gridType):**
+- 60 books, paged (default props): toolbar "1–50 of 60", `data-page-rows="50"`, container height `1736px` (not 600).
+- 60 books, `maxRows={10}`: **no** `grid-pagination-toolbar` testid, `data-page-rows="60"` (full set bound), container height `376px`.
+
+### 6.2 GREEN
+
+- `gridPagination.ts`: add `GridSizingMode` + `resolveGridSizingMode`; split `computeGlideGridHeight` into paged (exact, uncapped) and scroll (capped) paths; delete the `window.innerHeight` / `50vh` branch.
+- `GlideDataGridComponent`: resolve mode; paged ⇒ slice + toolbar + paged height; scroll ⇒ no slice (`rows=` full `sortedAndFilteredTableRows`), no toolbar, scroll height. `getCellContent` indexes the mode-appropriate row array.
+
+### 6.3 Refactor checkpoint
+
+- `containerHeight` prop: keep as scroll-mode px-cap override only, or drop if unreferenced — decide here and record.
+- Remove now-dead threshold/`DEFAULT_GRID_MAX_ROWS` coupling if no scroll path uses it (scroll mode uses the explicit `maxRows`; the constant may remain as documentation only — prefer deleting).
+
+### Validation
+
+```bash
+npm run testByFile -w miroir-standalone-app -- gridPagination.unit
+npm run testByFile -w miroir-standalone-app -- gridPagination.integ
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+### Realization
+
+- RED confirmed: `resolveGridSizingMode is not a function` (new D2-d mode describe failed before implementation).
+- `gridPagination.ts`: added `GridSizingMode` + `resolveGridSizingMode` (paged precedence when both set; default paged 50); replaced `computeGlideGridHeight` with `computeGlidePagedHeight` (exact, **uncapped** — the 600px theme cap no longer applies to paged Glide grids) and `computeGlideScrollHeight` (`min(maxRows,total)` rows, theme-`maxHeight` cap). `window.innerHeight`/`50vh` path deleted on the Glide side.
+- `GlideDataGridComponent`: resolves the mode; paged ⇒ slice after sort/filter + `GridPaginationToolbar` + `computeGlidePagedHeight`; scroll ⇒ full `sortedAndFilteredTableRows` bound (`rows=`, `getCellContent`, click handler), no toolbar, `computeGlideScrollHeight`. `useClientPagination` stays unconditional (inert single-page in scroll mode). Renamed `pagedRows` → `displayedRows`.
+- Obsolete D2-c Glide height tests removed in-slice (full-page cap, 50vh cap); ag-grid D2-c holdovers kept green until Slice 7.
+- `containerHeight` prop **kept**: now has a single defined role — scroll-mode px cap override (covered by a unit case).
+- Validation: `gridPagination.unit` 23/23, `gridPagination.integ` 12/12; package `tsc` clean on touched files.
+
+---
+
+## Slice 7 — ag-grid mode fork
+
+**Status:** ✅ DONE (2026-08-24)
+
+### Goal
+
+Same one-behavior-per-prop on ag-grid: paged mode = native pager + container height that tracks the **current page's** rows (short last page shrinks — fixes sizing-doc P3; filter shrink shrinks — fixes P4); scroll mode = no pager, capped px height, full `rowData`.
+
+**Layers cut:** view only (`gridPagination.ts` helpers, both façades' ag-grid branches).
+
+### 7.1 RED
+
+**Integ (`gridPagination.integ.test.tsx`, ag-grid gridType):**
+- Paged, 60 books: pager active; navigate to last page ⇒ container height reflects ~10 rows (not the static 2204px shell). Filter via ag-grid column filter (if feasible in happy-dom, else `onPaginationChanged`-driven recompute asserted via page navigation only) ⇒ height shrinks.
+- Scroll, `maxRows={10}`, 60 books: no `.ag-paging-panel`; all 60 rows bound (grid API `getDisplayedRowCount()` or rendered row count); container height = capped px; `domLayout="normal"`.
+
+### 7.2 GREEN
+
+- Paged height strategy — try `domLayout="autoHeight"` + pagination first (ag-grid v31 resizes to the current page's rows by construction; verifies in happy-dom). If incompatible, fall back to `domLayout="normal"` + `onPaginationChanged` handler that recomputes container height from `paginationGetCurrentPage()` / `getDisplayedRowCount()`. Record the choice in Realization.
+- `agGridPaginationProps` becomes mode-aware (paged ⇒ pager flags; scroll ⇒ `pagination: false`, `domLayout: "normal"`).
+- Scroll-mode container height helper (px estimate, theme-`maxHeight` cap) shared by both façades.
+
+### 7.3 Refactor checkpoint
+
+- Delete `shouldUseFixedAgGridViewport` and the old `computeAgGridContainerHeight` threshold logic if fully replaced; keep `AG_GRID_*` constants only where the scroll estimate needs them.
+
+### Validation
+
+```bash
+npm run testByFile -w miroir-standalone-app -- gridPagination.integ
+npm run testByFile -w miroir-standalone-app -- gridPagination.unit
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+### Realization
+
+- Paged height: initially chose **`domLayout="normal"` + `onPaginationChanged` recompute** over `autoHeight` — deterministic and test-observable in happy-dom. **Reversed later the same day:** live-browser probing showed the estimate path fragile — ag-grid's virtualization window latched onto a stale viewport height (container computed 2204px while `.ag-center-cols-viewport` kept an inline 1650px), leaving page rows unreachable. Switched to **`domLayout="autoHeight"`**: the grid self-sizes to the current page's rows, the estimate/`onPaginationChanged` machinery (`computeAgGridPagedHeight`, `agGridPageRowCount`) was deleted, and happy-dom observability turned out fine (row counts and pager summaries are assertable). Fixes sizing-doc P3/P4 by construction.
+- `gridPagination.ts`: `agGridPaginationProps` → mode-aware `agGridModeProps` (scroll ⇒ `pagination: false`); `computeAgGridContainerHeight`/`shouldUseFixedAgGridViewport`/`resolvePageSize`/`resolveMaxRows`/`DEFAULT_GRID_MAX_ROWS` deleted (all usages were in the two façades); added `computeAgGridPagedHeight` (uncapped) / `computeAgGridScrollHeight` (theme-capped).
+- **Finding:** ag-grid keeps the `.ag-paging-panel` node mounted with `ag-hidden`/`aria-hidden` when `pagination=false` — "no pager" assertions check the `ag-hidden` class, not node absence (happy-dom doesn't apply the stylesheet, so presence-only assertions mislead).
+- **Deviation (plan order):** the call-site flip (`ReportSectionListDisplay` / `TestResultsGrid`: `maxRows={50}` → `pageSize={50}`) was pulled forward from Slice 8 — otherwise the report-path tracer goes red mid-revision (maxRows ⇒ scroll mode ⇒ no pager).
+- Validation: `gridPagination.unit` 26/26, `gridPagination.integ` 13/13 (tracer green after flip); package `tsc` clean on touched files.
+
+---
+
+## Slice 8 — Prop-schema enforcement, call-site flip, JSON_ARRAY forward
+
+**Status:** ✅ DONE (2026-08-24)
+
+### Goal
+
+The XOR contract is enforced at the interface (not by convention): passing both `pageSize` and `maxRows` fails prop validation; `pageSize` must be a positive integer; report call sites explicitly select paged mode; the `EntityInstanceGrid` → `ValueObjectGrid` JSON_ARRAY path stops dropping `pageSize` (sizing-doc P7).
+
+**Layers cut:** code-level interface (zod prop schemas) → view (call sites, façade forwarding).
+
+### 8.1 RED
+
+**Unit (`gridPagination.unit.test.tsx`, prop-contracts describe):**
+- `tableComponentCorePropsSchema` / `valueObjectGridPropsSchema`: both `pageSize` + `maxRows` set ⇒ parse fails; `pageSize={0}` / `{-1}` / `{2.5}` ⇒ parse fails; each alone ⇒ parses.
+- `EntityInstanceGrid` with `type: "JSON_ARRAY"` + `pageSize={20}` forwards 20 to the `ValueObjectGrid` (rendered pager / slice reflects 20).
+
+**Integ:** `ReportSectionListDisplay` and `TestResultsGrid` render paged grids via their updated call-site props (existing tracer assertions stay green after the flip).
+
+### 8.2 GREEN
+
+- `EntityInstanceGridInterface.ts` / `ValueObjectGridInterface.ts`: `pageSize: z.number().int().positive().optional()`; `.refine()` (or `.superRefine`) rejecting both-set on the core schema; update prop comments to D2-d mode wording.
+- `GlideDataGridComponent.tsx` props: TS-only XOR documentation (no zod there).
+- `ReportSectionListDisplay.tsx:763`, `TestResultsGrid.tsx:356`: `maxRows={50}` → `pageSize={50}`.
+- `EntityInstanceGrid.tsx` JSON_ARRAY branch: forward `pageSize={props.pageSize}` (and keep `maxRows`).
+
+### 8.3 Refactor checkpoint
+
+- Grep sweep: no remaining `maxRows={` call sites outside tests; no stale D2-c wording in prop comments.
+
+### Validation
+
+```bash
+npm run testByFile -w miroir-standalone-app -- gridPagination.unit
+npm run testByFile -w miroir-standalone-app -- gridPagination.integ
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+### Realization
+
+- **Design constraint discovered:** an object-level `.refine`/`.superRefine` on `tableComponentCorePropsSchema` / `valueObjectGridPropsSchema` would turn them into `ZodEffects` and break their `.shape` (prop-contract tests) and `.extend` (entity/JSON_ARRAY sibling schemas) consumers. Initially the XOR lived in a dedicated exported `gridSizingModePropsSchema` with field-level `z.number().int().positive()` on the grid prop schemas. **Revised (2026-08-24, user end-goal):** the exclusivity is now encoded *in* the prop schemas themselves — both are unions of three variants (paged: `pageSize: number` + `maxRows: never`; scroll: `maxRows: number` + `pageSize: never`; default: both `never`), composed via `.merge` from shared `gridPagedSizingPropsSchema` / `gridScrollSizingPropsSchema` / `gridDefaultSizingPropsSchema` in `gridPagination.ts`. Union variants stay ZodObjects, so `.extend` survives as an `extendCoreProps` per-variant map. Each variant carries an optional `sizing` discriminator literal (`"paged"` / `"scroll"` / `"default"`), consistent-with-props enforced when present. `gridSizingModePropsSchema = z.union([...variants])` remains as the cheap standalone validation surface. Nothing parses component props at runtime — the schema documents/enforces the contract for tooling and tests; the resolver stays defensively paged-first.
+- Unit prop-contract tests: XOR both-set rejected, each-alone/neither accepted, `0`/`-1`/`2.5` pageSize rejected (29/29).
+- **P7 fixed:** `EntityInstanceGrid` JSON_ARRAY branch now forwards `pageSize` to `ValueObjectGrid`; locked by a harness-level test (`rowData` 60 + `pageSize={20}` ⇒ "1 to 20 of 60").
+- Rig extended with `JsonArrayGridHarness`.
+- Validation: `gridPagination.unit` 29/29, `gridPagination.integ` 13/13; package `tsc` clean on touched files.
+
+---
+
+## Slice 9 — D2-d cleanup, docs, nonreg, AC
+
+**Status:** ✅ DONE (2026-08-24)
+
+### 9.1 Cleanup
+
+- Delete dead code: `50vh` / `window.innerHeight` viewport path, `shouldUseFixedAgGridViewport`, D2-c threshold remnants; decide `containerHeight` fate per Slice 6.
+- Suite hygiene: `gridPagination.unit` / `.integ` describe blocks renamed to mode vocabulary; obsolete D2-c height-alignment cases removed or rewritten.
+
+### 9.2 Docs
+
+- `analysis.md` status → Implemented (D2-d); progress table all DONE.
+- Rewrite `docs/internals/list-report-section-sizing.md` to the mode model (interaction section collapses to mode semantics + surviving per-backend asymmetries P5/P6).
+
+### 9.3 Nonreg + typecheck
+
+```bash
+npm run nonreg -- --only unit-gridPagination,integ-gridPagination
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+```
+
+### 9.4 Tracer bullet (narrative, D2-d)
+
+1. Library → Lending History report: paged grid, 50 rows exactly filling the grid height (no inner scrollbar on either backend), Next ⇒ 10-row page, grid shrinks.
+2. Toggle `gridType`: identical capability with backend-native chrome.
+3. A `maxRows` grid (scroll mode): all rows bound, viewport capped at `maxRows` rows, scrollbar, no pager.
+
+### AC checklist (D2-d delta)
+
+| Criterion (analysis §7, D2-d wording) | Proven by | Status |
+|---|---|---|
+| Modes mutually exclusive; call sites migrated to `pageSize={50}` | Slice 8 prop-contract + call-site tests | ⬜ |
+| Full page renders at exact height without in-grid scroll on **both** backends | Slice 6 Glide 1736px; Slice 7 ag-grid page-tracking height | ⬜ |
+| Scroll mode: capped height, full set, no pager | Slice 6/7 scroll-mode cases | ⬜ |
+| Previous AC (Slices 0–5) still green | full `gridPagination` suites + targeted nonreg | ⬜ |
+
+### Realization
+
+- Cleanup: removed the dead module-level `const maxHeight = 500` in `GlideDataGridComponent` (pre-#247 leftover); all D2-c helpers already deleted in Slices 6–7 (`shouldUseFixedAgGridViewport`, `computeAgGridContainerHeight`, `agGridPaginationProps`, `resolvePageSize`/`resolveMaxRows`, `DEFAULT_GRID_MAX_ROWS`, `window.innerHeight`/`50vh` path). `styles.height` (P11) and the orphaned theme `minHeight` token (P12) are **pre-existing** dead code, deliberately untouched by this revision — documented in the sizing internals.
+- Suite hygiene: describes renamed to mode vocabulary (`sizing modes (D2-d)`, `ag-grid sizing modes (D2-d)`); D2-c height-alignment cases removed/rewritten in Slices 6–7.
+- Docs: `analysis.md` → Implemented (D2-d); `docs/internals/list-report-section-sizing.md` rewritten to the mode model.
+- Nonreg: `npm run nonreg -- --only unit-gridPagination,integ-gridPagination` → **2/2 passed** (snapshot `test-results/nonreg/20260824T093104Z`). Full-tier nonreg not rerun (unchanged since Slice 5 outside these files).
+- `graphify update .` run after code changes.
+
+### AC checklist (D2-d) — final
+
+| Criterion (analysis §7, D2-d wording) | Proven by | Status |
+|---|---|---|
+| Modes mutually exclusive; call sites migrated to `pageSize={50}` | `gridSizingModePropsSchema` unit cases; report tracer green after flip | ✅ |
+| Full page renders at exact height without in-grid scroll on **both** backends | Glide 1736px full-page case; ag-grid paged 2204px + last-page shrink to 524px | ✅ |
+| Scroll mode: capped height, full set, no pager | Glide `maxRows={10}` ⇒ 60 rows bound at 376px, no toolbar; ag-grid `maxRows={10}` ⇒ 468px, pager `ag-hidden` | ✅ |
+| Previous AC (Slices 0–5) still green | `gridPagination.unit` 29/29 + `.integ` 13/13 + targeted nonreg 2/2 | ✅ |

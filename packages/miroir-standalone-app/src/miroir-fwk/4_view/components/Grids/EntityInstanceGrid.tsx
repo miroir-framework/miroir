@@ -57,10 +57,11 @@ import {
 } from "./EntityInstanceGridInterface.js";
 import { ToolsCellRenderer } from './GenderCellRenderer.js';
 import { GlideDataGridComponent } from './GlideDataGridComponent.js';
+import { GridSizingDebugProbe } from './GridSizingDebugProbe.js';
 import {
-  agGridPaginationProps,
-  resolvePageSize,
-  shouldUseFixedAgGridViewport,
+  agGridModeProps,
+  computeAgGridScrollHeight,
+  resolveGridSizingMode,
 } from './gridPagination.js';
 import { defaultColDef } from './GridTools.js';
 import { ValueObjectGrid } from "./ValueObjectGrid.js";
@@ -838,14 +839,15 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
     ]
   );
   
-  const resolvedPageSize = resolvePageSize(props.pageSize);
+  // Sizing mode (D2-d): paged (pageSize, default 50) XOR scroll (maxRows)
+  const sizingMode = resolveGridSizingMode(props.pageSize, props.maxRows);
   const rowCount = tableComponentRows.tableComponentRowUuidIndexSchema.length;
-  const visiblePageRowCount = Math.min(resolvedPageSize, rowCount);
-  const useFixedAgGridViewport = shouldUseFixedAgGridViewport(
-    visiblePageRowCount,
-    props.maxRows,
-  );
-  const agPagination = agGridPaginationProps(props.pageSize);
+  const agGridMode = agGridModeProps(sizingMode);
+  // Paged mode: domLayout="autoHeight" — ag-grid sizes itself to the page's rows, no explicit height.
+  const agGridContainerHeight =
+    sizingMode.mode === "scroll"
+      ? `${computeAgGridScrollHeight(rowCount, sizingMode.maxRows, contextTheme.components.table.maxHeight)}px`
+      : undefined;
 
   return (
     <div 
@@ -900,9 +902,38 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
             data: tableComponentRows,
             copyButton: true,
             useCodeBlock: true,
+          },
+          {
+            label: "sizing (D2-d)",
+            data: {
+              props: { pageSize: props.pageSize ?? null, maxRows: props.maxRows ?? null },
+              resolvedMode: sizingMode,
+              rowCount,
+              agGridContainerHeight: agGridContainerHeight ?? "auto (autoHeight)",
+              agGridMode,
+              themeTable: {
+                maxHeight: contextTheme.components.table.maxHeight,
+                minHeight: contextTheme.components.table.minHeight,
+              },
+            },
+            copyButton: true,
+            useCodeBlock: true,
           }
         ]}
       />
+      {/* <GridSizingDebugProbe
+        targets={[
+          { label: "ag-grid container", selector: "#entity-instance-ag-grid" },
+          { label: "ag-grid react div", selector: "#entity-instance-ag-grid > div" },
+          { label: "ag-grid root-wrapper", selector: "#entity-instance-ag-grid .ag-root-wrapper" },
+          { label: "ag-grid body-viewport", selector: "#entity-instance-ag-grid .ag-body-viewport" },
+          { label: "ag-grid center-cols-viewport", selector: "#entity-instance-ag-grid .ag-center-cols-viewport" },
+          { label: "ag-grid paging-panel", selector: "#entity-instance-ag-grid .ag-paging-panel" },
+          { label: "glide container", selector: ".glide-data-grid-grid-container" },
+          { label: "glide editor", selector: ".glide-data-grid-grid-container [data-testid='glide-data-grid']" },
+          { label: "value-object ag-grid container", selector: "#valueObjectGrid" },
+        ]}
+      /> */}
       {props.type == "EntityInstance" ? (
         <div>
           {dialogFormObject ? (
@@ -970,16 +1001,8 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 id="entity-instance-ag-grid"
                 className="ag-theme-alpine"
                 style={{
-                  ...(useFixedAgGridViewport
-                    ? {
-                        ...props.styles,
-                        height: "50vh",
-                        maxHeight: contextTheme.components.table.maxHeight,
-                      }
-                    : {
-                        ...props.styles,
-                        minHeight: contextTheme.components.table.minHeight,
-                      }),
+                  ...props.styles,
+                  height: agGridContainerHeight,
                   width: '100%',
                   maxWidth: '100%',
                   overflow: 'auto', // Allow table to scroll when needed
@@ -989,9 +1012,9 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                 }}
               >
                 <AgGridReact
-                  domLayout={agPagination.domLayout}
-                  pagination={agPagination.pagination}
-                  paginationPageSize={agPagination.paginationPageSize}
+                  domLayout={agGridMode.domLayout}
+                  pagination={agGridMode.pagination}
+                  paginationPageSize={agGridMode.paginationPageSize}
                   columnDefs={agGridColumnDefs}
                   rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
                   getRowId={(params) => {
@@ -1061,6 +1084,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
           styles={props.styles}
           theme={contextTheme}
           maxRows={props.maxRows}
+          pageSize={props.pageSize}
           sortByAttribute={props.sortByAttribute}
           gridType={gridType}
           displayTools={false} // No editing for JSON arrays in EntityInstanceGrid context
