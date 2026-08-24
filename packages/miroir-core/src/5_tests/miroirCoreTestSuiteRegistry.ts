@@ -35,6 +35,7 @@ const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
   "resolveSchemaReferenceInContext",
   "selectUnionBranchFromDiscriminator",
   "tools",
+  "transformerResultSchema",
   "unfoldSchemaOnce",
   "unionArrayChoices",
   "unionObjectChoices",

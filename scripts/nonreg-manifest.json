@@ -36,6 +36,21 @@
       ]
     },
     {
+      "id": "unit-transformerResultSchema",
+      "tier": "unit",
+      "title": "#88 — resolveTransformerResultSchema (static-output MiroirTest)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-core",
+        "--",
+        "transformerResultSchema"
+      ]
+    },
+    {
       "id": "default-miroir-modelValidation",
       "tier": "default",
       "title": "Deployment modelValidation \u2014 miroir",

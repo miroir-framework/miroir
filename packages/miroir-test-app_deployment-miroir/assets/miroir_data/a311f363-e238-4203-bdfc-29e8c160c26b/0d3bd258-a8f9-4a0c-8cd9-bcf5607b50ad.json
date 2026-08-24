@@ -1,0 +1,90 @@
+{
+  "uuid": "0d3bd258-a8f9-4a0c-8cd9-bcf5607b50ad",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "transformerResultSchema",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issue #88 slice 1 — resolveTransformerResultSchema for static-output transformers",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "transformerResultSchema",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "staticOutput",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "currentDate returns string schema",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "currentDate",
+                "interpolation": "runtime"
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "string"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "boolExpr returns boolean schema regardless of operand transformers",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "boolExpr",
+                "interpolation": "runtime",
+                "operator": "==",
+                "left": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": 1
+                },
+                "right": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": 2
+                }
+              },
+              {}
+            ],
+            "expectedValue": {
+              "type": "boolean"
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "errors",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "throws for unknown transformerType",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "resolveTransformerResultSchema"
+            },
+            "arguments": [
+              {
+                "transformerType": "nonExistentTransformer",
+                "interpolation": "runtime"
+              },
+              {}
+            ],
+            "expectedError": "unknown transformerType \"nonExistentTransformer\""
+          }
+        ]
+      }
+    ]
+  }
+}

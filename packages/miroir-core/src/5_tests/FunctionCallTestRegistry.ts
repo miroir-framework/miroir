@@ -33,6 +33,7 @@ import {
 import { jzodUnion_recursivelyUnfold } from "../1_core/jzod/jzodUnion_RecursivelyUnfold";
 import { localizeJzodSchemaReferenceContext } from "../1_core/jzod/JzodUnfoldSchemaOnce";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
+import { resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
 import { mergeIfUnique, pushIfUnique } from "../1_core/tools";
 import { getModelUpdate } from "../1_core/model/ModelUpdate";
 import { ansiColumnsToJzodSchema } from "../1_core/postgres/ansiColumnsToJzodSchema";
@@ -148,6 +149,9 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   "miroir-core/2_domain/Templates": {
     resolveQueryTemplateWithExtractorCombinerTransformer:
       resolveQueryTemplateWithExtractorCombinerTransformer as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/Transformer_ResultSchema": {
+    resolveTransformerResultSchema: resolveTransformerResultSchema as WhitelistedFunction,
   },
 };
 

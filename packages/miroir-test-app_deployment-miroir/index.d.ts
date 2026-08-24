@@ -245,6 +245,7 @@ export declare const miroirTest_resolveQueryTemplates: any;
 export declare const miroirTest_resolveSchemaReferenceInContext: any;
 export declare const miroirTest_selectUnionBranchFromDiscriminator: any;
 export declare const miroirTest_tools: any;
+export declare const miroirTest_transformerResultSchema: any;
 export declare const miroirTest_unfoldSchemaOnce: any;
 export declare const miroirTest_domain_controller_data_crud: any;
 export declare const miroirTest_domain_controller_model_crud: any;

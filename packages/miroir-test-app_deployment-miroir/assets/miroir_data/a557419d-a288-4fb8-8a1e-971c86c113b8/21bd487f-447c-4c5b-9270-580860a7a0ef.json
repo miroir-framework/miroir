@@ -8,27 +8,71 @@
   "parentName": "TransformerDefinition",
   "classification": "basic",
   "transformerInterface": {
-    "inputOutput": { "input": "any", "output": "any" },
+    "inputOutput": {
+      "input": "any",
+      "output": "any"
+    },
     "transformerParameterSchema": {
-      "transformerType": { "type": "literal", "definition": "stringOp" },
+      "transformerType": {
+        "type": "literal",
+        "definition": "stringOp"
+      },
       "transformerDefinition": {
         "type": "object",
         "definition": {
-          "applyTo": { "type": "any", "optional": true, "description": "The string (or array for join) to operate on." },
+          "applyTo": {
+            "type": "any",
+            "optional": true,
+            "description": "The string (or array for join) to operate on."
+          },
           "op": {
             "type": "enum",
-            "definition": ["substring", "trim", "toLowerCase", "toUpperCase", "replace", "split", "join", "length"],
+            "definition": [
+              "substring",
+              "trim",
+              "toLowerCase",
+              "toUpperCase",
+              "replace",
+              "split",
+              "join",
+              "length"
+            ],
             "description": "The string operation to apply."
           },
-          "start": { "type": "number", "optional": true, "description": "1-based start position for substring." },
-          "length": { "type": "number", "optional": true, "description": "Number of characters for substring." },
-          "separator": { "type": "string", "optional": true, "description": "Delimiter string for split or join." },
-          "from": { "type": "string", "optional": true, "description": "Substring to find for replace." },
-          "to": { "type": "string", "optional": true, "description": "Replacement string for replace." }
+          "start": {
+            "type": "number",
+            "optional": true,
+            "description": "1-based start position for substring."
+          },
+          "length": {
+            "type": "number",
+            "optional": true,
+            "description": "Number of characters for substring."
+          },
+          "separator": {
+            "type": "string",
+            "optional": true,
+            "description": "Delimiter string for split or join."
+          },
+          "from": {
+            "type": "string",
+            "optional": true,
+            "description": "Substring to find for replace."
+          },
+          "to": {
+            "type": "string",
+            "optional": true,
+            "description": "Replacement string for replace."
+          }
         }
       }
     },
-    "transformerResultSchema": { "returns": "mlSchema", "definition": { "type": "any" } }
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "string"
+      }
+    }
   },
   "transformerImplementation": {
     "transformerImplementationType": "libraryImplementation",
