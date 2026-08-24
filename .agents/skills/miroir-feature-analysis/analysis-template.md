@@ -38,8 +38,8 @@ Key sources: [`packages/...`](../../../packages/...)
 
 ## 1. Goals
 
-1. **<goal 1>** — <one line>.
-2. **<goal 2>** — <one line>.
+1. **<name>** — In order to <benefit> as a <role>, I can <capability>.
+2. **<name>** — In order to <benefit> as a <role>, I can <capability>.
 
 ## 2. Non-goals
 
