@@ -18,7 +18,7 @@ Key sources:
 [`ViewParams.ts`](../../../packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts)
 
 **Document role:** analysis and architectural decision record.  
-**Status:** all decisions **Accepted** (user, 2026-08-24): D1-C, **D2-c**, D3-a, D4-a, **D5-b** — D2 and D5 resolved **against** the original proposals (kept below with rejection rationale). TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** **Implemented** (2026-08-24). All decisions **Accepted** (user, 2026-08-24): D1-C, **D2-c**, D3-a, D4-a, **D5-b** — D2 and D5 resolved **against** the original proposals (kept below with rejection rationale). TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 **Document history:** first revision (2026-08-24) — confirmation round flipped D2 to **D2-c** (independent props, no alias) and D5 to **D5-b** (backend-native chrome), and fixed state/pager placement **per backend**. §5 (target design), §6 (verdicts) and Goal 3 updated accordingly; the originally proposed D2-b / D5-a frames are preserved as rejected options.
 

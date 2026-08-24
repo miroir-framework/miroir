@@ -80,12 +80,33 @@ export function buildBooksIndex(...books: (typeof book1)[]) {
   return Object.fromEntries(books.map((book) => [book.uuid, book]));
 }
 
+export function buildManyBooks(count: number) {
+  return Object.fromEntries(
+    Array.from({ length: count }, (_, index) => {
+      const number = index + 1;
+      const book = {
+        ...book1,
+        uuid: `00000000-0000-4000-8000-${String(number).padStart(12, "0")}`,
+        name: `Book ${number}`,
+      };
+      return [book.uuid, book];
+    }),
+  );
+}
+
 export function buildBookListFormikValues(
   bookIndex = buildBooksIndex(book1, book2),
 ): Record<string, unknown> {
   return {
     [reportBookList.name]: reportBookList,
     books: bookIndex,
+  };
+}
+
+export function buildBookListFormikValuesForCount(count: number): Record<string, unknown> {
+  return {
+    [reportBookList.name]: reportBookList,
+    books: buildManyBooks(count),
   };
 }
 
@@ -112,6 +133,10 @@ export function renderBookListSectionInteg(
       </Formik>
     </ListTransformerIntegShell>,
   );
+}
+
+export function renderBookListSectionIntegWithCount(count: number): RenderResult {
+  return renderBookListSectionInteg(buildBookListFormikValuesForCount(count));
 }
 
 export function renderListTransformerPanelInteg(

@@ -767,6 +767,8 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 | `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `miroirCoreTransformers` (filtered leaf) |
 | `JzodElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
 | `ReportPage.integ.test.tsx` | Uses shared React test tools | Report rendering smoke tests |
+| `gridPagination.unit.test.tsx` | In-memory `LocalCache`; real Library deployment assets | Client pagination primitives, viewport height (D2-c), prop contracts |
+| `gridPagination.integ.test.tsx` | In-memory `LocalCache`; real provider stack | ag-grid native pager + Glide Miroir pager on `EntityInstanceGrid` / `ValueObjectGrid` / `ReportSectionListDisplay` |
 | `BlobEditorField.integ.test.tsx` | No | Blob field editor component |
 | `JzodObjectEditor.BlobIntegration.integ.test.tsx` | No | JzodObjectEditor blob integration |
 | `Runner_*.integ.test.tsx` | Yes (`VITE_MIROIR_*`) | Legacy runner tests — migrating to `miroir-runner-tests.integ.test.ts` |

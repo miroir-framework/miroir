@@ -91,6 +91,8 @@ npm run testByFile -w miroir-standalone-app -- tests/4_view/LocalCacheMonitorSum
 npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorIndicators.unit.test.ts
 npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorSession.unit.test.ts
 npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorFootprint.acceptance.unit.test.tsx
+npm run testByFile -w miroir-standalone-app -- tests/4_view/gridPagination.unit.test.tsx
+npm run testByFile -w miroir-standalone-app -- tests/4_view/gridPagination.integ.test.tsx
 npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 

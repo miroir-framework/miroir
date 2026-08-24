@@ -31,7 +31,8 @@ export const tableComponentCorePropsSchema = z.object({
   sortByAttribute: z.string().optional(),
   paramsAsdomainElements: domainElementObject,
   foreignKeyObjects: z.record(z.string(),entityInstancesUuidIndex),
-  maxRows: z.number().optional(), // Maximum number of rows to show (controls table height)
+  pageSize: z.number().optional(), // Client-side page size for grid pagination (default 50)
+  maxRows: z.number().optional(), // Viewport height hint — max visible rows before capping height (D2-c)
   addObjectdialogFormIsOpen: z.boolean(), //.optional(),
   setAddObjectdialogFormIsOpen: z.function().args(z.boolean()).returns(z.void()), //.optional(),
 });

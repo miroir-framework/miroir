@@ -24,6 +24,13 @@ import {
   TableComponentRow
 } from "./EntityInstanceGridInterface.js";
 import glideToolsCellRenderer, { ToolsCell, ToolsCellData } from './GlideToolsCellRenderer.js';
+import { GridPaginationToolbar } from './GridPaginationToolbar.js';
+import {
+  computeGlideGridHeight,
+  paginateRows,
+  resolvePageSize,
+  useClientPagination,
+} from './gridPagination.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideDataGridComponent");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -71,7 +78,8 @@ interface GlideDataGridComponentProps {
   containerWidth?: number; // Container width from parent EntityInstanceGrid
   containerHeight?: number; // Container width from parent EntityInstanceGrid
   toolsColumnDefinition: ToolsColumnDefinition;
-  maxRows?: number; // Maximum number of rows to show (controls table height)
+  maxRows?: number; // Viewport height hint (independent from pageSize)
+  pageSize?: number; // Client-side page size (default 50)
   theme?: any; // Table theme for unified styling
   glideTheme?: any; // Glide-specific theme object
   onCellClicked?: (cell: Item, event: CellClickedEventArgs) => void;
@@ -91,6 +99,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   containerHeight: propContainerHeight,
   toolsColumnDefinition,
   maxRows,
+  pageSize,
   theme,
   glideTheme,
   onCellClicked,
@@ -387,33 +396,33 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     return sorted;
   }, [tableComponentRows, sortState, filterState, getFilterValue]);
 
+  const resolvedPageSize = resolvePageSize(pageSize);
+  const paginationResetKey = useMemo(
+    () =>
+      `${sortState.columnId}:${sortState.direction}:${JSON.stringify(filterState)}:${tableComponentRows.tableComponentRowUuidIndexSchema.length}`,
+    [filterState, sortState, tableComponentRows.tableComponentRowUuidIndexSchema.length],
+  );
+  const pagination = useClientPagination({
+    totalCount: sortedAndFilteredTableRows.length,
+    pageSize: resolvedPageSize,
+    resetKey: paginationResetKey,
+  });
+  const pagedRows = useMemo(
+    () =>
+      paginateRows(sortedAndFilteredTableRows, pagination.pageIndex, resolvedPageSize).pageRows,
+    [sortedAndFilteredTableRows, pagination.pageIndex, resolvedPageSize],
+  );
+
   // ##############################################################################################
   // Calculate height based on data
   const height = useMemo(() => {
-    const rowCount = sortedAndFilteredTableRows.length;
-    if (rowCount > 50) {
-      return Math.min(window.innerHeight * 0.5, propContainerHeight??maxHeight); // 50vh but max 600px
-    } else {
-      // Calculate exact height to prevent extra empty rows
-      const headerHeight = 36; // Grid header height
-      const rowHeight = 34; // Height per row
-      
-      const calculatedHeight = rowCount * rowHeight + headerHeight;
-      
-      // Log the calculation for debugging
-      // log.info("GlideDataGrid height calculation", {
-      //   rowCount,
-      //   rowHeight,
-      //   headerHeight,
-      //   // filterToolbarHeight,
-      //   filterGroupsCount: filterState.columnGroups.length,
-      //   totalCalculatedHeight: calculatedHeight
-      // });
-      
-      // Apply reasonable bounds but prioritize exact calculation for small datasets
-      return Math.min(calculatedHeight, propContainerHeight??maxHeight);
-    }
-  }, [sortedAndFilteredTableRows.length, filterState.columnGroups]);
+    return computeGlideGridHeight(
+      pagedRows.length,
+      maxRows,
+      propContainerHeight,
+      theme?.components?.table?.maxHeight,
+    );
+  }, [maxRows, pagedRows.length, propContainerHeight, theme?.components?.table?.maxHeight]);
 
   // ##############################################################################################
   // Convert columnDefs to Glide format
@@ -541,7 +550,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   // Get cell content
   const getCellContent = useCallback(
     ([col, row]: Item): GridCell => {
-      const rowData = sortedAndFilteredTableRows[row];
+      const rowData = pagedRows[row];
       const colData = glideColumns[col];
 
       if (!rowData || !colData) {
@@ -645,7 +654,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       }
     },
     [
-      sortedAndFilteredTableRows,
+      pagedRows,
       glideColumns,
       columnDefs,
       handleToolsEdit,
@@ -659,7 +668,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   const handleCellClicked = useCallback(
     (cell: Item, event: CellClickedEventArgs) => {
       const [col, row] = cell;
-      const rowData = sortedAndFilteredTableRows[row];
+      const rowData = pagedRows[row];
       const colData = glideColumns[col];
       
       // Handle tools column clicks - these should be handled by the custom cell renderer
@@ -677,7 +686,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         onCellClicked(cell, event);
       }
     },
-    [sortedAndFilteredTableRows, glideColumns, onCellClicked, toolsColumnDefinition]
+    [pagedRows, glideColumns, onCellClicked, toolsColumnDefinition]
   );
 
   // Handle cell edits
@@ -748,11 +757,15 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         theme={theme}
       />
 
+      <GridPaginationToolbar pagination={pagination} theme={theme} />
+
       <div
         ref={containerRef} // Container ref for width / height measurement
         className="glide-data-grid-grid-container"
+        data-page-rows={pagedRows.length}
         style={{
           ...styles,
+          height: `${height}px`,
           display: "flex",
           flexDirection: "column",
           flexGrow: 1,
@@ -769,7 +782,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
           columns={glideColumns}
           width="100%"
           height={height} // DataEditor height = visible rows + header only
-          rows={sortedAndFilteredTableRows.length}
+          rows={pagedRows.length}
           getCellContent={getCellContent}
           onCellClicked={handleCellClicked}
           onCellEdited={handleCellEdited}
