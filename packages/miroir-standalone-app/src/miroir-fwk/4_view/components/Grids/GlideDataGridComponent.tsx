@@ -87,6 +87,7 @@ interface GlideDataGridComponentProps {
   onRowEdit?: (row: TableComponentRow, event?: any) => void;
   onRowDelete?: (row: TableComponentRow, event?: any) => void;
   onRowDuplicate?: (row: TableComponentRow, event?: any) => void;
+  onDisplayedPageRowsChange?: (rows: TableComponentRow[]) => void;
 }
 
 export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
@@ -107,6 +108,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   onRowEdit,
   onRowDelete,
   onRowDuplicate,
+  onDisplayedPageRowsChange,
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [internalContainerWidth, setInternalContainerWidth] = React.useState(1200);
@@ -416,6 +418,18 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
         : sortedAndFilteredTableRows,
     [sortedAndFilteredTableRows, pagination.pageIndex, sizingMode],
   );
+
+  useEffect(() => {
+    if (!onDisplayedPageRowsChange || sizingMode.mode !== "paged") {
+      return;
+    }
+    onDisplayedPageRowsChange(displayedRows);
+  }, [
+    displayedRows,
+    onDisplayedPageRowsChange,
+    sizingMode.mode,
+    pagination.pageIndex,
+  ]);
 
   // ##############################################################################################
   // Calculate height based on data

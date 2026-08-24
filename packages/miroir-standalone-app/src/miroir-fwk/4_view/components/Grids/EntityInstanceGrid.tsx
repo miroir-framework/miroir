@@ -61,6 +61,7 @@ import { GridSizingDebugProbe } from './GridSizingDebugProbe.js';
 import {
   agGridModeProps,
   computeAgGridScrollHeight,
+  paginateRows,
   resolveGridSizingMode,
 } from './gridPagination.js';
 import { defaultColDef } from './GridTools.js';
@@ -849,6 +850,61 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
       ? `${computeAgGridScrollHeight(rowCount, sizingMode.maxRows, contextTheme.components.table.maxHeight)}px`
       : undefined;
 
+  const notifyDisplayedPageRowsChange = useCallback(
+    (rows: TableComponentRow[]) => {
+      if (!props.onDisplayedPageRowsChange) {
+        return;
+      }
+      props.onDisplayedPageRowsChange(
+        Object.fromEntries(
+          rows
+            .map((row) => row.rawValue)
+            .filter(
+              (instance): instance is EntityInstance =>
+                instance != null && typeof instance === "object" && !Array.isArray(instance),
+            )
+            .map((instance) => [instance.uuid, instance]),
+        ),
+      );
+    },
+    [props.onDisplayedPageRowsChange],
+  );
+
+  const notifyAgGridDisplayedPageRowsChange = useCallback(() => {
+    if (!props.onDisplayedPageRowsChange || sizingMode.mode !== "paged") {
+      return;
+    }
+    const api = gridApiRef.current;
+    if (!api) {
+      return;
+    }
+    const pageIndex = api.paginationGetCurrentPage();
+    const pageRows = paginateRows(
+      tableComponentRows.tableComponentRowUuidIndexSchema,
+      pageIndex,
+      sizingMode.pageSize,
+    ).pageRows;
+    notifyDisplayedPageRowsChange(pageRows);
+  }, [
+    notifyDisplayedPageRowsChange,
+    props.onDisplayedPageRowsChange,
+    sizingMode,
+    tableComponentRows.tableComponentRowUuidIndexSchema,
+  ]);
+
+  useEffect(() => {
+    if (gridType !== "ag-grid") {
+      return;
+    }
+    notifyAgGridDisplayedPageRowsChange();
+  }, [
+    gridType,
+    notifyAgGridDisplayedPageRowsChange,
+    props.pageSize,
+    props.maxRows,
+    tableComponentRows.tableComponentRowUuidIndexSchema.length,
+  ]);
+
   return (
     <div 
       // ref={containerRef}
@@ -1015,6 +1071,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                   domLayout={agGridMode.domLayout}
                   pagination={agGridMode.pagination}
                   paginationPageSize={agGridMode.paginationPageSize}
+                  paginationPageSizeSelector={agGridMode.paginationPageSizeSelector}
                   columnDefs={agGridColumnDefs}
                   rowData={tableComponentRows.tableComponentRowUuidIndexSchema}
                   getRowId={(params) => {
@@ -1026,7 +1083,11 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                   defaultColDef={agGridDefaultColDef}
                   onCellClicked={onCellClicked}
                   onCellValueChanged={onCellValueChanged}
-                  onGridReady={onGridReady}
+                  onGridReady={(params) => {
+                    onGridReady(params);
+                    notifyAgGridDisplayedPageRowsChange();
+                  }}
+                  onPaginationChanged={notifyAgGridDisplayedPageRowsChange}
                   // DO NOT Enable advanced filtering and sorting features, not free software
                   // enableRangeSelection={true}
                   enableCellTextSelection={true}
@@ -1064,6 +1125,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
               onRowEdit={handleEditDialogFormOpen}
               onRowDelete={handleDeleteDialogFormOpen}
               onRowDuplicate={handleDuplicateDialogFormOpen}
+              onDisplayedPageRowsChange={notifyDisplayedPageRowsChange}
             />
           )}
         </div>

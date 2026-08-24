@@ -164,6 +164,7 @@ export function useClientPagination({
 export type AgGridModeProps = {
   pagination: boolean;
   paginationPageSize?: number;
+  paginationPageSizeSelector?: false | number[];
   domLayout: "normal" | "autoHeight";
 };
 
@@ -176,7 +177,12 @@ export type AgGridModeProps = {
  */
 export function agGridModeProps(sizing: GridSizingMode): AgGridModeProps {
   return sizing.mode === "paged"
-    ? { pagination: true, paginationPageSize: sizing.pageSize, domLayout: "autoHeight" }
+    ? {
+        pagination: true,
+        paginationPageSize: sizing.pageSize,
+        paginationPageSizeSelector: false,
+        domLayout: "autoHeight",
+      }
     : { pagination: false, domLayout: "normal" };
 }
 

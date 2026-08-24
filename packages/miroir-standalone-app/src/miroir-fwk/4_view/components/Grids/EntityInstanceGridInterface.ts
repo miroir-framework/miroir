@@ -38,6 +38,12 @@ const tableComponentCoreBasePropsSchema = z.object({
   foreignKeyObjects: z.record(z.string(),entityInstancesUuidIndex),
   addObjectdialogFormIsOpen: z.boolean(), //.optional(),
   setAddObjectdialogFormIsOpen: z.function().args(z.boolean()).returns(z.void()), //.optional(),
+  /** Fires when the visible page slice changes (paged mode only). */
+  onDisplayedPageRowsChange: z
+    .function()
+    .args(entityInstancesUuidIndex)
+    .returns(z.void())
+    .optional(),
 });
 
 // Sizing modes (D2-d): the core props schema is a union of paged / scroll / default variants,

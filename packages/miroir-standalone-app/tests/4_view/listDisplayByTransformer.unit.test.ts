@@ -12,6 +12,8 @@ import {
   applyTransformerToListRows,
   buildRowMapListTransformer,
   DEFAULT_ROW_IDENTITY_TRANSFORMER,
+  LIST_TRANSFORMER_PAGE_SIZE,
+  sliceInstancesToPage,
 } from "../../src/miroir-fwk/4_view/components/Reports/listDisplayByTransformer.js";
 
 const identityRowTransformer: CoreTransformerForBuildPlusRuntime = {
@@ -108,5 +110,26 @@ describe("listDisplayByTransformer — helper API", () => {
     expect(Array.isArray(result)).toBe(true);
     expect(result).toHaveLength(2);
     expect(result.every((item) => item instanceof TransformerFailure)).toBe(true);
+  });
+
+  it("sliceInstancesToPage returns only the requested page", () => {
+    const books = Object.fromEntries(
+      Array.from({ length: 25 }, (_, index) => {
+        const number = index + 1;
+        const book = {
+          ...book1,
+          uuid: `00000000-0000-4000-8000-${String(number).padStart(12, "0")}`,
+          name: `Book ${number}`,
+        };
+        return [book.uuid, book];
+      }),
+    );
+
+    const firstPage = sliceInstancesToPage(books, 0, LIST_TRANSFORMER_PAGE_SIZE);
+    const secondPage = sliceInstancesToPage(books, 1, LIST_TRANSFORMER_PAGE_SIZE);
+
+    expect(Object.keys(firstPage)).toHaveLength(LIST_TRANSFORMER_PAGE_SIZE);
+    expect(Object.keys(secondPage)).toHaveLength(LIST_TRANSFORMER_PAGE_SIZE);
+    expect(Object.keys(firstPage)).not.toEqual(Object.keys(secondPage));
   });
 });

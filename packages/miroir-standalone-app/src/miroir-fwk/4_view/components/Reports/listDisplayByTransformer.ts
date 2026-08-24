@@ -1,11 +1,58 @@
 import {
   defaultMiroirModelEnvironment,
   defaultTransformerInput,
+  EntityInstance,
+  EntityInstancesUuidIndex,
   TransformerFailure,
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
   type TransformerReturnType,
 } from "miroir-core";
+
+import { paginateRows } from "../Grids/gridPagination.js";
+
+/** Rows per page while the list-section transformer panel is enabled. */
+export const LIST_TRANSFORMER_PAGE_SIZE = 10;
+
+function compareInstancesByAttribute(
+  a: EntityInstance,
+  b: EntityInstance,
+  sortByAttribute?: string,
+): number {
+  if (!sortByAttribute) {
+    return 0;
+  }
+  const aValue = (a as Record<string, unknown>)[sortByAttribute];
+  const bValue = (b as Record<string, unknown>)[sortByAttribute];
+  if (aValue === bValue) {
+    return 0;
+  }
+  if (aValue == null) {
+    return -1;
+  }
+  if (bValue == null) {
+    return 1;
+  }
+  return aValue > bValue ? 1 : -1;
+}
+
+/** Sort and slice a uuid-indexed list to one page (matches EntityInstanceGrid row order). */
+export function sliceInstancesToPage(
+  instancesToDisplay: EntityInstancesUuidIndex,
+  pageIndex: number,
+  pageSize: number,
+  sortByAttribute?: string,
+): EntityInstancesUuidIndex {
+  const sorted = Object.values(instancesToDisplay ?? {})
+    .filter(
+      (instance): instance is EntityInstance =>
+        instance != null && typeof instance === "object" && !Array.isArray(instance),
+    )
+    .sort((a, b) => compareInstancesByAttribute(a, b, sortByAttribute));
+
+  const pageRows = paginateRows(sorted, pageIndex, pageSize).pageRows;
+  return Object.fromEntries(pageRows.map((instance) => [instance.uuid, instance]));
+}
 
 /** Default per-row identity transformer (exposes each list row as `row`). */
 export const DEFAULT_ROW_IDENTITY_TRANSFORMER: CoreTransformerForBuildPlusRuntime = {

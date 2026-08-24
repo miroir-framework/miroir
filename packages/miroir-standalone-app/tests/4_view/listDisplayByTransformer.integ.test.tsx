@@ -12,6 +12,7 @@ import {
   libraryApplicationDeploymentMap,
   ListTransformerIntegShell,
   renderBookListSectionInteg,
+  renderBookListSectionIntegWithCount,
   renderListTransformerPanelInteg,
   reportBookListSectionPath,
 } from "./helpers/listTransformerIntegRig.js";
@@ -28,6 +29,21 @@ vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", ()
 }));
 
 const getTransformerToggle = () => screen.getByRole("button", { name: /functions/i });
+
+async function clickAgGridNextPage() {
+  const nextButton = document.querySelector(
+    '.ag-paging-button[aria-label="Next Page"]',
+  ) as HTMLButtonElement | null;
+
+  if (!nextButton) {
+    throw new Error("ag-grid next paging button not found");
+  }
+
+  await act(async () => {
+    fireEvent.click(nextButton);
+  });
+  await waitForProgressiveRendering();
+}
 
 function ParentFormikValuesObserver({
   onValues,
@@ -123,6 +139,71 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
         expect(screen.getByRole("heading", { name: "Books" })).toBeInTheDocument();
       });
       expect(screen.getByText(book1.name, { exact: false })).toBeInTheDocument();
+    });
+
+    it("uses pageSize 10 while the transformer is enabled and restores default paging when disabled", async () => {
+      renderBookListSectionIntegWithCount(60);
+      await waitForProgressiveRendering();
+
+      expect(
+        document.querySelector(".ag-paging-row-summary-panel")?.textContent?.replace(/\s+/g, " "),
+      ).toMatch(/1 to 50 of 60/);
+
+      await act(async () => {
+        fireEvent.click(getTransformerToggle());
+      });
+      await waitForProgressiveRendering();
+
+      await waitFor(() => {
+        expect(
+          document.querySelector(".ag-paging-row-summary-panel")?.textContent?.replace(/\s+/g, " "),
+        ).toMatch(/1 to 10 of 60/);
+      });
+
+      await act(async () => {
+        fireEvent.click(getTransformerToggle());
+      });
+      await waitForProgressiveRendering();
+
+      await waitFor(() => {
+        expect(
+          document.querySelector(".ag-paging-row-summary-panel")?.textContent?.replace(/\s+/g, " "),
+        ).toMatch(/1 to 50 of 60/);
+      });
+    });
+
+    it("transforms only rows from the currently displayed page", async () => {
+      renderBookListSectionIntegWithCount(25);
+      await waitForProgressiveRendering();
+
+      await act(async () => {
+        fireEvent.click(getTransformerToggle());
+      });
+      await waitForProgressiveRendering();
+
+      await waitFor(
+        () => {
+          expect(screen.getByTestId("list-transformer-result")).toBeInTheDocument();
+          const resultText = screen.getByTestId("list-transformer-result").textContent ?? "";
+          expect(resultText).toContain("Book 1");
+          expect(resultText).not.toContain("Book 11");
+        },
+        { timeout: 15000 },
+      );
+
+      await clickAgGridNextPage();
+
+      await waitFor(
+        () => {
+          expect(
+            document.querySelector(".ag-paging-row-summary-panel")?.textContent?.replace(/\s+/g, " "),
+          ).toMatch(/11 to 20 of 25/);
+          const resultText = screen.getByTestId("list-transformer-result").textContent ?? "";
+          expect(resultText).toContain("Book 11");
+          expect(resultText).not.toContain("Book 1");
+        },
+        { timeout: 15000 },
+      );
     });
   });
 

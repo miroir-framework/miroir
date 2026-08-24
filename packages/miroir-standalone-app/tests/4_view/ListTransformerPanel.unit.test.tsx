@@ -22,12 +22,16 @@ import {
 } from "miroir-react";
 
 import { ReportSectionListDisplay } from "../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";
+import { LIST_TRANSFORMER_PAGE_SIZE } from "../../src/miroir-fwk/4_view/components/Reports/listDisplayByTransformer.js";
 import { TableComponentTypeSchema } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
 import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
 import { defaultStoredMiroirTheme } from "miroir-test-app_deployment-miroir";
 
 vi.mock("../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js", () => ({
-  EntityInstanceGrid: () => <div data-testid="entity-instance-grid-stub" />,
+  EntityInstanceGrid: (props: Record<string, unknown>) => {
+    (globalThis as any).__lastEntityInstanceGridProps = props;
+    return <div data-testid="entity-instance-grid-stub" />;
+  },
 }));
 
 vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
@@ -249,5 +253,25 @@ describe("ListTransformerPanel — list section integration", () => {
     expect(screen.getByTestId("list-transformer-failure").textContent).toContain("ReferenceNotFound");
     expect(screen.queryByTestId("list-transformer-result")).not.toBeInTheDocument();
     expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
+  });
+
+  it("switches the grid to pageSize 10 while enabled and restores default paging when disabled", () => {
+    renderBookListSection();
+
+    expect((globalThis as any).__lastEntityInstanceGridProps?.pageSize).toBe(50);
+
+    fireEvent.click(getTransformerToggle());
+    expect((globalThis as any).__lastEntityInstanceGridProps?.pageSize).toBe(
+      LIST_TRANSFORMER_PAGE_SIZE,
+    );
+    expect(
+      (globalThis as any).__lastEntityInstanceGridProps?.onDisplayedPageRowsChange,
+    ).toBeTypeOf("function");
+
+    fireEvent.click(getTransformerToggle());
+    expect((globalThis as any).__lastEntityInstanceGridProps?.pageSize).toBe(50);
+    expect(
+      (globalThis as any).__lastEntityInstanceGridProps?.onDisplayedPageRowsChange,
+    ).toBeUndefined();
   });
 });
