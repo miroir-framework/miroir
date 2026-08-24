@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What your usage would cost on Claude</title>
+<style>
+  :root {
+    --bg: #18191b;
+    --surface: #212225;
+    --border: #333539;
+    --text: #e6e7e9;
+    --text-2: #a6a8ab;
+    --text-3: #7d7f83;
+    --accent: #4c8dff;
+    --warning: #d9a13b;
+    --success: #3fb968;
+    --danger: #d9634e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  main { max-width: 920px; margin: 0 auto; padding: 32px 24px 48px; }
+  h1 { font-size: 24px; font-weight: 650; margin: 0 0 6px; }
+  h2 { font-size: 16px; font-weight: 650; margin: 34px 0 14px; }
+  p { margin: 0 0 10px; }
+  .subtitle { color: var(--text-2); margin-bottom: 26px; }
+  .caption { color: var(--text-3); font-size: 12px; margin-top: 8px; }
+
+  .stats { display: flex; gap: 48px; flex-wrap: wrap; margin: 8px 0 4px; }
+  .stat .value { font-size: 22px; font-weight: 650; }
+  .stat .label { color: var(--text-2); font-size: 12px; max-width: 220px; margin-top: 2px; }
+  .stat.warn .value { color: var(--warning); }
+  .stat.info .value { color: var(--accent); }
+
+  hr { border: 0; border-top: 1px solid var(--border); margin: 30px 0 0; }
+
+  table { width: 100%; border-collapse: collapse; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 16px; }
+  th, td { text-align: left; padding: 8px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 12px; font-weight: 600; color: var(--text-2); background: var(--surface); }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.total td { font-weight: 600; }
+  .dot::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--success); margin-right: 8px; }
+
+  .hbars { margin: 18px 0 4px; }
+  .hbar-row { display: grid; grid-template-columns: 150px 1fr 70px; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .hbar-row .name { color: var(--text-2); font-size: 12.5px; text-align: right; }
+  .hbar-track { background: var(--surface); border-radius: 4px; height: 20px; }
+  .hbar-fill { height: 100%; border-radius: 4px; background: var(--accent); }
+  .hbar-fill.c2 { background: #6f7fd8; }
+  .hbar-fill.c3 { background: #4fb3a9; }
+  .hbar-fill.c4 { background: #b381d9; }
+  .hbar-fill.c5 { background: #c9856b; }
+  .hbar-val { font-size: 12.5px; font-variant-numeric: tabular-nums; }
+
+  .vchart { position: relative; display: flex; align-items: flex-end; gap: 8%; height: 240px; padding: 0 8px; margin: 26px 0 6px; border-bottom: 1px solid var(--border); }
+  .vcol { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; }
+  .vbar { width: 72%; max-width: 110px; background: var(--accent); border-radius: 5px 5px 0 0; position: relative; }
+  .vbar.c2 { background: #6f7fd8; }
+  .vbar.c3 { background: var(--success); }
+  .vbar.c4 { background: #b381d9; }
+  .vbar .vval { position: absolute; top: -22px; left: 0; right: 0; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .vlabels { display: flex; gap: 8%; padding: 8px 8px 0; }
+  .vlabels div { flex: 1; text-align: center; color: var(--text-2); font-size: 12px; }
+  .refline { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--warning); }
+  .refline span { position: absolute; right: 0; top: -19px; font-size: 11px; color: var(--warning); background: var(--bg); padding: 0 4px; }
+
+  .callout { border: 1px solid var(--border); border-left: 3px solid var(--text-3); border-radius: 8px; padding: 12px 16px; margin-top: 12px; background: var(--surface); }
+  .callout.warn { border-left-color: var(--warning); }
+  .callout.info { border-left-color: var(--accent); }
+  .callout.ok { border-left-color: var(--success); }
+  .callout .t { font-weight: 650; margin-bottom: 4px; }
+  .callout p { margin: 0; color: var(--text-2); }
+
+  .sources { margin-top: 34px; color: var(--text-3); font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>What your usage would cost on Claude</h1>
+  <p class="subtitle">Your Cursor metered usage this period, priced against Anthropic's individual plans and API rates as of Aug 24, 2026.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="value">$183.26</div><div class="label">Cursor metered usage this period (API-list value)</div></div>
+    <div class="stat warn"><div class="value">$135.04</div><div class="label">of it Opus 4.6 (74% of the bill)</div></div>
+    <div class="stat info"><div class="value">$200/mo</div><div class="label">closest Claude equivalent: Max 20x</div></div>
+  </div>
+
+  <hr>
+  <h2>Where the spend goes now — Cursor, current period</h2>
+
+  <div class="hbars">
+    <div class="hbar-row"><div class="name">Opus 4.6 Thinking</div><div class="hbar-track"><div class="hbar-fill" style="width:96.85%"></div></div><div class="hbar-val">$96.85</div></div>
+    <div class="hbar-row"><div class="name">Opus 4.6</div><div class="hbar-track"><div class="hbar-fill c2" style="width:39.4%"></div></div><div class="hbar-val">$38.19</div></div>
+    <div class="hbar-row"><div class="name">Grok 4.6 Fast</div><div class="hbar-track"><div class="hbar-fill c3" style="width:29.5%"></div></div><div class="hbar-val">$28.58</div></div>
+    <div class="hbar-row"><div class="name">Kimi K3</div><div class="hbar-track"><div class="hbar-fill c4" style="width:17.6%"></div></div><div class="hbar-val">$17.06</div></div>
+    <div class="hbar-row"><div class="name">Sonnet 4.6 Thinking</div><div class="hbar-track"><div class="hbar-fill c5" style="width:2.7%"></div></div><div class="hbar-val">$2.58</div></div>
+  </div>
+
+  <table>
+    <thead><tr><th>Model</th><th class="num">Input tokens</th><th class="num">Output tokens</th><th class="num">Cost (API-list value)</th><th class="num">Share</th></tr></thead>
+    <tbody>
+      <tr><td>Opus 4.6 High (Thinking)</td><td class="num">19.09M</td><td class="num">444K</td><td class="num">$96.85</td><td class="num">52.8%</td></tr>
+      <tr><td>Opus 4.6 High</td><td class="num">12.08M</td><td class="num">346K</td><td class="num">$38.19</td><td class="num">20.8%</td></tr>
+      <tr><td>Grok 4.6 High Fast</td><td class="num">14.42M</td><td class="num">910K</td><td class="num">$28.58</td><td class="num">15.6%</td></tr>
+      <tr><td>Kimi K3</td><td class="num">15.27M</td><td class="num">223K</td><td class="num">$17.06</td><td class="num">9.3%</td></tr>
+      <tr><td>Sonnet 4.6 High Thinking</td><td class="num">4.04M</td><td class="num">102K</td><td class="num">$2.58</td><td class="num">1.4%</td></tr>
+      <tr class="total"><td>Total (metered)</td><td class="num">64.90M</td><td class="num">2.03M</td><td class="num">$183.26</td><td class="num">100%</td></tr>
+    </tbody>
+  </table>
+  <p class="caption">Source: Cursor Settings → Usage, current billing period. Plan summary shown there: $183.26 included usage · $20.00 included in Pro · $0.00 on-demand. Composer 2.5 does not appear in this metered table.</p>
+
+  <hr>
+  <h2>Equivalent setups on Claude — estimated monthly total</h2>
+
+  <div class="vchart">
+    <div class="refline" style="bottom:85.2%"><span>Current usage value $183</span></div>
+    <div class="vcol"><div class="vbar" style="height:85.2%"><div class="vval">$183</div></div></div>
+    <div class="vcol"><div class="vbar c2" style="height:72.1%"><div class="vval">~$155</div></div></div>
+    <div class="vcol"><div class="vbar c3" style="height:93.0%"><div class="vval">$200</div></div></div>
+    <div class="vcol"><div class="vbar c4" style="height:100%"><div class="vval">~$215</div></div></div>
+  </div>
+  <div class="vlabels">
+    <div>Cursor today (API-list value)</div>
+    <div>Claude Max 5x + usage credits</div>
+    <div>Claude Max 20x (flat)</div>
+    <div>Claude API key (pay-per-token)</div>
+  </div>
+  <p class="caption">Estimates: Max 5x bar = $100 sub + ~$55 mid-estimate credits; API bar = midpoint of the $180–250 band. Claude plans meter 5-hour session windows plus weekly caps, not tokens, so exact equivalence is approximate.</p>
+
+  <table>
+    <thead><tr><th>Option</th><th>Base price</th><th>How it meters</th><th>Fit for your pattern</th></tr></thead>
+    <tbody>
+      <tr><td>Pro</td><td>$20/mo</td><td>5h session window + weekly cap, shared with claude.ai; usage credits past caps at API rates</td><td>Not viable at your volume — caps are sized for light daily coding</td></tr>
+      <tr><td>Max 5x</td><td>$100/mo</td><td>5x Pro per window + weekly cap; credits at API rates past the cap</td><td>~$130–180 — sub + ~$30–80 credits; needs Sonnet-first discipline</td></tr>
+      <tr><td><span class="dot"></span>Max 20x</td><td>$200/mo</td><td>20x Pro per window + weekly cap; credits at API rates past the cap</td><td>~$200 flat — closest equivalent to your current pattern</td></tr>
+      <tr><td>API key only</td><td>no sub</td><td>Per-token, no caps, no claude.ai chat pool</td><td>~$180–250 at your volume (Anthropic's published heavy-dev band)</td></tr>
+    </tbody>
+  </table>
+
+  <hr>
+  <h2>Caveats that matter</h2>
+
+  <div class="callout warn">
+    <div class="t">Your Claude-side burn will be higher than $183</div>
+    <p>Composer 2.5 — your daily driver — is unmetered on Cursor and invisible in the $183.26. On Claude, everything (Claude Code + claude.ai chat) draws from one pool. Your Grok / Kimi / Sonnet work (~$48) becomes mostly Sonnet 4.6, and Kimi's analysis role presumably becomes Opus or Sonnet-thinking — all of it counting against the same session and weekly limits.</p>
+  </div>
+  <div class="callout info">
+    <div class="t">Opus is the lever</div>
+    <p>74% of your bill is Opus 4.6 ($135.04), mostly thinking sessions. Sonnet 4.6 costs $3/$15 per MTok vs Opus at $5/$25 — a 40% cut. Routing analysis/planning to Sonnet-thinking is what makes Max 5x + credits land near $130–150; keeping the current Opus-thinking habit points squarely at Max 20x.</p>
+  </div>
+  <div class="callout">
+    <div class="t">Fine print on Claude plans</div>
+    <p>Usage credits past plan caps bill at standard API rates with a configurable monthly spending cap. Weekly limits are running 50% above published levels through Aug 31, 2026 (promo, possibly permanent). API rates: Opus 4.6 $5/$25 per MTok, Sonnet 4.6 $3/$15; cache reads at ~0.1x input. Max tiers are monthly-only; Pro drops to $17/mo billed annually.</p>
+  </div>
+  <div class="callout ok">
+    <div class="t">Bottom line</div>
+    <p>Equivalent capacity on Claude is Max 20x at ~$200/mo flat — roughly what your metered usage is worth at API-list prices ($183.26), before counting your unmetered Composer work. A Sonnet-first pattern on Max 5x + credits lands around $130–180/mo. Both are far above the $20 Cursor Pro has actually charged you this period ($0.00 on-demand so far) — Cursor is currently absorbing most of your usage value.</p>
+  </div>
+
+  <p class="sources">Sources: Anthropic Help Center (Choose a Claude plan; What is the Max plan; Manage usage credits), claude.com/pricing, Anthropic API rate card — retrieved Aug 24, 2026. Anthropic published average for API-billed Claude Code developers: $150–250 per developer per month, ~$13 per active day.</p>
+</main>
+</body>
+</html>
