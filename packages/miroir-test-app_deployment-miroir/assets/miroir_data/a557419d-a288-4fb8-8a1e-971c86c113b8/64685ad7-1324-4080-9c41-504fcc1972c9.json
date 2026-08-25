@@ -43,6 +43,14 @@
     },
     "transformerResultSchema": {
       "returns": "mlSchemaTransformer",
+      "addAttributesToContextBeingSubtypeOf": {
+        "applyTo": {
+          "type": "array",
+          "definition": {
+            "type": "any"
+          }
+        }
+      },
       "definition": {
         "transformerType": "accessDynamicPath",
         "interpolation": "runtime",

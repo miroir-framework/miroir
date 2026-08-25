@@ -65,17 +65,17 @@ export function transformerInterfaceFromDefinition(
     | "coreTransformerForBuildPlusRuntime"
     | undefined = undefined;
   switch (target) {
-    case "build": {
-      innerReferenceRelativePath = "transformerForBuild";
-      relativePath = optionalInterpolation
-        ? "transformerForBuild_optional_Abstract"
-        : "transformerForBuild_Abstract";
-      break;
-    }
+  //   case "build": {
+  //     innerReferenceRelativePath = "transformerForBuild";
+  //     relativePath = optionalInterpolation
+  //       ? "transformerForBuild_optional_Abstract"
+  //       : "transformerForBuild_Abstract";
+  //     break;
+  //   }
     case "buildPlusRuntime":
-      innerReferenceRelativePath = "transformerForBuildPlusRuntime";
-      relativePath = "transformerForBuildPlusRuntime_optional_Abstract";
-      break;
+      // innerReferenceRelativePath = "transformerForBuildPlusRuntime";
+      // relativePath = "transformerForBuildPlusRuntime_optional_Abstract";
+      // break;
     case "coreBuildPlusRuntime":
       innerReferenceRelativePath = "coreTransformerForBuildPlusRuntime";
       relativePath = "transformerForBuildPlusRuntime_optional_Abstract";
@@ -84,8 +84,9 @@ export function transformerInterfaceFromDefinition(
       throw new Error(`Unknown target: ${target}`);
   }
 
-  const newApplyTo: JzodElement = (// allow using a transformer in place of a value for applyTo
-    transformerDefinition.transformerInterface.transformerParameterSchema
+  const transformerParameterSchema = transformerDefinition.transformerInterface.transformerParameterSchema;
+  const newApplyTo: JzodElement = (// TODO: allow using a transformer in place of a value for applyTo
+    transformerParameterSchema
       .transformerDefinition.definition as any
   ).applyTo?{
     type: "schemaReference",
@@ -100,23 +101,22 @@ export function transformerInterfaceFromDefinition(
   }: { type: "never"};
 
   const newDefinition = substituteTransformerReferencesInJzodElement<JzodObject>(
-    transformerDefinition.transformerInterface.transformerParameterSchema.transformerDefinition,
+    transformerParameterSchema.transformerDefinition,
     referenceMap
   ).definition;
 
   const result: JzodElement = {
     type: "object",
-    extend: transformerDefinition.transformerInterface.transformerParameterSchema
-      .transformerDefinition.extend
+    extend: transformerParameterSchema.transformerDefinition.extend
       ? [
           ...(Array.isArray(
-            transformerDefinition.transformerInterface.transformerParameterSchema
+            transformerParameterSchema
               .transformerDefinition.extend
           )
-            ? transformerDefinition.transformerInterface.transformerParameterSchema
+            ? transformerParameterSchema
                 .transformerDefinition.extend
             : [
-                transformerDefinition.transformerInterface.transformerParameterSchema
+                transformerParameterSchema
                   .transformerDefinition.extend,
               ]),
           {
@@ -141,17 +141,17 @@ export function transformerInterfaceFromDefinition(
           },
         ],
     definition: (
-      transformerDefinition.transformerInterface.transformerParameterSchema
+      transformerParameterSchema
         .transformerDefinition.definition as any
     ).applyTo?{
       transformerType:
-        transformerDefinition.transformerInterface.transformerParameterSchema.transformerType,
+        transformerParameterSchema.transformerType,
       ...newDefinition,
       applyTo: newApplyTo,
     }:
     {
       transformerType:
-        transformerDefinition.transformerInterface.transformerParameterSchema.transformerType,
+        transformerParameterSchema.transformerType,
       ...newDefinition
     },
   };

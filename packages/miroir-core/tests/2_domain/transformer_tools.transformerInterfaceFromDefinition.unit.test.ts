@@ -98,7 +98,7 @@ describe("transformerInterfaceFromDefinition", () => {
   };
 
   it("should return a valid JzodElement for runtime target", () => {
-    const result = transformerInterfaceFromDefinition(transformerDefinition, "buildPlusRuntime", runtimeReferenceMap);
+    const result = transformerInterfaceFromDefinition(transformerDefinition, "coreBuildPlusRuntime", runtimeReferenceMap);
     // console.log("result", JSON.stringify(result, null, 2));
     expect(result).toEqual({
       type: "object",
@@ -153,71 +153,6 @@ describe("transformerInterfaceFromDefinition", () => {
                 type: "schemaReference",
                 definition: {
                   relativePath: "transformerForBuildPlusRuntime",
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-  });
-
-  it("should return a valid JzodElement for build target", () => {
-    const result = transformerInterfaceFromDefinition(transformerDefinition, "build", buildReferenceMap);
-    console.log("result", JSON.stringify(result, null, 2));
-    expect(result).toEqual({
-      type: "object",
-      extend: [
-        {
-          type: "schemaReference",
-          definition: {
-            eager: true,
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "transformer_orderBy",
-          },
-        },
-        {
-          type: "schemaReference",
-          definition: {
-            eager: true,
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "transformerForBuild_Abstract",
-          },
-          context: {},
-        },
-      ],
-      definition: {
-        transformerType: {
-          type: "literal",
-          definition: "createObjectFromPairs",
-        },
-        applyTo: {
-          type: "schemaReference",
-          optional: true,
-          definition: {
-            relativePath: "transformerForBuild",
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          },
-          context: {},
-        },
-        referenceToOuterObject: {
-          type: "string",
-        },
-        definition: {
-          type: "array",
-          definition: {
-            type: "object",
-            definition: {
-              attributeKey: {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformerForBuild",
-                },
-              },
-              attributeValue: {
-                type: "schemaReference",
-                definition: {
-                  relativePath: "transformerForBuild",
                 },
               },
             },

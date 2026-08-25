@@ -131,22 +131,29 @@ function buildMlSchemaTransformerContext(
   transformer: TypedTransformer,
   context: TransformerResultSchemaContext,
   transformerDefinitions: Record<string, TransformerDefinition>,
+  attributeNames: Record<string, JzodElement>,
 ): TransformerResultSchemaContext | FailedTransformerInterfaceFromDefinition {
   const derivationContext = { ...context };
 
-  if ("applyTo" in transformer && transformer.applyTo !== undefined) {
-    const applyTo = transformer.applyTo as CoreTransformerForBuildPlusRuntime;
-    if (isTypedTransformer(applyTo)) {
-      const applyToSchema = resolveTransformerResultSchema(
-        applyTo,
-        context,
-        transformerDefinitions,
-      );
-      if (propagateFailure(applyToSchema)) {
-        return applyToSchema;
-      }
-      derivationContext.applyTo = applyToSchema;
+  for (const attributeName of Object.keys(attributeNames)) {
+    if (!(attributeName in transformer) || transformer[attributeName as keyof typeof transformer] === undefined) {
+      continue;
     }
+
+    const operand = transformer[attributeName as keyof typeof transformer] as CoreTransformerForBuildPlusRuntime;
+    if (!isTypedTransformer(operand)) {
+      continue;
+    }
+
+    const operandSchema = resolveTransformerResultSchema(
+      operand,
+      context,
+      transformerDefinitions,
+    );
+    if (propagateFailure(operandSchema)) {
+      return operandSchema;
+    }
+    derivationContext[attributeName] = operandSchema;
   }
 
   return derivationContext;
@@ -792,23 +799,24 @@ export function resolveTransformerResultSchema(
       transformer,
       context,
       transformerDefinitions,
+      resultSchema.addAttributesToContextBeingSubtypeOf ?? {},
     );
     if (isDerivationContextFailure(derivationContext)) {
       return derivationContext;
     }
     const resolvedDerivationContext = derivationContext as TransformerResultSchemaContext;
 
-    if (transformerType === "pickFromList") {
-      const applyToSchema = resolvedDerivationContext.applyTo;
+    for (const attributeProps in (resultSchema.addAttributesToContextBeingSubtypeOf ?? {})) {
+      const applyToSchema = resolvedDerivationContext[attributeProps];
       const applyToTransformer =
-        "applyTo" in transformer ? (transformer.applyTo as CoreTransformerForBuildPlusRuntime) : undefined;
+        attributeProps in transformer ? (transformer[attributeProps as keyof typeof transformer] as CoreTransformerForBuildPlusRuntime) : undefined;
       if (applyToSchema && applyToTransformer && isTypedTransformer(applyToTransformer)) {
         const shapeFailure = validateApplyToSchemaShape(
           transformerType,
           applyToTransformer,
           applyToSchema,
-          "array",
-          { type: "array", definition: { type: "any" } },
+          getSchemaType(resultSchema?.addAttributesToContextBeingSubtypeOf?.[attributeProps] ?? { type: "never"}) ?? "unknown",
+          resultSchema?.addAttributesToContextBeingSubtypeOf?.[attributeProps] ?? { type: "never"},
         );
         if (shapeFailure) {
           return shapeFailure;

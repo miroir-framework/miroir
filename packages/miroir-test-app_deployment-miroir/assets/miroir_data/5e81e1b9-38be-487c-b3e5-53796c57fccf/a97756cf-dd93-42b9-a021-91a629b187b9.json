@@ -96,7 +96,6 @@
                 }
               }
             },
-
             "definition": ["build", "runtime"]
           }
         }
