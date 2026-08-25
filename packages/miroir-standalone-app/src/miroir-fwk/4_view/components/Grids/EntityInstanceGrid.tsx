@@ -101,6 +101,14 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
   const contextDeploymentUuid = context.deploymentUuid;
   const contextApplicationUuid = context.application;
   const gridApiRef = useRef<GridApi | null>(null);
+  const gridReadyGenerationRef = useRef(0);
+
+  const withLiveGridApi = useCallback((fn: (api: GridApi) => void) => {
+    const api = gridApiRef.current;
+    if (api != null && !api.isDestroyed()) {
+      fn(api);
+    }
+  }, []);
 
   // Container width tracking for adaptive column sizing
   // const containerRef = useRef<HTMLDivElement>(null);
@@ -128,78 +136,85 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
   // ##############################################################################################
   const onGridReady = useCallback((params: any) => {
     gridApiRef.current = params.api;
-    
+    const generation = ++gridReadyGenerationRef.current;
+
     // Add custom filter icon click handler after grid is ready
     setTimeout(() => {
+      if (generation !== gridReadyGenerationRef.current) {
+        return;
+      }
+
       // Function to update visibility of global clear icon and attach event listeners
       const updateFilterUI = () => {
-        const filterModel = gridApiRef.current?.getFilterModel();
-        const hasAnyFilterActive = filterModel && Object.keys(filterModel).length > 0;
-        
-        // Update state to trigger re-render of global clear icon
-        setHasAnyFilter(!!hasAnyFilterActive);
-        
+        withLiveGridApi((api) => {
+          const filterModel = api.getFilterModel();
+          const hasAnyFilterActive = filterModel && Object.keys(filterModel).length > 0;
+
+          // Update state to trigger re-render of global clear icon
+          setHasAnyFilter(!!hasAnyFilterActive);
+        });
+
         // Attach listeners to individual filter icons
         const filterIcons = document.querySelectorAll('#tata .ag-header-cell-filtered .ag-filter-icon, #tata .ag-header-cell-filtered .ag-icon-filter');
         filterIcons.forEach((icon) => {
           // Remove existing listeners to avoid duplicates
           const newIcon = icon.cloneNode(true);
           icon.parentNode?.replaceChild(newIcon, icon);
-          
+
           // Add new click handler for individual column filter clear
           const clickHandler = (e: Event) => {
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
-            
+
             const headerCell = (e.target as HTMLElement).closest('.ag-header-cell');
-            if (headerCell && gridApiRef.current) {
+            if (headerCell) {
               const colId = headerCell.getAttribute('col-id');
               if (colId) {
-                const currentFilterModel = gridApiRef.current.getFilterModel();
-                if (currentFilterModel && currentFilterModel[colId]) {
-                  delete currentFilterModel[colId];
-                  gridApiRef.current.setFilterModel(currentFilterModel);
-                  // log.info(`Filter cleared for column: ${colId}`);
-                }
+                withLiveGridApi((api) => {
+                  const currentFilterModel = api.getFilterModel();
+                  if (currentFilterModel && currentFilterModel[colId]) {
+                    delete currentFilterModel[colId];
+                    api.setFilterModel(currentFilterModel);
+                  }
+                });
               }
             }
             return false;
           };
           newIcon.addEventListener('click', clickHandler, true);
         });
-        
+
         // Attach listener to global clear icon
         const globalIconForListener = document.querySelector('#tata .global-clear-filters');
         if (globalIconForListener) {
           // Remove existing listeners
           const newGlobalIcon = globalIconForListener.cloneNode(true);
           globalIconForListener.parentNode?.replaceChild(newGlobalIcon, globalIconForListener);
-          
+
           newGlobalIcon.addEventListener('click', (e: Event) => {
             e.preventDefault();
             e.stopPropagation();
             e.stopImmediatePropagation();
-            if (gridApiRef.current) {
-              gridApiRef.current.setFilterModel(null);
-              // log.info('All filters cleared via global icon click');
-            }
+            withLiveGridApi((api) => {
+              api.setFilterModel(null);
+            });
             return false;
           }, true);
         }
       };
-      
+
       // Initial update
       updateFilterUI();
-      
+
       // Listen for filter changes to update UI
-      if (gridApiRef.current) {
-        gridApiRef.current.addEventListener('filterChanged', () => {
+      withLiveGridApi((api) => {
+        api.addEventListener('filterChanged', () => {
           setTimeout(updateFilterUI, 50);
         });
-      }
+      });
     }, 100);
-  }, []);
+  }, [withLiveGridApi]);
 
   // ##############################################################################################
   const handleFilterIconClick = useCallback((event: MouseEvent) => {
@@ -226,39 +241,43 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
       event.stopPropagation();
       event.stopImmediatePropagation();
       
-      // Clear all filters
-      if (gridApiRef.current) {
-        gridApiRef.current.setFilterModel(null);
+      withLiveGridApi((api) => {
+        api.setFilterModel(null);
         log.info('All filters cleared');
-      }
+      });
       return false;
     } else if (isFilterIcon && isFiltered && headerCell) {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-      
+
       // Clear filter for this specific column only
-      if (gridApiRef.current) {
-        const colId = headerCell.getAttribute('col-id');
-        if (colId) {
-          const currentFilterModel = gridApiRef.current.getFilterModel();
+      const colId = headerCell.getAttribute('col-id');
+      if (colId) {
+        withLiveGridApi((api) => {
+          const currentFilterModel = api.getFilterModel();
           if (currentFilterModel && currentFilterModel[colId]) {
             delete currentFilterModel[colId];
-            gridApiRef.current.setFilterModel(currentFilterModel);
+            api.setFilterModel(currentFilterModel);
             log.info(`Filter cleared for column: ${colId}`);
           }
-        }
+        });
       }
       return false;
     }
-  }, []);
+  }, [withLiveGridApi]);
 
   // ##############################################################################################
   const handleGlobalClearAllFilters = useCallback(() => {
-    if (gridApiRef.current) {
-      gridApiRef.current.setFilterModel(null);
+    withLiveGridApi((api) => {
+      api.setFilterModel(null);
       log.info('All filters cleared');
-    }
+    });
+  }, [withLiveGridApi]);
+
+  const handleGridPreDestroyed = useCallback(() => {
+    gridReadyGenerationRef.current += 1;
+    gridApiRef.current = null;
   }, []);
 
   // ##############################################################################################
@@ -509,13 +528,12 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
     // Customize header to handle filter icon clicks
     headerComponentParams: {
       onFilterClick: () => {
-        if (gridApiRef.current) {
-          gridApiRef.current.setFilterModel(null);
-          // log.info('Filters cleared via header component');
-        }
+        withLiveGridApi((api) => {
+          api.setFilterModel(null);
+        });
       }
     }
-  } as Partial<AutoGeneratedColumnDef>),[]);
+  } as Partial<AutoGeneratedColumnDef>),[withLiveGridApi]);
 
   // ##############################################################################################
   // const columnDefs: (ColDef | ColGroupDef)[] = useMemo(() => {
@@ -874,22 +892,21 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
     if (!props.onDisplayedPageRowsChange || sizingMode.mode !== "paged") {
       return;
     }
-    const api = gridApiRef.current;
-    if (!api) {
-      return;
-    }
-    const pageIndex = api.paginationGetCurrentPage();
-    const pageRows = paginateRows(
-      tableComponentRows.tableComponentRowUuidIndexSchema,
-      pageIndex,
-      sizingMode.pageSize,
-    ).pageRows;
-    notifyDisplayedPageRowsChange(pageRows);
+    withLiveGridApi((api) => {
+      const pageIndex = api.paginationGetCurrentPage();
+      const pageRows = paginateRows(
+        tableComponentRows.tableComponentRowUuidIndexSchema,
+        pageIndex,
+        sizingMode.pageSize,
+      ).pageRows;
+      notifyDisplayedPageRowsChange(pageRows);
+    });
   }, [
     notifyDisplayedPageRowsChange,
     props.onDisplayedPageRowsChange,
     sizingMode,
     tableComponentRows.tableComponentRowUuidIndexSchema,
+    withLiveGridApi,
   ]);
 
   useEffect(() => {
@@ -1087,6 +1104,7 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
                     onGridReady(params);
                     notifyAgGridDisplayedPageRowsChange();
                   }}
+                  onGridPreDestroyed={handleGridPreDestroyed}
                   onPaginationChanged={notifyAgGridDisplayedPageRowsChange}
                   // DO NOT Enable advanced filtering and sorting features, not free software
                   // enableRangeSelection={true}

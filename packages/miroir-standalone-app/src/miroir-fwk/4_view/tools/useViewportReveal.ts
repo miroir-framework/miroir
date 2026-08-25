@@ -14,6 +14,7 @@ import {
   PROGRESSIVE_RENDER_FALLBACK_TIMEOUT_MS,
   PROGRESSIVE_RENDER_ROOT_MARGIN,
   PROGRESSIVE_RENDER_VISIBLE_STUCK_TIMEOUT_MS,
+  isVitestTestMode,
 } from "./progressiveRenderConfig.js";
 import { scheduleProgressiveReveal } from "./progressiveRevealScheduler.js";
 
@@ -59,7 +60,7 @@ function isRectVisibleInViewport(rect: DOMRectReadOnly): boolean {
 export function useViewportReveal(
   options: UseViewportRevealOptions = {}
 ): UseViewportRevealResult {
-  const isTestMode = process.env.VITE_TEST_MODE === "true";
+  const isTestMode = isVitestTestMode();
   const disabled = options.disabled === true || isTestMode;
   const rootMargin = options.rootMargin ?? PROGRESSIVE_RENDER_ROOT_MARGIN;
   const ref = useRef<HTMLDivElement>(null);

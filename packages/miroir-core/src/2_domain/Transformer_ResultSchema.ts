@@ -501,6 +501,14 @@ function mergeObjectSchemas(base: JzodElement, overlay: JzodElement): JzodElemen
   };
 }
 
+/**
+ * 
+ * @param applyTo - The applyTo transformer
+ * @param context - The context
+ * @param transformerDefinitions - The transformer definitions
+ * @param parentTransformerType - The parent transformer type
+ * @returns The resolved apply to array element schema
+ */
 function resolveApplyToArrayElementSchema(
   applyTo: CoreTransformerForBuildPlusRuntime | undefined,
   context: TransformerResultSchemaContext,
@@ -647,6 +655,15 @@ function resolveCaseBranchSchemas(
   return buildUnionSchema(branchSchemas);
 }
 
+/**
+ * @description
+ * This function, given a transformer, a context for used references and the set of existing transformer definitions,
+ * returns the expected jzod schema for the transformer result.
+ * @param transformer - The transformer
+ * @param context - The jzod schema corresponding to refrences potentially used by the transformer
+ * @param transformerDefinitions - The set of existing transformer definitions
+ * @returns The expected jzod schema of the result of the transformer execution
+ */
 export function resolveTransformerResultSchema(
   transformer: CoreTransformerForBuildPlusRuntime,
   context: TransformerResultSchemaContext,

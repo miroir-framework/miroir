@@ -54,3 +54,11 @@ export const PROGRESSIVE_RENDER_FALLBACK_TIMEOUT_MS = 0;
  * queue is backed up on large unfolded trees.
  */
 export const PROGRESSIVE_RENDER_VISIBLE_STUCK_TIMEOUT_MS = 500;
+
+/** True when Vitest sets VITE_TEST_MODE (progressive reveal is disabled). */
+export function isVitestTestMode(): boolean {
+  return (
+    (import.meta as ImportMeta & { env?: { VITE_TEST_MODE?: string } }).env
+      ?.VITE_TEST_MODE === "true"
+  );
+}

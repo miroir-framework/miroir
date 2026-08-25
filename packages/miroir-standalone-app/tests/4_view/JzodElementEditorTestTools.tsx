@@ -191,33 +191,24 @@ export const testThemeParams = {
 
 // ################################################################################################
 // Helper function to wait for progressive rendering to complete
-// TODO: hasn't progressive rendering been disabled for tests?
 export const waitForProgressiveRendering = async () => {
-  // Wait for loading messages to disappear with more attempts
+  // Progressive reveal is disabled under VITE_TEST_MODE (see useViewportReveal).
+  if (process.env.VITE_TEST_MODE === "true") {
+    return;
+  }
+
   await waitFor(
     () => {
-      // Check for any "Loading..." messages in the DOM using multiple approaches
-      // 1. Screen query for the regex pattern 
       const loadingMessages = screen.queryAllByText(/Loading .+\.\.\./);
-      
-      // 2. Direct DOM search for any element containing "Loading" text
-      const loadingTexts = Array.from(document.querySelectorAll('*')).filter(el => 
-        el.textContent && /Loading\s+\w+\s*\.\.\./i.test(el.textContent.trim())
-      );
-      
-      const totalLoading = loadingMessages.length + loadingTexts.length;
-      if (totalLoading > 0) {
-        console.log(`Still waiting for ${totalLoading} loading elements to finish:`, 
-          loadingTexts.map(el => el.textContent?.trim()));
-        throw new Error(`Still loading: ${totalLoading} loading messages found`);
+      if (loadingMessages.length > 0) {
+        throw new Error(`Still loading: ${loadingMessages.length} loading messages found`);
       }
     },
-    { timeout: 15000, interval: 150 } // 15 second timeout, check every 150ms
+    { timeout: 15000, interval: 150 }
   );
-  
-  // Additional delay to ensure rendering is complete after loading stops
+
   await act(async () => {
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
   });
 };
 
@@ -597,6 +588,14 @@ export function getWrapperLoadingLocalCache(
     miroirEventService,
     undefined as any,
   );
+  miroirContext.extendMiroirConfigWithExtraDeploymentConfiguration = () =>
+    ({
+      miroirConfigType: "client",
+      client: {
+        emulateServer: true,
+        rootApiUrl: "http://localhost:3080",
+      },
+    }) as ReturnType<MiroirContext["extendMiroirConfigWithExtraDeploymentConfiguration"]>;
   const theme = createTheme(testThemeParams);
   
   ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
@@ -613,7 +612,9 @@ export function getWrapperLoadingLocalCache(
 
   const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
 
-  console.log("getWrapperForLocalJzodElementEditor", "defaultMiroirMetaModel.entities", JSON.stringify(defaultMiroirMetaModel.entities));
+  if (process.env.VITE_TEST_MODE !== "true") {
+    console.log("getWrapperForLocalJzodElementEditor", "defaultMiroirMetaModel.entities", JSON.stringify(defaultMiroirMetaModel.entities));
+  }
     // const resultForLoadingLibraryAppInstances: Action2ReturnType = localCache.handleLocalCacheAction({
   const resultForLoadingMiroirMetaModel: Action2ReturnType = localCache.handleLocalCacheAction({
     actionType: "loadNewInstancesInLocalCache",
@@ -776,17 +777,19 @@ export function getWrapperLoadingLocalCache(
     }, applicationDeploymentMap
   );
 
-  console.log(
-    "getWrapperForLocalJzodElementEditor FINISHED PREPARING LOCAL CACHE",
-    "resultForLoadingMiroirMetaModel",
-    resultForLoadingMiroirMetaModel,
-    "resultForLoadingLibraryApplicationModel",
-    resultForLoadingLibraryApplicationModel,
-    "resultForLoadingLibraryApplicationInstances",
-    resultForLoadingLibraryApplicationInstances,
-    "localCache.getInnerStore().getState()",
-    localCache.getInnerStore().getState()
-  );  
+  if (process.env.VITE_TEST_MODE !== "true") {
+    console.log(
+      "getWrapperForLocalJzodElementEditor FINISHED PREPARING LOCAL CACHE",
+      "resultForLoadingMiroirMetaModel",
+      resultForLoadingMiroirMetaModel,
+      "resultForLoadingLibraryApplicationModel",
+      resultForLoadingLibraryApplicationModel,
+      "resultForLoadingLibraryApplicationInstances",
+      resultForLoadingLibraryApplicationInstances,
+      "localCache.getInnerStore().getState()",
+      localCache.getInnerStore().getState()
+    );
+  }  
   // localCache.setInstancesForEntityUuidIndex(
   //   deployment_Miroir.uuid,
   //   "MetaModel",

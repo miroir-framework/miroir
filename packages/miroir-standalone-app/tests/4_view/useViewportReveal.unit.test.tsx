@@ -15,6 +15,11 @@ describe("useViewportReveal", () => {
     const { result } = renderHook(() => useViewportReveal({ disabled: true }));
     expect(result.current.revealed).toBe(true);
   });
+
+  it("reveals immediately under VITE_TEST_MODE (vitest)", () => {
+    const { result } = renderHook(() => useViewportReveal());
+    expect(result.current.revealed).toBe(true);
+  });
 });
 
 describe("findScrollParent", () => {

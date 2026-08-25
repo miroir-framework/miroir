@@ -1123,12 +1123,12 @@
                 "applyTo": {
                   "transformerType": "getFromContext",
                   "interpolation": "runtime",
-                  "referenceName": "list"
+                  "referenceName": "notList"
                 },
                 "index": 0
               },
               {
-                "list": { "type": "number" }
+                "notList": { "type": "number" }
               }
             ],
             "expectedValue": {
@@ -1136,7 +1136,7 @@
               "failureKind": "schemaShapeMismatch",
               "error": "resolveTransformerResultSchema: pickFromList expected applyTo schema type \"array\" but got \"number\"",
               "transformerType": "pickFromList",
-              "referenceName": "list",
+              "referenceName": "notList",
               "expectedSchema": {
                 "type": "array",
                 "definition": { "type": "any" }

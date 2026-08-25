@@ -1,4 +1,4 @@
-import { render, type RenderResult } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor, within, type RenderResult } from "@testing-library/react";
 import { Formik } from "formik";
 import React, { useEffect } from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -66,7 +66,7 @@ function SeedLibraryDeploymentMapping({ children }: { children: React.ReactNode 
 
 export function ListTransformerIntegShell({ children }: { children: React.ReactNode }) {
   return (
-    <MemoryRouter>
+    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <ListTransformerIntegProviders>
         <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
           <SeedLibraryDeploymentMapping>{children}</SeedLibraryDeploymentMapping>
@@ -87,7 +87,8 @@ export function buildManyBooks(count: number) {
       const book = {
         ...book1,
         uuid: `00000000-0000-4000-8000-${String(number).padStart(12, "0")}`,
-        name: `Book ${number}`,
+        // Zero-pad so lexicographic sort by `name` matches numeric order (report uses sortByAttribute: name).
+        name: `Book ${String(number).padStart(2, "0")}`,
       };
       return [book.uuid, book];
     }),
@@ -153,4 +154,75 @@ export function renderListTransformerPanelInteg(
       />
     </ListTransformerIntegShell>,
   );
+}
+
+function findTransformerTypeControl(panel: HTMLElement): HTMLElement {
+  const byTestId = panel.querySelector('[data-testid="union-type-input-elementTransformer"]');
+  if (byTestId) {
+    return byTestId as HTMLElement;
+  }
+
+  const selectMatch = Array.from(panel.querySelectorAll("select")).find(
+    (el) => (el as HTMLSelectElement).value === "getFromContext",
+  );
+  if (selectMatch) {
+    return selectMatch;
+  }
+
+  const comboboxMatch = within(panel).getAllByRole("combobox").find(
+    (el) => (el as HTMLSelectElement).value === "getFromContext",
+  );
+  if (comboboxMatch) {
+    return comboboxMatch;
+  }
+
+  throw new Error("transformerType control (getFromContext) not found yet");
+}
+
+export async function getListTransformerPanel() {
+  return waitFor(() => screen.getByTestId("list-transformer-panel"), { timeout: 5000 });
+}
+
+export async function expectPanelTransformerType(transformerType: string) {
+  const panel = await getListTransformerPanel();
+  await waitFor(
+    () => {
+      within(panel).getByDisplayValue(transformerType);
+    },
+    { timeout: 5000 },
+  );
+}
+
+export async function setPanelElementTransformerType(transformerType: string) {
+  const panel = await getListTransformerPanel();
+  const transformerTypeSelect = await waitFor(
+    () => findTransformerTypeControl(panel),
+    { timeout: 5000, interval: 100 },
+  );
+
+  await act(async () => {
+    fireEvent.change(transformerTypeSelect, { target: { value: transformerType } });
+  });
+}
+
+export async function setPanelElementTransformerToMissingContextReference() {
+  const panel = await getListTransformerPanel();
+
+  const referenceInput = await waitFor(
+    () => {
+      const match = Array.from(panel.querySelectorAll("input, textarea")).find((el) =>
+        (el as HTMLInputElement).name?.includes("referenceName"),
+      );
+      if (!match) {
+        throw new Error("referenceName textbox not found yet");
+      }
+      return match;
+    },
+    { timeout: 5000, interval: 100 },
+  );
+
+  await act(async () => {
+    fireEvent.change(referenceInput, { target: { value: "missingRef" } });
+    fireEvent.blur(referenceInput);
+  });
 }
