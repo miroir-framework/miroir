@@ -305,6 +305,7 @@ export declare const transformer_jzodTypeCheck_json: any;
 export declare const transformer_resolveConditionalSchema_json: any;
 export declare const transformer_resolveSchemaReferenceInContext_json: any;
 export declare const transformer_unfoldSchemaOnce_json: any;
+export declare const transformer_resolveTransformerResultSchema_json: any;
 export declare const transformer_metaModel_entityDefinition_extractAttributes_json: any;
 export declare const runnerDeployApplication: any;
 export declare const runnerDropApplication: any;

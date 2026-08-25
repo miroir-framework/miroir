@@ -35,7 +35,12 @@ import {
   ResolveTransformerResultSchemaReturnType,
   isFailedTransformerInterfaceFromDefinition,
 } from "../0_interfaces/2_domain/TransformerResultSchemaInterface";
+import {
+  ResolveBuildTransformersTo,
+  Step,
+} from "./Transformers";
 import { applicationTransformerDefinitions } from "./TransformersForRuntime";
+import type { TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
 
 export type TransformerResultSchemaContext = Record<string, JzodElement>;
 
@@ -147,6 +152,14 @@ function buildMlSchemaTransformerContext(
   return derivationContext;
 }
 
+/**
+ * 
+ * @param transformer - The reference transformer
+ * @param context - The jzod schema corresponding to refrences potentially used by the transformer
+ * @param fallback - The fallback jzod schema
+ * @param transformerType - The type of the transformer
+ * @returns The expected jzod schema of the result of the transformer execution
+ */
 function resolveReferenceSchema(
   transformer: ReferenceTransformer,
   context: TransformerResultSchemaContext,
@@ -226,6 +239,13 @@ function resolveReferenceSchema(
   return fallback;
 }
 
+/**
+ * 
+ * @param transformer - The accessDynamicPath transformer
+ * @param context - The jzod schema corresponding to refrences potentially used by the transformer
+ * @param transformerDefinitions - The set of existing transformer definitions
+ * @returns The expected jzod schema of the result of the transformer execution
+ */
 function resolveAccessDynamicPathSchema(
   transformer: CoreTransformerForBuildPlusRuntime_accessDynamicPath,
   context: TransformerResultSchemaContext,
@@ -299,6 +319,15 @@ function resolveAccessDynamicPathSchema(
   return current;
 }
 
+/**
+ * 
+ * @param definition - The definition of the record transformer
+ * @param context - The jzod schema corresponding to refrences potentially used by the transformer
+ * @param transformerDefinitions - The set of existing transformer definitions
+ * @param threadContext - Whether to thread the context
+ * @param transformerType - The type of the transformer
+ * @returns The expected jzod schema of the result of the transformer execution
+ */
 function resolveRecordTransformerDefinitionSchema(
   definition: Record<string, CoreTransformerForBuildPlusRuntime> | undefined,
   context: TransformerResultSchemaContext,
@@ -335,6 +364,14 @@ function resolveRecordTransformerDefinitionSchema(
   return { type: "object", definition: objectDefinition };
 }
 
+/**
+ * 
+ * @param transformerType - The type of the transformer
+ * @param applyToTransformer - The applyTo transformer
+ * @param applyToSchema - The expected jzod schema of the result of the applyTo transformer execution
+ * @param expectedRootType - The expected root type of the applyTo schema
+ * @param expectedSchema - The expected jzod schema of the result of the applyTo transformer execution
+ */
 function validateApplyToSchemaShape(
   transformerType: string,
   applyToTransformer: TypedTransformer,
@@ -350,6 +387,11 @@ function validateApplyToSchemaShape(
   });
 }
 
+/**
+ * 
+ * @param transformer - The transformer
+ * @returns The reference binding from the transformer
+ */
 function referenceBindingFromTransformerOrEmpty(
   transformer: TypedTransformer,
 ): Pick<FailedTransformerInterfaceFromDefinition, "referenceName" | "referencePath"> {
@@ -362,6 +404,14 @@ function referenceBindingFromTransformerOrEmpty(
   return {};
 }
 
+/**
+ * 
+ * @param schema - The schema to validate
+ * @param expectedRootType - The expected root type of the schema
+ * @param expectedSchema - The expected jzod schema of the result of the schema execution
+ * @param details - The details of the schema
+ * @returns The failed transformer interface from definition
+ */
 function requireSchemaRootType(
   schema: JzodElement,
   expectedRootType: string,
@@ -393,6 +443,15 @@ function requireSchemaRootType(
   );
 }
 
+/**
+ * 
+ * @param operand - The operand
+ * @param context - The jzod schema corresponding to refrences potentially used by the operand
+ * @param transformerDefinitions - The set of existing transformer definitions
+ * @param parentTransformerType - The type of the parent transformer
+ * @param operandKey - The key of the operand
+ * @returns The expected jzod schema of the result of the operand execution
+ */
 function resolveOperandSchema(
   operand: CoreTransformerForBuildPlusRuntime,
   context: TransformerResultSchemaContext,
@@ -411,6 +470,15 @@ function resolveOperandSchema(
   return result;
 }
 
+/**
+ * 
+ * @param operand - The operand
+ * @param context - The jzod schema corresponding to refrences potentially used by the operand
+ * @param transformerDefinitions - The set of existing transformer definitions
+ * @param parentTransformerType - The type of the parent transformer
+ * @param operandKey - The key of the operand
+ * @returns The failed transformer interface from definition
+ */
 function validateBooleanOperand(
   operand: CoreTransformerForBuildPlusRuntime,
   context: TransformerResultSchemaContext,
@@ -552,6 +620,14 @@ function resolveApplyToArrayElementSchema(
   return unwrapArrayElementSchema(applyToSchema);
 }
 
+/**
+ * 
+ * @param applyTo - The applyTo transformer
+ * @param context - The jzod schema corresponding to refrences potentially used by the applyTo transformer
+ * @param transformerDefinitions - The set of existing transformer definitions
+ * @param parentTransformerType - The type of the parent transformer
+ * @returns The expected jzod schema of the result of the applyTo transformer execution
+ */
 function resolveApplyToObjectSchema(
   applyTo: CoreTransformerForBuildPlusRuntime | undefined,
   context: TransformerResultSchemaContext,
@@ -598,6 +674,14 @@ function resolveApplyToObjectSchema(
   return applyToSchema;
 }
 
+/**
+ * 
+ * @param predicate - The predicate
+ * @param context - The jzod schema corresponding to refrences potentially used by the predicate
+ * @param transformerDefinitions - The set of existing transformer definitions
+ * @param parentTransformerType - The type of the parent transformer
+ * @returns The failed transformer interface from definition
+ */
 function resolveListPredicateBoolean(
   predicate: CoreTransformerForBuildPlusRuntime,
   context: TransformerResultSchemaContext,
@@ -613,6 +697,13 @@ function resolveListPredicateBoolean(
   );
 }
 
+/**
+ * 
+ * @param caseTransformer - The case transformer
+ * @param context - The jzod schema corresponding to refrences potentially used by the case transformer
+ * @param transformerDefinitions - The set of existing transformer definitions
+ * @returns The expected jzod schema of the result of the case transformer execution
+ */
 function resolveCaseBranchSchemas(
   caseTransformer: CoreTransformerForBuildPlusRuntime_case,
   context: TransformerResultSchemaContext,
@@ -1242,7 +1333,52 @@ export function resolveTransformerResultSchema(
       }
       break;
     }
+    case "resolveTransformerResultSchema": {
+      const resolveSchemaTransformer = transformer as {
+        transformer?: CoreTransformerForBuildPlusRuntime;
+        context?: TransformerResultSchemaContext;
+      };
+      if (!resolveSchemaTransformer.transformer) {
+        return failTransformerResultSchema(
+          "schemaShapeMismatch",
+          "resolveTransformerResultSchema: resolveTransformerResultSchema requires transformer parameter",
+          { transformerType, typePath: ["transformer"] },
+        );
+      }
+      return resolveTransformerResultSchema(
+        resolveSchemaTransformer.transformer,
+        resolveSchemaTransformer.context ?? {},
+        transformerDefinitions,
+      );
+    }
   }
 
   return resultSchema.definition;
+}
+
+export function transformer_resolveTransformerResultSchema(
+  _step: Step,
+  _transformerPath: string[],
+  _label: string | undefined,
+  transformer: {
+    transformer: CoreTransformerForBuildPlusRuntime;
+    context?: TransformerResultSchemaContext;
+  },
+  _resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  _modelEnvironment: unknown,
+  _transformerParams: Record<string, unknown>,
+  _contextResults?: Record<string, unknown>,
+): TransformerReturnType<ResolveTransformerResultSchemaReturnType> {
+  if (!transformer.transformer) {
+    return failTransformerResultSchema(
+      "schemaShapeMismatch",
+      "resolveTransformerResultSchema: resolveTransformerResultSchema requires transformer parameter",
+      { transformerType: "resolveTransformerResultSchema", typePath: ["transformer"] },
+    );
+  }
+
+  return resolveTransformerResultSchema(
+    transformer.transformer,
+    transformer.context ?? {},
+  );
 }

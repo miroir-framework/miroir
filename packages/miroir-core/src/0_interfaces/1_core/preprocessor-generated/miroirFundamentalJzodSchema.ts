@@ -4860,6 +4860,46 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "mlsTransformerForBuildPlusRuntime_resolveTransformerResultSchema": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
+            },
+            "context": {}
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "resolveTransformerResultSchema"
+          },
+          "transformer": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime"
+            },
+            "description": "The nested transformer whose output schema should be inferred."
+          },
+          "context": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              }
+            },
+            "description": "Schema context for reference resolution (referenceName / referencePath operands)."
+          }
+        }
+      },
       "mlsTransformerForBuildPlusRuntime_ansiColumnsToJzodSchema": {
         "type": "object",
         "extend": [
@@ -27447,6 +27487,46 @@ export const miroirFundamentalJzodSchema = {
           "rootObject": {
             "type": "any",
             "optional": true
+          }
+        }
+      },
+      "transformerForBuildPlusRuntime_resolveTransformerResultSchema": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
+            },
+            "context": {}
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "resolveTransformerResultSchema"
+          },
+          "transformer": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime"
+            },
+            "description": "The nested transformer whose output schema should be inferred."
+          },
+          "context": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              }
+            },
+            "description": "Schema context for reference resolution (referenceName / referencePath operands)."
           }
         }
       },

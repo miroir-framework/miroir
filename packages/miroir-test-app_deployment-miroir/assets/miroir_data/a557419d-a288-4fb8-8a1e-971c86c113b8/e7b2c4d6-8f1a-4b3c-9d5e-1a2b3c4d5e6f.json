@@ -1,0 +1,127 @@
+{
+  "uuid": "e7b2c4d6-8f1a-4b3c-9d5e-1a2b3c4d5e6f",
+  "name": "resolveTransformerResultSchema",
+  "defaultLabel": "Resolve Transformer Result Schema",
+  "description": "Infers the Jzod output schema of a nested transformer without evaluating runtime values. Uses application transformer definitions internally.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "MLS",
+  "runnableAsSql": false,
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "object",
+      "output": "object"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "resolveTransformerResultSchema"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "transformer": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime"
+            },
+            "description": "The nested transformer whose output schema should be inferred."
+          },
+          "context": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "jzodElement"
+              }
+            },
+            "description": "Schema context for reference resolution (referenceName / referencePath operands)."
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "jzodElement"
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "status": {
+                "type": "literal",
+                "definition": "error"
+              },
+              "failureKind": {
+                "type": "string"
+              },
+              "error": {
+                "type": "string"
+              },
+              "transformerType": {
+                "type": "string",
+                "optional": true
+              },
+              "referenceName": {
+                "type": "string",
+                "optional": true
+              },
+              "referencePath": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "typePath": {
+                "type": "array",
+                "definition": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                }
+              },
+              "transformerPath": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "transformer_resolveTransformerResultSchema",
+    "sqlImplementationFunctionName": "N/A"
+  }
+}

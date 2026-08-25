@@ -361,6 +361,7 @@ export { default as transformer_jzodTypeCheck_json } from "./assets/miroir_data/
 export { default as transformer_resolveConditionalSchema_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/70f5e617-2aa3-4dc4-b897-4cc3cffa3405.json" with { type: "json" };
 export { default as transformer_resolveSchemaReferenceInContext_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/a8f8e3c6-9876-4e2d-8b4f-123456789abc.json" with { type: "json" };
 export { default as transformer_unfoldSchemaOnce_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d5c9f2e3-8741-4b9a-a1d2-4e5f6789abcd.json" with { type: "json" };
+export { default as transformer_resolveTransformerResultSchema_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e7b2c4d6-8f1a-4b3c-9d5e-1a2b3c4d5e6f.json" with { type: "json" };
 // metaModelTransformers
 export { default as transformer_metaModel_entityDefinition_extractAttributes_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/1bbed895-7d5a-4541-97bd-4d5cf22b128c.json" with { type: "json" };
 

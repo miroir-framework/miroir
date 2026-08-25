@@ -47,6 +47,7 @@ import {
   transformer_resolveConditionalSchema_json,
   transformer_resolveSchemaReferenceInContext_json,
   transformer_unfoldSchemaOnce_json,
+  transformer_resolveTransformerResultSchema_json,
   // meta model
   transformer_metaModel_entityDefinition_extractAttributes_json,
 } from "miroir-test-app_deployment-miroir";
@@ -88,6 +89,7 @@ export const transformer_resolveConditionalSchema: TransformerDefinition = trans
 export const transformer_resolveSchemaReferenceInContext: TransformerDefinition = transformer_resolveSchemaReferenceInContext_json as TransformerDefinition;
 export const transformer_unfoldSchemaOnce: TransformerDefinition = transformer_unfoldSchemaOnce_json as TransformerDefinition;
 export const transformer_jzodTypeCheck: TransformerDefinition = transformer_jzodTypeCheck_json as TransformerDefinition;
+export const transformer_resolveTransformerResultSchema: TransformerDefinition = transformer_resolveTransformerResultSchema_json as TransformerDefinition;
 // admin
 export const transformer_getActiveDeployment: TransformerDefinition = transformer_getActiveDeployment_json as TransformerDefinition;
 export const transformer_duplicateApplicationModel: TransformerDefinition = transformer_duplicateApplicationModel_json as TransformerDefinition;
@@ -120,6 +122,7 @@ export const mlsTransformers: Record<string,TransformerDefinition> = {
   transformer_resolveSchemaReferenceInContext,
   transformer_unfoldSchemaOnce,
   transformer_jzodTypeCheck,
+  transformer_resolveTransformerResultSchema,
   transformer_ansiColumnsToJzodSchema,
   transformer_defaultValueForMLSchema,
 };

@@ -77,6 +77,7 @@ import {
   resolveObjectExtendClauseAndDefinition,
 } from "../1_core/jzod/jzodTypeCheck";
 import { unfoldSchemaOnceTransformer } from "../1_core/jzod/JzodUnfoldSchemaOnce";
+import { transformer_resolveTransformerResultSchema } from "./Transformer_ResultSchema";
 import {
   resolveConditionalSchema,
   resolveConditionalSchemaTransformer,
@@ -760,6 +761,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   transformer_resolveSchemaReferenceInContext: resolveSchemaReferenceInContextTransformer,
   transformer_unfoldSchemaOnce: unfoldSchemaOnceTransformer,
   transformer_jzodTypeCheck: jzodTypeCheckTransformer,
+  transformer_resolveTransformerResultSchema,
   handleTransformer_ansiColumnsToJzodSchema,
   handleTransformer_concatLists,
   handleTransformer_filterList,

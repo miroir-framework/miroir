@@ -1295,6 +1295,30 @@
             }
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "mlTransformer",
+        "miroirTests": [
+          {
+            "miroirTestType": "transformerTest",
+            "miroirTestLabel": "resolveTransformerResultSchema transformer infers nested output schema",
+            "transformerName": "resolveTransformerResultSchema_currentDate",
+            "transformer": {
+              "transformerType": "resolveTransformerResultSchema",
+              "interpolation": "runtime",
+              "transformer": {
+                "transformerType": "currentDate",
+                "interpolation": "runtime"
+              },
+              "context": {}
+            },
+            "transformerParams": {},
+            "expectedValue": {
+              "type": "string"
+            }
+          }
+        ]
       }
     ]
   }
