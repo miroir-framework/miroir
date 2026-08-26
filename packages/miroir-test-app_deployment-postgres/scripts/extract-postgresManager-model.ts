@@ -101,20 +101,14 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
     if (appDeploymentConfig.admin.emulatedServerType !== "filesystem") {
       throw new Error("Invalid configuration: The deployment storage config for the library must have 'emulatedServerType' set to 'filesystem'");
     }
-    // Convert relative paths to absolute, resolving from scripts directory
-    const modelDir = resolve(scriptsDir, appDeploymentConfig.model.directory);
-    const dataDir = resolve(scriptsDir, appDeploymentConfig.data.directory);
-    const adminDir = resolve(scriptsDir, appDeploymentConfig.admin.directory);
-    
-    // Update the config with absolute paths
-    appDeploymentConfig.model.directory = modelDir;
-    appDeploymentConfig.data.directory = dataDir;
-    appDeploymentConfig.admin.directory = adminDir;
-    
+    // Paths in extractMetaModelConfig.json are relative to the package root (cwd when
+    // running via npm -w), joined with client.filesystemDeploymentRootDirectory — same as library.
     console.log("   Configuration loaded successfully");
     console.log("   Scripts directory:", scriptsDir);
-    console.log("   Model directory:", modelDir);
-    console.log("   Data directory:", dataDir);
+    console.log("   Model directory:", appDeploymentConfig.model.directory);
+    console.log("   Data directory:", appDeploymentConfig.data.directory);
+    console.log("   Admin directory:", appDeploymentConfig.admin.directory);
+    console.log("   filesystemDeploymentRootDirectory:", miroirConfig.client.filesystemDeploymentRootDirectory);
 
 
     const { storeController, persistenceStoreControllerManager } = await mountApplicationDeployment(

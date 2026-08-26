@@ -51,48 +51,32 @@
                         "left": {
                           "transformerType": "boolExpr",
                           "interpolation": "runtime",
-                          "operator": "&&",
-                          "left": {
-                            "transformerType": "boolExpr",
-                            "interpolation": "runtime",
-                            "operator": "isNotNull",
-                            "left": {
-                              "transformerType": "getFromParameters",
-                              "interpolation": "runtime",
-                              "safe": true,
-                              "referencePath": ["deployApplication", "applicationBundle"]
-                            }
-                          },
-                          "right": {
-                            "transformerType": "boolExpr",
-                            "interpolation": "runtime",
-                            "operator": "!=",
-                            "left": {
-                              "transformerType": "getFromParameters",
-                              "interpolation": "runtime",
-                              "safe": true,
-                              "referencePath": [
-                                "deployApplication",
-                                "applicationBundle",
-                                "applicationName"
-                              ]
-                            },
-                            "right": {
-                              "transformerType": "returnValue",
-                              "interpolation": "runtime",
-                              "value": ""
-                            }
-                          }
-                        },
-                        "right": {
-                          "transformerType": "boolExpr",
-                          "interpolation": "runtime",
                           "operator": "isNotNull",
                           "left": {
                             "transformerType": "getFromParameters",
                             "interpolation": "runtime",
                             "safe": true,
-                            "referencePath": ["deployApplication", "applicationBundle", "entities"]
+                            "referencePath": ["deployApplication", "applicationBundle"]
+                          }
+                        },
+                        "right": {
+                          "transformerType": "boolExpr",
+                          "interpolation": "runtime",
+                          "operator": "!=",
+                          "left": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "runtime",
+                            "safe": true,
+                            "referencePath": [
+                              "deployApplication",
+                              "applicationBundle",
+                              "applicationName"
+                            ]
+                          },
+                          "right": {
+                            "transformerType": "returnValue",
+                            "interpolation": "runtime",
+                            "value": ""
                           }
                         }
                       },
@@ -104,16 +88,12 @@
                           "transformerType": "getFromParameters",
                           "interpolation": "runtime",
                           "safe": true,
-                          "referencePath": [
-                            "deployApplication",
-                            "applicationBundle",
-                            "entityDefinitions"
-                          ]
+                          "referencePath": ["deployApplication", "applicationBundle", "entities"]
                         }
                       }
                     },
                     "then": true,
-                    "else": "Provide a valid application bundle (applicationName, entities, entityDefinitions required)."
+                    "else": "Provide a valid application bundle (applicationName and entities required; entityVersions optional for historized apps)."
                   }
                 }
               }
