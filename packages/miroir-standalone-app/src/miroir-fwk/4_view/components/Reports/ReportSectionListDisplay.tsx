@@ -862,6 +862,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                     applicationDeploymentMap={props.applicationDeploymentMap}
                     deploymentUuid={props.deploymentUuid}
                     sectionLabel={defaultLabel ?? currentReportTargetEntity?.name}
+                    rowMlSchema={instancesToDisplayJzodSchema}
                   />
                 ) : null}
               </div>

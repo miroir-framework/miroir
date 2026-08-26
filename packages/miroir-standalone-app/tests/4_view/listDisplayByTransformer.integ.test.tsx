@@ -73,6 +73,8 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
 
       const resultRegion = screen.getByTestId("list-transformer-result");
       expect(within(resultRegion).getByText(book1.name, { exact: false })).toBeInTheDocument();
+      // Declared result schema is concrete (not `any`) — no orange union-type stars on the result root.
+      expect(resultRegion.querySelector('[data-testid^="union-type-star-transformationResult"]')).toBeNull();
     });
 
     it("unmounts the panel when toggled off and leaves the list grid rendered", async () => {

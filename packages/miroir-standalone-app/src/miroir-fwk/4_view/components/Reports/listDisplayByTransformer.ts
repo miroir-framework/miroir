@@ -1,11 +1,15 @@
+import { valueToJzod } from "@miroir-framework/jzod";
 import {
   defaultMiroirModelEnvironment,
   defaultTransformerInput,
   EntityInstance,
   EntityInstancesUuidIndex,
+  isFailedTransformerInterfaceFromDefinition,
+  resolveTransformerResultSchema,
   TransformerFailure,
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
+  type JzodElement,
   type TransformerReturnType,
 } from "miroir-core";
 
@@ -120,4 +124,30 @@ export function getListTransformationFailure(
     return result.find((item) => isTransformerFailureValue(item)) ?? null;
   }
   return null;
+}
+
+const ANY_SCHEMA: JzodElement = { type: "any" };
+
+/**
+ * Declared display schema for list-transformer results.
+ * Prefer design-time typed inference with `row` context; fall back to value shape
+ * (`arrayAsArray`). Use `{ type: "any" }` only as last resort — declaring `any`
+ * as formValueMLSchema keeps orange union stars in the editor.
+ */
+export function resolveListTransformationResultDisplaySchema(
+  elementTransformer: CoreTransformerForBuildPlusRuntime,
+  transformationResult: TransformerReturnType<any>,
+  rowMlSchema?: JzodElement,
+): JzodElement {
+  if (rowMlSchema) {
+    const typed = resolveTransformerResultSchema(
+      buildRowMapListTransformer(elementTransformer),
+      { row: rowMlSchema },
+    );
+    if (!isFailedTransformerInterfaceFromDefinition(typed)) {
+      return typed;
+    }
+  }
+
+  return (valueToJzod(transformationResult, "arrayAsArray") ?? ANY_SCHEMA) as JzodElement;
 }

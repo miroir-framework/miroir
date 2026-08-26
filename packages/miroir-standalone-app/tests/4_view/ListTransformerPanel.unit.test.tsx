@@ -81,8 +81,17 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.j
 }));
 
 vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditorWithFormik.js", () => ({
-  TypedValueObjectEditorWithFormik: ({ initialValueObject }: { initialValueObject: { transformationResult?: unknown } }) => (
-    <div data-testid="list-transformer-result-viewer">
+  TypedValueObjectEditorWithFormik: ({
+    initialValueObject,
+    formValueMLSchema,
+  }: {
+    initialValueObject: { transformationResult?: unknown };
+    formValueMLSchema?: { type?: string };
+  }) => (
+    <div
+      data-testid="list-transformer-result-viewer"
+      data-schema-type={formValueMLSchema?.type ?? "missing"}
+    >
       {JSON.stringify(initialValueObject.transformationResult)}
     </div>
   ),
@@ -226,9 +235,12 @@ describe("ListTransformerPanel — list section integration", () => {
     expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
     expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
     expect(screen.getByTestId("list-transformer-result")).toBeInTheDocument();
-    const resultText = screen.getByTestId("list-transformer-result-viewer").textContent ?? "";
+    const resultViewer = screen.getByTestId("list-transformer-result-viewer");
+    const resultText = resultViewer.textContent ?? "";
     expect(resultText).toContain(book1.uuid);
     expect(resultText).toContain(book1.name);
+    // Declared schema must not be `any` (that keeps orange union stars).
+    expect(resultViewer.getAttribute("data-schema-type")).toBe("array");
   });
 
   it("recomputes the result when the transformer is edited (returnValue)", () => {

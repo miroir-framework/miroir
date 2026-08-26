@@ -211,19 +211,20 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
 
-  const { availableReports, entities, entityVersions } = useMemo(() => {
-      return props.deploymentUuid &&
-        context.deploymentUuidToReportsEntitiesMapping &&
-        context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid]
-        ? context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid][
-          props.applicationSection
-          ]
-        : { availableReports: [], entities: [], entityVersions: [] };
-    }, [
-      props.deploymentUuid,
-      context.deploymentUuidToReportsEntitiesMapping,
-      props.applicationSection,
-    ]);
+  const entities = useMemo(() => {
+    const result: Entity[] = props.deploymentUuid &&
+      context.deploymentUuidToReportsEntitiesMapping &&
+      context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid]
+      ? context.deploymentUuidToReportsEntitiesMapping[props.deploymentUuid][
+        props.applicationSection
+        ]?.entities ?? []
+      : [];
+    return result;
+  }, [
+    props.deploymentUuid,
+    context.deploymentUuidToReportsEntitiesMapping,
+    props.applicationSection,
+  ]);
   
 
   const targetEntityUuid: Uuid | undefined =
@@ -618,11 +619,6 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               initiallyUnfolded={false}
             />
             <ThemedOnScreenHelper label={`entities`} data={entities} initiallyUnfolded={false} />
-            <ThemedOnScreenHelper
-              label={`entityVersions`}
-              data={entityVersions}
-              initiallyUnfolded={false}
-            />
             <ThemedOnScreenHelper label={`targetEntityUuid`} data={targetEntityUuid} />
             <ThemedOnScreenHelper label={`instance`} data={instance} />
             {/* <ThemedOnScreenHelper

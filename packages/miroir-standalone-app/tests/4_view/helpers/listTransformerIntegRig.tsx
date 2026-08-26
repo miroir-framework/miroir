@@ -5,6 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 
 import {
   defaultSelfApplicationDeploymentMap,
+  entityMLSchema,
   getReportsAndEntitiesForDeploymentUuid,
 } from "miroir-core";
 import {
@@ -12,6 +13,7 @@ import {
   book2,
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
+  entityBook,
   reportBookList,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
@@ -151,6 +153,7 @@ export function renderListTransformerPanelInteg(
         applicationDeploymentMap={libraryApplicationDeploymentMap}
         deploymentUuid={deployment_Library_DO_NO_USE.uuid}
         sectionLabel="Books"
+        rowMlSchema={entityMLSchema(entityBook as any)}
       />
     </ListTransformerIntegShell>,
   );

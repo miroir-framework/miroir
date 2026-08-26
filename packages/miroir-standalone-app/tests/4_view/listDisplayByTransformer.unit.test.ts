@@ -13,6 +13,7 @@ import {
   buildRowMapListTransformer,
   DEFAULT_ROW_IDENTITY_TRANSFORMER,
   LIST_TRANSFORMER_PAGE_SIZE,
+  resolveListTransformationResultDisplaySchema,
   sliceInstancesToPage,
 } from "../../src/miroir-fwk/4_view/components/Reports/listDisplayByTransformer.js";
 
@@ -28,6 +29,14 @@ const mapListIdentityTransformer: CoreTransformerForBuildPlusRuntime = {
   referenceToOuterObject: "row",
   elementTransformer: identityRowTransformer,
 };
+
+const sampleRowMlSchema = {
+  type: "object",
+  definition: {
+    uuid: { type: "string" },
+    name: { type: "string" },
+  },
+} as const;
 
 describe("listDisplayByTransformer — mapList on uuid-indexed list input", () => {
   it("applies mapList with getFromContext row to a uuid-indexed book index (identity per row)", () => {
@@ -131,5 +140,69 @@ describe("listDisplayByTransformer — helper API", () => {
     expect(Object.keys(firstPage)).toHaveLength(LIST_TRANSFORMER_PAGE_SIZE);
     expect(Object.keys(secondPage)).toHaveLength(LIST_TRANSFORMER_PAGE_SIZE);
     expect(Object.keys(firstPage)).not.toEqual(Object.keys(secondPage));
+  });
+});
+
+describe("resolveListTransformationResultDisplaySchema", () => {
+  it("returns array of rowMlSchema for the default identity transformer", () => {
+    const result = applyTransformerToListRows(
+      { [book1.uuid]: book1 },
+      DEFAULT_ROW_IDENTITY_TRANSFORMER,
+    );
+
+    expect(
+      resolveListTransformationResultDisplaySchema(
+        DEFAULT_ROW_IDENTITY_TRANSFORMER,
+        result,
+        sampleRowMlSchema as any,
+      ),
+    ).toEqual({
+      type: "array",
+      definition: sampleRowMlSchema,
+    });
+  });
+
+  it("falls back to valueToJzod arrayAsArray when rowMlSchema is omitted", () => {
+    const result = applyTransformerToListRows(
+      { [book1.uuid]: book1, [book2.uuid]: book2 },
+      {
+        interpolation: "runtime",
+        transformerType: "returnValue",
+        value: 42,
+      },
+    );
+
+    const schema = resolveListTransformationResultDisplaySchema(
+      {
+        interpolation: "runtime",
+        transformerType: "returnValue",
+        value: 42,
+      },
+      result,
+    );
+
+    expect(schema).toEqual({ type: "array", definition: { type: "number" } });
+    expect(schema.type).not.toBe("any");
+  });
+
+  it("falls back to valueToJzod when typed resolution fails (missing context ref)", () => {
+    const failingTransformer: CoreTransformerForBuildPlusRuntime = {
+      interpolation: "runtime",
+      transformerType: "getFromContext",
+      referenceName: "missingRef",
+    };
+    const result = applyTransformerToListRows(
+      { [book1.uuid]: book1 },
+      failingTransformer,
+    );
+
+    const schema = resolveListTransformationResultDisplaySchema(
+      failingTransformer,
+      result,
+      sampleRowMlSchema as any,
+    );
+
+    expect(schema.type).not.toBe("any");
+    expect(schema.type).toBe("array");
   });
 });

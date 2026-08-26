@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import {
   safeStringify,
   type ApplicationDeploymentMap,
+  type CoreTransformerForBuildPlusRuntime,
   type JzodElement,
   type TransformerReturnType,
   type Uuid,
@@ -16,6 +17,7 @@ import {
   applyTransformerToListRows,
   DEFAULT_ROW_IDENTITY_TRANSFORMER,
   getListTransformationFailure,
+  resolveListTransformationResultDisplaySchema,
 } from "./listDisplayByTransformer.js";
 import { hasDisplayableTransformationResult } from "../TransformerEditor/TransformationResultPanel.js";
 import { ThemedContainer, ThemedHeaderSection, ThemedTitle } from "../Themes/index.js";
@@ -37,14 +39,23 @@ export interface ListTransformerPanelProps {
   applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
   sectionLabel?: string;
+  /** Row entity ML schema (enables typed result schema for identity / getFromContext row). */
+  rowMlSchema?: JzodElement;
 }
 
 const ListTransformerResultViewer: React.FC<{
   transformationResult: TransformerReturnType<any>;
+  transformationResultSchema: JzodElement;
   application: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   deploymentUuid: Uuid;
-}> = ({ transformationResult, application, applicationDeploymentMap, deploymentUuid }) => {
+}> = ({
+  transformationResult,
+  transformationResultSchema,
+  application,
+  applicationDeploymentMap,
+  deploymentUuid,
+}) => {
   const initialValueObject = useMemo(
     () => ({ transformationResult }),
     [safeStringify(transformationResult)],
@@ -54,7 +65,7 @@ const ListTransformerResultViewer: React.FC<{
     <TypedValueObjectEditorWithFormik
       labelElement={<div>Transformed rows:</div>}
       initialValueObject={initialValueObject}
-      formValueMLSchema={{ type: "any" } as JzodElement}
+      formValueMLSchema={transformationResultSchema}
       formikValuePathAsString="transformationResult"
       application={application}
       applicationDeploymentMap={applicationDeploymentMap}
@@ -76,16 +87,26 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
   applicationDeploymentMap,
   deploymentUuid,
   sectionLabel,
+  rowMlSchema,
 }) => {
   const formik = useFormikContext<Record<string, any>>();
 
+  const elementTransformer: CoreTransformerForBuildPlusRuntime =
+    formik.values[TRANSFORMER_INPUT_FORMIK_KEY] ?? DEFAULT_ROW_IDENTITY_TRANSFORMER;
+
   const transformationResult = useMemo(
+    () => applyTransformerToListRows(instancesToDisplay, elementTransformer),
+    [instancesToDisplay, elementTransformer],
+  );
+
+  const transformationResultSchema = useMemo(
     () =>
-      applyTransformerToListRows(
-        instancesToDisplay,
-        formik.values[TRANSFORMER_INPUT_FORMIK_KEY] ?? DEFAULT_ROW_IDENTITY_TRANSFORMER,
+      resolveListTransformationResultDisplaySchema(
+        elementTransformer,
+        transformationResult,
+        rowMlSchema,
       ),
-    [instancesToDisplay, formik.values[TRANSFORMER_INPUT_FORMIK_KEY]],
+    [elementTransformer, transformationResult, rowMlSchema],
   );
 
   const transformationFailure = useMemo(
@@ -125,6 +146,7 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         <div data-testid="list-transformer-result">
           <ListTransformerResultViewer
             transformationResult={transformationResult}
+            transformationResultSchema={transformationResultSchema}
             application={application}
             applicationDeploymentMap={applicationDeploymentMap}
             deploymentUuid={deploymentUuid}
