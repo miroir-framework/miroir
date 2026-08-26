@@ -6,10 +6,12 @@ import {
 } from "miroir-core";
 import type { McpToolDescriptionProperty } from "./mcpHandlersForEndpoint.js";
 import {
-  isJzodConversionLimitReached,
+  jsonSchemaRefPointer,
   normalizeJzodConversionOptions,
+  sanitizeJsonSchemaDefKey,
   schemaReferenceKey,
   type JzodConversionOptions,
+  type NormalizedJzodConversionOptions,
 } from "./jzodConversionContext.js";
 
 function looseObject(description: string): McpToolDescriptionProperty {
@@ -22,12 +24,66 @@ function looseObject(description: string): McpToolDescriptionProperty {
   };
 }
 
+function childOptions(
+  options: NormalizedJzodConversionOptions,
+): NormalizedJzodConversionOptions {
+  return {
+    ...options,
+    depth: options.depth + 1,
+  };
+}
+
+/**
+ * MCP tool `inputSchema` must be a JSON Schema with root `type: "object"` (Cursor and
+ * other clients reject bare root `$ref` — #248 cause 2).
+ * Only expands/wraps a top-level `$ref`; nested `$ref`s and non-ref roots are unchanged.
+ */
+function finalizeRootMcpInputSchema(
+  result: any,
+  defs: Record<string, unknown>,
+): any {
+  let root = result;
+
+  if (
+    root &&
+    typeof root === "object" &&
+    typeof root.$ref === "string" &&
+    root.type === undefined
+  ) {
+    const prefix = "#/$defs/";
+    const defKey = root.$ref.startsWith(prefix) ? root.$ref.slice(prefix.length) : undefined;
+    const body = defKey !== undefined ? defs[defKey] : undefined;
+    if (body && typeof body === "object") {
+      root = { ...(body as Record<string, unknown>) };
+    }
+
+    if (!root || typeof root !== "object" || root.type !== "object") {
+      const inner =
+        root && typeof root === "object"
+          ? root
+          : { type: "object", properties: {}, required: [], additionalProperties: true };
+      root = {
+        type: "object",
+        properties: {},
+        required: [],
+        additionalProperties: true,
+        allOf: [inner],
+      };
+    }
+  }
+
+  if (Object.keys(defs).length > 0) {
+    return { ...root, $defs: defs };
+  }
+  return root;
+}
+
 /**
  * Recursively converts a JzodElement to an MCP tool description property.
  *
- * Schema references are resolved against the Miroir fundamental model environment.
- * Cyclic references (jzodElement ↔ jzodObject, compositeAction ↔ domainAction, …)
- * degrade to a generic object rather than overflowing the stack.
+ * Schema references are resolved against the Miroir fundamental model environment and
+ * emitted as JSON Schema `$ref` / `$defs` entries so recursive Miroir types are not
+ * combinatorially inlined (see #248).
  */
 export function jzodElementToJsonSchema(
   jzodElement: JzodElement,
@@ -35,7 +91,28 @@ export function jzodElementToJsonSchema(
   propertyNameMapping?: Record<string, string>,
   conversionOptions?: JzodConversionOptions,
 ): McpToolDescriptionProperty | any {
+  const ownsDefs = conversionOptions?.defs === undefined;
   const options = normalizeJzodConversionOptions(conversionOptions);
+
+  const result = jzodElementToJsonSchemaInner(
+    jzodElement,
+    propertyName,
+    propertyNameMapping,
+    options,
+  );
+
+  if (ownsDefs) {
+    return finalizeRootMcpInputSchema(result, options.defs);
+  }
+  return result;
+}
+
+function jzodElementToJsonSchemaInner(
+  jzodElement: JzodElement,
+  propertyName: string | undefined,
+  propertyNameMapping: Record<string, string> | undefined,
+  options: NormalizedJzodConversionOptions,
+): McpToolDescriptionProperty | any {
   if (options.depth >= options.maxDepth) {
     return looseObject("");
   }
@@ -60,15 +137,21 @@ export function jzodElementToJsonSchema(
     case "schemaReference": {
       const ref = jzodElement as JzodReference;
       const refKey = schemaReferenceKey(ref);
-      if (isJzodConversionLimitReached(options, refKey)) {
+      const defKey = sanitizeJsonSchemaDefKey(refKey);
+      const refPointer = jsonSchemaRefPointer(defKey);
+
+      // Already defined, or placeholder reserved while resolving (cycle): share via $ref.
+      if (Object.prototype.hasOwnProperty.call(options.defs, defKey)) {
+        return { $ref: refPointer };
+      }
+
+      if (options.depth >= options.maxDepth) {
         return looseObject(description);
       }
 
+      // Reserve before resolving so recursive encounters return $ref instead of re-inlining.
+      options.defs[defKey] = looseObject(description || "Resolving schema reference");
       options.resolvingRefs.add(refKey);
-      const childOptions: JzodConversionOptions = {
-        ...options,
-        depth: options.depth + 1,
-      };
 
       try {
         const resolvedSchema = resolveJzodSchemaReferenceInContext(
@@ -76,15 +159,20 @@ export function jzodElementToJsonSchema(
           ref.context || {},
           defaultMiroirModelEnvironment,
         );
-        return jzodElementToJsonSchema(
+        options.defs[defKey] = jzodElementToJsonSchemaInner(
           resolvedSchema,
           propertyName,
           propertyNameMapping,
-          childOptions,
+          childOptions(options),
         );
+      } catch (error) {
+        delete options.defs[defKey];
+        throw error;
       } finally {
         options.resolvingRefs.delete(refKey);
       }
+
+      return { $ref: refPointer };
     }
 
     case "object": {
@@ -93,11 +181,11 @@ export function jzodElementToJsonSchema(
 
       if (jzodElement.definition) {
         for (const [key, value] of Object.entries(jzodElement.definition)) {
-          properties[key] = jzodElementToJsonSchema(
+          properties[key] = jzodElementToJsonSchemaInner(
             value as any,
             key,
             propertyNameMapping,
-            { ...options, depth: options.depth + 1 },
+            childOptions(options),
           );
           if (!(value as any).optional && !(value as any).nullable) {
             required.push(key);
@@ -120,11 +208,11 @@ export function jzodElementToJsonSchema(
       return {
         type: "array",
         description,
-        items: jzodElementToJsonSchema(
+        items: jzodElementToJsonSchemaInner(
           jzodElement.definition,
           undefined,
           propertyNameMapping,
-          { ...options, depth: options.depth + 1 },
+          childOptions(options),
         ),
       };
     }
@@ -164,11 +252,11 @@ export function jzodElementToJsonSchema(
       return {
         type: "object",
         description,
-        additionalProperties: jzodElementToJsonSchema(
+        additionalProperties: jzodElementToJsonSchemaInner(
           jzodElement.definition,
           undefined,
           propertyNameMapping,
-          { ...options, depth: options.depth + 1 },
+          childOptions(options),
         ),
       };
     }
@@ -177,10 +265,7 @@ export function jzodElementToJsonSchema(
         throw new Error("Tuple definition missing or invalid");
       }
       const prefixItems = jzodElement.definition.map((item) =>
-        jzodElementToJsonSchema(item as any, undefined, propertyNameMapping, {
-          ...options,
-          depth: options.depth + 1,
-        }),
+        jzodElementToJsonSchemaInner(item as any, undefined, propertyNameMapping, childOptions(options)),
       );
       return {
         type: "array",
@@ -196,10 +281,7 @@ export function jzodElementToJsonSchema(
       }
 
       const convertedMembers = jzodElement.definition.map((member) =>
-        jzodElementToJsonSchema(member as any, undefined, propertyNameMapping, {
-          ...options,
-          depth: options.depth + 1,
-        }),
+        jzodElementToJsonSchemaInner(member as any, undefined, propertyNameMapping, childOptions(options)),
       );
 
       const isDiscriminated = !!(jzodElement as any).discriminator;
@@ -225,14 +307,18 @@ export function jzodElementToJsonSchema(
       }
       return {
         allOf: [
-          jzodElementToJsonSchema(intersection.left, propertyName, propertyNameMapping, {
-            ...options,
-            depth: options.depth + 1,
-          }),
-          jzodElementToJsonSchema(intersection.right, propertyName, propertyNameMapping, {
-            ...options,
-            depth: options.depth + 1,
-          }),
+          jzodElementToJsonSchemaInner(
+            intersection.left,
+            propertyName,
+            propertyNameMapping,
+            childOptions(options),
+          ),
+          jzodElementToJsonSchemaInner(
+            intersection.right,
+            propertyName,
+            propertyNameMapping,
+            childOptions(options),
+          ),
         ],
         description,
       };
@@ -241,11 +327,11 @@ export function jzodElementToJsonSchema(
       if (!jzodElement.definition) {
         return looseObject(description);
       }
-      return jzodElementToJsonSchema(
+      return jzodElementToJsonSchemaInner(
         jzodElement.definition,
         propertyName,
         propertyNameMapping,
-        { ...options, depth: options.depth + 1 },
+        childOptions(options),
       );
     }
     case "any":

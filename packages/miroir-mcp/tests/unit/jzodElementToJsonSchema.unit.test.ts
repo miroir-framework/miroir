@@ -74,7 +74,7 @@ describe('jzodElementToJsonSchema', () => {
     });
   });
 
-  it('should resolve schemaReference for applicationSection with enum', () => {
+  it('should resolve schemaReference for applicationSection with enum via $ref/$defs', () => {
     const jzodElement = {
       type: 'schemaReference',
       tag: {
@@ -89,14 +89,24 @@ describe('jzodElementToJsonSchema', () => {
     };
 
     const result = jzodElementToJsonSchema(jzodElement as any, 'applicationSection');
+    const defKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_applicationSection';
 
-    expect(result).toEqual(
-        {
+    // Root must be type:object for MCP/Cursor (#248); non-object defs are wrapped via allOf.
+    expect(result.type).toBe('object');
+    expect(result.allOf).toEqual([
+      {
         type: 'string',
-        enum: ['model', 'data'],
-        description: 'A section of the application (model or data)',
-      }
-    );
+        enum: ['model', 'data', 'modelVersion'],
+        description:
+          'A section of the application (model, data, or modelVersion for version history)',
+      },
+    ]);
+    expect(result.$defs[defKey]).toEqual({
+      type: 'string',
+      enum: ['model', 'data', 'modelVersion'],
+      description:
+        'A section of the application (model, data, or modelVersion for version history)',
+    });
   });
 
   it('should convert object type recursively', () => {
@@ -256,17 +266,17 @@ describe('jzodElementToJsonSchema', () => {
     };
 
     const result = jzodElementToJsonSchema(jzodElement as any);
+    const entityInstanceKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_entityInstance';
 
-    // The resolved entityInstance should be an object with uuid, parentName, parentUuid, and other fields
     expect(result.type).toBe('array');
     expect(result.description).toBe('Array of entity instances');
-    expect(result.items.type).toBe('object');
-    // entityInstance contains uuid and parentUuid at minimum
-    expect(result.items.properties).toHaveProperty('uuid');
-    expect(result.items.properties).toHaveProperty('parentUuid');
+    expect(result.items).toEqual({ $ref: `#/$defs/${entityInstanceKey}` });
+    expect(result.$defs[entityInstanceKey].type).toBe('object');
+    expect(result.$defs[entityInstanceKey].properties).toHaveProperty('uuid');
+    expect(result.$defs[entityInstanceKey].properties).toHaveProperty('parentUuid');
   });
 
-  it('should resolve schemaReference with context (relative reference)', () => {
+  it('should resolve schemaReference with context (relative reference) via $ref/$defs', () => {
     const jzodElement = {
       type: 'schemaReference',
       context: {
@@ -285,14 +295,22 @@ describe('jzodElementToJsonSchema', () => {
     };
 
     const result = jzodElementToJsonSchema(jzodElement as any);
+    const defKey = '_myString';
 
-    expect(result).toEqual({
+    expect(result.type).toBe('object');
+    expect(result.allOf).toEqual([
+      {
+        type: 'string',
+        description: 'A custom string type',
+      },
+    ]);
+    expect(result.$defs[defKey]).toEqual({
       type: 'string',
       description: 'A custom string type',
     });
   });
 
-  it('should resolve nested schemaReference in object properties', () => {
+  it('should resolve nested schemaReference in object properties via $ref/$defs', () => {
     const jzodElement = {
       type: 'object',
       definition: {
@@ -315,12 +333,15 @@ describe('jzodElementToJsonSchema', () => {
     };
 
     const result = jzodElementToJsonSchema(jzodElement as any);
+    const sectionKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_applicationSection';
 
     expect(result.type).toBe('object');
-    expect(result.properties.section).toEqual({
+    expect(result.properties.section).toEqual({ $ref: `#/$defs/${sectionKey}` });
+    expect(result.$defs[sectionKey]).toEqual({
       type: 'string',
-      enum: ['model', 'data'],
-      description: 'A section of the application (model or data)',
+      enum: ['model', 'data', 'modelVersion'],
+      description:
+        'A section of the application (model, data, or modelVersion for version history)',
     });
     expect(result.properties.name).toEqual({
       type: 'string',
@@ -328,7 +349,7 @@ describe('jzodElementToJsonSchema', () => {
     });
   });
 
-  it('should resolve schemaReference for entityInstanceCollection', () => {
+  it('should resolve schemaReference for entityInstanceCollection via $ref/$defs', () => {
     const jzodElement = {
       type: 'schemaReference',
       definition: {
@@ -338,16 +359,18 @@ describe('jzodElementToJsonSchema', () => {
     };
 
     const result = jzodElementToJsonSchema(jzodElement as any);
+    const collectionKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_entityInstanceCollection';
 
+    // Root $ref expanded once so inputSchema.type is object (#248 cause 2).
     expect(result.type).toBe('object');
     expect(result.properties).toHaveProperty('parentUuid');
     expect(result.properties).toHaveProperty('applicationSection');
     expect(result.properties).toHaveProperty('instances');
-    // Check that instances is an array type
     expect(result.properties.instances.type).toBe('array');
+    expect(result.$defs[collectionKey].type).toBe('object');
   });
 
-  it('should handle complex nested schemaReference resolution', () => {
+  it('should handle complex nested schemaReference resolution via $ref/$defs', () => {
     const jzodElement = {
       type: 'object',
       definition: {
@@ -378,12 +401,13 @@ describe('jzodElementToJsonSchema', () => {
     };
 
     const result = jzodElementToJsonSchema(jzodElement as any);
+    const entityInstanceKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_entityInstance';
 
     expect(result.type).toBe('object');
     expect(result.properties.deployment.type).toBe('string');
     expect(result.properties.data.type).toBe('array');
-    expect(result.properties.data.items.type).toBe('object');
-    expect(result.properties.data.items.properties).toHaveProperty('uuid');
+    expect(result.properties.data.items).toEqual({ $ref: `#/$defs/${entityInstanceKey}` });
+    expect(result.$defs[entityInstanceKey].properties).toHaveProperty('uuid');
   });
 
   // TDD: New type conversions
@@ -961,7 +985,7 @@ describe('jzodElementToJsonSchema', () => {
       });
     });
 
-    it('should convert union with schemaReference', () => {
+    it('should convert union with schemaReference via $ref/$defs', () => {
       const jzodElement = {
         type: 'union',
         definition: [
@@ -979,16 +1003,19 @@ describe('jzodElementToJsonSchema', () => {
       };
 
       const result = jzodElementToJsonSchema(jzodElement as any);
+      const sectionKey = 'fe9b7d99-f216-44de-bb6e-60e1a1ebb739_applicationSection';
 
       expect(result.anyOf).toHaveLength(2);
       expect(result.anyOf[0]).toEqual({
         type: 'string',
         description: '',
       });
-      expect(result.anyOf[1]).toEqual({
+      expect(result.anyOf[1]).toEqual({ $ref: `#/$defs/${sectionKey}` });
+      expect(result.$defs[sectionKey]).toEqual({
         type: 'string',
-        enum: ['model', 'data'],
-        description: 'A section of the application (model or data)',
+        enum: ['model', 'data', 'modelVersion'],
+        description:
+          'A section of the application (model, data, or modelVersion for version history)',
       });
     });
   });
@@ -1005,7 +1032,27 @@ describe('jzodElementToJsonSchema', () => {
 
       expect(() => jzodElementToJsonSchema(jzodElement as any)).not.toThrow();
       const result = jzodElementToJsonSchema(jzodElement as any);
-      expect(result).toBeDefined();
+      const defKey = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739_jzodElement";
+      expect(result.type).toBe("object");
+      expect(result.$defs[defKey]).toBeDefined();
+      // Recursive encounters must reuse $ref, not re-inline (size stays bounded).
+      const serialized = JSON.stringify(result);
+      expect(serialized.length).toBeLessThan(512 * 1024);
+    });
+
+    it("ensures root inputSchema is type object when payload is a schemaReference", () => {
+      const jzodElement = {
+        type: "schemaReference",
+        definition: {
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          relativePath: "boxedQueryWithExtractorCombinerTransformer",
+        },
+      };
+
+      const result = jzodElementToJsonSchema(jzodElement as any);
+      expect(result.type).toBe("object");
+      expect(result.$ref).toBeUndefined();
+      expect(result.properties || result.allOf).toBeTruthy();
     });
 
     it("does not stack overflow on compositeActionSequence payload shape", () => {
@@ -1018,6 +1065,10 @@ describe('jzodElementToJsonSchema', () => {
       };
 
       expect(() => jzodElementToJsonSchema(jzodElement as any)).not.toThrow();
+      const result = jzodElementToJsonSchema(jzodElement as any);
+      const serialized = JSON.stringify(result);
+      // Pre-$ref this class of schema expanded to tens of MB; budget matches #248 provisional gate.
+      expect(serialized.length).toBeLessThan(512 * 1024);
     });
 
     it("converts Jzod any type to a generic object instead of throwing", () => {

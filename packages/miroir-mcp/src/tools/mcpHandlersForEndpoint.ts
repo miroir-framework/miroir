@@ -322,6 +322,13 @@ export type McpToolDescriptionPropertyObject = {
   properties: Record<string, McpToolDescriptionProperty>;
   required: string[];
   additionalProperties?: boolean;
+  /** Shared definitions when Jzod schemaReferences are emitted as `$ref` (#248). */
+  $defs?: Record<string, unknown>;
+};
+
+export type McpToolDescriptionPropertyRef = {
+  $ref: string;
+  $defs?: Record<string, unknown>;
 };
 
 export type McpToolDescriptionPropertyArray = {
@@ -337,12 +344,14 @@ export type McpToolDescriptionPropertyString = {
 export type McpToolDescriptionProperty =
   | McpToolDescriptionPropertyString
   | McpToolDescriptionPropertyObject
-  | McpToolDescriptionPropertyArray;
+  | McpToolDescriptionPropertyArray
+  | McpToolDescriptionPropertyRef;
 
   export type McpToolDescription = {
   name: string;
   description?: string;
-  inputSchema: McpToolDescriptionPropertyObject;
+  /** JSON Schema for tool args; may be a root object or a root `$ref` with `$defs` (#248). */
+  inputSchema: McpToolDescriptionPropertyObject | McpToolDescriptionPropertyRef;
 };
 
 export type McpRequestHandler<T extends McpToolDescription> = {
