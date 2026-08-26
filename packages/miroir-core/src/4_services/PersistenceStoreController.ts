@@ -35,7 +35,7 @@ import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
 
-import { entityEntity } from "miroir-test-app_deployment-miroir";
+import { entityCommit, entityEntity } from "miroir-test-app_deployment-miroir";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import {
@@ -123,6 +123,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   /**
    * #232 — resolve a section to its backing store, or return Action2Error for an unconfigured
    * modelVersion section (instead of silently falling through to data or model).
+   * Reads (getInstances / getInstance) treat absence as empty — unversioned satellites omit
+   * the section (#234). Writes still surface the named error.
    */
   private getSectionInstanceStore(
     section: ApplicationSection,
@@ -140,6 +142,19 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       return this.modelVersionStoreSection;
     }
     return section === "model" ? this.modelStoreSection : this.dataStoreSection;
+  }
+
+  private emptyModelVersionCollection(
+    entityUuid: string,
+  ): Action2EntityInstanceCollectionOrFailure {
+    return {
+      status: "ok",
+      returnedDomainElement: {
+        parentUuid: entityUuid,
+        applicationSection: "modelVersion",
+        instances: [],
+      },
+    };
   }
 
   // #############################################################################################
@@ -466,9 +481,16 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   async bootFromPersistedState(
     metaModelEntities: Entity[],
   ): Promise<Action2VoidReturnType> {
+    // #232/#234 — VH parents belong on modelVersion only. Commit instances live in data (Miroir)
+    // and are not created for satellite apps — do not register a phantom model SQL table for them.
+    const modelSectionEntities = metaModelEntities.filter(
+      (entity) =>
+        !versionHistoryEntityUuids.has(entity.uuid!) &&
+        entity.uuid !== entityCommit.uuid,
+    );
     const modelBootFromPersistedState: Action2ReturnType =
       await this.modelStoreSection.bootFromPersistedState(
-        metaModelEntities,
+        modelSectionEntities,
         // metaModelEntityDefinitions
       );
     if (modelBootFromPersistedState instanceof Action2Error) {
@@ -754,6 +776,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
     const currentStore = this.getSectionInstanceStore(section);
     if (currentStore instanceof Action2Error) {
+      // Unversioned deployments: no history rows to fetch (#234).
+      if (section === "modelVersion") {
+        return new Action2Error(
+          "FailedToGetInstance",
+          `modelVersion section is not configured; no instance ${instancePrimaryKey} for entity ${entityUuid}.`,
+        );
+      }
       return currentStore;
     }
     const result: Action2EntityInstanceReturnType = await currentStore.getInstance(
@@ -807,6 +836,17 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     
     const currentStore = this.getSectionInstanceStore(section);
     if (currentStore instanceof Action2Error) {
+      // Unversioned / bundled deployments omit modelVersion (#232 Slice 4 / #234).
+      // REST refresh GETs /CRUD/.../modelVersion/entity/.../all — return empty, not 500.
+      if (section === "modelVersion") {
+        log.info(
+          this.logHeader,
+          "getInstances",
+          "modelVersion section not configured — returning empty collection for",
+          entityUuid,
+        );
+        return this.emptyModelVersionCollection(entityUuid);
+      }
       return currentStore;
     }
     log.debug(

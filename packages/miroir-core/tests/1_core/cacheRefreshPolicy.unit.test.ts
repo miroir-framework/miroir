@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  isAbsentModelVersionSectionError,
   isLazyCacheOnRefreshEntity,
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
@@ -10,6 +11,7 @@ import type {
   Entity,
   EntityVersion,
 } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement.js";
 
 function entity(uuid: string, name: string): Entity {
   return {
@@ -71,10 +73,49 @@ describe("shouldCacheAllInstancesOnRefresh (1.1 default eager)", () => {
   });
 });
 
+describe("isAbsentModelVersionSectionError (#232/#234 wrapped soft-skip)", () => {
+  it("detects the marker on the top-level Action2Error", () => {
+    expect(
+      isAbsentModelVersionSectionError(
+        new Action2Error(
+          "FailedToOpenStore",
+          "modelVersion section is not configured for this deployment",
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  it("detects the marker nested under FailedToHandlePersistenceAction (server refresh wrap)", () => {
+    // Matches logs-server.txt: outer LocalPersistenceAction_read, inner FailedToOpenStore.
+    // Action2Error ctor: (errorType, errorMessage, errorStack, innerError)
+    const wrapped = new Action2Error(
+      "FailedToHandlePersistenceAction",
+      "could not handle action LocalPersistenceAction_read",
+      [],
+      new Action2Error(
+        "FailedToOpenStore",
+        "modelVersion section is not configured for this deployment (store: PersistenceStoreController …). Add a modelVersion section to the deployment configuration to persist version history.",
+      ),
+    );
+    expect(isAbsentModelVersionSectionError(wrapped)).toBe(true);
+  });
+
+  it("returns false for unrelated errors", () => {
+    expect(
+      isAbsentModelVersionSectionError(
+        new Action2Error("FailedToGetInstances", "relation Commit does not exist"),
+      ),
+    ).toBe(false);
+  });
+});
+
 describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
-  const applicationUuid = "00000000-0000-4000-8000-000000000001";
-  const modelA = entity("model-a", "Entity");
-  const modelB = entity("model-b", "EntityVersion");
+  // Satellite (non-Miroir) application uuid — section routing uses metaModelEntityUuids.
+  const applicationUuid = "84d28eb1-d98a-499e-bf24-62cade033da6";
+  // Real meta-model Entity uuid → section "model" for satellite apps.
+  const entityEntityUuid = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+  const modelEntity = entity(entityEntityUuid, "Entity");
+  const modelMenu = entity("dde4c883-ae6d-47c3-b6df-26bc6e3c1842", "Menu");
   const dataEager = entity("data-eager", "Book");
   const dataLazy = entity("data-lazy", "Blob");
   const dataDefault = entity("data-default", "Author");
@@ -85,28 +126,28 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
     // data-default intentionally omitted → default eager
   };
 
-  it("always includes every model entity regardless of cache flags", () => {
+  it("always includes every model-catalog entity regardless of cache flags", () => {
     const result = resolveEntitiesToFetchOnRefresh(
       applicationUuid,
-      [modelA, modelB],
+      [modelEntity, modelMenu],
       [dataLazy],
       {
         "data-lazy": entityVersion("data-lazy", false),
-        "model-a": entityVersion("model-a", false),
-        "model-b": entityVersion("model-b", false),
+        [entityEntityUuid]: entityVersion(entityEntityUuid, false),
+        [modelMenu.uuid]: entityVersion(modelMenu.uuid!, false),
       },
     );
 
     const modelUuids = result
       .filter((e) => e.section === "model")
       .map((e) => e.entity.uuid);
-    expect(modelUuids).toEqual(["model-a", "model-b"]);
+    expect(modelUuids).toEqual([entityEntityUuid, modelMenu.uuid]);
   });
 
   it("includes data entities whose cacheAllInstancesOnRefresh is true or absent", () => {
     const result = resolveEntitiesToFetchOnRefresh(
       applicationUuid,
-      [modelA],
+      [modelEntity],
       [dataEager, dataDefault, dataLazy],
       definitionsByEntityUuid,
     );
@@ -177,16 +218,46 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
     ]);
   });
 
+  it("routes version-history entities in the modelEntities list to modelVersion (#232/#234 unversioned SQL)", async () => {
+    // Satellite apps (Postgres, Library, …) refresh with metaModelEntities as modelEntitiesToFetch.
+    // VH parents must not be tagged section "model" — SQL then SELECTs missing Postgres.*Version tables.
+    const {
+      entityApplicationVersionCrossMenuVersion,
+      entityHistoricalMenuVersion,
+      entitySelfApplicationVersion,
+      selfApplicationMiroir,
+    } = await import("miroir-test-app_deployment-miroir");
+
+    for (const appUuid of [selfApplicationMiroir.uuid as string, applicationUuid]) {
+      const result = resolveEntitiesToFetchOnRefresh(
+        appUuid,
+        [
+          entitySelfApplicationVersion as Entity,
+          entityApplicationVersionCrossMenuVersion as Entity,
+          entityHistoricalMenuVersion as Entity,
+          modelEntity,
+        ],
+        [],
+      );
+
+      const byUuid = Object.fromEntries(result.map((e) => [e.entity.uuid, e.section]));
+      expect(byUuid[entitySelfApplicationVersion.uuid]).toBe("modelVersion");
+      expect(byUuid[entityApplicationVersionCrossMenuVersion.uuid]).toBe("modelVersion");
+      expect(byUuid[entityHistoricalMenuVersion.uuid]).toBe("modelVersion");
+      expect(byUuid[modelEntity.uuid]).toBe("model");
+    }
+  });
+
   it("tags sections correctly on the fetch list", () => {
     const result = resolveEntitiesToFetchOnRefresh(
       applicationUuid,
-      [modelA],
+      [modelEntity],
       [dataEager],
       definitionsByEntityUuid,
     );
 
     expect(result).toEqual([
-      { section: "model" as ApplicationSection, entity: modelA },
+      { section: "model" as ApplicationSection, entity: modelEntity },
       { section: "data" as ApplicationSection, entity: dataEager },
     ]);
   });

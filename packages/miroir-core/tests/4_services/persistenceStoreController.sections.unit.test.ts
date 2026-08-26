@@ -175,7 +175,7 @@ describe("PersistenceStoreController section routing", () => {
     expect(items).toHaveLength(1);
   });
 
-  it("getInstances modelVersion unconfigured returns named error", async () => {
+  it("getInstances modelVersion unconfigured returns empty collection (#234 unversioned REST refresh)", async () => {
     const admin = makeAdminStub("admin");
     const modelStore = new ModelSectionStub("model-store");
     const dataStore = new DataSectionStub("data-store");
@@ -184,9 +184,13 @@ describe("PersistenceStoreController section routing", () => {
     const controller = new PersistenceStoreController(admin, modelStore, dataStore);
 
     const result = await controller.getInstances("modelVersion", ENTITY_UUID);
-    expect(result instanceof Action2Error).toBe(true);
-    if (!(result instanceof Action2Error)) return;
-    expect(result.errorMessage).toMatch(/modelVersion/i);
+    expect(result instanceof Action2Error).toBe(false);
+    if (result instanceof Action2Error) return;
+    const items =
+      (result.returnedDomainElement as any).elementValue?.instances ??
+      (result.returnedDomainElement as any).instances ??
+      [];
+    expect(items).toEqual([]);
   });
 
   it("upsertInstance routes modelVersion to history store (no entity-check)", async () => {

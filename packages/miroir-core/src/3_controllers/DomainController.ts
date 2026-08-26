@@ -26,6 +26,7 @@ import {
   entityReport,
   entityRunner,
   entitySelfApplicationVersion,
+  entitySelfApplication,
   entityApplicationVersionCrossEntityVersion,
   entityApplicationVersionCrossQueryVersion,
   entityHistoricalQueryVersion,
@@ -82,7 +83,10 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
+  isAbsentModelVersionSectionError,
+  isLazyCacheOnRefreshEntity,
   resolveEntitiesToFetchOnRefresh,
+  shouldCacheAllInstancesOnRefresh,
 } from "../1_core/localCache/cacheRefreshPolicy.js";
 import { ACTION_OK } from "../1_core/constants";
 import { defaultMiroirMetaModel } from "../1_core/defaultMiroirMetaModel";
@@ -98,6 +102,7 @@ import {
   type FreezeMetaModelSlice,
   type StoredQueryForFreeze,
 } from "../1_core/versioning/applicationVersionFreeze.js";
+import { resolveVersioningMode } from "../1_core/versioning/versioningMode.js";
 import {
   defaultMiroirModelEnvironment,
   getApplicationSection,
@@ -548,11 +553,10 @@ export class DomainController implements DomainControllerInterface {
               .then((fetchContext: Record<string, any> | Action2Error) => {
                 if (fetchContext instanceof Action2Error) {
                   // Bundled / unversioned deployments may omit modelVersion (#232 Slice 4).
+                  // Marker is often nested under FailedToHandlePersistenceAction.innerError.
                   if (
                     e.section === "modelVersion" &&
-                    fetchContext.errorMessage?.includes(
-                      "modelVersion section is not configured",
-                    )
+                    isAbsentModelVersionSectionError(fetchContext)
                   ) {
                     return {
                       parentName: e.entity.name,
@@ -567,15 +571,9 @@ export class DomainController implements DomainControllerInterface {
                 }
               })
               .catch((reason) => {
-                const reasonMessage =
-                  reason instanceof Error
-                    ? reason.message
-                    : typeof reason === "string"
-                      ? reason
-                      : JSON.stringify(reason);
                 if (
                   e.section === "modelVersion" &&
-                  reasonMessage.includes("modelVersion section is not configured")
+                  isAbsentModelVersionSectionError(reason)
                 ) {
                   return {
                     parentName: e.entity.name,
@@ -609,18 +607,22 @@ export class DomainController implements DomainControllerInterface {
 
           // Model is always loaded entirely (application concepts). Fetch model first so
           // Entity cache policies are available for non-model refresh (#232 modelVersion).
-          const modelFetchTargets = modelEntitiesToFetch.map((e) => ({
-            section: "model" as ApplicationSection,
-            entity: e,
-          }));
+          // Only true "model" section here — VH parents in metaModelEntities are not fetched
+          // unless versioningMode is versioned-internal (see nonModelFetchTargets below).
+          const modelFetchTargets = modelEntitiesToFetch
+            .map((e) => ({
+              section: getApplicationSection(applicationUuid, e.uuid!),
+              entity: e,
+            }))
+            .filter((e) => e.section === "model");
           const modelInstances = await Promise.all(modelFetchTargets.map(fetchEntityInstances));
 
           // Optional cache-policy fallback from EntityVersion when EV was fetched in the
           // model phase (Library / Admin). Miroir EV is not in miroirModelEntities;
           // empty map is fine — refresh policy uses Entity.cache from model-fetched Entities.
           const entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {};
-          const entityDefinitionFetchIndex = modelEntitiesToFetch.findIndex(
-            (e) => e.uuid === entityEntityVersion.uuid,
+          const entityDefinitionFetchIndex = modelFetchTargets.findIndex(
+            (e) => e.entity.uuid === entityEntityVersion.uuid,
           );
           if (entityDefinitionFetchIndex >= 0) {
             const entityDefinitionCollection = modelInstances[entityDefinitionFetchIndex];
@@ -637,13 +639,46 @@ export class DomainController implements DomainControllerInterface {
             }
           }
 
+          // #234 — only versioned-internal apps have a modelVersion store; skip VH fetches
+          // for unversioned / versioned-external (no REST/SQL noise, no soft-skip needed).
+          const selfApplicationFetchIndex = modelFetchTargets.findIndex(
+            (e) => e.entity.uuid === entitySelfApplication.uuid,
+          );
+          let versioningMode = resolveVersioningMode({});
+          if (selfApplicationFetchIndex >= 0) {
+            const selfAppCollection = modelInstances[selfApplicationFetchIndex];
+            if (
+              !(selfAppCollection instanceof Action2Error) &&
+              selfAppCollection &&
+              Array.isArray(selfAppCollection.instances)
+            ) {
+              const selfAppRow = (selfAppCollection.instances as SelfApplication[]).find(
+                (row) => row.uuid === applicationUuid,
+              );
+              if (selfAppRow) {
+                versioningMode = resolveVersioningMode(selfAppRow);
+              }
+            }
+          }
+
           const toFetchEntities = resolveEntitiesToFetchOnRefresh(
             applicationUuid,
             modelEntitiesToFetch,
             dataEntitiesToFetch as Entity[],
             entityDefinitionsByEntityUuid,
           );
-          const nonModelFetchTargets = toFetchEntities.filter((e) => e.section !== "model");
+          const nonModelFetchTargets = toFetchEntities.filter((e) => {
+            if (e.section === "model") {
+              return false;
+            }
+            if (
+              e.section === "modelVersion" &&
+              versioningMode !== "versioned-internal"
+            ) {
+              return false;
+            }
+            return true;
+          });
           const nonModelInstances = await Promise.all(
             nonModelFetchTargets.map(fetchEntityInstances),
           );

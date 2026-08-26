@@ -49,11 +49,56 @@ export function resolveCachePolicyCarrierForEntity(
   return entityDefinitionsByEntityUuid?.[entity.uuid];
 }
 
+/** Marker substring from PersistenceStoreController when modelVersion is omitted (#232/#234). */
+export const MISSING_MODEL_VERSION_SECTION_MARKER =
+  "modelVersion section is not configured";
+
+/**
+ * True when an Action2Error (or nested innerError chain) reports an absent modelVersion
+ * section. Persistence wrappers often bury the marker under FailedToHandlePersistenceAction.
+ */
+export function isAbsentModelVersionSectionError(error: unknown): boolean {
+  const seen = new Set<unknown>();
+  const walk = (value: unknown): boolean => {
+    if (value == null || seen.has(value)) {
+      return false;
+    }
+    if (typeof value !== "object") {
+      return typeof value === "string" && value.includes(MISSING_MODEL_VERSION_SECTION_MARKER);
+    }
+    seen.add(value);
+    const record = value as {
+      errorMessage?: unknown;
+      message?: unknown;
+      innerError?: unknown;
+    };
+    if (
+      typeof record.errorMessage === "string" &&
+      record.errorMessage.includes(MISSING_MODEL_VERSION_SECTION_MARKER)
+    ) {
+      return true;
+    }
+    if (
+      typeof record.message === "string" &&
+      record.message.includes(MISSING_MODEL_VERSION_SECTION_MARKER)
+    ) {
+      return true;
+    }
+    if (Array.isArray(record.innerError)) {
+      return record.innerError.some(walk);
+    }
+    return walk(record.innerError);
+  };
+  return walk(error);
+}
+
 /**
  * Builds the refresh fetch list.
- * - Model entities are always included (application concepts must be fully available).
+ * - Model-catalog entities are always included (application concepts must be fully available).
  * - Non-model entities are included only when shouldCacheAllInstancesOnRefresh is true.
- * - Section routing uses getApplicationSection (#232: version-history → modelVersion).
+ * - Section routing uses getApplicationSection for every entity (#232: version-history →
+ *   modelVersion). Do not hardcode "model" for the modelEntities list — satellite apps pass
+ *   metaModelEntities there, which includes VH parents; SQL then SELECTs missing tables (#234).
  *
  * #217 Phase 7: reads Entity.cache first; optional EntityVersion map is legacy fallback.
  */
@@ -64,7 +109,7 @@ export function resolveEntitiesToFetchOnRefresh(
   entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {},
 ): EntityFetchOnRefresh[] {
   const modelFetches: EntityFetchOnRefresh[] = modelEntities.map((entity) => ({
-    section: "model" as ApplicationSection,
+    section: getApplicationSection(applicationUuid, entity.uuid!),
     entity,
   }));
 

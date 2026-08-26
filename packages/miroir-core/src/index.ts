@@ -915,6 +915,8 @@ export {
   versionHistoryEntityUuids,
 } from "./1_core/Model.js";
 export {
+  isAbsentModelVersionSectionError,
+  MISSING_MODEL_VERSION_SECTION_MARKER,
   resolveCachePolicyCarrierForEntity,
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
