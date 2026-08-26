@@ -664,11 +664,16 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
           0,
           LIST_TRANSFORMER_PAGE_SIZE,
           objectListReportSection?.definition?.sortByAttribute,
+          currentReportTargetEntity ?? {},
         ),
       );
       return true;
     });
-  }, [instancesToDisplay, objectListReportSection?.definition?.sortByAttribute]);
+  }, [
+    currentReportTargetEntity,
+    instancesToDisplay,
+    objectListReportSection?.definition?.sortByAttribute,
+  ]);
 
   const handleDisplayedPageRowsChange = useCallback(
     (pageInstances: EntityInstancesUuidIndex) => {
@@ -696,8 +701,10 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       0,
       LIST_TRANSFORMER_PAGE_SIZE,
       objectListReportSection?.definition?.sortByAttribute,
+      currentReportTargetEntity ?? {},
     );
   }, [
+    currentReportTargetEntity,
     displayedPageInstances,
     instancesToDisplay,
     objectListReportSection?.definition?.sortByAttribute,

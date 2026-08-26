@@ -881,11 +881,14 @@ export const EntityInstanceGrid = (props: TableComponentProps) => {
               (instance): instance is EntityInstance =>
                 instance != null && typeof instance === "object" && !Array.isArray(instance),
             )
-            .map((instance) => [instance.uuid, instance]),
+            .map((instance) => [
+              getInstancePrimaryKeyValue(presentModelSource ?? {}, instance),
+              instance,
+            ]),
         ),
       );
     },
-    [props.onDisplayedPageRowsChange],
+    [presentModelSource, props.onDisplayedPageRowsChange],
   );
 
   const notifyAgGridDisplayedPageRowsChange = useCallback(() => {

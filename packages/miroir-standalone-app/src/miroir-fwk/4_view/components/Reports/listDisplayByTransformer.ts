@@ -4,11 +4,13 @@ import {
   defaultTransformerInput,
   EntityInstance,
   EntityInstancesUuidIndex,
+  getInstancePrimaryKeyValue,
   isFailedTransformerInterfaceFromDefinition,
   resolveTransformerResultSchema,
   TransformerFailure,
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
+  type EntityPrimaryKeySource,
   type JzodElement,
   type TransformerReturnType,
 } from "miroir-core";
@@ -46,6 +48,7 @@ export function sliceInstancesToPage(
   pageIndex: number,
   pageSize: number,
   sortByAttribute?: string,
+  entityPrimaryKeySource: EntityPrimaryKeySource = {},
 ): EntityInstancesUuidIndex {
   const sorted = Object.values(instancesToDisplay ?? {})
     .filter(
@@ -55,7 +58,12 @@ export function sliceInstancesToPage(
     .sort((a, b) => compareInstancesByAttribute(a, b, sortByAttribute));
 
   const pageRows = paginateRows(sorted, pageIndex, pageSize).pageRows;
-  return Object.fromEntries(pageRows.map((instance) => [instance.uuid, instance]));
+  return Object.fromEntries(
+    pageRows.map((instance) => [
+      getInstancePrimaryKeyValue(entityPrimaryKeySource, instance),
+      instance,
+    ]),
+  );
 }
 
 /** Default per-row identity transformer (exposes each list row as `row`). */

@@ -141,6 +141,53 @@ describe("listDisplayByTransformer — helper API", () => {
     expect(Object.keys(secondPage)).toHaveLength(LIST_TRANSFORMER_PAGE_SIZE);
     expect(Object.keys(firstPage)).not.toEqual(Object.keys(secondPage));
   });
+
+  it("sliceInstancesToPage keys rows by composite idAttribute, not uuid", () => {
+    const compositePkEntity = { idAttribute: ["catalog_name", "schema_name"] as const };
+    const schemata = {
+      "postgres|ParisModel": {
+        catalog_name: "postgres",
+        schema_name: "ParisModel",
+        schema_owner: "postgres",
+      },
+      "postgres|public": {
+        catalog_name: "postgres",
+        schema_name: "public",
+        schema_owner: "pg_database_owner",
+      },
+      "postgres|library": {
+        catalog_name: "postgres",
+        schema_name: "library",
+        schema_owner: "postgres",
+      },
+    };
+
+    const page = sliceInstancesToPage(schemata, 0, 10, undefined, compositePkEntity);
+
+    expect(Object.keys(page)).toHaveLength(3);
+    expect(applyTransformerToListRows(page, DEFAULT_ROW_IDENTITY_TRANSFORMER)).toEqual(
+      expect.arrayContaining([
+        schemata["postgres|ParisModel"],
+        schemata["postgres|public"],
+        schemata["postgres|library"],
+      ]),
+    );
+  });
+
+  it("sliceInstancesToPage keys rows by non-uuid idAttribute", () => {
+    const codePkEntity = { idAttribute: "code" as const };
+    const rowsByCode = {
+      alpha: { code: "alpha", label: "Alpha" },
+      beta: { code: "beta", label: "Beta" },
+    };
+
+    const page = sliceInstancesToPage(rowsByCode, 0, 10, undefined, codePkEntity);
+
+    expect(Object.keys(page)).toEqual(["alpha", "beta"]);
+    expect(applyTransformerToListRows(page, DEFAULT_ROW_IDENTITY_TRANSFORMER)).toEqual(
+      expect.arrayContaining([rowsByCode.alpha, rowsByCode.beta]),
+    );
+  });
 });
 
 describe("resolveListTransformationResultDisplaySchema", () => {
