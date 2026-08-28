@@ -34,6 +34,17 @@ import { jzodUnion_recursivelyUnfold } from "../1_core/jzod/jzodUnion_Recursivel
 import { localizeJzodSchemaReferenceContext } from "../1_core/jzod/JzodUnfoldSchemaOnce";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
+import {
+  checkTransformerInterfaceCompatibility,
+  checkTransformerInterfaceCompatibilityWithInference,
+  findInvalidStockTransformerInputOutputs,
+  getTransformerDefinitionInputOutput,
+  inputOutputTypesCompatible,
+} from "../2_domain/TransformerInterfaceCheck";
+import {
+  inferElementTransformerOutputType,
+  inferTransformerOutputTypeFromSchema,
+} from "../2_domain/TransformerInterfaceInference";
 import { mergeIfUnique, pushIfUnique } from "../1_core/tools";
 import { getModelUpdate } from "../1_core/model/ModelUpdate";
 import { ansiColumnsToJzodSchema } from "../1_core/postgres/ansiColumnsToJzodSchema";
@@ -152,6 +163,23 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
   },
   "miroir-core/2_domain/Transformer_ResultSchema": {
     resolveTransformerResultSchema: resolveTransformerResultSchema as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerInterfaceCheck": {
+    inputOutputTypesCompatible: inputOutputTypesCompatible as WhitelistedFunction,
+    checkTransformerInterfaceCompatibility:
+      checkTransformerInterfaceCompatibility as WhitelistedFunction,
+    checkTransformerInterfaceCompatibilityWithInference:
+      checkTransformerInterfaceCompatibilityWithInference as WhitelistedFunction,
+    getTransformerDefinitionInputOutput:
+      getTransformerDefinitionInputOutput as WhitelistedFunction,
+    findInvalidStockTransformerInputOutputs:
+      findInvalidStockTransformerInputOutputs as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerInterfaceInference": {
+    inferTransformerOutputTypeFromSchema:
+      inferTransformerOutputTypeFromSchema as WhitelistedFunction,
+    inferElementTransformerOutputType:
+      inferElementTransformerOutputType as WhitelistedFunction,
   },
 };
 

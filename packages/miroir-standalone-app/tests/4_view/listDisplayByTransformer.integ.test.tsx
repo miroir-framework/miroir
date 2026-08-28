@@ -2,7 +2,7 @@ import { act, fireEvent, screen, waitFor, within } from "@testing-library/react"
 import "@testing-library/jest-dom";
 import { describe, expect, it, vi } from "vitest";
 
-import { book1 } from "miroir-test-app_deployment-library";
+import { book1, entityBook } from "miroir-test-app_deployment-library";
 
 import {
   expectPanelTransformerType,
@@ -163,6 +163,83 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
         { timeout: 15000 },
       );
     });
+
+    it("defaults the output-type chooser to the row entity and shows no border for the identity transformer", async () => {
+      renderBookListSectionInteg();
+
+      await act(async () => {
+        fireEvent.click(getTransformerToggle());
+      });
+      await waitForProgressiveRendering();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
+      });
+      expect(screen.getByTestId("list-transformer-given-input-type")).toHaveTextContent(
+        entityBook.name,
+      );
+      const chooser = screen.getByTestId(
+        "list-transformer-expected-output-type",
+      ) as HTMLSelectElement;
+      expect(chooser.value).toBe(entityBook.uuid);
+      expect(
+        screen.getByTestId("list-transformer-editor").getAttribute("data-transformer-inadequate"),
+      ).toBe("false");
+    });
+
+    it("borders the transformer editor orange when expected output type mismatches inferred row output", async () => {
+      renderBookListSectionInteg();
+
+      await act(async () => {
+        fireEvent.click(getTransformerToggle());
+      });
+      await waitForProgressiveRendering();
+      await waitFor(() => {
+        expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
+      });
+
+      fireEvent.change(screen.getByTestId("list-transformer-expected-output-type"), {
+        target: { value: "array" },
+      });
+
+      await waitFor(
+        () => {
+          expect(
+            screen
+              .getByTestId("list-transformer-editor")
+              .getAttribute("data-transformer-inadequate"),
+          ).toBe("true");
+        },
+        { timeout: 15000 },
+      );
+    });
+
+    it("borders the transformer editor orange when the transformer input does not accept rows", async () => {
+      renderBookListSectionInteg();
+
+      await act(async () => {
+        fireEvent.click(getTransformerToggle());
+      });
+      await waitForProgressiveRendering();
+      await waitFor(() => {
+        expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
+      });
+
+      // mustacheStringTemplate declares input "string" — Book entity rows do not fit
+      await setPanelElementTransformerType("mustacheStringTemplate");
+      await expectPanelTransformerType("mustacheStringTemplate");
+
+      await waitFor(
+        () => {
+          expect(
+            screen
+              .getByTestId("list-transformer-editor")
+              .getAttribute("data-transformer-inadequate"),
+          ).toBe("true");
+        },
+        { timeout: 15000 },
+      );
+    });
   });
 
   describe("ListTransformerPanel + real TypedValueObjectEditor", () => {
@@ -177,6 +254,24 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
       await setPanelElementTransformerType("returnValue");
 
       await expectPanelTransformerType("returnValue");
+    });
+
+    it("keeps the chooser at any and never marks inadequacy when no row entity is provided", async () => {
+      renderListTransformerPanelInteg();
+
+      await waitForProgressiveRendering();
+      await waitFor(() => {
+        expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
+      });
+
+      expect(screen.getByTestId("list-transformer-given-input-type")).toHaveTextContent("any");
+      const chooser = screen.getByTestId(
+        "list-transformer-expected-output-type",
+      ) as HTMLSelectElement;
+      expect(chooser.value).toBe("any");
+      expect(
+        screen.getByTestId("list-transformer-editor").getAttribute("data-transformer-inadequate"),
+      ).toBe("false");
     });
 
     it("surfaces transformer failure inline", async () => {

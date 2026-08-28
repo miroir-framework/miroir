@@ -1,0 +1,362 @@
+{
+  "uuid": "c9f0a3e1-7b2d-4e6a-8f1c-5d3b9a7e2c84",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "transformerInterfaceCheck",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issue #249 — transformer inputOutput compatibility relation (entity uuids, payloads, subtyping) and stock definition validity. Uuids used: Menu dde4c883-ae6d-47c3-b6df-26bc6e3c1842, User ca794e28-b2dc-45b3-8137-00151557eea8, EntityVersion 54b9c72f-d4f3-4db9-9e0e-0dc840b530bd.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "transformerInterfaceCheck",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "inputOutputTypesCompatible",
+        "miroirTests": [
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "any is compatible both ways",
+            "miroirTests": [
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "any vs any", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["any", "any"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "any actual vs string expected", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["any", "string"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "string actual vs any expected", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["string", "any"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "any vs entity uuid", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["any", "ca794e28-b2dc-45b3-8137-00151557eea8"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "entity uuid vs any", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["ca794e28-b2dc-45b3-8137-00151557eea8", "any"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "any vs array-with-payload form", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["any", { "type": "array", "payload": "string" }], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array-with-payload form vs any", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "array", "payload": "string" }, "any"], "expectedValue": true }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "primitive literals match exactly",
+            "miroirTests": [
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "string vs string", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["string", "string"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "string vs number", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["string", "number"], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "undefined vs undefined", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["undefined", "undefined"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "undefined vs string", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["undefined", "string"], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "boolean vs boolean", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["boolean", "boolean"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "bigint vs number", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["bigint", "number"], "expectedValue": false }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "bare object and array",
+            "miroirTests": [
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "object vs object", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["object", "object"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array vs array", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["array", "array"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "object vs array", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["object", "array"], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array vs object", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["array", "object"], "expectedValue": false }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "entity uuid subtyping",
+            "miroirTests": [
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "same entity uuid", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["dde4c883-ae6d-47c3-b6df-26bc6e3c1842", "dde4c883-ae6d-47c3-b6df-26bc6e3c1842"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "different entity uuids", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["dde4c883-ae6d-47c3-b6df-26bc6e3c1842", "ca794e28-b2dc-45b3-8137-00151557eea8"], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "entity uuid accepted where object declared", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["ca794e28-b2dc-45b3-8137-00151557eea8", "object"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "object does not satisfy entity uuid expectation", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["object", "ca794e28-b2dc-45b3-8137-00151557eea8"], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "entity uuid vs array", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["ca794e28-b2dc-45b3-8137-00151557eea8", "array"], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "entity uuid vs string literal", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["ca794e28-b2dc-45b3-8137-00151557eea8", "string"], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "string literal vs entity uuid", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["string", "ca794e28-b2dc-45b3-8137-00151557eea8"], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "entity uuid vs undefined", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["ca794e28-b2dc-45b3-8137-00151557eea8", "undefined"], "expectedValue": false }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "object and array payload forms",
+            "miroirTests": [
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array of string vs array of string", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "array", "payload": "string" }, { "type": "array", "payload": "string" }], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array of string vs array of number", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "array", "payload": "string" }, { "type": "array", "payload": "number" }], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array without payload vs array of string", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "array" }, { "type": "array", "payload": "string" }], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array of string vs array without payload", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "array", "payload": "string" }, { "type": "array" }], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "object of number vs object of number", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "object", "payload": "number" }, { "type": "object", "payload": "number" }], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "object of string vs array of string", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "object", "payload": "string" }, { "type": "array", "payload": "string" }], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "bare array literal vs array of string form", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["array", { "type": "array", "payload": "string" }], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array of string form vs bare array literal", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "array", "payload": "string" }, "array"], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array of User vs array of User", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "array", "payload": "ca794e28-b2dc-45b3-8137-00151557eea8" }, { "type": "array", "payload": "ca794e28-b2dc-45b3-8137-00151557eea8" }], "expectedValue": true },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array of User vs array of Menu", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "array", "payload": "ca794e28-b2dc-45b3-8137-00151557eea8" }, { "type": "array", "payload": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842" }], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "array of User vs array of string", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": [{ "type": "array", "payload": "ca794e28-b2dc-45b3-8137-00151557eea8" }, { "type": "array", "payload": "string" }], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "entity uuid vs object form with specific payload", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["ca794e28-b2dc-45b3-8137-00151557eea8", { "type": "object", "payload": "string" }], "expectedValue": false },
+              { "miroirTestType": "functionCallTest", "miroirTestLabel": "entity uuid vs object form without payload", "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "inputOutputTypesCompatible" }, "arguments": ["ca794e28-b2dc-45b3-8137-00151557eea8", { "type": "object" }], "expectedValue": true }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "checkTransformerInterfaceCompatibility",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "exact entity uuid match on input and output",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "ca794e28-b2dc-45b3-8137-00151557eea8" },
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "ca794e28-b2dc-45b3-8137-00151557eea8" }
+            ],
+            "expectedValue": { "status": "ok" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "string transformer on entity rows fails on both directions",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "ca794e28-b2dc-45b3-8137-00151557eea8" },
+              { "input": "string", "output": "string" }
+            ],
+            "expectedValue": {
+              "status": "incompatible",
+              "failures": [
+                { "direction": "input", "given": "ca794e28-b2dc-45b3-8137-00151557eea8", "declared": "string" },
+                { "direction": "output", "given": "ca794e28-b2dc-45b3-8137-00151557eea8", "declared": "string" }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "object input accepts entity instance, any output is lenient",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "ca794e28-b2dc-45b3-8137-00151557eea8" },
+              { "input": "object", "output": "any" }
+            ],
+            "expectedValue": { "status": "ok" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "object output does not satisfy entity uuid expectation",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "ca794e28-b2dc-45b3-8137-00151557eea8" },
+              { "input": "any", "output": "object" }
+            ],
+            "expectedValue": {
+              "status": "incompatible",
+              "failures": [
+                { "direction": "output", "given": "ca794e28-b2dc-45b3-8137-00151557eea8", "declared": "object" }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "entity uuid output satisfies object expectation",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "object" },
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "ca794e28-b2dc-45b3-8137-00151557eea8" }
+            ],
+            "expectedValue": { "status": "ok" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "any given types are lenient both ways",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "any", "output": "any" },
+              { "input": "string", "output": "string" }
+            ],
+            "expectedValue": { "status": "ok" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "absent declared inputOutput means any/any and never fails",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "ca794e28-b2dc-45b3-8137-00151557eea8" }
+            ],
+            "expectedValue": { "status": "ok" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "declared array without payload matches expected array of string",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": { "type": "array", "payload": "string" } },
+              { "input": "object", "output": { "type": "array" } }
+            ],
+            "expectedValue": { "status": "ok" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "given bare array accepted by declared array of string (lenient any payload)",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "array", "output": "number" },
+              { "input": { "type": "array", "payload": "string" }, "output": "number" }
+            ],
+            "expectedValue": { "status": "ok" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "declared array of number does not satisfy expected array of string",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "any", "output": { "type": "array", "payload": "string" } },
+              { "input": "any", "output": { "type": "array", "payload": "number" } }
+            ],
+            "expectedValue": {
+              "status": "incompatible",
+              "failures": [
+                { "direction": "output", "given": { "type": "array", "payload": "string" }, "declared": { "type": "array", "payload": "number" } }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "declared input undefined ignores the piped input (identity transformer on entity rows)",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5", "output": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5" },
+              { "input": "undefined", "output": "any" }
+            ],
+            "expectedValue": { "status": "ok" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "undefined leniency is input-direction only",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibility" },
+            "arguments": [
+              { "input": "any", "output": "string" },
+              { "input": "undefined", "output": "undefined" }
+            ],
+            "expectedValue": {
+              "status": "incompatible",
+              "failures": [
+                { "direction": "output", "given": "string", "declared": "undefined" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "inferredOutputType",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "number schema maps to number inputOutput type",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceInference", "export": "inferTransformerOutputTypeFromSchema" },
+            "arguments": [{ "type": "number" }],
+            "expectedValue": "number"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "row entity object schema maps to entity uuid when hinted",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceInference", "export": "inferTransformerOutputTypeFromSchema" },
+            "arguments": [
+              { "type": "object", "definition": { "name": { "type": "string" } } },
+              {
+                "rowEntityUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                "rowMlSchema": { "type": "object", "definition": { "name": { "type": "string" } } }
+              }
+            ],
+            "expectedValue": "ca794e28-b2dc-45b3-8137-00151557eea8"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "inferred User output fails Book expectation even when declared output is any",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibilityWithInference" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5" },
+              { "input": "undefined", "output": "any" },
+              "ca794e28-b2dc-45b3-8137-00151557eea8"
+            ],
+            "expectedValue": {
+              "status": "incompatible",
+              "failures": [
+                {
+                  "direction": "output",
+                  "given": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "declared": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                  "source": "inferred"
+                }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "inferred User output satisfies User expectation",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibilityWithInference" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "ca794e28-b2dc-45b3-8137-00151557eea8" },
+              { "input": "undefined", "output": "any" },
+              "ca794e28-b2dc-45b3-8137-00151557eea8"
+            ],
+            "expectedValue": { "status": "ok" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "inferred User output fails array expectation",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "checkTransformerInterfaceCompatibilityWithInference" },
+            "arguments": [
+              { "input": "ca794e28-b2dc-45b3-8137-00151557eea8", "output": "array" },
+              { "input": "undefined", "output": "any" },
+              "ca794e28-b2dc-45b3-8137-00151557eea8"
+            ],
+            "expectedValue": {
+              "status": "incompatible",
+              "failures": [
+                {
+                  "direction": "output",
+                  "given": "array",
+                  "declared": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                  "source": "inferred"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "stockTransformerDefinitions",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mustacheStringTemplate declares string to string",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
+            "arguments": ["mustacheStringTemplate"],
+            "expectedValue": { "input": "string", "output": "string" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "transformer_menu_addItem declares Menu entity uuid in and out",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
+            "arguments": ["transformer_menu_addItem"],
+            "expectedValue": { "input": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842", "output": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "entityDefinition_extractAttributes declares EntityVersion uuid to array",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
+            "arguments": ["entityDefinition_extractAttributes"],
+            "expectedValue": { "input": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", "output": "array" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "duplicateApplicationModel fixed from metaModel to object",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
+            "arguments": ["duplicateApplicationModel"],
+            "expectedValue": { "input": "object", "output": "object" }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "unknown transformerType yields undefined inputOutput",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "getTransformerDefinitionInputOutput" },
+            "arguments": ["nonExistentTransformer"],
+            "expectUndefinedResult": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "all stock transformer definition inputOutputs validate against the enhanced schema",
+            "functionRef": { "module": "miroir-core/2_domain/TransformerInterfaceCheck", "export": "findInvalidStockTransformerInputOutputs" },
+            "arguments": [],
+            "expectedValue": []
+          }
+        ]
+      }
+    ]
+  }
+}

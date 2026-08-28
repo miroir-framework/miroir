@@ -264,6 +264,12 @@ export {
   BundledStoreSectionConfiguration,
   bundledStoreSectionConfiguration,
   IndexedDbStoreSectionConfiguration,
+  InputOutputObject,
+  inputOutputObject,
+  InputOutputPayloadType,
+  inputOutputPayloadType,
+  InputOutputType,
+  inputOutputType,
   InstanceAction,
   JzodArray,
   jzodArray,
@@ -1186,6 +1192,22 @@ export {
   type ResolveTransformerResultSchemaReturnType,
   type TransformerResultSchemaContext,
 } from "./2_domain/Transformer_ResultSchema.js";
+export {
+  checkTransformerInterfaceCompatibility,
+  checkTransformerInterfaceCompatibilityWithInference,
+  findInvalidStockTransformerInputOutputs,
+  getTransformerDefinitionInputOutput,
+  inputOutputTypesCompatible,
+} from "./2_domain/TransformerInterfaceCheck.js";
+export {
+  inferElementTransformerOutputType,
+  inferTransformerOutputTypeFromSchema,
+} from "./2_domain/TransformerInterfaceInference.js";
+export type {
+  TransformerInterfaceCompatibility,
+  TransformerInterfaceGivenTypes,
+  TransformerInterfaceMismatch,
+} from "./0_interfaces/2_domain/TransformerInterfaceCheckInterface.js";
 export {
   storeActionOrBundleActionStoreRunner
 } from "./3_controllers/ActionRunner.js";

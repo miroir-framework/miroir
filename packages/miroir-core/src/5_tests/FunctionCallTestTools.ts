@@ -364,6 +364,21 @@ export async function runMiroirFunctionCallTestInMemory(
   }
 
   miroirActivityTracker.setTestAssertionResult(currentTestAssertionPath, testAssertionResult);
+
+  // Surface failures to vitest when leaves run inside vitest-registered tests (CLI / CI):
+  // without this, assertion failures above are swallowed by the catch and the vitest test
+  // passes vacuously. In-process runs (Miroir Tests UI) pass a stub exposing only `expect`
+  // (see createInProcessVitestStub); they collect results through the tracker instead.
+  if (
+    testAssertionResult.assertionResult === "error" &&
+    typeof (localVitest as VitestNamespace).test === "function"
+  ) {
+    throw new Error(
+      `functionCallTest "${testSuiteNamePathAsString} > ${assertionName}" failed. ` +
+        `Expected: ${JSON.stringify(testAssertionResult.assertionExpectedValue)}, ` +
+        `actual: ${JSON.stringify(testAssertionResult.assertionActualValue)}`,
+    );
+  }
 }
 
 export {

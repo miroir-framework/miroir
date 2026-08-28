@@ -34,7 +34,9 @@ const vitestArgs = [
   "run",
   "--poolOptions.forks.singleFork",
   "--reporter=verbose",
-  `tests/${miroirCoreTestVitestEntry(config.executionMode)}.ts`,
+  // root is ./tests (vite.config.js): the filter must be a root-relative substring,
+  // "tests/<file>" would never match on Windows path matching
+  `${miroirCoreTestVitestEntry(config.executionMode)}.ts`,
 ];
 
 const result = spawnSync("npx", vitestArgs, {

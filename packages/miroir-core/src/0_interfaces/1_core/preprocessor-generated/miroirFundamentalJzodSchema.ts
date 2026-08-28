@@ -5509,17 +5509,62 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "inputOutputType": {
-        "type": "enum",
+      "inputOutputPayloadType": {
+        "type": "union",
         "definition": [
-          "any",
-          "undefined",
-          "bigint",
-          "number",
-          "string",
-          "boolean",
-          "object",
-          "array"
+          {
+            "type": "enum",
+            "definition": [
+              "any",
+              "bigint",
+              "number",
+              "string",
+              "boolean"
+            ]
+          },
+          {
+            "type": "uuid"
+          }
+        ]
+      },
+      "inputOutputType": {
+        "type": "union",
+        "definition": [
+          {
+            "type": "enum",
+            "definition": [
+              "any",
+              "undefined",
+              "bigint",
+              "number",
+              "string",
+              "boolean",
+              "object",
+              "array"
+            ]
+          },
+          {
+            "type": "uuid"
+          },
+          {
+            "type": "object",
+            "definition": {
+              "type": {
+                "type": "enum",
+                "definition": [
+                  "object",
+                  "array"
+                ]
+              },
+              "payload": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "relativePath": "inputOutputPayloadType"
+                }
+              }
+            }
+          }
         ]
       },
       "inputOutputObject": {
@@ -5620,17 +5665,62 @@ export const miroirFundamentalJzodSchema = {
                 "type": "schemaReference",
                 "optional": true,
                 "context": {
-                  "inputOutputType": {
-                    "type": "enum",
+                  "inputOutputPayloadType": {
+                    "type": "union",
                     "definition": [
-                      "any",
-                      "undefined",
-                      "bigint",
-                      "number",
-                      "string",
-                      "boolean",
-                      "object",
-                      "array"
+                      {
+                        "type": "enum",
+                        "definition": [
+                          "any",
+                          "bigint",
+                          "number",
+                          "string",
+                          "boolean"
+                        ]
+                      },
+                      {
+                        "type": "uuid"
+                      }
+                    ]
+                  },
+                  "inputOutputType": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "enum",
+                        "definition": [
+                          "any",
+                          "undefined",
+                          "bigint",
+                          "number",
+                          "string",
+                          "boolean",
+                          "object",
+                          "array"
+                        ]
+                      },
+                      {
+                        "type": "uuid"
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "type": {
+                            "type": "enum",
+                            "definition": [
+                              "object",
+                              "array"
+                            ]
+                          },
+                          "payload": {
+                            "type": "schemaReference",
+                            "optional": true,
+                            "definition": {
+                              "relativePath": "inputOutputPayloadType"
+                            }
+                          }
+                        }
+                      }
                     ]
                   },
                   "inputOutputObject": {

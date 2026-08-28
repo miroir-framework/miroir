@@ -159,29 +159,6 @@ export function renderListTransformerPanelInteg(
   );
 }
 
-function findTransformerTypeControl(panel: HTMLElement): HTMLElement {
-  const byTestId = panel.querySelector('[data-testid="union-type-input-elementTransformer"]');
-  if (byTestId) {
-    return byTestId as HTMLElement;
-  }
-
-  const selectMatch = Array.from(panel.querySelectorAll("select")).find(
-    (el) => (el as HTMLSelectElement).value === "getFromContext",
-  );
-  if (selectMatch) {
-    return selectMatch;
-  }
-
-  const comboboxMatch = within(panel).getAllByRole("combobox").find(
-    (el) => (el as HTMLSelectElement).value === "getFromContext",
-  );
-  if (comboboxMatch) {
-    return comboboxMatch;
-  }
-
-  throw new Error("transformerType control (getFromContext) not found yet");
-}
-
 export async function getListTransformerPanel() {
   return waitFor(() => screen.getByTestId("list-transformer-panel"), { timeout: 5000 });
 }
@@ -196,15 +173,34 @@ export async function expectPanelTransformerType(transformerType: string) {
   );
 }
 
+/**
+ * Drives the transformerType discriminator (a ThemedSelectWithPortal filterable combobox):
+ * focus opens the dropdown, typing filters, Enter commits the first matching option
+ * (the Enter path bypasses the component's dropdownJustOpened click guard).
+ */
 export async function setPanelElementTransformerType(transformerType: string) {
   const panel = await getListTransformerPanel();
-  const transformerTypeSelect = await waitFor(
-    () => findTransformerTypeControl(panel),
+  const discriminatorInput = await waitFor(
+    () => {
+      const match = panel.querySelector(
+        'input[name="elementTransformer.transformerType"]',
+      ) as HTMLInputElement | null;
+      if (!match) {
+        throw new Error("transformerType discriminator input not found yet");
+      }
+      return match;
+    },
     { timeout: 5000, interval: 100 },
   );
 
   await act(async () => {
-    fireEvent.change(transformerTypeSelect, { target: { value: transformerType } });
+    fireEvent.focus(discriminatorInput);
+  });
+  await act(async () => {
+    fireEvent.change(discriminatorInput, { target: { value: transformerType } });
+  });
+  await act(async () => {
+    fireEvent.keyDown(discriminatorInput, { key: "Enter" });
   });
 }
 

@@ -9,8 +9,8 @@
   "classification": "admin",
   "transformerInterface": {
     "inputOutput": {
-      "input": "metaModel",
-      "output": "metaModel"
+      "input": "object",
+      "output": "object"
     },
     "transformerParameterSchema": {
       "transformerType": {
@@ -42,7 +42,11 @@
     "transformerResultSchema": {
       "returns": "mlSchema",
       "definition": {
-        "type": "string"
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "metaModel"
+        }
       }
     }
   },

@@ -294,6 +294,7 @@ export { default as miroirTest_resolveQueryTemplates } from "./assets/miroir_dat
 export { default as miroirTest_resolveSchemaReferenceInContext } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/02a34783-d8fa-4f3c-8978-5edc2658dcbf.json" with { type: "json" };
 export { default as miroirTest_selectUnionBranchFromDiscriminator } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/84e67b10-17f0-4340-8c1f-5f19a8b94e05.json" with { type: "json" };
 export { default as miroirTest_tools } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/e5940340-a73b-4d30-88a5-0f45072e146b.json" with { type: "json" };
+export { default as miroirTest_transformerInterfaceCheck } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c9f0a3e1-7b2d-4e6a-8f1c-5d3b9a7e2c84.json" with { type: "json" };
 export { default as miroirTest_transformerResultSchema } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/0d3bd258-a8f9-4a0c-8cd9-bcf5607b50ad.json" with { type: "json" };
 export { default as miroirTest_unfoldSchemaOnce } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/dd06922d-d4cd-4057-9dc1-bab3a0ed6276.json" with { type: "json" };
 export { default as miroirTest_domain_controller_data_crud } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c8e2a104-5b6d-4f91-a2c3-9d0e1f2a3b4c.json" with { type: "json" };

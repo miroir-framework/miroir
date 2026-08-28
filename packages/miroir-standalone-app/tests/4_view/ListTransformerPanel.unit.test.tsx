@@ -75,6 +75,35 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.j
         >
           Set failing transformer
         </button>
+        <button
+          type="button"
+          data-testid="set-menu-addItem-transformer"
+          onClick={() =>
+            formik.setFieldValue(formikValuePathAsString, {
+              interpolation: "runtime",
+              transformerType: "transformer_menu_addItem",
+            })
+          }
+        >
+          Set transformer_menu_addItem
+        </button>
+        <button
+          type="button"
+          data-testid="set-numericOp-transformer"
+          onClick={() =>
+            formik.setFieldValue(formikValuePathAsString, {
+              interpolation: "runtime",
+              transformerType: "numericOp",
+              op: "*",
+              args: [
+                { interpolation: "runtime", transformerType: "returnValue", value: 2 },
+                { interpolation: "runtime", transformerType: "returnValue", value: 3 },
+              ],
+            })
+          }
+        >
+          Set numericOp
+        </button>
       </div>
     );
   },
@@ -285,5 +314,87 @@ describe("ListTransformerPanel — list section integration", () => {
     expect(
       (globalThis as any).__lastEntityInstanceGridProps?.onDisplayedPageRowsChange,
     ).toBeUndefined();
+  });
+
+  const expectOrangeBorder = (editor: HTMLElement, inadequate: boolean) => {
+    expect(editor.getAttribute("data-transformer-inadequate")).toBe(inadequate ? "true" : "false");
+    const borderColor = editor.style.borderColor;
+    if (inadequate) {
+      expect(borderColor === "#ff9800" || borderColor === "rgb(255, 152, 0)").toBe(true);
+    } else {
+      expect(borderColor === "#ff9800" || borderColor === "rgb(255, 152, 0)").toBe(false);
+    }
+  };
+
+  it("offers an output-type chooser defaulting to the row entity (Book)", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+
+    expect(screen.getByTestId("list-transformer-given-input-type")).toHaveTextContent(
+      entityBook.name,
+    );
+    const chooser = screen.getByTestId(
+      "list-transformer-expected-output-type",
+    ) as HTMLSelectElement;
+    expect(chooser.value).toBe(entityBook.uuid);
+    // base types and entity options are both present
+    expect(
+      Array.from(chooser.options).map((o) => o.value),
+    ).toEqual(expect.arrayContaining(["any", "object", "array", entityBook.uuid]));
+  });
+
+  it("shows no inadequacy border for the default identity transformer", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+  });
+
+  it("borders the editor orange when expected output type does not match inferred actual output", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+    fireEvent.change(screen.getByTestId("list-transformer-expected-output-type"), {
+      target: { value: "array" },
+    });
+
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+  });
+
+  it("borders the editor orange when expected output entity differs from row entity", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+    fireEvent.change(screen.getByTestId("list-transformer-expected-output-type"), {
+      target: { value: "ca794e28-b2dc-45b3-8137-00151557eea8" },
+    });
+
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+  });
+
+  it("borders the editor orange when the transformer input does not accept the row entity", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+    // transformer_menu_addItem declares input = Menu entity uuid, Book rows are not Menus
+    fireEvent.click(screen.getByTestId("set-menu-addItem-transformer"));
+
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+  });
+
+  it("resolves the inadequacy when the chooser is aligned with the declared output", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+    // numericOp: input any (ok), output number — but default expected output is Book entity uuid
+    fireEvent.click(screen.getByTestId("set-numericOp-transformer"));
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+
+    fireEvent.change(screen.getByTestId("list-transformer-expected-output-type"), {
+      target: { value: "number" },
+    });
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
   });
 });
