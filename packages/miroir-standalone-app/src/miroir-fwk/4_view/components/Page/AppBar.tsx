@@ -403,6 +403,19 @@ export function AppBar(props:AppBarProps) {
       "icon": "report_problem"
     },
     // {
+    //   miroirMenuItemType: "miroirMenuPageLink",
+    //   label: "Transformer Builder",
+    //   targetRoot: "transformerBuilder",
+    //   section: "model",
+    //   icon: {
+    //     iconType: "mui",
+    //     name: "build",
+    //     superImpose: {
+    //       letter: "T",
+    //       color: "#FF0000",
+    //     },
+    //   },
+    // },    // {
     //   "label": "error-logs",
     //   "section": "model",
     //   "selfApplication": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e", //not used
