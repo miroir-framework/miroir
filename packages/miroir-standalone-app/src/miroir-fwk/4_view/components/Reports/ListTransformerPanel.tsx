@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 
 import {
   checkTransformerInterfaceCompatibilityWithInference,
+  getApplicationSection,
   getTransformerDefinitionInputOutput,
   inferElementTransformerOutputType,
   safeStringify,
@@ -15,6 +16,7 @@ import {
   type Uuid,
 } from "miroir-core";
 import { ThemedOnScreenHelper } from "miroir-react";
+import { entityEntity, reportEntityDetails } from "miroir-test-app_deployment-miroir";
 
 import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
 import { TypedValueObjectEditorWithFormik } from "./TypedValueObjectEditorWithFormik.js";
@@ -25,7 +27,17 @@ import {
   resolveListTransformationResultDisplaySchema,
 } from "./listDisplayByTransformer.js";
 import { hasDisplayableTransformationResult } from "../TransformerEditor/TransformationResultPanel.js";
-import { ThemedContainer, ThemedHeaderSection, ThemedTitle } from "../Themes/index.js";
+import { ReportInstanceLink } from "../ReportInstanceLink.js";
+import {
+  ThemedContainer,
+  ThemedFlexRow,
+  ThemedHeaderSection,
+  ThemedLabel,
+  ThemedLabeledEditor,
+  ThemedSelectWithPortal,
+  ThemedText,
+  ThemedTitle,
+} from "../Themes/index.js";
 
 /** Shared with TransformerEditor — schemaReference to coreTransformerForBuildPlusRuntime. */
 export const coreTransformerForBuildPlusRuntimeSchemaReference: JzodElement = {
@@ -201,45 +213,63 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         </ThemedTitle>
       </ThemedHeaderSection>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", margin: "4px 0", flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>Given input type:</span>
-          <span
-            data-testid="list-transformer-given-input-type"
-            title={typeof givenInputType === "string" ? givenInputType : safeStringify(givenInputType)}
-          >
-            {givenInputTypeLabel}
-          </span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <label htmlFor="list-transformer-expected-output-type">Expected output type:</label>
-          <select
-            id="list-transformer-expected-output-type"
-            data-testid="list-transformer-expected-output-type"
-            value={typeof expectedOutputType === "string" ? expectedOutputType : "any"}
-            onChange={(event) =>
-              setChosenOutputType(
-                event.target.value === defaultExpectedOutputType
-                  ? undefined
-                  : (event.target.value as InputOutputType),
-              )
-            }
-          >
-            {INPUT_OUTPUT_BASE_TYPES.map((baseType) => (
-              <option key={baseType} value={baseType}>
-                {baseType}
-              </option>
-            ))}
-            {[...(entities ?? [])]
-              .sort((a, b) => a.name.localeCompare(b.name))
-              .map((entity) => (
-                <option key={entity.uuid} value={entity.uuid}>
-                  {entity.name}
+      <ThemedFlexRow align="center" wrap gap="16px" style={{ margin: "4px 0" }}>
+        <ThemedLabeledEditor
+          labelElement={<ThemedLabel>Given input type:</ThemedLabel>}
+          editor={
+            rowEntityUuid ? (
+              <span data-testid="list-transformer-given-input-type">
+                <ReportInstanceLink
+                  label={givenInputTypeLabel}
+                  application={application}
+                  deploymentUuid={deploymentUuid}
+                  applicationSection={getApplicationSection(application, entityEntity.uuid)}
+                  reportUuid={reportEntityDetails.uuid}
+                  instanceUuid={rowEntityUuid}
+                />
+              </span>
+            ) : (
+              <span
+                data-testid="list-transformer-given-input-type"
+                title={typeof givenInputType === "string" ? givenInputType : safeStringify(givenInputType)}
+              >
+                <ThemedText>{givenInputTypeLabel}</ThemedText>
+              </span>
+            )
+          }
+        />
+        <ThemedLabeledEditor
+          labelElement={<ThemedLabel>Expected output type:</ThemedLabel>}
+          editor={
+            <ThemedSelectWithPortal
+              id="list-transformer-expected-output-type"
+              data-testid="list-transformer-expected-output-type"
+              value={typeof expectedOutputType === "string" ? expectedOutputType : "any"}
+              onChange={(event) =>
+                setChosenOutputType(
+                  event.target.value === defaultExpectedOutputType
+                    ? undefined
+                    : (event.target.value as InputOutputType),
+                )
+              }
+              minWidth="160px"
+            >
+              {INPUT_OUTPUT_BASE_TYPES.map((baseType) => (
+                <option key={baseType} value={baseType}>
+                  {baseType}
                 </option>
               ))}
-          </select>
-        </div>
-      </div>
+              {[...(entities ?? [])]
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((entity) => (
+                  <option key={entity.uuid} value={entity.uuid}>
+                    {entity.name}
+                  </option>
+                ))}
+            </ThemedSelectWithPortal>
+          }
+        />
+      </ThemedFlexRow>
 
       <div
         data-testid="list-transformer-editor"

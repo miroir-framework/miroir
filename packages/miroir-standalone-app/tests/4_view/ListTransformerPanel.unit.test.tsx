@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import React from "react";
 import { Formik } from "formik";
+import { MemoryRouter } from "react-router-dom";
 import { configureStore } from "@reduxjs/toolkit";
 import { describe, expect, it, vi } from "vitest";
 
@@ -222,26 +223,28 @@ function renderBookListSection() {
   };
 
   return render(
-    <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
-      <LocalCacheProvider store={store}>
-        <Formik initialValues={formikInitialValues} onSubmit={vi.fn()}>
-          <ReportSectionListDisplay
-            label="Books"
-            paramsAsdomainElements={{}}
-            applicationDeploymentMap={{
-              [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
-            }}
-            formikReportDefinitionPathString={reportBookList.name}
-            reportSectionPath={[...reportSectionPath]}
-            formikValuePath={[...reportSectionPath]}
-            tableComponentReportType={TableComponentTypeSchema.enum.EntityInstance}
-            chosenApplicationSection="data"
-            application={selfApplicationLibrary.uuid}
-            deploymentUuid={deployment_Library_DO_NO_USE.uuid}
-          />
-        </Formik>
-      </LocalCacheProvider>
-    </MiroirThemeProvider>,
+    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
+        <LocalCacheProvider store={store}>
+          <Formik initialValues={formikInitialValues} onSubmit={vi.fn()}>
+            <ReportSectionListDisplay
+              label="Books"
+              paramsAsdomainElements={{}}
+              applicationDeploymentMap={{
+                [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+              }}
+              formikReportDefinitionPathString={reportBookList.name}
+              reportSectionPath={[...reportSectionPath]}
+              formikValuePath={[...reportSectionPath]}
+              tableComponentReportType={TableComponentTypeSchema.enum.EntityInstance}
+              chosenApplicationSection="data"
+              application={selfApplicationLibrary.uuid}
+              deploymentUuid={deployment_Library_DO_NO_USE.uuid}
+            />
+          </Formik>
+        </LocalCacheProvider>
+      </MiroirThemeProvider>
+    </MemoryRouter>,
   );
 }
 
@@ -334,6 +337,9 @@ describe("ListTransformerPanel — list section integration", () => {
     expect(screen.getByTestId("list-transformer-given-input-type")).toHaveTextContent(
       entityBook.name,
     );
+    expect(
+      screen.getByTestId("list-transformer-given-input-type").querySelector("a"),
+    ).toBeTruthy();
     const chooser = screen.getByTestId(
       "list-transformer-expected-output-type",
     ) as HTMLSelectElement;

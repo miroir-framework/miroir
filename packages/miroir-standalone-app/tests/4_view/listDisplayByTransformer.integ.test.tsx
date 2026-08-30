@@ -178,6 +178,9 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
       expect(screen.getByTestId("list-transformer-given-input-type")).toHaveTextContent(
         entityBook.name,
       );
+      expect(
+        screen.getByTestId("list-transformer-given-input-type").querySelector("a"),
+      ).toBeTruthy();
       const chooser = screen.getByTestId(
         "list-transformer-expected-output-type",
       ) as HTMLSelectElement;
