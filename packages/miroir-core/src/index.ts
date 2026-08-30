@@ -879,6 +879,7 @@ export {
   ANY_IMPLICIT_UNION_TYPE, jzodTypeCheck,
   jzodUnionResolvedTypeForObject, selectUnionBranchFromDiscriminator, unionObjectChoices
 } from "./1_core/jzod/jzodTypeCheck.js";
+export { isMlSchemaSubtype } from "./1_core/jzod/mlSchemaSubtype.js";
 export {
   getMiroirFundamentalSchemaForDeployment,
   resolveFundamentalSchemaForDeployment,
