@@ -18,6 +18,7 @@ Related: [#145](https://github.com/miroir-framework/miroir/issues/145) (mlSchema
 | D5 — References / extend | **Identity only** in the first cut: `schemaReference` compares the whole node (paths, `eager`, `partial`, **and `context`**) after presentation stripping; objects bearing `extend` are subtypes of deep-equal schemas only (no flattening without a model environment). Resolution + flattening are follow-ups. |
 | D6 — validations / coerce | **Conservative**: a subtype may add validations to an unvalidated supertype; a `coerce` subtype requires a `coerce` supertype; otherwise constraint sets must be deep-equal. Comparing validation semantics is out of scope. |
 | D7 — Recursion | **No depth guard**: schemas are finite JSON trees and the recursion is structural on the input. Cyclic schemas can only be expressed via `schemaReference` / `lazy`, which are never recursed into. |
+| D8 — optional / nullable | **Match `jzodTypeCheck`**: either flag accepts both `null` and `undefined`; a missing object attribute is allowed when the target attribute is optional **or** nullable (or the object is `partial`). Consequently optional and nullable are equivalent value sets. |
 
 ## Goals
 

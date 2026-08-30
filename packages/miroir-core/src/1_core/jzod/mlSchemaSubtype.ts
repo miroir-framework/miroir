@@ -17,6 +17,9 @@ import type {
  * applies against `nonStrict` supertypes.
  *
  * - Presentation metadata (`tag`, `description`) is ignored.
+ * - `optional` / `nullable` follow `jzodTypeCheck`: either flag accepts both
+ *   `null` and `undefined`, and a missing object attribute is allowed when the
+ *   target attribute is optional **or** nullable (or the object is `partial`).
  * - `validations` / `coerce` are compared conservatively: a subtype may add
  *   validations to an unvalidated supertype; a `coerce` subtype requires a
  *   `coerce` supertype; otherwise constraint sets must be deep-equal.
@@ -55,10 +58,13 @@ function isSubtype(a: JzodElement, b: JzodElement): boolean {
 /**
  * Expand optional / nullable / union into a flat list of core (non-optional,
  * non-nullable, non-union) alternatives. Value set = union of branch value sets.
+ *
+ * Matches `jzodTypeCheck`: `optional` and `nullable` each accept both `null`
+ * and `undefined` (see null/undefined handling at the top of that function).
  */
 function normalizeToBranches(schema: JzodElement): CoreSchema[] {
-  const optional = schema.optional === true;
-  const nullable = schema.nullable === true;
+  const admitsNullOrUndefined =
+    schema.optional === true || schema.nullable === true;
 
   let cores: CoreSchema[];
   if (schema.type === "union") {
@@ -68,10 +74,8 @@ function normalizeToBranches(schema: JzodElement): CoreSchema[] {
   }
 
   const result = [...cores];
-  if (optional) {
+  if (admitsNullOrUndefined) {
     result.push({ type: "undefined" } as CoreSchema);
-  }
-  if (nullable) {
     result.push({ type: "null" } as CoreSchema);
   }
   return result;
@@ -86,15 +90,6 @@ function stripOptionalNullable(schema: JzodElement): CoreSchema {
     nullable?: boolean;
   };
   return rest as CoreSchema;
-}
-
-/** Remove only the `optional` flag: absence of an attribute is fine for records. */
-function stripOptionalFlag(schema: JzodElement): JzodElement {
-  if (schema.optional === undefined) {
-    return schema;
-  }
-  const { optional: _o, ...rest } = schema as JzodElement & { optional?: boolean };
-  return rest as JzodElement;
 }
 
 function stripPresentation(schema: CoreSchema): CoreSchema {
@@ -310,8 +305,10 @@ function objectSubtypeOfRecord(
   }
   const aPartial = objectSchema.partial === true;
   const props = objectSchema.definition ?? {};
+  // Do not strip optional/nullable: under jzodTypeCheck those flags also admit
+  // null/undefined *as present values*, which a plain record value type rejects.
   const propsOk = Object.values(props).every((prop) =>
-    isSubtype(stripOptionalFlag(aPartial ? { ...prop, optional: true } : prop), recordValueSchema),
+    isSubtype(aPartial ? { ...prop, optional: true } : prop, recordValueSchema),
   );
   if (!propsOk) {
     return false;
@@ -367,8 +364,9 @@ function isObjectSubtype(a: JzodObject, b: JzodObject): boolean {
         }
         continue;
       }
-      // `key` never occurs in values of A: fine only if B tolerates its absence
-      if (bPartial || bProp.optional === true) {
+      // `key` never occurs in values of A: fine if B tolerates absence — same as
+      // jzodTypeCheck, which skips missing attrs when optional OR nullable
+      if (bPartial || bProp.optional === true || bProp.nullable === true) {
         continue;
       }
       return false;

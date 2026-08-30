@@ -61,14 +61,29 @@ describe("isMlSchemaSubtype — optional / nullable (#250)", () => {
     expect(isMlSchemaSubtype(nullableString, stringSchema)).toBe(false);
   });
 
-  it("undefined is subtype of optional string", () => {
+  it("follows jzodTypeCheck: optional and nullable each accept null and undefined", () => {
     const optionalString = { type: "string", optional: true } as JzodElement;
+    const nullableString = { type: "string", nullable: true } as JzodElement;
     expect(isMlSchemaSubtype(undefinedSchema, optionalString)).toBe(true);
+    expect(isMlSchemaSubtype(nullSchema, optionalString)).toBe(true);
+    expect(isMlSchemaSubtype(undefinedSchema, nullableString)).toBe(true);
+    expect(isMlSchemaSubtype(nullSchema, nullableString)).toBe(true);
   });
 
-  it("null is subtype of nullable string", () => {
+  it("follows jzodTypeCheck: optional and nullable are equivalent value sets", () => {
+    const optionalString = { type: "string", optional: true } as JzodElement;
     const nullableString = { type: "string", nullable: true } as JzodElement;
-    expect(isMlSchemaSubtype(nullSchema, nullableString)).toBe(true);
+    expect(isMlSchemaSubtype(optionalString, nullableString)).toBe(true);
+    expect(isMlSchemaSubtype(nullableString, optionalString)).toBe(true);
+  });
+
+  it("missing object attribute is OK when target attribute is nullable (jzodTypeCheck)", () => {
+    const empty = { type: "object", definition: {} } as JzodElement;
+    const nullableName = {
+      type: "object",
+      definition: { name: { type: "string", nullable: true } },
+    } as JzodElement;
+    expect(isMlSchemaSubtype(empty, nullableName)).toBe(true);
   });
 });
 
@@ -319,13 +334,19 @@ describe("isMlSchemaSubtype — arrays, records, tuples (#250)", () => {
     expect(isMlSchemaSubtype(obj, stringRecord)).toBe(true);
   });
 
-  it("optional object attributes still fit a record of their core type", () => {
+  it("optional object attributes do not fit a record of their core type (null/undefined values)", () => {
+    // jzodTypeCheck: optional admits null as a present value; Record<string,string> does not
     const objWithOptional = {
       type: "object",
       definition: { a: { type: "uuid", optional: true } },
     } as JzodElement;
     const stringRecord = { type: "record", definition: stringSchema } as JzodElement;
-    expect(isMlSchemaSubtype(objWithOptional, stringRecord)).toBe(true);
+    const optionalStringRecord = {
+      type: "record",
+      definition: { type: "string", optional: true },
+    } as JzodElement;
+    expect(isMlSchemaSubtype(objWithOptional, stringRecord)).toBe(false);
+    expect(isMlSchemaSubtype(objWithOptional, optionalStringRecord)).toBe(true);
   });
 
   it("nonStrict object is a subtype of a record only when the record accepts any value", () => {
@@ -436,6 +457,44 @@ describe("isMlSchemaSubtype — schemaReference identity (#250)", () => {
     expect(isMlSchemaSubtype(ctxString, ctxNumber)).toBe(false);
     expect(isMlSchemaSubtype(ctxNumber, ctxString)).toBe(false);
     expect(isMlSchemaSubtype(ctxString, ctxStringAgain)).toBe(true);
+  });
+
+  it("references differing only in eager or partial are not subtypes", () => {
+    const base = {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "entity",
+      },
+    } as JzodElement;
+    const eager = {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "entity",
+        eager: true,
+      },
+    } as JzodElement;
+    const partial = {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "entity",
+        partial: true,
+      },
+    } as JzodElement;
+    expect(isMlSchemaSubtype(base, eager)).toBe(false);
+    expect(isMlSchemaSubtype(eager, base)).toBe(false);
+    expect(isMlSchemaSubtype(base, partial)).toBe(false);
+    expect(isMlSchemaSubtype(partial, base)).toBe(false);
+    expect(isMlSchemaSubtype(eager, {
+      type: "schemaReference",
+      definition: {
+        absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        relativePath: "entity",
+        eager: true,
+      },
+    } as JzodElement)).toBe(true);
   });
 
   it("references differing only in presentation metadata are subtypes", () => {
