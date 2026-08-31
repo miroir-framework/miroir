@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../197-FEATURE- run integration tests in the UI/plan.md`](../197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md)
 Working branch: `dev-copilot`
 
-**Resume note:** Slice 7 ✅ — registry fallback dropped; final `{ kind, suiteDefinition, testbedInitApplicationParameters }`. Next is Slice 8 (nonreg, docs, cleanup, AC).
+**Resume note:** Slice 8 ✅ — nonreg, docs, issue-dir cleanup, AC. #252 implementation complete. `runner_create_entity` “Create Entity with reports” remains a pre-existing integ failure (not gated in nonreg).
 
 ---
 
@@ -47,7 +47,7 @@ This plan does **not** retire suite-*key* registries or drop registry `kind` (#2
 | 5 | Remaining unique DC slices inlined on suite JSON | ✅ | those five DC suites integ GREEN |
 | 6 | Freeze suite inline appForTest playfield | ✅ | `runner_freeze_application_version` integ GREEN |
 | 7 | Drop registry fallback; final `{ kind, suiteDefinition, testbedInitApplicationParameters }` | ✅ | launcher unit + drop/lend/undo_redo integ GREEN |
-| 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step + tracer narrative |
+| 8 | Nonreg, docs, cleanup, AC | ✅ | promoted units + docs; `issues/252-*` gone |
 
 ---
 
@@ -606,7 +606,7 @@ Plus a spot-check of one uuid suite and one inline suite already proven in earli
 
 ## Slice 8 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 8.1 Nonreg
 
@@ -646,15 +646,15 @@ Automated equivalent: Slice 1 integ + Slice 3 integ + Slice 2 modelValidation / 
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| `MiroirTestSuite` optional `testbedModel` + `testbedEntitiesAndInstances`; unit suites valid without them | Slice 1 schema + existing unit `testMiroir` still in nonreg | ⬜ |
+| `MiroirTestSuite` optional `testbedModel` + `testbedEntitiesAndInstances`; unit suites valid without them | Slice 1 schema + existing unit `testMiroir` still in nonreg | ✅ |
 | Integ suites with a non-null playfield today run with model+instances from the suite or a `TestConfiguration`, not from `testBedModelAndInstances` | Slices 1, 3–7 integ | ✅ |
 | `testbedInitApplicationParameters` is **not** on `MiroirTestSuite` **nor** on `TestConfiguration`; it stays on the registry | D2/D4; Slice 2 entity schema; Slice 7 registry type | ✅ |
-| `TestConfiguration` Entity exists; Miroir instances in data, user-app instances in model | Slice 2 `getApplicationSection`; Slices 3–6 asset paths | ⬜ |
-| Suites can reference a `TestConfiguration`; shared document / Publisher+Country seeds are instances | Slices 3–4 | ⬜ |
+| `TestConfiguration` Entity exists; Miroir instances in data, user-app instances in model | Slice 2 `getApplicationSection`; Slices 3–6 asset paths | ✅ |
+| Suites can reference a `TestConfiguration`; shared document / Publisher+Country seeds are instances | Slices 3–4 | ✅ |
 | Freeze suite playfield inline on suite JSON (no cross-app config uuid) | Slice 6 (D12) | ✅ |
 | `skipRunTargetPlayfieldReset` suites still run with no testbed seed | Slice 1 + Slice 7 drop integ; create “no reports” GREEN; “with reports” pre-existing EntityNotFound | ✅ |
 | UI and CLI share the resolution path; registry `kind` **remains** | Slice 7; D8 | ✅ |
-| Docs describe self-contained suite + optional `TestConfiguration` | Slice 8.2 | ⬜ |
+| Docs describe self-contained suite + optional `TestConfiguration` | Slice 8.2 | ✅ |
 
 Withdrawn ACs (do **not** implement): init on `TestConfiguration`; drop registry `kind`; appForTest `TestConfiguration` uuid for freeze (D12).
 
@@ -670,4 +670,10 @@ npm run testByFile -w miroir-standalone-app -- uiIntegrationTestLauncher.unit
 
 ### Realization
 
-<Appended on completion.>
+- Nonreg: `unit-resolveSuitePlayfieldSeed`, `unit-testConfigurationSection`, `integ-runner-runner_drop_entity`, `integ-action-evolutionTraceWP1`. Omitted `integ-runner-runner_create_entity` — “Create Entity with reports” is a pre-existing `EntityNotFound` (Slice 7); gating it would go red.
+- Docs: `docs/reference/testing.md` “Adding a new suite” now has an integ subsection (suite/config playfield; registry leftover is kind + init). Feature 197 plan notes #252. `analysis.md` status → implemented.
+- Issue dirs deleted (`tests/**/issues/252-self-contained-testbed/`). Promoted: `packages/miroir-core/tests/5_tests/resolveSuitePlayfieldSeed.unit.test.ts` (21), `packages/miroir-core/tests/1_core/testConfigurationSection.unit.test.ts` (9), `packages/miroir-standalone-app/tests/helpers/uiIntegrationRunnerRegistry.unit.test.ts` (2).
+- Tracer (automated): Slice 1 undo_redo integ + Slice 3 return/lend + Slice 2 menus / `getApplicationSection` (now `testConfigurationSection` + `applicationModelScopeMenu`).
+- Proof: `resolveSuitePlayfieldSeed` (21) GREEN; `testConfigurationSection` (9) GREEN; `applicationModelScopeMenu` (15) GREEN; launcher unit (16) GREEN; registry unit (2) GREEN; `issues/252-*` absent.
+
+---

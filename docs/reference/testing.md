@@ -1137,6 +1137,8 @@ await session.teardown();
 
 ### Adding a new suite
 
+#### Unit suite (`testMiroir --mode unit`)
+
 1. Create a `MiroirTestDefinition` JSON in `assets/miroir_data/a311f363-…/<uuid>.json`.
 2. Export it from `packages/miroir-test-app_deployment-miroir/index.ts`:
    ```typescript
@@ -1146,6 +1148,19 @@ await session.teardown();
 4. Rebuild: `npm run build -w miroir-test-app_deployment-miroir`.
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.
 6. Run: `MIROIR_TEST_SUITES=myNewSuite MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core`.
+
+#### Integration suite (UI / CLI `testMiroir --mode integ`)
+
+Playfield **model + instances** belong on the suite or a `TestConfiguration`, not in TypeScript.
+
+1. On the `MiroirTestSuite` `definition`, set either:
+   - inline `testbedModel` + `testbedEntitiesAndInstances` (a `metaModelPartial` slice, not a full app dump), **or**
+   - `testConfiguration`: uuid of a `TestConfiguration` instance.
+   Do not set both. Do **not** paste Entity arrays into TypeScript.
+2. `TestConfiguration` instances follow Query / `MiroirTest`: Miroir app → **data** (`miroir_data/675ccd46-…/`); any other app → that app’s **model** section. Payload is `name` / `description` + `testbedModel` + `testbedEntitiesAndInstances` only.
+3. Add `{ kind, suiteDefinition, testbedInitApplicationParameters }` to `UI_INTEGRATION_RUNNER_SUITE_REGISTRY`. `kind` stays (`runnerTest` | `domainControllerTest` | `actionTest`). Omit `testbedInitApplicationParameters` only when every leaf has `skipRunTargetPlayfieldReset`.
+4. Export the suite from the owning deployment package and rebuild it.
+5. Run: `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites myNewSuite --mode integ`.
 
 ---
 

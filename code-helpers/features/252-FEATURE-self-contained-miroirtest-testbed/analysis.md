@@ -22,7 +22,7 @@ Key sources:
 - [`packages/miroir-core/src/5_tests/LibraryPlayfield.ts`](../../../packages/miroir-core/src/5_tests/LibraryPlayfield.ts) (`resetIntegTestbed`)
 
 **Document role:** analysis and architectural decision record.
-**Status:** analysis **complete** — decision record confirmed (user 2026-08-31, including Q1). Implementation: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** **implemented** (2026-08-31). Decision record confirmed (user 2026-08-31, including Q1). Implementation: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 **Document history:** first draft mixed “which `TestConfiguration` to use” with “where `testbedInitApplicationParameters` lives” (old D3/D4/D5). Round 1 split those. Round 2: `runTarget` is the **sandbox identity** (ephemeral vs pinned), not TestConfiguration ownership; instance **section** follows Query/MiroirTest (`getApplicationSection`); registry keeps `{ kind, suiteDefinition, testbedInitApplicationParameters }`; menus on model-scope template **and** Miroir menu. Q1 confirmed: TestConfiguration payload is model + instances only.
 
 ---
@@ -35,7 +35,7 @@ Key sources:
 | Run integ tests in the UI (playfield still in TS registry) | #197 | parent, in progress |
 | Classify remaining vitest twins | #204 | later |
 | Retire multi-registry *keys* / vitest-name discovery | #228 | complementary, later |
-| **Self-contained testbed + `TestConfiguration`** | **#252** | **this** |
+| **Self-contained testbed + `TestConfiguration`** | **#252** | ✅ |
 
 #228 retires *how suites are listed*. This issue moves **model + instances** out of the UI registry. The registry **keeps** `kind` and `testbedInitApplicationParameters`.
 
