@@ -14,6 +14,7 @@
       "applicationName": "Library",
       "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
     },
+    "testConfiguration": "431e0903-80ff-45be-aec7-12fe272dcef0",
     "miroirTests": [
       {
         "miroirTestType": "actionTest",

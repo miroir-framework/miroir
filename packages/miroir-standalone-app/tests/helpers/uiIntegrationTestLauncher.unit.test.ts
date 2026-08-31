@@ -189,6 +189,55 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     }
   });
 
+  it("model_crud / freeze / evolutionTraceWP1 compose the Miroir Publisher+Country TestConfiguration seed and drop registry playfield", () => {
+    const context = { miroirConfig: {} as never };
+    const runTarget = {
+      applicationUuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      applicationName: "Library",
+    };
+    const expectedEntityNames = ["Country", "Publisher"];
+    for (const key of [
+      "domain_controller_model_crud",
+      "domain_controller_application_version_freeze",
+      "evolutionTraceWP1",
+    ] as const) {
+      const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
+      expect(Object.prototype.hasOwnProperty.call(entry, "testBedModelAndInstances"), key).toBe(
+        false,
+      );
+      expect(entry.testbedInitApplicationParameters, key).toEqual(libraryTestbedInitParams);
+
+      const params = buildUiIntegrationOrchestratorCreateSessionParams(
+        entry,
+        context,
+        "test",
+        runTarget,
+        {},
+        UI_INTEGRATION_RUNNER_UUID_INDEX,
+      );
+      expect(params.kind, key).toBe("action");
+      if (params.kind !== "action") {
+        continue;
+      }
+      const seed = params.sessionSpecificOptions.testBedModelAndInstances;
+      expect(seed, key).toBeDefined();
+      expect(seed.testbedInitApplicationParameters, key).toEqual(libraryTestbedInitParams);
+      expect(
+        seed.testbedEntitiesAndInstances.map((entry) => entry.entity.name).sort(),
+        key,
+      ).toEqual(expectedEntityNames);
+      expect(seed.testbedModel.applicationUuid, key).toBe(
+        "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      );
+      expect(seed.testbedModel.applicationName, key).toBe("Library");
+      expect(
+        (seed.testbedModel.entities ?? []).map((entity) => entity.name),
+        key,
+      ).toEqual(["Publisher", "Country"]);
+    }
+  });
+
   it("create/drop omit a playfield seed because skipRunTargetPlayfieldReset is set", () => {
     const context = { miroirConfig: {} as never };
     const runTarget = {

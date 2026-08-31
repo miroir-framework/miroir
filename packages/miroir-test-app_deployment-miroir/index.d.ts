@@ -266,6 +266,7 @@ export declare const miroirTest_evolutionTraceWP1: any;
 export declare const miroirTest_runner_create_entity: any;
 export declare const miroirTest_runner_drop_entity: any;
 export declare const miroirTest_runner_freeze_application_version: any;
+export declare const testConfiguration_libraryPublisherAndCountry: any;
 export declare const miroirTest_unionArrayChoices: any;
 export declare const miroirTest_unionObjectChoices: any;
 export declare const transformerMenuV1: any;

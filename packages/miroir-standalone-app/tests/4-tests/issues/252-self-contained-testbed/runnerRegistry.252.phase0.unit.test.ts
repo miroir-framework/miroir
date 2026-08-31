@@ -52,6 +52,9 @@ const EXPECTED_KIND: Record<(typeof EXPECTED_KEYS)[number], string> = {
 const NULL_PLAYFIELD_KEYS = new Set(["runner_create_entity", "runner_drop_entity"]);
 const SUITE_OWNED_PLAYFIELD_KEYS = new Set([
   "domain_controller_model_undo_redo",
+  "domain_controller_model_crud",
+  "domain_controller_application_version_freeze",
+  "evolutionTraceWP1",
   "runner_lend_document",
   "runner_return_document",
 ]);
@@ -63,7 +66,7 @@ const SUITE_OWNED_PLAYFIELD_KEYS = new Set([
       expect(listUiIntegrationRunnerSuiteKeys()).toEqual([...EXPECTED_KEYS]);
     });
 
-    it("each entry has kind; create/drop keep null playfield; undo_redo and lend/return are suite-owned; others still have the nested triple plus lifted init", () => {
+    it("each entry has kind; create/drop keep null playfield; migrated rows are suite-owned; others still have the nested triple plus lifted init", () => {
       for (const key of EXPECTED_KEYS) {
         const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
         expect(entry, key).toBeDefined();

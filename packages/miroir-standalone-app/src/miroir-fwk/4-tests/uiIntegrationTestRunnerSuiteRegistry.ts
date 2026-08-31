@@ -75,7 +75,6 @@ import {
   entityCodeNumber,
   entityCompositePK,
   entityNoParentUuid,
-  libraryEntitiesAndInstancesPublisherAndCountry,
   libraryTestbedInitParams,
   noParentItem1,
   noParentItem2,
@@ -368,15 +367,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_model_crud.definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity, entityCountry as Entity],
-      },
-    },
   },
   // ###############################################################################
   [miroirTest_domain_controller_composite_pk_crud.name]: {
@@ -484,30 +474,12 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     suiteDefinition:
       miroirTest_domain_controller_application_version_freeze.definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity, entityCountry as Entity],
-      },
-    },
   },
   // ###############################################################################
   [miroirTest_evolutionTraceWP1.name]: {
     kind: "actionTest",
     suiteDefinition: miroirTest_evolutionTraceWP1.definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity, entityCountry as Entity],
-      },
-    },
   },
 };
 

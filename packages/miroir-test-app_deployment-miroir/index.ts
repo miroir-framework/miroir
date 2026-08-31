@@ -319,6 +319,11 @@ export { default as miroirTest_unionArrayChoices } from "./assets/miroir_data/a3
 export { default as miroirTest_unionObjectChoices } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/14319c8e-8ece-4853-9004-f095fbd16d1a.json" with { type: "json" };
 
 // ################################################################################################
+// Miroir Data - TestConfiguration (parentUuid = entityTestConfiguration = 675ccd46)
+// ################################################################################################
+export { default as testConfiguration_libraryPublisherAndCountry } from "./assets/miroir_data/675ccd46-7dd3-400b-a2bd-1319c39e11da/431e0903-80ff-45be-aec7-12fe272dcef0.json" with { type: "json" };
+
+// ################################################################################################
 // Miroir Data - TransformerDefinition (parentUuid = entityTransformerDefinition = a557419d)
 // ################################################################################################
 export { default as transformerMenuV1 } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/685440be-7f3f-4774-b90d-bafa82d6832b.json" with { type: "json" };

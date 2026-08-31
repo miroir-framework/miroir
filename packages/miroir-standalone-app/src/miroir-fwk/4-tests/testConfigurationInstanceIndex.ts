@@ -4,6 +4,7 @@
  */
 import type { TestConfigurationPlayfield } from "miroir-core";
 import { testConfiguration_libraryDocumentSeed } from "miroir-test-app_deployment-library";
+import { testConfiguration_libraryPublisherAndCountry } from "miroir-test-app_deployment-miroir";
 
 function playfieldFromInstance(instance: {
   uuid: string;
@@ -20,6 +21,9 @@ function playfieldFromInstance(instance: {
 export const TEST_CONFIGURATION_INSTANCE_INDEX: Record<string, TestConfigurationPlayfield> = {
   [testConfiguration_libraryDocumentSeed.uuid]: playfieldFromInstance(
     testConfiguration_libraryDocumentSeed,
+  ),
+  [testConfiguration_libraryPublisherAndCountry.uuid]: playfieldFromInstance(
+    testConfiguration_libraryPublisherAndCountry,
   ),
 };
 

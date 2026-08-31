@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../197-FEATURE- run integration tests in the UI/plan.md`](../197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md)
 Working branch: `dev-copilot`
 
-**Resume note:** Slice 3 ✅ — Library document `TestConfiguration`; lend/return by uuid. Next is Slice 4 (Miroir Publisher+Country config; three suites by uuid).
+**Resume note:** Slice 4 ✅ — Miroir Publisher+Country `TestConfiguration`; three suites by uuid. Next is Slice 5 (remaining unique DC slices inlined on suite JSON).
 
 ---
 
@@ -43,7 +43,7 @@ This plan does **not** retire suite-*key* registries or drop registry `kind` (#2
 | 1 | Tracer: suite-owned seed for `domain_controller_model_undo_redo` | ✅ | resolver + launcher unit + that suite integ GREEN |
 | 2 | Entity `TestConfiguration` + reports + menus | ✅ | `getApplicationSection` + modelValidation + #240 menu suite |
 | 3 | Library document `TestConfiguration`; lend/return by uuid | ✅ | lend + return integ GREEN |
-| 4 | Miroir Publisher+Country config; three suites by uuid | ⬜ | model_crud + freeze + evolutionTraceWP1 integ GREEN |
+| 4 | Miroir Publisher+Country config; three suites by uuid | ✅ | model_crud + freeze + evolutionTraceWP1 integ GREEN |
 | 5 | Remaining unique DC slices inlined on suite JSON | ⬜ | those five DC suites integ GREEN |
 | 6 | Freeze suite inline appForTest playfield | ⬜ | `runner_freeze_application_version` integ GREEN |
 | 7 | Drop registry fallback; final `{ kind, suiteDefinition, testbedInitApplicationParameters }` | ⬜ | launcher unit + create/drop integ GREEN |
@@ -425,7 +425,7 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ## Slice 4 — Miroir Publisher+Country config; three suites by uuid
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -457,7 +457,12 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ### Realization
 
-<Appended on completion.>
+- Miroir-data instance `431e0903-…` (`libraryPublisherAndCountry`) under `miroir_data/675ccd46-…/`, `selfApplication: 360fcf1f-…`. Instances: Publisher (3: folio/penguin/springer), Country (3: Country1–3) — same as `libraryEntitiesAndInstancesPublisherAndCountry`. `testbedModel` slice `{ applicationUuid, applicationName, entities: [Publisher, Country] }` (Library uuids). No endpoints needed (unlike Slice 3 lend/return).
+- Three suite JSON files have `testConfiguration: 431e0903-…` and no inline playfield. Export `testConfiguration_libraryPublisherAndCountry`. Added to `TEST_CONFIGURATION_INSTANCE_INDEX`.
+- Registry dropped `testBedModelAndInstances` for those three rows; kept `kind` + `libraryTestbedInitParams`. Kept TS `libraryEntitiesAndInstancesPublisherAndCountry` for `ExtractorPersistenceStoreRunner.integ.test.tsx`.
+- Slice 0 inventory/registry tests updated for uuid-owned model_crud / freeze / evolutionTraceWP1.
+- Miroir `modelValidation` is MetaModel-array based, so the new instance is not in that suite (still 151). The three suite JSON rows with the FK did validate. Instance payload is covered by the Slice 4 resolver test reading the JSON from disk.
+- Proof: `resolveSuitePlayfieldSeed.252.phase4` (3) GREEN; launcher unit (13) GREEN; Slice 0 core (4) + registry (2) GREEN; `modelValidation.unit` (151) GREEN; `testMiroir … --suites domain_controller_model_crud,domain_controller_application_version_freeze,evolutionTraceWP1 --mode integ` (19) GREEN.
 
 ---
 
