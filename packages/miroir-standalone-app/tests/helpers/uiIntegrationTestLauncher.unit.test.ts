@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import { miroirTest_runner_return_document } from "miroir-test-app_deployment-library";
+import {
+  miroirTest_domain_controller_model_undo_redo,
+} from "miroir-test-app_deployment-miroir";
 import type { MiroirTestDefinition, MiroirTestSuite } from "miroir-core";
 
 import {
@@ -8,6 +11,7 @@ import {
   resolveUiIntegrationTestRunTarget,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
 import { resolveDefaultApplicationNameFromMiroirTestSuite } from "miroir-core";
+import { libraryTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
 import {
   buildUiIntegrationOrchestratorCreateSessionParams,
   listUiIntegrationRunnerSuiteKeys,
@@ -93,6 +97,60 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     ).toBe("action");
   });
 
+  it("composes undo_redo playfield from suite JSON plus registry init params", () => {
+    const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY.domain_controller_model_undo_redo;
+    expect(Object.prototype.hasOwnProperty.call(entry, "testBedModelAndInstances")).toBe(false);
+
+    const context = { miroirConfig: {} as never };
+    const runTarget = {
+      applicationUuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      applicationName: "Library",
+    };
+    const params = buildUiIntegrationOrchestratorCreateSessionParams(
+      entry,
+      context,
+      "test",
+      runTarget,
+      {},
+      UI_INTEGRATION_RUNNER_UUID_INDEX,
+    );
+    expect(params.kind).toBe("action");
+    if (params.kind !== "action") {
+      return;
+    }
+    const seed = params.sessionSpecificOptions.testBedModelAndInstances;
+    const suite = (miroirTest_domain_controller_model_undo_redo as MiroirTestDefinition)
+      .definition as MiroirTestSuite;
+    expect(seed.testbedModel).toEqual(suite.testbedModel);
+    expect(seed.testbedEntitiesAndInstances).toEqual(suite.testbedEntitiesAndInstances);
+    expect(seed.testbedInitApplicationParameters).toEqual(libraryTestbedInitParams);
+  });
+
+  it("create/drop omit a playfield seed because skipRunTargetPlayfieldReset is set", () => {
+    const context = { miroirConfig: {} as never };
+    const runTarget = {
+      applicationUuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      applicationName: "Library",
+    };
+    for (const key of ["runner_create_entity", "runner_drop_entity"] as const) {
+      const params = buildUiIntegrationOrchestratorCreateSessionParams(
+        UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key],
+        context,
+        "test",
+        runTarget,
+        {},
+        UI_INTEGRATION_RUNNER_UUID_INDEX,
+      );
+      expect(params.kind, key).toBe("runner");
+      if (params.kind !== "runner") {
+        continue;
+      }
+      expect(params.sessionSpecificOptions?.testBedModelAndInstances, key).toBeUndefined();
+      expect(params.sessionSpecificOptions?.skipRunTargetPlayfieldReset, key).toBe(true);
+    }
+  });
 });
 
 describe("uiIntegrationTestTransformerSuiteRegistry (B7)", () => {

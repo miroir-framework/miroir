@@ -1438,6 +1438,11 @@ export {
   runnerTestJzodSchema,
 } from "./5_tests/RunnerTestTools.js";
 export {
+  resolveSuitePlayfieldSeed,
+  type SuitePlayfieldSeed,
+  type TestConfigurationPlayfield,
+} from "./5_tests/resolveSuitePlayfieldSeed.js";
+export {
   isRunnerTestRunTargetUuid,
   getTestbedUuidsForTestSuite,
   buildRunnerTestSessionParamBank,

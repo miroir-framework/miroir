@@ -52,7 +52,7 @@ describe("mergeApplicationModelScopeMenuItems", () => {
   it("rewrites selfApplication on every item for the target app", () => {
     const merged = mergeApplicationModelScopeMenuItems(template, LIBRARY_UUID);
 
-    expect(merged).toHaveLength(9);
+    expect(merged).toHaveLength(10);
     for (const item of merged) {
       expect(item.selfApplication).toBe(LIBRARY_UUID);
     }
@@ -79,6 +79,7 @@ describe("mergeApplicationModelScopeMenuItems", () => {
       "Endpoints",
       "Runners",
       "Tests",
+      "Test Configurations",
       "Model-Data Divider",
     ]);
 
@@ -94,7 +95,7 @@ describe("mergeApplicationModelScopeMenuItems", () => {
     expect(entities.section).toBe("model");
     expect(entities.icon).toBe("category");
 
-    const divider = merged[8];
+    const divider = merged[9];
     expect(divider.miroirMenuItemType).toBe("miroirMenuItemDivider");
     expect(divider.menuItemScope).toBe("model");
   });

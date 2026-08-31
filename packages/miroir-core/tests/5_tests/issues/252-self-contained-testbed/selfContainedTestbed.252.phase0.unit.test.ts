@@ -89,6 +89,7 @@ const EXPECTED_MODEL_SCOPE_LABELS = [
   "Endpoints",
   "Runners",
   "Tests",
+  "Test Configurations",
   "Model-Data Divider",
 ] as const;
 
@@ -112,7 +113,7 @@ function modelScopeItemLabels(menu: Menu): string[] {
 (shouldRun ? describe : describe.skip)(
   "self-contained testbed current contracts (issue #252 slice 0)",
   () => {
-    it("fourteen integ suite JSON definitions have no testbedModel, testbedEntitiesAndInstances, or testConfiguration", () => {
+    it("integ suite JSON definitions have no playfield fields except domain_controller_model_undo_redo inline seed", () => {
       const keys = Object.keys(INTEG_SUITE_DEFINITIONS).sort();
       expect(keys).toEqual([
         "domain_controller_application_version_freeze",
@@ -132,23 +133,32 @@ function modelScopeItemLabels(menu: Menu): string[] {
       ]);
 
       for (const [name, definition] of Object.entries(INTEG_SUITE_DEFINITIONS)) {
+        if (name === "domain_controller_model_undo_redo") {
+          expect(playfieldFieldsOn(definition), name).toEqual([
+            "testbedModel",
+            "testbedEntitiesAndInstances",
+          ]);
+          continue;
+        }
         expect(playfieldFieldsOn(definition), name).toEqual([]);
       }
     });
 
-    it("no Entity JSON under the Entity metaclass folder is named TestConfiguration", () => {
+    it("Entity JSON under the Entity metaclass folder includes TestConfiguration", () => {
       const names = readdirSync(ENTITY_METACLASS_DIR)
         .filter((file) => file.endsWith(".json"))
         .map((file) => {
           const row = JSON.parse(readFileSync(join(ENTITY_METACLASS_DIR, file), "utf8")) as {
             name?: string;
+            uuid?: string;
           };
-          return row.name;
+          return row;
         });
-      expect(names).not.toContain("TestConfiguration");
+      const testConfiguration = names.find((row) => row.name === "TestConfiguration");
+      expect(testConfiguration?.uuid).toBe("675ccd46-7dd3-400b-a2bd-1319c39e11da");
     });
 
-    it("ApplicationModelScopeTemplate item labels are the eight report links plus divider", () => {
+    it("ApplicationModelScopeTemplate item labels are the nine report links plus divider", () => {
       const labels = modelScopeItemLabels(menuApplicationModelScopeTemplate as Menu);
       expect(labels).toEqual([...EXPECTED_MODEL_SCOPE_LABELS]);
     });

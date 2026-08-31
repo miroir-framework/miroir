@@ -1,0 +1,97 @@
+{
+  "uuid": "d85749be-caf7-4595-9375-5ab6abf2061b",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "675ccd46-7dd3-400b-a2bd-1319c39e11da",
+  "conceptLevel": "Model",
+  "name": "TestConfiguration",
+  "description": "Definition of the TestConfiguration entity: reusable playfield model and instances for MiroirTest integration suites.",
+  "viewAttributes": [
+    "name",
+    "description",
+    "uuid"
+  ],
+  "defaultInstanceDetailsReportUuid": "21a693e4-127b-4c84-a7eb-d145eaf4d0d2",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "SelfApplication",
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "testbedModel": {
+        "type": "any",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Testbed Model"
+          }
+        }
+      },
+      "testbedEntitiesAndInstances": {
+        "type": "array",
+        "optional": true,
+        "definition": {
+          "type": "object",
+          "definition": {
+            "entity": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entity"
+              }
+            },
+            "instances": {
+              "type": "array",
+              "definition": {
+                "type": "any"
+              }
+            }
+          }
+        },
+        "tag": {
+          "value": {
+            "defaultLabel": "Testbed Entities And Instances"
+          }
+        }
+      }
+    }
+  }
+}

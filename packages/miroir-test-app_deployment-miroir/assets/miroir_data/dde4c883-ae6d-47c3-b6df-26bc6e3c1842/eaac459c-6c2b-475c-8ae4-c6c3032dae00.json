@@ -97,6 +97,17 @@
           },
           {
             "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Miroir Test Configurations",
+            "section": "data",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "08cd379a-9ec8-4e1b-ac99-8a77a6905d72",
+            "icon": {
+              "iconType": "mui",
+              "name": "tune"
+            }
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
             "label": "Miroir Blobs",
             "section": "data",
             "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",

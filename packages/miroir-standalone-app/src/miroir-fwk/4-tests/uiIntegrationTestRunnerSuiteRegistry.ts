@@ -3,6 +3,7 @@ import type {
   ApplicationVersion,
   Entity,
   EntityInstance,
+  InitApplicationParameters,
   IntegrationTestOrchestratorContext,
   IntegrationTestSessionFactoryCreateParams,
   MetaModel,
@@ -12,7 +13,11 @@ import type {
   SelfApplication,
   TestbedUuids,
 } from "miroir-core";
-import { resolveRunnerFromMiroirTestSuite, resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite } from "miroir-core";
+import {
+  resolveRunnerFromMiroirTestSuite,
+  resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
+  resolveSuitePlayfieldSeed,
+} from "miroir-core";
 import {
   author1,
   author2,
@@ -94,23 +99,26 @@ export type UiIntegrationRunnerTestSuiteEntry = {
   kind: "runnerTest";
   suiteDefinition: MiroirTestSuite;
   /**
-   * Playfield seed for runner suites that reset/seed the runTarget in `beforeEach`.
-   * `null` for create/drop-entity suites (`skipRunTargetPlayfieldReset`) that manage
-   * their own ephemeral deployment inside the composite action.
+   * Transitional playfield fallback (#252). Omitted once the suite JSON (or a
+   * TestConfiguration uuid) owns model + instances. `null` for create/drop
+   * (`skipRunTargetPlayfieldReset`).
    */
-  testBedModelAndInstances: TestbedSetupParameters | null;
+  testBedModelAndInstances?: TestbedSetupParameters | null;
+  testbedInitApplicationParameters?: InitApplicationParameters | null;
 };
 
 export type UiIntegrationDomainControllerTestSuiteEntry = {
   kind: "domainControllerTest";
   suiteDefinition: MiroirTestSuite;
-  testBedModelAndInstances: TestbedSetupParameters;
+  testBedModelAndInstances?: TestbedSetupParameters;
+  testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationActionTestSuiteEntry = {
   kind: "actionTest";
   suiteDefinition: MiroirTestSuite;
-  testBedModelAndInstances: TestbedSetupParameters;
+  testBedModelAndInstances?: TestbedSetupParameters;
+  testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationRunnerSuiteEntry =
@@ -187,6 +195,43 @@ export function buildUiIntegrationOrchestratorCreateSessionParams(
   };
 }
 // ################################################################################################
+function composeUiIntegrationPlayfieldSeed(
+  entry: UiIntegrationRunnerSuiteEntry,
+): TestbedSetupParameters | undefined {
+  if (resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition)) {
+    return undefined;
+  }
+
+  const resolved = resolveSuitePlayfieldSeed(entry.suiteDefinition);
+  const nested = entry.testBedModelAndInstances ?? undefined;
+  const modelAndInstances =
+    resolved ??
+    (nested
+      ? {
+          testbedModel: nested.testbedModel,
+          testbedEntitiesAndInstances: nested.testbedEntitiesAndInstances,
+        }
+      : undefined);
+
+  if (modelAndInstances === undefined) {
+    return undefined;
+  }
+
+  const init =
+    entry.testbedInitApplicationParameters ?? nested?.testbedInitApplicationParameters;
+  if (init === undefined || init === null) {
+    throw new Error(
+      `UI integration suite "${entry.suiteDefinition.miroirTestLabel}" is missing testbedInitApplicationParameters`,
+    );
+  }
+
+  return {
+    testbedModel: modelAndInstances.testbedModel,
+    testbedEntitiesAndInstances: modelAndInstances.testbedEntitiesAndInstances,
+    testbedInitApplicationParameters: init,
+  };
+}
+
 export function buildUiIntegrationRunnerSessionSpecificOptions(
   entry: UiIntegrationRunnerSuiteEntry,
   pageLabel: string,
@@ -201,34 +246,16 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
   testBedModelAndInstances?: TestbedSetupParameters;
   skipRunTargetPlayfieldReset?: boolean;
 } {
-  switch (entry.kind) {
-    case "runnerTest":
-      return {
-        pageLabel,
-        runTarget,
-        suiteTestParams,
-        runnerUuidIndex,
-        ...(entry.testBedModelAndInstances !== null
-          ? { testBedModelAndInstances: entry.testBedModelAndInstances }
-          : {}),
-        ...(resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition)
-          ? { skipRunTargetPlayfieldReset: true }
-          : {}),
-      };
-    case "domainControllerTest":
-    case "actionTest":
-      return {
-        pageLabel,
-        runTarget,
-        suiteTestParams,
-        runnerUuidIndex,
-        testBedModelAndInstances: entry.testBedModelAndInstances,
-      };
-    default: {
-      const exhaustive: never = entry;
-      return exhaustive;
-    }
-  }
+  const skipReset = resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition);
+  const playfield = composeUiIntegrationPlayfieldSeed(entry);
+  return {
+    pageLabel,
+    runTarget,
+    suiteTestParams,
+    runnerUuidIndex,
+    ...(playfield !== undefined ? { testBedModelAndInstances: playfield } : {}),
+    ...(skipReset ? { skipRunTargetPlayfieldReset: true } : {}),
+  };
 }
 
 // ################################################################################################
@@ -237,6 +264,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
       testbedInitApplicationParameters: libraryTestbedInitParams,
@@ -248,6 +276,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
       testbedInitApplicationParameters: libraryTestbedInitParams,
@@ -273,6 +302,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
       .definition as MiroirTestSuite,
+    testbedInitApplicationParameters: appForTestTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
@@ -306,6 +336,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_data_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_data_crud.definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
@@ -343,6 +374,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_model_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_model_crud.definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
@@ -357,6 +389,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_composite_pk_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_composite_pk_crud.definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
@@ -377,6 +410,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_model_crud.definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
@@ -401,6 +435,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_data_crud.definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
@@ -420,6 +455,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_no_parent_uuid_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_no_parent_uuid_crud.definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: [
         {
@@ -447,20 +483,14 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_domain_controller_model_undo_redo.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_model_undo_redo.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-      },
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_application_version_freeze.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_application_version_freeze.definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,
@@ -475,6 +505,7 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_evolutionTraceWP1.name]: {
     kind: "actionTest",
     suiteDefinition: miroirTest_evolutionTraceWP1.definition as MiroirTestSuite,
+    testbedInitApplicationParameters: libraryTestbedInitParams,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
       testbedInitApplicationParameters: libraryTestbedInitParams,

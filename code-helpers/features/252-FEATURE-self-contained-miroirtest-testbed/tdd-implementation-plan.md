@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../197-FEATURE- run integration tests in the UI/plan.md`](../197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md)
 Working branch: `dev-copilot`
 
-**Resume note:** Slice 0 ✅ — current registry / schema / menu / section contracts locked.
+**Resume note:** Slice 2 ✅ — Entity `TestConfiguration` + reports + menus. Next is Slice 3 (Library document `TestConfiguration`; lend/return by uuid).
 
 ---
 
@@ -40,8 +40,8 @@ This plan does **not** retire suite-*key* registries or drop registry `kind` (#2
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize registry, schema, menus, section routing | ✅ | inventory unit tests GREEN (current state) |
-| 1 | Tracer: suite-owned seed for `domain_controller_model_undo_redo` | ⬜ | resolver + launcher unit + that suite integ GREEN |
-| 2 | Entity `TestConfiguration` + reports + menus | ⬜ | `getApplicationSection` + modelValidation + #240 menu suite |
+| 1 | Tracer: suite-owned seed for `domain_controller_model_undo_redo` | ✅ | resolver + launcher unit + that suite integ GREEN |
+| 2 | Entity `TestConfiguration` + reports + menus | ✅ | `getApplicationSection` + modelValidation + #240 menu suite |
 | 3 | Library document `TestConfiguration`; lend/return by uuid | ⬜ | lend + return integ GREEN |
 | 4 | Miroir Publisher+Country config; three suites by uuid | ⬜ | model_crud + freeze + evolutionTraceWP1 integ GREEN |
 | 5 | Remaining unique DC slices inlined on suite JSON | ⬜ | those five DC suites integ GREEN |
@@ -216,7 +216,7 @@ RUN_TEST=runnerRegistry.252.phase0 npm run testByFile -w miroir-standalone-app -
 
 ## Slice 1 — Tracer: suite-owned seed for undo_redo
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -288,13 +288,20 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ### Realization
 
-<Appended on completion.>
+- Dual-write on Entity `a311f363-…` and EntityVersion `51c647fe-…`: optional `testbedModel` + `testbedEntitiesAndInstances` on `miroirTestSuite` (no `testConfiguration` yet, D10).
+- `testbedEntitiesAndInstances` uses `schemaReference` → `entity` (codegen produced `{ entity: Entity; instances: any[] }[]`).
+- `testbedModel` is `any`, not `schemaReference` → `metaModelPartial`. Instance validation (`modelValidation` on `domain_controller_model_undo_redo`) could not flatten `metaModelPartial`: its `extend` is `{ partial, eager, relativePath: "metaModel" }` with `absolutePath` commented out in `getMiroirFundamentalJzodSchema.ts` (circularity). Resolver/`SuitePlayfieldSeed` still type the payload as `MetaModelPartial`.
+- Host helper `resolveSuitePlayfieldSeed` in `packages/miroir-core/src/5_tests/resolveSuitePlayfieldSeed.ts`, exported from `miroir-core`. skipReset wins (D11); uuid XOR inline; neither → `null` (Slice 7 fallback).
+- Tracer JSON `c6d8e70a-…` has inline Library `{ applicationUuid, applicationName }` and `testbedEntitiesAndInstances: []`.
+- Registry: lifted `testbedInitApplicationParameters` on all seeded rows; `domain_controller_model_undo_redo` dropped `testBedModelAndInstances`; `buildUiIntegrationRunnerSessionSpecificOptions` composes suite seed + registry init (unmigrated rows still fall back to nested playfield).
+- Slice 0 inventory tests updated so undo_redo is the migrated case.
+- Proof: `resolveSuitePlayfieldSeed.252.phase1` (8) GREEN; launcher unit (11) GREEN; `modelValidation.unit` (148) GREEN; `testMiroir … --suites domain_controller_model_undo_redo --mode integ` GREEN. `npx tsc` miroir-core GREEN. standalone-app tsc still reports two pre-existing errors in `ReportSectionListDisplay.tsx` / `ReportTools.ts` (not this slice). Vitest root for the miroir package is `tests/`, so modelValidation is `modelValidation.unit` not `tests/modelValidation.unit.test.ts`.
 
 ---
 
 ## Slice 2 — Entity `TestConfiguration` + reports + menus
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -351,7 +358,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- Entity `675ccd46-…` (Query-like: `conceptLevel: Model`, `parentDefinitionVersionUuid: 381ab1be-…`) and EntityVersion `d85749be-…` dual-write the same `mlSchema`. Payload: `selfApplication`, `name`, optional `description`, optional `testbedModel` **`any`** (same Slice 1 circularity on `metaModelPartial`), optional `testbedEntitiesAndInstances` (`schemaReference` → `entity` + `instances` any). No init-params. Icon `tune`.
+- List report `08cd379a-…` is a QueryList clone (`extractorInstancesByEntity`, `objectListReportSection`). Details `21a693e4-…` is a QueryDetails clone. List report is in `defaultMiroirMetaModel.reports` and `miroirModelInitializeDataInstances`; details is an asset only (same as QueryDetails).
+- Menus (D9): `ApplicationModelScopeTemplate` 10 items (`Test Configurations` after Tests, `section`/`menuItemScope: model`); `MiroirMenu` has “Miroir Test Configurations” immediately after “Miroir Tests” (`section: data`). Both point at `08cd379a-…`.
+- `testConfiguration` optional uuid FK (`targetEntity: 675ccd46-…`) on `miroirTestSuite` dual-write Entity `a311f363-…` + EntityVersion `51c647fe-…`. Generated `MiroirTestSuite.testConfiguration?: string`. TestConfiguration’s own mlSchema is **not** in `generate-ts-types.ts`.
+- Exports: `entityTestConfiguration`, `entityVersionTestConfiguration` / deprecated `entityDefinitionTestConfiguration`, `reportTestConfigurationList` / `reportTestConfigurationDetails`. Bootstrap: `defaultMiroirMetaModel.entities` + `.entityVersions`, both create-entity orders after `entityMiroirTest`.
+- Slice 0 inventory and `applicationModelScopeMenu.unit.test.ts` updated for the 9th report link (length 10, divider index 9).
+- Proof: `testConfigurationEntity.252.phase2` (9) GREEN; `applicationModelScopeMenu` (15) GREEN; `selfContainedTestbed.252.phase0` (4) GREEN; `modelValidation.unit` (151) GREEN — Entity + EntityVersion + TestConfigurationList rows; `npx tsc` miroir-core GREEN. Vitest root for the miroir package is `tests/`, so modelValidation is `modelValidation.unit` not `tests/modelValidation.unit.test.ts`.
 
 ---
 

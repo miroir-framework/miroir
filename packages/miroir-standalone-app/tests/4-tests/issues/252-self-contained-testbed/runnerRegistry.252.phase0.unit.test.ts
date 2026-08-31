@@ -58,23 +58,31 @@ const NULL_PLAYFIELD_KEYS = new Set(["runner_create_entity", "runner_drop_entity
       expect(listUiIntegrationRunnerSuiteKeys()).toEqual([...EXPECTED_KEYS]);
     });
 
-    it("each entry has kind and testBedModelAndInstances; create/drop are null; others carry the playfield triple", () => {
+    it("each entry has kind; create/drop keep null playfield; undo_redo is suite-owned; others still have the nested triple plus lifted init", () => {
       for (const key of EXPECTED_KEYS) {
         const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
         expect(entry, key).toBeDefined();
         expect(entry.kind, key).toBe(EXPECTED_KIND[key]);
-        expect(Object.prototype.hasOwnProperty.call(entry, "testBedModelAndInstances"), key).toBe(
-          true,
-        );
 
         if (NULL_PLAYFIELD_KEYS.has(key)) {
           expect(entry.testBedModelAndInstances, key).toBeNull();
+          expect(entry.testbedInitApplicationParameters, key).toBeUndefined();
+          continue;
+        }
+
+        if (key === "domain_controller_model_undo_redo") {
+          expect(
+            Object.prototype.hasOwnProperty.call(entry, "testBedModelAndInstances"),
+            key,
+          ).toBe(false);
+          expect(entry.testbedInitApplicationParameters, key).toBeDefined();
           continue;
         }
 
         const seed = entry.testBedModelAndInstances;
         expect(seed, key).not.toBeNull();
-        if (seed === null) {
+        expect(seed, key).toBeDefined();
+        if (seed === null || seed === undefined) {
           continue;
         }
         expect("testbedModel" in seed, `${key}.testbedModel`).toBe(true);
@@ -85,6 +93,7 @@ const NULL_PLAYFIELD_KEYS = new Set(["runner_create_entity", "runner_drop_entity
           "testbedInitApplicationParameters" in seed,
           `${key}.testbedInitApplicationParameters`,
         ).toBe(true);
+        expect(entry.testbedInitApplicationParameters, `${key}.liftedInit`).toBeDefined();
       }
     });
   },
