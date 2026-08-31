@@ -179,6 +179,40 @@ describe("listDisplayByTransformer — helper API", () => {
     expect(result).toEqual([42, 42]);
   });
 
+  it("empty getFromContext referencePath does not dump the list context into the overlay", () => {
+    const bookIndex = {
+      [book1.uuid]: book1,
+      [book2.uuid]: book2,
+    };
+
+    const result = applyTransformerToListRows(
+      bookIndex,
+      buildRowAttributeOverrideTransformer({
+        newRecordEntry: {
+          interpolation: "runtime",
+          transformerType: "getFromContext",
+          referencePath: [],
+        },
+      }),
+    );
+
+    expect(Array.isArray(result)).toBe(true);
+    for (const row of result as any[]) {
+      if (row instanceof TransformerFailure) {
+        continue;
+      }
+      expect(row).not.toHaveProperty("defaultInput");
+      const overlay = row?.newRecordEntry;
+      if (overlay instanceof TransformerFailure) {
+        continue;
+      }
+      if (overlay && typeof overlay === "object") {
+        expect(overlay).not.toHaveProperty("defaultInput");
+        expect(overlay).not.toHaveProperty("row");
+      }
+    }
+  });
+
   it("applyTransformerToListRows returns per-row TransformerFailure without throwing", () => {
     const bookIndex = {
       [book1.uuid]: book1,

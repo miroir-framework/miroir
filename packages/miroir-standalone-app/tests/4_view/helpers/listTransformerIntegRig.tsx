@@ -204,6 +204,30 @@ export async function setPanelElementTransformerType(transformerType: string) {
   });
 }
 
+export async function setPanelInterpolation(interpolation: "runtime" | "build", inputName = "elementTransformer.interpolation") {
+  const panel = await getListTransformerPanel();
+  const interpolationInput = await waitFor(
+    () => {
+      const match = panel.querySelector(`input[name="${inputName}"]`) as HTMLInputElement | null;
+      if (!match) {
+        throw new Error(`${inputName} discriminator input not found yet`);
+      }
+      return match;
+    },
+    { timeout: 5000, interval: 100 },
+  );
+
+  await act(async () => {
+    fireEvent.focus(interpolationInput);
+  });
+  await act(async () => {
+    fireEvent.change(interpolationInput, { target: { value: interpolation } });
+  });
+  await act(async () => {
+    fireEvent.keyDown(interpolationInput, { key: "Enter" });
+  });
+}
+
 export async function setPanelElementTransformerToMissingContextReference() {
   const panel = await getListTransformerPanel();
 

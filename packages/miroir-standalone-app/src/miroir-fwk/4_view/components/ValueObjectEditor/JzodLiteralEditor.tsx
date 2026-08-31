@@ -46,6 +46,7 @@ import {
   ThemedSelectWithPortal
 } from "../Themes/index";
 import { JzodLiteralEditorProps } from "./JzodElementEditorInterface";
+import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodLiteralEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -90,6 +91,20 @@ const handleDiscriminatorChange = (
     throw new Error(
       "handleDiscriminatorChange called but current object does not have a discriminated union type!"
     );
+  }
+  const fieldName = String(rootLessListKeyArray[rootLessListKeyArray.length - 1] ?? "");
+  if (!isPrimaryUnionDiscriminatorField(fieldName, parentKeyMap.discriminator)) {
+    const targetRootLessListKey =
+      [reportSectionPathAsString, ...rootLessListKeyArray.slice(0, -1)].join(".") ?? "";
+    const patched = {
+      ...resolvePathOnObject(formik.values[reportSectionPathAsString], parentKeyMap.valuePath),
+      [fieldName]: selectedValue,
+    };
+    if (onChangeCallback) {
+      onChangeCallback(patched, rootLessListKey);
+    }
+    formik.setFieldValue(targetRootLessListKey, patched, false);
+    return;
   }
   let newJzodSchema: JzodElement | undefined = undefined;
   let localChosenDiscriminator: string | undefined = undefined;
@@ -367,9 +382,9 @@ export const JzodLiteralEditor: FC<JzodLiteralEditorProps> =  (
       )
   );
 
-    // Check if this literal is a discriminator
-  const isDiscriminator = 
-    !!parentKeyMap?.discriminator && 
+    // Check if this literal is the primary union discriminator (e.g. transformerType, not interpolation)
+  const isDiscriminator =
+    isPrimaryUnionDiscriminatorField(name, parentKeyMap?.discriminator) &&
     !!parentKeyMap?.discriminatorValues;
 
   const discriminatorIndex: number = !parentKeyMap?.discriminator

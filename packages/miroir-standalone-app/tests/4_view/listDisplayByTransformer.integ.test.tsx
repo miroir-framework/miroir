@@ -6,11 +6,13 @@ import { book1, entityBook } from "miroir-test-app_deployment-library";
 
 import {
   expectPanelTransformerType,
+  getListTransformerPanel,
   renderBookListSectionInteg,
   renderBookListSectionIntegWithCount,
   renderListTransformerPanelInteg,
   setPanelElementTransformerToMissingContextReference,
   setPanelElementTransformerType,
+  setPanelInterpolation,
 } from "./helpers/listTransformerIntegRig.js";
 import { waitForProgressiveRendering } from "./JzodElementEditorTestTools.js";
 
@@ -287,6 +289,71 @@ describe("listDisplayByTransformer — integration (app-stack)", () => {
         expect(screen.getByText(/ReferenceNotFound/i)).toBeInTheDocument();
       });
       expect(screen.queryByTestId("list-transformer-result")).not.toBeInTheDocument();
+    });
+
+    it("selecting interpolation runtime keeps transformerType and does not freeze", async () => {
+      renderListTransformerPanelInteg();
+
+      await waitForProgressiveRendering();
+      const panel = await getListTransformerPanel();
+      await expectPanelTransformerType("mergeIntoObject");
+
+      await setPanelInterpolation("build");
+      await waitForProgressiveRendering();
+      await expectPanelTransformerType("mergeIntoObject");
+      expect(
+        (panel.querySelector('input[name="elementTransformer.interpolation"]') as HTMLInputElement)
+          ?.value,
+      ).toBe("build");
+
+      await setPanelInterpolation("runtime");
+      await waitForProgressiveRendering();
+      await expectPanelTransformerType("mergeIntoObject");
+      expect(
+        (panel.querySelector('input[name="elementTransformer.interpolation"]') as HTMLInputElement)
+          ?.value,
+      ).toBe("runtime");
+
+      await setPanelInterpolation("runtime", "elementTransformer.definition.interpolation");
+      await waitForProgressiveRendering();
+      await expectPanelTransformerType("mergeIntoObject");
+      expect(
+        (
+          panel.querySelector(
+            'input[name="elementTransformer.definition.interpolation"]',
+          ) as HTMLInputElement
+        )?.value,
+      ).toBe("runtime");
+      expect(panel.textContent).not.toMatch(/Loading interpolation/i);
+    }, 15000);
+
+    it("keeps interpolation visible after adding getFromContext.referencePath", async () => {
+      renderListTransformerPanelInteg();
+
+      await waitForProgressiveRendering();
+      const panel = await getListTransformerPanel();
+
+      const addReferencePath = await waitFor(() => {
+        const match = panel.querySelector(
+          'button[aria-label="elementTransformer.applyTo.addObjectOptionalAttribute.referencePath"]',
+        ) as HTMLButtonElement | null;
+        if (!match) {
+          throw new Error("add referencePath button not found yet");
+        }
+        return match;
+      });
+
+      await act(async () => {
+        fireEvent.click(addReferencePath);
+      });
+      await waitForProgressiveRendering();
+
+      await waitFor(() => {
+        expect(panel.textContent).not.toMatch(/Loading interpolation/i);
+        expect(
+          panel.querySelector('input[name="elementTransformer.applyTo.interpolation"]'),
+        ).not.toBeNull();
+      });
     });
   });
 });

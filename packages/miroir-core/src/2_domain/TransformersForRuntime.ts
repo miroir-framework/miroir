@@ -1747,9 +1747,15 @@ export function transformer_resolveReference(
   // ReferenceNotFound
   const bank: Record<string, any> =
     paramOrContext == "param" ? queryParams ?? {} : contextResults ?? {};
-  const usedReference = transformerInnerReference.referenceName
+  const hasNamedReference =
+    typeof transformerInnerReference.referenceName === "string" &&
+    transformerInnerReference.referenceName.length > 0;
+  const hasPathReference =
+    Array.isArray(transformerInnerReference.referencePath) &&
+    transformerInnerReference.referencePath.length > 0;
+  const usedReference = hasNamedReference
     ? "referenceName"
-    : (transformerInnerReference as any).referencePath
+    : hasPathReference
     ? "referencePath"
     : "no name";
 
@@ -1780,9 +1786,9 @@ export function transformer_resolveReference(
   }
 
   // ReferenceNotFound
-  if (transformerInnerReference.referenceName) {
+  if (hasNamedReference) {
     // ReferenceNotFound
-    if (!Object.hasOwn(bank, transformerInnerReference.referenceName)) {
+    if (!Object.hasOwn(bank, transformerInnerReference.referenceName as string)) {
     // if (!bank[transformerInnerReference.referenceName]) {
       // log.error(
       //   "transformer_resolveReference failed, reference not found for step",
@@ -1811,15 +1817,17 @@ export function transformer_resolveReference(
     //   "found result",
     //   JSON.stringify(bank[transformerInnerReference.referenceName], null, 2)
     // );
-    return bank[transformerInnerReference.referenceName];
+    return bank[transformerInnerReference.referenceName as string];
   }
 
-  // ReferenceFoundButUndefined
-  if (transformerInnerReference.referencePath) {
+  // Empty `referencePath: []` is truthy but resolvePathOnObject(bank, []) returns
+  // the whole bank. That dumps context into the list-transformer preview and
+  // freezes the editor on "Loading interpolation...".
+  if (hasPathReference) {
     try {
       const pathResult = transformerInnerReference.safe
-        ? safeResolvePathOnObject(bank, transformerInnerReference.referencePath)
-        : resolvePathOnObject(bank, transformerInnerReference.referencePath);
+        ? safeResolvePathOnObject(bank, transformerInnerReference.referencePath as string[])
+        : resolvePathOnObject(bank, transformerInnerReference.referencePath as string[]);
       // log.info(
       //   "transformer_resolveReference path resolved for",
       //   JSON.stringify(transformerInnerReference, null, 2),
@@ -1846,7 +1854,7 @@ export function transformer_resolveReference(
         queryReference: JSON.stringify(transformerInnerReference.referencePath),
         failureMessage:
           "no referencePath " +
-          transformerInnerReference.referencePath.join(".") +
+          (transformerInnerReference.referencePath as string[]).join(".") +
           " found in queryContext",
         // queryContext: JSON.stringify(Object.keys(bank)),
         // queryContext: JSON.stringify(bank),
@@ -1854,6 +1862,15 @@ export function transformer_resolveReference(
       });
     }
   }
+
+  throw new TransformerFailure({
+    queryFailure: "ReferenceNotFound",
+    transformerPath: [...transformerPath, usedReference],
+    failureOrigin: ["transformer_resolveReference"],
+    queryReference: transformerInnerReference.referenceName,
+    failureMessage: "no referenceName or referencePath in " + paramOrContext,
+    queryContext: JSON.stringify(Object.keys(bank)),
+  });
 }
 
 // // ################################################################################################
