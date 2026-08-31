@@ -343,6 +343,34 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     expect(seed.testbedModel.reports).toBeUndefined();
   });
 
+  it("throws when a non-skipReset suite has no suite-owned playfield (no registry fallback)", () => {
+    const context = { miroirConfig: {} as never };
+    const runTarget = {
+      applicationUuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      applicationName: "Library",
+    };
+    const entry = {
+      kind: "actionTest" as const,
+      suiteDefinition: {
+        miroirTestType: "miroirTestSuite",
+        miroirTestLabel: "synthetic_no_playfield",
+        miroirTests: [],
+      } as MiroirTestSuite,
+      testbedInitApplicationParameters: libraryTestbedInitParams,
+    };
+    expect(() =>
+      buildUiIntegrationOrchestratorCreateSessionParams(
+        entry,
+        context,
+        "test",
+        runTarget,
+        {},
+        UI_INTEGRATION_RUNNER_UUID_INDEX,
+      ),
+    ).toThrow(/no suite-owned playfield/);
+  });
+
   it("create/drop omit a playfield seed because skipRunTargetPlayfieldReset is set", () => {
     const context = { miroirConfig: {} as never };
     const runTarget = {
@@ -351,6 +379,12 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       applicationName: "Library",
     };
     for (const key of ["runner_create_entity", "runner_drop_entity"] as const) {
+      const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
+      expect(
+        Object.prototype.hasOwnProperty.call(entry, "testBedModelAndInstances"),
+        key,
+      ).toBe(false);
+      expect(entry.testbedInitApplicationParameters, key).toBeUndefined();
       const params = buildUiIntegrationOrchestratorCreateSessionParams(
         UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key],
         context,

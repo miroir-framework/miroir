@@ -59,26 +59,18 @@ export const UI_INTEGRATION_RUNNER_UUID_INDEX: Record<string, Runner> = {
 export type UiIntegrationRunnerTestSuiteEntry = {
   kind: "runnerTest";
   suiteDefinition: MiroirTestSuite;
-  /**
-   * Transitional playfield fallback (#252). Omitted once the suite JSON (or a
-   * TestConfiguration uuid) owns model + instances. `null` for create/drop
-   * (`skipRunTargetPlayfieldReset`).
-   */
-  testBedModelAndInstances?: TestbedSetupParameters | null;
-  testbedInitApplicationParameters?: InitApplicationParameters | null;
+  testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationDomainControllerTestSuiteEntry = {
   kind: "domainControllerTest";
   suiteDefinition: MiroirTestSuite;
-  testBedModelAndInstances?: TestbedSetupParameters;
   testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationActionTestSuiteEntry = {
   kind: "actionTest";
   suiteDefinition: MiroirTestSuite;
-  testBedModelAndInstances?: TestbedSetupParameters;
   testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
@@ -167,31 +159,22 @@ function composeUiIntegrationPlayfieldSeed(
     entry.suiteDefinition,
     getTestConfigurationFromIndex,
   );
-  const nested = entry.testBedModelAndInstances ?? undefined;
-  const modelAndInstances =
-    resolved ??
-    (nested
-      ? {
-          testbedModel: nested.testbedModel,
-          testbedEntitiesAndInstances: nested.testbedEntitiesAndInstances,
-        }
-      : undefined);
-
-  if (modelAndInstances === undefined) {
-    return undefined;
+  if (resolved === null) {
+    throw new Error(
+      `UI integration suite "${entry.suiteDefinition.miroirTestLabel}" has no suite-owned playfield (inline testbed or TestConfiguration uuid)`,
+    );
   }
 
-  const init =
-    entry.testbedInitApplicationParameters ?? nested?.testbedInitApplicationParameters;
-  if (init === undefined || init === null) {
+  const init = entry.testbedInitApplicationParameters;
+  if (init === undefined) {
     throw new Error(
       `UI integration suite "${entry.suiteDefinition.miroirTestLabel}" is missing testbedInitApplicationParameters`,
     );
   }
 
   return {
-    testbedModel: modelAndInstances.testbedModel,
-    testbedEntitiesAndInstances: modelAndInstances.testbedEntitiesAndInstances,
+    testbedModel: resolved.testbedModel,
+    testbedEntitiesAndInstances: resolved.testbedEntitiesAndInstances,
     testbedInitApplicationParameters: init,
   };
 }
@@ -242,14 +225,12 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testBedModelAndInstances: null,
   },
   // ###############################################################################
   [miroirTest_runner_drop_entity.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testBedModelAndInstances: null,
   },
   // ###############################################################################
   [miroirTest_runner_freeze_application_version.name]: {

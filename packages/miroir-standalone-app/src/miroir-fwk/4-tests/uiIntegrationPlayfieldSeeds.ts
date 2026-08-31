@@ -37,7 +37,7 @@ import {
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
 /**
- * Seed payload for UI integration runner registry `testBedModelAndInstances` entries.
+ * Session playfield triple (model + instances + init). Not a registry field.
  */
 export type TestbedSetupParameters = {
   testbedEntitiesAndInstances: ApplicationEntitiesAndInstances;

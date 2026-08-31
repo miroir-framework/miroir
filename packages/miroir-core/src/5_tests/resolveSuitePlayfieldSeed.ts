@@ -26,7 +26,7 @@ type MiroirTestSuiteWithPlayfield = MiroirTestSuite & {
 };
 
 /**
- * skipReset wins (D11). Uuid XOR inline (D3). Neither → null (transitional fallback).
+ * skipReset wins (D11). Uuid XOR inline (D3). Neither → null (launcher throws for non-skipReset).
  */
 export function resolveSuitePlayfieldSeed(
   suite: MiroirTestSuite,

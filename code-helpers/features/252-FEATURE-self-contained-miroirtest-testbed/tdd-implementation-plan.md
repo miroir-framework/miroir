@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../197-FEATURE- run integration tests in the UI/plan.md`](../197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md)
 Working branch: `dev-copilot`
 
-**Resume note:** Slice 6 ✅ — freeze suite inline appForTest playfield (D12, no config uuid). Next is Slice 7 (drop registry fallback; final registry type).
+**Resume note:** Slice 7 ✅ — registry fallback dropped; final `{ kind, suiteDefinition, testbedInitApplicationParameters }`. Next is Slice 8 (nonreg, docs, cleanup, AC).
 
 ---
 
@@ -46,7 +46,7 @@ This plan does **not** retire suite-*key* registries or drop registry `kind` (#2
 | 4 | Miroir Publisher+Country config; three suites by uuid | ✅ | model_crud + freeze + evolutionTraceWP1 integ GREEN |
 | 5 | Remaining unique DC slices inlined on suite JSON | ✅ | those five DC suites integ GREEN |
 | 6 | Freeze suite inline appForTest playfield | ✅ | `runner_freeze_application_version` integ GREEN |
-| 7 | Drop registry fallback; final `{ kind, suiteDefinition, testbedInitApplicationParameters }` | ⬜ | launcher unit + create/drop integ GREEN |
+| 7 | Drop registry fallback; final `{ kind, suiteDefinition, testbedInitApplicationParameters }` | ✅ | launcher unit + drop/lend/undo_redo integ GREEN |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step + tracer narrative |
 
 ---
@@ -556,7 +556,7 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ## Slice 7 — Drop registry fallback; final registry type
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -596,7 +596,11 @@ Plus a spot-check of one uuid suite and one inline suite already proven in earli
 
 ### Realization
 
-<Appended on completion.>
+- Registry type is `{ kind, suiteDefinition, testbedInitApplicationParameters? }`. Create/drop omit init. No `testBedModelAndInstances` on the type or any entry.
+- `composeUiIntegrationPlayfieldSeed` no longer reads a registry playfield. `resolveSuitePlayfieldSeed` returning `null` for a non-skipReset suite throws `no suite-owned playfield`. skipReset still returns `undefined` (D11). CLI `createSessionParamsForSuite` uses the same builder.
+- Session options still carry composed `testBedModelAndInstances` (session name, not a registry field). `TestbedSetupParameters` stays as that session triple. Seeds file still exports `libraryTestbedInitParams` plus leftover instance arrays for vitest twins (`entityCompositePK`, `runnerLibraryDocumentEntitiesAndInstances`, `libraryEntitiesAndInstancesPublisherAndCountry`) — not deleted here (#204 / Slice 8).
+- `runner_create_entity` “Create Entity with reports” fails `EntityNotFound` for EntityVersion `54b9c72f-…` on the ephemeral test app. Same failure with the old `testBedModelAndInstances: null` row restored — pre-existing, not the new throw. “Create Entity (no reports)” and `runner_drop_entity` GREEN.
+- Proof: `runnerRegistry.252.phase7` (2) GREEN; Slice 0 registry (2) GREEN; launcher unit (16) GREEN; standalone-app tsc only the two pre-existing Report* errors; `testMiroir … runner_drop_entity` (1), `runner_lend_document` (1), `domain_controller_model_undo_redo` (1) GREEN.
 
 ---
 
@@ -643,13 +647,13 @@ Automated equivalent: Slice 1 integ + Slice 3 integ + Slice 2 modelValidation / 
 | Criterion | Proven by | Status |
 |---|---|---|
 | `MiroirTestSuite` optional `testbedModel` + `testbedEntitiesAndInstances`; unit suites valid without them | Slice 1 schema + existing unit `testMiroir` still in nonreg | ⬜ |
-| Integ suites with a non-null playfield today run with model+instances from the suite or a `TestConfiguration`, not from `testBedModelAndInstances` | Slices 1, 3–7 integ | ⬜ |
-| `testbedInitApplicationParameters` is **not** on `MiroirTestSuite` **nor** on `TestConfiguration`; it stays on the registry | D2/D4; Slice 2 entity schema; Slice 7 registry type | ⬜ |
+| Integ suites with a non-null playfield today run with model+instances from the suite or a `TestConfiguration`, not from `testBedModelAndInstances` | Slices 1, 3–7 integ | ✅ |
+| `testbedInitApplicationParameters` is **not** on `MiroirTestSuite` **nor** on `TestConfiguration`; it stays on the registry | D2/D4; Slice 2 entity schema; Slice 7 registry type | ✅ |
 | `TestConfiguration` Entity exists; Miroir instances in data, user-app instances in model | Slice 2 `getApplicationSection`; Slices 3–6 asset paths | ⬜ |
 | Suites can reference a `TestConfiguration`; shared document / Publisher+Country seeds are instances | Slices 3–4 | ⬜ |
 | Freeze suite playfield inline on suite JSON (no cross-app config uuid) | Slice 6 (D12) | ✅ |
-| `skipRunTargetPlayfieldReset` suites still run with no testbed seed | Slice 1 + Slice 7 create/drop integ | ⬜ |
-| UI and CLI share the resolution path; registry `kind` **remains** | Slice 7; D8 | ⬜ |
+| `skipRunTargetPlayfieldReset` suites still run with no testbed seed | Slice 1 + Slice 7 drop integ; create “no reports” GREEN; “with reports” pre-existing EntityNotFound | ✅ |
+| UI and CLI share the resolution path; registry `kind` **remains** | Slice 7; D8 | ✅ |
 | Docs describe self-contained suite + optional `TestConfiguration` | Slice 8.2 | ⬜ |
 
 Withdrawn ACs (do **not** implement): init on `TestConfiguration`; drop registry `kind`; appForTest `TestConfiguration` uuid for freeze (D12).
