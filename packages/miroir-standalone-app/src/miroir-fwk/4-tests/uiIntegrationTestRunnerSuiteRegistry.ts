@@ -1,15 +1,11 @@
 import type {
   ActionIntegrationSessionOptions,
-  ApplicationVersion,
-  Entity,
-  EntityInstance,
   InitApplicationParameters,
   IntegrationTestOrchestratorContext,
   IntegrationTestSessionFactoryCreateParams,
   MiroirTestDefinition,
   MiroirTestSuite,
   Runner,
-  SelfApplication,
   TestbedUuids,
 } from "miroir-core";
 import {
@@ -18,17 +14,9 @@ import {
   resolveSuitePlayfieldSeed,
 } from "miroir-core";
 import {
-  Country1,
-  Country2,
-  Country3,
-  entityCountry,
-  entityPublisher,
   lendDocumentRunner,
   miroirTest_runner_lend_document,
   miroirTest_runner_return_document,
-  folio as publisher1,
-  penguin as publisher2,
-  springer as publisher3,
   returnDocumentRunner,
 } from "miroir-test-app_deployment-library";
 import {
@@ -47,7 +35,6 @@ import {
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 
-import { appForTestInitialApplicationVersion, selfApplicationAppForTest } from "miroir-test-app_deployment-appForTest";
 import { getTestConfigurationFromIndex } from "./testConfigurationInstanceIndex.js";
 import {
   appForTestTestbedInitParams
@@ -270,34 +257,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
       .definition as MiroirTestSuite,
     testbedInitApplicationParameters: appForTestTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityPublisher as Entity,
-          instances: [
-            publisher1 as EntityInstance,
-            publisher2 as EntityInstance,
-            publisher3 as EntityInstance,
-          ],
-        },
-        {
-          entity: entityCountry as Entity,
-          instances: [
-            Country1 as EntityInstance,
-            Country2 as EntityInstance,
-            Country3 as EntityInstance,
-          ],
-        },
-      ],
-      testbedInitApplicationParameters: appForTestTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationAppForTest.uuid,
-        applicationName: selfApplicationAppForTest.name,
-        entities: [entityPublisher as Entity, entityCountry as Entity],
-        applicationVersions: [appForTestInitialApplicationVersion as ApplicationVersion], // does it make sense?
-        applications: [selfApplicationAppForTest as SelfApplication],
-      },
-    },
   },
   // ###############################################################################
   [miroirTest_domain_controller_data_crud.name]: {

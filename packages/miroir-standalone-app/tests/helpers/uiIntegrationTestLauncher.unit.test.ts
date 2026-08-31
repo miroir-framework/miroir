@@ -12,6 +12,7 @@ import {
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
 import { resolveDefaultApplicationNameFromMiroirTestSuite } from "miroir-core";
 import { libraryTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
+import { appForTestTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
 import {
   buildUiIntegrationOrchestratorCreateSessionParams,
   listUiIntegrationRunnerSuiteKeys,
@@ -298,6 +299,48 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       expect(seed.testbedModel.applicationName, key).toBe("Library");
       expect(seed.testbedModel.reports, key).toBeUndefined();
     }
+  });
+
+  it("freeze suite composes inline appForTest playfield and drops registry playfield", () => {
+    const context = { miroirConfig: {} as never };
+    const runTarget = {
+      applicationUuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      applicationName: "appForTest",
+    };
+    const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_freeze_application_version;
+    expect(Object.prototype.hasOwnProperty.call(entry, "testBedModelAndInstances")).toBe(false);
+    expect(entry.testbedInitApplicationParameters).toEqual(appForTestTestbedInitParams);
+
+    const params = buildUiIntegrationOrchestratorCreateSessionParams(
+      entry,
+      context,
+      "test",
+      runTarget,
+      {},
+      UI_INTEGRATION_RUNNER_UUID_INDEX,
+    );
+    expect(params.kind).toBe("runner");
+    if (params.kind !== "runner") {
+      return;
+    }
+    const seed = params.sessionSpecificOptions?.testBedModelAndInstances;
+    expect(seed).toBeDefined();
+    if (seed === undefined) {
+      return;
+    }
+    expect(seed.testbedInitApplicationParameters).toEqual(appForTestTestbedInitParams);
+    expect(seed.testbedEntitiesAndInstances.map((row) => row.entity.name)).toEqual([
+      "Publisher",
+      "Country",
+    ]);
+    expect(seed.testbedModel.applicationUuid).toBe("eef01001-0001-4000-8000-000000000001");
+    expect(seed.testbedModel.applicationName).toBe("appForTest");
+    expect((seed.testbedModel.entities ?? []).map((entity) => entity.name)).toEqual([
+      "Publisher",
+      "Country",
+    ]);
+    expect(seed.testbedModel.reports).toBeUndefined();
   });
 
   it("create/drop omit a playfield seed because skipRunTargetPlayfieldReset is set", () => {

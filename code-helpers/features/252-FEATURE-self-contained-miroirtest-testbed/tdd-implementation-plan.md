@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../197-FEATURE- run integration tests in the UI/plan.md`](../197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md)
 Working branch: `dev-copilot`
 
-**Resume note:** Slice 5 ✅ — unique DC slices inlined on suite JSON. Next is Slice 6 (freeze suite inline appForTest playfield).
+**Resume note:** Slice 6 ✅ — freeze suite inline appForTest playfield (D12, no config uuid). Next is Slice 7 (drop registry fallback; final registry type).
 
 ---
 
@@ -45,7 +45,7 @@ This plan does **not** retire suite-*key* registries or drop registry `kind` (#2
 | 3 | Library document `TestConfiguration`; lend/return by uuid | ✅ | lend + return integ GREEN |
 | 4 | Miroir Publisher+Country config; three suites by uuid | ✅ | model_crud + freeze + evolutionTraceWP1 integ GREEN |
 | 5 | Remaining unique DC slices inlined on suite JSON | ✅ | those five DC suites integ GREEN |
-| 6 | Freeze suite inline appForTest playfield | ⬜ | `runner_freeze_application_version` integ GREEN |
+| 6 | Freeze suite inline appForTest playfield | ✅ | `runner_freeze_application_version` integ GREEN |
 | 7 | Drop registry fallback; final `{ kind, suiteDefinition, testbedInitApplicationParameters }` | ⬜ | launcher unit + create/drop integ GREEN |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step + tracer narrative |
 
@@ -514,7 +514,7 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ## Slice 6 — Freeze suite playfield (appForTest seed)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -546,7 +546,11 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ### Realization
 
-<Appended on completion.>
+- `runner_freeze_application_version` Miroir-data JSON now carries inline `testbedModel` + `testbedEntitiesAndInstances` (no `testConfiguration`). Reserved uuid `343d4d68-…` remains unused (D12).
+- Slice is appForTest assets, not Library copies: `applicationUuid`/`applications[0]` = `eef01001-0001-…`, `applicationVersions[0]` = `eef01001-0005-…`, entities Publisher then Country with `selfApplication` appForTest. Instances 3 publishers + 3 countries (same uuids as Library data). No `reports`/`menus`/`endpoints` keys.
+- Registry freeze row is `{ kind: "runnerTest", suiteDefinition, testbedInitApplicationParameters: appForTestTestbedInitParams }`. No `testBedModelAndInstances` left except create/drop `null`.
+- Dropped unused Library Country/Publisher imports from the registry; `uiIntegrationAppForTestPlayfieldSeed.ts` now exports only `appForTestTestbedInitParams`.
+- Proof: `resolveSuitePlayfieldSeed.252.phase6` (2) GREEN; launcher unit (15) GREEN; Slice 0 core (4) + registry (2) GREEN; `modelValidation.unit` (151) GREEN; `testMiroir … runner_freeze_application_version` (2) GREEN.
 
 ---
 
@@ -643,7 +647,7 @@ Automated equivalent: Slice 1 integ + Slice 3 integ + Slice 2 modelValidation / 
 | `testbedInitApplicationParameters` is **not** on `MiroirTestSuite` **nor** on `TestConfiguration`; it stays on the registry | D2/D4; Slice 2 entity schema; Slice 7 registry type | ⬜ |
 | `TestConfiguration` Entity exists; Miroir instances in data, user-app instances in model | Slice 2 `getApplicationSection`; Slices 3–6 asset paths | ⬜ |
 | Suites can reference a `TestConfiguration`; shared document / Publisher+Country seeds are instances | Slices 3–4 | ⬜ |
-| Freeze suite playfield inline on suite JSON (no cross-app config uuid) | Slice 6 (D12) | ⬜ |
+| Freeze suite playfield inline on suite JSON (no cross-app config uuid) | Slice 6 (D12) | ✅ |
 | `skipRunTargetPlayfieldReset` suites still run with no testbed seed | Slice 1 + Slice 7 create/drop integ | ⬜ |
 | UI and CLI share the resolution path; registry `kind` **remains** | Slice 7; D8 | ⬜ |
 | Docs describe self-contained suite + optional `TestConfiguration` | Slice 8.2 | ⬜ |

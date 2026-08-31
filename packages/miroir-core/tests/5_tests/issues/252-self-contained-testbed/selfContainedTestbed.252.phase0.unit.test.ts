@@ -139,6 +139,7 @@ function modelScopeItemLabels(menu: Menu): string[] {
         "domain_controller_non_uuid_pk_model_crud",
         "domain_controller_non_uuid_pk_data_crud",
         "domain_controller_no_parent_uuid_crud",
+        "runner_freeze_application_version",
       ]);
       const uuidPlayfieldKeys = new Set([
         "runner_lend_document",

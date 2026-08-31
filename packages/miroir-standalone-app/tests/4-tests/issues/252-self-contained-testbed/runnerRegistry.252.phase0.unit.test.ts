@@ -62,6 +62,7 @@ const SUITE_OWNED_PLAYFIELD_KEYS = new Set([
   "evolutionTraceWP1",
   "runner_lend_document",
   "runner_return_document",
+  "runner_freeze_application_version",
 ]);
 
 (shouldRun ? describe : describe.skip)(
