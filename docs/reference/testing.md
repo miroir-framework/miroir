@@ -126,7 +126,7 @@ The registry maps short string keys → deployment exports:
 packages/miroir-core/src/5_tests/miroirCoreTestSuiteRegistry.ts
 ```
 
-Current registered suites (36 total, sorted):
+Current registered suites (38 total, sorted):
 
 ```
 adminTransformers, alterObject, ansiColumnsToJzodSchema, buildAnyKeyMap,
@@ -139,9 +139,12 @@ localizeJzodSchemaReferenceContext, menu, mergePositionBased,
 metaModelTransformers, miroirCoreTransformers, modelUpdates, mustache,
 pilot_transformer_plus, queries_library, resolveConditionalSchema,
 resolveQueryTemplates, resolveSchemaReferenceInContext,
-selectUnionBranchFromDiscriminator, tools, transformerResultSchema,
-unfoldSchemaOnce, unionArrayChoices, unionObjectChoices
+selectUnionBranchFromDiscriminator, tools, transformerInterfaceCheck,
+transformerResultSchema, unfoldSchemaOnce, unionArrayChoices,
+unionObjectChoices, virtualAttributes
 ```
+
+**`virtualAttributes`** — issue #82: lazy instance-local Entity attributes (`tag.value.virtualAttribute`). MiroirTest `functionCallTest` + `queryTest` (evaluate / strip / project / filter / orderBy / same-query runtimeTransformers). Sequelize skip + SQL compile: `packages/miroir-store-postgres/test/virtualAttributes.unit.test.ts`. List/details display: `packages/miroir-standalone-app/tests/4_view/virtualAttributes.integ.test.tsx`.
 
 **`transformerResultSchema`** — issue #88: `functionCallTest` leaves call `resolveTransformerResultSchema` (pure schema inference, no transformer runtime). Reference: [transformer-result-schema.md](./transformer-result-schema.md). Nonreg step: `unit-transformerResultSchema`.
 

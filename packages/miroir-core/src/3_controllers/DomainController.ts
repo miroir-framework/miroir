@@ -110,6 +110,8 @@ import {
   miroirModelEntities,
 } from "../1_core/Model";
 import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partialMutationGuard.js";
+import { findPresentModelEntityFromDomainState } from "../2_domain/ExtractorVirtualAttributes.js";
+import { stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes.js";
 import {
   buildEvolutionTracePersistenceActions,
   collectEvolutionTraceStateFromDomainState,
@@ -1040,6 +1042,12 @@ export class DomainController implements DomainControllerInterface {
       return Promise.resolve(rejectedPartial);
     }
 
+    const actionToPersist =
+      instanceAction.actionType === "createInstance" ||
+      instanceAction.actionType === "updateInstance"
+        ? this.stripVirtualAttributesOnWriteAction(instanceAction, applicationDeploymentMap)
+        : instanceAction;
+
     const deploymentUuid = applicationDeploymentMap[instanceAction.payload.application];
 
     // log.info(
@@ -1058,7 +1066,7 @@ export class DomainController implements DomainControllerInterface {
       {}, // context
       {}, // continuation
       applicationDeploymentMap,
-      instanceAction,
+      actionToPersist,
     );
     // log.info(
     //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",
@@ -1090,11 +1098,11 @@ export class DomainController implements DomainControllerInterface {
       {}, // context
       {}, // continuation
       applicationDeploymentMap,
-      instanceAction,
+      actionToPersist,
     );
 
     if (!(result instanceof Action2Error)) {
-      await this.maybeRecordEvolutionTrace(instanceAction, applicationDeploymentMap);
+      await this.maybeRecordEvolutionTrace(actionToPersist, applicationDeploymentMap);
     }
 
     // log.info(
@@ -1107,6 +1115,38 @@ export class DomainController implements DomainControllerInterface {
     // );
     return Promise.resolve(ACTION_OK);
     // return Promise.resolve(result);
+  }
+
+  /**
+   * Drop virtual attribute keys on create/update before any store sees the payload (D4).
+   */
+  private stripVirtualAttributesOnWriteAction(
+    instanceAction: Extract<InstanceAction, { actionType: "createInstance" | "updateInstance" }>,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): InstanceAction {
+    const deploymentUuid = applicationDeploymentMap[instanceAction.payload.application];
+    if (!deploymentUuid) {
+      return instanceAction;
+    }
+    const domainState = this.localCache.getDomainState();
+    return {
+      ...instanceAction,
+      payload: {
+        ...instanceAction.payload,
+        objects: instanceAction.payload.objects.map((instance) => {
+          const entityUuid = instance.parentUuid;
+          if (!entityUuid) {
+            return instance;
+          }
+          const entity = findPresentModelEntityFromDomainState(
+            domainState,
+            deploymentUuid,
+            entityUuid,
+          );
+          return entity ? stripVirtualAttributesFromInstance(entity, instance) : instance;
+        }),
+      },
+    };
   }
 
   /**

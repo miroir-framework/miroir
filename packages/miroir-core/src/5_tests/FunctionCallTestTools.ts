@@ -153,6 +153,9 @@ function normalizeFunctionCallResult(rawResult: unknown, ignoreAttributes: strin
       errorMessage: rawResult.errorMessage,
     };
   }
+  if (rawResult === null) {
+    return null;
+  }
   const resultForNormalize = deepNormalizeSets(rawResult);
   const resultWithIgnored = ignorePostgresExtraAttributes(resultForNormalize, ignoreAttributes);
   const jsonifiedResult = jsonify(resultWithIgnored);
@@ -352,7 +355,13 @@ export async function runMiroirFunctionCallTestInMemory(
         };
       }
     }
-  } catch {
+  } catch (error) {
+    const vitestActual =
+      error && typeof error === "object" && "actual" in error
+        ? (error as { actual: unknown }).actual
+        : error instanceof Error
+          ? error.message
+          : error;
     testAssertionResult = {
       assertionName,
       assertionResult: "error",
@@ -360,6 +369,7 @@ export async function runMiroirFunctionCallTestInMemory(
         miroirTest.expectedError ??
         miroirTest.expectedAction2ErrorType ??
         miroirTest.expectedValue,
+      assertionActualValue: vitestActual,
     };
   }
 

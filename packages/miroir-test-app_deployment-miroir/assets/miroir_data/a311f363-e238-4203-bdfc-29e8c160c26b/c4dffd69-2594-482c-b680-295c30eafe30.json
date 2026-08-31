@@ -1,0 +1,925 @@
+{
+  "uuid": "c4dffd69-2594-482c-b680-295c30eafe30",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "virtualAttributes",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Issue #82 — virtual attributes: lazy instance-only evaluation (Book citation tracer).",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "virtualAttributes",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "evaluate",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "citation requested",
+            "functionRef": {
+              "module": "miroir-core/2_domain/VirtualAttributes",
+              "export": "evaluateVirtualAttributesOnInstance"
+            },
+            "arguments": [
+              {
+                "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "parentName": "Entity",
+                "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "Book",
+                "conceptLevel": "Model",
+                "description": "A book.",
+                "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+                "viewAttributes": [
+                  "name",
+                  "author",
+                  "year",
+                  "citation",
+                  "publisher",
+                  "uuid"
+                ],
+                "icon": "Book",
+                "cache": {
+                  "cacheAllInstancesOnRefresh": true
+                },
+                "mlSchema": {
+                  "type": "object",
+                  "extend": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "eager": true,
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "entityDefinitionRoot"
+                    }
+                  },
+                  "definition": {
+                    "name": {
+                      "type": "string",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Book Title"
+                        }
+                      }
+                    },
+                    "year": {
+                      "type": "number",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "id": 6,
+                          "defaultLabel": "Year of Publication",
+                          "display": {
+                            "editable": true
+                          }
+                        }
+                      }
+                    },
+                    "citation": {
+                      "type": "string",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Citation",
+                          "display": {
+                            "editable": false,
+                            "modifiable": false
+                          },
+                          "virtualAttribute": {
+                            "interpolation": "runtime",
+                            "transformerType": "mustacheStringTemplate",
+                            "definition": "{{name}} ({{year}})"
+                          }
+                        }
+                      }
+                    },
+                    "author": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "id": 7,
+                          "defaultLabel": "Author",
+                          "foreignKeyParams": {
+                            "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    },
+                    "publisher": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Publisher",
+                          "id": 8,
+                          "foreignKeyParams": {
+                            "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "name": "Rear Window",
+                "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                "conceptLevel": "",
+                "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                "year": 1942
+              },
+              [
+                "citation"
+              ]
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 3,
+            "assertions": [
+              {
+                "label": "citation",
+                "resultAccessPath": [
+                  "citation"
+                ],
+                "expectedValue": "Rear Window (1942)"
+              },
+              {
+                "label": "name",
+                "resultAccessPath": [
+                  "name"
+                ],
+                "expectedValue": "Rear Window"
+              },
+              {
+                "label": "year",
+                "resultAccessPath": [
+                  "year"
+                ],
+                "expectedValue": 1942
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "citation not requested",
+            "functionRef": {
+              "module": "miroir-core/2_domain/VirtualAttributes",
+              "export": "evaluateVirtualAttributesOnInstance"
+            },
+            "arguments": [
+              {
+                "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "parentName": "Entity",
+                "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "Book",
+                "conceptLevel": "Model",
+                "description": "A book.",
+                "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+                "viewAttributes": [
+                  "name",
+                  "author",
+                  "year",
+                  "citation",
+                  "publisher",
+                  "uuid"
+                ],
+                "icon": "Book",
+                "cache": {
+                  "cacheAllInstancesOnRefresh": true
+                },
+                "mlSchema": {
+                  "type": "object",
+                  "extend": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "eager": true,
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "entityDefinitionRoot"
+                    }
+                  },
+                  "definition": {
+                    "name": {
+                      "type": "string",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Book Title"
+                        }
+                      }
+                    },
+                    "year": {
+                      "type": "number",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "id": 6,
+                          "defaultLabel": "Year of Publication",
+                          "display": {
+                            "editable": true
+                          }
+                        }
+                      }
+                    },
+                    "citation": {
+                      "type": "string",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Citation",
+                          "display": {
+                            "editable": false,
+                            "modifiable": false
+                          },
+                          "virtualAttribute": {
+                            "interpolation": "runtime",
+                            "transformerType": "mustacheStringTemplate",
+                            "definition": "{{name}} ({{year}})"
+                          }
+                        }
+                      }
+                    },
+                    "author": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "id": 7,
+                          "defaultLabel": "Author",
+                          "foreignKeyParams": {
+                            "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    },
+                    "publisher": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Publisher",
+                          "id": 8,
+                          "foreignKeyParams": {
+                            "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "name": "Rear Window",
+                "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                "conceptLevel": "",
+                "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                "year": 1942
+              },
+              []
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 3,
+            "expectedValue": {
+              "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "name": "Rear Window",
+              "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+              "conceptLevel": "",
+              "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+              "year": 1942
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "unknown needed name ignored",
+            "functionRef": {
+              "module": "miroir-core/2_domain/VirtualAttributes",
+              "export": "evaluateVirtualAttributesOnInstance"
+            },
+            "arguments": [
+              {
+                "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "parentName": "Entity",
+                "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "Book",
+                "conceptLevel": "Model",
+                "description": "A book.",
+                "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+                "viewAttributes": [
+                  "name",
+                  "author",
+                  "year",
+                  "citation",
+                  "publisher",
+                  "uuid"
+                ],
+                "icon": "Book",
+                "cache": {
+                  "cacheAllInstancesOnRefresh": true
+                },
+                "mlSchema": {
+                  "type": "object",
+                  "extend": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "eager": true,
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "entityDefinitionRoot"
+                    }
+                  },
+                  "definition": {
+                    "name": {
+                      "type": "string",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Book Title"
+                        }
+                      }
+                    },
+                    "year": {
+                      "type": "number",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "id": 6,
+                          "defaultLabel": "Year of Publication",
+                          "display": {
+                            "editable": true
+                          }
+                        }
+                      }
+                    },
+                    "citation": {
+                      "type": "string",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Citation",
+                          "display": {
+                            "editable": false,
+                            "modifiable": false
+                          },
+                          "virtualAttribute": {
+                            "interpolation": "runtime",
+                            "transformerType": "mustacheStringTemplate",
+                            "definition": "{{name}} ({{year}})"
+                          }
+                        }
+                      }
+                    },
+                    "author": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "id": 7,
+                          "defaultLabel": "Author",
+                          "foreignKeyParams": {
+                            "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    },
+                    "publisher": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Publisher",
+                          "id": 8,
+                          "foreignKeyParams": {
+                            "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "name": "Rear Window",
+                "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                "conceptLevel": "",
+                "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                "year": 1942
+              },
+              [
+                "notAField"
+              ]
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 3,
+            "expectedValue": {
+              "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "name": "Rear Window",
+              "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+              "conceptLevel": "",
+              "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+              "year": 1942
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "strip drops citation",
+            "functionRef": {
+              "module": "miroir-core/2_domain/VirtualAttributes",
+              "export": "stripVirtualAttributesFromInstance"
+            },
+            "arguments": [
+              {
+                "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "parentName": "Entity",
+                "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "Book",
+                "conceptLevel": "Model",
+                "description": "A book.",
+                "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+                "viewAttributes": [
+                  "name",
+                  "author",
+                  "year",
+                  "citation",
+                  "publisher",
+                  "uuid"
+                ],
+                "icon": "Book",
+                "cache": {
+                  "cacheAllInstancesOnRefresh": true
+                },
+                "mlSchema": {
+                  "type": "object",
+                  "extend": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "eager": true,
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "entityDefinitionRoot"
+                    }
+                  },
+                  "definition": {
+                    "name": {
+                      "type": "string",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Book Title"
+                        }
+                      }
+                    },
+                    "year": {
+                      "type": "number",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "id": 6,
+                          "defaultLabel": "Year of Publication",
+                          "display": {
+                            "editable": true
+                          }
+                        }
+                      }
+                    },
+                    "citation": {
+                      "type": "string",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Citation",
+                          "display": {
+                            "editable": false,
+                            "modifiable": false
+                          },
+                          "virtualAttribute": {
+                            "interpolation": "runtime",
+                            "transformerType": "mustacheStringTemplate",
+                            "definition": "{{name}} ({{year}})"
+                          }
+                        }
+                      }
+                    },
+                    "author": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "id": 7,
+                          "defaultLabel": "Author",
+                          "foreignKeyParams": {
+                            "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    },
+                    "publisher": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Publisher",
+                          "id": 8,
+                          "foreignKeyParams": {
+                            "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "name": "Rear Window",
+                "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                "conceptLevel": "",
+                "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                "year": 1942,
+                "citation": "should not persist"
+              }
+            ],
+            "expectedValue": {
+              "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+              "parentName": "Book",
+              "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "name": "Rear Window",
+              "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+              "conceptLevel": "",
+              "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+              "year": 1942
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "query",
+        "miroirTests": [
+          {
+            "miroirTestType": "queryTest",
+            "miroirTestLabel": "project citation on Rear Window",
+            "fixtureRef": "libraryDomainState",
+            "runner": "runQueryFromDomainState",
+            "query": {
+              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "extractors": {
+                "books": {
+                  "extractorOrCombinerType": "extractorInstancesByEntity",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "attributes": [
+                    "uuid",
+                    "name",
+                    "year",
+                    "citation"
+                  ],
+                  "filter": {
+                    "attributeName": "uuid",
+                    "value": "c97be567-bd70-449f-843e-cd1d64ac1ddd"
+                  }
+                }
+              }
+            },
+            "assertions": [
+              {
+                "label": "citation",
+                "resultAccessPath": [
+                  "books",
+                  "0",
+                  "citation"
+                ],
+                "expectedValue": "Rear Window (1942)"
+              },
+              {
+                "label": "name",
+                "resultAccessPath": [
+                  "books",
+                  "0",
+                  "name"
+                ],
+                "expectedValue": "Rear Window"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "queryTest",
+            "miroirTestLabel": "lazy default omits citation",
+            "fixtureRef": "libraryDomainState",
+            "runner": "runQueryFromDomainState",
+            "query": {
+              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "extractors": {
+                "books": {
+                  "extractorOrCombinerType": "extractorInstancesByEntity",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                }
+              }
+            },
+            "assertions": [
+              {
+                "label": "books",
+                "resultAccessPath": [
+                  "books"
+                ],
+                "expectedValue": [
+                  {
+                    "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Renata n'importe quoi",
+                    "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+                    "conceptLevel": "",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Bride Wore Black",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095"
+                  },
+                  {
+                    "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Le Pain et le Cirque",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "Rear Window",
+                    "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                    "conceptLevel": "",
+                    "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                    "year": 1942
+                  },
+                  {
+                    "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "conceptLevel": "Data",
+                    "name": "Et dans l'éternité je ne m'ennuierai pas",
+                    "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+                    "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+                  },
+                  {
+                    "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+                    "parentName": "Book",
+                    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "name": "The Design of Everyday Things",
+                    "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+                    "conceptLevel": "",
+                    "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "queryTest",
+            "miroirTestLabel": "filter on citation keeps Rear Window without projecting citation",
+            "fixtureRef": "libraryDomainState",
+            "runner": "runQueryFromDomainState",
+            "query": {
+              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "extractors": {
+                "books": {
+                  "extractorOrCombinerType": "extractorInstancesByEntity",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "filter": {
+                    "attributeName": "citation",
+                    "value": "Rear Window"
+                  }
+                }
+              }
+            },
+            "assertions": [
+              {
+                "label": "uuid",
+                "resultAccessPath": [
+                  "books",
+                  "0",
+                  "uuid"
+                ],
+                "expectedValue": "c97be567-bd70-449f-843e-cd1d64ac1ddd"
+              },
+              {
+                "label": "no citation key",
+                "resultAccessPath": [
+                  "books",
+                  "0"
+                ],
+                "expectedValue": {
+                  "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "name": "Rear Window",
+                  "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+                  "conceptLevel": "",
+                  "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+                  "year": 1942
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "queryTest",
+            "miroirTestLabel": "orderBy citation ascending",
+            "fixtureRef": "libraryDomainState",
+            "runner": "runQueryFromDomainState",
+            "query": {
+              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "extractors": {
+                "books": {
+                  "extractorOrCombinerType": "extractorInstancesByEntity",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "orderBy": {
+                    "attributeName": "citation",
+                    "direction": "ASC"
+                  }
+                }
+              }
+            },
+            "assertions": [
+              {
+                "label": "uuid 0",
+                "resultAccessPath": [
+                  "books",
+                  "0",
+                  "uuid"
+                ],
+                "expectedValue": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+              },
+              {
+                "label": "uuid 1",
+                "resultAccessPath": [
+                  "books",
+                  "1",
+                  "uuid"
+                ],
+                "expectedValue": "c6852e89-3c3c-447f-b827-4b5b9d830975"
+              },
+              {
+                "label": "uuid 2",
+                "resultAccessPath": [
+                  "books",
+                  "2",
+                  "uuid"
+                ],
+                "expectedValue": "c97be567-bd70-449f-843e-cd1d64ac1ddd"
+              },
+              {
+                "label": "uuid 3",
+                "resultAccessPath": [
+                  "books",
+                  "3",
+                  "uuid"
+                ],
+                "expectedValue": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7"
+              },
+              {
+                "label": "uuid 4",
+                "resultAccessPath": [
+                  "books",
+                  "4",
+                  "uuid"
+                ],
+                "expectedValue": "6fefa647-7ecf-4f83-b617-69d7d5094c37"
+              },
+              {
+                "label": "uuid 5",
+                "resultAccessPath": [
+                  "books",
+                  "5",
+                  "uuid"
+                ],
+                "expectedValue": "e20e276b-619d-4e16-8816-b7ec37b53439"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "queryTest",
+            "miroirTestLabel": "runtimeTransformer reads projected citation",
+            "fixtureRef": "libraryDomainState",
+            "runner": "runQueryFromDomainState",
+            "query": {
+              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "extractors": {
+                "books": {
+                  "extractorOrCombinerType": "extractorInstancesByEntity",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "attributes": [
+                    "uuid",
+                    "name",
+                    "year",
+                    "citation"
+                  ],
+                  "filter": {
+                    "attributeName": "uuid",
+                    "value": "c97be567-bd70-449f-843e-cd1d64ac1ddd"
+                  }
+                }
+              },
+              "runtimeTransformers": {
+                "citations": {
+                  "transformerType": "getUniqueValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "referenceName": "books"
+                  },
+                  "attribute": "citation"
+                }
+              }
+            },
+            "assertions": [
+              {
+                "label": "citations",
+                "resultAccessPath": [
+                  "citations",
+                  "0",
+                  "citation"
+                ],
+                "expectedValue": "Rear Window (1942)"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "queryTest",
+            "miroirTestLabel": "runtimeTransformer requires citation without extractor attributes",
+            "fixtureRef": "libraryDomainState",
+            "runner": "runQueryFromDomainState",
+            "query": {
+              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "extractors": {
+                "books": {
+                  "extractorOrCombinerType": "extractorInstancesByEntity",
+                  "parentName": "Book",
+                  "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "filter": {
+                    "attributeName": "uuid",
+                    "value": "c97be567-bd70-449f-843e-cd1d64ac1ddd"
+                  }
+                }
+              },
+              "runtimeTransformers": {
+                "citations": {
+                  "transformerType": "getUniqueValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "referenceName": "books"
+                  },
+                  "attribute": "citation"
+                }
+              }
+            },
+            "assertions": [
+              {
+                "label": "citations",
+                "resultAccessPath": [
+                  "citations",
+                  "0",
+                  "citation"
+                ],
+                "expectedValue": "Rear Window (1942)"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

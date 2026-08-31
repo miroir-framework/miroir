@@ -106,6 +106,8 @@ Entity (Book, present-model mlSchema)  ←── EntityVersion (historical / dua
 
 **Relationships:** declare FKs with `foreignKeyParams.targetEntity` (Author, Publisher). The UI uses that for pickers and ordering; Queries/combiners join on the same attributes.
 
+**Virtual attributes:** mark an `mlSchema` field with `tag.value.virtualAttribute` (inline transformer). The value is computed from **that instance’s stored fields only** — never a JOIN, never persisted, only when a query or report requires the name. See [Entity API — Virtual attributes](../../reference/api/entity.md#virtual-attributes).
+
 **Practical tips**
 
 - Prefer **optional** new attributes when existing instances lack values (Library tutorial ISBN example).

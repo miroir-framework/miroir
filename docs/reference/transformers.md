@@ -15,6 +15,12 @@ Stock definitions live in the Miroir application deployment assets
 (`packages/miroir-test-app_deployment-miroir/assets/miroir_data/a557419d-…/`, one JSON file per
 transformer, keyed by `transformerType` in `applicationTransformerDefinitions`).
 
+**Virtual attributes** (Entity `mlSchema` tag `virtualAttribute`) are not a transformer type.
+They attach an inline transformer to an attribute so Queries, reports, and later transformers
+in the same boxed query can use that name. Evaluation is **instance-local** (stored fields of
+that row only — FK uuids as scalars, no JOIN) and **lazy** (computed only when the query or
+display requires the name). They are never persisted. See [Entity API](./api/entity.md#virtual-attributes).
+
 ---
 
 ## Classification topics

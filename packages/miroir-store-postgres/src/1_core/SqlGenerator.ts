@@ -8,9 +8,12 @@ import {
   MiroirLoggerFactory,
   ResultAccessPath,
   findEntityFromUuid,
+  isVirtualAttribute,
+  requiredVirtualAttributeNames,
   transformer_extended_apply_wrapper,
   transformer_resolveReference,
   type CoreTransformerForBuildPlusRuntime,
+  type Entity,
   type CoreTransformerForBuildPlusRuntime_returnValue,
   type CoreTransformerForBuildPlusRuntime_constantAsExtractor,
   type CoreTransformerForBuildPlusRuntime_getFromContext,
@@ -90,7 +93,7 @@ function getIdAttributeForEntity(
   entityUuid: string,
   modelEnvironment?: MiroirModelEnvironment
 ): string | string[] {
-  const present = findEntityFromUuid(modelEnvironment?.currentModel, entityUuid);
+  const present = findPresentEntityFromModelEnvironment(modelEnvironment, entityUuid);
   return present?.idAttribute ?? "uuid";
 }
 
@@ -169,7 +172,7 @@ function getSchemaForEntity(
   defaultSchema: string,
   modelEnvironment?: MiroirModelEnvironment
 ): string {
-  const present = findEntityFromUuid(modelEnvironment?.currentModel, entityUuid);
+  const present = findPresentEntityFromModelEnvironment(modelEnvironment, entityUuid);
   return present?.externalDataSource?.schema ?? defaultSchema;
 }
 
@@ -548,12 +551,106 @@ export function sqlStringForCombiner /*BoxedExtractorTemplateRunner*/(
   // }
 }
 
+const ENTITY_IDENTITY_SQL_COLUMNS = [
+  "uuid",
+  "parentName",
+  "parentUuid",
+  "parentDefinitionVersionUuid",
+  "conceptLevel",
+];
+
+function findPresentEntityFromModelEnvironment(
+  modelEnvironment: MiroirModelEnvironment | undefined,
+  entityUuid: string,
+): Entity | undefined {
+  if (!modelEnvironment?.currentModel?.entities) {
+    return undefined;
+  }
+  return findEntityFromUuid(modelEnvironment.currentModel, entityUuid);
+}
+
+function sqlLiteral(value: unknown): string {
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  return `'${String(value ?? "").replace(/'/g, "''")}'`;
+}
+
+function inlinePreparedStatementParameters(sql: string, parameters: unknown[]): string {
+  let result = sql;
+  for (let index = parameters.length; index >= 1; index--) {
+    const literal = sqlLiteral(parameters[index - 1]);
+    result = result.replaceAll(`$${index}::text`, literal);
+    result = result.replaceAll(`$${index}`, literal);
+  }
+  return result;
+}
+
+function rowColumnSqlContext(entity: Entity): Record<string, SqlContextEntry> {
+  const entries: Record<string, SqlContextEntry> = {};
+  for (const name of ENTITY_IDENTITY_SQL_COLUMNS) {
+    entries[name] = { type: "scalar", rawSqlExpression: `"${name}"` };
+  }
+  for (const [name, schema] of Object.entries(entity.mlSchema?.definition ?? {})) {
+    if (isVirtualAttribute(schema)) {
+      continue;
+    }
+    entries[name] = { type: "scalar", rawSqlExpression: `"${name}"` };
+  }
+  return entries;
+}
+
+function compileVirtualAttributeSqlExpression(
+  entity: Entity,
+  name: string,
+): Domain2QueryReturnType<string> {
+  const schema = entity.mlSchema?.definition?.[name];
+  const transformer = schema
+    ? ((schema as { tag?: { value?: { virtualAttribute?: CoreTransformerForBuildPlusRuntime } } })
+        .tag?.value?.virtualAttribute)
+    : undefined;
+  if (!transformer) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: { virtualAttribute: name } as any,
+      failureMessage: `virtual attribute '${name}' has no transformer`,
+    });
+  }
+  const compiled = sqlStringForRuntimeTransformer(
+    transformer,
+    0,
+    0,
+    {},
+    rowColumnSqlContext(entity),
+    true,
+    false,
+  );
+  if (compiled instanceof Domain2ElementFailed) {
+    return compiled;
+  }
+  const expression =
+    typeof compiled.sqlStringOrObject === "string"
+      ? compiled.sqlStringOrObject
+      : String(compiled.sqlStringOrObject);
+  return inlinePreparedStatementParameters(
+    expression,
+    compiled.preparedStatementParameters ?? [],
+  );
+}
+
+function sqlColumnOrVirtualExpression(
+  attributeName: string,
+  virtualSql: Record<string, string>,
+): string {
+  return virtualSql[attributeName] ?? `"${attributeName}"`;
+}
+
 // ##############################################################################################
 export function  sqlStringForExtractor(
   extractor: ExtractorOrCombiner,
   schema: string,
   modelEnvironment: MiroirModelEnvironment,
-): RecursiveStringRecords {
+): Domain2QueryReturnType<RecursiveStringRecords> {
   switch (extractor.extractorOrCombinerType) {
     case "extractorByPrimaryKey": {
       const pkColumn = getIdAttributeForEntity(extractor.parentUuid, modelEnvironment);
@@ -587,34 +684,67 @@ export function  sqlStringForExtractor(
     }
     case "extractorInstancesByEntity": {
       const effectiveSchema = getSchemaForEntity(extractor.parentUuid, schema, modelEnvironment);
+      const entity = findPresentEntityFromModelEnvironment(
+        modelEnvironment,
+        extractor.parentUuid,
+      );
+      const needed = entity
+        ? requiredVirtualAttributeNames(entity, {
+            filterAttributeName: extractor.filter?.attributeName,
+            orderByAttributeName: extractor.orderBy?.attributeName,
+            projectedAttributes: extractor.attributes,
+          })
+        : [];
+      const virtualSql: Record<string, string> = {};
+      for (const name of needed) {
+        const compiled = compileVirtualAttributeSqlExpression(entity!, name);
+        if (compiled instanceof Domain2ElementFailed) {
+          return compiled;
+        }
+        virtualSql[name] = compiled;
+      }
       let whereClause: string | undefined = undefined;
       if (extractor.filter) {
         const { attributeName, value, values, not, undefined: isUndefined } = extractor.filter;
+        const columnOrExpr = sqlColumnOrVirtualExpression(attributeName, virtualSql);
         
         // Handle undefined check
         if (isUndefined) {
           whereClause = not 
-            ? `"${attributeName}" IS NOT NULL`
-            : `"${attributeName}" IS NULL`;
+            ? `${columnOrExpr} IS NOT NULL`
+            : `${columnOrExpr} IS NULL`;
         }
         // Handle values array (multiple values)
         else if (values !== undefined && values.length > 0) {
           const valueList = values.map(v => `'${v}'`).join(', ');
           whereClause = not
-            ? `"${attributeName}" NOT IN (${valueList})`
-            : `"${attributeName}" IN (${valueList})`;
+            ? `${columnOrExpr} NOT IN (${valueList})`
+            : `${columnOrExpr} IN (${valueList})`;
         }
         // Handle single value
         else if (value !== undefined) {
           whereClause = not
-            ? `"${attributeName}" NOT ILIKE '%${value}%'`
-            : `"${attributeName}" ILIKE '%${value}%'`;
+            ? `${columnOrExpr} NOT ILIKE '%${value}%'`
+            : `${columnOrExpr} ILIKE '%${value}%'`;
         }
       }
+      const select =
+        extractor.attributes && extractor.attributes.length > 0
+          ? extractor.attributes.map((attributeName) => ({
+              queryPart: "defineColumn" as const,
+              value: sqlColumnOrVirtualExpression(attributeName, virtualSql),
+              as: attributeName,
+            }))
+          : undefined;
+      const orderBy = extractor.orderBy
+        ? `${sqlColumnOrVirtualExpression(extractor.orderBy.attributeName, virtualSql)} ${extractor.orderBy.direction ?? "ASC"}`
+        : undefined;
       return sqlQuery(undefined, {
         queryPart: "query",
+        select,
         from: [{ queryPart: "hereTable", definition: { queryPart: "bypass", value: `"${effectiveSchema}"."${extractor.parentName}"` } }],
         where: whereClause,
+        orderBy,
       });
       break;
     }
@@ -5507,6 +5637,12 @@ export function sqlStringForQuery(
       return [key, sqlStringForExtractor(value, schema, modelEnvironment)];
     }
   );
+  const extractorFailure = extractorRawQueries.find(
+    ([, sql]) => sql instanceof Domain2ElementFailed,
+  );
+  if (extractorFailure) {
+    return extractorFailure[1] as Domain2ElementFailed;
+  }
 
   log.info(
     "sqlStringForQuery extractorRawQueries",

@@ -16,8 +16,10 @@ import {
   DomainControllerInterface,
   DomainElementSuccess,
   Entity,
+  EntityInstance,
   EntityInstancesUuidIndex,
   entityMLSchema,
+  evaluateVirtualAttributesOnInstance,
   ExtractorOrCombinerRecord,
   getApplicationSection,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
@@ -31,6 +33,7 @@ import {
   MiroirLoggerFactory,
   noValue,
   ReduxDeploymentsState,
+  requiredVirtualAttributeNames,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
@@ -263,6 +266,33 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   ]);
     
   const currentReportTargetEntity: Entity | undefined = entities.find((e) => e.uuid === objectListReportSection?.definition.parentUuid);
+
+  const displayedInstances: EntityInstancesUuidIndex = useMemo(() => {
+    if (!currentReportTargetEntity || !instancesToDisplay) {
+      return instancesToDisplay ?? {};
+    }
+    const needed = requiredVirtualAttributeNames(currentReportTargetEntity, {
+      referencedAttributeNames: currentReportTargetEntity.viewAttributes,
+    });
+    if (needed.length === 0) {
+      return instancesToDisplay;
+    }
+    return Object.fromEntries(
+      Object.entries(instancesToDisplay).map(([instanceUuid, instance]) => [
+        instanceUuid,
+        evaluateVirtualAttributesOnInstance(
+          currentReportTargetEntity,
+          instance as EntityInstance,
+          needed,
+          currentMiroirModelEnvironment,
+        ),
+      ]),
+    );
+  }, [
+    currentReportTargetEntity,
+    currentMiroirModelEnvironment,
+    instancesToDisplay,
+  ]);
     // objectListReportSection
     //   ? findEntityFromUuid(
     //       { entities, entityVersions },
@@ -861,7 +891,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   foreignKeyObjects={foreignKeyObjects}
                   currentModel={currentModel}
                   columnDefs={tableColumnDefs}
-                  instancesToDisplay={instancesToDisplay}
+                  instancesToDisplay={displayedInstances}
                   application={props.application}
                   applicationDeploymentMap={props.applicationDeploymentMap}
                   deploymentUuid={props.deploymentUuid}

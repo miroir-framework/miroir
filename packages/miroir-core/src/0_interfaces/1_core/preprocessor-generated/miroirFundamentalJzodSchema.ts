@@ -122,6 +122,20 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
+                  "virtualAttribute": {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "coreTransformerForBuildPlusRuntime"
+                          }
+                        }
+                      }
+                    }
+                  },
                   "isBlob": {
                     "type": "boolean",
                     "optional": true
@@ -27789,6 +27803,20 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
+                  "virtualAttribute": {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "coreTransformerForBuildPlusRuntime"
+                          }
+                        }
+                      }
+                    }
+                  },
                   "isBlob": {
                     "type": "boolean",
                     "optional": true
@@ -33667,6 +33695,20 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     ]
+                  },
+                  "virtualAttribute": {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "coreTransformerForBuildPlusRuntime"
+                          }
+                        }
+                      }
+                    }
                   },
                   "isBlob": {
                     "type": "boolean",

@@ -262,6 +262,7 @@ export declare const miroirTest_runner_drop_entity: any;
 export declare const miroirTest_runner_freeze_application_version: any;
 export declare const miroirTest_unionArrayChoices: any;
 export declare const miroirTest_unionObjectChoices: any;
+export declare const miroirTest_virtualAttributes: any;
 export declare const transformerMenuV1: any;
 export declare const transformer_spreadSheetToJzodSchema_json: any;
 export declare const transformer_ifThenElse_json: any;

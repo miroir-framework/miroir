@@ -247,7 +247,7 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 
 | File | Role |
 |------|------|
-| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Registry key → deployment export (35 suites) |
+| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Registry key → deployment export (38 suites, including `virtualAttributes` for #82) |
 | `src/5_tests/parseMiroirTestCliConfig.ts` | CLI/env parsing for `MIROIR_TEST_*` vars |
 | `src/5_tests/runMiroirCoreTestsFromCLI.ts` | Main entry for both vitest files |
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |

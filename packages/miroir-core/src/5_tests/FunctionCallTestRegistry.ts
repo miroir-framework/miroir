@@ -63,6 +63,7 @@ import {
 } from "../tools";
 import { getAttributeTypesFromJzodSchema } from "../1_core/jzod/getAttributeTypesFromJzodSchema";
 import { alterObjectAtPath } from "../tools";
+import { evaluateVirtualAttributesOnInstance, stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes";
 
 export type FunctionCallRef = {
   module: string;
@@ -193,6 +194,12 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
       inferTransformerOutputTypeFromSchema as WhitelistedFunction,
     inferElementTransformerOutputType:
       inferElementTransformerOutputType as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/VirtualAttributes": {
+    evaluateVirtualAttributesOnInstance:
+      evaluateVirtualAttributesOnInstance as WhitelistedFunction,
+    stripVirtualAttributesFromInstance:
+      stripVirtualAttributesFromInstance as WhitelistedFunction,
   },
 };
 

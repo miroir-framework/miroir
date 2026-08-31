@@ -14,7 +14,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/82
 Working branch: `master`
 
-**Resume note:** plan written 2026-08-31 — no slices started.
+**Resume note:** All slices ✅ DONE 2026-08-31. Feature tests green; SQL `citation: null` leak fixed. Remaining `npm run nonreg` fails are not #82 (see Slice 8 Realization).
 
 ---
 
@@ -37,15 +37,15 @@ This plan does **not** resolve FK *target rows* into the transformer context (an
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize: no virtual tag; full extractors are raw; SQL is column names | ⬜ | phase0 vitest + existing `queries_library` |
-| 1 | Schema: `tag.value.virtualAttribute` validates | ⬜ | generated types + modelValidation |
-| 2 | Tracer: lazy instance-only evaluation helper | ⬜ | MiroirTest `virtualAttributes` / `evaluate` |
-| 3 | In-memory Query: project / filter / orderBy / lazy default | ⬜ | MiroirTest `virtualAttributes` / `query` |
-| 4 | Never persist: skip SQL columns + strip on write | ⬜ | functionCallTest + postgres mapping vitest |
-| 5 | SQL Query: expression on A only when required | ⬜ | SqlGenerator vitest + `runAsSql` integ |
-| 6 | List + details display without report RT | ⬜ | Library BookList / BookDetails integ |
-| 7 | Other transformers read a required virtual name | ⬜ | queryTest with RT `accessDynamicPath` |
-| 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg + tracer narrative |
+| 0 | Characterize: no virtual tag; full extractors are raw; SQL is column names | ✅ | phase0 vitest + existing `queries_library` |
+| 1 | Schema: `tag.value.virtualAttribute` validates | ✅ | generated types + modelValidation |
+| 2 | Tracer: lazy instance-only evaluation helper | ✅ | MiroirTest `virtualAttributes` / `evaluate` |
+| 3 | In-memory Query: project / filter / orderBy / lazy default | ✅ | MiroirTest `virtualAttributes` / `query` |
+| 4 | Never persist: skip SQL columns + strip on write | ✅ | functionCallTest + postgres mapping vitest |
+| 5 | SQL Query: expression on A only when required | ✅ | SqlGenerator vitest + `runAsSql` integ |
+| 6 | List + details display without report RT | ✅ | Library BookList / BookDetails integ |
+| 7 | Other transformers read a required virtual name | ✅ | queryTest with RT `getUniqueValues` |
+| 8 | Nonreg, docs, cleanup, AC | ✅ | nonreg + tracer narrative |
 
 ---
 
@@ -78,9 +78,9 @@ Carried from the analysis decision record (confirmed 2026-08-31). Deviations go 
 | Example virtual attribute name | `citation` — mustache `{{name}} ({{year}})` |
 | Example instance (expected citation) | Rear Window `c97be567-bd70-449f-843e-cd1d64ac1ddd` → `"Rear Window (1942)"` |
 | BookList / BookDetails (existing) | `74b010b6-afee-44e7-8590-5f0849e4a5c9` / `c3503412-3d8a-43ef-a168-aa36e975e606` |
-| Slice 0 transitional vitest | `packages/miroir-core/tests/2_domain/issues/82-virtual-attributes/virtualAttributes.82.phase0.unit.test.ts` |
-| Slice 4/5 postgres vitest | `packages/miroir-store-postgres/test/issues/82-virtual-attributes/` |
-| Slice 6 view integ | `packages/miroir-standalone-app/tests/4_view/issues/82-virtual-attributes/` |
+| Slice 0 / tag + Book lock (feature-named after Slice 8) | `packages/miroir-core/tests/2_domain/virtualAttributes.unit.test.ts` |
+| Slice 4/5 postgres vitest (feature-named after Slice 8) | `packages/miroir-store-postgres/test/virtualAttributes.unit.test.ts` |
+| Slice 6 view integ (feature-named after Slice 8) | `packages/miroir-standalone-app/tests/4_view/virtualAttributes.integ.test.tsx` |
 | Nonreg step | None new — suite enrolled via the `unit-miroir-core` registry sweep (Slice 8.1); SQL/view coverage via slice-local commands until Slice 8 |
 
 No new Entity uuid. Jzod bootstrap schema `1e8dab4b-65a3-4686-922e-ce89a2d62aa9` is edited in place (Slice 1).
@@ -153,7 +153,7 @@ Query/SQL/report layers call this API; they are not a second implementation of e
 
 ## Slice 0 — Characterize current contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -184,13 +184,19 @@ npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
 
 ### Realization
 
-<Appended on completion.>
+Characterization tests pass on current master (no schema change).
+
+- Core: `packages/miroir-core/tests/2_domain/issues/82-virtual-attributes/virtualAttributes.82.phase0.unit.test.ts` — Jzod bootstrap `jzodBaseObject.tag.value` keys do **not** include `virtualAttribute`; Library Book `mlSchema.definition` keys are exactly `name`, `year`, `author`, `publisher` (no `citation`).
+- Postgres: `packages/miroir-store-postgres/test/issues/82-virtual-attributes/virtualAttributes.82.phase0.unit.test.ts` — `fromMiroirPresentModelToSequelizeEntityDefinition(Book)` columns are the flattened `entityDefinitionRoot` identity fields (`uuid`, `parentName`, `parentUuid`, `parentDefinitionVersionUuid`, `conceptLevel`) plus `name`, `year`, `author`, `publisher`; no `citation`. Helper is not exported from the postgres package index, so the test imports `src/utils.js` and the Book JSON asset (postgres does not depend on the library package).
+- `npm run testMiroir -w miroir-core -- --suites queries_library --mode unit` — 17 passed (lazy non-regression: PK Book fetch is stored JSON).
+
+Slice 1 will replace the core “absent `virtualAttribute` key” assertion with a “present key + editor pattern” assertion in the same file.
 
 ---
 
 ## Slice 1 — Schema: `virtualAttribute` on the Jzod tag
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -230,13 +236,15 @@ RUN_TEST=virtualAttributes.82.phase0 npm run testByFile -w miroir-core -- virtua
 
 ### Realization
 
-<Appended on completion.>
+`jzodBaseObject.tag.value.virtualAttribute` added to bootstrap JSON `1e8dab4b-65a3-4686-922e-ce89a2d62aa9` immediately after `initializeTo`. Shape matches `initializeTo.transformer`: `type: "any"`, `optional: true`, `ifThenElseMMLS.mmlsReference` → `fe9b7d99-f216-44de-bb6e-60e1a1ebb739` / `coreTransformerForBuildPlusRuntime`.
+
+Phase0 assertion now locks that editor pattern. `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` regenerated `virtualAttribute?: any` on Jzod tags. `tsc --noEmit` on miroir-core passed.
 
 ---
 
 ## Slice 2 — Tracer: lazy instance-only evaluation
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -282,13 +290,19 @@ npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
 
 ### Realization
 
-<Appended on completion.>
+Library Book Entity gained optional `citation` (`mustacheStringTemplate` `{{name}} ({{year}})`, `display.editable/modifiable: false`) in `mlSchema` and `viewAttributes` (after `year`). Instances on disk are unchanged.
+
+`packages/miroir-core/src/2_domain/VirtualAttributes.ts` implements the public API. Evaluation uses `transformer_extended_apply_wrapper` at `"runtime"` with `contextResults` = stored instance fields (virtual keys excluded). Mustache binds `{{name}}` / `{{year}}` from that context (D3: no extra objects). Identity fields are never treated as virtual.
+
+MiroirTest suite `c4dffd69-2594-482c-b680-295c30eafe30` (`virtualAttributes` / nested `evaluate`): Rear Window requested → `"Rear Window (1942)"`; empty / unknown `neededNames` → instance JSON unchanged. Whitelisted under `miroir-core/2_domain/VirtualAttributes`. Enrolled in `MIROIR_TEST_SUITE_REGISTRY_NAMES`.
+
+Phase0 now locks the Book `citation` tag. Postgres phase0 now expects `citation` among Sequelize columns (current mapping; Slice 4 will exclude it). `queries_library` 17 passed. Library `modelValidation` 179 passed.
 
 ---
 
 ## Slice 3 — In-memory Query requires the name
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -325,13 +339,20 @@ npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
 
 ### Realization
 
-<Appended on completion.>
+In-memory extractors overlay virtual attributes only when required, then strip unprojected names after filter/orderBy.
+
+- `packages/miroir-core/src/2_domain/ExtractorVirtualAttributes.ts` — `extractorVirtualAttributeNeed`, entity lookup from DomainState/Redux, `overlayAndFilterExtractorInstances`, `stripUnprojectedVirtualAttributes`. Filter/orderBy run on already-evaluated instances (`instanceMatchesFilter` stays a pure matcher).
+- Wired in `DomainStateQuerySelectors.selectEntityInstanceUuidIndexFromDomainState` and `ReduxDeploymentsStateQuerySelectors.selectEntityInstanceUuidIndexFromReduxDeploymentsState` (also added the missing `modelEnvironment` parameter those runners already declared). Lazy path: no filter / orderBy / projected virtual names → return stored instances unchanged.
+- `QuerySelectors.extractEntityInstanceListWithObjectListExtractorInMemory` strips unprojected virtual keys after the last filter so filter-without-project does not leak `citation`.
+- MiroirTest `virtualAttributes` / `query` (DomainState runner): project Rear Window → `"Rear Window (1942)"`; lazy full list has no `citation`; filter `value: "Rear Window"` (substring — `instanceMatchesFilter` is case-insensitive regex, so parentheses in `"Rear Window (1942)"` would not match the literal); orderBy `citation` ASC is the six snapshot books by computed string. Filter-without-project returns the raw Rear Window instance (no `citation` key).
+- `libraryDomainState` comes from `packages/miroir-core/src/domainState.json`: Book Entity received present-model `mlSchema`/`viewAttributes` (including `citation`); Rear Window gained stored `year: 1942`. `queries_library` heteronomous expected value updated to include that year. `QueryRunnerTestTools.runMiroirQueryRunnerTestInMemory` now rethrows vitest assertion failures (previously swallowed in `catch`, so queryTests could pass vacuously).
+- `npm run testMiroir -w miroir-core -- --suites virtualAttributes --mode unit` — 7 passed. `queries_library` — 17 passed.
 
 ---
 
 ## Slice 4 — Never persist
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -367,13 +388,18 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-store-postgres/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+Virtual attributes are not Sequelize columns; create/update payloads drop them before any store sees them.
+
+- `fromMiroirPresentModelToSequelizeEntityDefinition` skips `isVirtualAttribute` keys (also `getOptionalNonNullableAttributes`). Book columns are identity + `name`/`year`/`author`/`publisher` — no `citation`.
+- `applyMlSchemaColumnChanges` still records a virtual `addColumns` entry on Entity `mlSchema` (otherwise the designer could not attach the transformer). Physical skip is the Sequelize mapping: after a virtual addColumn, `fromMiroirPresentModelToSequelizeEntityDefinition` still omits that key, so `sync({ alter: true })` does not add a column.
+- `DomainController.handleInstanceAction` strips virtual keys on `createInstance` / `updateInstance` (`stripVirtualAttributesOnWriteAction`) before `callPersistenceAction` and `callLocalCacheAction`. Lookup uses present-model Entity from local-cache DomainState. No per-store duplicate.
+- MiroirTest `strip drops citation` (payload `citation: "should not persist"` → raw Rear Window, no `citation` key). Postgres vitest 2 passed. `virtualAttributes` 8 passed. `tsc` on miroir-core passed. `tsc` on miroir-store-postgres still reports pre-existing `SqlGenerator.ts` `MetaModel | undefined` errors (not introduced here).
 
 ---
 
 ## Slice 5 — SQL: expression on A only when required
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -412,13 +438,19 @@ npm run testMiroir -w miroir-core -- --suites virtualAttributes --mode unit
 
 ### Realization
 
-<Appended on completion.>
+`sqlStringForExtractor` compiles required virtual attributes as expressions over the entity’s own columns (`sqlStringForRuntimeTransformer` + row-column `rawSqlExpression` context). Unused virtual names are absent from SQL.
+
+- Lazy Book list: `SELECT * FROM "myschema"."Book"` — no `citation`.
+- Filter / project `citation`: single `FROM` Book, no JOIN; mustache inlines `"name"` / `"year"`; WHERE uses that expression with `ILIKE`, not `"citation" ILIKE`. SELECT projects `(…) AS "citation"`.
+- Required non-compilable transformer (`mapList` on citation) → `Domain2ElementFailed` `QueryNotExecutable`. `sqlStringForQuery` propagates extractor failures.
+- Shared need collection: `requiredVirtualAttributeNames`. Entity lookup uses `currentModel.entities` (skips when absent so legacy `entityVersions`-only test envs do not throw).
+- Optional `runAsSql` integ skipped; unit SQL strings are the seam. Postgres 82-virtual-attributes 6 passed. `virtualAttributes` 8 passed.
 
 ---
 
 ## Slice 6 — List and details display
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -457,13 +489,18 @@ npm run testMiroir -w miroir-core -- --suites virtualAttributes --mode unit
 
 ### Realization
 
-<Appended on completion.>
+BookList and BookDetails show `citation` without Report `runtimeTransformers`. The integ rig injects raw Formik instances (bypasses the report query), so GREEN is a display-side overlay through `evaluateVirtualAttributesOnInstance` — the UI does not call `transformer_extended_apply` itself.
+
+- List: `ReportSectionListDisplay` overlays `viewAttributes` as `referencedAttributeNames` and passes `displayedInstances` to `EntityInstanceGrid`. Formik `books` stay stored fields (D4).
+- Details: `ReportSectionEntityInstance` overlays every key of the entity `mlSchema.definition` (the details schema). Nested `Formik` with `enableReinitialize` feeds TVOE the overlaid instance so the parent formik payload is not mutated with `citation`.
+- RED file: `packages/miroir-standalone-app/tests/4_view/issues/82-virtual-attributes/virtualAttributes.82.phase6.integ.test.tsx` — BookList JSON has no `runtimeTransformers`; grid Citation cell and details read-only field show `"Rear Window (1942)"`.
+- `npm run testByFile -w miroir-standalone-app -- 82-virtual-attributes` — 3 passed.
 
 ---
 
 ## Slice 7 — Other transformers in the same query
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -498,13 +535,18 @@ npm run testMiroir -w miroir-core -- --suites virtualAttributes --mode unit
 
 ### Realization
 
-<Appended on completion.>
+A same-query `runtimeTransformer` can read `citation` when the extractor projected it (Slice 3 overlay) and when it did not — the boxed query collects RT-referenced names and overlays them on extractor lists before RTs run.
+
+- MiroirTest `virtualAttributes` / `query`: `runtimeTransformer reads projected citation` (extractor `attributes` includes `citation` + `getUniqueValues` on `citation`) was already green from Slice 3.
+- RED: `runtimeTransformer requires citation without extractor attributes` — Rear Window filtered by uuid only; `citations.0.citation` expected `"Rear Window (1942)"`; failed because the RT saw a missing field.
+- GREEN: `collectReferencedAttributeNamesFromRuntimeTransformers` (`getUniqueValues.attribute`, `accessDynamicPath` / `referencePath` string segments) + `overlayVirtualAttributesOnQueryContextForRuntimeTransformers` in `runQuery` after extractors/combiners, before RTs. Intersection with virtual names still goes through `requiredVirtualAttributeNames` (D5). Lazy extractors with no RT still omit `citation`.
+- `npm run testMiroir -w miroir-core -- --suites virtualAttributes --mode unit` — 10 passed. `queries_library` — 17 passed. Async SQL `runQuery` not wired (Slice 5 already compiles required names into SELECT; RT-without-attributes on `runAsSql` is out of this slice).
 
 ---
 
 ## Slice 8 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 8.1 Nonreg
 
@@ -534,25 +576,35 @@ Automated equivalent: `virtualAttributes` MiroirTest + Slice 5 SQL vitest + Slic
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Attach a transformer as a virtual attribute on an Entity | Slice 1 schema + Slice 2 Book `citation` | ⬜ |
-| Use it like any other attribute in Queries (in-memory) | Slice 3 queryTests | ⬜ |
-| If runnable as SQL, Queries use it without extra tables | Slice 5 | ⬜ |
-| List extra column without per-report RT | Slice 6 BookList | ⬜ |
-| Details report shows it | Slice 6 BookDetails | ⬜ |
-| Actions / other transformers | Slice 7 (query RT); Actions consume that result | ⬜ |
-| Not stored | Slice 4 | ⬜ |
-| Lazy: not computed unless required | Slice 2 `not requested` + Slice 3 lazy default + `queries_library` | ⬜ |
+| Attach a transformer as a virtual attribute on an Entity | Slice 1 schema + Slice 2 Book `citation` | ✅ |
+| Use it like any other attribute in Queries (in-memory) | Slice 3 queryTests | ✅ |
+| If runnable as SQL, Queries use it without extra tables | Slice 5 | ✅ |
+| List extra column without per-report RT | Slice 6 BookList | ✅ |
+| Details report shows it | Slice 6 BookDetails | ✅ |
+| Actions / other transformers | Slice 7 (query RT); Actions consume that result | ✅ |
+| Not stored | Slice 4 | ✅ |
+| Lazy: not computed unless required | Slice 2 `not requested` + Slice 3 lazy default + `queries_library` | ✅ |
 
 ### Validation
 
 ```bash
 npm run testMiroir -w miroir-core -- --suites virtualAttributes --mode unit
 npm run testMiroir -w miroir-core -- --suites queries_library --mode unit
-npm run vitest -w miroir-store-postgres -- 82-virtual-attributes
-npm run testByFile -w miroir-standalone-app -- 82-virtual-attributes
+npm run testByFile -w miroir-core -- virtualAttributes
+npm run vitest -w miroir-store-postgres -- virtualAttributes
+npm run testByFile -w miroir-standalone-app -- virtualAttributes
 npm run nonreg
 ```
 
 ### Realization
 
-<Appended on completion.>
+Docs, #238 cleanup, AC, and the one #82 nonreg regression are done. Tracer narrative is covered by MiroirTest `virtualAttributes` (10), postgres SQL/mapping vitest (7), and BookList/BookDetails integ (3).
+
+- **Docs:** `analysis.md` → implemented. `docs/reference/api/entity.md` (Virtual attributes), `docs/guides/developer/defining-entities.md`, `docs/reference/transformers.md` (not a transformer type; instance-local / lazy / no JOIN). Registry list in `docs/reference/testing.md` is 38 suites including `virtualAttributes`; `docs/contributing/testing.md` suite count 38.
+- **#238:** deleted `tests/**/issues/82-virtual-attributes/`. Assertions live in `packages/miroir-core/tests/2_domain/virtualAttributes.unit.test.ts`, `packages/miroir-store-postgres/test/virtualAttributes.unit.test.ts`, `packages/miroir-standalone-app/tests/4_view/virtualAttributes.integ.test.tsx`.
+- **SQL NULL leak (D4/D5):** `SELECT *` / leftover NULL `citation` appeared on Book rows in `ExtractorPersistenceStoreRunner` (`select Books of Author`). Cause: `getOptionalNonNullableAttributes` skipped virtual keys, so `stripNullOptionalAttributes` left `citation: null`. GREEN: treat virtual names as optional-non-nullable so NULL is dropped on read (do not strip a compiled `AS "citation"` string). Postgres vitest `drops leftover SQL NULL citation on read`. Re-run: full `ExtractorPersistenceStoreRunner.integ` — 11 passed.
+- **Harness (keep):** `FunctionCallTestTools.normalizeFunctionCallResult` preserves top-level `null` (mirrors expected-value); catch copies vitest `AssertionError.actual`. Needed after #246 started rethrowing functionCallTest failures (`unNullify(null)` → `undefined` broke `modelUpdates` `expectedValue: null`). `modelUpdates` — 6 passed.
+- **Validation commands:** `virtualAttributes` unit 10; `queries_library` 17; core vitest 2; postgres 7; standalone integ 3.
+- **`npm run nonreg`** snapshot `test-results/nonreg/20260831T140120Z` (ran before the NULL-strip rebuild): 39 passed / 6 failed. After GREEN, the #82 extractor leak is gone. Remaining fails are **not** this issue: `unit-check-bare-console` (`chunkLoadTrace.ts` / `index.tsx`); `unit-transformerResultSchema` `numericOp` (#88); `jzodUnion_RecursiveUnfold expands the jzodElement definition` (stale expected vs current schema / Set encoding — no `virtualAttribute` in either side; surfaced by #246 rethrow); `appstack-DomainController.integ` “No test files found” (`--profile` eaten as vitest filter); `unit-gridPagination` extra `paginationPageSizeSelector` (unrelated dirty grid work).
+
+No commit (user did not ask).

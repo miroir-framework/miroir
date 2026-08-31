@@ -28,7 +28,7 @@ Key sources:
 - Motivating workaround (current-state only): Designer UserStory [`59debf06-….json`](../../../packages/miroir-test-app_deployment-designer/assets/designer_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/59debf06-405d-4def-a7eb-3db45360310d.json) + `UserStoryList` [`7f037bbb-….json`](../../../packages/miroir-test-app_deployment-designer/assets/designer_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7f037bbb-3a5a-4111-b8ec-85ef756c9ff2.json)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed with the user (2026-08-31). TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** implemented (2026-08-31). TDD plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 Issue wording uses “Entity Definitions”. Present-model authority is **Entity** (#217). Virtual attributes attach to **Entity.mlSchema**. EntityVersion snapshots them on freeze.
 

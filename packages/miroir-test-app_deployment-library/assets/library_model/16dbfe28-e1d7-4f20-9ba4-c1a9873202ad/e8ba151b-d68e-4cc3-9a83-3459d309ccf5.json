@@ -12,6 +12,7 @@
     "name",
     "author",
     "year",
+    "citation",
     "publisher",
     "uuid"
   ],
@@ -47,6 +48,24 @@
             "defaultLabel": "Year of Publication",
             "display": {
               "editable": true
+            }
+          }
+        }
+      },
+      "citation": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Citation",
+            "display": {
+              "editable": false,
+              "modifiable": false
+            },
+            "virtualAttribute": {
+              "interpolation": "runtime",
+              "transformerType": "mustacheStringTemplate",
+              "definition": "{{name}} ({{year}})"
             }
           }
         }
