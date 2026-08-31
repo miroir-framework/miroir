@@ -6,7 +6,6 @@ import type {
   InitApplicationParameters,
   IntegrationTestOrchestratorContext,
   IntegrationTestSessionFactoryCreateParams,
-  MetaModel,
   MiroirTestDefinition,
   MiroirTestSuite,
   Runner,
@@ -19,20 +18,9 @@ import {
   resolveSuitePlayfieldSeed,
 } from "miroir-core";
 import {
-  author1,
-  author2,
-  author3,
-  book1,
-  book2,
-  book4,
-  book5,
-  book6,
   Country1,
   Country2,
   Country3,
-  defaultLibraryAppModel,
-  entityAuthor,
-  entityBook,
   entityCountry,
   entityPublisher,
   lendDocumentRunner,
@@ -42,7 +30,6 @@ import {
   penguin as publisher2,
   springer as publisher3,
   returnDocumentRunner,
-  selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import {
   miroirTest_domain_controller_application_version_freeze,
@@ -66,19 +53,7 @@ import {
   appForTestTestbedInitParams
 } from "./uiIntegrationAppForTestPlayfieldSeed.js";
 import {
-  codeItem1,
-  codeItem2,
-  codeItem3,
-  compositeItem1,
-  compositeItem2,
-  compositeItem3,
-  entityCodeNumber,
-  entityCompositePK,
-  entityNoParentUuid,
   libraryTestbedInitParams,
-  noParentItem1,
-  noParentItem2,
-  noParentItem3,
   type TestbedSetupParameters
 } from "./uiIntegrationPlayfieldSeeds.js";
 
@@ -329,38 +304,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_data_crud.definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityAuthor as Entity,
-          instances: [
-            author1 as EntityInstance,
-            author2 as EntityInstance,
-            author3 as EntityInstance,
-          ],
-        },
-        {
-          entity: entityBook as Entity,
-          instances: [
-            book1 as EntityInstance,
-            book2 as EntityInstance,
-            book4 as EntityInstance,
-            book5 as EntityInstance,
-            book6 as EntityInstance,
-          ],
-        },
-        {
-          entity: entityPublisher as Entity,
-          instances: [
-            publisher1 as EntityInstance,
-            publisher2 as EntityInstance,
-            publisher3 as EntityInstance,
-          ],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: defaultLibraryAppModel as MetaModel,
-    },
   },
   // ###############################################################################
   [miroirTest_domain_controller_model_crud.name]: {
@@ -373,20 +316,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_composite_pk_crud.definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityCompositePK,
-          instances: [compositeItem1, compositeItem2, compositeItem3],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityCompositePK],
-      },
-    },
   },
   // ###############################################################################
   [miroirTest_domain_controller_non_uuid_pk_model_crud.name]: {
@@ -394,24 +323,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_model_crud.definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityPublisher as Entity,
-          instances: [
-            publisher1 as EntityInstance,
-            publisher2 as EntityInstance,
-            publisher3 as EntityInstance,
-          ],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity],
-      },
-    },
   },
   // ###############################################################################
   [miroirTest_domain_controller_non_uuid_pk_data_crud.name]: {
@@ -419,48 +330,12 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_data_crud.definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityCodeNumber,
-          instances: [codeItem1, codeItem2, codeItem3],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityCodeNumber],
-      },
-    },
   },
   // ###############################################################################
   [miroirTest_domain_controller_no_parent_uuid_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_no_parent_uuid_crud.definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityPublisher as Entity,
-          instances: [
-            publisher1 as EntityInstance,
-            publisher2 as EntityInstance,
-            publisher3 as EntityInstance,
-          ],
-        },
-        {
-          entity: entityNoParentUuid,
-          instances: [noParentItem1, noParentItem2, noParentItem3],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity, entityNoParentUuid],
-      },
-    },
   },
   // ###############################################################################
   [miroirTest_domain_controller_model_undo_redo.name]: {

@@ -238,6 +238,68 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     }
   });
 
+  it("unique DC suites compose inline JSON playfield and drop registry playfield", () => {
+    const context = { miroirConfig: {} as never };
+    const runTarget = {
+      applicationUuid: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+      applicationName: "Library",
+    };
+    const expectedByKey: Record<string, { entityNames: string[]; modelEntityNames: string[] }> = {
+      domain_controller_data_crud: {
+        entityNames: ["Author", "Book", "Publisher"],
+        modelEntityNames: ["Author", "Book", "Publisher"],
+      },
+      domain_controller_composite_pk_crud: {
+        entityNames: ["TestEntityCompositePK"],
+        modelEntityNames: ["TestEntityCompositePK"],
+      },
+      domain_controller_non_uuid_pk_model_crud: {
+        entityNames: ["Publisher"],
+        modelEntityNames: ["Publisher"],
+      },
+      domain_controller_non_uuid_pk_data_crud: {
+        entityNames: ["TestEntityCodeNumber"],
+        modelEntityNames: ["TestEntityCodeNumber"],
+      },
+      domain_controller_no_parent_uuid_crud: {
+        entityNames: ["Publisher", "TestEntityNoParentUuid"],
+        modelEntityNames: ["Publisher", "TestEntityNoParentUuid"],
+      },
+    };
+    for (const key of Object.keys(expectedByKey) as (keyof typeof expectedByKey)[]) {
+      const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
+      expect(Object.prototype.hasOwnProperty.call(entry, "testBedModelAndInstances"), key).toBe(
+        false,
+      );
+      expect(entry.testbedInitApplicationParameters, key).toEqual(libraryTestbedInitParams);
+
+      const params = buildUiIntegrationOrchestratorCreateSessionParams(
+        entry,
+        context,
+        "test",
+        runTarget,
+        {},
+        UI_INTEGRATION_RUNNER_UUID_INDEX,
+      );
+      expect(params.kind, key).toBe("action");
+      if (params.kind !== "action") {
+        continue;
+      }
+      const seed = params.sessionSpecificOptions.testBedModelAndInstances;
+      expect(seed.testbedInitApplicationParameters, key).toEqual(libraryTestbedInitParams);
+      expect(
+        seed.testbedEntitiesAndInstances.map((row) => row.entity.name),
+        key,
+      ).toEqual(expectedByKey[key].entityNames);
+      expect((seed.testbedModel.entities ?? []).map((entity) => entity.name), key).toEqual(
+        expectedByKey[key].modelEntityNames,
+      );
+      expect(seed.testbedModel.applicationName, key).toBe("Library");
+      expect(seed.testbedModel.reports, key).toBeUndefined();
+    }
+  });
+
   it("create/drop omit a playfield seed because skipRunTargetPlayfieldReset is set", () => {
     const context = { miroirConfig: {} as never };
     const runTarget = {

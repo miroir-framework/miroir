@@ -14,6 +14,288 @@
       "applicationName": "Library",
       "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
     },
+    "testbedModel": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "entities": [
+        {
+          "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "name": "Publisher",
+          "conceptLevel": "Model",
+          "description": "The publisher of a book.",
+          "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+          "viewAttributes": [
+            "name",
+            "country",
+            "icon",
+            "uuid"
+          ],
+          "icon": "building",
+          "cache": {
+            "cacheAllInstancesOnRefresh": true
+          },
+          "mlSchema": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityDefinitionRoot"
+              }
+            },
+            "definition": {
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Name"
+                  }
+                }
+              },
+              "country": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 5,
+                    "display": {
+                      "editable": true
+                    },
+                    "defaultLabel": "Country",
+                    "foreignKeyParams": {
+                      "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "icon": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 6,
+                    "defaultLabel": "Icon"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "uuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "name": "TestEntityNoParentUuid",
+          "conceptLevel": "Model",
+          "description": "Test entity whose instances do not bear a parentUuid attribute.",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "uuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Name"
+                  }
+                }
+              },
+              "description": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Description"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "testbedEntitiesAndInstances": [
+      {
+        "entity": {
+          "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "name": "Publisher",
+          "conceptLevel": "Model",
+          "description": "The publisher of a book.",
+          "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+          "viewAttributes": [
+            "name",
+            "country",
+            "icon",
+            "uuid"
+          ],
+          "icon": "building",
+          "cache": {
+            "cacheAllInstancesOnRefresh": true
+          },
+          "mlSchema": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityDefinitionRoot"
+              }
+            },
+            "definition": {
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Name"
+                  }
+                }
+              },
+              "country": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 5,
+                    "display": {
+                      "editable": true
+                    },
+                    "defaultLabel": "Country",
+                    "foreignKeyParams": {
+                      "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "icon": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 6,
+                    "defaultLabel": "Icon"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "instances": [
+          {
+            "uuid": "1f550a2a-33f5-4a56-83ee-302701039494",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "name": "Penguin",
+            "icon": "",
+            "country": "b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe"
+          },
+          {
+            "uuid": "516a7366-39e7-4998-82cb-80199a7fa667",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "name": "Folio",
+            "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+          },
+          {
+            "uuid": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "name": "Springer",
+            "country": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0"
+          }
+        ]
+      },
+      {
+        "entity": {
+          "uuid": "803b81ad-fda4-4206-8860-cc86f37c7a6e",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "name": "TestEntityNoParentUuid",
+          "conceptLevel": "Model",
+          "description": "Test entity whose instances do not bear a parentUuid attribute.",
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "uuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Uuid",
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Name"
+                  }
+                }
+              },
+              "description": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Description"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "instances": [
+          {
+            "uuid": "4476e12d-e822-44db-bd06-aadb81b74d60",
+            "name": "item one"
+          },
+          {
+            "uuid": "63e87f77-30d8-4044-a8de-0e7af286060c",
+            "name": "item two"
+          },
+          {
+            "uuid": "ada284e0-f3bb-4da8-8041-671a8ee39b8d",
+            "name": "item three"
+          }
+        ]
+      }
+    ],
     "miroirTests": [
       {
         "miroirTestType": "actionTest",

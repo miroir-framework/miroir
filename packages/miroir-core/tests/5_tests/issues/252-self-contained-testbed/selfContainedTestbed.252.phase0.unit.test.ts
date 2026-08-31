@@ -113,7 +113,7 @@ function modelScopeItemLabels(menu: Menu): string[] {
 (shouldRun ? describe : describe.skip)(
   "self-contained testbed current contracts (issue #252 slice 0)",
   () => {
-    it("integ suite JSON definitions have no playfield fields except undo_redo inline seed and uuid-owned suites", () => {
+    it("integ suite JSON definitions have inline, uuid, or no playfield according to the current migration", () => {
       const keys = Object.keys(INTEG_SUITE_DEFINITIONS).sort();
       expect(keys).toEqual([
         "domain_controller_application_version_freeze",
@@ -132,21 +132,30 @@ function modelScopeItemLabels(menu: Menu): string[] {
         "runner_return_document",
       ]);
 
+      const inlinePlayfieldKeys = new Set([
+        "domain_controller_model_undo_redo",
+        "domain_controller_data_crud",
+        "domain_controller_composite_pk_crud",
+        "domain_controller_non_uuid_pk_model_crud",
+        "domain_controller_non_uuid_pk_data_crud",
+        "domain_controller_no_parent_uuid_crud",
+      ]);
+      const uuidPlayfieldKeys = new Set([
+        "runner_lend_document",
+        "runner_return_document",
+        "domain_controller_model_crud",
+        "domain_controller_application_version_freeze",
+        "evolutionTraceWP1",
+      ]);
       for (const [name, definition] of Object.entries(INTEG_SUITE_DEFINITIONS)) {
-        if (name === "domain_controller_model_undo_redo") {
+        if (inlinePlayfieldKeys.has(name)) {
           expect(playfieldFieldsOn(definition), name).toEqual([
             "testbedModel",
             "testbedEntitiesAndInstances",
           ]);
           continue;
         }
-        if (
-          name === "runner_lend_document" ||
-          name === "runner_return_document" ||
-          name === "domain_controller_model_crud" ||
-          name === "domain_controller_application_version_freeze" ||
-          name === "evolutionTraceWP1"
-        ) {
+        if (uuidPlayfieldKeys.has(name)) {
           expect(playfieldFieldsOn(definition), name).toEqual(["testConfiguration"]);
           continue;
         }

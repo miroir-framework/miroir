@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../197-FEATURE- run integration tests in the UI/plan.md`](../197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md)
 Working branch: `dev-copilot`
 
-**Resume note:** Slice 4 ✅ — Miroir Publisher+Country `TestConfiguration`; three suites by uuid. Next is Slice 5 (remaining unique DC slices inlined on suite JSON).
+**Resume note:** Slice 5 ✅ — unique DC slices inlined on suite JSON. Next is Slice 6 (freeze suite inline appForTest playfield).
 
 ---
 
@@ -44,7 +44,7 @@ This plan does **not** retire suite-*key* registries or drop registry `kind` (#2
 | 2 | Entity `TestConfiguration` + reports + menus | ✅ | `getApplicationSection` + modelValidation + #240 menu suite |
 | 3 | Library document `TestConfiguration`; lend/return by uuid | ✅ | lend + return integ GREEN |
 | 4 | Miroir Publisher+Country config; three suites by uuid | ✅ | model_crud + freeze + evolutionTraceWP1 integ GREEN |
-| 5 | Remaining unique DC slices inlined on suite JSON | ⬜ | those five DC suites integ GREEN |
+| 5 | Remaining unique DC slices inlined on suite JSON | ✅ | those five DC suites integ GREEN |
 | 6 | Freeze suite inline appForTest playfield | ⬜ | `runner_freeze_application_version` integ GREEN |
 | 7 | Drop registry fallback; final `{ kind, suiteDefinition, testbedInitApplicationParameters }` | ⬜ | launcher unit + create/drop integ GREEN |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step + tracer narrative |
@@ -468,7 +468,7 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ## Slice 5 — Remaining unique DC slices inlined on suite JSON
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -502,7 +502,13 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ### Realization
 
-<Appended on completion.>
+- Five Miroir-data suite JSON files now carry inline `testbedModel` + `testbedEntitiesAndInstances` (no `testConfiguration`). Registry rows dropped `testBedModelAndInstances`; kept `kind` + `libraryTestbedInitParams`.
+- `domain_controller_data_crud` uses a **slice** `{ applicationUuid, applicationName, entities: [Author, Book, Publisher] }` and instances Author (3), Book (5, no book3), Publisher (3) — not `defaultLibraryAppModel` (D1). No extra endpoints needed.
+- Synthetics `44691d2c-…` (composite PK), `4bbf4d19-…` (code number), `803b81ad-…` (no parentUuid) travel only in those suite JSON files, not as Library Entity rows.
+- `TestEntityNoParentUuid` uuid tag used `display.editable` (same as the suite’s existing `createEntity` payload). A first modelValidation run failed on `tag.value.editable` (`jzodTypeCheck value attribute 'editable' not found`).
+- Seeds file: deleted unused `entityCodeNumber` / `entityNoParentUuid` / `publisherOnlyTestMetaModel` / `runnerEmptyApplicationPlayfieldSeed`. Kept `entityCompositePK` + items for `libraryPlayfieldSeeds.ts` (vitest twin). Kept `runnerLibraryDocumentEntitiesAndInstances` and `libraryEntitiesAndInstancesPublisherAndCountry`.
+- Remaining registry playfield: only `runner_freeze_application_version` (Slice 6) plus create/drop `null`.
+- Proof: `resolveSuitePlayfieldSeed.252.phase5` (4) GREEN; launcher unit (14) GREEN; Slice 0 core (4) + registry (2) GREEN; `modelValidation.unit` (151) GREEN; `testMiroir …` five unique DC suites (21) GREEN.
 
 ---
 
