@@ -9,6 +9,7 @@ import {
   ACTION_OK,
   BoxedExtractorOrCombinerReturningObjectOrObjectList,
   BoxedQueryWithExtractorCombinerTransformer,
+  Domain2ElementFailed,
   EntityInstance,
   ExtractorRunnerInMemory,
   LoggerInterface,
@@ -18,6 +19,7 @@ import {
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
   type ApplicationDeploymentMap,
+  type Domain2QueryReturnType,
   type MiroirModelEnvironment
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
@@ -94,7 +96,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
         | BoxedExtractorOrCombinerReturningObjectOrObjectList
         | BoxedQueryWithExtractorCombinerTransformer,
       modelEnvironment: MiroirModelEnvironment
-    ): RecursiveStringRecords {
+    ): Domain2QueryReturnType<RecursiveStringRecords> {
       // log.info(this.logHeader, "sqlForExtractor called with parameter", "extractor", extractor);
       // log.info(this.logHeader, "sqlForExtractor called with sequelize", this.sequelize);
       // log.info(this.logHeader, "sqlForExtractor called with dialect", (this.sequelize as any).dialect);
@@ -156,11 +158,18 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           break;
         }
         case "boxedQueryWithExtractorCombinerTransformer": {
+          const extractorSqlEntries = Object.entries(query.extractors ?? {}).map(
+            ([name, extractor]) =>
+              [name, sqlStringForExtractor(extractor, this.schema, modelEnvironment)] as const,
+          );
+          const extractorFailure = extractorSqlEntries.find(
+            ([, sql]) => sql instanceof Domain2ElementFailed,
+          );
+          if (extractorFailure) {
+            return extractorFailure[1] as Domain2ElementFailed;
+          }
           return Object.fromEntries(
-            Object.entries(query.extractors ?? {}).map((e) => [
-              e[0],
-              sqlStringForExtractor(e[1], this.schema, modelEnvironment),
-            ])
+            extractorSqlEntries as [string, RecursiveStringRecords][],
           );
           break;
         }
