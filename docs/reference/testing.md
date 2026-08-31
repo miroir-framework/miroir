@@ -42,7 +42,7 @@ npm run nonreg -- --tier full --run-all
 | Tier | Contents |
 |------|----------|
 | `unit` | MiroirTest unit suites via `testMiroir -w miroir-core -- --mode unit` + `RunAllMiroirTestsButton`, `MiroirTestListDisplay`, `MiroirTestDisplay` + LocalCache memory measure (pure `localCacheMemoryMeasure` / attributed + static redux/zustand images) |
-| `default` | `unit` + deployment `modelValidation` for **miroir**, **admin**, **library** (right after miroir-core unit) + MiroirTest integ (`miroirCoreTransformers`, `runner_lend_document`, `runner_return_document`, `domain_controller_data_crud`) + curated app-stack (`DomainController.integ`, PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
+| `default` | `unit` + deployment `modelValidation` for **miroir**, **admin**, **library** (right after miroir-core unit) + MiroirTest integ (`miroirCoreTransformers`, `runner_lend_document`, `runner_return_document`, `domain_controller_*`) + curated app-stack (PersistenceStoreController, extractors, UI launcher/list/display proofs, `JzodElementEditor`) |
 | `full` | `default` + deployment `modelValidation` for **postgres** |
 
 Modes: `--run-all` (continue after failures; default) or `--fail-fast`.
@@ -613,7 +613,7 @@ Miroir has a small set of **consolidated, named log presets** that work identica
 
 **Recommended troubleshooting workflow:** (1) run with `catch-all`, copy `runId`, `grep $RUNID`; (2) re-run the same leaf with the relevant `scope-*` config for payload detail (e.g. `scope-query-local` for a query leaf, `scope-query` if you also need DomainController hops). Set `MIROIR_TEST_VERBOSE_TRACKING=1` for tracker `🧪` console noise; `MIROIR_TEST_VERBOSE=1` for full env dump from the test launcher.
 
-**Bare `console.*` allowlist (#237):** Most runtime diagnostics use `LoggerInterface` (regulable via presets above). Intentional bare `console.*` remains only for: (1) **run/span hop lines** in `MiroirActivityTracker` (`formatRunBanner`, `formatSpanBoundaryLine`); (2) **operator CLI** in `miroir-cli`, `miroir-mcp`, `miroir-server` (usage text, startup banners); (3) **PreStartLogger** sink before `startRegisteredLoggers`; (4) optional debug utilities (`FoldedStateTreeDebug.ts`, icon extraction demos) and test-only helpers. Everything else should use module `log.*` at the appropriate level.
+**Bare `console.*` allowlist (#237):** Most runtime diagnostics use `LoggerInterface` (regulable via presets above). Intentional bare `console.*` remains only for: (1) **run/span hop lines** in `MiroirActivityTracker` (`formatRunBanner`, `formatSpanBoundaryLine`); (2) **operator CLI** in `miroir-cli`, `miroir-mcp`, `miroir-server` (usage text, startup banners); (3) **PreStartLogger** sink before `startRegisteredLoggers`; (4) optional debug utilities (`FoldedStateTreeDebug.ts`, `chunkLoadTrace.ts`, icon extraction demos) and test-only helpers. Everything else should use module `log.*` at the appropriate level.
 
 **CI guard:** from repo root, `npm run check:console` (also the first step in `nonreg` unit tier). Violations must be migrated to `log.*` or added explicitly to `scripts/check_bare_console.py` with justification.
 
@@ -638,16 +638,13 @@ Vitest matches files by substring. Run from the **repository root** so relative 
 ```bash
 VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-sql.json \
 VITE_MIROIR_LOG_CONFIG_FILENAME=catch-all-detailed \
-npm run testByFile -w miroir-standalone-app -- DomainController.integ.Data
+npm run testByFile -w miroir-standalone-app -- PersistenceStoreController.integ
 ```
 
 The final argument is a Vitest file-name filter (not a suite key). Examples:
 
 | Filter | Matches |
 |--------|---------|
-| `DomainController.integ` | All DomainController integration files |
-| `DomainController.integ.Data` | Deprecated imperative Data CRUD — prefer `testMiroir --suites domain_controller_data_crud` |
-| `DomainController.integ.Model` | Model CRUD suite |
 | `PersistenceStoreController.integ` | PersistenceStoreController low-level store tests |
 | `ExtractorPersistenceStoreRunner.integ` | Extractor runner against live store |
 | `ExtractorTemplatePersistenceStoreRunner.integ` | Extractor template runner |
@@ -688,36 +685,24 @@ npm run testByFile -w miroir-standalone-app -- \
 
 #### DomainController (`tests/3_controllers/`)
 
-Full-stack CRUD coverage for model and data actions.
+Legacy `DomainController.integ.*.CRUD.test.tsx` files were removed in #228. CRUD coverage is the MiroirTest `actionTest` suites (`integ-action-domain_controller_*` in nonreg).
 
-| File | Focus |
-|------|-------|
-| `DomainController.integ.Data.CRUD.test.tsx` | **Deprecated** Data-section CRUD — keep green; prefer `testMiroir --suites domain_controller_data_crud` (`actionTest`) |
-| `DomainController.integ.Model.CRUD.test.tsx` | **Deprecated** Model-section CRUD — keep green; prefer `testMiroir --suites domain_controller_model_crud` (`actionTest`) |
-| `DomainController.integ.compositePK.CRUD.test.tsx` | **Deprecated** Composite-PK Data CRUD — keep green; prefer `testMiroir --suites domain_controller_composite_pk_crud` (`actionTest`) |
-| `DomainController.integ.nonUuidPK.CRUD.test.tsx` | **Deprecated** Non-UUID PK Model+Data CRUD — keep green; prefer `testMiroir --suites domain_controller_non_uuid_pk_{model,data}_crud` (`actionTest`) |
-| `DomainController.integ.noParentUuid.CRUD.test.tsx` | **Deprecated** Entities without `parentUuid` — keep green; prefer `testMiroir --suites domain_controller_no_parent_uuid_crud` (`actionTest`) |
+| Suite | Focus |
+|-------|-------|
+| `domain_controller_data_crud` | Data-section CRUD |
+| `domain_controller_model_crud` | Model-section CRUD |
+| `domain_controller_composite_pk_crud` | Composite-PK Data CRUD |
+| `domain_controller_non_uuid_pk_model_crud` / `domain_controller_non_uuid_pk_data_crud` | Non-UUID PK Model+Data CRUD |
+| `domain_controller_no_parent_uuid_crud` | Entities without `parentUuid` |
 
 ```bash
-# Preferred Data CRUD — MiroirTest action suite
+# Data CRUD — MiroirTest action suite
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites domain_controller_data_crud --mode integ
 
-# Deprecated imperative Data CRUD (parity harness — do not delete until cutover)
-npm run testByFile -w miroir-standalone-app -- \
-  --profile emulatedServer-sql DomainController.integ.Data
-
-# Postgres — all DomainController app-stack files
-npm run testByFile -w miroir-standalone-app -- \
-  --profile emulatedServer-sql DomainController.integ
-
-# Filesystem
-npm run testByFile -w miroir-standalone-app -- \
-  --profile emulatedServer-filesystem DomainController.integ
-
-# IndexedDB
-npm run testByFile -w miroir-standalone-app -- \
-  --profile emulatedServer-indexedDb DomainController.integ.Data
+# Filesystem (same suites; change --profile)
+npm run testMiroir -w miroir-standalone-app -- \
+  --profile emulatedServer-filesystem --suites domain_controller_data_crud --mode integ
 ```
 
 #### Storage layer (`tests/4_storage/`)

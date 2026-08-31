@@ -915,7 +915,7 @@ export function resolveTransformerResultSchema(
           return argFailure;
         }
       }
-      break;
+      return { type: "number" };
     }
     case "mapList": {
       const mapListTransformer = transformer as CoreTransformerForBuildPlusRuntime_mapList;

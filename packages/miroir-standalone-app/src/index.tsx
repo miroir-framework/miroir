@@ -135,7 +135,7 @@ const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
 
 const logConfigResolution = resolveWebLogConfigWithMeta();
-console.info("[miroir] log config", {
+log.info("[miroir] log config", {
   preset: logConfigResolution.presetName,
   rawSelection: logConfigResolution.rawSelection,
   usedFallback: logConfigResolution.usedFallback,

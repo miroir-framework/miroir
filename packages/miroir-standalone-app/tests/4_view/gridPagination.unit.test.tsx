@@ -301,6 +301,7 @@ describe("gridPagination — ag-grid sizing modes (D2-d)", () => {
     expect(agGridModeProps({ mode: "paged", pageSize: 20 })).toEqual({
       pagination: true,
       paginationPageSize: 20,
+      paginationPageSizeSelector: false,
       domLayout: "autoHeight",
     });
     expect(agGridModeProps({ mode: "scroll", maxRows: 10 })).toEqual({

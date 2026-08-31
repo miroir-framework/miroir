@@ -747,6 +747,7 @@
                     "bigint",
                     "boolean",
                     "never",
+                    "null",
                     "uuid",
                     "undefined",
                     "unknown",

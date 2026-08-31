@@ -153,6 +153,9 @@ function normalizeFunctionCallResult(rawResult: unknown, ignoreAttributes: strin
       errorMessage: rawResult.errorMessage,
     };
   }
+  if (rawResult === null || rawResult === undefined) {
+    return rawResult;
+  }
   const resultForNormalize = deepNormalizeSets(rawResult);
   const resultWithIgnored = ignorePostgresExtraAttributes(resultForNormalize, ignoreAttributes);
   const jsonifiedResult = jsonify(resultWithIgnored);
@@ -231,6 +234,8 @@ export async function runMiroirFunctionCallTestInMemory(
   const testSuiteNamePathAsString = MiroirActivityTracker.testPathName(testNamePath);
 
   let testAssertionResult: TestAssertionResult;
+  let capturedActual: unknown;
+  let didCaptureActual = false;
 
   try {
     if (miroirTest.expectedError) {
@@ -333,6 +338,8 @@ export async function runMiroirFunctionCallTestInMemory(
     } else {
       const rawResult = fn(...args);
       const normalizedResult = normalizeFunctionCallResult(rawResult, miroirTest.ignoreAttributes);
+      capturedActual = normalizedResult;
+      didCaptureActual = true;
       const normalizedExpected = normalizeExpectedFunctionCallValue(miroirTest.expectedValue);
 
       const testResult: any = localVitest
@@ -352,7 +359,7 @@ export async function runMiroirFunctionCallTestInMemory(
         };
       }
     }
-  } catch {
+  } catch (error) {
     testAssertionResult = {
       assertionName,
       assertionResult: "error",
@@ -360,6 +367,11 @@ export async function runMiroirFunctionCallTestInMemory(
         miroirTest.expectedError ??
         miroirTest.expectedAction2ErrorType ??
         miroirTest.expectedValue,
+      assertionActualValue: didCaptureActual
+        ? capturedActual
+        : error instanceof Error
+          ? error.message
+          : error,
     };
   }
 

@@ -113,11 +113,13 @@
                   {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
                     "value": 2
                   },
                   {
                     "transformerType": "returnValue",
                     "interpolation": "runtime",
+                    "mlSchema": { "type": "number" },
                     "value": 3
                   }
                 ]
