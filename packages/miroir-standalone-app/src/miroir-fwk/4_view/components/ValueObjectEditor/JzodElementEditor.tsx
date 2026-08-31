@@ -97,8 +97,18 @@ if ((import.meta as any).env?.VITE_TEST_MODE) {
   log.info("############################### JzodElementEditor is NOT under test mode #########################################");
 }
 
-// #####################################################################################################
-export type JzodObjectFormEditorInputs = { [a: string]: any };
+function findPathAnnotation(
+  annotations: { path: (string | number)[]; label: string }[] | undefined,
+  currentPath: (string | number)[] | undefined,
+): { path: (string | number)[]; label: string } | undefined {
+  const path = currentPath ?? [];
+  return (annotations ?? []).find((annotation) => {
+    if (annotation.path.length !== path.length) {
+      return false;
+    }
+    return path.every((segment, index) => String(segment) === String(annotation.path[index]));
+  });
+}
 
 export interface EditorAttribute {
   attribute: EntityAttribute;
@@ -700,14 +710,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     if (!props.showMlSchemaTypes) {
       return undefined;
     }
-    const currentPath = props.rootLessListKeyArray || [];
-    return (props.mlSchemaTypeAnnotations ?? []).find((annotation) => {
-      if (annotation.path.length !== currentPath.length) {
-        return false;
-      }
-      return currentPath.every((segment, index) => String(segment) === String(annotation.path[index]));
-    });
+    return findPathAnnotation(props.mlSchemaTypeAnnotations, props.rootLessListKeyArray);
   }, [props.showMlSchemaTypes, props.mlSchemaTypeAnnotations, props.rootLessListKeyArray]);
+
+  const pathEnvironmentAnnotation = useMemo(
+    () => findPathAnnotation(props.environmentAnnotations, props.rootLessListKeyArray),
+    [props.environmentAnnotations, props.rootLessListKeyArray],
+  );
 
   // Enhanced label element with error tooltip for simple types
   const enhancedLabelElement = useMemo(() => {
@@ -1048,6 +1057,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              environmentAnnotations={props.environmentAnnotations}
               onChangeVector={props.onChangeVector}
             />
           </>
@@ -1107,6 +1117,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              environmentAnnotations={props.environmentAnnotations}
               onChangeVector={props.onChangeVector}
             />
           );
@@ -1143,6 +1154,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              environmentAnnotations={props.environmentAnnotations}
               onChangeVector={props.onChangeVector}
             />
           );
@@ -1518,6 +1530,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              environmentAnnotations={props.environmentAnnotations}
                 onChangeVector={props.onChangeVector}
               />
             // </div>
@@ -1555,6 +1568,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              environmentAnnotations={props.environmentAnnotations}
                 onChangeVector={props.onChangeVector}
               />
             // </div>
@@ -1593,6 +1607,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               compatibilityWarnings={props.compatibilityWarnings}
               showMlSchemaTypes={props.showMlSchemaTypes}
               mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+              environmentAnnotations={props.environmentAnnotations}
               onChangeVector={props.onChangeVector}
             />
             </>
@@ -1911,6 +1926,15 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     ): (<>hidden4</>);
   
   // ##############################################################
+  const environmentAnnotationElement = pathEnvironmentAnnotation ? (
+    <ThemedText
+      data-testid={`transformer-environment-${(props.rootLessListKeyArray ?? []).join(".") || "root"}`}
+      style={{ fontSize: "12px", opacity: 0.85, marginBottom: "4px" }}
+    >
+      {pathEnvironmentAnnotation.label}
+    </ThemedText>
+  ) : null;
+
   const result = (
     <>
       <div>
@@ -1921,24 +1945,35 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           />
         )}
         {!resolvedTypeIsObjectOrArrayOrAny ? (
-          // simple type value / object attribute
+          // simple type value / object attribute (e.g. getFromContext.referenceName)
           <span
             style={{
               display: "flex",
+              flexDirection: "column",
               justifyContent: "flex-start",
-              alignItems: "flex-start",
+              alignItems: "stretch",
               width: "100%",
             }}
           >
-            {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
-              ?.objectHideDeleteButton && props.deleteButtonElement}
-            {/* {mainElementWithUnionTypeSelector} */}
-            {mainElementWithDebug}
-            {mergedExtraToolsButtons && (
-              <span style={{ marginLeft: "8px", display: "inline-flex", alignItems: "center" }}>
-                {mergedExtraToolsButtons}
-              </span>
-            )}
+            {environmentAnnotationElement}
+            <span
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+                width: "100%",
+              }}
+            >
+              {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
+                ?.objectHideDeleteButton && props.deleteButtonElement}
+              {/* {mainElementWithUnionTypeSelector} */}
+              {mainElementWithDebug}
+              {mergedExtraToolsButtons && (
+                <span style={{ marginLeft: "8px", display: "inline-flex", alignItems: "center" }}>
+                  {mergedExtraToolsButtons}
+                </span>
+              )}
+            </span>
           </span>
         ) : displayWithoutFrame ? (
           <div
@@ -1990,6 +2025,7 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                   {pathTypeAnnotation.label}
                 </ThemedText>
               ) : null}
+              {environmentAnnotationElement}
               {codeEditorWithButtonOrMainElement}
             </ThemedCardContent>
           </ThemedCard>
@@ -2069,6 +2105,8 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     resolvedTypeIsObjectOrArrayOrAny,
     displayAsCodeEditor,
     currentValueObjectAtKey,
+    pathTypeAnnotation,
+    pathEnvironmentAnnotation,
   ]);
   return resultWithDebug;
 }

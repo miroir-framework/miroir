@@ -60,6 +60,8 @@ export interface JzodEditorPropsRoot {
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  /** Per-path getFromContext / getFromParameters names. */
+  environmentAnnotations?: { path: (string | number)[]; label: string }[];
   // external field change observation
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>; // callbacks indexed by rootLessListKey for selective field observation
 }

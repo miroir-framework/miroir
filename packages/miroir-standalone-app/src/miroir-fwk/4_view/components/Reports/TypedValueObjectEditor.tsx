@@ -100,6 +100,7 @@ export interface TypedValueObjectEditorProps {
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  environmentAnnotations?: { path: (string | number)[]; label: string }[];
   // fold / unfold element
   // depth control
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
@@ -161,6 +162,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   compatibilityWarnings,
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
+  environmentAnnotations,
   // 
   formLabel, // TODO: remove
   displaySubmitButton,
@@ -601,6 +603,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               compatibilityWarnings={compatibilityWarnings}
               showMlSchemaTypes={showMlSchemaTypes}
               mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+              environmentAnnotations={environmentAnnotations}
               onChangeVector={onChangeVector}
             />
           </ErrorBoundary>
@@ -673,6 +676,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               compatibilityWarnings={compatibilityWarnings}
               showMlSchemaTypes={showMlSchemaTypes}
               mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+              environmentAnnotations={environmentAnnotations}
               submitButton={
                 !displaySubmitButton || displaySubmitButton === "onTop" ? submitButton : <></>
               }

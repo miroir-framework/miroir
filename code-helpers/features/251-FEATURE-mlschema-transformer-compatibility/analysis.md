@@ -15,7 +15,7 @@ Related: [#250](https://github.com/miroir-framework/miroir/issues/250) (subtypin
 | D2 — Piped input | **`inputOutput.input` only** (`getDeclaredInputMlSchema`). Named parameters (`applyTo`, `left`, `right`, `args`) and `addAttributesToContextBeingSubtypeOf` are not “the input”. |
 | D3 — Piped input | Skip when accepted input is `undefined` or `any` (`getFromContext` / `returnValue` do not consume the pipe) |
 | D4 — Output | `resolveTransformerResultSchema` (Proposal B). On failure, fall back to static `returns: "mlSchema"` definition |
-| D5 — Nesting | Structural walk of every nested typed transformer. Slot names only change the pipe (`applyTo` expected = parent piped input; `elementTransformer` / `predicate` unwrap the list element; `then`/`else` inherit expected output). `definition` **records** keep Proposal B adjacency. |
+| D5 — Nesting | Structural walk of every nested typed transformer. Slot names only change the pipe (`applyTo` expected = parent piped input; `elementTransformer` / `predicate` unwrap the list element; `then`/`else` inherit expected output). `dataflowObject.definition` keeps Proposal B adjacency; `createObject.definition` keys are independent. `mergeIntoObject.definition` is an overlay (no parent pipe; `applyTo` is context / `defaultInput`). |
 | D6 — UI | Per-node in/out labels; orange `#ff9800` on incompatible nodes (panel wrapper + TVOE path-matched borders) |
 
 ## Goals

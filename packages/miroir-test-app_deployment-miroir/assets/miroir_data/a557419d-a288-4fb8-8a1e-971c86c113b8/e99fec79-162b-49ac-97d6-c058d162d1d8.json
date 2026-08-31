@@ -9,7 +9,7 @@
   "classification": "basic",
   "transformerInterface": {
     "inputOutput": {
-      "input": "object",
+      "input": "undefined",
       "output": "object"
     },
     "transformerParameterSchema": {

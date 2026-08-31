@@ -283,7 +283,7 @@ const testThemeOptions = [
   },
 ];
 
-function renderBookListSection() {
+function renderBookListSection(pageParams: Record<string, unknown> = {}) {
   const store = createLibraryBookListStore();
   const formikInitialValues = {
     [reportBookList.name]: reportBookList,
@@ -299,7 +299,7 @@ function renderBookListSection() {
           <Formik initialValues={formikInitialValues} onSubmit={vi.fn()}>
             <ReportSectionListDisplay
               label="Books"
-              paramsAsdomainElements={{}}
+              paramsAsdomainElements={pageParams}
               applicationDeploymentMap={{
                 [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
               }}
@@ -336,6 +336,7 @@ describe("ListTransformerPanel — list section integration", () => {
 
     expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
     expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
+    expect(screen.getByTestId("list-transformer-environment-nodes")).toBeInTheDocument();
     expect(screen.getByTestId("list-transformer-result")).toBeInTheDocument();
     const resultViewer = screen.getByTestId("list-transformer-result-viewer");
     const resultText = resultViewer.textContent ?? "";
@@ -520,6 +521,15 @@ describe("ListTransformerPanel — list section integration", () => {
       "data-transformer-inadequate",
       "false",
     );
+    expect(screen.getByTestId("list-transformer-mlschema-node-root")).toHaveTextContent(
+      "Book{uuid, parentName, parentUuid, parentDefinitionVersionUuid, conceptLevel, name, year, author, publisher}",
+    );
+    expect(screen.getByTestId("list-transformer-mlschema-node-definition")).toHaveTextContent(
+      /in undefined/,
+    );
+    expect(screen.getByTestId("list-transformer-mlschema-node-definition")).not.toHaveTextContent(
+      /in Book\{/,
+    );
   });
 
   it("when mlSchema types are on, flags a nested mapList.elementTransformer mismatch", () => {
@@ -531,6 +541,22 @@ describe("ListTransformerPanel — list section integration", () => {
     expect(screen.getByTestId("list-transformer-mlschema-node-elementTransformer")).toHaveAttribute(
       "data-transformer-inadequate",
       "true",
+    );
+  });
+
+  it("lists getFromContext and getFromParameters names per node", () => {
+    renderBookListSection({ pageSize: 10 });
+    fireEvent.click(getTransformerToggle());
+
+    expect(screen.getByTestId("list-transformer-environment-nodes")).toBeInTheDocument();
+    const root = screen.getByTestId("list-transformer-environment-node-root");
+    expect(root).toHaveTextContent("getFromContext: defaultInput, row");
+    expect(root).toHaveTextContent("getFromParameters: pageSize");
+    expect(screen.getByTestId("list-transformer-environment-node-applyTo")).toHaveTextContent(
+      "getFromContext: defaultInput, row",
+    );
+    expect(screen.getByTestId("list-transformer-environment-node-definition")).toHaveTextContent(
+      "getFromContext: defaultInput, row",
     );
   });
 });

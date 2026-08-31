@@ -342,6 +342,7 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
             compatibilityWarnings={props.compatibilityWarnings}
             showMlSchemaTypes={props.showMlSchemaTypes}
             mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
+            environmentAnnotations={props.environmentAnnotations}
             onChangeVector={props.onChangeVector}
           />
         )}

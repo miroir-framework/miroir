@@ -177,9 +177,10 @@ All TransformerDefinition instances live in [`packages/miroir-test-app_deploymen
 | `any → any` | 5 | `stringOp`, `ifThenElse`, `case`, `plus`, `getObjectEntries` |
 | `any → number` | 1 | `numericOp` |
 | `object → any` | 2 | `defaultValueForSchema`, `accessDynamicPath` |
-| `object → object` | 8 | `resolveConditionalSchema`, `jzodTypeCheck`, `resolveSchemaReferenceInContext`, `unfoldSchemaOnce`, `resolveTransformerResultSchema`, `createObject`, `dataflowObject`, `transformer_menu_addItem` |
+| `object → object` | 7 | `resolveConditionalSchema`, `jzodTypeCheck`, `resolveSchemaReferenceInContext`, `unfoldSchemaOnce`, `resolveTransformerResultSchema`, `dataflowObject`, `transformer_menu_addItem` |
 | `object → array` | 1 | `getObjectValues` |
 | `undefined → any` | 4 | `returnValue`, `constantAsExtractor`, `getFromParameters`, `getFromContext` |
+| `undefined → object` | 1 | `createObject` |
 | `undefined → string` | 3 | `generateUuid`, `currentTimestamp`, `currentDate` |
 | `string → string` | 2 | `mustacheStringTemplate`, `getActiveDeployment` |
 | **`metaModel → metaModel` (out-of-enum, invalid)** | 1 | `duplicateApplicationModel` |

@@ -139,11 +139,12 @@ const EditableAttributeName: FC<{
       value={localValue}
       name={formikRootLessListKey + "-NAME"}
       aria-label={formikRootLessListKey + "-NAME"}
+      title="Record entry name"
       onChange={(e) => setLocalValue(e.target.value)}
       onFocus={() => setIsEditing(true)}
       onBlur={handleCommit}
       onKeyDown={handleKeyDown}
-      minWidth={60}
+      minWidth={80}
       dynamicWidth={true}
     />
   );
@@ -196,6 +197,7 @@ const ProgressiveAttribute: FC<{
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  environmentAnnotations?: { path: (string | number)[]; label: string }[];
 }> = ({
   valueObjectEditMode,
   attribute,
@@ -239,6 +241,7 @@ const ProgressiveAttribute: FC<{
   compatibilityWarnings,
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
+  environmentAnnotations,
 }) => {
   // Viewport-gated: cheap placeholder until this attribute intersects the
   // scrollport. Unfolding a huge parent then only mounts editors that are
@@ -407,6 +410,7 @@ const ProgressiveAttribute: FC<{
             compatibilityWarnings={compatibilityWarnings}
             showMlSchemaTypes={showMlSchemaTypes}
             mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+            environmentAnnotations={environmentAnnotations}
             deleteButtonElement={
               !readOnly && !hideOptionalButton ? (
                 <>
@@ -583,6 +587,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     compatibilityWarnings,
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
+    environmentAnnotations,
   } = props;
 
   // Memoize the onChangeVector callback for this field to avoid repeated lookups
@@ -1293,6 +1298,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             compatibilityWarnings={compatibilityWarnings}
             showMlSchemaTypes={showMlSchemaTypes}
             mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+            environmentAnnotations={environmentAnnotations}
               />
             ))}
       </div>
@@ -1327,6 +1333,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     compatibilityWarnings,
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
+    environmentAnnotations,
   ]);
 
   const schemaType =

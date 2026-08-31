@@ -893,6 +893,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                     rowEntityUuid={currentReportTargetEntity?.uuid}
                     entities={entities}
                     mlSchemaCompatibilityEnabled={mlSchemaCompatibilityEnabled}
+                    transformerParams={props.paramsAsdomainElements as Record<string, any>}
                   />
                 ) : null}
               </div>

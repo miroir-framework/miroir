@@ -173,6 +173,7 @@ interface ProgressiveArrayItemProps {
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  environmentAnnotations?: { path: (string | number)[]; label: string }[];
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>;
   removeItemAtIndex?: (index: number) => void;
   duplicateItemAtIndex?: (index: number) => void;
@@ -208,6 +209,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   compatibilityWarnings,
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
+  environmentAnnotations,
   onChangeVector,
   removeItemAtIndex,
   duplicateItemAtIndex,
@@ -332,6 +334,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 compatibilityWarnings={compatibilityWarnings}
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                environmentAnnotations={environmentAnnotations}
               />
             </ErrorBoundary>
           </>
@@ -373,6 +376,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     compatibilityWarnings,
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
+    environmentAnnotations,
     onChangeVector,
     ...props
   }
@@ -752,6 +756,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                 compatibilityWarnings={compatibilityWarnings}
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                environmentAnnotations={environmentAnnotations}
                   onChangeVector={onChangeVector}
                   removeItemAtIndex={!readOnly || insideAny ? removeItemAtIndex : undefined}
                   duplicateItemAtIndex={!readOnly ? duplicateItemAtIndex : undefined}
@@ -779,6 +784,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       compatibilityWarnings,
       showMlSchemaTypes,
       mlSchemaTypeAnnotations,
+      environmentAnnotations,
     ]
   );
   ;
