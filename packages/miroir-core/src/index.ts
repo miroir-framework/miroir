@@ -1210,6 +1210,19 @@ export type {
   TransformerInterfaceMismatch,
 } from "./0_interfaces/2_domain/TransformerInterfaceCheckInterface.js";
 export {
+  checkTransformerMlSchemaCompatibility,
+  formatMlSchemaTypeLabel,
+  getDeclaredInputMlSchema,
+  liftInputOutputTypeToMlSchema,
+  nodePathKey,
+} from "./2_domain/TransformerMlSchemaCheck.js";
+export type {
+  TransformerMlSchemaCompatibility,
+  TransformerMlSchemaGivenTypes,
+  TransformerMlSchemaMismatch,
+  TransformerMlSchemaNodeReport,
+} from "./0_interfaces/2_domain/TransformerMlSchemaCheckInterface.js";
+export {
   storeActionOrBundleActionStoreRunner
 } from "./3_controllers/ActionRunner.js";
 export {

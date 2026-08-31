@@ -8,6 +8,8 @@ import {
   Action2VoidReturnType,
   ApplicationSection,
   applicationSection,
+  defaultSelfApplicationDeploymentMap,
+  defaultViewParamsFromAdminStorageFetchQueryParams,
   Deployment,
   domain2ElementObjectZodSchema,
   Domain2QueryReturnType,
@@ -35,7 +37,8 @@ import {
   SyncQueryRunnerExtractorAndParams,
   type CoreTransformerForBuildPlusRuntime,
   type MiroirModelEnvironment,
-  type ReportSection
+  type ReportSection,
+  type ViewParamsData,
 } from "miroir-core";
 
 import { useFormikContext } from "formik";
@@ -384,6 +387,23 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     props.application,
     props.deploymentUuid
   );
+
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<
+    string,
+    EntityInstancesUuidIndex
+  > = useReduxDeploymentsStateQuerySelectorForCleanedResult(
+    deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+      ReduxDeploymentsState,
+      Domain2QueryReturnType<DomainElementSuccess>
+    >,
+    defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap),
+    { ...defaultSelfApplicationDeploymentMap, ...props.applicationDeploymentMap },
+  );
+  const viewParamsData = defaultViewParamsFromAdminStorageFetchQueryResults?.[
+    "viewParams"
+  ] as ViewParamsData | undefined;
+  const mlSchemaCompatibilityEnabled =
+    viewParamsData?.mlSchemaTransformerCompatibility === true;
   // // ##############################################################################################
   const onCreateFormObject = useCallback(
     async (data: any) => {
@@ -872,6 +892,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                     rowMlSchema={instancesToDisplayJzodSchema}
                     rowEntityUuid={currentReportTargetEntity?.uuid}
                     entities={entities}
+                    mlSchemaCompatibilityEnabled={mlSchemaCompatibilityEnabled}
                   />
                 ) : null}
               </div>

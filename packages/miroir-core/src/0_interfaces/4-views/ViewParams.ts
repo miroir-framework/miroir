@@ -26,6 +26,8 @@ export const viewParams: JzodElement = {
     mongoConnectionString: { type: "string", optional: true },
     /** When true, show AI-related AppBar icons (assistant, dev console, transformer builder). Default false. */
     agents: { type: "boolean", optional: true },
+    /** When true, transformer editors use mlSchema compatibility (#251). Default false — #249 inputOutput path. */
+    mlSchemaTransformerCompatibility: { type: "boolean", optional: true },
     toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
@@ -62,6 +64,8 @@ export interface ViewParamsData {
   mongoConnectionString?: string;
   /** AI / agent UI in AppBar and CopilotKit sidebar (#244). Absent or false = hidden. */
   agents?: boolean;
+  /** #251 mlSchema transformer compatibility. Absent or false = #249 inputOutput path only. */
+  mlSchemaTransformerCompatibility?: boolean;
   toolsPage?: ToolsPageState;
   generalEditMode?: boolean;
 }

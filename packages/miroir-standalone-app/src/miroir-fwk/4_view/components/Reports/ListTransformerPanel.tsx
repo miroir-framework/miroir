@@ -3,15 +3,19 @@ import React, { useMemo, useState } from "react";
 
 import {
   checkTransformerInterfaceCompatibilityWithInference,
+  checkTransformerMlSchemaCompatibility,
+  formatMlSchemaTypeLabel,
   getApplicationSection,
   getTransformerDefinitionInputOutput,
   inferElementTransformerOutputType,
+  liftInputOutputTypeToMlSchema,
   safeStringify,
   type ApplicationDeploymentMap,
   type CoreTransformerForBuildPlusRuntime,
   type Entity,
   type InputOutputType,
   type JzodElement,
+  type TransformerMlSchemaNodeReport,
   type TransformerReturnType,
   type Uuid,
 } from "miroir-core";
@@ -35,6 +39,7 @@ import {
   ThemedLabel,
   ThemedLabeledEditor,
   ThemedSelectWithPortal,
+  ThemedSwitch,
   ThemedText,
   ThemedTitle,
 } from "../Themes/index.js";
@@ -62,6 +67,11 @@ export interface ListTransformerPanelProps {
   rowEntityUuid?: Uuid;
   /** Entities proposed as output-type choices in addition to the base types. */
   entities?: Entity[];
+  /**
+   * #251 — when true, start in mlSchema compatibility mode (also the Settings
+   * `mlSchemaTransformerCompatibility` default). Off keeps the #249 inputOutput path.
+   */
+  mlSchemaCompatibilityEnabled?: boolean;
 }
 
 const INPUT_OUTPUT_BASE_TYPES = [
@@ -76,6 +86,17 @@ const INPUT_OUTPUT_BASE_TYPES = [
 ] as const;
 
 /** Human-readable label for an input/output type (entity uuid → entity name when known). */
+function formatMlSchemaNodeMismatch(node: TransformerMlSchemaNodeReport): string {
+  const pathLabel = node.path.length === 0 ? node.transformerType : `${node.path.join(".")} (${node.transformerType})`;
+  return node.failures
+    .map((failure) => {
+      const givenLabel = formatMlSchemaTypeLabel(failure.given);
+      const declaredLabel = formatMlSchemaTypeLabel(failure.declared);
+      return `${pathLabel} ${failure.direction}: given ${givenLabel}, declared ${declaredLabel}`;
+    })
+    .join("; ");
+}
+
 function formatInputOutputTypeLabel(type: InputOutputType, entities?: Entity[]): string {
   if (typeof type === "object") {
     const payloadLabel =
@@ -134,6 +155,7 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
   rowMlSchema,
   rowEntityUuid,
   entities,
+  mlSchemaCompatibilityEnabled = false,
 }) => {
   const formik = useFormikContext<Record<string, any>>();
 
@@ -142,10 +164,24 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
 
   // undefined = "default", i.e. same as the input type
   const [chosenOutputType, setChosenOutputType] = useState<InputOutputType | undefined>(undefined);
+  const [mlSchemaMode, setMlSchemaMode] = useState(mlSchemaCompatibilityEnabled);
   const defaultExpectedOutputType: InputOutputType = rowEntityUuid ?? "any";
   const expectedOutputType: InputOutputType = chosenOutputType ?? defaultExpectedOutputType;
   const givenInputType: InputOutputType = rowEntityUuid ?? "any";
   const givenInputTypeLabel = formatInputOutputTypeLabel(givenInputType, entities);
+
+  const entityMlSchemas = useMemo(() => {
+    const map: Record<string, JzodElement> = {};
+    for (const entity of entities ?? []) {
+      if (entity.mlSchema) {
+        map[entity.uuid] = entity.mlSchema as JzodElement;
+      }
+    }
+    if (rowEntityUuid && rowMlSchema) {
+      map[rowEntityUuid] = rowMlSchema;
+    }
+    return map;
+  }, [entities, rowEntityUuid, rowMlSchema]);
 
   // CoreTransformerForBuildPlusRuntime has string (by-name reference) and array arms — no interface check then.
   const transformerType: string | undefined =
@@ -169,9 +205,30 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
         : ({ status: "ok" } as const),
     [transformerType, rowEntityUuid, expectedOutputType, inferredOutputType],
   );
-  const transformerInadequate = interfaceCompatibility.status === "incompatible";
-  const interfaceMismatchTitle =
-    interfaceCompatibility.status === "incompatible"
+
+  const givenInputMlSchema: JzodElement = rowMlSchema ?? liftInputOutputTypeToMlSchema(givenInputType, entityMlSchemas);
+  const expectedOutputMlSchema = liftInputOutputTypeToMlSchema(expectedOutputType, entityMlSchemas);
+  const mlSchemaCompatibility = useMemo(
+    () =>
+      checkTransformerMlSchemaCompatibility(
+        elementTransformer,
+        { input: givenInputMlSchema, output: expectedOutputMlSchema },
+        rowMlSchema ? { row: rowMlSchema } : {},
+        undefined,
+        entityMlSchemas,
+      ),
+    [elementTransformer, givenInputMlSchema, expectedOutputMlSchema, rowMlSchema, entityMlSchemas],
+  );
+
+  const transformerInadequate = mlSchemaMode
+    ? mlSchemaCompatibility.status === "incompatible"
+    : interfaceCompatibility.status === "incompatible";
+  const interfaceMismatchTitle = mlSchemaMode
+    ? mlSchemaCompatibility.nodes
+        .filter((node) => node.failures.length > 0)
+        .map((node) => formatMlSchemaNodeMismatch(node))
+        .join("; ") || undefined
+    : interfaceCompatibility.status === "incompatible"
       ? interfaceCompatibility.failures
           .map((failure) => {
             const actualLabel =
@@ -180,6 +237,29 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
           })
           .join("; ")
       : undefined;
+
+  const compatibilityWarnings = useMemo(
+    () =>
+      mlSchemaMode
+        ? mlSchemaCompatibility.nodes
+            .filter((node) => node.failures.length > 0)
+            .map((node) => ({
+              path: node.path,
+              title: formatMlSchemaNodeMismatch(node),
+            }))
+        : undefined,
+    [mlSchemaMode, mlSchemaCompatibility],
+  );
+  const mlSchemaTypeAnnotations = useMemo(
+    () =>
+      mlSchemaMode
+        ? mlSchemaCompatibility.nodes.map((node) => ({
+            path: node.path,
+            label: `in: ${formatMlSchemaTypeLabel(node.givenInput)} → out: ${formatMlSchemaTypeLabel(node.actualOutput)}`,
+          }))
+        : undefined,
+    [mlSchemaMode, mlSchemaCompatibility],
+  );
 
   const transformationResult = useMemo(
     () => applyTransformerToListRows(instancesToDisplay, elementTransformer),
@@ -269,7 +349,49 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
             </ThemedSelectWithPortal>
           }
         />
+        <ThemedLabeledEditor
+          labelElement={<ThemedLabel>mlSchema types:</ThemedLabel>}
+          editor={
+            <ThemedSwitch
+              id="list-transformer-mlschema-switch"
+              name="list-transformer-mlschema-switch"
+              inputProps={{
+                "data-testid": "list-transformer-mlschema-switch",
+              } as React.InputHTMLAttributes<HTMLInputElement>}
+              checked={mlSchemaMode}
+              onChange={(event) => setMlSchemaMode(event.target.checked)}
+              size="small"
+            />
+          }
+        />
       </ThemedFlexRow>
+      {mlSchemaMode ? (
+        <div data-testid="list-transformer-mlschema-nodes" style={{ margin: "4px 0 8px" }}>
+          {mlSchemaCompatibility.nodes.map((node) => {
+            const pathKey = node.path.map(String).join(".") || "root";
+            const inadequate = node.failures.length > 0;
+            return (
+              <div
+                key={pathKey}
+                data-testid={`list-transformer-mlschema-node-${pathKey}`}
+                data-transformer-inadequate={inadequate ? "true" : "false"}
+                title={inadequate ? formatMlSchemaNodeMismatch(node) : undefined}
+                style={{
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                  borderLeft: inadequate ? "3px solid #ff9800" : "3px solid transparent",
+                  paddingLeft: "6px",
+                }}
+              >
+                <ThemedText>
+                  {pathKey}: in {formatMlSchemaTypeLabel(node.givenInput)} → out{" "}
+                  {formatMlSchemaTypeLabel(node.actualOutput)}
+                </ThemedText>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
 
       <div
         data-testid="list-transformer-editor"
@@ -293,6 +415,9 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
           valueObjectEditMode="create"
           maxRenderDepth={2}
           displaySubmitButton="noDisplay"
+          compatibilityWarnings={compatibilityWarnings}
+          showMlSchemaTypes={mlSchemaMode}
+          mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
         />
       </div>
 

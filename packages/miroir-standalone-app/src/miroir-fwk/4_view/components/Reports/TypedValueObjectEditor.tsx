@@ -97,6 +97,9 @@ export interface TypedValueObjectEditorProps {
     errorPath: string[]; // Path to element that should be highlighted with red border due to error
     errorMessage: string; // Error message to display as tooltip or title
   };
+  compatibilityWarnings?: { path: (string | number)[]; title: string }[];
+  showMlSchemaTypes?: boolean;
+  mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
   // fold / unfold element
   // depth control
   maxRenderDepth?: number; // Optional max depth for initial rendering, default 1
@@ -155,6 +158,9 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   readonly = false,
   // error highlighting
   displayError,
+  compatibilityWarnings,
+  showMlSchemaTypes,
+  mlSchemaTypeAnnotations,
   // 
   formLabel, // TODO: remove
   displaySubmitButton,
@@ -592,6 +598,9 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               maxRenderDepth={maxRenderDepth} // always 1
               readOnly={true}
               displayError={displayError}
+              compatibilityWarnings={compatibilityWarnings}
+              showMlSchemaTypes={showMlSchemaTypes}
+              mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
               onChangeVector={onChangeVector}
             />
           </ErrorBoundary>
@@ -661,6 +670,9 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
               foreignKeyObjects={foreignKeyObjects}
               maxRenderDepth={maxRenderDepth} // always 1
               displayError={displayError}
+              compatibilityWarnings={compatibilityWarnings}
+              showMlSchemaTypes={showMlSchemaTypes}
+              mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
               submitButton={
                 !displaySubmitButton || displaySubmitButton === "onTop" ? submitButton : <></>
               }

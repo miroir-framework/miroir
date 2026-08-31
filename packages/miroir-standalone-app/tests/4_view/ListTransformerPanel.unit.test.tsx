@@ -105,6 +105,48 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.j
         >
           Set numericOp
         </button>
+        <button
+          type="button"
+          data-testid="set-mustache-transformer"
+          onClick={() =>
+            formik.setFieldValue(formikValuePathAsString, {
+              interpolation: "runtime",
+              transformerType: "mustacheStringTemplate",
+              definition: "Hello {{name}}",
+            })
+          }
+        >
+          Set mustache
+        </button>
+        <button
+          type="button"
+          data-testid="set-mapList-mustache-transformer"
+          onClick={() =>
+            formik.setFieldValue(formikValuePathAsString, {
+              interpolation: "runtime",
+              transformerType: "mapList",
+              applyTo: {
+                interpolation: "runtime",
+                transformerType: "returnValue",
+                mlSchema: {
+                  type: "array",
+                  definition: entityBook.mlSchema ?? {
+                    type: "object",
+                    definition: { name: { type: "string" } },
+                  },
+                },
+                value: [],
+              },
+              elementTransformer: {
+                interpolation: "runtime",
+                transformerType: "mustacheStringTemplate",
+                definition: "{{x}}",
+              },
+            })
+          }
+        >
+          Set mapList mustache
+        </button>
       </div>
     );
   },
@@ -402,5 +444,53 @@ describe("ListTransformerPanel — list section integration", () => {
       target: { value: "number" },
     });
     expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+  });
+
+  it("keeps the #249 inputOutput path while the mlSchema switch is off", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+
+    expect(screen.getByTestId("list-transformer-mlschema-switch")).not.toBeChecked();
+    expect(screen.queryByTestId("list-transformer-mlschema-nodes")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("set-menu-addItem-transformer"));
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+  });
+
+  it("when mlSchema types are on, shows per-node types and borders mustache against Book rows", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    fireEvent.click(screen.getByTestId("list-transformer-mlschema-switch"));
+
+    expect(screen.getByTestId("list-transformer-mlschema-nodes")).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("set-mustache-transformer"));
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
+    expect(screen.getByTestId("list-transformer-mlschema-node-root")).toHaveAttribute(
+      "data-transformer-inadequate",
+      "true",
+    );
+  });
+
+  it("when mlSchema types are on, identity against Book stays compatible", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    fireEvent.click(screen.getByTestId("list-transformer-mlschema-switch"));
+
+    expectOrangeBorder(screen.getByTestId("list-transformer-editor"), false);
+    expect(screen.getByTestId("list-transformer-mlschema-node-root")).toHaveAttribute(
+      "data-transformer-inadequate",
+      "false",
+    );
+  });
+
+  it("when mlSchema types are on, flags a nested mapList.elementTransformer mismatch", () => {
+    renderBookListSection();
+    fireEvent.click(getTransformerToggle());
+    fireEvent.click(screen.getByTestId("list-transformer-mlschema-switch"));
+    fireEvent.click(screen.getByTestId("set-mapList-mustache-transformer"));
+
+    expect(screen.getByTestId("list-transformer-mlschema-node-elementTransformer")).toHaveAttribute(
+      "data-transformer-inadequate",
+      "true",
+    );
   });
 });

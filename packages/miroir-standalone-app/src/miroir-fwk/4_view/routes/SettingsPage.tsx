@@ -103,6 +103,8 @@ export const SettingsPage: React.FC<any> = (props: any) => {
 
   const currentGridType = viewParamsData?.gridType || "ag-grid";
   const agentsEnabled = viewParamsData?.agents === true;
+  const mlSchemaTransformerCompatibility =
+    viewParamsData?.mlSchemaTransformerCompatibility === true;
 
   // Initialize the ViewParamsUpdateQueue
   const updateQueue = useMemo(() => {
@@ -163,6 +165,27 @@ export const SettingsPage: React.FC<any> = (props: any) => {
       );
       log.info("SettingsPage: Queued agents change (immediate)", {
         from: agentsEnabled,
+        to: checked,
+      });
+    }
+  };
+
+  const handleMlSchemaTransformerCompatibilityChange = (
+    _event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
+    if (viewParamsData && updateQueue) {
+      updateQueue.queueUpdate(
+        {
+          currentValue: viewParamsData,
+          updates: {
+            mlSchemaTransformerCompatibility: checked,
+          },
+        },
+        true,
+      );
+      log.info("SettingsPage: Queued mlSchema transformer compatibility change (immediate)", {
+        from: mlSchemaTransformerCompatibility,
         to: checked,
       });
     }
@@ -246,6 +269,24 @@ export const SettingsPage: React.FC<any> = (props: any) => {
             />
             <Typography variant="body2" sx={{ mt: 0.5, opacity: 0.8 }}>
               Show AI Assistant, AI Dev Console, and Transformer Builder in the app bar.
+            </Typography>
+          </Box>
+
+          <Box sx={{ mb: 2, mt: 3 }}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={mlSchemaTransformerCompatibility}
+                  onChange={handleMlSchemaTransformerCompatibilityChange}
+                  inputProps={{ "aria-label": "mlSchema transformer compatibility" }}
+                />
+              }
+              label="mlSchema transformer compatibility"
+              sx={{ color: miroirTheme.currentTheme.colors.text }}
+            />
+            <Typography variant="body2" sx={{ mt: 0.5, opacity: 0.8 }}>
+              Check transformers with mlSchema types at every nesting level (#251). Off keeps the
+              coarse inputOutput check (#249).
             </Typography>
           </Box>
 

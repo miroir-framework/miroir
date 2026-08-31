@@ -141,6 +141,20 @@
             }
           }
         }
+      },
+      "mlSchemaTransformerCompatibility": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 13,
+            "defaultLabel": "mlSchema transformer compatibility",
+            "description": "When on, transformer editors check and display mlSchema input/output types at every nesting level (#251). Off keeps the coarse inputOutput check (#249).",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       }
     }
   }

@@ -42,6 +42,12 @@ import {
   inputOutputTypesCompatible,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
+  checkTransformerMlSchemaCompatibility,
+  formatMlSchemaTypeLabel,
+  getDeclaredInputMlSchema,
+  liftInputOutputTypeToMlSchema,
+} from "../2_domain/TransformerMlSchemaCheck";
+import {
   inferElementTransformerOutputType,
   inferTransformerOutputTypeFromSchema,
 } from "../2_domain/TransformerInterfaceInference";
@@ -174,6 +180,13 @@ const FUNCTION_CALL_REGISTRY: Record<string, Record<string, WhitelistedFunction>
       getTransformerDefinitionInputOutput as WhitelistedFunction,
     findInvalidStockTransformerInputOutputs:
       findInvalidStockTransformerInputOutputs as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerMlSchemaCheck": {
+    checkTransformerMlSchemaCompatibility:
+      checkTransformerMlSchemaCompatibility as WhitelistedFunction,
+    getDeclaredInputMlSchema: getDeclaredInputMlSchema as WhitelistedFunction,
+    liftInputOutputTypeToMlSchema: liftInputOutputTypeToMlSchema as WhitelistedFunction,
+    formatMlSchemaTypeLabel: formatMlSchemaTypeLabel as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerInterfaceInference": {
     inferTransformerOutputTypeFromSchema:

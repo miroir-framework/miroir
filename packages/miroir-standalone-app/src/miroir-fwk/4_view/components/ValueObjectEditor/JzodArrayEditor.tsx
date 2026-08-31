@@ -170,6 +170,9 @@ interface ProgressiveArrayItemProps {
     errorPath: string[];
     errorMessage: string;
   };
+  compatibilityWarnings?: { path: (string | number)[]; title: string }[];
+  showMlSchemaTypes?: boolean;
+  mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>;
   removeItemAtIndex?: (index: number) => void;
   duplicateItemAtIndex?: (index: number) => void;
@@ -202,6 +205,9 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   readOnly,
   existingObject,
   displayError,
+  compatibilityWarnings,
+  showMlSchemaTypes,
+  mlSchemaTypeAnnotations,
   onChangeVector,
   removeItemAtIndex,
   duplicateItemAtIndex,
@@ -323,6 +329,9 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 readOnly={readOnly}
                 existingObject={existingObject}
                 displayError={displayError}
+                compatibilityWarnings={compatibilityWarnings}
+                showMlSchemaTypes={showMlSchemaTypes}
+                mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
               />
             </ErrorBoundary>
           </>
@@ -361,6 +370,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     readOnly,
     existingObject,
     displayError,
+    compatibilityWarnings,
+    showMlSchemaTypes,
+    mlSchemaTypeAnnotations,
     onChangeVector,
     ...props
   }
@@ -737,6 +749,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                   valueObjectEditMode={props.valueObjectEditMode}
                   
                   displayError={displayError}
+                compatibilityWarnings={compatibilityWarnings}
+                showMlSchemaTypes={showMlSchemaTypes}
+                mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
                   onChangeVector={onChangeVector}
                   removeItemAtIndex={!readOnly || insideAny ? removeItemAtIndex : undefined}
                   duplicateItemAtIndex={!readOnly ? duplicateItemAtIndex : undefined}
@@ -761,6 +776,9 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       displayAsStructuredElementSwitch,
       removeItemAtIndex,
       duplicateItemAtIndex,
+      compatibilityWarnings,
+      showMlSchemaTypes,
+      mlSchemaTypeAnnotations,
     ]
   );
   ;

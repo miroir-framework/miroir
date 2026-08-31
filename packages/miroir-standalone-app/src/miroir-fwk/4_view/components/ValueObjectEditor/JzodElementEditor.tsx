@@ -50,6 +50,7 @@ import {
   ThemedSelectWithPortal,
   ThemedStackedLabeledEditor,
   ThemedSwitch,
+  ThemedText,
   ThemedTextEditor
 } from "../Themes/index";
 import { JzodAnyEditor } from "./JzodAnyEditor.js";
@@ -685,6 +686,29 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     );
   }, [props.displayError, props.rootLessListKeyArray]);
 
+  const pathWarning = useMemo(() => {
+    const currentPath = props.rootLessListKeyArray || [];
+    return (props.compatibilityWarnings ?? []).find((warning) => {
+      if (warning.path.length !== currentPath.length) {
+        return false;
+      }
+      return currentPath.every((segment, index) => String(segment) === String(warning.path[index]));
+    });
+  }, [props.compatibilityWarnings, props.rootLessListKeyArray]);
+
+  const pathTypeAnnotation = useMemo(() => {
+    if (!props.showMlSchemaTypes) {
+      return undefined;
+    }
+    const currentPath = props.rootLessListKeyArray || [];
+    return (props.mlSchemaTypeAnnotations ?? []).find((annotation) => {
+      if (annotation.path.length !== currentPath.length) {
+        return false;
+      }
+      return currentPath.every((segment, index) => String(segment) === String(annotation.path[index]));
+    });
+  }, [props.showMlSchemaTypes, props.mlSchemaTypeAnnotations, props.rootLessListKeyArray]);
+
   // Enhanced label element with error tooltip for simple types
   const enhancedLabelElement = useMemo(() => {
     if (!props.labelElement || !hasPathError || !props.displayError) {
@@ -707,10 +731,19 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
   const normalBorderColor = useMiroirNestingBorderColor(props.indentLevel || 0);
   const normalLeftBorderColor = useMiroirNestingBorderColor((props.indentLevel || 0) + 1);
   
-  // Use error colors if this element has a path error
+  // Use error colors if this element has a path error; #251 orange for mlSchema incompatibility
   const errorBorderColor = "#f44336"; // Red color from theme for errors
-  const borderColor = hasPathError ? errorBorderColor : normalBorderColor;
-  const leftBorderColor = hasPathError ? errorBorderColor : normalLeftBorderColor;
+  const warningBorderColor = "#ff9800";
+  const borderColor = hasPathError
+    ? errorBorderColor
+    : pathWarning
+      ? warningBorderColor
+      : normalBorderColor;
+  const leftBorderColor = hasPathError
+    ? errorBorderColor
+    : pathWarning
+      ? warningBorderColor
+      : normalLeftBorderColor;
 
   // Check if we should display without frame (ThemedCard)
   const displayWithoutFrame = useMemo(
@@ -1012,6 +1045,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               insideAny={true}
               anyRootLessListKey={props.rootLessListKey}
               displayError={props.displayError}
+              compatibilityWarnings={props.compatibilityWarnings}
+              showMlSchemaTypes={props.showMlSchemaTypes}
+              mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               onChangeVector={props.onChangeVector}
             />
           </>
@@ -1068,6 +1104,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               anyRootLessListKey={props.anyRootLessListKey}
               extraToolsButtons={effectiveExtraToolsButtonsForContainer}
               displayError={props.displayError}
+              compatibilityWarnings={props.compatibilityWarnings}
+              showMlSchemaTypes={props.showMlSchemaTypes}
+              mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               onChangeVector={props.onChangeVector}
             />
           );
@@ -1101,6 +1140,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               readOnly={props.readOnly}
               anyRootLessListKey={props.anyRootLessListKey}
               displayError={props.displayError}
+              compatibilityWarnings={props.compatibilityWarnings}
+              showMlSchemaTypes={props.showMlSchemaTypes}
+              mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               onChangeVector={props.onChangeVector}
             />
           );
@@ -1473,6 +1515,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 anyRootLessListKey={props.anyRootLessListKey}
                 readOnly={props.readOnly}
                 displayError={props.displayError}
+              compatibilityWarnings={props.compatibilityWarnings}
+              showMlSchemaTypes={props.showMlSchemaTypes}
+              mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
                 onChangeVector={props.onChangeVector}
               />
             // </div>
@@ -1507,6 +1552,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 anyRootLessListKey={props.anyRootLessListKey}
                 readOnly={props.readOnly}
                 displayError={props.displayError}
+              compatibilityWarnings={props.compatibilityWarnings}
+              showMlSchemaTypes={props.showMlSchemaTypes}
+              mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
                 onChangeVector={props.onChangeVector}
               />
             // </div>
@@ -1542,6 +1590,9 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
               anyRootLessListKey={props.rootLessListKey}
               readOnly={props.readOnly}
               displayError={props.displayError}
+              compatibilityWarnings={props.compatibilityWarnings}
+              showMlSchemaTypes={props.showMlSchemaTypes}
+              mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
               onChangeVector={props.onChangeVector}
             />
             </>
@@ -1905,7 +1956,11 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           <ThemedCard
             id={props.rootLessListKey}
             key={props.rootLessListKey}
-            title={hasPathError && props.displayError ? props.displayError.errorMessage : undefined}
+            title={
+              hasPathError && props.displayError
+                ? props.displayError.errorMessage
+                : pathWarning?.title
+            }
             style={{
               padding: "1px",
               width: "calc(100% - 10px)",
@@ -1927,6 +1982,14 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 flexDirection: "column",
               }}
             >
+              {pathTypeAnnotation ? (
+                <ThemedText
+                  data-testid={`mlschema-type-${(props.rootLessListKeyArray ?? []).join(".")}`}
+                  style={{ fontSize: "12px", opacity: 0.85, marginBottom: "4px" }}
+                >
+                  {pathTypeAnnotation.label}
+                </ThemedText>
+              ) : null}
               {codeEditorWithButtonOrMainElement}
             </ThemedCardContent>
           </ThemedCard>

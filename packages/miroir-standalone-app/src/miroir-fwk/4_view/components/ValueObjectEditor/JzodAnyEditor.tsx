@@ -339,6 +339,9 @@ export const JzodAnyEditor: React.FC<JzodAnyEditorProps> = (
             insideAny={true} // important to avoid infinite recursion between JzodAnyEditor and JzodElementEditor when type is "any"
             anyRootLessListKey={props.anyRootLessListKey}
             displayError={props.displayError}
+            compatibilityWarnings={props.compatibilityWarnings}
+            showMlSchemaTypes={props.showMlSchemaTypes}
+            mlSchemaTypeAnnotations={props.mlSchemaTypeAnnotations}
             onChangeVector={props.onChangeVector}
           />
         )}

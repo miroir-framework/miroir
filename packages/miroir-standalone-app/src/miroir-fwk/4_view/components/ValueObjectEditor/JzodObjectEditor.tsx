@@ -193,6 +193,9 @@ const ProgressiveAttribute: FC<{
     errorPath: string[];
     errorMessage: string;
   };
+  compatibilityWarnings?: { path: (string | number)[]; title: string }[];
+  showMlSchemaTypes?: boolean;
+  mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
 }> = ({
   valueObjectEditMode,
   attribute,
@@ -233,6 +236,9 @@ const ProgressiveAttribute: FC<{
   insideAny,
   anyRootLessListKey,
   displayError,
+  compatibilityWarnings,
+  showMlSchemaTypes,
+  mlSchemaTypeAnnotations,
 }) => {
   // Viewport-gated: cheap placeholder until this attribute intersects the
   // scrollport. Unfolding a huge parent then only mounts editors that are
@@ -398,6 +404,9 @@ const ProgressiveAttribute: FC<{
             maxRenderDepth={maxRenderDepth}
             readOnly={readOnly}
             displayError={displayError}
+            compatibilityWarnings={compatibilityWarnings}
+            showMlSchemaTypes={showMlSchemaTypes}
+            mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
             deleteButtonElement={
               !readOnly && !hideOptionalButton ? (
                 <>
@@ -571,6 +580,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     existingObject,
     foreignKeyObjects = {}, // Add default empty object
     onChangeVector,
+    compatibilityWarnings,
+    showMlSchemaTypes,
+    mlSchemaTypeAnnotations,
   } = props;
 
   // Memoize the onChangeVector callback for this field to avoid repeated lookups
@@ -1278,6 +1290,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
                 miroirMetaModel={miroirMetaModel}
                 measuredUnfoldJzodSchemaOnce={measuredUnfoldJzodSchemaOnce}
                 displayError={displayError}
+            compatibilityWarnings={compatibilityWarnings}
+            showMlSchemaTypes={showMlSchemaTypes}
+            mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
               />
             ))}
       </div>
@@ -1309,6 +1324,9 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     miroirMetaModel,
     measuredUnfoldJzodSchemaOnce,
     reportContext.foldedObjectAttributeOrArrayItems, // This is the key addition!
+    compatibilityWarnings,
+    showMlSchemaTypes,
+    mlSchemaTypeAnnotations,
   ]);
 
   const schemaType =
