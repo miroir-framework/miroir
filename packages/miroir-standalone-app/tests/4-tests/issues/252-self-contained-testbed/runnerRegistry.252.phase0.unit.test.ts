@@ -50,6 +50,11 @@ const EXPECTED_KIND: Record<(typeof EXPECTED_KEYS)[number], string> = {
 };
 
 const NULL_PLAYFIELD_KEYS = new Set(["runner_create_entity", "runner_drop_entity"]);
+const SUITE_OWNED_PLAYFIELD_KEYS = new Set([
+  "domain_controller_model_undo_redo",
+  "runner_lend_document",
+  "runner_return_document",
+]);
 
 (shouldRun ? describe : describe.skip)(
   "UI integration runner registry current contracts (issue #252 slice 0)",
@@ -58,7 +63,7 @@ const NULL_PLAYFIELD_KEYS = new Set(["runner_create_entity", "runner_drop_entity
       expect(listUiIntegrationRunnerSuiteKeys()).toEqual([...EXPECTED_KEYS]);
     });
 
-    it("each entry has kind; create/drop keep null playfield; undo_redo is suite-owned; others still have the nested triple plus lifted init", () => {
+    it("each entry has kind; create/drop keep null playfield; undo_redo and lend/return are suite-owned; others still have the nested triple plus lifted init", () => {
       for (const key of EXPECTED_KEYS) {
         const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
         expect(entry, key).toBeDefined();
@@ -70,7 +75,7 @@ const NULL_PLAYFIELD_KEYS = new Set(["runner_create_entity", "runner_drop_entity
           continue;
         }
 
-        if (key === "domain_controller_model_undo_redo") {
+        if (SUITE_OWNED_PLAYFIELD_KEYS.has(key)) {
           expect(
             Object.prototype.hasOwnProperty.call(entry, "testBedModelAndInstances"),
             key,

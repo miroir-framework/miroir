@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../197-FEATURE- run integration tests in the UI/plan.md`](../197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md)
 Working branch: `dev-copilot`
 
-**Resume note:** Slice 2 ✅ — Entity `TestConfiguration` + reports + menus. Next is Slice 3 (Library document `TestConfiguration`; lend/return by uuid).
+**Resume note:** Slice 3 ✅ — Library document `TestConfiguration`; lend/return by uuid. Next is Slice 4 (Miroir Publisher+Country config; three suites by uuid).
 
 ---
 
@@ -42,7 +42,7 @@ This plan does **not** retire suite-*key* registries or drop registry `kind` (#2
 | 0 | Characterize registry, schema, menus, section routing | ✅ | inventory unit tests GREEN (current state) |
 | 1 | Tracer: suite-owned seed for `domain_controller_model_undo_redo` | ✅ | resolver + launcher unit + that suite integ GREEN |
 | 2 | Entity `TestConfiguration` + reports + menus | ✅ | `getApplicationSection` + modelValidation + #240 menu suite |
-| 3 | Library document `TestConfiguration`; lend/return by uuid | ⬜ | lend + return integ GREEN |
+| 3 | Library document `TestConfiguration`; lend/return by uuid | ✅ | lend + return integ GREEN |
 | 4 | Miroir Publisher+Country config; three suites by uuid | ⬜ | model_crud + freeze + evolutionTraceWP1 integ GREEN |
 | 5 | Remaining unique DC slices inlined on suite JSON | ⬜ | those five DC suites integ GREEN |
 | 6 | Freeze suite inline appForTest playfield | ⬜ | `runner_freeze_application_version` integ GREEN |
@@ -370,7 +370,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ## Slice 3 — Library document config; lend / return by uuid
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -413,7 +413,13 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesyst
 
 ### Realization
 
-<Appended on completion.>
+- Library instance `d669558c-…` (`libraryDocumentSeed`) under `library_model/675ccd46-…/`, `selfApplication: 5af03c98-…`. Instances: Author (3), Book (6), Publisher (3), User (1) — same as `runnerLibraryDocumentEntitiesAndInstances`.
+- `testbedModel` is a **slice**, not `defaultLibraryAppModel`: `{ applicationUuid, applicationName, entities: [Author, Book, Country, LendingHistoryItem, Publisher, User], endpoints: [Books, Lending] }`. First integ with only the four instance entities failed (`could not find action endpoint: 212f2784-…`). Leaf `initialModel` stays `defaultLibraryAppModel` via `getFromParameters`.
+- Both Library suite JSON files have `testConfiguration: d669558c-…` and no inline playfield. Export `testConfiguration_libraryDocumentSeed`.
+- Host index `TEST_CONFIGURATION_INSTANCE_INDEX` / `getTestConfigurationFromIndex` in `packages/miroir-standalone-app/src/miroir-fwk/4-tests/testConfigurationInstanceIndex.ts`. `composeUiIntegrationPlayfieldSeed` passes that loader into `resolveSuitePlayfieldSeed`. CLI `createSessionParamsForSuite` already goes through the same composer.
+- Registry lend/return rows dropped `testBedModelAndInstances`; kept `kind` + `libraryTestbedInitParams`. Kept `runnerLibraryDocumentEntitiesAndInstances` for `Runner_Miroir.integ.test.tsx`.
+- Slice 0 inventory/registry tests updated for uuid-owned lend/return.
+- Proof: `resolveSuitePlayfieldSeed.252.phase3` (3) GREEN; phase1+3 (11) GREEN; launcher unit (12) GREEN; library `modelValidation.unit` (180) GREEN including `TestConfiguration > libraryDocumentSeed`; Slice 0 core (4) + registry (2) GREEN; `testMiroir … --suites runner_lend_document,runner_return_document --mode integ` (2) GREEN. Vitest root for the library package is `tests/`, so modelValidation is `modelValidation.unit`.
 
 ---
 

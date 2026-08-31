@@ -61,6 +61,7 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import { appForTestInitialApplicationVersion, selfApplicationAppForTest } from "miroir-test-app_deployment-appForTest";
+import { getTestConfigurationFromIndex } from "./testConfigurationInstanceIndex.js";
 import {
   appForTestTestbedInitParams
 } from "./uiIntegrationAppForTestPlayfieldSeed.js";
@@ -79,7 +80,6 @@ import {
   noParentItem1,
   noParentItem2,
   noParentItem3,
-  runnerLibraryDocumentEntitiesAndInstances,
   type TestbedSetupParameters
 } from "./uiIntegrationPlayfieldSeeds.js";
 
@@ -202,7 +202,10 @@ function composeUiIntegrationPlayfieldSeed(
     return undefined;
   }
 
-  const resolved = resolveSuitePlayfieldSeed(entry.suiteDefinition);
+  const resolved = resolveSuitePlayfieldSeed(
+    entry.suiteDefinition,
+    getTestConfigurationFromIndex,
+  );
   const nested = entry.testBedModelAndInstances ?? undefined;
   const modelAndInstances =
     resolved ??
@@ -265,11 +268,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: defaultLibraryAppModel as MetaModel,
-    },
   },
   // ###############################################################################
   [miroirTest_runner_return_document.name]: {
@@ -277,11 +275,6 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
     testbedInitApplicationParameters: libraryTestbedInitParams,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: defaultLibraryAppModel as MetaModel,
-    },
   },
   // ###############################################################################
   [miroirTest_runner_create_entity.name]: {

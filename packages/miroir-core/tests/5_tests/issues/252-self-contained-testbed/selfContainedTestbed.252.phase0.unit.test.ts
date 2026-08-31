@@ -113,7 +113,7 @@ function modelScopeItemLabels(menu: Menu): string[] {
 (shouldRun ? describe : describe.skip)(
   "self-contained testbed current contracts (issue #252 slice 0)",
   () => {
-    it("integ suite JSON definitions have no playfield fields except domain_controller_model_undo_redo inline seed", () => {
+    it("integ suite JSON definitions have no playfield fields except undo_redo inline seed and lend/return uuid", () => {
       const keys = Object.keys(INTEG_SUITE_DEFINITIONS).sort();
       expect(keys).toEqual([
         "domain_controller_application_version_freeze",
@@ -138,6 +138,10 @@ function modelScopeItemLabels(menu: Menu): string[] {
             "testbedModel",
             "testbedEntitiesAndInstances",
           ]);
+          continue;
+        }
+        if (name === "runner_lend_document" || name === "runner_return_document") {
+          expect(playfieldFieldsOn(definition), name).toEqual(["testConfiguration"]);
           continue;
         }
         expect(playfieldFieldsOn(definition), name).toEqual([]);
