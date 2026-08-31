@@ -561,23 +561,6 @@
       ]
     },
     {
-      "id": "appstack-DomainController.integ",
-      "tier": "default",
-      "title": "App-stack \u2014 DomainController.integ (all; Data.CRUD deprecated but kept green)",
-      "requires": "postgres",
-      "argv": [
-        "npm",
-        "run",
-        "testByFile",
-        "-w",
-        "miroir-standalone-app",
-        "--",
-        "--profile",
-        "{profile}",
-        "DomainController.integ"
-      ]
-    },
-    {
       "id": "appstack-PersistenceStoreController.integ",
       "tier": "default",
       "title": "App-stack \u2014 PersistenceStoreController.integ",

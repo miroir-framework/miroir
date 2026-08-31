@@ -23,6 +23,7 @@ ALLOWLIST_FILES = {
     "test-expect.ts",
     "FoldedStateTreeDebug.ts",
     "FoldedStateTreeUtils.ts",
+    "chunkLoadTrace.ts",
     "ViewParamsUpdateQueueTestUtils.ts",
     "test-icon-extraction.ts",
     "IconExtractionDemo.tsx",

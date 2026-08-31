@@ -12,7 +12,27 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
-const codeMirrorExtensions = [javascript()];
+// Module-level identities: @uiw/react-codemirror reconfigures the EditorView whenever
+// `extensions` or `basicSetup` change by reference, which rebuilds the fold gutter DOM
+// and drops the click that sits between mousedown and mouseup.
+const codeMirrorExtensions = [
+  javascript(),
+  EditorView.lineWrapping,
+  EditorView.theme({
+    ".cm-foldGutter": {
+      width: "1.2em",
+    },
+    ".cm-foldGutter .cm-gutterElement": {
+      textAlign: "center",
+      cursor: "pointer",
+    },
+  }),
+];
+
+const codeMirrorBasicSetup = {
+  foldGutter: true,
+  lineNumbers: true,
+};
 
 interface CodeBlockProps {
   value: string;
@@ -23,16 +43,8 @@ export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value, copyButton
   const { currentTheme } = useMiroirTheme();
   const jsonString = value;
   const lines = jsonString?.split("\n");
-  const lineCount = lines?.length || 1;
   const maxLineLength = lines ? Math.max(...lines.map((line) => line.length)) : 0;
   const fixedWidth = Math.min(Math.max(maxLineLength * 0.6, 1200), 1800);
-  
-  // Calculate height based on content: lineHeight * number of lines + padding
-  // Typical CodeMirror line height is around 18-20px
-  const lineHeight = 20;
-  const padding = 20;
-  const calculatedHeight = Math.min((lineCount * lineHeight) + padding, 400);
-  const heightPx = `${calculatedHeight}px`;
 
   const containerStyles = css({
     position: 'relative',
@@ -75,37 +87,16 @@ export const CodeBlock_ReadOnly: React.FC<CodeBlockProps> = ({ value, copyButton
         </button>
       )}
       <ReactCodeMirror
-      editable={false}
-      height={heightPx}
-      style={{
-        width: `${fixedWidth}px`,
-        maxWidth: "90vw",
-        height: heightPx,
-      }}
-      value={jsonString}
-      extensions={[
-        ...codeMirrorExtensions,
-        EditorView.lineWrapping,
-        // EditorView.theme({
-        //   ".cm-editor": {
-        //     width: `${fixedWidth}px`,
-        //     height: heightPx,
-        //   },
-        //   ".cm-scroller": {
-        //     width: "100%",
-        //     overflow: calculatedHeight >= 400 ? "auto" : "hidden",
-        //     height: heightPx,
-        //   },
-        //   ".cm-content": {
-        //     minWidth: `${fixedWidth}px`,
-        //   },
-        // }),
-      ]}
-      basicSetup={{
-        foldGutter: true,
-        lineNumbers: true,
-      }}
-    />
+        readOnly={true}
+        maxHeight="400px"
+        style={{
+          width: `${fixedWidth}px`,
+          maxWidth: "90vw",
+        }}
+        value={jsonString}
+        extensions={codeMirrorExtensions}
+        basicSetup={codeMirrorBasicSetup}
+      />
     </div>
   );
 };
