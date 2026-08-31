@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../197-FEATURE- run integration tests in the UI/plan.md`](../197-FEATURE-%20run%20integration%20tests%20in%20the%20UI/plan.md)
 Working branch: `dev-copilot`
 
-**Resume note:** not started.
+**Resume note:** Slice 0 ✅ — current registry / schema / menu / section contracts locked.
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** retire suite-*key* registries or drop registry `kind` (#2
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize registry, schema, menus, section routing | ⬜ | inventory unit tests GREEN (current state) |
+| 0 | Characterize registry, schema, menus, section routing | ✅ | inventory unit tests GREEN (current state) |
 | 1 | Tracer: suite-owned seed for `domain_controller_model_undo_redo` | ⬜ | resolver + launcher unit + that suite integ GREEN |
 | 2 | Entity `TestConfiguration` + reports + menus | ⬜ | `getApplicationSection` + modelValidation + #240 menu suite |
 | 3 | Library document `TestConfiguration`; lend/return by uuid | ⬜ | lend + return integ GREEN |
@@ -175,7 +175,7 @@ Session still consumes `RunnerLibraryPlayfieldSeed` (model + instances + init). 
 
 ## Slice 0 — Characterize current contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -208,7 +208,9 @@ RUN_TEST=runnerRegistry.252.phase0 npm run testByFile -w miroir-standalone-app -
 
 ### Realization
 
-<Appended on completion.>
+- Core inventory: `packages/miroir-core/tests/5_tests/issues/252-self-contained-testbed/selfContainedTestbed.252.phase0.unit.test.ts` (4 tests) — 14 integ suite JSON roots have no playfield fields; no Entity named `TestConfiguration`; model-scope labels are the eight report links + divider; `getApplicationSection` is Miroir **data** / Library **model** for `MiroirTest`.
+- Registry inventory: `packages/miroir-standalone-app/tests/4-tests/issues/252-self-contained-testbed/runnerRegistry.252.phase0.unit.test.ts` (2 tests) — 14 keys; kinds; create/drop `testBedModelAndInstances === null`; other rows carry the nested triple.
+- No production code. Characterization of current state, all GREEN.
 
 ---
 
