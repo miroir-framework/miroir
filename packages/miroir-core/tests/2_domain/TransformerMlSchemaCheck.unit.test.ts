@@ -146,6 +146,28 @@ describe("checkTransformerMlSchemaCompatibility — single node (#251)", () => {
     expect(report.nodes[0].actualOutput?.type).toBe("object");
   });
 
+  it("accepts mergeIntoObject with an empty createObject overlay as row identity", () => {
+    const overlayIdentity: CoreTransformerForBuildPlusRuntime = {
+      interpolation: "runtime",
+      transformerType: "mergeIntoObject",
+      applyTo: identityRow,
+      definition: {
+        interpolation: "runtime",
+        transformerType: "createObject",
+        definition: {},
+      },
+    };
+    const report = checkTransformerMlSchemaCompatibility(
+      overlayIdentity,
+      { input: bookSchema, output: bookSchema },
+      { row: bookSchema },
+    );
+    expect(report.status).toBe("ok");
+    const overlay = report.nodes.find((n) => n.path.length === 1 && n.path[0] === "definition");
+    expect(overlay?.transformerType).toBe("createObject");
+    expect(overlay?.failures).toEqual([]);
+  });
+
   it("rejects mustacheStringTemplate against a Book row (string ≰ object)", () => {
     const report = checkTransformerMlSchemaCompatibility(mustache, {
       input: bookSchema,

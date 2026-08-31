@@ -147,6 +147,34 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.j
         >
           Set mapList mustache
         </button>
+        <button
+          type="button"
+          data-testid="set-name-override-transformer"
+          onClick={() =>
+            formik.setFieldValue(formikValuePathAsString, {
+              interpolation: "runtime",
+              transformerType: "mergeIntoObject",
+              applyTo: {
+                interpolation: "runtime",
+                transformerType: "getFromContext",
+                referenceName: "row",
+              },
+              definition: {
+                interpolation: "runtime",
+                transformerType: "createObject",
+                definition: {
+                  name: {
+                    interpolation: "runtime",
+                    transformerType: "returnValue",
+                    value: "Overridden Title",
+                  },
+                },
+              },
+            })
+          }
+        >
+          Set name override
+        </button>
       </div>
     );
   },
@@ -327,6 +355,18 @@ describe("ListTransformerPanel — list section integration", () => {
     expect(resultText).toContain("42");
     expect(resultText).not.toContain(book1.uuid);
     expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
+  });
+
+  it("overrides one row attribute on every row and keeps the other fields", () => {
+    renderBookListSection();
+
+    fireEvent.click(getTransformerToggle());
+    fireEvent.click(screen.getByTestId("set-name-override-transformer"));
+
+    const resultText = screen.getByTestId("list-transformer-result-viewer").textContent ?? "";
+    expect(resultText).toContain("Overridden Title");
+    expect(resultText).toContain(book1.uuid);
+    expect(resultText).not.toContain(book1.name);
   });
 
   it("surfaces transformer failure inline and keeps the grid rendered", () => {

@@ -195,14 +195,25 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
     [elementTransformer, rowMlSchema, rowEntityUuid],
   );
   const interfaceCompatibility = useMemo(
-    () =>
-      transformerType
-        ? checkTransformerInterfaceCompatibilityWithInference(
-            { input: rowEntityUuid ?? "any", output: expectedOutputType },
-            getTransformerDefinitionInputOutput(transformerType),
-            inferredOutputType,
-          )
-        : ({ status: "ok" } as const),
+    () => {
+      if (!transformerType) {
+        return { status: "ok" } as const;
+      }
+      const declared = getTransformerDefinitionInputOutput(transformerType);
+      // mergeIntoObject declares output `object`. An empty overlay still yields the
+      // row entity; use inferred output for the #249 output check in that case.
+      const declaredForCheck =
+        transformerType === "mergeIntoObject" &&
+        inferredOutputType !== undefined &&
+        declared
+          ? { ...declared, output: inferredOutputType }
+          : declared;
+      return checkTransformerInterfaceCompatibilityWithInference(
+        { input: rowEntityUuid ?? "any", output: expectedOutputType },
+        declaredForCheck,
+        inferredOutputType,
+      );
+    },
     [transformerType, rowEntityUuid, expectedOutputType, inferredOutputType],
   );
 

@@ -66,12 +66,37 @@ export function sliceInstancesToPage(
   );
 }
 
-/** Default per-row identity transformer (exposes each list row as `row`). */
-export const DEFAULT_ROW_IDENTITY_TRANSFORMER: CoreTransformerForBuildPlusRuntime = {
-  interpolation: "runtime",
-  transformerType: "getFromContext",
-  referenceName: "row",
-};
+function rowFromContextTransformer(): CoreTransformerForBuildPlusRuntime {
+  return {
+    interpolation: "runtime",
+    transformerType: "getFromContext",
+    referenceName: "row",
+  };
+}
+
+/**
+ * Per-row transformer: start from the list row (`getFromContext` `row`) and overlay
+ * calculated attributes. Each key in `attributeCalculations` is a separate transformer;
+ * the same calculations run on every row. An empty overlay is identity.
+ */
+export function buildRowAttributeOverrideTransformer(
+  attributeCalculations: Record<string, CoreTransformerForBuildPlusRuntime> = {},
+): CoreTransformerForBuildPlusRuntime {
+  return {
+    interpolation: "runtime",
+    transformerType: "mergeIntoObject",
+    applyTo: rowFromContextTransformer(),
+    definition: {
+      interpolation: "runtime",
+      transformerType: "createObject",
+      definition: { ...attributeCalculations },
+    },
+  };
+}
+
+/** Default per-row transformer: identity, with an empty overlay to add calculated attributes. */
+export const DEFAULT_ROW_IDENTITY_TRANSFORMER: CoreTransformerForBuildPlusRuntime =
+  buildRowAttributeOverrideTransformer();
 
 /**
  * Wrap an element-level transformer into the mapList built-in applied per row.

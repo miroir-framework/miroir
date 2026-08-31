@@ -10,6 +10,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   applyTransformerToListRows,
+  buildRowAttributeOverrideTransformer,
   buildRowMapListTransformer,
   DEFAULT_ROW_IDENTITY_TRANSFORMER,
   LIST_TRANSFORMER_PAGE_SIZE,
@@ -76,6 +77,23 @@ describe("listDisplayByTransformer — helper API", () => {
     });
   });
 
+  it("default row transformer is mergeIntoObject over row with an empty createObject overlay", () => {
+    expect(DEFAULT_ROW_IDENTITY_TRANSFORMER).toEqual({
+      interpolation: "runtime",
+      transformerType: "mergeIntoObject",
+      applyTo: {
+        interpolation: "runtime",
+        transformerType: "getFromContext",
+        referenceName: "row",
+      },
+      definition: {
+        interpolation: "runtime",
+        transformerType: "createObject",
+        definition: {},
+      },
+    });
+  });
+
   it("applyTransformerToListRows returns identity-projected books from a uuid index", () => {
     const bookIndex = {
       [book1.uuid]: book1,
@@ -86,6 +104,63 @@ describe("listDisplayByTransformer — helper API", () => {
 
     expect(result).not.toBeInstanceOf(TransformerFailure);
     expect(result).toEqual(expect.arrayContaining([book1, book2]));
+  });
+
+  it("applyTransformerToListRows overlays one calculated attribute on every row", () => {
+    const bookIndex = {
+      [book1.uuid]: book1,
+      [book2.uuid]: book2,
+    };
+
+    const result = applyTransformerToListRows(
+      bookIndex,
+      buildRowAttributeOverrideTransformer({
+        name: {
+          interpolation: "runtime",
+          transformerType: "returnValue",
+          value: "Overridden Title",
+        },
+      }),
+    );
+
+    expect(result).not.toBeInstanceOf(TransformerFailure);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        { ...book1, name: "Overridden Title" },
+        { ...book2, name: "Overridden Title" },
+      ]),
+    );
+  });
+
+  it("applyTransformerToListRows overlays several calculated attributes, each with its own transformer", () => {
+    const bookIndex = {
+      [book1.uuid]: book1,
+      [book2.uuid]: book2,
+    };
+
+    const result = applyTransformerToListRows(
+      bookIndex,
+      buildRowAttributeOverrideTransformer({
+        name: {
+          interpolation: "runtime",
+          transformerType: "returnValue",
+          value: "Shared Title",
+        },
+        year: {
+          interpolation: "runtime",
+          transformerType: "returnValue",
+          value: 2099,
+        },
+      }),
+    );
+
+    expect(result).not.toBeInstanceOf(TransformerFailure);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        { ...book1, name: "Shared Title", year: 2099 },
+        { ...book2, name: "Shared Title", year: 2099 },
+      ]),
+    );
   });
 
   it("applyTransformerToListRows maps every row through returnValue", () => {

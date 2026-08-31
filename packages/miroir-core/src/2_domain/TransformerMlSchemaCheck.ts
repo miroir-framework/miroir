@@ -308,11 +308,13 @@ function walkChildren(
     );
     handledKeys.add("definition");
   } else if (isTypedTransformer(record.definition)) {
+    // mergeIntoObject.definition is the overlay, not the result — do not
+    // inherit the parent's expected output (empty createObject is not a Book).
     checkNode(
       record.definition,
       [...path, "definition"],
       parentGivenInput,
-      parentExpectedOutput,
+      undefined,
       context,
       transformerDefinitions,
       entityMlSchemas,
