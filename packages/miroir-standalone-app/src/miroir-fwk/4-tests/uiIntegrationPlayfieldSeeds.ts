@@ -22,7 +22,6 @@ import {
   Country1,
   Country2,
   Country3,
-  defaultLibraryAppModel,
   entityAuthor,
   entityBook,
   entityCountry,
@@ -34,7 +33,7 @@ import {
   selfApplicationLibrary,
   selfApplicationModelBranchLibraryMasterBranch,
   selfApplicationVersionLibraryInitialVersion,
-  user1,
+  user1
 } from "miroir-test-app_deployment-library";
 
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
