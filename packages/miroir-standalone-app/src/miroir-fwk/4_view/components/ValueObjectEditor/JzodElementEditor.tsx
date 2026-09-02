@@ -97,19 +97,6 @@ if ((import.meta as any).env?.VITE_TEST_MODE) {
   log.info("############################### JzodElementEditor is NOT under test mode #########################################");
 }
 
-function findPathAnnotation(
-  annotations: { path: (string | number)[]; label: string }[] | undefined,
-  currentPath: (string | number)[] | undefined,
-): { path: (string | number)[]; label: string } | undefined {
-  const path = currentPath ?? [];
-  return (annotations ?? []).find((annotation) => {
-    if (annotation.path.length !== path.length) {
-      return false;
-    }
-    return path.every((segment, index) => String(segment) === String(annotation.path[index]));
-  });
-}
-
 export interface EditorAttribute {
   attribute: EntityAttribute;
   value: any;
@@ -705,18 +692,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       return currentPath.every((segment, index) => String(segment) === String(warning.path[index]));
     });
   }, [props.compatibilityWarnings, props.rootLessListKeyArray]);
-
-  const pathTypeAnnotation = useMemo(() => {
-    if (!props.showMlSchemaTypes) {
-      return undefined;
-    }
-    return findPathAnnotation(props.mlSchemaTypeAnnotations, props.rootLessListKeyArray);
-  }, [props.showMlSchemaTypes, props.mlSchemaTypeAnnotations, props.rootLessListKeyArray]);
-
-  const pathEnvironmentAnnotation = useMemo(
-    () => findPathAnnotation(props.environmentAnnotations, props.rootLessListKeyArray),
-    [props.environmentAnnotations, props.rootLessListKeyArray],
-  );
 
   // Enhanced label element with error tooltip for simple types
   const enhancedLabelElement = useMemo(() => {
@@ -1925,16 +1900,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
       </span>
     ): (<>hidden4</>);
   
-  // ##############################################################
-  const environmentAnnotationElement = pathEnvironmentAnnotation ? (
-    <ThemedText
-      data-testid={`transformer-environment-${(props.rootLessListKeyArray ?? []).join(".") || "root"}`}
-      style={{ fontSize: "12px", opacity: 0.85, marginBottom: "4px" }}
-    >
-      {pathEnvironmentAnnotation.label}
-    </ThemedText>
-  ) : null;
-
   const result = (
     <>
       <div>
@@ -1949,31 +1914,20 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
           <span
             style={{
               display: "flex",
-              flexDirection: "column",
               justifyContent: "flex-start",
-              alignItems: "stretch",
+              alignItems: "flex-start",
               width: "100%",
             }}
           >
-            {environmentAnnotationElement}
-            <span
-              style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                alignItems: "flex-start",
-                width: "100%",
-              }}
-            >
-              {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
-                ?.objectHideDeleteButton && props.deleteButtonElement}
-              {/* {mainElementWithUnionTypeSelector} */}
-              {mainElementWithDebug}
-              {mergedExtraToolsButtons && (
-                <span style={{ marginLeft: "8px", display: "inline-flex", alignItems: "center" }}>
-                  {mergedExtraToolsButtons}
-                </span>
-              )}
-            </span>
+            {!localResolvedElementJzodSchemaBasedOnValue?.tag?.value?.display
+              ?.objectHideDeleteButton && props.deleteButtonElement}
+            {/* {mainElementWithUnionTypeSelector} */}
+            {mainElementWithDebug}
+            {mergedExtraToolsButtons && (
+              <span style={{ marginLeft: "8px", display: "inline-flex", alignItems: "center" }}>
+                {mergedExtraToolsButtons}
+              </span>
+            )}
           </span>
         ) : displayWithoutFrame ? (
           <div
@@ -2017,15 +1971,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                 flexDirection: "column",
               }}
             >
-              {pathTypeAnnotation ? (
-                <ThemedText
-                  data-testid={`mlschema-type-${(props.rootLessListKeyArray ?? []).join(".")}`}
-                  style={{ fontSize: "12px", opacity: 0.85, marginBottom: "4px" }}
-                >
-                  {pathTypeAnnotation.label}
-                </ThemedText>
-              ) : null}
-              {environmentAnnotationElement}
               {codeEditorWithButtonOrMainElement}
             </ThemedCardContent>
           </ThemedCard>
@@ -2105,8 +2050,6 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
     resolvedTypeIsObjectOrArrayOrAny,
     displayAsCodeEditor,
     currentValueObjectAtKey,
-    pathTypeAnnotation,
-    pathEnvironmentAnnotation,
   ]);
   return resultWithDebug;
 }

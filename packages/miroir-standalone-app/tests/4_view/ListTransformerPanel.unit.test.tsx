@@ -39,14 +39,44 @@ vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", ()
   JsonObjectEditFormDialog: () => null,
 }));
 
-vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.js", () => ({
+vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.js", async () => {
+  const { useFormikContext } = await import("formik");
+  const {
+    annotationPathKey,
+    parseMlSchemaAnnotationLabel,
+    TransformerNamedBindings,
+    TransformerTitleSignature,
+  } = await import(
+    "../../src/miroir-fwk/4_view/components/Reports/TransformerTypeAnnotation.js"
+  );
+
+  return {
   TypedValueObjectEditor: ({
     formikValuePathAsString,
+    showMlSchemaTypes,
+    mlSchemaTypeAnnotations,
+    environmentAnnotations,
+    compatibilityWarnings,
   }: {
     formikValuePathAsString: string;
+    showMlSchemaTypes?: boolean;
+    mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+    environmentAnnotations?: {
+      path: (string | number)[];
+      label: string;
+      contextNames?: string[];
+      parameterNames?: string[];
+      transformerType?: string;
+    }[];
+    compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   }) => {
-    const { useFormikContext } = require("formik") as typeof import("formik");
     const formik = useFormikContext<Record<string, unknown>>();
+    const pathsEqual = (
+      left: (string | number)[],
+      right: (string | number)[],
+    ) =>
+      left.length === right.length &&
+      left.every((segment, index) => String(segment) === String(right[index]));
 
     return (
       <div data-testid={`tvo-editor-${formikValuePathAsString}`}>
@@ -175,10 +205,49 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.j
         >
           Set name override
         </button>
+        {showMlSchemaTypes
+          ? (mlSchemaTypeAnnotations ?? [])
+              .filter((annotation) => annotation.path.length > 0)
+              .map((annotation) => {
+                const { inLabel, outLabel } = parseMlSchemaAnnotationLabel(annotation.label);
+                const pathKey = annotationPathKey(annotation.path);
+                const warning = (compatibilityWarnings ?? []).find((item) =>
+                  pathsEqual(item.path, annotation.path),
+                );
+                return (
+                  <TransformerTitleSignature
+                    key={`mlschema-${pathKey}`}
+                    inLabel={inLabel}
+                    outLabel={outLabel}
+                    inadequate={!!warning}
+                    title={warning?.title ?? `${inLabel} → ${outLabel}`}
+                    data-testid={`list-transformer-mlschema-node-${pathKey}`}
+                  />
+                );
+              })
+          : null}
+        {(environmentAnnotations ?? [])
+          .filter(
+            (annotation) =>
+              annotation.path.length > 0 && annotation.transformerType !== undefined,
+          )
+          .map((annotation) => {
+            const pathKey = annotationPathKey(annotation.path);
+            return (
+              <TransformerNamedBindings
+                key={`env-${pathKey}`}
+                kind="context"
+                names={annotation.contextNames}
+                title={annotation.label}
+                data-testid={`list-transformer-environment-node-${pathKey}`}
+              />
+            );
+          })}
       </div>
     );
   },
-}));
+  };
+});
 
 vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditorWithFormik.js", () => ({
   TypedValueObjectEditorWithFormik: ({
@@ -336,7 +405,7 @@ describe("ListTransformerPanel — list section integration", () => {
 
     expect(screen.getByTestId("entity-instance-grid-stub")).toBeInTheDocument();
     expect(screen.getByTestId("list-transformer-panel")).toBeInTheDocument();
-    expect(screen.getByTestId("list-transformer-environment-nodes")).toBeInTheDocument();
+    expect(screen.getByTestId("list-transformer-environment-node-root")).toBeInTheDocument();
     expect(screen.getByTestId("list-transformer-result")).toBeInTheDocument();
     const resultViewer = screen.getByTestId("list-transformer-result-viewer");
     const resultText = resultViewer.textContent ?? "";
@@ -492,6 +561,7 @@ describe("ListTransformerPanel — list section integration", () => {
     fireEvent.click(getTransformerToggle());
 
     expect(screen.getByTestId("list-transformer-mlschema-switch")).not.toBeChecked();
+    expect(screen.queryByTestId("list-transformer-mlschema-node-root")).not.toBeInTheDocument();
     expect(screen.queryByTestId("list-transformer-mlschema-nodes")).not.toBeInTheDocument();
     fireEvent.click(screen.getByTestId("set-menu-addItem-transformer"));
     expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
@@ -502,7 +572,7 @@ describe("ListTransformerPanel — list section integration", () => {
     fireEvent.click(getTransformerToggle());
     fireEvent.click(screen.getByTestId("list-transformer-mlschema-switch"));
 
-    expect(screen.getByTestId("list-transformer-mlschema-nodes")).toBeInTheDocument();
+    expect(screen.getByTestId("list-transformer-mlschema-node-root")).toBeInTheDocument();
     fireEvent.click(screen.getByTestId("set-mustache-transformer"));
     expectOrangeBorder(screen.getByTestId("list-transformer-editor"), true);
     expect(screen.getByTestId("list-transformer-mlschema-node-root")).toHaveAttribute(
@@ -521,14 +591,16 @@ describe("ListTransformerPanel — list section integration", () => {
       "data-transformer-inadequate",
       "false",
     );
-    expect(screen.getByTestId("list-transformer-mlschema-node-root")).toHaveTextContent(
-      "Book{uuid, parentName, parentUuid, parentDefinitionVersionUuid, conceptLevel, name, year, author, publisher}",
+    expect(screen.getByTestId("list-transformer-mlschema-node-root")).toHaveTextContent("Book");
+    expect(screen.getByTestId("list-transformer-mlschema-node-root")).toHaveAttribute(
+      "title",
+      expect.stringMatching(/Book\{uuid/),
     );
     expect(screen.getByTestId("list-transformer-mlschema-node-definition")).toHaveTextContent(
-      /in undefined/,
+      "undefined",
     );
     expect(screen.getByTestId("list-transformer-mlschema-node-definition")).not.toHaveTextContent(
-      /in Book\{/,
+      "Book{",
     );
   });
 
@@ -538,6 +610,9 @@ describe("ListTransformerPanel — list section integration", () => {
     fireEvent.click(screen.getByTestId("list-transformer-mlschema-switch"));
     fireEvent.click(screen.getByTestId("set-mapList-mustache-transformer"));
 
+    expect(
+      screen.getByTestId("list-transformer-editor").getAttribute("data-inadequate-paths") ?? "",
+    ).toContain("elementTransformer");
     expect(screen.getByTestId("list-transformer-mlschema-node-elementTransformer")).toHaveAttribute(
       "data-transformer-inadequate",
       "true",
@@ -548,15 +623,18 @@ describe("ListTransformerPanel — list section integration", () => {
     renderBookListSection({ pageSize: 10 });
     fireEvent.click(getTransformerToggle());
 
-    expect(screen.getByTestId("list-transformer-environment-nodes")).toBeInTheDocument();
     const root = screen.getByTestId("list-transformer-environment-node-root");
-    expect(root).toHaveTextContent("getFromContext: defaultInput, row");
-    expect(root).toHaveTextContent("getFromParameters: pageSize");
+    expect(root).toHaveTextContent("defaultInput, row");
+    expect(root).not.toHaveTextContent("pageSize");
+    expect(screen.getByTestId("list-transformer-parameters")).toHaveTextContent("pageSize");
     expect(screen.getByTestId("list-transformer-environment-node-applyTo")).toHaveTextContent(
-      "getFromContext: defaultInput, row",
+      "defaultInput, row",
+    );
+    expect(screen.getByTestId("list-transformer-environment-node-applyTo")).not.toHaveTextContent(
+      "pageSize",
     );
     expect(screen.getByTestId("list-transformer-environment-node-definition")).toHaveTextContent(
-      "getFromContext: defaultInput, row",
+      "defaultInput, row",
     );
   });
 });

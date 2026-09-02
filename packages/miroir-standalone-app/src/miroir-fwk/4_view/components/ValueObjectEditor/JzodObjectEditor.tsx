@@ -71,6 +71,10 @@ import {
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
 import { getFoldedDisplayValue, useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
+import {
+  findPathAnnotation,
+  TransformerTitleRowAnnotations,
+} from "../Reports/TransformerTypeAnnotation.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -1354,6 +1358,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
       })
     : NOOP_RENDER_COUNTS;
 
+  const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
+
   return (
     <div
       id={unitTestLabel ? unitTestAnchorId(unitTestLabel) : rootLessListKey}
@@ -1398,6 +1404,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           <span>
             <ThemedFlexRow align="center">
               {labelElement}
+              <TransformerTitleRowAnnotations
+                path={rootLessListKeyArray}
+                skipRoot
+                showMlSchemaTypes={showMlSchemaTypes}
+                mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                environmentAnnotations={environmentAnnotations}
+                inadequate={!!titleRowWarning}
+                inadequateTitle={titleRowWarning?.title}
+              />
               {unitTestKind && <UnitTestKindBadge kind={unitTestKind} />}
               {/* Show folded display value when object is folded and a value is available */}
               {reportContext.isNodeFolded(rootLessListKeyArray) &&

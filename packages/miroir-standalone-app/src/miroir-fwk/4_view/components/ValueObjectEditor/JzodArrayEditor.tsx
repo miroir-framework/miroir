@@ -38,6 +38,10 @@ import {
 } from "../../tools/renderInsightRegistry.js";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import {
+  findPathAnnotation,
+  TransformerTitleRowAnnotations,
+} from "../Reports/TransformerTypeAnnotation.js";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
@@ -808,6 +812,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       })
     : NOOP_RENDER_COUNTS;
 
+  const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
+
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
       <JsonDisplayHelper debug={true}
@@ -833,6 +839,15 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           <span>
             <ThemedFlexRow align="center">
               {label}
+              <TransformerTitleRowAnnotations
+                path={rootLessListKeyArray}
+                skipRoot
+                showMlSchemaTypes={showMlSchemaTypes}
+                mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                environmentAnnotations={environmentAnnotations}
+                inadequate={!!titleRowWarning}
+                inadequateTitle={titleRowWarning?.title}
+              />
               {/* Show folded display value when array is folded and a value is available */}
               {reportContext.isNodeFolded(rootLessListKeyArray) &&
                 (() => {

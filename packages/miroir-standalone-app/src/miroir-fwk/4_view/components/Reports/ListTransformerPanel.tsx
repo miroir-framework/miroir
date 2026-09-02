@@ -37,6 +37,10 @@ import {
 import { hasDisplayableTransformationResult } from "../TransformerEditor/TransformationResultPanel.js";
 import { ReportInstanceLink } from "../ReportInstanceLink.js";
 import {
+  TransformerNamedBindings,
+  TransformerTitleSignature,
+} from "./TransformerTypeAnnotation.js";
+import {
   ThemedContainer,
   ThemedFlexRow,
   ThemedHeaderSection,
@@ -309,17 +313,33 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
       }),
     [elementTransformer, transformerParams],
   );
-  const environmentNodeBindings = useMemo(
-    () => environmentBindings.filter((binding) => binding.transformerType !== undefined),
-    [environmentBindings],
-  );
   const environmentAnnotations = useMemo(
     () =>
       environmentBindings.map((binding) => ({
         path: binding.path,
         label: formatTransformerEnvironmentLabel(binding),
+        contextNames: binding.contextNames,
+        parameterNames: binding.parameterNames,
+        transformerType: binding.transformerType,
       })),
     [environmentBindings],
+  );
+  const rootMlSchemaNode = useMemo(
+    () => mlSchemaCompatibility.nodes.find((node) => node.path.length === 0),
+    [mlSchemaCompatibility],
+  );
+  const rootEnvironmentBinding = useMemo(
+    () => environmentBindings.find((binding) => binding.path.length === 0),
+    [environmentBindings],
+  );
+  const inadequatePathKeys = useMemo(
+    () =>
+      mlSchemaMode
+        ? mlSchemaCompatibility.nodes
+            .filter((node) => node.failures.length > 0)
+            .map((node) => (node.path.length === 0 ? "root" : node.path.map(String).join(".")))
+        : [],
+    [mlSchemaMode, mlSchemaCompatibility],
   );
 
   const transformationResult = useMemo(
@@ -349,9 +369,47 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
     <div data-testid="list-transformer-panel">
       <ThemedContainer style={{ marginTop: "12px" }}>
       <ThemedHeaderSection>
-        <ThemedTitle>
-          {sectionLabel ? `${sectionLabel} — transformer` : "List transformer"}
-        </ThemedTitle>
+        <ThemedFlexRow align="center" wrap gap="8px">
+          <ThemedTitle>
+            {sectionLabel ? `${sectionLabel} — transformer` : "List transformer"}
+          </ThemedTitle>
+          {mlSchemaMode && rootMlSchemaNode ? (
+            <TransformerTitleSignature
+              inLabel={formatMlSchemaTypeLabel(rootMlSchemaNode.givenInput, {
+                schemaNameResolver: mlSchemaNameResolver,
+              })}
+              outLabel={formatMlSchemaTypeLabel(rootMlSchemaNode.actualOutput, {
+                schemaNameResolver: mlSchemaNameResolver,
+              })}
+              inadequate={rootMlSchemaNode.failures.length > 0}
+              data-testid="list-transformer-mlschema-node-root"
+              title={
+                rootMlSchemaNode.failures.length > 0
+                  ? formatMlSchemaNodeMismatch(rootMlSchemaNode, mlSchemaNameResolver)
+                  : `${formatMlSchemaTypeLabel(rootMlSchemaNode.givenInput, {
+                      schemaNameResolver: mlSchemaNameResolver,
+                    })} → ${formatMlSchemaTypeLabel(rootMlSchemaNode.actualOutput, {
+                      schemaNameResolver: mlSchemaNameResolver,
+                    })}`
+              }
+            />
+          ) : null}
+        </ThemedFlexRow>
+        <ThemedFlexRow align="center" wrap gap="8px">
+          {rootEnvironmentBinding ? (
+            <TransformerNamedBindings
+              kind="context"
+              names={rootEnvironmentBinding.contextNames}
+              title={formatTransformerEnvironmentLabel(rootEnvironmentBinding)}
+              data-testid="list-transformer-environment-node-root"
+            />
+          ) : null}
+          <TransformerNamedBindings
+            kind="parameters"
+            names={Object.keys(transformerParams ?? {})}
+            data-testid="list-transformer-parameters"
+          />
+        </ThemedFlexRow>
       </ThemedHeaderSection>
 
       <ThemedFlexRow align="center" wrap gap="16px" style={{ margin: "4px 0" }}>
@@ -426,63 +484,10 @@ const ListTransformerPanelInner: React.FC<ListTransformerPanelProps> = ({
           }
         />
       </ThemedFlexRow>
-      {mlSchemaMode ? (
-        <div data-testid="list-transformer-mlschema-nodes" style={{ margin: "4px 0 8px" }}>
-          {mlSchemaCompatibility.nodes.map((node) => {
-            const pathKey = node.path.map(String).join(".") || "root";
-            const inadequate = node.failures.length > 0;
-            return (
-              <div
-                key={pathKey}
-                data-testid={`list-transformer-mlschema-node-${pathKey}`}
-                data-transformer-inadequate={inadequate ? "true" : "false"}
-                title={inadequate ? formatMlSchemaNodeMismatch(node, mlSchemaNameResolver) : undefined}
-                style={{
-                  fontSize: "12px",
-                  marginBottom: "2px",
-                  borderLeft: inadequate ? "3px solid #ff9800" : "3px solid transparent",
-                  paddingLeft: "6px",
-                  overflowWrap: "anywhere",
-                }}
-              >
-                <ThemedText>
-                  {pathKey}: in{" "}
-                  {formatMlSchemaTypeLabel(node.givenInput, { schemaNameResolver: mlSchemaNameResolver })}{" "}
-                  → out{" "}
-                  {formatMlSchemaTypeLabel(node.actualOutput, { schemaNameResolver: mlSchemaNameResolver })}
-                </ThemedText>
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
-      {environmentNodeBindings.length > 0 ? (
-        <div data-testid="list-transformer-environment-nodes" style={{ margin: "4px 0 8px" }}>
-          {environmentNodeBindings.map((binding) => {
-            const pathKey = binding.path.map(String).join(".") || "root";
-            return (
-              <div
-                key={pathKey}
-                data-testid={`list-transformer-environment-node-${pathKey}`}
-                style={{
-                  fontSize: "12px",
-                  marginBottom: "2px",
-                  paddingLeft: "6px",
-                  overflowWrap: "anywhere",
-                }}
-              >
-                <ThemedText>
-                  {pathKey}: {formatTransformerEnvironmentLabel(binding)}
-                </ThemedText>
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
-
       <div
         data-testid="list-transformer-editor"
         data-transformer-inadequate={transformerInadequate ? "true" : "false"}
+        data-inadequate-paths={inadequatePathKeys.join(" ")}
         title={interfaceMismatchTitle}
         style={{
           border: transformerInadequate ? "2px solid #ff9800" : "2px solid transparent",
