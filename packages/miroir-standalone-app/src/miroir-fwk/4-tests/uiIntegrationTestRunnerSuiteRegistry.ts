@@ -31,7 +31,9 @@ import {
   entityCountry,
   entityPublisher,
   lendDocumentRunner,
+  mcpLendDocumentRunner,
   miroirTest_runner_lend_document,
+  miroirTest_runner_mcp_lend_document,
   miroirTest_runner_return_document,
   folio as publisher1,
   penguin as publisher2,
@@ -88,6 +90,7 @@ export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY =
 export const UI_INTEGRATION_RUNNER_UUID_INDEX: Record<string, Runner> = {
   ...RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
   [lendDocumentRunner.uuid]: lendDocumentRunner,
+  [mcpLendDocumentRunner.uuid]: mcpLendDocumentRunner,
   [returnDocumentRunner.uuid]: returnDocumentRunner,
 };
 
@@ -266,6 +269,17 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
   [miroirTest_runner_mcp_get_instances.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_mcp_get_instances as MiroirTestDefinition)
+      .definition as MiroirTestSuite,
+    testBedModelAndInstances: {
+      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+      testbedInitApplicationParameters: libraryTestbedInitParams,
+      testbedModel: defaultLibraryAppModel as MetaModel,
+    },
+  },
+  // ###############################################################################
+  [miroirTest_runner_mcp_lend_document.name]: {
+    kind: "runnerTest",
+    suiteDefinition: (miroirTest_runner_mcp_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
     testBedModelAndInstances: {
       testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,

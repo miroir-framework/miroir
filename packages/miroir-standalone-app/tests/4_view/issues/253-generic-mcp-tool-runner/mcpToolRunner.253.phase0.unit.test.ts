@@ -16,6 +16,7 @@ import {
 } from "miroir-test-app_deployment-miroir";
 import {
   lendDocument,
+  mcpLendDocument,
   reportLibraryHome,
   returnDocument,
   selfApplicationLibrary,
@@ -110,6 +111,7 @@ const EXPECTED_RUNNERS: { name: string; runnerType: string; uuid: string }[] = [
   { name: "mcpGetInstances", runnerType: "mcpToolRunner", uuid: "897e9711-65a0-414e-9773-19de92ade533" },
   { name: "returnDocument", runnerType: "actionRunner", uuid: "98a38a84-e702-4540-a056-c7676a193a2b" },
   { name: "lendDocument", runnerType: "actionRunner", uuid: "cc853632-f158-43fa-b9ed-437c9c25f539" },
+  { name: "mcpLendDocument", runnerType: "mcpToolRunner", uuid: "dbb39e31-5c7d-4473-9adb-5286e2972e46" },
 ];
 
 const MIROIR_DATA_RUNNER_INSTANCES: RunnerInstance[] = [
@@ -128,7 +130,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     expect(runnerTypeLiterals()).toEqual(["customRunner", "actionRunner", "mcpToolRunner"]);
   });
 
-  it("exactly 9 Runner instances including mcpGetInstances", () => {
+  it("exactly 10 Runner instances including mcpGetInstances and mcpLendDocument", () => {
     const imported: RunnerInstance[] = [
       runnerDropApplication,
       runnerFreezeApplicationVersion,
@@ -139,6 +141,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       runnerMcpGetInstances,
       returnDocument,
       lendDocument,
+      mcpLendDocument,
     ];
 
     expect(
@@ -164,6 +167,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     expect(instanceFiles).toEqual([
       `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_RUNNER_UUID}/98a38a84-e702-4540-a056-c7676a193a2b.json`,
       `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_RUNNER_UUID}/cc853632-f158-43fa-b9ed-437c9c25f539.json`,
+      `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_RUNNER_UUID}/dbb39e31-5c7d-4473-9adb-5286e2972e46.json`,
       `packages/miroir-test-app_deployment-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/1cd065d8-dfb0-466f-974c-e81e993f2c66.json`,
       `packages/miroir-test-app_deployment-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/20d51c4c-52e5-4077-baf3-5e87bd75e496.json`,
       `packages/miroir-test-app_deployment-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/44313751-b0e5-4132-bb12-a544806e759b.json`,
@@ -186,6 +190,9 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       );
     }
     expect(resolveRunnerDefinitionApplication(libraryPage, lendDocument.uuid)).toBe(libraryPage);
+    expect(resolveRunnerDefinitionApplication(libraryPage, mcpLendDocument.uuid)).toBe(
+      libraryPage,
+    );
     expect(resolveRunnerDefinitionApplication(libraryPage, returnDocument.uuid)).toBe(
       libraryPage,
     );
@@ -194,7 +201,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     ).toBe(libraryPage);
   });
 
-  it("execute reports have 6 + 2 + 1 runnerReportSections", () => {
+  it("execute reports have 6 + 3 + 1 runnerReportSections", () => {
     const miroirRunnerSections = runnerReportSections(reportMiroirRunners);
     expect(miroirRunnerSections).toHaveLength(6);
     expect(miroirRunnerSections.map((section) => section.definition)).toEqual([
@@ -231,7 +238,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     ]);
 
     const libraryHomeSections = runnerReportSections(reportLibraryHome);
-    expect(libraryHomeSections).toHaveLength(2);
+    expect(libraryHomeSections).toHaveLength(3);
     expect(libraryHomeSections.map((section) => section.definition)).toEqual([
       {
         runnerReportSectionType: "storedRunner",
@@ -242,6 +249,11 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
         runnerReportSectionType: "storedRunner",
         label: "returnBook",
         runner: returnDocument.uuid,
+      },
+      {
+        runnerReportSectionType: "storedRunner",
+        label: "MCP: lendDocument",
+        runner: mcpLendDocument.uuid,
       },
     ]);
 

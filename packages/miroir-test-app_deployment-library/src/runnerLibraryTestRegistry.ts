@@ -1,6 +1,7 @@
 import type { Runner } from "miroir-core";
 
 import lendDocument from "../assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/cc853632-f158-43fa-b9ed-437c9c25f539.json" with { type: "json" };
+import mcpLendDocument from "../assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/dbb39e31-5c7d-4473-9adb-5286e2972e46.json" with { type: "json" };
 import returnDocument from "../assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/98a38a84-e702-4540-a056-c7676a193a2b.json" with { type: "json" };
 
 /**
@@ -9,4 +10,5 @@ import returnDocument from "../assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf
  * for lookup at session / execution time.
  */
 export const lendDocumentRunner = lendDocument as unknown as Runner;
+export const mcpLendDocumentRunner = mcpLendDocument as unknown as Runner;
 export const returnDocumentRunner = returnDocument as unknown as Runner;

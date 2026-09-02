@@ -30,6 +30,14 @@
           }
         },
         {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "MCP: lendDocument",
+            "runner": "dbb39e31-5c7d-4473-9adb-5286e2972e46"
+          }
+        },
+        {
           "type": "storedReportDisplay",
           "definition": {
             "transformerType": "returnValue",

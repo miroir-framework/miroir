@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [`../229-FEATURE-dynamic-mcp-endpoint-tools/`](../229-FEATURE-dynamic-mcp-endpoint-tools/) ✅ · [`../248-FIX-mcp-tools-list-payload-size/`](../248-FIX-mcp-tools-list-payload-size/) ✅  
 Parent: [#193](https://github.com/miroir-framework/miroir/issues/193)
 
-**Resume note:** Slice 1 done. Next is Slice 2 (`runner_mcp_lend_document` on LibraryHome, `resultPresentation: "status"`).
+**Resume note:** Slice 2 deepened — success leaf queries LendingHistoryItem after MCP lend. Next is Slice 3 (nonreg, docs, cleanup, AC).
 
 ---
 
@@ -49,7 +49,7 @@ Correct shape: **one query path through all layers**, then **deepen** with the e
 |---|---|---|---|
 | 0 | Characterize current contracts | ✅ | `mcpToolRunner.253.phase0.unit.test.ts` |
 | 1 | Tracer: run `mcpGetInstances` end-to-end | ✅ | `runner_mcp_get_instances` |
-| 2 | Same path: run `mcpLendDocument` (status only) | ⬜ | `runner_mcp_lend_document` |
+| 2 | Same path: run `mcpLendDocument` (status only) | ✅ | `runner_mcp_lend_document` |
 | 3 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps + tracer narrative |
 
 ---
@@ -236,7 +236,7 @@ Validation: modelValidation 149 passed; `runner_mcp_get_instances` 1/1 on `--pro
 
 ## Slice 2 — Same path: run `mcpLendDocument` (status only)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -255,10 +255,9 @@ Behavior asserted:
 - Submit `{ user: user1, book: book1, startDate }` → MCP `parsed.status === "success"`.
 - The run is `tools/call` `Library_lendDocument` via `runMcpToolRunner`.
 - Presentation is `"status"`: the host/UI must **not** require a payload panel for the test to pass (success/failure is enough).
+- After success, a boxed query of `LendingHistoryItem` filtered to the lent book has aggregate `1`.
 - A second leaf or the same suite: missing/invalid `book` → MCP `status === "error"`.
 - `runner_lend_document` (`cc853632-…`) still passes (non-regression in Validation, not a new twin implementation).
-
-Optional: a new `LendingHistoryItem` for that book/user. If server-vs-client cache (analysis risk 2) blocks it without rollback, envelope-only is enough; record in Realization.
 
 ### 2.2 GREEN
 
@@ -284,7 +283,19 @@ npm run testMiroir -w miroir-standalone-app -- --suites runner_mcp_get_instances
 
 ### Realization
 
-<Appended on completion.>
+Effect GREEN: `runner_mcp_lend_document` (2/2) submits `mcpLendDocument` via HTTP `tools/call` `Library_lendDocument`. Success leaf uses the same `user1` / `book1` / `lendStartDate` params as `runner_lend_document`. Error leaf omits `book`; host asserts `expectedMcpStatus: "error"` and does **not** require a payload panel.
+
+Layers landed:
+
+- Instance `dbb39e31-…` in Library model (`toolName: "Library_lendDocument"`, `resultPresentation: "status"`). Exported; indexed in `UI_INTEGRATION_RUNNER_UUID_INDEX`. **Not** added to `defaultLibraryAppModel.runners` (same EntityVersion-snapshot reason as Slice 1).
+- Extra `runnerReportSection` on `LibraryHome` labeled `MCP: lendDocument`. `lendBook` / `returnBook` unchanged.
+- Host reads `expectedMcpStatus` (default `"success"`). Payload uuid check still only when `expectedInstanceUuid` is set.
+- View already hid the result panel for `"status"` (Slice 1). Form still comes from Endpoint payload Jzod via `resolveMcpToolAction` (Lending FKs `user` / `book`).
+- `runMcpToolRunner` maps transport / protocol throws to `{ status: "error" }` so a missing required field (MCP input schema rejects the call and Streamable HTTP resets) is the same failure envelope as a handler `{ status: "error" }`.
+
+Success leaf commits after `tools/call` (`commitLibraryLocalCache` in `preTestCompositeActions`), then runs the same boxed `LendingHistoryItem` query pattern as `runner_lend_document` (filtered to `book1`) and asserts aggregate `1`. Error leaf stays envelope-only. Host runs the leaf's `preTestCompositeActions` / assertions after MCP success; it does not inject a commit or wrap MCP as `actionRunner`.
+
+Validation: library modelValidation 180 (includes `mcpLendDocument`); `runner_mcp_lend_document` 2/2; `runner_lend_document` 1/1; `runner_mcp_get_instances` 1/1; all on `--profile emulatedServer-filesystem`. `miroir-core` tsc clean.
 
 ---
 
@@ -328,12 +339,12 @@ npm run nonreg -- --only integ-runner-runner_mcp_get_instances,integ-runner-runn
 |---|---|---|
 | `mcpToolRunner` schema + `toolName` + `resultPresentation` | Slice 1 `devBuild` + modelValidation | ✅ |
 | Query Runner instance | Slice 1 `897e9711-…` | ✅ |
-| Effect Runner instance | Slice 2 `dbb39e31-…` | ⬜ |
-| Submit is MCP `tools/call` | Slices 1–2 `runnerTest` host | ⬜ (Slice 1 host proven) |
+| Effect Runner instance | Slice 2 `dbb39e31-…` | ✅ |
+| Submit is MCP `tools/call` | Slices 1–2 `runnerTest` host | ✅ |
 | Query success shows `book1` | `runner_mcp_get_instances` | ✅ |
-| Effect is success/failure only | `runner_mcp_lend_document` | ⬜ |
-| Reachable on existing reports; LibraryHome twins unchanged | Slice 1 + 2 report JSON + `runner_lend_document` | ⬜ |
-| Other Runners unchanged | Slice 0 lock evolution + `runner_lend_document` | ⬜ |
+| Effect is success/failure only | `runner_mcp_lend_document` | ✅ |
+| Reachable on existing reports; LibraryHome twins unchanged | Slice 1 + 2 report JSON + `runner_lend_document` | ✅ |
+| Other Runners unchanged | Slice 0 lock evolution + `runner_lend_document` | ✅ |
 
 ### Realization
 

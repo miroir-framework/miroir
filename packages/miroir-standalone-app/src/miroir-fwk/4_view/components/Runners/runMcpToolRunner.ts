@@ -19,13 +19,23 @@ export async function runMcpToolRunner(
       `runMcpToolRunner: expected mcpToolRunner, got ${runner.definition.runnerType}`,
     );
   }
-  const response = await callMcpToolViaHttp(
-    serverUrl,
-    runner.definition.toolName,
-    args,
-    fetchImpl,
-  );
-  return (response.content[0]?.parsed ?? {}) as McpToolRunnerEnvelope;
+  try {
+    const response = await callMcpToolViaHttp(
+      serverUrl,
+      runner.definition.toolName,
+      args,
+      fetchImpl,
+    );
+    return (response.content[0]?.parsed ?? {}) as McpToolRunnerEnvelope;
+  } catch (error) {
+    return {
+      status: "error",
+      error: {
+        message: error instanceof Error ? error.message : String(error),
+        type: "FailedToHandleAction",
+      },
+    };
+  }
 }
 
 export function browserMcpServerUrl(): string {
