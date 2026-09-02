@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   entityRunner,
+  instanceEndpointV1,
   reportMiroirRunners,
   reportVersioning,
   runnerCreateEntity,
@@ -22,6 +23,7 @@ import {
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 
+import { resolveMcpToolAction } from "../../../../src/miroir-fwk/4_view/components/Runners/resolveMcpToolAction.js";
 import { resolveRunnerDefinitionApplication } from "../../../../src/miroir-fwk/4_view/components/Runners/runnerDefinitionApplication.js";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
@@ -264,6 +266,28 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       label: "freezeApplicationVersion",
       runner: runnerFreezeApplicationVersion.uuid,
     });
+  });
+
+  it("Miroir_getInstances form payload is application, applicationSection, parentUuid — not getInstance uuid", () => {
+    const resolved = resolveMcpToolAction("Miroir_getInstances", "Miroir", [
+      instanceEndpointV1,
+    ]);
+    expect(resolved?.action.actionParameters.actionType.definition).toBe("getInstances");
+    const payload = resolved?.action.actionParameters.payload;
+    expect(payload?.type).toBe("object");
+    const definition = payload?.definition ?? {};
+    expect(Object.keys(definition)).toEqual([
+      "application",
+      "applicationSection",
+      "parentUuid",
+      "attributes",
+    ]);
+    expect(definition).not.toHaveProperty("uuid");
+    expect(definition.parentUuid?.tag?.value?.defaultLabel).toBe("parentUuid");
+    expect(definition.applicationSection?.tag?.value?.defaultLabel).toBe("applicationSection");
+    expect(definition.application?.tag?.value?.display?.editable).not.toBe(false);
+    expect(definition.parentUuid?.tag?.value?.display?.editable).not.toBe(false);
+    expect(definition.application?.tag?.value?.initializeTo).toBeUndefined();
   });
 
   it("browser MCP runner modules import miroir-mcp/client, not the Node CLI entry", () => {
