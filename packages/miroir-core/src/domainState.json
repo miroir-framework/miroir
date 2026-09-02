@@ -24,7 +24,100 @@
           "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
           "name": "Book",
           "conceptLevel": "Model",
-          "description": "A book."
+          "description": "A book.",
+          "mlSchema": {
+            "type": "object",
+            "extend": {
+              "type": "schemaReference",
+              "definition": {
+                "eager": true,
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entityDefinitionRoot"
+              }
+            },
+            "definition": {
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Book Title"
+                  }
+                }
+              },
+              "year": {
+                "type": "number",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 6,
+                    "defaultLabel": "Year of Publication",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                }
+              },
+              "citation": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Citation",
+                    "display": {
+                      "editable": false,
+                      "modifiable": false
+                    },
+                    "virtualAttribute": {
+                      "interpolation": "runtime",
+                      "transformerType": "mustacheStringTemplate",
+                      "definition": "{{name}} ({{year}})"
+                    }
+                  }
+                }
+              },
+              "author": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 7,
+                    "defaultLabel": "Author",
+                    "foreignKeyParams": {
+                      "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "publisher": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Publisher",
+                    "id": 8,
+                    "foreignKeyParams": {
+                      "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "viewAttributes": [
+            "name",
+            "author",
+            "year",
+            "citation",
+            "publisher",
+            "uuid"
+          ],
+          "icon": "Book",
+          "cache": {
+            "cacheAllInstancesOnRefresh": true
+          },
+          "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f"
         }
       },
       "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd": {
@@ -72,7 +165,11 @@
               },
               "conceptLevel": {
                 "type": "enum",
-                "definition": ["MetaModel", "Model", "Data"],
+                "definition": [
+                  "MetaModel",
+                  "Model",
+                  "Data"
+                ],
                 "optional": true,
                 "tag": {
                   "value": {
@@ -140,32 +237,59 @@
               "uuid": {
                 "type": "simpleType",
                 "definition": "string",
-                "validations": [{ "type": "uuid" }],
-                "tag": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
               },
               "parentName": {
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
-                "tag": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": {
+                  "id": 2,
+                  "defaultLabel": "Entity Name",
+                  "editable": false
+                }
               },
               "parentUuid": {
                 "type": "simpleType",
                 "definition": "string",
-                "validations": [{ "type": "uuid" }],
-                "tag": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "id": 3,
+                  "defaultLabel": "Entity Uuid",
+                  "editable": false
+                }
               },
               "name": {
                 "type": "simpleType",
                 "definition": "string",
-                "tag": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": {
+                  "id": 4,
+                  "defaultLabel": "Name",
+                  "editable": true
+                }
               },
               "icon": {
                 "id": 5,
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
-                "tag": { "defaultLabel": "Icon", "editable": true }
+                "tag": {
+                  "defaultLabel": "Icon",
+                  "editable": true
+                }
               }
             }
           }
@@ -185,31 +309,58 @@
               "uuid": {
                 "type": "simpleType",
                 "definition": "string",
-                "validations": [{ "type": "uuid" }],
-                "tag": { "id": 1, "defaultLabel": "Uuid", "editable": false }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "id": 1,
+                  "defaultLabel": "Uuid",
+                  "editable": false
+                }
               },
               "parentName": {
                 "type": "simpleType",
                 "definition": "string",
                 "optional": true,
-                "tag": { "id": 2, "defaultLabel": "Entity Name", "editable": false }
+                "tag": {
+                  "id": 2,
+                  "defaultLabel": "Entity Name",
+                  "editable": false
+                }
               },
               "parentUuid": {
                 "type": "simpleType",
                 "definition": "string",
-                "validations": [{ "type": "uuid" }],
-                "tag": { "id": 3, "defaultLabel": "Entity Uuid", "editable": false }
+                "validations": [
+                  {
+                    "type": "uuid"
+                  }
+                ],
+                "tag": {
+                  "id": 3,
+                  "defaultLabel": "Entity Uuid",
+                  "editable": false
+                }
               },
               "name": {
                 "type": "simpleType",
                 "definition": "string",
-                "tag": { "id": 4, "defaultLabel": "Name", "editable": true }
+                "tag": {
+                  "id": 4,
+                  "defaultLabel": "Name",
+                  "editable": true
+                }
               },
               "icon": {
                 "id": 5,
                 "type": "simpleType",
                 "definition": "string",
-                "tag": { "defaultLabel": "Gender (narrow-minded)", "editable": true }
+                "tag": {
+                  "defaultLabel": "Gender (narrow-minded)",
+                  "editable": true
+                }
               }
             }
           }
@@ -352,7 +503,8 @@
           "name": "Rear Window",
           "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
           "conceptLevel": "",
-          "publisher": "1f550a2a-33f5-4a56-83ee-302701039494"
+          "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+          "year": 1942
         },
         "caef8a59-39eb-48b5-ad59-a7642d3a1e8f": {
           "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",

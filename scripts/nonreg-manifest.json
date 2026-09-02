@@ -411,6 +411,46 @@
       ]
     },
     {
+      "id": "integ-runner-runner_mcp_get_instances",
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 runner_mcp_get_instances",
+      "requires": "postgres",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "runner_mcp_get_instances",
+        "--mode",
+        "integ"
+      ]
+    },
+    {
+      "id": "integ-runner-runner_mcp_lend_document",
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 runner_mcp_lend_document",
+      "requires": "postgres",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "runner_mcp_lend_document",
+        "--mode",
+        "integ"
+      ]
+    },
+    {
       "id": "integ-action-domain_controller_data_crud",
       "tier": "default",
       "title": "MiroirTest integ \u2014 domain_controller_data_crud (actionTest)",

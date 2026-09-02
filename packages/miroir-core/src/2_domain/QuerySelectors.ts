@@ -18,6 +18,7 @@ import {
   RunBoxedQueryAction
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import type { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import {
   Action2Error,
   Action2ReturnType,
@@ -31,6 +32,7 @@ import {
   SyncBoxedExtractorRunnerParams,
   SyncQueryRunnerExtractorAndParams
 } from "../0_interfaces/2_domain/ExtractorRunnerInterface";
+import type { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { getForeignKeyValue, instanceMatchesForeignKey } from "../1_core/Entity/EntityPrimaryKey";
@@ -39,7 +41,11 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { applyExtractorFilterAndOrderBy, instanceMatchesFilter } from "./ExtractorByEntityReturningObjectListTools";
-import { resolveExtractorTemplate } from "./Templates";
+import {
+  findEntityFromExtractorState,
+  overlayVirtualAttributesOnQueryContextForRuntimeTransformers,
+  stripUnprojectedVirtualAttributes,
+} from "./ExtractorVirtualAttributes";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "QuerySelectors");
@@ -589,7 +595,7 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
   foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, StateType>,
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstance[]> => {
-  const selectedInstancesUuidIndex: Domain2QueryReturnType<EntityInstance[]> = (
+  const selectedInstances: Domain2QueryReturnType<EntityInstance[]> = (
     foreignKeyParams?.extractorRunnerMap ?? emptySelectorMap
   ).extractEntityInstanceList(
     deploymentEntityState,
@@ -598,17 +604,27 @@ export const extractEntityInstanceListWithObjectListExtractorInMemory
     modelEnvironment
   );
 
-  // log.info(
-  //   "extractEntityInstanceUuidIndexWithObjectListExtractorInMemory for",
-  //   foreignKeyParams,
-  //   "found selectedInstances", selectedInstancesUuidIndex,
-  // );
-
-  return applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
-    selectedInstancesUuidIndex,
+  const filtered = applyExtractorForSingleObjectListToSelectedInstancesListInMemory(
+    selectedInstances,
     foreignKeyParams.extractor,
   );
-
+  if (filtered instanceof Domain2ElementFailed) {
+    return filtered;
+  }
+  const select = foreignKeyParams.extractor.select;
+  if (select.extractorOrCombinerType !== "extractorInstancesByEntity") {
+    return filtered;
+  }
+  const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
+  if (!deploymentUuid) {
+    return filtered;
+  }
+  const entity = findEntityFromExtractorState(
+    deploymentEntityState as DomainState | ReduxDeploymentsState,
+    deploymentUuid,
+    select.parentUuid,
+  );
+  return stripUnprojectedVirtualAttributes(entity, filtered, select, modelEnvironment);
 };
 
 // ################################################################################################
@@ -1166,6 +1182,17 @@ export const runQuery = <StateType>(
     context[combiner[0]] = result; // does side effect!
     // log.info("runQuery done for entry", combiner[0], "query", combiner[1], "result=", result);
   }
+  overlayVirtualAttributesOnQueryContextForRuntimeTransformers(
+    state as DomainState | ReduxDeploymentsState,
+    deploymentUuid,
+    {
+      ...(extractorParams.extractor.extractors ?? {}),
+      ...(extractorParams.extractor.combiners ?? {}),
+    },
+    extractorParams.extractor.runtimeTransformers as Record<string, unknown> | undefined,
+    context,
+    modelEnvironment,
+  );
   // log.info(
   //   "runQuery done for combiners,",
   //   // extractor[0],

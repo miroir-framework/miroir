@@ -27,8 +27,17 @@ if (!certsReady) {
   );
 }
 
+const viteRoot = path.resolve(__viteDirname, "src");
+
 export default defineConfig({
-  root: 'src',
+  // Absolute path so `root` does not depend on process cwd (npm -w, CI, or
+  // an editor launching Vite from the repo root). On Windows only, normalize
+  // drive-letter case: Vite's html-proxy cache compares root to HTML module
+  // ids, and `c:` vs `C:` misses the inline-CSS entry.
+  root:
+    process.platform === "win32"
+      ? viteRoot.replace(/\\/g, "/").replace(/^([a-zA-Z]):/, (_, drive) => `${drive.toUpperCase()}:`)
+      : viteRoot,
   build: {
     // Relative to the root
     outDir: '../dist',
@@ -103,7 +112,8 @@ export default defineConfig({
       '/query':         { target: apiBase, secure: false },
       '/action':        { target: apiBase, secure: false },
       '/CRUD':          { target: apiBase, secure: false },
-      '/api/copilotkit': { target: apiBase, secure: false }
+      '/api/copilotkit': { target: apiBase, secure: false },
+      '/mcp':            { target: apiBase, secure: false }
     }
   },
   test: {

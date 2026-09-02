@@ -818,6 +818,7 @@ export const ThemedEditableInput: React.FC<ThemedComponentProps & {
   onBlur,
   onKeyDown,
   name,
+  title,
   'aria-label': ariaLabel,
   minWidth = 60,
   dynamicWidth = true,
@@ -826,18 +827,25 @@ export const ThemedEditableInput: React.FC<ThemedComponentProps & {
 }) => {
   const { currentTheme } = useMiroirTheme();
   
+  const inputBackground =
+    currentTheme.components?.input?.background ??
+    currentTheme.colors.backgroundPaper ??
+    currentTheme.colors.background;
+
   const inputStyles = css({
     border: `1px solid ${currentTheme.colors.border}`,
     borderRadius: currentTheme.borderRadius.sm,
-    padding: `${currentTheme.spacing.xs} ${currentTheme.spacing.sm}`,
-    fontSize: 'inherit',
-    fontFamily: 'inherit',
-    backgroundColor: currentTheme.colors.surface,
+    padding: currentTheme.spacing.sm,
+    minHeight: "2.2em",
+    boxSizing: "border-box",
+    fontSize: currentTheme.typography.fontSize.md,
+    fontFamily: currentTheme.typography.fontFamily,
+    backgroundColor: inputBackground,
     color: currentTheme.colors.text,
     minWidth: `${minWidth}px`,
-    width: dynamicWidth ? `${Math.max(minWidth, value.length * 8 + 16)}px` : 'auto',
-    '&:focus': {
-      outline: 'none',
+    width: dynamicWidth ? `${Math.max(minWidth, value.length * 8 + 24)}px` : "auto",
+    "&:focus": {
+      outline: "none",
       borderColor: currentTheme.colors.primary,
       boxShadow: `0 0 0 2px ${currentTheme.colors.primary}20`,
     },
@@ -849,6 +857,7 @@ export const ThemedEditableInput: React.FC<ThemedComponentProps & {
       className={className}
       style={style}
       name={name}
+      title={title}
       aria-label={ariaLabel}
       value={value}
       onChange={onChange}

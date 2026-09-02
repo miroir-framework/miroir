@@ -1223,6 +1223,22 @@ export type {
   TransformerMlSchemaNodeReport,
 } from "./0_interfaces/2_domain/TransformerMlSchemaCheckInterface.js";
 export {
+  collectTransformerEnvironmentBindings,
+  formatTransformerEnvironmentLabel,
+} from "./2_domain/TransformerEnvironmentBindings.js";
+export type {
+  TransformerEnvironment,
+  TransformerEnvironmentBinding,
+} from "./2_domain/TransformerEnvironmentBindings.js";
+export {
+  evaluateVirtualAttributesOnInstance,
+  isVirtualAttribute,
+  listVirtualAttributeNames,
+  requiredVirtualAttributeNames,
+  stripVirtualAttributesFromInstance,
+} from "./2_domain/VirtualAttributes.js";
+export type { VirtualAttributeNeed } from "./2_domain/VirtualAttributes.js";
+export {
   storeActionOrBundleActionStoreRunner
 } from "./3_controllers/ActionRunner.js";
 export {

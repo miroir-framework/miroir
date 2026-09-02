@@ -84,6 +84,26 @@ See also: [Defining Entities — versioning infrastructure](../../guides/develop
 }
 ```
 
+### Virtual attributes
+
+An `mlSchema` attribute may carry `tag.value.virtualAttribute`: an inline transformer
+(`coreTransformerForBuildPlusRuntime`, same editor pattern as `initializeTo.transformer`) that
+computes the value from **that instance’s stored fields only** (including FK uuids as scalars).
+No other Entity is read and SQL never adds a JOIN for it.
+
+- **Lazy:** evaluated only when a query requires the name (`filter` / `orderBy` / `attributes`),
+  a later `runtimeTransformer` in the same boxed query reads it, or a report shows it
+  (`viewAttributes` / details schema).
+- **Never stored:** not a SQL/filesystem column; stripped on create/update.
+- **SQL:** when `runAsSql` requires the name, the transformer compiles to an expression over
+  that table’s columns; compile failure → `QueryNotExecutable`.
+- Public API: `packages/miroir-core/src/2_domain/VirtualAttributes.ts`
+  (`evaluateVirtualAttributesOnInstance`, `requiredVirtualAttributeNames`,
+  `stripVirtualAttributesFromInstance`).
+
+Library tracer: Book `citation` = mustache `{{name}} ({{year}})` — Rear Window → `"Rear Window (1942)"`.
+Report-local `runtimeTransformers` remain the tool for cluster/JOIN display.
+
 ---
 
 ## EntityVersion

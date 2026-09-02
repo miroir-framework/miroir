@@ -5,6 +5,7 @@ import type {
   JzodElement,
   TransformerDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { defaultTransformerInput } from "../0_interfaces/1_core/Transformer";
 import type {
   TransformerMlSchemaCompatibility,
   TransformerMlSchemaGivenTypes,
@@ -273,9 +274,33 @@ function listElementGivenInput(
 }
 
 /**
+ * Runtime `mergeIntoObject` binds `applyTo` into context as
+ * `referenceToOuterObject` (or `defaultInput`). That is context, not a pipe.
+ */
+function bindApplyToAsOuterContext(
+  record: Record<string, unknown>,
+  context: TransformerResultSchemaContext,
+  transformerDefinitions: Record<string, TransformerDefinition>,
+): TransformerResultSchemaContext {
+  const applyToOutput = isTypedTransformer(record.applyTo)
+    ? resolveOutputSchema(record.applyTo, context, transformerDefinitions)
+    : undefined;
+  if (!applyToOutput) {
+    return context;
+  }
+  const outerName =
+    typeof record.referenceToOuterObject === "string" && record.referenceToOuterObject.length > 0
+      ? record.referenceToOuterObject
+      : defaultTransformerInput;
+  return { ...context, [outerName]: applyToOutput };
+}
+
+/**
  * Walk every nested typed transformer. Slot names only affect the *pipe*
  * passed to the child (`applyTo`, list-element slots, `then`/`else`).
- * `definition` records keep Proposal B adjacency (dataflowObject).
+ * `dataflowObject.definition` keeps Proposal B adjacency; other `definition`
+ * records (e.g. `createObject`) are independent. `mergeIntoObject.definition`
+ * is an overlay: no parent pipe, `applyTo` available as context.
  */
 function walkChildren(
   transformer: TypedTransformer,
@@ -297,25 +322,38 @@ function walkChildren(
   const handledKeys = new Set<string>(SKIP_WALK_KEYS);
 
   if (isDefinitionRecord(record.definition)) {
-    walkDataflowDefinition(
-      record.definition,
-      path,
-      parentGivenInput,
-      context,
-      transformerDefinitions,
-      entityMlSchemas,
-      nodes,
-    );
+    if (transformer.transformerType === "dataflowObject") {
+      walkDataflowDefinition(
+        record.definition,
+        path,
+        parentGivenInput,
+        context,
+        transformerDefinitions,
+        entityMlSchemas,
+        nodes,
+      );
+    } else {
+      walkIndependentDefinition(
+        record.definition,
+        path,
+        parentGivenInput,
+        context,
+        transformerDefinitions,
+        entityMlSchemas,
+        nodes,
+      );
+    }
     handledKeys.add("definition");
   } else if (isTypedTransformer(record.definition)) {
-    // mergeIntoObject.definition is the overlay, not the result — do not
-    // inherit the parent's expected output (empty createObject is not a Book).
+    const isMergeOverlay = transformer.transformerType === "mergeIntoObject";
     checkNode(
       record.definition,
       [...path, "definition"],
-      parentGivenInput,
+      isMergeOverlay ? UNDEFINED_SCHEMA : parentGivenInput,
       undefined,
-      context,
+      isMergeOverlay
+        ? bindApplyToAsOuterContext(record, context, transformerDefinitions)
+        : context,
       transformerDefinitions,
       entityMlSchemas,
       nodes,
@@ -365,6 +403,32 @@ function walkChildren(
       continue;
     }
     walkSlot(value, [...path, key], key);
+  }
+}
+
+function walkIndependentDefinition(
+  definition: Record<string, unknown>,
+  path: (string | number)[],
+  parentGivenInput: JzodElement,
+  context: TransformerResultSchemaContext,
+  transformerDefinitions: Record<string, TransformerDefinition>,
+  entityMlSchemas: Record<string, JzodElement> | undefined,
+  nodes: TransformerMlSchemaNodeReport[],
+): void {
+  for (const [stepName, step] of Object.entries(definition)) {
+    if (!isTypedTransformer(step)) {
+      continue;
+    }
+    checkNode(
+      step,
+      [...path, "definition", stepName],
+      parentGivenInput,
+      undefined,
+      context,
+      transformerDefinitions,
+      entityMlSchemas,
+      nodes,
+    );
   }
 }
 
@@ -419,29 +483,39 @@ function walkDataflowDefinition(
   }
 }
 
+export interface FormatMlSchemaTypeLabelOptions {
+  /** Resolver returning a display name for an object schema (e.g. entity name). */
+  schemaNameResolver?: (schema: JzodElement) => string | undefined;
+}
+
 /**
  * Format a ML schema type label.
  * @param schema - The schema to format.
+ * @param options - Optional display options (object schema name resolution).
  * @returns The formatted label.
  */
-export function formatMlSchemaTypeLabel(schema: JzodElement | undefined): string {
+export function formatMlSchemaTypeLabel(
+  schema: JzodElement | undefined,
+  options?: FormatMlSchemaTypeLabelOptions,
+): string {
   if (!schema || typeof schema !== "object" || !("type" in schema)) {
     return "unknown";
   }
   switch (schema.type) {
     case "array": {
       const inner = unwrapArrayElement(schema);
-      return inner ? `array<${formatMlSchemaTypeLabel(inner)}>` : "array";
+      return inner ? `array<${formatMlSchemaTypeLabel(inner, options)}>` : "array";
     }
     case "record":
-      return `record<${formatMlSchemaTypeLabel((schema as { definition?: JzodElement }).definition)}>`;
+      return `record<${formatMlSchemaTypeLabel((schema as { definition?: JzodElement }).definition, options)}>`;
     case "object": {
+      const name = options?.schemaNameResolver?.(schema) ?? "object";
       const keys = Object.keys(schema.definition ?? {});
-      return keys.length === 0 ? "object" : `object{${keys.slice(0, 4).join(",")}${keys.length > 4 ? ",…" : ""}}`;
+      return keys.length === 0 ? name : `${name}{${keys.join(", ")}}`;
     }
     case "union":
       return (schema.definition ?? [])
-        .map((branch) => formatMlSchemaTypeLabel(branch))
+        .map((branch) => formatMlSchemaTypeLabel(branch, options))
         .join("|");
     case "literal":
       return `"${schema.definition}"`;

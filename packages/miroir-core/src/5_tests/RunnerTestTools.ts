@@ -9,7 +9,9 @@ import type {
   MiroirTestSuite,
   Runner,
   StoreUnitConfiguration,
+  TestAssertionResult,
   TestCompositeActionParams,
+  TestSuiteResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
@@ -39,6 +41,25 @@ export {
   resolveRunnerRefFromMiroirTestSuite,
   resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
 } from "./runnerTestSuiteResolve.js";
+
+function findTrackedAssertionByName(
+  suiteResult: TestSuiteResult,
+  assertionName: string,
+): TestAssertionResult | undefined {
+  for (const test of Object.values(suiteResult.testsResults ?? {})) {
+    const found = test.testAssertionsResults?.[assertionName];
+    if (found) {
+      return found;
+    }
+  }
+  for (const nested of Object.values(suiteResult.testsSuiteResults ?? {})) {
+    const found = findTrackedAssertionByName(nested, assertionName);
+    if (found) {
+      return found;
+    }
+  }
+  return undefined;
+}
 
 export function resolveRunnerFromRunnerRef(
   runnerRef: string,
@@ -178,6 +199,91 @@ export async function runMiroirRunnerTest(
     throw new Error(
       "runMiroirRunnerTest: runnerTestContext.runnerUuidIndex or resolvedRunner is required for runnerTest leaves",
     );
+  }
+
+  if (resolvedRunner.definition.runnerType === "mcpToolRunner") {
+    if (!runnerContext.executeMcpToolRunner) {
+      throw new Error(
+        "runMiroirRunnerTest: mcpToolRunner requires executeMcpToolRunner on runnerTestContext",
+      );
+    }
+    const mergedTestParams = expandGetFromParametersInParamBank(
+      mergeRunnerTestParamBank(runnerContext.testParams, leaf),
+    );
+    const namedArgs = mergedTestParams[resolvedRunner.name];
+    const args =
+      namedArgs && typeof namedArgs === "object" && !Array.isArray(namedArgs)
+        ? (namedArgs as Record<string, unknown>)
+        : {};
+    const mcpResult = await runnerContext.executeMcpToolRunner(resolvedRunner, args);
+    const expectedMcpStatus =
+      typeof mergedTestParams.expectedMcpStatus === "string"
+        ? mergedTestParams.expectedMcpStatus
+        : "success";
+    localVitest
+      .expect(mcpResult.status, `${leaf.miroirTestLabel} MCP status`)
+      .toBe(expectedMcpStatus);
+    const expectedInstanceUuid = mergedTestParams.expectedInstanceUuid;
+    if (typeof expectedInstanceUuid === "string") {
+      localVitest
+        .expect(JSON.stringify(mcpResult.result ?? {}), `${leaf.miroirTestLabel} payload`)
+        .toContain(expectedInstanceUuid);
+    }
+    const hasPostSubmit =
+      (leaf.preTestCompositeActions?.length ?? 0) > 0 ||
+      (leaf.testCompositeActionAssertions?.length ?? 0) > 0;
+    if (
+      hasPostSubmit &&
+      mcpResult.status === expectedMcpStatus &&
+      expectedMcpStatus === "success"
+    ) {
+      const label = leaf.testCompositeActionLabel ?? leaf.miroirTestLabel;
+      const currentModelEnvironment = runnerContext.domainController.currentModelEnvironment(
+        runnerContext.runTarget.applicationUuid,
+        runnerContext.applicationDeploymentMap,
+      );
+      await runnerContext.domainController.handleTestCompositeAction(
+        {
+          testType: "testBuildPlusRuntimeCompositeAction",
+          testLabel: label,
+          testParams: mergedTestParams,
+          compositeActionSequence: {
+            actionType: "compositeActionSequence",
+            actionLabel: label,
+            endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            payload: {
+              actionSequence: leaf.preTestCompositeActions ?? [],
+            },
+          },
+          testCompositeActionAssertions: leaf.testCompositeActionAssertions ?? [],
+        } as any,
+        runnerContext.applicationDeploymentMap,
+        currentModelEnvironment,
+        mergedTestParams,
+      );
+      const trackedRoot = miroirActivityTracker.getTestAssertionsResults([]);
+      for (const assertion of leaf.testCompositeActionAssertions ?? []) {
+        const tracked = findTrackedAssertionByName(
+          trackedRoot,
+          assertion.nameGivenToResult,
+        );
+        if (tracked === undefined) {
+          throw new Error(
+            `runnerTest "${leaf.miroirTestLabel}" post-submit assertion "${assertion.nameGivenToResult}" did not run`,
+          );
+        }
+        if (tracked.assertionResult === "error") {
+          throw new Error(
+            `runnerTest "${leaf.miroirTestLabel}" post-submit query assertion failed: ${tracked.assertionName} expected ${JSON.stringify(tracked.assertionExpectedValue)} actual ${JSON.stringify(tracked.assertionActualValue)}`,
+          );
+        }
+      }
+    }
+    miroirActivityTracker.setTestAssertionResult(testAssertionPath, {
+      assertionName: leaf.miroirTestLabel,
+      assertionResult: "ok",
+    });
+    return;
   }
 
   const testAction = resolveRunnerTestLeaf({

@@ -1,3 +1,4 @@
+// @vitest-environment node
 import "@testing-library/jest-dom";
 import * as vitest from "vitest";
 import { expect } from "vitest";

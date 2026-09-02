@@ -47,7 +47,7 @@ function miroirPlatformExists(params: EnsureMiroirPlatformParams): boolean {
 async function deployMiroirPlatform(params: EnsureMiroirPlatformParams): Promise<void> {
   if (params.deployStrategy === "compositeAction") {
     const createMiroirDeploymentAction = createDeploymentCompositeAction(
-      "miroir",
+      "Miroir",
       params.miroirDeploymentUuid,
       params.miroirSelfApplicationUuid,
       params.adminDeployment,

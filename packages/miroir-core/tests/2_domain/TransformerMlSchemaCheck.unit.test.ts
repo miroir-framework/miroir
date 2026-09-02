@@ -124,6 +124,12 @@ describe("getDeclaredInputMlSchema (#251)", () => {
     );
   });
 
+  it("treats createObject declared input as undefined (keys read context, not a pipe)", () => {
+    expect(getDeclaredInputMlSchema(applicationTransformerDefinitions.createObject)?.type).toBe(
+      "undefined",
+    );
+  });
+
   it("treats boolExpr and numericOp piped input as any (left/right/args are parameters, not the pipe)", () => {
     expect(getDeclaredInputMlSchema(applicationTransformerDefinitions.boolExpr)).toEqual({
       type: "any",
@@ -166,6 +172,68 @@ describe("checkTransformerMlSchemaCompatibility — single node (#251)", () => {
     const overlay = report.nodes.find((n) => n.path.length === 1 && n.path[0] === "definition");
     expect(overlay?.transformerType).toBe("createObject");
     expect(overlay?.failures).toEqual([]);
+    expect(overlay?.givenInput?.type).toBe("undefined");
+  });
+
+  it("does not present the row entity as piped input of mergeIntoObject.definition", () => {
+    const overlayWithEntry: CoreTransformerForBuildPlusRuntime = {
+      interpolation: "runtime",
+      transformerType: "mergeIntoObject",
+      applyTo: identityRow,
+      definition: {
+        interpolation: "runtime",
+        transformerType: "createObject",
+        definition: {
+          newRecordEntry: {
+            transformerType: "returnValue",
+            value: 0,
+          },
+        },
+      },
+    };
+    const report = checkTransformerMlSchemaCompatibility(
+      overlayWithEntry,
+      { input: bookSchema },
+      { row: bookSchema },
+    );
+    expect(report.status).toBe("ok");
+    const overlay = report.nodes.find((n) => n.path.join(".") === "definition");
+    expect(overlay?.transformerType).toBe("createObject");
+    expect(overlay?.givenInput?.type).toBe("undefined");
+    expect(overlay?.failures).toEqual([]);
+    const entry = report.nodes.find(
+      (n) => n.path.join(".") === "definition.definition.newRecordEntry",
+    );
+    expect(entry?.transformerType).toBe("returnValue");
+    expect(entry?.givenInput?.type).toBe("undefined");
+  });
+
+  it("binds mergeIntoObject.applyTo into overlay context as defaultInput", () => {
+    const overlayWithContextRead: CoreTransformerForBuildPlusRuntime = {
+      interpolation: "runtime",
+      transformerType: "mergeIntoObject",
+      applyTo: identityRow,
+      definition: {
+        interpolation: "runtime",
+        transformerType: "createObject",
+        definition: {
+          copy: {
+            interpolation: "runtime",
+            transformerType: "getFromContext",
+            referenceName: "defaultInput",
+          },
+        },
+      },
+    };
+    const report = checkTransformerMlSchemaCompatibility(
+      overlayWithContextRead,
+      { input: bookSchema },
+      { row: bookSchema },
+    );
+    const copy = report.nodes.find((n) => n.path.join(".") === "definition.definition.copy");
+    expect(copy?.transformerType).toBe("getFromContext");
+    expect(copy?.givenInput?.type).toBe("undefined");
+    expect(copy?.actualOutput).toEqual(bookSchema);
   });
 
   it("rejects mustacheStringTemplate against a Book row (string ≰ object)", () => {
@@ -338,6 +406,33 @@ describe("checkTransformerMlSchemaCompatibility — nested + Proposal B (#251)",
     expect(predicate!.failures.some((f) => f.direction === "input")).toBe(true);
   });
 
+  it("does not thread createObject.definition keys as a dataflow pipe", () => {
+    const built: CoreTransformerForBuildPlusRuntime = {
+      interpolation: "runtime",
+      transformerType: "createObject",
+      definition: {
+        names: {
+          interpolation: "runtime",
+          transformerType: "returnValue",
+          mlSchema: bookArraySchema,
+          value: [],
+        },
+        first: {
+          interpolation: "runtime",
+          transformerType: "pickFromList",
+          index: 0,
+        },
+      },
+    };
+    const report = checkTransformerMlSchemaCompatibility(built, {
+      input: bookSchema,
+      output: { type: "object", nonStrict: true, definition: {} } as JzodElement,
+    });
+    const first = report.nodes.find((n) => n.path[0] === "definition" && n.path[1] === "first");
+    expect(first?.givenInput).toEqual(bookSchema);
+    expect(first?.failures.some((f) => f.direction === "input")).toBe(true);
+  });
+
   it("checks adjacent dataflowObject steps (Proposal B composition)", () => {
     const flow: CoreTransformerForBuildPlusRuntime = {
       interpolation: "runtime",
@@ -368,7 +463,39 @@ describe("checkTransformerMlSchemaCompatibility — nested + Proposal B (#251)",
 describe("formatMlSchemaTypeLabel (#251)", () => {
   it("summarizes primitives, arrays and objects", () => {
     expect(formatMlSchemaTypeLabel(stringSchema)).toBe("string");
-    expect(formatMlSchemaTypeLabel(bookArraySchema)).toBe("array<object{uuid,name}>");
-    expect(formatMlSchemaTypeLabel(bookSchema)).toContain("object");
+    expect(formatMlSchemaTypeLabel(bookArraySchema)).toBe("array<object{uuid, name}>");
+    expect(formatMlSchemaTypeLabel(bookSchema)).toBe("object{uuid, name}");
+  });
+
+  it("lists all object attributes", () => {
+    const wideSchema = {
+      type: "object",
+      definition: {
+        a: { type: "string" },
+        b: { type: "number" },
+        c: { type: "boolean" },
+        d: { type: "uuid" },
+        e: { type: "string" },
+        f: { type: "date" },
+      },
+    } as JzodElement;
+    expect(formatMlSchemaTypeLabel(wideSchema)).toBe("object{a, b, c, d, e, f}");
+  });
+
+  it("uses the provided schema name resolver for object types", () => {
+    const resolveName = (schema: JzodElement) =>
+      JSON.stringify(schema) === JSON.stringify(bookSchema) ? "Book" : undefined;
+    expect(formatMlSchemaTypeLabel(bookSchema, { schemaNameResolver: resolveName })).toBe(
+      "Book{uuid, name}",
+    );
+    expect(formatMlSchemaTypeLabel(bookArraySchema, { schemaNameResolver: resolveName })).toBe(
+      "array<Book{uuid, name}>",
+    );
+  });
+
+  it("keeps object label when the resolver does not match", () => {
+    expect(formatMlSchemaTypeLabel(bookSchema, { schemaNameResolver: () => undefined })).toBe(
+      "object{uuid, name}",
+    );
   });
 });

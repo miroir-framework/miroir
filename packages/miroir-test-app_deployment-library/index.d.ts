@@ -48,6 +48,7 @@ export declare const lendingEndpoint: any;
 export declare const bookEndpoint: any;
 export declare const returnDocument: any;
 export declare const lendDocument: any;
+export declare const mcpLendDocument: any;
 export declare const menuDefaultLibrary: any;
 export declare const selfApplicationLibrary: any;
 export declare const selfApplicationStoreBasedConfigurationLibrary: any;
@@ -77,8 +78,10 @@ export declare const user2: any;
 export declare const user3: any;
 export declare const miroirTest_runner_lend_document: any;
 export declare const miroirTest_runner_return_document: any;
+export declare const miroirTest_runner_mcp_lend_document: any;
 export declare const testConfiguration_libraryDocumentSeed: any;
 export declare const lendDocumentRunner: any;
+export declare const mcpLendDocumentRunner: any;
 export declare const returnDocumentRunner: any;
 export declare const defaultLibraryAppModel: MetaModel;
 export declare function getDefaultLibraryModelEnvironmentDEFUNCT(

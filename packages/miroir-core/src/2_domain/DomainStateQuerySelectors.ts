@@ -11,7 +11,6 @@ import {
   BoxedQueryTemplateWithExtractorCombinerTransformer,
   BoxedQueryWithExtractorCombinerTransformer,
   Entity,
-  EntityVersion,
   EntityInstance,
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject
@@ -34,10 +33,14 @@ import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { getForeignKeyValue } from "../1_core/Entity/EntityPrimaryKey";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
-import { findEntityFromUuid } from "../tools";
 import { cleanLevel } from "./constants";
 import { runQueryTemplateFromDomainState } from "./DomainStateQueryTemplateSelector";
-import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
+import {
+  extractorVirtualAttributeNeed,
+  findPresentModelEntityFromDomainState,
+  indexInstancesByUuid,
+  overlayAndFilterExtractorInstances,
+} from "./ExtractorVirtualAttributes";
 import {
   applyExtractorTransformerInMemory,
   extractEntityInstanceListWithObjectListExtractorInMemory,
@@ -47,6 +50,7 @@ import {
   runQuery,
 } from "./QuerySelectors";
 import { transformer_extended_apply } from "./TransformersForRuntime";
+import { requiredVirtualAttributeNames } from "./VirtualAttributes";
 // import { transformer_InnerReference_resolve } from "./TransformersForRuntime";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainStateQuerySelector");
@@ -86,7 +90,8 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
 > = (
   domainState: DomainState,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  extractorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>
+  extractorParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, DomainState>,
+  modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   const deploymentUuid =
     applicationDeploymentMap[extractorParams.extractor.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
@@ -156,29 +161,26 @@ export const selectEntityInstanceUuidIndexFromDomainState: SyncBoxedExtractorRun
 
   const entityInstances = domainState[deploymentUuid][applicationSection][entityUuid];
 
-  if (extractorParams.extractor.select.extractorOrCombinerType !== "extractorInstancesByEntity"
-    || (!extractorParams.extractor.select.filter && !extractorParams.extractor.select.orderBy)
-  ) {
+  if (extractorParams.extractor.select.extractorOrCombinerType !== "extractorInstancesByEntity") {
     return entityInstances;
   }
 
-  // log.info("selectEntityInstanceUuidIndexFromDomainState applying filter", extractorParams.extractor.select.filter);
   const localSelect = extractorParams.extractor.select;
-  const instanceToKey = new Map<EntityInstance, string>();
-  for (const [key, instance] of Object.entries(entityInstances)) {
-    instanceToKey.set(instance, key);
+  const entity = findPresentModelEntityFromDomainState(domainState, deploymentUuid, entityUuid);
+  const needed = entity
+    ? requiredVirtualAttributeNames(entity, extractorVirtualAttributeNeed(localSelect))
+    : [];
+  if (!localSelect.filter && !localSelect.orderBy && needed.length === 0) {
+    return entityInstances;
   }
-  const filteredInstancesArray = applyExtractorFilterAndOrderBy(
-    Object.values(entityInstances),
-    localSelect
+  return indexInstancesByUuid(
+    overlayAndFilterExtractorInstances(
+      entity,
+      Object.values(entityInstances),
+      localSelect,
+      modelEnvironment,
+    ),
   );
-  // log.info("selectEntityInstanceUuidIndexFromDomainState filteredInstancesArray", filteredInstancesArray);
-  const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
-    acc[instanceToKey.get(instance) ?? instance.uuid!] = instance;
-    return acc;
-  }, {});
-  // log.info("selectEntityInstanceUuidIndexFromDomainState filtered result", result);
-  return result;  
 };
 
 // ################################################################################################

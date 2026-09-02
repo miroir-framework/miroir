@@ -29,6 +29,7 @@ import {
   ThemedSelectWithPortal
 } from "../Themes/index";
 import { JzodEnumEditorProps } from "./JzodElementEditorInterface";
+import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
 import { useSelector } from "react-redux";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 import { JsonDisplayHelper } from "miroir-react";
@@ -97,6 +98,23 @@ const handleDiscriminatorChange = (
     throw new Error(
       "handleDiscriminatorChange called but current object does not have a discriminated union type!",
     );
+  }
+  const fieldName = String(rootLessListKeyArray[rootLessListKeyArray.length - 1] ?? "");
+  if (!isPrimaryUnionDiscriminatorField(fieldName, parentKeyMap.discriminator)) {
+    const targetRootLessListKey =
+      [reportSectionPathAsString, ...rootLessListKeyArray.slice(0, -1)].join(".") ?? "";
+    const patched = resolveDiscriminatorParentValue(
+      formik.values,
+      reportSectionPathAsString,
+      parentKeyMap.valuePath,
+      rootLessListKeyArray,
+      selectedValue,
+    );
+    if (onChangeCallback) {
+      onChangeCallback(patched, rootLessListKey);
+    }
+    formik.setFieldValue(targetRootLessListKey, patched, false);
+    return;
   }
   // if (typeof parentKeyMap.discriminator !== "string") {
   //   throw new Error(
@@ -343,9 +361,8 @@ export const JzodEnumEditor: FC<JzodEnumEditorProps> = ({
           );
 
   const isDiscriminator =
-    parentKeyMap?.discriminator &&
-    parentKeyMap?.discriminatorValues &&
-    discriminatorIndex !== -1;
+    isPrimaryUnionDiscriminatorField(name, parentKeyMap?.discriminator) &&
+    !!parentKeyMap?.discriminatorValues;
 
   // Handler for discriminator select change (using common function)
   const handleSelectEnumChange = useCallback(

@@ -41,6 +41,7 @@ export { default as bookEndpoint } from "./assets/library_model/3d8da4d4-8f76-4b
 // Library Model - Runners
 export { default as returnDocument } from "./assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/98a38a84-e702-4540-a056-c7676a193a2b.json" with { type: "json" };
 export { default as lendDocument } from "./assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/cc853632-f158-43fa-b9ed-437c9c25f539.json" with { type: "json" };
+export { default as mcpLendDocument } from "./assets/library_model/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/dbb39e31-5c7d-4473-9adb-5286e2972e46.json" with { type: "json" };
 
 // Library Model - Menus
 export { default as menuDefaultLibrary } from "./assets/library_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/dd168e5a-2a21-4d2d-a443-032c6d15eb22.json" with { type: "json" };
@@ -88,8 +89,10 @@ export { default as user3 } from "./assets/library_data/ca794e28-b2dc-45b3-8137-
 export { default as miroirTest_runner_lend_document } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/f8e7d6c5-b4a3-4291-8765-43210fedcba0.json" with { type: "json" };
 export { default as miroirTest_runner_return_document } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/a1b2c3d4-e5f6-4789-a012-3456789abcde.json" with { type: "json" };
 export { default as testConfiguration_libraryDocumentSeed } from "./assets/library_model/675ccd46-7dd3-400b-a2bd-1319c39e11da/d669558c-7cda-4037-81bf-0b9a71fbcb94.json" with { type: "json" };
+export { default as miroirTest_runner_mcp_lend_document } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/a6fc85c8-83ad-4c8f-a6e0-6f9d17713159.json" with { type: "json" };
 
 export {
   lendDocumentRunner,
+  mcpLendDocumentRunner,
   returnDocumentRunner,
 } from "./src/runnerLibraryTestRegistry.js";

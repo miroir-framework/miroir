@@ -15,7 +15,9 @@ import {
 } from "miroir-core";
 import {
   lendDocumentRunner,
+  mcpLendDocumentRunner,
   miroirTest_runner_lend_document,
+  miroirTest_runner_mcp_lend_document,
   miroirTest_runner_return_document,
   returnDocumentRunner,
 } from "miroir-test-app_deployment-library";
@@ -32,6 +34,7 @@ import {
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
   miroirTest_runner_freeze_application_version,
+  miroirTest_runner_mcp_get_instances,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 
@@ -53,6 +56,7 @@ export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY =
 export const UI_INTEGRATION_RUNNER_UUID_INDEX: Record<string, Runner> = {
   ...RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
   [lendDocumentRunner.uuid]: lendDocumentRunner,
+  [mcpLendDocumentRunner.uuid]: mcpLendDocumentRunner,
   [returnDocumentRunner.uuid]: returnDocumentRunner,
 };
 
@@ -225,6 +229,28 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
+  },
+  // ###############################################################################
+  [miroirTest_runner_mcp_get_instances.name]: {
+    kind: "runnerTest",
+    suiteDefinition: (miroirTest_runner_mcp_get_instances as MiroirTestDefinition)
+      .definition as MiroirTestSuite,
+    testBedModelAndInstances: {
+      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+      testbedInitApplicationParameters: libraryTestbedInitParams,
+      testbedModel: defaultLibraryAppModel as MetaModel,
+    },
+  },
+  // ###############################################################################
+  [miroirTest_runner_mcp_lend_document.name]: {
+    kind: "runnerTest",
+    suiteDefinition: (miroirTest_runner_mcp_lend_document as MiroirTestDefinition)
+      .definition as MiroirTestSuite,
+    testBedModelAndInstances: {
+      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+      testbedInitApplicationParameters: libraryTestbedInitParams,
+      testbedModel: defaultLibraryAppModel as MetaModel,
+    },
   },
   // ###############################################################################
   [miroirTest_runner_drop_entity.name]: {

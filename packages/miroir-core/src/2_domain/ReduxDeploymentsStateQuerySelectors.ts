@@ -8,7 +8,13 @@ import {
   EntityInstancesUuidIndex,
   ExtractorOrCombinerReturningObject,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
+import {
+  extractorVirtualAttributeNeed,
+  findPresentModelEntityFromReduxState,
+  indexInstancesByUuid,
+  overlayAndFilterExtractorInstances,
+} from "./ExtractorVirtualAttributes";
+import { requiredVirtualAttributeNames } from "./VirtualAttributes";
 import { ReduxDeploymentsState } from "../0_interfaces/2_domain/ReduxDeploymentsStateInterface";
 import { Domain2ElementFailed, Domain2QueryReturnType, TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
 import {
@@ -366,7 +372,8 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
 > = (
   deploymentEntityState: ReduxDeploymentsState,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>
+  foreignKeyParams: SyncBoxedExtractorRunnerParams<BoxedExtractorOrCombinerReturningObjectList, ReduxDeploymentsState>,
+  modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<EntityInstancesUuidIndex> => {
   const deploymentUuid = applicationDeploymentMap[foreignKeyParams.extractor.application];
   const applicationSection = foreignKeyParams.extractor.select.applicationSection ?? defaultApplicationSection;
@@ -434,30 +441,28 @@ export const selectEntityInstanceUuidIndexFromReduxDeploymentsState: SyncBoxedEx
   // );
   const entityInstances = deploymentEntityState[deploymentEntityStateIndex].entities;
   const localSelect = foreignKeyParams.extractor.select;
-  if (
-    localSelect.extractorOrCombinerType !== "extractorInstancesByEntity" ||
-    (!localSelect.filter && !localSelect.orderBy)
-  ) {
+  if (localSelect.extractorOrCombinerType !== "extractorInstancesByEntity") {
     return entityInstances;
   }
-  // Apply filter and orderBy
-  // Build reverse map to preserve original PK keys from the EntityAdapter
-  const instanceToKey = new Map<EntityInstance, string>();
-  for (const [key, instance] of Object.entries(entityInstances)) {
-    instanceToKey.set(instance, key);
-  }
-  const filteredInstancesArray = applyExtractorFilterAndOrderBy(
-    Object.values(entityInstances),
-    localSelect
+  const entity = findPresentModelEntityFromReduxState(
+    deploymentEntityState,
+    deploymentUuid,
+    entityUuid,
   );
-  // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filteredInstancesArray", filteredInstancesArray);
-
-  const result = filteredInstancesArray.reduce((acc: EntityInstancesUuidIndex, instance: EntityInstance) => {
-    acc[instanceToKey.get(instance) ?? instance.uuid!] = instance;
-    return acc;
-  }, {});
-  // log.info("selectEntityInstanceUuidIndexFromReduxDeploymentsState filtered result", result);
-  return result;
+  const needed = entity
+    ? requiredVirtualAttributeNames(entity, extractorVirtualAttributeNeed(localSelect))
+    : [];
+  if (!localSelect.filter && !localSelect.orderBy && needed.length === 0) {
+    return entityInstances;
+  }
+  return indexInstancesByUuid(
+    overlayAndFilterExtractorInstances(
+      entity,
+      Object.values(entityInstances),
+      localSelect,
+      modelEnvironment,
+    ),
+  );
 };
 
 // ################################################################################################

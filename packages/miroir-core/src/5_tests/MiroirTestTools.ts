@@ -61,6 +61,14 @@ export type RunnerTestContext = CompositeActionTestContext & {
   resolvedRunner?: Runner;
   /** Runner definitions keyed by uuid; used to resolve leaf `runnerRef` at execution time. */
   runnerUuidIndex?: Record<string, Runner>;
+  /**
+   * HTTP `tools/call` for `mcpToolRunner` leaves. Provided by the session host
+   * (ephemeral MCP on the session DomainController).
+   */
+  executeMcpToolRunner?: (
+    runner: Runner,
+    args: Record<string, unknown>,
+  ) => Promise<{ status?: string; result?: unknown; error?: { message?: string } }>;
 };
 
 export type MiroirTestExecutionEnvironment = {

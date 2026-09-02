@@ -360,6 +360,12 @@ export async function runMiroirFunctionCallTestInMemory(
       }
     }
   } catch (error) {
+    const vitestActual =
+      error && typeof error === "object" && "actual" in error
+        ? (error as { actual: unknown }).actual
+        : error instanceof Error
+          ? error.message
+          : error;
     testAssertionResult = {
       assertionName,
       assertionResult: "error",

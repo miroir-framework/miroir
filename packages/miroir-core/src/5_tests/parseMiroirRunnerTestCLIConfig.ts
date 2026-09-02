@@ -22,6 +22,8 @@ export const MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES = [
   "domain_controller_application_version_freeze",
   "evolutionTraceWP1",
   "runner_freeze_application_version",
+  "runner_mcp_get_instances",
+  "runner_mcp_lend_document",
 ] as const;
 
 function listRunnerTestSuiteKeys(): string[] {

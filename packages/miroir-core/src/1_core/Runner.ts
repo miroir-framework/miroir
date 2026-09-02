@@ -50,6 +50,12 @@ export function testBuildPlusRuntimeCompositeActionSuiteForRunner(
   skipCreateDeployment?: boolean,
   skipDropDeployment?: boolean,
 ): TestCompositeActionParams {
+  if (runner.definition.runnerType === "mcpToolRunner") {
+    throw new Error(
+      "testBuildPlusRuntimeCompositeActionSuiteForRunner does not execute mcpToolRunner; use runMcpToolRunner",
+    );
+  }
+
   const actionTemplateWithoutTemplates: CompositeActionTemplate =
     runner.definition.runnerType === "customRunner"
       ? {

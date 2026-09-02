@@ -71,6 +71,10 @@ import {
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, JzodElementEditor } from "./JzodElementEditor";
 import { getFoldedDisplayValue, useJzodElementEditorHooks } from "./JzodElementEditorHooks";
 import { JzodObjectEditorProps } from "./JzodElementEditorInterface";
+import {
+  findPathAnnotation,
+  TransformerTitleRowAnnotations,
+} from "../Reports/TransformerTypeAnnotation.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JzodElementEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -139,11 +143,12 @@ const EditableAttributeName: FC<{
       value={localValue}
       name={formikRootLessListKey + "-NAME"}
       aria-label={formikRootLessListKey + "-NAME"}
+      title="Record entry name"
       onChange={(e) => setLocalValue(e.target.value)}
       onFocus={() => setIsEditing(true)}
       onBlur={handleCommit}
       onKeyDown={handleKeyDown}
-      minWidth={60}
+      minWidth={80}
       dynamicWidth={true}
     />
   );
@@ -196,6 +201,7 @@ const ProgressiveAttribute: FC<{
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  environmentAnnotations?: { path: (string | number)[]; label: string }[];
 }> = ({
   valueObjectEditMode,
   attribute,
@@ -239,6 +245,7 @@ const ProgressiveAttribute: FC<{
   compatibilityWarnings,
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
+  environmentAnnotations,
 }) => {
   // Viewport-gated: cheap placeholder until this attribute intersects the
   // scrollport. Unfolding a huge parent then only mounts editors that are
@@ -407,6 +414,7 @@ const ProgressiveAttribute: FC<{
             compatibilityWarnings={compatibilityWarnings}
             showMlSchemaTypes={showMlSchemaTypes}
             mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+            environmentAnnotations={environmentAnnotations}
             deleteButtonElement={
               !readOnly && !hideOptionalButton ? (
                 <>
@@ -583,6 +591,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     compatibilityWarnings,
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
+    environmentAnnotations,
   } = props;
 
   // Memoize the onChangeVector callback for this field to avoid repeated lookups
@@ -1293,6 +1302,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
             compatibilityWarnings={compatibilityWarnings}
             showMlSchemaTypes={showMlSchemaTypes}
             mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+            environmentAnnotations={environmentAnnotations}
               />
             ))}
       </div>
@@ -1327,6 +1337,7 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
     compatibilityWarnings,
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
+    environmentAnnotations,
   ]);
 
   const schemaType =
@@ -1346,6 +1357,8 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
         durationMs: performance.now() - renderStartRef.current,
       })
     : NOOP_RENDER_COUNTS;
+
+  const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
 
   return (
     <div
@@ -1391,6 +1404,15 @@ export function JzodObjectEditor(props: JzodObjectEditorProps) {
           <span>
             <ThemedFlexRow align="center">
               {labelElement}
+              <TransformerTitleRowAnnotations
+                path={rootLessListKeyArray}
+                skipRoot
+                showMlSchemaTypes={showMlSchemaTypes}
+                mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                environmentAnnotations={environmentAnnotations}
+                inadequate={!!titleRowWarning}
+                inadequateTitle={titleRowWarning?.title}
+              />
               {unitTestKind && <UnitTestKindBadge kind={unitTestKind} />}
               {/* Show folded display value when object is folded and a value is available */}
               {reportContext.isNodeFolded(rootLessListKeyArray) &&

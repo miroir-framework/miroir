@@ -1,4 +1,4 @@
-import { useFormikContext } from 'formik';
+import { Formik, useFormikContext } from 'formik';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
@@ -14,9 +14,11 @@ import {
   Uuid,
   defaultSelfApplicationDeploymentMap,
   entityWithResolvedMLSchema,
+  evaluateVirtualAttributesOnInstance,
   getQueryTemplateRunnerParamsForReduxDeploymentsState,
   interpolateExpression,
   resolvePathOnObject,
+  requiredVirtualAttributeNames,
   type ApplicationDeploymentMap,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type JzodObject,
@@ -40,6 +42,7 @@ import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import {
   useCurrentModel,
+  useCurrentModelEnvironment,
   useReduxDeploymentsStateQueryTemplateSelector
 } from "../../ReduxHooks.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
@@ -210,6 +213,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
       : deployment_Miroir.uuid, // the report to edit any element from the 'model' section must be in the meta-model
       props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
   );
+  const currentMiroirModelEnvironment = useCurrentModelEnvironment(
+    props.application,
+    props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+  );
 
   const entities = useMemo(() => {
     const result: Entity[] = props.deploymentUuid &&
@@ -233,6 +240,26 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
   const currentReportTargetEntity: Entity | undefined = targetEntityUuid
     ? entities.find((entity) => entity.uuid === targetEntityUuid)
     : undefined;
+
+  const displayedInstance = useMemo(() => {
+    if (!currentReportTargetEntity || !instance) {
+      return instance;
+    }
+    const needed = requiredVirtualAttributeNames(currentReportTargetEntity, {
+      referencedAttributeNames: Object.keys(
+        currentReportTargetEntity.mlSchema?.definition ?? {},
+      ),
+    });
+    if (needed.length === 0) {
+      return instance;
+    }
+    return evaluateVirtualAttributesOnInstance(
+      currentReportTargetEntity,
+      instance,
+      needed,
+      currentMiroirModelEnvironment,
+    );
+  }, [currentMiroirModelEnvironment, currentReportTargetEntity, instance]);
 
   const currentFlattenedReportSectionTargetEntityMlSchema: JzodObject | undefined =
     currentReportTargetEntity
@@ -575,6 +602,11 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               // },
             ]}
           />
+          <Formik
+            initialValues={{ [formikValuePathAsString]: displayedInstance }}
+            enableReinitialize
+            onSubmit={() => {}}
+          >
           <TypedValueObjectEditor
             formValueMLSchema={currentFlattenedReportSectionTargetEntityMlSchema}
             formikValuePathAsString={formikValuePathAsString}
@@ -592,6 +624,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             //
             setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
           />
+          </Formik>
           </>
         ) : (
           <div>

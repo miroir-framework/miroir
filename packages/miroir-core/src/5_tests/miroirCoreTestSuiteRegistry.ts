@@ -40,6 +40,7 @@ const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
   "unfoldSchemaOnce",
   "unionArrayChoices",
   "unionObjectChoices",
+  "virtualAttributes",
 ] as const;
 
 export type MiroirTestSuiteKey = (typeof MIROIR_TEST_SUITE_REGISTRY_NAMES)[number];

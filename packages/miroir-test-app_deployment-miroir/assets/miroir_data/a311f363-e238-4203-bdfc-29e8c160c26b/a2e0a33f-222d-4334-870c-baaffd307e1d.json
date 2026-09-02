@@ -1,0 +1,51 @@
+{
+  "uuid": "a2e0a33f-222d-4334-870c-baaffd307e1d",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "runner_mcp_get_instances",
+  "description": "Issue #253 — mcpToolRunner getInstances via MCP tools/call; payload includes seeded book1.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "runner.mcpGetInstances",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "testParams": {
+      "expectedInstanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "runnerTest",
+        "miroirTestLabel": "MCP getInstances returns book1",
+        "environmentRef": "libraryRunnerTestEnvironment",
+        "runnerRef": "897e9711-65a0-414e-9773-19de92ade533",
+        "deploymentRef": "libraryTestIdentifiers",
+        "testCompositeActionLabel": "MCP getInstances returns book1",
+        "initialModel": {
+          "transformerType": "getFromParameters",
+          "interpolation": "build",
+          "referenceName": "defaultLibraryAppModel"
+        },
+        "testParams": {
+          "mcpGetInstances": {
+            "application": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "testApplicationUuid"
+            },
+            "applicationSection": "data",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          }
+        },
+        "preTestCompositeActions": [],
+        "testCompositeActionAssertions": [],
+        "preRunnerCompositeActions": [],
+        "defaultApplicationName": "Library"
+      }
+    ]
+  }
+}

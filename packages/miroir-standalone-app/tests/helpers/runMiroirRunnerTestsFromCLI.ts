@@ -16,6 +16,7 @@ import {
 import { onFailedRunExport } from "./writeFailedRunExport.js";
 import {
   miroirTest_runner_lend_document,
+  miroirTest_runner_mcp_lend_document,
   miroirTest_runner_return_document,
 } from "miroir-test-app_deployment-library";
 import {
@@ -31,6 +32,7 @@ import {
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
   miroirTest_runner_freeze_application_version,
+  miroirTest_runner_mcp_get_instances,
 } from "miroir-test-app_deployment-miroir";
 
 const SUITE_BY_KEY: Record<string, MiroirTestDefinition> = {
@@ -40,6 +42,8 @@ const SUITE_BY_KEY: Record<string, MiroirTestDefinition> = {
   runner_drop_entity: miroirTest_runner_drop_entity as MiroirTestDefinition,
   runner_freeze_application_version:
     miroirTest_runner_freeze_application_version as MiroirTestDefinition,
+  runner_mcp_get_instances: miroirTest_runner_mcp_get_instances as MiroirTestDefinition,
+  runner_mcp_lend_document: miroirTest_runner_mcp_lend_document as MiroirTestDefinition,
   domain_controller_data_crud: miroirTest_domain_controller_data_crud as MiroirTestDefinition,
   domain_controller_model_crud: miroirTest_domain_controller_model_crud as MiroirTestDefinition,
   domain_controller_composite_pk_crud:

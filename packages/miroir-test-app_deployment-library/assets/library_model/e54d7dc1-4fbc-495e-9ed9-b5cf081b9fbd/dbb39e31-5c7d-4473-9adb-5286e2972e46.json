@@ -1,0 +1,14 @@
+{
+  "uuid": "dbb39e31-5c7d-4473-9adb-5286e2972e46",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "name": "mcpLendDocument",
+  "defaultLabel": "MCP: lendDocument",
+  "parentName": "Runner",
+  "description": "Issue #253 — lend a document through backend MCP tools/call (Library_lendDocument).",
+  "definition": {
+    "runnerType": "mcpToolRunner",
+    "toolName": "Library_lendDocument",
+    "resultPresentation": "status"
+  }
+}

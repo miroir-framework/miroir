@@ -1344,6 +1344,65 @@ export function getJzodObjectEditorTests(
               });
             },
           },
+        "createObject definition record entry name can be renamed": {
+          props: {
+            label: "Test Label",
+            name: "testField",
+            listKey: "ROOT.testField",
+            rootLessListKey: "testField",
+            rootLessListKeyArray: ["testField"],
+            rawJzodSchema: {
+              type: "schemaReference",
+              definition: {
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath: "coreTransformerForBuildPlusRuntime",
+              },
+            },
+            initialFormState: {
+              interpolation: "runtime",
+              transformerType: "createObject",
+              definition: {
+                newRecordEntry: {
+                  interpolation: "runtime",
+                  transformerType: "returnValue",
+                  value: 0,
+                },
+              },
+            },
+          },
+          tests: async (expect, container) => {
+            const input = screen.getByRole("textbox", {
+              name: formikFieldName("testField.definition.newRecordEntry-NAME"),
+            }) as HTMLInputElement;
+            expect(input).toBeInTheDocument();
+            expect(input).toHaveValue("newRecordEntry");
+            await act(() => {
+              fireEvent.change(input, { target: { value: "firstName" } });
+            });
+            await act(() => {
+              fireEvent.blur(input);
+            });
+            await waitAfterUserInteraction();
+            expect(input).toHaveValue("firstName");
+            const values = extractValuesFromRenderedElements(
+              expect,
+              undefined,
+              container,
+              formikFieldName("testField"),
+              "after rename createObject record entry",
+            );
+            const testResult = formValuesToJSON(values);
+            // Outer transformerType / interpolation are comboboxes; extractValues
+            // omits them. The record key itself is what this test cares about.
+            expect(testResult.definition).toEqual({
+              firstName: {
+                interpolation: "runtime",
+                transformerType: "returnValue",
+                value: 0,
+              },
+            });
+          },
+        },
       },
     },
   };

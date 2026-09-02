@@ -56,6 +56,14 @@
           }
         },
         {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
+            "label": "MCP: getInstances",
+            "runner": "897e9711-65a0-414e-9773-19de92ade533"
+          }
+        },
+        {
           "type": "storedReportDisplay",
           "definition": {
             "transformerType": "returnValue",

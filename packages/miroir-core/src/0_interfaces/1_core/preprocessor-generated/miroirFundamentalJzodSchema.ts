@@ -122,6 +122,20 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
+                  "virtualAttribute": {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "coreTransformerForBuildPlusRuntime"
+                          }
+                        }
+                      }
+                    }
+                  },
                   "isBlob": {
                     "type": "boolean",
                     "optional": true
@@ -15627,7 +15641,7 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "Definition",
-                "description": "The definition of the runner, which can be either a custom runner or an action runner",
+                "description": "The definition of the runner: customRunner, actionRunner, or mcpToolRunner",
                 "display": {
                   "displayedAttributeValueWhenFolded": "definition.runnerType.definition"
                 }
@@ -15753,6 +15767,36 @@ export const miroirFundamentalJzodSchema = {
                   },
                   "action": {
                     "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "runnerType": {
+                    "type": "literal",
+                    "definition": "mcpToolRunner"
+                  },
+                  "toolName": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "MCP Tool Name"
+                      }
+                    }
+                  },
+                  "resultPresentation": {
+                    "type": "enum",
+                    "definition": [
+                      "payload",
+                      "status"
+                    ],
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Result Presentation",
+                        "description": "payload shows the MCP result document; status is success or failure only"
+                      }
+                    }
                   }
                 }
               }
@@ -27868,6 +27912,20 @@ export const miroirFundamentalJzodSchema = {
                       }
                     ]
                   },
+                  "virtualAttribute": {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "coreTransformerForBuildPlusRuntime"
+                          }
+                        }
+                      }
+                    }
+                  },
                   "isBlob": {
                     "type": "boolean",
                     "optional": true
@@ -33746,6 +33804,20 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     ]
+                  },
+                  "virtualAttribute": {
+                    "type": "any",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "coreTransformerForBuildPlusRuntime"
+                          }
+                        }
+                      }
+                    }
                   },
                   "isBlob": {
                     "type": "boolean",

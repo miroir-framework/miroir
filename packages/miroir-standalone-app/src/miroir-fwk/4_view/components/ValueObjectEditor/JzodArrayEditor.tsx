@@ -38,6 +38,10 @@ import {
 } from "../../tools/renderInsightRegistry.js";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import {
+  findPathAnnotation,
+  TransformerTitleRowAnnotations,
+} from "../Reports/TransformerTypeAnnotation.js";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useReportPageContext } from "../Reports/ReportPageContext";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
@@ -173,6 +177,7 @@ interface ProgressiveArrayItemProps {
   compatibilityWarnings?: { path: (string | number)[]; title: string }[];
   showMlSchemaTypes?: boolean;
   mlSchemaTypeAnnotations?: { path: (string | number)[]; label: string }[];
+  environmentAnnotations?: { path: (string | number)[]; label: string }[];
   onChangeVector?: Record<string, (value: any, rootLessListKey: string) => void>;
   removeItemAtIndex?: (index: number) => void;
   duplicateItemAtIndex?: (index: number) => void;
@@ -208,6 +213,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
   compatibilityWarnings,
   showMlSchemaTypes,
   mlSchemaTypeAnnotations,
+  environmentAnnotations,
   onChangeVector,
   removeItemAtIndex,
   duplicateItemAtIndex,
@@ -332,6 +338,7 @@ const ProgressiveArrayItem: React.FC<ProgressiveArrayItemProps> = ({
                 compatibilityWarnings={compatibilityWarnings}
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                environmentAnnotations={environmentAnnotations}
               />
             </ErrorBoundary>
           </>
@@ -373,6 +380,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
     compatibilityWarnings,
     showMlSchemaTypes,
     mlSchemaTypeAnnotations,
+    environmentAnnotations,
     onChangeVector,
     ...props
   }
@@ -752,6 +760,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
                 compatibilityWarnings={compatibilityWarnings}
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                environmentAnnotations={environmentAnnotations}
                   onChangeVector={onChangeVector}
                   removeItemAtIndex={!readOnly || insideAny ? removeItemAtIndex : undefined}
                   duplicateItemAtIndex={!readOnly ? duplicateItemAtIndex : undefined}
@@ -779,6 +788,7 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
       compatibilityWarnings,
       showMlSchemaTypes,
       mlSchemaTypeAnnotations,
+      environmentAnnotations,
     ]
   );
   ;
@@ -801,6 +811,8 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
         durationMs: performance.now() - renderStartRef.current,
       })
     : NOOP_RENDER_COUNTS;
+
+  const titleRowWarning = findPathAnnotation(compatibilityWarnings, rootLessListKeyArray);
 
   return (
     <div id={rootLessListKey} key={rootLessListKey}>
@@ -827,6 +839,15 @@ export const JzodArrayEditor: React.FC<JzodArrayEditorProps> = (
           <span>
             <ThemedFlexRow align="center">
               {label}
+              <TransformerTitleRowAnnotations
+                path={rootLessListKeyArray}
+                skipRoot
+                showMlSchemaTypes={showMlSchemaTypes}
+                mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
+                environmentAnnotations={environmentAnnotations}
+                inadequate={!!titleRowWarning}
+                inadequateTitle={titleRowWarning?.title}
+              />
               {/* Show folded display value when array is folded and a value is available */}
               {reportContext.isNodeFolded(rootLessListKeyArray) &&
                 (() => {

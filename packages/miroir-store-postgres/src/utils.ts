@@ -3,6 +3,7 @@
 import {
   Entity,
   entityMLSchema,
+  isVirtualAttribute,
   JzodElement,
   JzodObject,
   LoggerInterface,
@@ -82,7 +83,9 @@ export function fromMiroirPresentModelToSequelizeEntityDefinition(
   const pkAttributes: string[] = Array.isArray(idAttribute) ? idAttribute : [idAttribute];
   const jzodObjectAttributes = mlSchema.definition;
   const result = Object.fromEntries(
-    Object.entries(jzodObjectAttributes).map((a: [string, JzodElement]) => {
+    Object.entries(jzodObjectAttributes)
+      .filter(([, schema]) => !isVirtualAttribute(schema))
+      .map((a: [string, JzodElement]) => {
       return [
         [a[0]],
         {
@@ -125,6 +128,10 @@ export function getOptionalNonNullableAttributes(
   return Object.entries(mlSchema.definition)
     .filter(([, attrDef]) => {
       const attr = attrDef as JzodElement & { optional?: boolean; nullable?: boolean };
+      // Virtual attributes are not columns; if a leftover NULL appears on read, drop it (D4).
+      if (isVirtualAttribute(attr)) {
+        return true;
+      }
       return attr.optional === true && !attr.nullable;
     })
     .map(([attrName]) => attrName);
