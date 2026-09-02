@@ -1,0 +1,14 @@
+{
+  "uuid": "897e9711-65a0-414e-9773-19de92ade533",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "name": "mcpGetInstances",
+  "defaultLabel": "MCP: getInstances",
+  "parentName": "Runner",
+  "description": "Issue #253 — query instances through backend MCP tools/call (Miroir_getInstances).",
+  "definition": {
+    "runnerType": "mcpToolRunner",
+    "toolName": "Miroir_getInstances",
+    "resultPresentation": "payload"
+  }
+}

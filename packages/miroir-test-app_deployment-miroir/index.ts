@@ -309,6 +309,7 @@ export { default as miroirTest_evolutionTraceWP1 } from "./assets/miroir_data/a3
 export { default as miroirTest_runner_create_entity } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/4b4645f5-a3c1-4563-ac3f-c6e12cc703dc.json" with { type: "json" };
 export { default as miroirTest_runner_drop_entity } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/81ec69e8-0e2f-41ef-8017-76a8f004c9aa.json" with { type: "json" };
 export { default as miroirTest_runner_freeze_application_version } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/967eff73-2a41-40c8-aa8d-87d292d31953.json" with { type: "json" };
+export { default as miroirTest_runner_mcp_get_instances } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a2e0a33f-222d-4334-870c-baaffd307e1d.json" with { type: "json" };
 export { default as miroirTest_unionArrayChoices } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/9e4db067-27ab-48c1-91f7-2a739824e674.json" with { type: "json" };
 export { default as miroirTest_unionObjectChoices } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/14319c8e-8ece-4853-9004-f095fbd16d1a.json" with { type: "json" };
 export { default as miroirTest_virtualAttributes } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c4dffd69-2594-482c-b680-295c30eafe30.json" with { type: "json" };
@@ -376,6 +377,7 @@ export { default as runnerDropApplication } from "./assets/miroir_data/e54d7dc1-
 export { default as runnerDropEntity } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/44313751-b0e5-4132-bb12-a544806e759b.json" with { type: "json" };
 export { default as runnerCreateEntity } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/82f81a25-2366-4abf-8a97-83ca5e9a9c46.json" with { type: "json" };
 export { default as runnerFreezeApplicationVersion } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/20d51c4c-52e5-4077-baf3-5e87bd75e496.json" with { type: "json" };
+export { default as runnerMcpGetInstances } from "./assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/897e9711-65a0-414e-9773-19de92ade533.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - Blob (parentUuid = entityBlob = 62209e4a)

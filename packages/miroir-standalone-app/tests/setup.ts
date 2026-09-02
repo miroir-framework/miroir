@@ -6,8 +6,12 @@ import {
 import { fetch } from 'cross-fetch';
 import '@testing-library/jest-dom';
 
-// Add `fetch` polyfill.
-global.fetch = fetch;
+// Polyfill only when the runtime has no fetch. Overwriting Node's native
+// fetch (or a later undici) with cross-fetch breaks MCP Streamable HTTP
+// (Response.body.cancel is missing).
+if (typeof globalThis.fetch !== "function") {
+  global.fetch = fetch;
+}
 
 // Configure React Testing Library for vitest
 import { configure } from '@testing-library/react';

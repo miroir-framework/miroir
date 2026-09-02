@@ -36,6 +36,7 @@ import {
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+import { browserMcpServerUrl, runMcpToolRunner } from "../4_view/components/Runners/runMcpToolRunner.js";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
 import { buildTeardownTestApplicationStoresAction } from "./testApplicationStoreTeardown.js";
 import {
@@ -76,6 +77,15 @@ export type RunnerTestSessionOptions = IntegTestHostOptions & {
    * (vitest / TLS). The browser orchestrator injects `window.fetch.bind(window)`.
    */
   customFetch?: typeof fetch;
+  /**
+   * Node-only MCP HTTP server for mcpToolRunner host tests. Must not be imported
+   * from `miroir-mcp` in this file — that package root is the Node CLI and
+   * breaks the Vite client build. Browser sessions omit this and call same-origin `/mcp`.
+   */
+  startMcpHttpServer?: (
+    domainController: DomainControllerInterface,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ) => Promise<{ url: string; close: () => Promise<void> }>;
 };
 
 export type RunnerTestSessionConfig = {
@@ -151,6 +161,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
   private persistenceStoreControllerManager:
     | PersistenceStoreControllerManagerInterface
     | undefined;
+  private mcpHttpClose: (() => Promise<void>) | undefined;
 
   constructor(private readonly options: RunnerTestSessionOptions) {}
 
@@ -365,6 +376,21 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       runtimeContext: {},
     };
 
+    if (resolvedRunner?.definition.runnerType === "mcpToolRunner") {
+      if (this.options.startMcpHttpServer) {
+        const ephemeral = await this.options.startMcpHttpServer(
+          domainController,
+          testApplicationDeploymentMap,
+        );
+        this.mcpHttpClose = ephemeral.close;
+        this.runnerTestContext.executeMcpToolRunner = async (runner, args) =>
+          runMcpToolRunner(runner, args, ephemeral.url);
+      } else {
+        this.runnerTestContext.executeMcpToolRunner = async (runner, args) =>
+          runMcpToolRunner(runner, args, browserMcpServerUrl());
+      }
+    }
+
     return {
       domainController,
       applicationDeploymentMap: testApplicationDeploymentMap,
@@ -449,6 +475,11 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       this.applicationDeploymentMap = undefined;
       this.runnerTestContext = undefined;
       return;
+    }
+
+    if (this.mcpHttpClose) {
+      await this.mcpHttpClose();
+      this.mcpHttpClose = undefined;
     }
 
     const { runTarget, testDeploymentStorageConfiguration } = this.runnerTestContext;

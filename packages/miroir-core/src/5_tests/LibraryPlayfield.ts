@@ -102,7 +102,7 @@ export async function ensureLibraryPlayfield(
   }
 
   const createLibraryDeploymentAction = createDeploymentCompositeAction(
-    "library",
+    "Library",
     params.libraryDeploymentUuid,
     params.librarySelfApplicationUuid,
     params.adminDeployment,

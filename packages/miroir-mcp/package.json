@@ -3,13 +3,25 @@
   "version": "0.5.0-rc.1",
   "description": "Model Context Protocol (MCP) server for Miroir Framework - exposes InstanceEndpoint actions as MCP tools",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js"
+    }
+  },
   "bin": {
     "miroir-mcp": "./dist/index.js"
   },
   "scripts": {
     "copy-files": "copyfiles -u 1 src/**/*.json dist/src",
-    "build": "npm run copy-files && tsup --target=node20 --format esm src/index.ts",
+    "build": "npm run copy-files && tsup",
     "devBuild": "npm run build",
     "dev": "npm run build && node ./dist/index.js",
     "test": "cross-env NODE_ENV=test vitest run --poolOptions.threads.singleThread --bail=1",

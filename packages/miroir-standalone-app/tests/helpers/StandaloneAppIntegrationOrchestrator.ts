@@ -23,6 +23,7 @@ import {
   IntegrationTestSession,
 } from "./IntegrationTestSession.js";
 import { DomainControllerIntegrationTestSession } from "./DomainControllerIntegrationTestSession.js";
+import { startEphemeralMcpHttpServer } from "miroir-mcp";
 import { RunnerTestSession } from "./RunnerTestSession.js";
 
 function resolveLibraryPlayfieldEnsureMode(
@@ -93,6 +94,7 @@ function createRunnerOrActionSession(
     ...hostBootstrap,
     ...(resolvedRunner !== undefined ? { resolvedRunner } : {}),
     hostExecutionEnvironment: resolveHostExecutionEnvironment(context, hostBootstrap),
+    startMcpHttpServer: startEphemeralMcpHttpServer,
   });
 }
 

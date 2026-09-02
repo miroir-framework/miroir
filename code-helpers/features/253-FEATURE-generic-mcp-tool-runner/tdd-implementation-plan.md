@@ -13,7 +13,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [`../229-FEATURE-dynamic-mcp-endpoint-tools/`](../229-FEATURE-dynamic-mcp-endpoint-tools/) ✅ · [`../248-FIX-mcp-tools-list-payload-size/`](../248-FIX-mcp-tools-list-payload-size/) ✅  
 Parent: [#193](https://github.com/miroir-framework/miroir/issues/193)
 
-**Resume note:** Slice 0 done. Next is Slice 1 tracer (`runner_mcp_get_instances`).
+**Resume note:** Slice 1 done. Next is Slice 2 (`runner_mcp_lend_document` on LibraryHome, `resultPresentation: "status"`).
 
 ---
 
@@ -48,7 +48,7 @@ Correct shape: **one query path through all layers**, then **deepen** with the e
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize current contracts | ✅ | `mcpToolRunner.253.phase0.unit.test.ts` |
-| 1 | Tracer: run `mcpGetInstances` end-to-end | ⬜ | `runner_mcp_get_instances` |
+| 1 | Tracer: run `mcpGetInstances` end-to-end | ✅ | `runner_mcp_get_instances` |
 | 2 | Same path: run `mcpLendDocument` (status only) | ⬜ | `runner_mcp_lend_document` |
 | 3 | Nonreg, docs, cleanup, AC | ⬜ | nonreg steps + tracer narrative |
 
@@ -91,7 +91,7 @@ Seed literals: Library `5af03c98-…`; Book `e8ba151b-…`; `book1` `caef8a59-39
 | Purpose | Command |
 |---|---|
 | Slice 0 inventory | `RUN_TEST=mcpToolRunner.253.phase0 npm run testByFile -w miroir-standalone-app -- mcpToolRunner.253.phase0` |
-| Query runnerTest | `npm run testMiroir -w miroir-standalone-app -- --suites runner_mcp_get_instances --mode integration` |
+| Query runnerTest | `npm run testMiroir -w miroir-standalone-app -- --suites runner_mcp_get_instances --mode integration --profile emulatedServer-filesystem` |
 | Effect runnerTest | `npm run testMiroir -w miroir-standalone-app -- --suites runner_mcp_lend_document --mode integration` |
 | Existing lend twin | `npm run testMiroir -w miroir-standalone-app -- --suites runner_lend_document --mode integration` |
 | Miroir / Library assets | `npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts` |
@@ -150,7 +150,7 @@ Electron release copies). No production code changed. Validation command: 5 pass
 
 ## Slice 1 — Tracer: run `mcpGetInstances` end-to-end
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -200,15 +200,37 @@ Update the Slice 0 lock in the same change set so it describes post-Slice-1 real
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
-npm run testMiroir -w miroir-standalone-app -- --suites runner_mcp_get_instances --mode integration
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation
+npm run testMiroir -w miroir-standalone-app -- --suites runner_mcp_get_instances --mode integration --profile emulatedServer-filesystem
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
 ### Realization
 
-<Appended on completion.>
+Tracer GREEN: `runner_mcp_get_instances` submits `mcpGetInstances` via HTTP `tools/call` `Miroir_getInstances` (Library / data / Book) and the payload contains seeded `book1` (`caef8a59-…`).
+
+Layers landed:
+
+- Present-model Runner Entity third union arm (`mcpToolRunner` + `toolName` + `resultPresentation`). EntityVersion snapshot `daa38a5f-…` left untouched.
+- Instance `897e9711-…` (`mcpGetInstances`), export, `MIROIR_DATA_RUNNER_UUIDS`, extra section on `reportMiroirRunners`.
+- Shared `runMcpToolRunner` + ephemeral MCP on the session DomainController; `runMiroirRunnerTest` branches on `mcpToolRunner` (does not wrap as a composite action).
+- `StoredRunnerView` exhaustive switch; form from Endpoint payload Jzod; snackbar via `Action2Error`; payload panel without `debug={true}` (that helper hides output unless debug is on).
+- API `mountHttpRoutes` on the main Express `app` + Vite `proxy['/mcp']`.
+- Slice 0 lock updated to 3 arms / 9 runners / 7 Miroir-data uuids / 6 report sections / `/mcp` present (5/5).
+
+Needed for the tracer to actually return instances (not new product surface):
+
+- `DomainController.handleInstanceAction` now returns the persistence `getInstance` / `getInstances` payload (`CallUtils.callPersistenceAction` otherwise swallows it as `{}`).
+- Playfield AdminApplication names are `Miroir` / `Library` so `toolNameFor` matches production (`Miroir_getInstances`).
+- Runner integ file uses `@vitest-environment node`; `setup.ts` no longer overwrites native `fetch` with `cross-fetch` (that polyfill lacks `Response.body.cancel`, which Streamable HTTP needs).
+- Suite key registered in `SUITE_BY_KEY` and `MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES`.
+
+`mcpGetInstances` is **not** in `defaultMiroirMetaModel.runners`: in-memory modelValidation still type-checks Runner instances against the EntityVersion snapshot (two arms only). The JSON asset and MiroirTest stay; freeze/createEntity follow the same pattern.
+
+`npx tsc -p packages/miroir-standalone-app` still reports two pre-existing errors in `ReportTools.ts` / `ReportSectionListDisplay.tsx` (unrelated to this slice). `miroir-core` tsc is clean.
+
+Validation: modelValidation 149 passed; `runner_mcp_get_instances` 1/1 on `--profile emulatedServer-filesystem`; Slice 0 lock 5/5.
 
 ---
 
@@ -304,11 +326,11 @@ npm run nonreg -- --only integ-runner-runner_mcp_get_instances,integ-runner-runn
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| `mcpToolRunner` schema + `toolName` + `resultPresentation` | Slice 1 `devBuild` + modelValidation | ⬜ |
-| Query Runner instance | Slice 1 `897e9711-…` | ⬜ |
+| `mcpToolRunner` schema + `toolName` + `resultPresentation` | Slice 1 `devBuild` + modelValidation | ✅ |
+| Query Runner instance | Slice 1 `897e9711-…` | ✅ |
 | Effect Runner instance | Slice 2 `dbb39e31-…` | ⬜ |
-| Submit is MCP `tools/call` | Slices 1–2 `runnerTest` host | ⬜ |
-| Query success shows `book1` | `runner_mcp_get_instances` | ⬜ |
+| Submit is MCP `tools/call` | Slices 1–2 `runnerTest` host | ⬜ (Slice 1 host proven) |
+| Query success shows `book1` | `runner_mcp_get_instances` | ✅ |
 | Effect is success/failure only | `runner_mcp_lend_document` | ⬜ |
 | Reachable on existing reports; LibraryHome twins unchanged | Slice 1 + 2 report JSON + `runner_lend_document` | ⬜ |
 | Other Runners unchanged | Slice 0 lock evolution + `runner_lend_document` | ⬜ |

@@ -5,6 +5,7 @@ import {
   runnerDropApplication,
   runnerDropEntity,
   runnerFreezeApplicationVersion,
+  runnerMcpGetInstances,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 
@@ -19,6 +20,7 @@ const MIROIR_DATA_RUNNER_UUIDS = new Set<Uuid>([
   runnerDropApplication.uuid,
   runnerDropEntity.uuid,
   runnerFreezeApplicationVersion.uuid,
+  runnerMcpGetInstances.uuid,
   // createApplication — not re-exported from deployment index
   "bcc872dc-649a-410a-81bc-a8ad65f21e1c",
 ]);

@@ -52,6 +52,7 @@ import {
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
   miroirTest_runner_freeze_application_version,
+  miroirTest_runner_mcp_get_instances,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 
@@ -260,6 +261,17 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
     testBedModelAndInstances: null,
+  },
+  // ###############################################################################
+  [miroirTest_runner_mcp_get_instances.name]: {
+    kind: "runnerTest",
+    suiteDefinition: (miroirTest_runner_mcp_get_instances as MiroirTestDefinition)
+      .definition as MiroirTestSuite,
+    testBedModelAndInstances: {
+      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+      testbedInitApplicationParameters: libraryTestbedInitParams,
+      testbedModel: defaultLibraryAppModel as MetaModel,
+    },
   },
   // ###############################################################################
   [miroirTest_runner_drop_entity.name]: {

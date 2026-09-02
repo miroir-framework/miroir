@@ -121,5 +121,9 @@ console.warn("[miroir-mcp] Miroir MCP is in library mode, not starting server au
 export * from "./config/configLoader.js";
 export * from "./config/configSchema.js";
 export { MiroirMcpServer, setupMcpServer, refreshLocalCachesForDeployedApplications, MCP_HTTP_ENDPOINT };
-export { EndpointToolRegistry };
+export { EndpointToolRegistry, toolNameFor } from "./tools/EndpointToolRegistry.js";
+export { callMcpToolViaHttp, listMcpToolsViaHttp, sendMcpRequestViaHttp } from "./mcpHttpClient.js";
+export type { McpHttpFetch } from "./mcpHttpClient.js";
+export { startEphemeralMcpHttpServer } from "./ephemeralMcpHttp.js";
+export type { EphemeralMcpHttpServer } from "./ephemeralMcpHttp.js";
 

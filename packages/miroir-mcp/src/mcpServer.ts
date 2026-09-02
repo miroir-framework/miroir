@@ -22,16 +22,16 @@ import {
 
 
 import { MiroirMcpConfig } from "./config/configSchema.js";
+import { MCP_HTTP_ENDPOINT } from "./mcpConstants.js";
 import { type EndpointToolRegistry } from "./tools/EndpointToolRegistry.js";
+
+export { MCP_HTTP_ENDPOINT };
 
 const packageName = "miroir-mcp";
 let log: LoggerInterface = console as any as LoggerInterface;
 
 /** ModelEndpoint uuid — rollback reloads persisted model/data into the local cache. */
 const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
-
-/** Stateless Streamable HTTP MCP endpoint path. */
-export const MCP_HTTP_ENDPOINT = "/mcp";
 
 /**
  * openStore wires persistence backends but does not populate instance rows (including
@@ -151,7 +151,19 @@ export class MiroirMcpServer {
     });
     await logAvailableMcpTools(this.endpointToolRegistry, "initial");
 
-    this.app.post(MCP_HTTP_ENDPOINT, async (req, res) => {
+    this.mountHttpRoutes(this.app);
+
+    this.app.get("/health", (_req, res) => {
+      res.json({ status: "ok", name: "miroir-mcp-server", version: "1.0.0" });
+    });
+  }
+
+  /**
+   * Mount Streamable HTTP `/mcp` on another Express app (same-origin API, D6-a)
+   * without starting a second registry subscription.
+   */
+  mountHttpRoutes(targetApp: Express): void {
+    targetApp.post(MCP_HTTP_ENDPOINT, async (req, res) => {
       log.info(`Received POST request on ${MCP_HTTP_ENDPOINT}`);
 
       const mcpServer = this.createMcpServer();
@@ -186,7 +198,7 @@ export class MiroirMcpServer {
       }
     });
 
-    this.app.get(MCP_HTTP_ENDPOINT, (_req, res) => {
+    targetApp.get(MCP_HTTP_ENDPOINT, (_req, res) => {
       res.status(405).set("Allow", "POST").json({
         jsonrpc: "2.0",
         error: {
@@ -197,7 +209,7 @@ export class MiroirMcpServer {
       });
     });
 
-    this.app.delete(MCP_HTTP_ENDPOINT, (_req, res) => {
+    targetApp.delete(MCP_HTTP_ENDPOINT, (_req, res) => {
       res.status(405).set("Allow", "POST").json({
         jsonrpc: "2.0",
         error: {
@@ -206,13 +218,9 @@ export class MiroirMcpServer {
         },
         id: null,
       });
-    });
-
-    // Health check endpoint
-    this.app.get("/health", (req, res) => {
-      res.json({ status: "ok", name: "miroir-mcp-server", version: "1.0.0" });
     });
   }
+
   // ##############################################################################################
   /**
    * Start the MCP server with HTTP transport

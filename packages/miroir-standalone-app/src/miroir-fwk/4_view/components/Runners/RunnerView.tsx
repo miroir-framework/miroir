@@ -38,7 +38,7 @@ import {
   useSelector,
   useSnackbar,
 } from "miroir-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
@@ -46,6 +46,11 @@ import { useRunner } from "../Reports/ReportHooks.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
 import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
 import { resolveRunnerDefinitionApplication } from "./runnerDefinitionApplication.js";
+import {
+  applicationNameForMcpRunner,
+  resolveMcpToolAction,
+} from "./resolveMcpToolAction.js";
+import { browserMcpServerUrl, runMcpToolRunner } from "./runMcpToolRunner.js";
 
 import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView");
@@ -73,6 +78,8 @@ export function StoredRunnerView(props: {
   );
   const runnerDeploymentUuid: Uuid = applicationDeploymentMap[runnerDefinitionApplicationUuid];
   const context = useMiroirContextService();
+  const { handleAsyncAction } = useSnackbar();
+  const [mcpPayloadResult, setMcpPayloadResult] = useState<unknown>(undefined);
   const currentModelEnvironment: MiroirModelEnvironment =
     useCurrentModelEnvironment(runnerDefinitionApplicationUuid, applicationDeploymentMap);
 
@@ -130,6 +137,18 @@ export function StoredRunnerView(props: {
         )
       : undefined;
 
+  const mcpResolvedAction: Action | undefined =
+    storedRunner?.definition.runnerType === "mcpToolRunner"
+      ? resolveMcpToolAction(
+          storedRunner.definition.toolName,
+          applicationNameForMcpRunner(
+            storedRunner.application,
+            libraryAppModelEnvironment?.currentModel?.applications,
+          ),
+          libraryAppModelEnvironment?.currentModel?.endpoints,
+        )?.action
+      : undefined;
+
   const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
     useReduxDeploymentsStateQuerySelectorForCleanedResult(
       deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
@@ -169,6 +188,20 @@ export function StoredRunnerView(props: {
               },
             } as JzodObject,
           }
+        : storedRunner?.definition.runnerType === "mcpToolRunner"
+        ? {
+            formMLSchemaType: "mlSchema",
+            mlSchema: {
+              type: "object",
+              definition: {
+                [storedRunner?.name ?? ""]:
+                  mcpResolvedAction?.actionParameters?.payload ?? {
+                    type: "object",
+                    definition: {},
+                  },
+              },
+            } as JzodObject,
+          }
         : storedRunner?.definition.formMLSchema.formMLSchemaType === "mlSchema"
         ? ({
             ...storedRunner?.definition.formMLSchema,
@@ -188,7 +221,7 @@ export function StoredRunnerView(props: {
               },
             },
           } as FormMLSchema),
-    [storedRunner, currentActionDefinition, runnerName]
+    [storedRunner, currentActionDefinition, mcpResolvedAction, runnerName]
   );
 
   const resolvedMLSchema: FormMLSchema = useMemo(() => {
@@ -230,7 +263,8 @@ export function StoredRunnerView(props: {
     });
     return !storedRunner
       ? undefined
-      : storedRunner?.definition.runnerType === "actionRunner"
+      : storedRunner?.definition.runnerType === "actionRunner" ||
+          storedRunner?.definition.runnerType === "mcpToolRunner"
         ? getDefaultValueForJzodSchemaWithResolutionNonHook(
             "build",
             // (formMLSchema as any).mlSchema,
@@ -282,7 +316,7 @@ export function StoredRunnerView(props: {
                 transformerParams, // contextResults // TODO: remove!
                 deploymentEntityState, // TODO: keep this? improve so that it does not depend on entire deployment state
               )
-          : undefined; // impossible case, choices are "actionRunner" || "customRunner"
+          : undefined;
   }, [
     storedRunner,
     formMLSchema,
@@ -376,47 +410,99 @@ export function StoredRunnerView(props: {
         <div>Error loading runner definition...</div>
       ) : runnerDefinitionFromLocalCache ? (
         <>
-          {runnerDefinitionFromLocalCache.definition.runnerType == "customRunner" ? (
-            <RunnerView
-              runnerName={runnerName}
-              application={runnerDefinitionApplicationUuid}
-              applicationDeploymentMap={
-                props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-              }
-              runnerApplicationDeploymentMap={props.runnerApplicationDeploymentMap}
-              // formMLSchema={formMLSchema}
-              formMLSchema={resolvedMLSchema}
-              initialFormValue={initialFormValue}
-              action={{
-                actionType: "compositeActionTemplate",
-                compositeActionTemplate: runnerDefinitionFromLocalCache.definition.compositeActionSequence,
-              }}
-              formLabel={runnerDefinitionFromLocalCache.defaultLabel}
-              formikValuePathAsString={runnerName}
-              displaySubmitButton="onFirstLine"
-              useActionButton={false}
-            />
-          ) : (
-            // <div>Application Runner type not yet supported in StoredRunnerView</div>
-            <>
-              <RunnerView
-                runnerName={runnerName}
-                application={runnerDefinitionApplicationUuid}
-                applicationDeploymentMap={
-                  props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+          {(() => {
+            const runnerType = runnerDefinitionFromLocalCache.definition.runnerType;
+            const sharedProps = {
+              runnerName,
+              application: runnerDefinitionApplicationUuid,
+              applicationDeploymentMap:
+                props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap,
+              runnerApplicationDeploymentMap: props.runnerApplicationDeploymentMap,
+              formMLSchema: resolvedMLSchema,
+              initialFormValue,
+              formLabel: runnerDefinitionFromLocalCache.defaultLabel,
+              formikValuePathAsString: runnerName,
+              displaySubmitButton: "onFirstLine" as const,
+              useActionButton: false,
+            };
+            switch (runnerType) {
+              case "customRunner":
+                return (
+                  <RunnerView
+                    {...sharedProps}
+                    action={{
+                      actionType: "compositeActionTemplate",
+                      compositeActionTemplate:
+                        runnerDefinitionFromLocalCache.definition.compositeActionSequence,
+                    }}
+                  />
+                );
+              case "actionRunner":
+                return (
+                  <RunnerView
+                    {...sharedProps}
+                    action={storedRunnerAction as any}
+                  />
+                );
+              case "mcpToolRunner": {
+                const mcpDefinition = runnerDefinitionFromLocalCache.definition;
+                if (mcpDefinition.runnerType !== "mcpToolRunner") {
+                  return <div>MCP runner type mismatch</div>;
                 }
-                runnerApplicationDeploymentMap={props.runnerApplicationDeploymentMap}
-                // formMLSchema={formMLSchema}
-                formMLSchema={resolvedMLSchema}
-                initialFormValue={initialFormValue}
-                action={storedRunnerAction as any}
-                formLabel={runnerDefinitionFromLocalCache.defaultLabel}
-                formikValuePathAsString={runnerName}
-                displaySubmitButton="onFirstLine"
-                useActionButton={false}
-              />
-            </>
-          )}
+                return (
+                  <>
+                    <RunnerView
+                      {...sharedProps}
+                      action={{
+                        actionType: "onSubmit",
+                        onSubmit: async (values, formikHelpers) => {
+                          await handleAsyncAction(async () => {
+                            const args =
+                              values && typeof values === "object" && runnerName in values
+                                ? (values[runnerName] as Record<string, unknown>)
+                                : (values as Record<string, unknown>);
+                            const envelope = await runMcpToolRunner(
+                              runnerDefinitionFromLocalCache,
+                              args,
+                              browserMcpServerUrl(),
+                            );
+                            if (envelope.status === "error") {
+                              return new Action2Error(
+                                "FailedToHandleAction",
+                                envelope.error?.message ?? "Unknown error",
+                              );
+                            }
+                            if (mcpDefinition.resultPresentation === "payload") {
+                              setMcpPayloadResult(envelope.result);
+                            }
+                            formikHelpers.setSubmitting(false);
+                            return { status: "ok" };
+                          }, "MCP tool call successful", "StoredRunnerView mcpToolRunner");
+                        },
+                      }}
+                    />
+                    {mcpDefinition.resultPresentation === "payload" &&
+                    mcpPayloadResult !== undefined ? (
+                      <JsonDisplayHelper
+                        componentName="StoredRunnerView-mcpResult"
+                        elements={[
+                          {
+                            label: `${runnerName} MCP result`,
+                            data: mcpPayloadResult,
+                            useCodeBlock: true,
+                          },
+                        ]}
+                      />
+                    ) : null}
+                  </>
+                );
+              }
+              default: {
+                const exhaustive: never = runnerType;
+                return <div>Unsupported runner type: {String(exhaustive)}</div>;
+              }
+            }
+          })()}
         </>
       ) : (
         <div>Loading runner definition...</div>

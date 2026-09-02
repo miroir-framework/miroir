@@ -180,6 +180,37 @@ export async function runMiroirRunnerTest(
     );
   }
 
+  if (resolvedRunner.definition.runnerType === "mcpToolRunner") {
+    if (!runnerContext.executeMcpToolRunner) {
+      throw new Error(
+        "runMiroirRunnerTest: mcpToolRunner requires executeMcpToolRunner on runnerTestContext",
+      );
+    }
+    const mergedTestParams = expandGetFromParametersInParamBank(
+      mergeRunnerTestParamBank(runnerContext.testParams, leaf),
+    );
+    const namedArgs = mergedTestParams[resolvedRunner.name];
+    const args =
+      namedArgs && typeof namedArgs === "object" && !Array.isArray(namedArgs)
+        ? (namedArgs as Record<string, unknown>)
+        : {};
+    const mcpResult = await runnerContext.executeMcpToolRunner(resolvedRunner, args);
+    localVitest
+      .expect(mcpResult.status, `${leaf.miroirTestLabel} MCP status`)
+      .toBe("success");
+    const expectedInstanceUuid = mergedTestParams.expectedInstanceUuid;
+    if (typeof expectedInstanceUuid === "string") {
+      localVitest
+        .expect(JSON.stringify(mcpResult.result ?? {}), `${leaf.miroirTestLabel} payload`)
+        .toContain(expectedInstanceUuid);
+    }
+    miroirActivityTracker.setTestAssertionResult(testAssertionPath, {
+      assertionName: leaf.miroirTestLabel,
+      assertionResult: "ok",
+    });
+    return;
+  }
+
   const testAction = resolveRunnerTestLeaf({
     leaf,
     pageLabel: runnerContext.pageLabel,

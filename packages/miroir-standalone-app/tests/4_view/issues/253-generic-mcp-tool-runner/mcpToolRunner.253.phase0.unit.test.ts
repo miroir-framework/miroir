@@ -11,6 +11,7 @@ import {
   runnerDropApplication,
   runnerDropEntity,
   runnerFreezeApplicationVersion,
+  runnerMcpGetInstances,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
 import {
@@ -106,6 +107,7 @@ const EXPECTED_RUNNERS: { name: string; runnerType: string; uuid: string }[] = [
   { name: "deployApplication", runnerType: "customRunner", uuid: "4f3cd0b1-08a1-421c-84f7-e0589be88d18" },
   { name: "createEntity", runnerType: "customRunner", uuid: "82f81a25-2366-4abf-8a97-83ca5e9a9c46" },
   { name: "createApplication", runnerType: "customRunner", uuid: CREATE_APPLICATION_UUID },
+  { name: "mcpGetInstances", runnerType: "mcpToolRunner", uuid: "897e9711-65a0-414e-9773-19de92ade533" },
   { name: "returnDocument", runnerType: "actionRunner", uuid: "98a38a84-e702-4540-a056-c7676a193a2b" },
   { name: "lendDocument", runnerType: "actionRunner", uuid: "cc853632-f158-43fa-b9ed-437c9c25f539" },
 ];
@@ -117,15 +119,16 @@ const MIROIR_DATA_RUNNER_INSTANCES: RunnerInstance[] = [
   runnerDeployApplication,
   runnerCreateEntity,
   runnerCreateApplication,
+  runnerMcpGetInstances,
 ];
 
 describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", () => {
-  it("Runner Entity union has exactly customRunner | actionRunner", () => {
+  it("Runner Entity union has customRunner | actionRunner | mcpToolRunner", () => {
     expect(entityRunner.uuid).toBe(ENTITY_RUNNER_UUID);
-    expect(runnerTypeLiterals()).toEqual(["customRunner", "actionRunner"]);
+    expect(runnerTypeLiterals()).toEqual(["customRunner", "actionRunner", "mcpToolRunner"]);
   });
 
-  it("exactly 8 Runner instances match analysis §3.2 names, types, and uuids", () => {
+  it("exactly 9 Runner instances including mcpGetInstances", () => {
     const imported: RunnerInstance[] = [
       runnerDropApplication,
       runnerFreezeApplicationVersion,
@@ -133,6 +136,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       runnerDeployApplication,
       runnerCreateEntity,
       runnerCreateApplication,
+      runnerMcpGetInstances,
       returnDocument,
       lendDocument,
     ];
@@ -165,14 +169,15 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       `packages/miroir-test-app_deployment-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/44313751-b0e5-4132-bb12-a544806e759b.json`,
       `packages/miroir-test-app_deployment-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/4f3cd0b1-08a1-421c-84f7-e0589be88d18.json`,
       `packages/miroir-test-app_deployment-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/82f81a25-2366-4abf-8a97-83ca5e9a9c46.json`,
+      `packages/miroir-test-app_deployment-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/897e9711-65a0-414e-9773-19de92ade533.json`,
       `packages/miroir-test-app_deployment-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/${CREATE_APPLICATION_UUID}.json`,
     ]);
   });
 
-  it("MIROIR_DATA_RUNNER_UUIDS has exactly the 6 Miroir-data runner uuids", () => {
+  it("MIROIR_DATA_RUNNER_UUIDS has exactly the 7 Miroir-data runner uuids", () => {
     const miroirDataUuids = MIROIR_DATA_RUNNER_INSTANCES.map((runner) => runner.uuid);
-    expect(miroirDataUuids).toHaveLength(6);
-    expect(new Set(miroirDataUuids).size).toBe(6);
+    expect(miroirDataUuids).toHaveLength(7);
+    expect(new Set(miroirDataUuids).size).toBe(7);
 
     const libraryPage = selfApplicationLibrary.uuid;
     for (const uuid of miroirDataUuids) {
@@ -189,9 +194,9 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     ).toBe(libraryPage);
   });
 
-  it("execute reports have 5 + 2 + 1 runnerReportSections", () => {
+  it("execute reports have 6 + 2 + 1 runnerReportSections", () => {
     const miroirRunnerSections = runnerReportSections(reportMiroirRunners);
-    expect(miroirRunnerSections).toHaveLength(5);
+    expect(miroirRunnerSections).toHaveLength(6);
     expect(miroirRunnerSections.map((section) => section.definition)).toEqual([
       {
         runnerReportSectionType: "storedRunner",
@@ -217,6 +222,11 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
         runnerReportSectionType: "storedRunner",
         label: "createEntity",
         runner: runnerCreateEntity.uuid,
+      },
+      {
+        runnerReportSectionType: "storedRunner",
+        label: "MCP: getInstances",
+        runner: runnerMcpGetInstances.uuid,
       },
     ]);
 
@@ -244,7 +254,26 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     });
   });
 
-  it("vite.config.js server.proxy has no /mcp", () => {
+  it("browser MCP runner modules import miroir-mcp/client, not the Node CLI entry", () => {
+    const viewRoot = join(
+      REPO_ROOT,
+      "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners",
+    );
+    const runMcp = readFileSync(join(viewRoot, "runMcpToolRunner.ts"), "utf8");
+    const resolveMcp = readFileSync(join(viewRoot, "resolveMcpToolAction.ts"), "utf8");
+    expect(runMcp).toMatch(/from ["']miroir-mcp\/client["']/);
+    expect(resolveMcp).toMatch(/from ["']miroir-mcp\/client["']/);
+    expect(runMcp).not.toMatch(/from ["']miroir-mcp["']/);
+    expect(resolveMcp).not.toMatch(/from ["']miroir-mcp["']/);
+
+    const runnerTestSession = readFileSync(
+      join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4-tests/RunnerTestSession.ts"),
+      "utf8",
+    );
+    expect(runnerTestSession).not.toMatch(/from ["']miroir-mcp["']/);
+  });
+
+  it("vite.config.js server.proxy includes /mcp", () => {
     const viteConfig = readFileSync(
       join(REPO_ROOT, "packages/miroir-standalone-app/vite.config.js"),
       "utf8",
@@ -260,7 +289,8 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       "/action",
       "/CRUD",
       "/api/copilotkit",
+      "/mcp",
     ]);
-    expect(proxyKeys).not.toContain("/mcp");
+    expect(proxyKeys).toContain("/mcp");
   });
 });

@@ -103,10 +103,10 @@ describe("LibraryPlayfield (Gap B L1/L2)", () => {
         "createInstance",
       ]);
       expect(action.payload.actionSequence[0].actionLabel).toBe(
-        "CreateAdminApplicationInstance for library",
+        "CreateAdminApplicationInstance for Library",
       );
       expect(action.payload.actionSequence[1].actionLabel).toBe(
-        "storeManagementAction_openStore for library",
+        "storeManagementAction_openStore for Library",
       );
     });
   });

@@ -493,6 +493,7 @@ const mcpServer = await setupMcpServer(
   endpointToolRegistry,
   domainController,
 );
+mcpServer.mountHttpRoutes(app);
 
 // AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
 app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap));

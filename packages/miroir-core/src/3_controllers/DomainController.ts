@@ -1062,9 +1062,12 @@ export class DomainController implements DomainControllerInterface {
 
     // non-transactional modification: perform the changes immediately on the remote datastore (thereby commited)
     // The same action is performed on the local cache and on the remote store for Data Instances.
+    const isInstanceRead =
+      actionToPersist.actionType === "getInstance" ||
+      actionToPersist.actionType === "getInstances";
     const handleActionResult = await this.callUtil.callPersistenceAction(
       {}, // context
-      {}, // continuation
+      isInstanceRead ? { addResultToContextAsName: "persistenceResult" } : {},
       applicationDeploymentMap,
       actionToPersist,
     );
@@ -1087,6 +1090,12 @@ export class DomainController implements DomainControllerInterface {
         handleActionResult,
       );
       return Promise.resolve(handleActionResult);
+    }
+    if (isInstanceRead) {
+      const persistenceResult = (
+        handleActionResult as { persistenceResult?: Action2VoidReturnType }
+      ).persistenceResult;
+      return Promise.resolve(persistenceResult ?? ACTION_OK);
     }
     // log.info(
     //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController deployment",

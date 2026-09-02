@@ -135,6 +135,7 @@ import {
   miroirTest_runner_create_entity,
   miroirTest_runner_drop_entity,
   miroirTest_runner_freeze_application_version,
+  miroirTest_runner_mcp_get_instances,
   miroirTest_selectUnionBranchFromDiscriminator,
   miroirTest_tools,
   miroirTest_transformerResultSchema,
@@ -388,6 +389,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     miroirTest_runner_create_entity as MiroirTestDefinition,
     miroirTest_runner_drop_entity as MiroirTestDefinition,
     miroirTest_runner_freeze_application_version as MiroirTestDefinition,
+    miroirTest_runner_mcp_get_instances as MiroirTestDefinition,
     // miroirTest_mustache as MiroirTestDefinition
   ],
   themes: [
