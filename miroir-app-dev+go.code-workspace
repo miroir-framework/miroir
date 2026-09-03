@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../jzod-ts"
+		},
+		{
+			"path": "../miroir-go"
 		}
 	],
   "settings": {
