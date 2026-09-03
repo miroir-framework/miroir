@@ -1,45 +1,25 @@
 import type {
   ActionIntegrationSessionOptions,
-  ApplicationVersion,
-  Entity,
-  EntityInstance,
+  InitApplicationParameters,
   IntegrationTestOrchestratorContext,
   IntegrationTestSessionFactoryCreateParams,
-  MetaModel,
   MiroirTestDefinition,
   MiroirTestSuite,
   Runner,
-  SelfApplication,
   TestbedUuids,
 } from "miroir-core";
-import { resolveRunnerFromMiroirTestSuite, resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite } from "miroir-core";
 import {
-  author1,
-  author2,
-  author3,
-  book1,
-  book2,
-  book4,
-  book5,
-  book6,
-  Country1,
-  Country2,
-  Country3,
-  defaultLibraryAppModel,
-  entityAuthor,
-  entityBook,
-  entityCountry,
-  entityPublisher,
+  resolveRunnerFromMiroirTestSuite,
+  resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
+  resolveSuitePlayfieldSeed,
+} from "miroir-core";
+import {
   lendDocumentRunner,
   mcpLendDocumentRunner,
   miroirTest_runner_lend_document,
   miroirTest_runner_mcp_lend_document,
   miroirTest_runner_return_document,
-  folio as publisher1,
-  penguin as publisher2,
-  springer as publisher3,
   returnDocumentRunner,
-  selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import {
   miroirTest_domain_controller_application_version_freeze,
@@ -58,26 +38,12 @@ import {
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
 } from "miroir-test-app_deployment-miroir";
 
-import { appForTestInitialApplicationVersion, selfApplicationAppForTest } from "miroir-test-app_deployment-appForTest";
+import { getTestConfigurationFromIndex } from "./testConfigurationInstanceIndex.js";
 import {
   appForTestTestbedInitParams
 } from "./uiIntegrationAppForTestPlayfieldSeed.js";
 import {
-  codeItem1,
-  codeItem2,
-  codeItem3,
-  compositeItem1,
-  compositeItem2,
-  compositeItem3,
-  entityCodeNumber,
-  entityCompositePK,
-  entityNoParentUuid,
-  libraryEntitiesAndInstancesPublisherAndCountry,
   libraryTestbedInitParams,
-  noParentItem1,
-  noParentItem2,
-  noParentItem3,
-  runnerLibraryDocumentEntitiesAndInstances,
   type TestbedSetupParameters
 } from "./uiIntegrationPlayfieldSeeds.js";
 
@@ -97,24 +63,19 @@ export const UI_INTEGRATION_RUNNER_UUID_INDEX: Record<string, Runner> = {
 export type UiIntegrationRunnerTestSuiteEntry = {
   kind: "runnerTest";
   suiteDefinition: MiroirTestSuite;
-  /**
-   * Playfield seed for runner suites that reset/seed the runTarget in `beforeEach`.
-   * `null` for create/drop-entity suites (`skipRunTargetPlayfieldReset`) that manage
-   * their own ephemeral deployment inside the composite action.
-   */
-  testBedModelAndInstances: TestbedSetupParameters | null;
+  testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationDomainControllerTestSuiteEntry = {
   kind: "domainControllerTest";
   suiteDefinition: MiroirTestSuite;
-  testBedModelAndInstances: TestbedSetupParameters;
+  testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationActionTestSuiteEntry = {
   kind: "actionTest";
   suiteDefinition: MiroirTestSuite;
-  testBedModelAndInstances: TestbedSetupParameters;
+  testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationRunnerSuiteEntry =
@@ -191,6 +152,37 @@ export function buildUiIntegrationOrchestratorCreateSessionParams(
   };
 }
 // ################################################################################################
+function composeUiIntegrationPlayfieldSeed(
+  entry: UiIntegrationRunnerSuiteEntry,
+): TestbedSetupParameters | undefined {
+  if (resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition)) {
+    return undefined;
+  }
+
+  const resolved = resolveSuitePlayfieldSeed(
+    entry.suiteDefinition,
+    getTestConfigurationFromIndex,
+  );
+  if (resolved === null) {
+    throw new Error(
+      `UI integration suite "${entry.suiteDefinition.miroirTestLabel}" has no suite-owned playfield (inline testbed or TestConfiguration uuid)`,
+    );
+  }
+
+  const init = entry.testbedInitApplicationParameters;
+  if (init === undefined) {
+    throw new Error(
+      `UI integration suite "${entry.suiteDefinition.miroirTestLabel}" is missing testbedInitApplicationParameters`,
+    );
+  }
+
+  return {
+    testbedModel: resolved.testbedModel,
+    testbedEntitiesAndInstances: resolved.testbedEntitiesAndInstances,
+    testbedInitApplicationParameters: init,
+  };
+}
+
 export function buildUiIntegrationRunnerSessionSpecificOptions(
   entry: UiIntegrationRunnerSuiteEntry,
   pageLabel: string,
@@ -205,34 +197,16 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
   testBedModelAndInstances?: TestbedSetupParameters;
   skipRunTargetPlayfieldReset?: boolean;
 } {
-  switch (entry.kind) {
-    case "runnerTest":
-      return {
-        pageLabel,
-        runTarget,
-        suiteTestParams,
-        runnerUuidIndex,
-        ...(entry.testBedModelAndInstances !== null
-          ? { testBedModelAndInstances: entry.testBedModelAndInstances }
-          : {}),
-        ...(resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition)
-          ? { skipRunTargetPlayfieldReset: true }
-          : {}),
-      };
-    case "domainControllerTest":
-    case "actionTest":
-      return {
-        pageLabel,
-        runTarget,
-        suiteTestParams,
-        runnerUuidIndex,
-        testBedModelAndInstances: entry.testBedModelAndInstances,
-      };
-    default: {
-      const exhaustive: never = entry;
-      return exhaustive;
-    }
-  }
+  const skipReset = resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition);
+  const playfield = composeUiIntegrationPlayfieldSeed(entry);
+  return {
+    pageLabel,
+    runTarget,
+    suiteTestParams,
+    runnerUuidIndex,
+    ...(playfield !== undefined ? { testBedModelAndInstances: playfield } : {}),
+    ...(skipReset ? { skipRunTargetPlayfieldReset: true } : {}),
+  };
 }
 
 // ################################################################################################
@@ -241,29 +215,20 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: defaultLibraryAppModel as MetaModel,
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_runner_return_document.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: defaultLibraryAppModel as MetaModel,
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_runner_create_entity.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_create_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testBedModelAndInstances: null,
   },
   // ###############################################################################
   [miroirTest_runner_mcp_get_instances.name]: {
@@ -292,224 +257,70 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_drop_entity as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testBedModelAndInstances: null,
   },
   // ###############################################################################
   [miroirTest_runner_freeze_application_version.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityPublisher as Entity,
-          instances: [
-            publisher1 as EntityInstance,
-            publisher2 as EntityInstance,
-            publisher3 as EntityInstance,
-          ],
-        },
-        {
-          entity: entityCountry as Entity,
-          instances: [
-            Country1 as EntityInstance,
-            Country2 as EntityInstance,
-            Country3 as EntityInstance,
-          ],
-        },
-      ],
-      testbedInitApplicationParameters: appForTestTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationAppForTest.uuid,
-        applicationName: selfApplicationAppForTest.name,
-        entities: [entityPublisher as Entity, entityCountry as Entity],
-        applicationVersions: [appForTestInitialApplicationVersion as ApplicationVersion], // does it make sense?
-        applications: [selfApplicationAppForTest as SelfApplication],
-      },
-    },
+    testbedInitApplicationParameters: appForTestTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_data_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_data_crud.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityAuthor as Entity,
-          instances: [
-            author1 as EntityInstance,
-            author2 as EntityInstance,
-            author3 as EntityInstance,
-          ],
-        },
-        {
-          entity: entityBook as Entity,
-          instances: [
-            book1 as EntityInstance,
-            book2 as EntityInstance,
-            book4 as EntityInstance,
-            book5 as EntityInstance,
-            book6 as EntityInstance,
-          ],
-        },
-        {
-          entity: entityPublisher as Entity,
-          instances: [
-            publisher1 as EntityInstance,
-            publisher2 as EntityInstance,
-            publisher3 as EntityInstance,
-          ],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: defaultLibraryAppModel as MetaModel,
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_model_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_model_crud.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity, entityCountry as Entity],
-      },
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_composite_pk_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_composite_pk_crud.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityCompositePK,
-          instances: [compositeItem1, compositeItem2, compositeItem3],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityCompositePK],
-      },
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_non_uuid_pk_model_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_model_crud.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityPublisher as Entity,
-          instances: [
-            publisher1 as EntityInstance,
-            publisher2 as EntityInstance,
-            publisher3 as EntityInstance,
-          ],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity],
-      },
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_non_uuid_pk_data_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_data_crud.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityCodeNumber,
-          instances: [codeItem1, codeItem2, codeItem3],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityCodeNumber],
-      },
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_no_parent_uuid_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_no_parent_uuid_crud.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [
-        {
-          entity: entityPublisher as Entity,
-          instances: [
-            publisher1 as EntityInstance,
-            publisher2 as EntityInstance,
-            publisher3 as EntityInstance,
-          ],
-        },
-        {
-          entity: entityNoParentUuid,
-          instances: [noParentItem1, noParentItem2, noParentItem3],
-        },
-      ],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity, entityNoParentUuid],
-      },
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_model_undo_redo.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_model_undo_redo.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: [],
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-      },
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_application_version_freeze.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_application_version_freeze.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity, entityCountry as Entity],
-      },
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_evolutionTraceWP1.name]: {
     kind: "actionTest",
     suiteDefinition: miroirTest_evolutionTraceWP1.definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: libraryEntitiesAndInstancesPublisherAndCountry,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: {
-        applicationUuid: selfApplicationLibrary.uuid,
-        applicationName: selfApplicationLibrary.name,
-        entities: [entityPublisher as Entity, entityCountry as Entity],
-      },
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
 };
 

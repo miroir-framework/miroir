@@ -1,0 +1,1334 @@
+{
+  "uuid": "d669558c-7cda-4037-81bf-0b9a71fbcb94",
+  "parentName": "TestConfiguration",
+  "parentUuid": "675ccd46-7dd3-400b-a2bd-1319c39e11da",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "name": "libraryDocumentSeed",
+  "description": "Shared Library playfield seed for lendDocument and returnDocument runner suites (Author, Book, Publisher, User instances; Library application entities and endpoints).",
+  "testbedModel": {
+    "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+    "applicationName": "Library",
+    "entities": [
+      {
+        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "Author",
+        "conceptLevel": "Model",
+        "description": "The Author of a book.",
+        "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+        "viewAttributes": [
+          "name",
+          "country",
+          "icon",
+          "uuid"
+        ],
+        "cache": {
+          "cacheAllInstancesOnRefresh": true
+        },
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 4,
+                  "defaultLabel": "Name"
+                }
+              }
+            },
+            "language": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 5,
+                  "defaultLabel": "Language"
+                }
+              }
+            },
+            "birthDate": {
+              "type": "date",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 6,
+                  "defaultLabel": "Birth"
+                }
+              }
+            },
+            "deathDate": {
+              "type": "date",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 7,
+                  "defaultLabel": "Death"
+                }
+              }
+            },
+            "country": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 8,
+                  "defaultLabel": "Country",
+                  "foreignKeyParams": {
+                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            },
+            "icon": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 9,
+                  "defaultLabel": "Icon"
+                }
+              }
+            },
+            "icons": {
+              "type": "number",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 10,
+                  "defaultLabel": "Icons"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "Book",
+        "conceptLevel": "Model",
+        "description": "A book.",
+        "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+        "viewAttributes": [
+          "name",
+          "author",
+          "year",
+          "publisher",
+          "uuid"
+        ],
+        "icon": "Book",
+        "cache": {
+          "cacheAllInstancesOnRefresh": true
+        },
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "defaultLabel": "Book Title"
+                }
+              }
+            },
+            "year": {
+              "type": "number",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 6,
+                  "defaultLabel": "Year of Publication",
+                  "display": {
+                    "editable": true
+                  }
+                }
+              }
+            },
+            "author": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "id": 7,
+                  "defaultLabel": "Author",
+                  "foreignKeyParams": {
+                    "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            },
+            "publisher": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "defaultLabel": "Publisher",
+                  "id": 8,
+                  "foreignKeyParams": {
+                    "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "Country",
+        "conceptLevel": "Model",
+        "description": "Country.",
+        "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
+        "viewAttributes": [
+          "name",
+          "iso3166-1Alpha-2",
+          "icon",
+          "uuid"
+        ],
+        "cache": {
+          "cacheAllInstancesOnRefresh": true
+        },
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 4,
+                  "defaultLabel": "Name"
+                }
+              }
+            },
+            "iso3166-1Alpha-2": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 5,
+                  "defaultLabel": "Country Code"
+                }
+              }
+            },
+            "icon": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 6,
+                  "defaultLabel": "Icon"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "uuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentName": "Entity",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "conceptLevel": "Model",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "name": "LendingHistoryItem",
+        "description": "An item representing a lending history record in the Library application.",
+        "defaultInstanceDetailsReportUuid": "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
+        "viewAttributes": [
+          "uuid",
+          "user",
+          "book",
+          "startDate",
+          "endDate"
+        ],
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "user": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "defaultLabel": "User",
+                  "foreignKeyParams": {
+                    "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "display": {
+                    "modifiable": false
+                  }
+                }
+              },
+              "optional": false
+            },
+            "book": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "defaultLabel": "Book",
+                  "foreignKeyParams": {
+                    "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "display": {
+                    "modifiable": false
+                  }
+                }
+              },
+              "optional": false
+            },
+            "startDate": {
+              "type": "date"
+            },
+            "endDate": {
+              "type": "date",
+              "optional": true
+            },
+            "note": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        }
+      },
+      {
+        "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "Publisher",
+        "conceptLevel": "Model",
+        "description": "The publisher of a book.",
+        "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+        "viewAttributes": [
+          "name",
+          "country",
+          "icon",
+          "uuid"
+        ],
+        "icon": "building",
+        "cache": {
+          "cacheAllInstancesOnRefresh": true
+        },
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 4,
+                  "defaultLabel": "Name"
+                }
+              }
+            },
+            "country": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 5,
+                  "display": {
+                    "editable": true
+                  },
+                  "defaultLabel": "Country",
+                  "foreignKeyParams": {
+                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            },
+            "icon": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 6,
+                  "defaultLabel": "Icon"
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "uuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "User",
+        "conceptLevel": "Model",
+        "description": "User.",
+        "defaultInstanceDetailsReportUuid": "8adee3d5-f8cc-4118-aa02-5a2cd07908aa",
+        "viewAttributes": [
+          "name",
+          "firstName",
+          "lastName",
+          "street",
+          "postalCode",
+          "city",
+          "state",
+          "country",
+          "uuid"
+        ],
+        "icon": "person",
+        "cache": {
+          "cacheAllInstancesOnRefresh": true
+        },
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "name": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Name",
+                  "id": 5
+                }
+              },
+              "type": "string"
+            },
+            "firstName": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "First Name",
+                  "id": 6
+                }
+              },
+              "type": "string"
+            },
+            "lastName": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Last Name",
+                  "id": 7
+                }
+              },
+              "type": "string"
+            },
+            "street": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Street Adress",
+                  "id": 8
+                }
+              },
+              "type": "string"
+            },
+            "postalCode": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Postal Code",
+                  "id": 9
+                }
+              },
+              "type": "string"
+            },
+            "city": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "City",
+                  "id": 10
+                }
+              },
+              "type": "string"
+            },
+            "state": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "State",
+                  "id": 11
+                }
+              },
+              "type": "string"
+            },
+            "country": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Country",
+                  "foreignKeyParams": {
+                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "id": 12
+                }
+              },
+              "type": "uuid",
+              "optional": true
+            }
+          }
+        }
+      }
+    ],
+    "endpoints": [
+      {
+        "uuid": "9884c1a4-5122-488a-85db-a99fbc02e678",
+        "parentName": "Endpoint",
+        "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+        "name": "Books",
+        "version": "1",
+        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "definition": {
+          "actions": []
+        }
+      },
+      {
+        "uuid": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+        "parentName": "Endpoint",
+        "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "Lending",
+        "version": "1",
+        "definition": {
+          "actions": [
+            {
+              "actionParameters": {
+                "actionType": {
+                  "type": "literal",
+                  "definition": "lendDocument"
+                },
+                "actionLabel": {
+                  "type": "string",
+                  "optional": true
+                },
+                "endpoint": {
+                  "type": "literal",
+                  "definition": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de"
+                },
+                "payload": {
+                  "type": "object",
+                  "definition": {
+                    "user": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "User",
+                          "canBeTemplate": true,
+                          "initializeTo": {
+                            "initializeToType": "value",
+                            "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                          },
+                          "foreignKeyParams": {
+                            "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    },
+                    "book": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Book",
+                          "canBeTemplate": true,
+                          "initializeTo": {
+                            "initializeToType": "value",
+                            "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                          },
+                          "foreignKeyParams": {
+                            "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    },
+                    "startDate": {
+                      "type": "date",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Start Date",
+                          "canBeTemplate": true
+                        }
+                      }
+                    },
+                    "note": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
+                }
+              },
+              "actionImplementation": {
+                "actionImplementationType": "compositeActionTemplate",
+                "definition": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "lendDocumentImplementation",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "lendDocument_createInstance_LendingHistoryItem",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                          "objects": [
+                            {
+                              "transformerType": "createObject",
+                              "definition": {
+                                "uuid": {
+                                  "transformerType": "generateUuid"
+                                },
+                                "parentName": "LendingHistoryItem",
+                                "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                                "book": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "book"
+                                  ]
+                                },
+                                "user": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "user"
+                                  ]
+                                },
+                                "startDate": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "startDate"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "getFromParameters",
+                                  "safe": true,
+                                  "referencePath": [
+                                    "payload",
+                                    "note"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "actionErrors": {
+                "type": "literal",
+                "definition": "FailedToLendDocument"
+              }
+            },
+            {
+              "actionParameters": {
+                "actionType": {
+                  "type": "literal",
+                  "definition": "returnDocument"
+                },
+                "actionLabel": {
+                  "type": "string",
+                  "optional": true
+                },
+                "endpoint": {
+                  "type": "literal",
+                  "definition": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de"
+                },
+                "payload": {
+                  "type": "object",
+                  "definition": {
+                    "user": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "User",
+                          "canBeTemplate": true,
+                          "initializeTo": {
+                            "initializeToType": "value",
+                            "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                          },
+                          "foreignKeyParams": {
+                            "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    },
+                    "book": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Book",
+                          "canBeTemplate": true,
+                          "initializeTo": {
+                            "initializeToType": "value",
+                            "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                          },
+                          "foreignKeyParams": {
+                            "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                            "targetEntityOrderInstancesBy": "name"
+                          }
+                        }
+                      }
+                    },
+                    "note": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "endDate": {
+                      "type": "date",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "End Date",
+                          "canBeTemplate": true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "actionImplementation": {
+                "actionImplementationType": "compositeActionTemplate",
+                "definition": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "returnDocumentImplementation",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "returnDocument_createInstance_LendingHistoryItem",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                          "objects": [
+                            {
+                              "transformerType": "createObject",
+                              "definition": {
+                                "uuid": {
+                                  "transformerType": "generateUuid"
+                                },
+                                "parentName": "LendingHistoryItem",
+                                "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                                "book": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "book"
+                                  ]
+                                },
+                                "user": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "user"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "getFromParameters",
+                                  "safe": true,
+                                  "referencePath": [
+                                    "payload",
+                                    "note"
+                                  ]
+                                },
+                                "startDate": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "endDate"
+                                  ]
+                                },
+                                "endDate": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "endDate"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "actionErrors": {
+                "type": "literal",
+                "definition": "FailedToLendDocument"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "testbedEntitiesAndInstances": [
+    {
+      "entity": {
+        "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "Author",
+        "conceptLevel": "Model",
+        "description": "The Author of a book.",
+        "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+        "viewAttributes": [
+          "name",
+          "country",
+          "icon",
+          "uuid"
+        ],
+        "cache": {
+          "cacheAllInstancesOnRefresh": true
+        },
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 4,
+                  "defaultLabel": "Name"
+                }
+              }
+            },
+            "language": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 5,
+                  "defaultLabel": "Language"
+                }
+              }
+            },
+            "birthDate": {
+              "type": "date",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 6,
+                  "defaultLabel": "Birth"
+                }
+              }
+            },
+            "deathDate": {
+              "type": "date",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 7,
+                  "defaultLabel": "Death"
+                }
+              }
+            },
+            "country": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 8,
+                  "defaultLabel": "Country",
+                  "foreignKeyParams": {
+                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            },
+            "icon": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 9,
+                  "defaultLabel": "Icon"
+                }
+              }
+            },
+            "icons": {
+              "type": "number",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 10,
+                  "defaultLabel": "Icons"
+                }
+              }
+            }
+          }
+        }
+      },
+      "instances": [
+        {
+          "uuid": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+          "parentName": "Author",
+          "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          "name": "Don Norman",
+          "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11"
+        },
+        {
+          "uuid": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+          "parentName": "Author",
+          "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          "name": "Paul Veyne",
+          "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+        },
+        {
+          "uuid": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+          "parentName": "Author",
+          "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+          "conceptLevel": "Data",
+          "name": "Cornell Woolrich",
+          "country": "2eda1207-4dcc-4af9-a3ba-ef75e7f12c11"
+        }
+      ]
+    },
+    {
+      "entity": {
+        "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "Book",
+        "conceptLevel": "Model",
+        "description": "A book.",
+        "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+        "viewAttributes": [
+          "name",
+          "author",
+          "year",
+          "publisher",
+          "uuid"
+        ],
+        "icon": "Book",
+        "cache": {
+          "cacheAllInstancesOnRefresh": true
+        },
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "defaultLabel": "Book Title"
+                }
+              }
+            },
+            "year": {
+              "type": "number",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 6,
+                  "defaultLabel": "Year of Publication",
+                  "display": {
+                    "editable": true
+                  }
+                }
+              }
+            },
+            "author": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "id": 7,
+                  "defaultLabel": "Author",
+                  "foreignKeyParams": {
+                    "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            },
+            "publisher": {
+              "type": "uuid",
+              "tag": {
+                "value": {
+                  "defaultLabel": "Publisher",
+                  "id": 8,
+                  "foreignKeyParams": {
+                    "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "instances": [
+        {
+          "uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          "parentName": "Book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "conceptLevel": "Data",
+          "name": "Et dans l'éternité je ne m'ennuierai pas",
+          "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+          "publisher": "516a7366-39e7-4998-82cb-80199a7fa667",
+          "year": 2014
+        },
+        {
+          "uuid": "e20e276b-619d-4e16-8816-b7ec37b53439",
+          "parentName": "Book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "name": "The Design of Everyday Things",
+          "author": "4441169e-0c22-4fbc-81b2-28c87cf48ab2",
+          "conceptLevel": "",
+          "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+          "year": 1988
+        },
+        {
+          "uuid": "4cb917b3-3c53-4f9b-b000-b0e4c07a81f7",
+          "parentName": "Book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "name": "Renata n'importe quoi",
+          "author": "e4376314-d197-457c-aa5e-d2da5f8d5977",
+          "conceptLevel": "Data",
+          "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+        },
+        {
+          "uuid": "6fefa647-7ecf-4f83-b617-69d7d5094c37",
+          "parentName": "Book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "name": "The Bride Wore Black",
+          "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+          "conceptLevel": "",
+          "publisher": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+          "year": 1940
+        },
+        {
+          "uuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd",
+          "parentName": "Book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "name": "Rear Window",
+          "author": "d14c1c0c-eb2e-42d1-8ac1-2d58f5143c17",
+          "conceptLevel": "",
+          "publisher": "1f550a2a-33f5-4a56-83ee-302701039494",
+          "year": 1942
+        },
+        {
+          "uuid": "c6852e89-3c3c-447f-b827-4b5b9d830975",
+          "parentName": "Book",
+          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+          "conceptLevel": "Data",
+          "name": "Le Pain et le Cirque",
+          "author": "ce7b601d-be5f-4bc6-a5af-14091594046a",
+          "publisher": "516a7366-39e7-4998-82cb-80199a7fa667"
+        }
+      ]
+    },
+    {
+      "entity": {
+        "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "Publisher",
+        "conceptLevel": "Model",
+        "description": "The publisher of a book.",
+        "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+        "viewAttributes": [
+          "name",
+          "country",
+          "icon",
+          "uuid"
+        ],
+        "icon": "building",
+        "cache": {
+          "cacheAllInstancesOnRefresh": true
+        },
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "name": {
+              "type": "string",
+              "tag": {
+                "value": {
+                  "id": 4,
+                  "defaultLabel": "Name"
+                }
+              }
+            },
+            "country": {
+              "type": "uuid",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 5,
+                  "display": {
+                    "editable": true
+                  },
+                  "defaultLabel": "Country",
+                  "foreignKeyParams": {
+                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "targetEntityOrderInstancesBy": "name"
+                  }
+                }
+              }
+            },
+            "icon": {
+              "type": "string",
+              "optional": true,
+              "tag": {
+                "value": {
+                  "id": 6,
+                  "defaultLabel": "Icon"
+                }
+              }
+            }
+          }
+        }
+      },
+      "instances": [
+        {
+          "uuid": "1f550a2a-33f5-4a56-83ee-302701039494",
+          "parentName": "Publisher",
+          "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+          "name": "Penguin",
+          "icon": "",
+          "country": "b6ddfb89-4301-48bf-9ed9-4ed6ee9261fe"
+        },
+        {
+          "uuid": "516a7366-39e7-4998-82cb-80199a7fa667",
+          "parentName": "Publisher",
+          "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+          "name": "Folio",
+          "country": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+        },
+        {
+          "uuid": "c1c97d54-aba8-4599-883a-7fe8f3874095",
+          "parentName": "Publisher",
+          "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+          "name": "Springer",
+          "country": "30b8e7c6-b75d-4db0-906f-fa81fa5c4cc0"
+        }
+      ]
+    },
+    {
+      "entity": {
+        "uuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+        "parentName": "Entity",
+        "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+        "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "name": "User",
+        "conceptLevel": "Model",
+        "description": "User.",
+        "defaultInstanceDetailsReportUuid": "8adee3d5-f8cc-4118-aa02-5a2cd07908aa",
+        "viewAttributes": [
+          "name",
+          "firstName",
+          "lastName",
+          "street",
+          "postalCode",
+          "city",
+          "state",
+          "country",
+          "uuid"
+        ],
+        "icon": "person",
+        "cache": {
+          "cacheAllInstancesOnRefresh": true
+        },
+        "mlSchema": {
+          "type": "object",
+          "extend": {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "entityDefinitionRoot"
+            }
+          },
+          "definition": {
+            "name": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Name",
+                  "id": 5
+                }
+              },
+              "type": "string"
+            },
+            "firstName": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "First Name",
+                  "id": 6
+                }
+              },
+              "type": "string"
+            },
+            "lastName": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Last Name",
+                  "id": 7
+                }
+              },
+              "type": "string"
+            },
+            "street": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Street Adress",
+                  "id": 8
+                }
+              },
+              "type": "string"
+            },
+            "postalCode": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Postal Code",
+                  "id": 9
+                }
+              },
+              "type": "string"
+            },
+            "city": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "City",
+                  "id": 10
+                }
+              },
+              "type": "string"
+            },
+            "state": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "State",
+                  "id": 11
+                }
+              },
+              "type": "string"
+            },
+            "country": {
+              "tag": {
+                "value": {
+                  "defaultLabel": "Country",
+                  "foreignKeyParams": {
+                    "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "targetEntityOrderInstancesBy": "name"
+                  },
+                  "id": 12
+                }
+              },
+              "type": "uuid",
+              "optional": true
+            }
+          }
+        }
+      },
+      "instances": [
+        {
+          "uuid": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+          "parentName": "User",
+          "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+          "conceptLevel": "Model",
+          "name": "Jeanne Dielman",
+          "firstName": "Jeanne",
+          "lastName": "Dielman",
+          "street": "23 quai du Commerce",
+          "postalCode": "1080",
+          "city": "bruxelles",
+          "state": "",
+          "country": "962e4064-bf6c-42e6-9929-6fb318efc7ec"
+        }
+      ]
+    }
+  ]
+}

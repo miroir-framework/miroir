@@ -6693,6 +6693,46 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "testbedModel": {
+            "type": "any",
+            "optional": true
+          },
+          "testbedEntitiesAndInstances": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "object",
+              "definition": {
+                "entity": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entity"
+                  },
+                  "context": {}
+                },
+                "instances": {
+                  "type": "array",
+                  "definition": {
+                    "type": "any"
+                  }
+                }
+              }
+            }
+          },
+          "testConfiguration": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Test Configuration",
+                "foreignKeyParams": {
+                  "targetEntity": "675ccd46-7dd3-400b-a2bd-1319c39e11da",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
           "miroirTests": {
             "type": "array",
             "definition": {
@@ -7404,6 +7444,45 @@ export const miroirFundamentalJzodSchema = {
                       "deploymentUuid": {
                         "type": "string",
                         "optional": true
+                      }
+                    }
+                  },
+                  "testbedModel": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "testbedEntitiesAndInstances": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "entity": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "entity"
+                          }
+                        },
+                        "instances": {
+                          "type": "array",
+                          "definition": {
+                            "type": "any"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "testConfiguration": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Test Configuration",
+                        "foreignKeyParams": {
+                          "targetEntity": "675ccd46-7dd3-400b-a2bd-1319c39e11da",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
                       }
                     }
                   },

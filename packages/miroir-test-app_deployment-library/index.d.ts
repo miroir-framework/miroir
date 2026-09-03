@@ -79,6 +79,7 @@ export declare const user3: any;
 export declare const miroirTest_runner_lend_document: any;
 export declare const miroirTest_runner_return_document: any;
 export declare const miroirTest_runner_mcp_lend_document: any;
+export declare const testConfiguration_libraryDocumentSeed: any;
 export declare const lendDocumentRunner: any;
 export declare const mcpLendDocumentRunner: any;
 export declare const returnDocumentRunner: any;

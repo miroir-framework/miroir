@@ -91,6 +91,8 @@ sequenceDiagram
 
 **Still open for #197:** Phase B **optional postponed** leftovers only (Electron emulated, B8/B9, Playwright) — [phase-b-ui-launcher-plan.md](./phase-b-ui-launcher-plan.md) §7. Phase R complete ✅ ([r6-suite-scoped-context-plan.md](./r6-suite-scoped-context-plan.md)). UI runs **domainController-based** MiroirTest integ (`runnerTest` + `transformerTest`); PersistenceStoreController-direct `4_storage` suites remain deferred (B9 postponed — see [Out of scope](#out-of-scope)).
 
+**Playfield seed (#252):** Integ suites no longer take model + instances from `UI_INTEGRATION_RUNNER_SUITE_REGISTRY`. That payload lives on the `MiroirTestSuite` (inline `testbedModel` + `testbedEntitiesAndInstances`, or a `testConfiguration` uuid). The registry leftover is `{ kind, suiteDefinition, testbedInitApplicationParameters }`. See [252 plan](../252-FEATURE-self-contained-miroirtest-testbed/tdd-implementation-plan.md).
+
 **Action integ → MiroirTest:** Data CRUD pilot on `actionTest` (`domain_controller_data_crud` in **deployment-miroir**; Library is `runTarget` only). Imperative `DomainController.integ.Data.CRUD.test.tsx` is **deprecated** but kept green until full replacement. Plan: [action-integ-miroirtest-migration-plan.md](./action-integ-miroirtest-migration-plan.md).
 
 ### Legacy imperative runner files (not yet on MiroirTest JSON)

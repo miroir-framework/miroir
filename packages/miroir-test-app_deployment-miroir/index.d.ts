@@ -33,6 +33,7 @@ export declare const entityApplicationVersionCrossTransformerDefinitionVersion: 
 export declare const entityTest: any;
 export declare const entityTransformerDefinition: any;
 export declare const entityMiroirTest: any;
+export declare const entityTestConfiguration: any;
 export declare const entityBlob: any;
 export declare const entityCommit: any;
 export declare const entityApplicationVersionCrossEntityVersion: any;
@@ -82,6 +83,9 @@ export declare const entityDefinitionTest: any;
 export declare const entityVersionMiroirTest: any;
 /** @deprecated Use entityVersionMiroirTest */
 export declare const entityDefinitionMiroirTest: any;
+export declare const entityVersionTestConfiguration: any;
+/** @deprecated Use entityVersionTestConfiguration */
+export declare const entityDefinitionTestConfiguration: any;
 export declare const entityVersionStoreBasedConfiguration: any;
 /** @deprecated Use entityVersionStoreBasedConfiguration */
 export declare const entityDefinitionStoreBasedConfiguration: any;
@@ -175,6 +179,8 @@ export declare const reportTestList: any;
 export declare const reportTestDetails: any;
 export declare const reportMiroirTestList: any;
 export declare const reportMiroirTestDetails: any;
+export declare const reportTestConfigurationList: any;
+export declare const reportTestConfigurationDetails: any;
 export declare const reportEndpointDetails: any;
 export declare const reportMenuDetails: any;
 export declare const reportMiroirQueryList: any;
@@ -260,6 +266,7 @@ export declare const miroirTest_evolutionTraceWP1: any;
 export declare const miroirTest_runner_create_entity: any;
 export declare const miroirTest_runner_drop_entity: any;
 export declare const miroirTest_runner_freeze_application_version: any;
+export declare const testConfiguration_libraryPublisherAndCountry: any;
 export declare const miroirTest_runner_mcp_get_instances: any;
 export declare const miroirTest_unionArrayChoices: any;
 export declare const miroirTest_unionObjectChoices: any;

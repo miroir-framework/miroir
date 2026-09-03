@@ -51,6 +51,36 @@
       ]
     },
     {
+      "id": "unit-resolveSuitePlayfieldSeed",
+      "tier": "unit",
+      "title": "#252 — resolveSuitePlayfieldSeed (inline XOR TestConfiguration)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-core",
+        "--",
+        "resolveSuitePlayfieldSeed"
+      ]
+    },
+    {
+      "id": "unit-testConfigurationSection",
+      "tier": "unit",
+      "title": "#252 — TestConfiguration entity, menus, getApplicationSection",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-core",
+        "--",
+        "testConfigurationSection"
+      ]
+    },
+    {
       "id": "default-miroir-modelValidation",
       "tier": "default",
       "title": "Deployment modelValidation \u2014 miroir",
@@ -596,6 +626,46 @@
         "emulatedServer-filesystem",
         "--suites",
         "runner_freeze_application_version",
+        "--mode",
+        "integ"
+      ]
+    },
+    {
+      "id": "integ-runner-runner_drop_entity",
+      "tier": "default",
+      "title": "MiroirTest integ — runner_drop_entity (skipReset, no playfield)",
+      "requires": "postgres",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "runner_drop_entity",
+        "--mode",
+        "integ"
+      ]
+    },
+    {
+      "id": "integ-action-evolutionTraceWP1",
+      "tier": "default",
+      "title": "MiroirTest integ — evolutionTraceWP1 (actionTest)",
+      "requires": "postgres",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "evolutionTraceWP1",
         "--mode",
         "integ"
       ]

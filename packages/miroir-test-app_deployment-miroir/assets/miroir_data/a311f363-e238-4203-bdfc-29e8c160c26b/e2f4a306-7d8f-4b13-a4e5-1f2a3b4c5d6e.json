@@ -14,6 +14,169 @@
       "applicationName": "Library",
       "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
     },
+    "testbedModel": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "entities": [
+        {
+          "uuid": "44691d2c-d7c1-48e0-8363-71c51195e104",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "name": "TestEntityCompositePK",
+          "conceptLevel": "Model",
+          "description": "Test entity with a composite primary key [region, code].",
+          "idAttribute": [
+            "region",
+            "code"
+          ],
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "region": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Region"
+                  }
+                }
+              },
+              "code": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Code"
+                  }
+                }
+              },
+              "parentName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Name"
+                  }
+                }
+              },
+              "parentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Entity Uuid"
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 5,
+                    "defaultLabel": "Name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "testbedEntitiesAndInstances": [
+      {
+        "entity": {
+          "uuid": "44691d2c-d7c1-48e0-8363-71c51195e104",
+          "parentName": "Entity",
+          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+          "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+          "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "name": "TestEntityCompositePK",
+          "conceptLevel": "Model",
+          "description": "Test entity with a composite primary key [region, code].",
+          "idAttribute": [
+            "region",
+            "code"
+          ],
+          "mlSchema": {
+            "type": "object",
+            "definition": {
+              "region": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Region"
+                  }
+                }
+              },
+              "code": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Code"
+                  }
+                }
+              },
+              "parentName": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Entity Name"
+                  }
+                }
+              },
+              "parentUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "Entity Uuid"
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 5,
+                    "defaultLabel": "Name"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "instances": [
+          {
+            "region": "EU",
+            "code": "A1",
+            "parentUuid": "44691d2c-d7c1-48e0-8363-71c51195e104",
+            "parentName": "TestEntityCompositePK",
+            "name": "EU-A1 item"
+          },
+          {
+            "region": "EU",
+            "code": "B2",
+            "parentUuid": "44691d2c-d7c1-48e0-8363-71c51195e104",
+            "parentName": "TestEntityCompositePK",
+            "name": "EU-B2 item"
+          },
+          {
+            "region": "US",
+            "code": "A1",
+            "parentUuid": "44691d2c-d7c1-48e0-8363-71c51195e104",
+            "parentName": "TestEntityCompositePK",
+            "name": "US-A1 item"
+          }
+        ]
+      }
+    ],
     "miroirTests": [
       {
         "miroirTestType": "actionTest",
