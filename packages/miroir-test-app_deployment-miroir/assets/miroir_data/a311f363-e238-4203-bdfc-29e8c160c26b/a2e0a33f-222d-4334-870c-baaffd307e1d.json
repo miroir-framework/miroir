@@ -14,6 +14,7 @@
       "applicationName": "Library",
       "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
     },
+    "testConfiguration": "d669558c-7cda-4037-81bf-0b9a71fbcb94",
     "testParams": {
       "expectedInstanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
     },

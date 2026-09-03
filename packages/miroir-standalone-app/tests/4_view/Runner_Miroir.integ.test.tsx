@@ -100,7 +100,7 @@ const runnerTestSession = new RunnerTestSession({
   runTarget: runnerTestRunTarget,
   suiteTestParams: runnerReturnDocumentSuite.testParams,
   resolvedRunner: returnDocument as unknown as Runner,
-  testBedModelAndInstances: {
+  integTestbedResetParams: {
       testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
       testbedInitApplicationParameters: libraryTestbedInitParams,
       testbedModel: defaultLibraryAppModel as MetaModelPartial,

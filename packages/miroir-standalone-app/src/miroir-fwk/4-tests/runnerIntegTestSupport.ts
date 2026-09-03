@@ -1,10 +1,8 @@
 import {
   type ApplicationDeploymentMap,
-  type ApplicationEntitiesAndInstances,
   type Deployment,
   type DomainControllerInterface,
-  type InitApplicationParameters,
-  type MetaModelPartial,
+  type IntegTestbedResetParams,
   type MiroirConfigClient,
   type StoreUnitConfiguration,
   type Uuid,
@@ -19,6 +17,16 @@ import { resolveCanonicalTestDeploymentUuid } from "./resolveCanonicalTestDeploy
 
 const STANDALONE_APP_TESTS_TMP = "miroir-standalone-app/tests/tmp";
 
+export type BeforeEachTestOptions = {
+  clearDocumentBody?: boolean;
+  resetMiroirPlatform?: {
+    miroirDeploymentUuid: Uuid;
+    miroirSelfApplicationUuid: Uuid;
+  };
+  /** Playfield model + instances + init; forwarded to resetIntegTestbed when set. */
+  integTestbedResetParams?: IntegTestbedResetParams;
+};
+
 export async function beforeEachTest(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
@@ -26,17 +34,9 @@ export async function beforeEachTest(
     applicationUuid: string;
     deploymentUuid: string;
   },
-  options?: {
-    clearDocumentBody?: boolean;
-    resetMiroirPlatform?: {
-      miroirDeploymentUuid: Uuid;
-      miroirSelfApplicationUuid: Uuid;
-    };
-    testbedEntitiesAndInstances?: ApplicationEntitiesAndInstances;
-    testbedInitApplicationParameters?: InitApplicationParameters;
-    testbedModel?: MetaModelPartial;
-  },
+  options?: BeforeEachTestOptions,
 ): Promise<void> {
+  const resetParams = options?.integTestbedResetParams;
   await resetIntegTestbed({
     domainController,
     applicationDeploymentMap,
@@ -48,9 +48,13 @@ export async function beforeEachTest(
       miroirDeploymentUuid: deployment_Miroir.uuid,
       miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
     },
-    testbedEntitiesAndInstances: options?.testbedEntitiesAndInstances,
-    testbedInitApplicationParameters: options?.testbedInitApplicationParameters,
-    testbedModel: options?.testbedModel,
+    ...(resetParams
+      ? {
+          testbedEntitiesAndInstances: resetParams.testbedEntitiesAndInstances,
+          testbedInitApplicationParameters: resetParams.testbedInitApplicationParameters,
+          testbedModel: resetParams.testbedModel,
+        }
+      : {}),
   });
   if (options?.clearDocumentBody !== false && typeof document !== "undefined") {
     document.body.innerHTML = "";

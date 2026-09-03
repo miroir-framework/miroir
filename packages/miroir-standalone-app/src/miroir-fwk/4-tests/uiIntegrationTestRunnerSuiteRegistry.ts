@@ -12,6 +12,8 @@ import {
   resolveRunnerFromMiroirTestSuite,
   resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
   resolveSuitePlayfieldSeed,
+  composeIntegTestbedResetParams,
+  type IntegTestbedResetParams,
 } from "miroir-core";
 import {
   lendDocumentRunner,
@@ -44,7 +46,6 @@ import {
 } from "./uiIntegrationAppForTestPlayfieldSeed.js";
 import {
   libraryTestbedInitParams,
-  type TestbedSetupParameters
 } from "./uiIntegrationPlayfieldSeeds.js";
 
 export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
@@ -139,9 +140,9 @@ export function buildUiIntegrationOrchestratorCreateSessionParams(
     suiteTestParams,
     runnerUuidIndex,
   );
-  if (sessionSpecificOptions.testBedModelAndInstances === undefined) {
+  if (sessionSpecificOptions.integTestbedResetParams === undefined) {
     throw new Error(
-      `action session requires testBedModelAndInstances (suite entry kind: ${entry.kind})`,
+      `action session requires integTestbedResetParams (suite entry kind: ${entry.kind})`,
     );
   }
 
@@ -152,35 +153,31 @@ export function buildUiIntegrationOrchestratorCreateSessionParams(
   };
 }
 // ################################################################################################
-function composeUiIntegrationPlayfieldSeed(
+export function composeUiIntegrationTestbedResetParams(
   entry: UiIntegrationRunnerSuiteEntry,
-): TestbedSetupParameters | undefined {
+): IntegTestbedResetParams | undefined {
   if (resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition)) {
     return undefined;
   }
 
-  const resolved = resolveSuitePlayfieldSeed(
+  const playfieldSeed = resolveSuitePlayfieldSeed(
     entry.suiteDefinition,
     getTestConfigurationFromIndex,
   );
-  if (resolved === null) {
+  if (playfieldSeed === null) {
     throw new Error(
       `UI integration suite "${entry.suiteDefinition.miroirTestLabel}" has no suite-owned playfield (inline testbed or TestConfiguration uuid)`,
     );
   }
 
-  const init = entry.testbedInitApplicationParameters;
-  if (init === undefined) {
+  const testbedInitApplicationParameters = entry.testbedInitApplicationParameters;
+  if (testbedInitApplicationParameters === undefined) {
     throw new Error(
       `UI integration suite "${entry.suiteDefinition.miroirTestLabel}" is missing testbedInitApplicationParameters`,
     );
   }
 
-  return {
-    testbedModel: resolved.testbedModel,
-    testbedEntitiesAndInstances: resolved.testbedEntitiesAndInstances,
-    testbedInitApplicationParameters: init,
-  };
+  return composeIntegTestbedResetParams(playfieldSeed, testbedInitApplicationParameters);
 }
 
 export function buildUiIntegrationRunnerSessionSpecificOptions(
@@ -194,17 +191,17 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
   runTarget: TestbedUuids;
   suiteTestParams: Record<string, unknown> | undefined;
   runnerUuidIndex: Record<string, Runner>;
-  testBedModelAndInstances?: TestbedSetupParameters;
+  integTestbedResetParams?: IntegTestbedResetParams;
   skipRunTargetPlayfieldReset?: boolean;
 } {
   const skipReset = resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite(entry.suiteDefinition);
-  const playfield = composeUiIntegrationPlayfieldSeed(entry);
+  const integTestbedResetParams = composeUiIntegrationTestbedResetParams(entry);
   return {
     pageLabel,
     runTarget,
     suiteTestParams,
     runnerUuidIndex,
-    ...(playfield !== undefined ? { testBedModelAndInstances: playfield } : {}),
+    ...(integTestbedResetParams !== undefined ? { integTestbedResetParams } : {}),
     ...(skipReset ? { skipRunTargetPlayfieldReset: true } : {}),
   };
 }
@@ -235,22 +232,14 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_mcp_get_instances as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: defaultLibraryAppModel as MetaModel,
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_runner_mcp_lend_document.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_mcp_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testBedModelAndInstances: {
-      testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
-      testbedModel: defaultLibraryAppModel as MetaModel,
-    },
+    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_runner_drop_entity.name]: {

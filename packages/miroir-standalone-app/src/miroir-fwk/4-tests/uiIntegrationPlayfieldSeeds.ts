@@ -37,13 +37,10 @@ import {
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
 /**
- * Session playfield triple (model + instances + init). Not a registry field.
+ * Session playfield triple (model + instances + init). Alias of miroir-core IntegTestbedResetParams.
+ * @deprecated Prefer IntegTestbedResetParams from miroir-core.
  */
-export type TestbedSetupParameters = {
-  testbedEntitiesAndInstances: ApplicationEntitiesAndInstances;
-  testbedInitApplicationParameters: InitApplicationParameters;
-  testbedModel: MetaModelPartial;
-};
+export type TestbedSetupParameters = import("miroir-core").IntegTestbedResetParams;
 
 /** Composite-PK test entity — PK is `["region", "code"]` (matches legacy integ file). */
 const ENTITY_COMPOSITE_PK_UUID = "44691d2c-d7c1-48e0-8363-71c51195e104";

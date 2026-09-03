@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildRunnerTestSessionParamBank,
+  composeIntegTestbedResetParams,
   emptyApplicationModel,
   getBootstrapPhasesForSessionKind,
   getTestbedUuidsForTestSuite,
@@ -11,6 +12,7 @@ import {
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type MetaModel,
+  type MetaModelPartial,
   type MiroirConfigClient,
   type MiroirTestDefinition,
   type MiroirTestSuite,
@@ -23,6 +25,7 @@ import {
   selfApplicationAppForTest,
 } from "miroir-test-app_deployment-appForTest";
 import {
+  defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   miroirTest_runner_return_document,
   returnDocument,
@@ -72,8 +75,19 @@ vi.mock("../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js", async (importO
 });
 
 import { getTestSessionConfig, RunnerTestSession } from "./RunnerTestSession.js";
-import { runnerLibraryDocumentPlayfieldSeed } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
+import {
+  libraryTestbedInitParams,
+  runnerLibraryDocumentEntitiesAndInstances,
+} from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
+
+const runnerLibraryDocumentPlayfieldSeed = composeIntegTestbedResetParams(
+  {
+    testbedModel: defaultLibraryAppModel as MetaModelPartial,
+    testbedEntitiesAndInstances: runnerLibraryDocumentEntitiesAndInstances,
+  },
+  libraryTestbedInitParams,
+);
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
   return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
@@ -94,7 +108,7 @@ function runnerSessionOptions(
     runTarget,
     suiteTestParams: runnerReturnDocumentSuite().testParams,
     resolvedRunner: returnDocument as Runner,
-    testBedModelAndInstances: runnerLibraryDocumentPlayfieldSeed,
+    integTestbedResetParams: runnerLibraryDocumentPlayfieldSeed,
     ...overrides,
   };
 }
@@ -289,7 +303,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     expect(beforeEachTestMock).toHaveBeenCalledTimes(1);
   });
 
-  it("beforeEach forwards testBedModelAndInstances and remaps its metaModel for runTarget", async () => {
+  it("beforeEach forwards integTestbedResetParams and remaps its metaModel for runTarget", async () => {
     const { domainControllerDataCrudLibraryPlayfieldSeed } = await import(
       "./libraryPlayfieldSeeds.js"
     );
@@ -303,7 +317,7 @@ describe("RunnerTestSession (Gap E R)", () => {
       runTarget,
       suiteTestParams: runnerReturnDocumentSuite().testParams,
       resolvedRunner: returnDocument as Runner,
-      testBedModelAndInstances: domainControllerDataCrudLibraryPlayfieldSeed,
+      integTestbedResetParams: domainControllerDataCrudLibraryPlayfieldSeed,
     });
 
     await session.initSession();
@@ -322,12 +336,14 @@ describe("RunnerTestSession (Gap E R)", () => {
           miroirDeploymentUuid: deployment_Miroir.uuid,
           miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
         },
-        testbedEntitiesAndInstances:
-          domainControllerDataCrudLibraryPlayfieldSeed.testbedEntitiesAndInstances,
-        testbedInitApplicationParameters:
-          domainControllerDataCrudLibraryPlayfieldSeed.testbedInitApplicationParameters,
-        testbedModel: expect.objectContaining({
-          applicationUuid: runTarget.applicationUuid,
+        integTestbedResetParams: expect.objectContaining({
+          testbedEntitiesAndInstances:
+            domainControllerDataCrudLibraryPlayfieldSeed.testbedEntitiesAndInstances,
+          testbedInitApplicationParameters:
+            domainControllerDataCrudLibraryPlayfieldSeed.testbedInitApplicationParameters,
+          testbedModel: expect.objectContaining({
+            applicationUuid: runTarget.applicationUuid,
+          }),
         }),
       }),
     );
@@ -373,7 +389,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     } as unknown as MetaModel;
     const session = new RunnerTestSession(
       runnerSessionOptions(runTarget, {
-        testBedModelAndInstances: {
+        integTestbedResetParams: {
           testbedEntitiesAndInstances: [],
           testbedInitApplicationParameters: libraryTestbedInitParams,
           testbedModel: customMetaModel,
@@ -385,9 +401,9 @@ describe("RunnerTestSession (Gap E R)", () => {
     await session.beforeEach();
 
     const forwarded = beforeEachTestMock.mock.calls[0][3] as {
-      testbedModel: MetaModel;
+      integTestbedResetParams: { testbedModel: MetaModel };
     };
-    expect(forwarded.testbedModel.entities.map((e) => e.uuid)).toEqual([
+    expect(forwarded.integTestbedResetParams.testbedModel.entities.map((e) => e.uuid)).toEqual([
       customEntityUuid,
     ]);
   });

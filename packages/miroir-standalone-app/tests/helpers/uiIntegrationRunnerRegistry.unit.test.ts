@@ -29,6 +29,8 @@ const EXPECTED_KEYS = [
   "runner_drop_entity",
   "runner_freeze_application_version",
   "runner_lend_document",
+  "runner_mcp_get_instances",
+  "runner_mcp_lend_document",
   "runner_return_document",
 ] as const;
 
@@ -40,7 +42,7 @@ const ALLOWED_ENTRY_KEYS = new Set([
 ]);
 
 (shouldRun ? describe : describe.skip)("UI integration runner registry", () => {
-  it("lists the fourteen runner/action suite keys", () => {
+  it("lists the sixteen runner/action suite keys", () => {
     expect(listUiIntegrationRunnerSuiteKeys()).toEqual([...EXPECTED_KEYS]);
   });
 

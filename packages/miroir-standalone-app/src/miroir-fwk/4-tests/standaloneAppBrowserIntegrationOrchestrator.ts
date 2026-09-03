@@ -118,9 +118,9 @@ const browserSessionFactory: IntegrationTestSessionFactory = {
       if (!sessionSpecificOptions?.runTarget) {
         throw new Error("Browser integration orchestrator: runner/action session requires runTarget");
       }
-      if (kind === "action" && !sessionSpecificOptions.testBedModelAndInstances) {
+      if (kind === "action" && !sessionSpecificOptions.integTestbedResetParams) {
         throw new Error(
-          "Browser integration orchestrator: action session requires testBedModelAndInstances",
+          "Browser integration orchestrator: action session requires integTestbedResetParams",
         );
       }
       const runnerOptions = sessionSpecificOptions;

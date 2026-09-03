@@ -7,8 +7,8 @@ import type {
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion.js";
-import type { InitApplicationParameters } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
-import type { ApplicationDeploymentMap, ApplicationEntitiesAndInstances } from "../1_core/Deployment.js";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment.js";
+import type { IntegTestbedResetParams } from "./composeIntegTestbedResetParams.js";
 import type { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import type { MiroirEventService } from "../3_controllers/MiroirEventService";
 import type {
@@ -143,17 +143,16 @@ export type DomainControllerOrchestratorSessionOptions =
     profile: DomainControllerSessionProfile;
   };
 
-export type RunnerLibraryPlayfieldSeed = {
-  testbedEntitiesAndInstances: ApplicationEntitiesAndInstances;
-  testbedInitApplicationParameters: InitApplicationParameters;
-  testbedModel: MetaModelPartial;
-};
+/** @deprecated Use IntegTestbedResetParams */
+export type RunnerLibraryPlayfieldSeed = IntegTestbedResetParams;
+
+export type { IntegTestbedResetParams };
 
 export type ActionIntegrationSessionOptions = IntegTestHostOptions & {
   pageLabel?: string;
   runTarget: TestbedUuids;
   suiteTestParams?: Record<string, unknown>;
-  testBedModelAndInstances: RunnerLibraryPlayfieldSeed;
+  integTestbedResetParams: IntegTestbedResetParams;
 };
 
 export type RunnerIntegrationSessionOptions = IntegTestHostOptions & {
@@ -161,7 +160,7 @@ export type RunnerIntegrationSessionOptions = IntegTestHostOptions & {
   runTarget: TestbedUuids;
   suiteTestParams?: Record<string, unknown>;
   skipRunTargetPlayfieldReset?: boolean;
-  testBedModelAndInstances?: RunnerLibraryPlayfieldSeed;
+  integTestbedResetParams?: IntegTestbedResetParams;
   /** Runner definitions keyed by Runner uuid for leaf `runnerRef` lookup. */
   runnerUuidIndex?: Record<string, Runner>;
 };

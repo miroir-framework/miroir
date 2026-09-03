@@ -1454,6 +1454,10 @@ export {
   runnerTestJzodSchema,
 } from "./5_tests/RunnerTestTools.js";
 export {
+  composeIntegTestbedResetParams,
+  type IntegTestbedResetParams,
+} from "./5_tests/composeIntegTestbedResetParams.js";
+export {
   resolveSuitePlayfieldSeed,
   type SuitePlayfieldSeed,
   type TestConfigurationPlayfield,
