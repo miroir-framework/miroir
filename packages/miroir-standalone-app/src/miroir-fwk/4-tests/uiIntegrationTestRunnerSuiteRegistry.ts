@@ -1,6 +1,5 @@
 import type {
   ActionIntegrationSessionOptions,
-  InitApplicationParameters,
   IntegrationTestOrchestratorContext,
   IntegrationTestSessionFactoryCreateParams,
   MiroirTestDefinition,
@@ -12,6 +11,7 @@ import {
   resolveRunnerFromMiroirTestSuite,
   resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
   resolveSuitePlayfieldSeed,
+  resolveSuiteTestbedInitApplicationParameters,
   composeIntegTestbedResetParams,
   type IntegTestbedResetParams,
 } from "miroir-core";
@@ -41,12 +41,7 @@ import {
 } from "miroir-test-app_deployment-miroir";
 
 import { getTestConfigurationFromIndex } from "./testConfigurationInstanceIndex.js";
-import {
-  appForTestTestbedInitParams
-} from "./uiIntegrationAppForTestPlayfieldSeed.js";
-import {
-  libraryTestbedInitParams,
-} from "./uiIntegrationPlayfieldSeeds.js";
+import { getTestbedInitApplicationParametersFromRef } from "./testbedInitApplicationParametersIndex.js";
 
 export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.name;
 // export const RUNNER_DROP_ENTITY_SUITE_KEY = miroirTest_runner_drop_entity.name;
@@ -64,19 +59,16 @@ export const UI_INTEGRATION_RUNNER_UUID_INDEX: Record<string, Runner> = {
 export type UiIntegrationRunnerTestSuiteEntry = {
   kind: "runnerTest";
   suiteDefinition: MiroirTestSuite;
-  testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationDomainControllerTestSuiteEntry = {
   kind: "domainControllerTest";
   suiteDefinition: MiroirTestSuite;
-  testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationActionTestSuiteEntry = {
   kind: "actionTest";
   suiteDefinition: MiroirTestSuite;
-  testbedInitApplicationParameters?: InitApplicationParameters;
 };
 
 export type UiIntegrationRunnerSuiteEntry =
@@ -170,11 +162,12 @@ export function composeUiIntegrationTestbedResetParams(
     );
   }
 
-  const testbedInitApplicationParameters = entry.testbedInitApplicationParameters;
-  if (testbedInitApplicationParameters === undefined) {
-    throw new Error(
-      `UI integration suite "${entry.suiteDefinition.miroirTestLabel}" is missing testbedInitApplicationParameters`,
-    );
+  const testbedInitApplicationParameters = resolveSuiteTestbedInitApplicationParameters(
+    entry.suiteDefinition,
+    getTestbedInitApplicationParametersFromRef,
+  );
+  if (testbedInitApplicationParameters === null) {
+    return undefined;
   }
 
   return composeIntegTestbedResetParams(playfieldSeed, testbedInitApplicationParameters);
@@ -212,14 +205,12 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_runner_return_document.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_return_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_runner_create_entity.name]: {
@@ -232,14 +223,12 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_mcp_get_instances as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_runner_mcp_lend_document.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_mcp_lend_document as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_runner_drop_entity.name]: {
@@ -252,64 +241,54 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_freeze_application_version as MiroirTestDefinition)
       .definition as MiroirTestSuite,
-    testbedInitApplicationParameters: appForTestTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_data_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_data_crud.definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_model_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_model_crud.definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_composite_pk_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_composite_pk_crud.definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_non_uuid_pk_model_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_model_crud.definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_non_uuid_pk_data_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_non_uuid_pk_data_crud.definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_no_parent_uuid_crud.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_no_parent_uuid_crud.definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_model_undo_redo.name]: {
     kind: "domainControllerTest",
     suiteDefinition: miroirTest_domain_controller_model_undo_redo.definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_domain_controller_application_version_freeze.name]: {
     kind: "domainControllerTest",
     suiteDefinition:
       miroirTest_domain_controller_application_version_freeze.definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
   // ###############################################################################
   [miroirTest_evolutionTraceWP1.name]: {
     kind: "actionTest",
     suiteDefinition: miroirTest_evolutionTraceWP1.definition as MiroirTestSuite,
-    testbedInitApplicationParameters: libraryTestbedInitParams,
   },
 };
 

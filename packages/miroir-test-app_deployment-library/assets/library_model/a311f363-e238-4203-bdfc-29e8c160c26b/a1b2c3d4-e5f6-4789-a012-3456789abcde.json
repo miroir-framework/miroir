@@ -176,6 +176,7 @@
         ],
         "defaultApplicationName": "Library"
       }
-    ]
+    ],
+    "testbedInitApplicationParameters": "libraryTestbedInitParams"
   }
 }

@@ -1463,6 +1463,10 @@ export {
   type TestConfigurationPlayfield,
 } from "./5_tests/resolveSuitePlayfieldSeed.js";
 export {
+  resolveSuiteTestbedInitApplicationParameters,
+  type TestbedInitApplicationParametersRef,
+} from "./5_tests/resolveSuiteTestbedInitApplicationParameters.js";
+export {
   isRunnerTestRunTargetUuid,
   getTestbedUuidsForTestSuite,
   buildRunnerTestSessionParamBank,

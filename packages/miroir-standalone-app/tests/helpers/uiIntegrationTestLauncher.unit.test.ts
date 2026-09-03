@@ -100,7 +100,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     ).toBe("action");
   });
 
-  it("composes undo_redo playfield from suite JSON plus registry init params", () => {
+  it("composes undo_redo playfield from suite JSON plus suite init ref", () => {
     const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY.domain_controller_model_undo_redo;
     expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams")).toBe(false);
 
@@ -148,7 +148,9 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"), key).toBe(
         false,
       );
-      expect(entry.testbedInitApplicationParameters, key).toEqual(libraryTestbedInitParams);
+      expect(entry.suiteDefinition.testbedInitApplicationParameters, key).toBe(
+        "libraryTestbedInitParams",
+      );
 
       const params = buildUiIntegrationOrchestratorCreateSessionParams(
         entry,
@@ -214,7 +216,9 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"), key).toBe(
         false,
       );
-      expect(entry.testbedInitApplicationParameters, key).toEqual(libraryTestbedInitParams);
+      expect(entry.suiteDefinition.testbedInitApplicationParameters, key).toBe(
+        "libraryTestbedInitParams",
+      );
 
       const params = buildUiIntegrationOrchestratorCreateSessionParams(
         entry,
@@ -280,7 +284,9 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"), key).toBe(
         false,
       );
-      expect(entry.testbedInitApplicationParameters, key).toEqual(libraryTestbedInitParams);
+      expect(entry.suiteDefinition.testbedInitApplicationParameters, key).toBe(
+        "libraryTestbedInitParams",
+      );
 
       const params = buildUiIntegrationOrchestratorCreateSessionParams(
         entry,
@@ -317,7 +323,9 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     };
     const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_freeze_application_version;
     expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams")).toBe(false);
-    expect(entry.testbedInitApplicationParameters).toEqual(appForTestTestbedInitParams);
+    expect(entry.suiteDefinition.testbedInitApplicationParameters).toBe(
+      "appForTestTestbedInitParams",
+    );
 
     const params = buildUiIntegrationOrchestratorCreateSessionParams(
       entry,
@@ -362,9 +370,9 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       suiteDefinition: {
         miroirTestType: "miroirTestSuite",
         miroirTestLabel: "synthetic_no_playfield",
+        testbedInitApplicationParameters: "libraryTestbedInitParams",
         miroirTests: [],
       } as MiroirTestSuite,
-      testbedInitApplicationParameters: libraryTestbedInitParams,
     };
     expect(() =>
       buildUiIntegrationOrchestratorCreateSessionParams(
@@ -391,7 +399,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
         Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"),
         key,
       ).toBe(false);
-      expect(entry.testbedInitApplicationParameters, key).toBeUndefined();
+      expect(entry.suiteDefinition.testbedInitApplicationParameters, key).toBeUndefined();
       const params = buildUiIntegrationOrchestratorCreateSessionParams(
         UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key],
         context,

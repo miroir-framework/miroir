@@ -47,6 +47,7 @@
         "preRunnerCompositeActions": [],
         "defaultApplicationName": "Library"
       }
-    ]
+    ],
+    "testbedInitApplicationParameters": "libraryTestbedInitParams"
   }
 }

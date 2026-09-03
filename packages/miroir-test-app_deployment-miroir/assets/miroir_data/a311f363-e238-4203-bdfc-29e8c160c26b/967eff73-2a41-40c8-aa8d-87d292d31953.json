@@ -888,6 +888,7 @@
         ],
         "defaultApplicationName": "appForTest"
       }
-    ]
+    ],
+    "testbedInitApplicationParameters": "appForTestTestbedInitParams"
   }
 }
