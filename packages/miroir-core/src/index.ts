@@ -1346,6 +1346,35 @@ export {
   type MiroirTestSuiteUiExecutionMode,
 } from "./5_tests/inferIntegrationSessionKind.js";
 export {
+  APPLICATION_MIROIR_TEST_SOURCE_FOLDERS,
+  ENTITY_MIROIR_TEST_UUID,
+  type ApplicationMiroirTestSourceFolder,
+} from "./5_tests/applicationMiroirTestFolders.js";
+export {
+  buildApplicationMiroirTestCatalog,
+  buildUiIntegrationRunnerSuiteRegistryFromCatalog,
+  buildUiIntegrationSuiteRegistriesFromMiroirTests,
+  buildUiIntegrationTransformerSuiteRegistryFromCatalog,
+  catalogEntryFromMiroirTest,
+  classifyApplicationMiroirTestCliLaunchKind,
+  inferUiIntegrationRunnerSuiteKind,
+  indexApplicationMiroirTestsByKey,
+  isMiroirTestSuiteInstance,
+  isUiIntegrationLaunchableSuite,
+  listCliRunnerIntegrationSuiteKeys,
+  listCliTransformerIntegrationSuiteKeys,
+  listCliUnitSuiteKeys,
+  loadMiroirTestSuiteFromCatalog,
+  resolveApplicationMiroirTestSuiteKey,
+  resolveApplicationMiroirTestSuiteKeys,
+  suiteKeyFromMiroirTestInstance,
+  type ApplicationMiroirTestCatalogEntry,
+  type ApplicationMiroirTestCliLaunchKind,
+  type UiIntegrationRunnerSuiteKind,
+  type UiIntegrationRunnerSuiteRegistryMap,
+  type UiIntegrationTransformerSuiteRegistryMap,
+} from "./5_tests/applicationMiroirTestCatalog.js";
+export {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,
   getBootstrapPhasesForSessionKind,
@@ -1564,6 +1593,7 @@ export {
 export {
   listMiroirTestSuiteKeys,
   loadMiroirCoreTestSuite,
+  MIROIR_TEST_SUITE_REGISTRY_NAMES,
   type MiroirTestSuiteKey,
   type MiroirTestSuiteLoader,
 } from "./5_tests/miroirCoreTestSuiteRegistry.js";

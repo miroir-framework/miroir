@@ -1142,15 +1142,16 @@ await session.teardown();
 
 #### Unit suite (`testMiroir --mode unit`)
 
-1. Create a `MiroirTestDefinition` JSON in `assets/miroir_data/a311f363-…/<uuid>.json`.
-2. Export it from `packages/miroir-test-app_deployment-miroir/index.ts`:
-   ```typescript
-   export { default as miroirTest_myNewSuite } from "./assets/miroir_data/.../uuid.json" assert { type: "json" };
-   ```
-3. Add the key to `MIROIR_TEST_SUITE_REGISTRY_NAMES` in `miroirCoreTestSuiteRegistry.ts`.
-4. Rebuild: `npm run build -w miroir-test-app_deployment-miroir`.
+1. Create a `MiroirTestDefinition` JSON in the owning application's MiroirTest folder:
+   - Miroir app: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/<uuid>.json`
+   - Other apps: that app's **model** section `…/<app>_model/a311f363-…/<uuid>.json`
+2. Set `name` to the CLI / UI suite key (e.g. `myNewSuite`).
+3. CLI discovery reads `APPLICATION_MIROIR_TEST_SOURCE_FOLDERS` — no hardcoded key list and no `UI_INTEGRATION_RUNNER_SUITE_REGISTRY` row. Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`.
+4. Optional: export `miroirTest_myNewSuite` from the deployment package `index.ts` if other TypeScript wants a named import. Rebuild that package.
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.
 6. Run: `MIROIR_TEST_SUITES=myNewSuite MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core`.
+
+The last hardcoded snapshots (`MIROIR_TEST_SUITE_REGISTRY_NAMES`, `MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES`, `UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY`) are kept for reference only.
 
 #### Integration suite (UI / CLI `testMiroir --mode integ`)
 
@@ -1161,8 +1162,8 @@ Playfield **model + instances** belong on the suite or a `TestConfiguration`, no
    - `testConfiguration`: uuid of a `TestConfiguration` instance.
    Do not set both. Do **not** paste Entity arrays into TypeScript.
 2. `TestConfiguration` instances follow Query / `MiroirTest`: Miroir app → **data** (`miroir_data/675ccd46-…/`); any other app → that app’s **model** section. Payload is `name` / `description` + `testbedModel` + `testbedEntitiesAndInstances` only.
-3. Add `{ kind, suiteDefinition, testbedInitApplicationParameters }` to `UI_INTEGRATION_RUNNER_SUITE_REGISTRY`. `kind` stays (`runnerTest` | `domainControllerTest` | `actionTest`). Omit `testbedInitApplicationParameters` only when every leaf has `skipRunTargetPlayfieldReset`.
-4. Export the suite from the owning deployment package and rebuild it.
+3. Session kind (`runner` / `action` / `transformer`) is inferred from the suite leaves. UI launchability comes from the **currently selected application's** MiroirTest instances, not from `UI_INTEGRATION_RUNNER_SUITE_REGISTRY`.
+4. Put the JSON in the application folder listed in `APPLICATION_MIROIR_TEST_SOURCE_FOLDERS` so CLI `testMiroir --mode integ` can find it.
 5. Run: `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites myNewSuite --mode integ`.
 
 ---

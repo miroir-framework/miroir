@@ -8,12 +8,17 @@ import {
   miroirCoreTestVitestEntry,
   parseMiroirTestCliConfig,
 } from "../src/5_tests/parseMiroirTestCliConfig";
+import { listCliUnitSuiteKeysFromFolders } from "../src/5_tests/loadApplicationMiroirTestsFromFolders";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(scriptDir, "..");
 
 const argv = process.argv.slice(2);
-const config = parseMiroirTestCliConfig(process.env, argv);
+const config = parseMiroirTestCliConfig(
+  process.env,
+  argv,
+  listCliUnitSuiteKeysFromFolders(),
+);
 
 if (config.executionMode === "integration") {
   console.error(

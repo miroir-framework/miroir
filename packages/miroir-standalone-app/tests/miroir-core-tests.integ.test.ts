@@ -3,13 +3,16 @@ import * as vitest from "vitest";
 
 import {
   ConfigurationService,
-  listMiroirTestSuiteKeys,
   MiroirActivityTracker,
   parseMiroirTestCliArgs,
   resolveMiroirTestCliConfigFromPartial,
   runMiroirTests,
   type MiroirConfigClient,
 } from "miroir-core";
+import {
+  listCliUnitSuiteKeysFromFolders,
+  resolveCliSuiteKeysFromCatalog,
+} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { runMiroirCoreTestsFromCLI } from "./helpers/runMiroirCoreTestsFromCLI.js";
 import { assertMiroirCoreIntegTestLaunchReady } from "./helpers/miroirCoreIntegTestLaunch.js";
 import { resolveTestSessionForIntegOptionsFromEnv } from "./helpers/IntegrationTestSession.js";
@@ -18,11 +21,16 @@ import { createStandaloneAppIntegrationOrchestrator } from "./helpers/Standalone
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
 const argv = process.argv.slice(2);
-const config = resolveMiroirTestCliConfigFromPartial(
+const unitSuiteKeys = listCliUnitSuiteKeysFromFolders();
+const parsedConfig = resolveMiroirTestCliConfigFromPartial(
   process.env,
   parseMiroirTestCliArgs(argv, { integModeAlias: true }),
-  listMiroirTestSuiteKeys(),
+  unitSuiteKeys,
 );
+const config = {
+  ...parsedConfig,
+  suiteKeys: resolveCliSuiteKeysFromCatalog(parsedConfig.suiteKeys, unitSuiteKeys),
+};
 const testSessionOptions = resolveTestSessionForIntegOptionsFromEnv(process.env);
 const miroirActivityTracker = new MiroirActivityTracker();
 assertMiroirCoreIntegTestLaunchReady({

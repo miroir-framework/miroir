@@ -18719,15 +18719,12 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "canBeTemplate": true,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "application",
                         "description": "Application UUID to query",
                         "foreignKeyParams": {
                           "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
                         }
                       }
                     }
@@ -18736,6 +18733,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "tag": {
                       "value": {
+                        "defaultLabel": "applicationSection",
                         "description": "Section to query (model or data)"
                       }
                     },
@@ -18748,12 +18746,8 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "Entity UUID to get all instances for",
-                        "display": {
-                          "editable": false
-                        }
+                        "defaultLabel": "parentUuid",
+                        "description": "Entity UUID to get all instances for"
                       }
                     }
                   },
@@ -35459,15 +35453,12 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "canBeTemplate": true,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "application",
                         "description": "Application UUID to query",
                         "foreignKeyParams": {
                           "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
                         },
                         "isTemplate": true
                       }
@@ -35482,15 +35473,12 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "canBeTemplate": true,
-                            "defaultLabel": "Application",
+                            "defaultLabel": "application",
                             "description": "Application UUID to query",
                             "foreignKeyParams": {
                               "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
-                            },
-                            "display": {
-                              "editable": false
                             }
                           }
                         }
@@ -35508,6 +35496,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "tag": {
                       "value": {
+                        "defaultLabel": "applicationSection",
                         "description": "Section to query (model or data)",
                         "isTemplate": true
                       }
@@ -35521,12 +35510,8 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "Entity UUID to get all instances for",
-                        "display": {
-                          "editable": false
-                        }
+                        "defaultLabel": "parentUuid",
+                        "description": "Entity UUID to get all instances for"
                       }
                     }
                   },

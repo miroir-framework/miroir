@@ -7,6 +7,7 @@ import {
   resolvePathOnObject,
   type MiroirTestDefinition,
 } from "miroir-core";
+import { useSelectedApplicationMiroirTests } from "../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js";
 import type { MiroirTestReportSection } from "miroir-core";
 import { useViewParams } from "miroir-react";
 
@@ -32,6 +33,7 @@ export interface ReportSectionMiroirTestProps {
 export const ReportSectionMiroirTest = (props: ReportSectionMiroirTestProps) => {
   const formikContext = useFormikContext<any>();
   const viewParams = useViewParams();
+  const selectedApplicationMiroirTests = useSelectedApplicationMiroirTests();
 
   const reportDefinitionFromFormik = useMemo(() => {
     return formikContext.values[props.reportName];
@@ -67,17 +69,23 @@ export const ReportSectionMiroirTest = (props: ReportSectionMiroirTestProps) => 
   }
 
   if (Array.isArray(fetchedMiroirTests)) {
-    if (fetchedMiroirTests.length === 0) {
+    const listTests =
+      selectedApplicationMiroirTests.length > 0
+        ? selectedApplicationMiroirTests
+        : fetchedMiroirTests;
+    if (listTests.length === 0) {
       return null;
     }
 
     log.info("ReportSectionMiroirTest: rendering list", {
-      count: fetchedMiroirTests.length,
+      count: listTests.length,
+      source:
+        selectedApplicationMiroirTests.length > 0 ? "selectedApplication" : "reportFetch",
     });
 
     return (
       <MiroirTestListDisplay
-        miroirTests={fetchedMiroirTests}
+        miroirTests={listTests}
         useSnackBar={true}
         gridType={viewParams.gridType}
       />

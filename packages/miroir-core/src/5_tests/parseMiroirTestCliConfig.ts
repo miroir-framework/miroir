@@ -233,11 +233,12 @@ export function resolveMiroirTestCliConfigFromPartial(
 export function parseMiroirTestCliConfig(
   env: NodeJS.ProcessEnv,
   argv: string[],
+  allSuiteKeys: string[] = listMiroirTestSuiteKeys(),
 ): MiroirTestCliConfig {
   return resolveMiroirTestCliConfigFromPartial(
     env,
     parseMiroirTestCliArgs(argv),
-    listMiroirTestSuiteKeys(),
+    allSuiteKeys,
   );
 }
 

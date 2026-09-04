@@ -4,13 +4,18 @@ import { miroirTest_runner_return_document } from "miroir-test-app_deployment-li
 import {
   miroirTest_domain_controller_model_undo_redo,
 } from "miroir-test-app_deployment-miroir";
-import type { MiroirTestDefinition, MiroirTestSuite } from "miroir-core";
+import {
+  indexApplicationMiroirTestsByKey,
+  resolveDefaultApplicationNameFromMiroirTestSuite,
+  type MiroirTestDefinition,
+  type MiroirTestSuite,
+} from "miroir-core";
+import { loadApplicationMiroirTestCatalog } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 
 import {
   isUiIntegrationSuiteRunSuccessful,
   resolveUiIntegrationTestRunTarget,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
-import { resolveDefaultApplicationNameFromMiroirTestSuite } from "miroir-core";
 import { libraryTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
 import { appForTestTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
 import {
@@ -19,7 +24,28 @@ import {
   resolveUiIntegrationOrchestratorSessionKind,
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
   UI_INTEGRATION_RUNNER_UUID_INDEX,
+  uiIntegrationRunnerSuiteEntryFromDefinition,
+  type UiIntegrationRunnerSuiteEntry,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+
+const applicationMiroirTestCatalogByKey = indexApplicationMiroirTestsByKey(
+  loadApplicationMiroirTestCatalog(),
+);
+
+function runnerSuiteEntryFromFolders(suiteKey: string): UiIntegrationRunnerSuiteEntry {
+  const catalogEntry = applicationMiroirTestCatalogByKey[suiteKey];
+  if (!catalogEntry) {
+    throw new Error(`Missing application MiroirTest suite "${suiteKey}"`);
+  }
+  const entry = uiIntegrationRunnerSuiteEntryFromDefinition(
+    catalogEntry.suiteKey,
+    catalogEntry.suiteDefinition,
+  );
+  if (!entry) {
+    throw new Error(`Suite "${suiteKey}" is not a UI runner/action suite`);
+  }
+  return entry;
+}
 
 function runnerReturnDocumentSuite(): MiroirTestSuite {
   return (miroirTest_runner_return_document as MiroirTestDefinition).definition as MiroirTestSuite;
@@ -56,7 +82,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       applicationName: "Library",
     };
     const runnerParams = buildUiIntegrationOrchestratorCreateSessionParams(
-      UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_lend_document,
+      runnerSuiteEntryFromFolders("runner_lend_document"),
       context,
       "test",
       runTarget,
@@ -73,7 +99,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
     }
 
     const actionParams = buildUiIntegrationOrchestratorCreateSessionParams(
-      UI_INTEGRATION_RUNNER_SUITE_REGISTRY.domain_controller_data_crud,
+      runnerSuiteEntryFromFolders("domain_controller_data_crud"),
       context,
       "test",
       runTarget,
@@ -101,7 +127,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
   });
 
   it("composes undo_redo playfield from suite JSON plus suite init ref", () => {
-    const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY.domain_controller_model_undo_redo;
+    const entry = runnerSuiteEntryFromFolders("domain_controller_model_undo_redo");
     expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams")).toBe(false);
 
     const context = { miroirConfig: {} as never };
@@ -144,7 +170,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       "runner_mcp_get_instances",
       "runner_mcp_lend_document",
     ] as const) {
-      const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
+      const entry = runnerSuiteEntryFromFolders(key);
       expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"), key).toBe(
         false,
       );
@@ -212,7 +238,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       "domain_controller_application_version_freeze",
       "evolutionTraceWP1",
     ] as const) {
-      const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
+      const entry = runnerSuiteEntryFromFolders(key);
       expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"), key).toBe(
         false,
       );
@@ -280,7 +306,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       },
     };
     for (const key of Object.keys(expectedByKey) as (keyof typeof expectedByKey)[]) {
-      const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
+      const entry = runnerSuiteEntryFromFolders(key);
       expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"), key).toBe(
         false,
       );
@@ -321,7 +347,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       deploymentUuid: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
       applicationName: "appForTest",
     };
-    const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY.runner_freeze_application_version;
+    const entry = runnerSuiteEntryFromFolders("runner_freeze_application_version");
     expect(Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams")).toBe(false);
     expect(entry.suiteDefinition.testbedInitApplicationParameters).toBe(
       "appForTestTestbedInitParams",
@@ -394,14 +420,14 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       applicationName: "Library",
     };
     for (const key of ["runner_create_entity", "runner_drop_entity"] as const) {
-      const entry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key];
+      const entry = runnerSuiteEntryFromFolders(key);
       expect(
         Object.prototype.hasOwnProperty.call(entry, "integTestbedResetParams"),
         key,
       ).toBe(false);
       expect(entry.suiteDefinition.testbedInitApplicationParameters, key).toBeUndefined();
       const params = buildUiIntegrationOrchestratorCreateSessionParams(
-        UI_INTEGRATION_RUNNER_SUITE_REGISTRY[key],
+        entry,
         context,
         "test",
         runTarget,

@@ -1,4 +1,9 @@
-import type { MiroirTestDefinition, MiroirTestSuite } from "miroir-core";
+import {
+  isUiIntegrationLaunchableSuite,
+  suiteKeyFromMiroirTestInstance,
+  type MiroirTestDefinition,
+  type MiroirTestSuite,
+} from "miroir-core";
 
 import type { UiIntegrationRunnerSuiteEntry } from "./uiIntegrationTestRunnerSuiteRegistry.js";
 import type { UiIntegrationTransformerSuiteEntry } from "./uiIntegrationTestTransformerSuiteRegistry.js";
@@ -19,8 +24,8 @@ function listAllUiIntegrationSuiteKeys(
  */
 export function resolveUiIntegrationRunnerSuiteKey(
   miroirTest: MiroirTestDefinition,
-  runnerSuiteRegistry: Record<string, UiIntegrationRunnerSuiteEntry>,
-  transformerSuiteRegistry: Record<string, UiIntegrationTransformerSuiteEntry>,
+  runnerSuiteRegistry: Record<string, UiIntegrationRunnerSuiteEntry> = {},
+  transformerSuiteRegistry: Record<string, UiIntegrationTransformerSuiteEntry> = {},
 ): string | undefined {
   const instanceName = miroirTest.name?.trim();
   if (instanceName && instanceName in runnerSuiteRegistry) {
@@ -45,6 +50,10 @@ export function resolveUiIntegrationRunnerSuiteKey(
     }
   }
 
+  if (suite && isUiIntegrationLaunchableSuite(suite)) {
+    return suiteKeyFromMiroirTestInstance(miroirTest);
+  }
+
   return undefined;
 }
 
@@ -58,6 +67,10 @@ export function isUiIntegrationRunnerSuiteSupportedForInstance(
     runnerSuiteRegistry,
     transformerSuiteRegistry,
   );
+  const suite = miroirTest.definition as MiroirTestSuite | undefined;
+  if (suite && isUiIntegrationLaunchableSuite(suite)) {
+    return true;
+  }
   return (
     key !== undefined &&
     listAllUiIntegrationSuiteKeys(runnerSuiteRegistry, transformerSuiteRegistry).includes(key)

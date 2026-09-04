@@ -44,7 +44,7 @@ import {
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
-import { entitySelfApplication, entityTheme } from "miroir-test-app_deployment-miroir";
+import { entityMiroirTest, entitySelfApplication, entityTheme } from "miroir-test-app_deployment-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceModelSelector");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
@@ -313,7 +313,7 @@ const selectTestsFromReduxState = createSelector(
           ? "data"
           : "model"
         : undefined,
-      entityTheme.uuid
+      entityMiroirTest.uuid
     );
   }
 );

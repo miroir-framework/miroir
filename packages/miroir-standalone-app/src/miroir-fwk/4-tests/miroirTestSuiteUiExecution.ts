@@ -1,5 +1,6 @@
 import {
   classifyMiroirTestSuiteExecutionCapabilities,
+  isUiIntegrationLaunchableSuite,
   type MiroirTestDefinition,
   type MiroirTestSuite,
   type MiroirTestSuiteUiExecutionMode,
@@ -52,13 +53,7 @@ export function classifyMiroirTestListExecutionCapabilities(
     }
     if (caps.hasIntegrationLeaves) {
       integrationSuiteKeys.add(identityKey);
-      if (
-        isUiIntegrationRunnerSuiteSupportedForInstance(
-          instance,
-          runnerSuiteRegistry,
-          transformerSuiteRegistry,
-        )
-      ) {
+      if (isUiIntegrationLaunchableSuite(instance.definition)) {
         const registryKey = resolveUiIntegrationRunnerSuiteKey(
           instance,
           runnerSuiteRegistry,

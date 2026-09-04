@@ -8,6 +8,7 @@ import type {
   TestbedUuids,
 } from "miroir-core";
 import {
+  inferUiIntegrationRunnerSuiteKind,
   resolveRunnerFromMiroirTestSuite,
   resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
   resolveSuitePlayfieldSeed,
@@ -199,8 +200,25 @@ export function buildUiIntegrationRunnerSessionSpecificOptions(
   };
 }
 
-// ################################################################################################
-export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationRunnerSuiteEntry> = {
+export function uiIntegrationRunnerSuiteEntryFromDefinition(
+  suiteKey: string,
+  suiteDefinition: MiroirTestSuite,
+): UiIntegrationRunnerSuiteEntry | undefined {
+  const kind = inferUiIntegrationRunnerSuiteKind(suiteDefinition, suiteKey);
+  if (!kind) {
+    return undefined;
+  }
+  return { kind, suiteDefinition };
+}
+
+/**
+ * @deprecated Last hardcoded snapshot. UI uses the selected application's MiroirTests;
+ * CLI uses `loadApplicationMiroirTestCatalog()`.
+ */
+export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY: Record<
+  string,
+  UiIntegrationRunnerSuiteEntry
+> = {
   [miroirTest_runner_lend_document.name]: {
     kind: "runnerTest",
     suiteDefinition: (miroirTest_runner_lend_document as MiroirTestDefinition)
@@ -291,6 +309,9 @@ export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY: Record<string, UiIntegrationR
     suiteDefinition: miroirTest_evolutionTraceWP1.definition as MiroirTestSuite,
   },
 };
+
+/** @deprecated Alias of {@link UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY}. */
+export const UI_INTEGRATION_RUNNER_SUITE_REGISTRY = UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY;
 
 export function listUiIntegrationRunnerSuiteKeys(): string[] {
   return Object.keys(UI_INTEGRATION_RUNNER_SUITE_REGISTRY).sort();

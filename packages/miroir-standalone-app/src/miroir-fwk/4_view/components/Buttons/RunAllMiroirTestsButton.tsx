@@ -2,6 +2,7 @@ import React from 'react';
 
 import {
   ACTION_OK,
+  buildUiIntegrationSuiteRegistriesFromMiroirTests,
   MiroirLoggerFactory,
   TestFramework,
   defaultMetaModelEnvironment,
@@ -27,8 +28,6 @@ import {
 } from '../../../4-tests/miroirTestSuiteUiExecution.js';
 import type { UiIntegrationTestLauncherEnvironment } from '../../../4-tests/uiIntegrationTestLauncher.js';
 import type { UiIntegrationTestRunTargetMode } from '../../../4-tests/uiIntegrationTestLauncherTypes.js';
-import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from '../../../4-tests/uiIntegrationTestRunnerSuiteRegistry.js';
-import { UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY } from '../../../4-tests/uiIntegrationTestTransformerSuiteRegistry.js';
 import { useIntegTestRunCoordinator } from '../../../4-tests/useIntegTestRunCoordinator.js';
 import { ActionButtonWithSnackbar } from '../../components/Page/ActionButtonWithSnackbar.js';
 import { cleanLevel } from '../../constants.js';
@@ -81,10 +80,11 @@ function createBatchNestedCoordinator(): IntegTestRunCoordinator {
 function selectLaunchableIntegrationInstances(
   miroirTests: MiroirTestDefinition[],
 ): MiroirTestDefinition[] {
+  const { runner, transformer } = buildUiIntegrationSuiteRegistriesFromMiroirTests(miroirTests);
   const listCaps = classifyMiroirTestListExecutionCapabilities(
     miroirTests,
-    UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
-    UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
+    runner,
+    transformer,
   );
   const launchableKeySet = new Set(listCaps.launchableIntegrationSuiteKeys);
 
@@ -96,11 +96,7 @@ function selectLaunchableIntegrationInstances(
   }
 
   return sortMiroirTestInstances(miroirTests).filter((instance) => {
-    const registryKey = resolveUiIntegrationRunnerSuiteKey(
-      instance,
-      UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
-      UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
-    );
+    const registryKey = resolveUiIntegrationRunnerSuiteKey(instance, runner, transformer);
     return registryKey !== undefined && launchableKeySet.has(registryKey);
   });
 }
@@ -130,6 +126,9 @@ async function runLaunchableIntegrationBatch(params: {
   const resultsBySuiteKey: MiroirTestSuiteResultsMap = {};
   const failures: string[] = [];
   const nestedCoordinator = createBatchNestedCoordinator();
+  const { runner, transformer } = buildUiIntegrationSuiteRegistriesFromMiroirTests(
+    params.miroirTests,
+  );
 
   await getIntegTestRunCoordinator().runExclusive(async () => {
     const batchEnv: UiIntegrationTestLauncherEnvironment = {
@@ -138,11 +137,7 @@ async function runLaunchableIntegrationBatch(params: {
     };
 
     for (const instance of sortedLaunchable) {
-      const registryKey = resolveUiIntegrationRunnerSuiteKey(
-        instance,
-        UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
-        UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
-      );
+      const registryKey = resolveUiIntegrationRunnerSuiteKey(instance, runner, transformer);
       if (!registryKey) {
         continue;
       }

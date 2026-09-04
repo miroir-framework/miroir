@@ -2,14 +2,19 @@ import {
   miroirTestCliConfigToEnv,
   miroirCoreTestVitestEntry,
   MIROIR_RUNNER_TEST_VITEST_ENTRY,
-  MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES,
   parseMiroirRunnerTestCliConfig,
   parseMiroirTestCliArgs,
   parseProfileArg,
   resolveMiroirTestCliConfigFromPartial,
   splitSuiteKeys,
-  listMiroirTestSuiteKeys,
 } from "miroir-core";
+import {
+  listCliRunnerIntegrationSuiteKeysFromFolders,
+  listCliTransformerIntegrationSuiteKeysFromFolders,
+  listCliUnitSuiteKeysFromFolders,
+  loadApplicationMiroirTestCatalog,
+  resolveCliSuiteKeysFromCatalog,
+} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 
 import { applyIntegrationTestProfile } from "../tests/helpers/integrationTestProfiles.js";
 
@@ -25,34 +30,51 @@ export function resolveVitestEntry(
   env: NodeJS.ProcessEnv,
   argv: string[],
 ): { vitestEntry: string; spawnEnv: NodeJS.ProcessEnv } {
+  const catalog = loadApplicationMiroirTestCatalog();
+  const unitKeys = listCliUnitSuiteKeysFromFolders();
+  const transformerIntegKeys = listCliTransformerIntegrationSuiteKeysFromFolders();
+  const runnerKeys = listCliRunnerIntegrationSuiteKeysFromFolders();
+  const coreKeys = new Set([...unitKeys, ...transformerIntegKeys]);
+
   const requestedSuiteKeys = resolveRequestedSuiteKeys(env, argv);
-  const coreKeys = new Set(listMiroirTestSuiteKeys());
+  const resolvedRequestedKeys =
+    requestedSuiteKeys.length > 0 && !requestedSuiteKeys.includes("*")
+      ? resolveCliSuiteKeysFromCatalog(requestedSuiteKeys, [...coreKeys, ...runnerKeys], catalog)
+      : requestedSuiteKeys;
 
   if (
-    requestedSuiteKeys.length > 0 &&
-    !requestedSuiteKeys.includes("*") &&
-    requestedSuiteKeys.every((key) => coreKeys.has(key))
+    resolvedRequestedKeys.length > 0 &&
+    !resolvedRequestedKeys.includes("*") &&
+    resolvedRequestedKeys.every((key) => coreKeys.has(key))
   ) {
     const coreConfig = resolveMiroirTestCliConfigFromPartial(
       env,
       parseMiroirTestCliArgs(argv, { integModeAlias: true }),
-      listMiroirTestSuiteKeys(),
+      unitKeys,
     );
-    if (coreConfig.executionMode !== "integration") {
+    const resolvedCoreConfig = {
+      ...coreConfig,
+      suiteKeys: resolveCliSuiteKeysFromCatalog(coreConfig.suiteKeys, unitKeys, catalog),
+    };
+    if (resolvedCoreConfig.executionMode !== "integration") {
       throw new Error(
         "miroir-core integration suites require MIROIR_TEST_MODE=integ (or integration)",
       );
     }
     return {
-      vitestEntry: miroirCoreTestVitestEntry(coreConfig.executionMode),
-      spawnEnv: { ...env, ...miroirTestCliConfigToEnv(coreConfig) },
+      vitestEntry: miroirCoreTestVitestEntry(resolvedCoreConfig.executionMode),
+      spawnEnv: { ...env, ...miroirTestCliConfigToEnv(resolvedCoreConfig) },
     };
   }
 
-  const runnerConfig = parseMiroirRunnerTestCliConfig(env, argv);
+  const runnerConfig = parseMiroirRunnerTestCliConfig(env, argv, runnerKeys);
+  const resolvedRunnerConfig = {
+    ...runnerConfig,
+    suiteKeys: resolveCliSuiteKeysFromCatalog(runnerConfig.suiteKeys, runnerKeys, catalog),
+  };
   return {
     vitestEntry: MIROIR_RUNNER_TEST_VITEST_ENTRY,
-    spawnEnv: { ...env, ...miroirTestCliConfigToEnv(runnerConfig) },
+    spawnEnv: { ...env, ...miroirTestCliConfigToEnv(resolvedRunnerConfig) },
   };
 }
 

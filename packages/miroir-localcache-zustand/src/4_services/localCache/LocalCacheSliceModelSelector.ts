@@ -33,9 +33,9 @@ import {
   entityQueryVersion,
   entityReport,
   entityRunner,
+  entityMiroirTest,
   entitySelfApplication,
   entitySelfApplicationVersion,
-  entityTest,
   entityTheme,
   selfApplicationMiroir,
 } from "miroir-test-app_deployment-miroir";
@@ -244,7 +244,7 @@ const selectTestsFromReduxState = createSelector(
           ? "data"
           : "model"
         : undefined,
-      entityTest.uuid
+      entityMiroirTest.uuid
     );
   }
 );

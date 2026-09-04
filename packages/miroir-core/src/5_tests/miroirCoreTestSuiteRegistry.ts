@@ -2,7 +2,8 @@ import type { MiroirTestSuite } from "../0_interfaces/1_core/preprocessor-genera
 
 export type MiroirTestSuiteLoader = () => Promise<{ default: MiroirTestSuite }>;
 
-const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
+/** @deprecated Use `listCliUnitSuiteKeys(loadApplicationMiroirTestCatalog())`. Last hardcoded snapshot. */
+export const MIROIR_TEST_SUITE_REGISTRY_NAMES = [
   "adminTransformers",
   "alterObject",
   "ansiColumnsToJzodSchema",
@@ -63,13 +64,29 @@ export function listMiroirTestSuiteKeys(): string[] {
   return ([...MIROIR_TEST_SUITE_REGISTRY_NAMES] as string[]).sort();
 }
 
+/**
+ * @deprecated Named-export fallback. CLI and Node tests should use
+ * `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`.
+ */
 export async function loadMiroirCoreTestSuite(suiteKey: string): Promise<MiroirTestSuite> {
   const loader = MIROIR_TEST_SUITE_REGISTRY[suiteKey];
-  if (!loader) {
-    throw new Error(
-      `Unknown MiroirTest suite key "${suiteKey}". Available: ${listMiroirTestSuiteKeys().join(", ")}`,
-    );
+  if (loader) {
+    const loaded = await loader();
+    return loaded.default;
   }
-  const loaded = await loader();
-  return loaded.default;
+
+  const deployment = await import("miroir-test-app_deployment-miroir");
+  for (const [exportName, value] of Object.entries(deployment)) {
+    if (!exportName.startsWith("miroirTest_")) {
+      continue;
+    }
+    const instance = value as { name?: string; definition?: MiroirTestSuite };
+    if (instance?.name === suiteKey && instance.definition) {
+      return instance.definition;
+    }
+  }
+
+  throw new Error(
+    `Unknown MiroirTest suite key "${suiteKey}". Available: ${listMiroirTestSuiteKeys().join(", ")}`,
+  );
 }

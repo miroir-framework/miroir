@@ -26,7 +26,9 @@ import {
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
   UI_INTEGRATION_RUNNER_UUID_INDEX,
   buildUiIntegrationOrchestratorCreateSessionParams,
+  uiIntegrationRunnerSuiteEntryFromDefinition,
 } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import { listCliRunnerIntegrationSuiteKeysFromFolders } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { miroirAppStartup } from "../src/startup.js";
 import {
   loadRunnerOrActionMiroirTestSuite,
@@ -43,7 +45,11 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
   log = logger;
 });
 
-const config = parseMiroirRunnerTestCliConfig(process.env, process.argv.slice(2));
+const config = parseMiroirRunnerTestCliConfig(
+  process.env,
+  process.argv.slice(2),
+  listCliRunnerIntegrationSuiteKeysFromFolders(),
+);
 const { miroirConfig, logConfig } = await loadTestConfigFiles(env);
 const loggerOptions = logConfig as any as LoggerOptions;
 
@@ -72,7 +78,9 @@ if (config.filter?.testList) {
 }
 
 function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
-  const registryEntry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey];
+  const registryEntry =
+    uiIntegrationRunnerSuiteEntryFromDefinition(suiteKey, suite) ??
+    UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey];
   if (!registryEntry) {
     throw new Error(`Unknown runner/action suite key: ${suiteKey}`);
   }

@@ -6,6 +6,17 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
+export {
+  listCliRunnerIntegrationSuiteKeysFromFolders,
+  listCliTransformerIntegrationSuiteKeysFromFolders,
+  listCliUnitSuiteKeysFromFolders,
+  loadApplicationMiroirTestCatalog,
+  loadApplicationMiroirTestsFromFolders,
+  loadMiroirCoreTestSuiteFromFolders,
+  resolveCliSuiteKeysFromCatalog,
+  resolveMonorepoRoot,
+} from "./loadApplicationMiroirTestsFromFolders.js";
+
 import type {
   Entity,
   JzodElement,

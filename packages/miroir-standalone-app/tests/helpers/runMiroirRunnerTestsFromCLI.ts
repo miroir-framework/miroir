@@ -4,8 +4,9 @@ import {
   MiroirActivityTracker,
   defaultMetaModelEnvironment,
   displayMiroirTestResults,
+  indexApplicationMiroirTestsByKey,
+  resolveApplicationMiroirTestSuiteKey,
   type MiroirTestCliConfig,
-  type MiroirTestDefinition,
   type MiroirTestExecutionEnvironment,
   type MiroirTestExecutionOptions,
   type MiroirTestSuite,
@@ -15,60 +16,23 @@ import {
 } from "miroir-core";
 import { onFailedRunExport } from "./writeFailedRunExport.js";
 import {
-  miroirTest_runner_lend_document,
-  miroirTest_runner_mcp_lend_document,
-  miroirTest_runner_return_document,
-} from "miroir-test-app_deployment-library";
-import {
-  miroirTest_domain_controller_composite_pk_crud,
-  miroirTest_domain_controller_data_crud,
-  miroirTest_domain_controller_model_crud,
-  miroirTest_domain_controller_model_undo_redo,
-  miroirTest_domain_controller_application_version_freeze,
-  miroirTest_domain_controller_no_parent_uuid_crud,
-  miroirTest_domain_controller_non_uuid_pk_data_crud,
-  miroirTest_domain_controller_non_uuid_pk_model_crud,
-  miroirTest_evolutionTraceWP1,
-  miroirTest_runner_create_entity,
-  miroirTest_runner_drop_entity,
-  miroirTest_runner_freeze_application_version,
-  miroirTest_runner_mcp_get_instances,
-} from "miroir-test-app_deployment-miroir";
+  listCliRunnerIntegrationSuiteKeysFromFolders,
+  loadApplicationMiroirTestCatalog,
+} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 
-const SUITE_BY_KEY: Record<string, MiroirTestDefinition> = {
-  runner_lend_document: miroirTest_runner_lend_document as MiroirTestDefinition,
-  runner_return_document: miroirTest_runner_return_document as MiroirTestDefinition,
-  runner_create_entity: miroirTest_runner_create_entity as MiroirTestDefinition,
-  runner_drop_entity: miroirTest_runner_drop_entity as MiroirTestDefinition,
-  runner_freeze_application_version:
-    miroirTest_runner_freeze_application_version as MiroirTestDefinition,
-  runner_mcp_get_instances: miroirTest_runner_mcp_get_instances as MiroirTestDefinition,
-  runner_mcp_lend_document: miroirTest_runner_mcp_lend_document as MiroirTestDefinition,
-  domain_controller_data_crud: miroirTest_domain_controller_data_crud as MiroirTestDefinition,
-  domain_controller_model_crud: miroirTest_domain_controller_model_crud as MiroirTestDefinition,
-  domain_controller_composite_pk_crud:
-    miroirTest_domain_controller_composite_pk_crud as MiroirTestDefinition,
-  domain_controller_non_uuid_pk_model_crud:
-    miroirTest_domain_controller_non_uuid_pk_model_crud as MiroirTestDefinition,
-  domain_controller_non_uuid_pk_data_crud:
-    miroirTest_domain_controller_non_uuid_pk_data_crud as MiroirTestDefinition,
-  domain_controller_no_parent_uuid_crud:
-    miroirTest_domain_controller_no_parent_uuid_crud as MiroirTestDefinition,
-  domain_controller_model_undo_redo:
-    miroirTest_domain_controller_model_undo_redo as MiroirTestDefinition,
-  domain_controller_application_version_freeze:
-    miroirTest_domain_controller_application_version_freeze as MiroirTestDefinition,
-  evolutionTraceWP1: miroirTest_evolutionTraceWP1 as MiroirTestDefinition,
-};
+const applicationMiroirTestCatalog = loadApplicationMiroirTestCatalog();
+const runnerSuitesByKey = indexApplicationMiroirTestsByKey(applicationMiroirTestCatalog);
 
 export function loadRunnerOrActionMiroirTestSuite(suiteKey: string): MiroirTestSuite {
-  const instance = SUITE_BY_KEY[suiteKey];
-  if (!instance) {
+  const resolvedKey =
+    resolveApplicationMiroirTestSuiteKey(applicationMiroirTestCatalog, suiteKey) ?? suiteKey;
+  const entry = runnerSuitesByKey[resolvedKey];
+  if (!entry || entry.cliLaunchKind !== "runner-integration") {
     throw new Error(
-      `Unknown runner/action MiroirTest suite key "${suiteKey}". Available: ${Object.keys(SUITE_BY_KEY).join(", ")}`,
+      `Unknown runner/action MiroirTest suite key "${suiteKey}". Available: ${listCliRunnerIntegrationSuiteKeysFromFolders().join(", ")}`,
     );
   }
-  return instance.definition as MiroirTestSuite;
+  return entry.suiteDefinition;
 }
 
 // ################################################################################################
