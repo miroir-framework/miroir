@@ -682,6 +682,7 @@
           }
         ]
       }
-    ]
+    ],
+    "testbedInitApplicationParameters": "libraryTestbedInitParams"
   }
 }

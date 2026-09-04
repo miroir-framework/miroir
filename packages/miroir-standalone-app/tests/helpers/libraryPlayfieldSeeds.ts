@@ -48,8 +48,8 @@ import {
   emptyLibraryPlayfieldModel,
   entityCompositePK,
   libraryTestbedInitParams,
-  type TestbedSetupParameters,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
+import type { IntegTestbedResetParams } from "miroir-core";
 
 export const ENTITY_COMPOSITE_PK_UUID = "44691d2c-d7c1-48e0-8363-71c51195e104";
 export const ENTITY_DEFINITION_COMPOSITE_PK_UUID = "fbec9082-5cdf-4877-bd78-66a434a8eebf";
@@ -225,13 +225,13 @@ export const domainControllerModelCrudFilterEntities: Uuid[] = [
   entityCountry.uuid,
 ];
 
-export const domainControllerDataCrudLibraryPlayfieldSeed: TestbedSetupParameters = {
+export const domainControllerDataCrudLibraryPlayfieldSeed: IntegTestbedResetParams = {
   testbedEntitiesAndInstances: libraryEntitiesAndInstancesWithoutBook3,
   testbedInitApplicationParameters: libraryTestbedInitParams,
   testbedModel: defaultLibraryAppModel,
 };
 
-export const domainControllerModelUndoRedoLibraryPlayfieldSeed: TestbedSetupParameters = {
+export const domainControllerModelUndoRedoLibraryPlayfieldSeed: IntegTestbedResetParams = {
   testbedEntitiesAndInstances: [],
   testbedInitApplicationParameters: libraryTestbedInitParams,
   testbedModel: emptyLibraryPlayfieldModel,

@@ -18,7 +18,7 @@ import {
   type MiroirTestExecutionEnvironment,
   type PersistenceStoreControllerManagerInterface,
   type Runner,
-  type RunnerLibraryPlayfieldSeed,
+  type IntegTestbedResetParams,
   type RunnerTestContext,
   type RunnerTestSessionInterface,
   type StoreUnitConfiguration,
@@ -62,7 +62,7 @@ export type RunnerTestSessionOptions = IntegTestHostOptions & {
    * Optional playfield seed applied in `beforeEach` after reset
    * (Action Data.CRUD MiroirTest suites).
    */
-  testBedModelAndInstances?: RunnerLibraryPlayfieldSeed;
+  integTestbedResetParams?: IntegTestbedResetParams;
   /**
    * When true, `beforeEach` does **not** reset/seed the session runTarget with
    * remapped library model. Used by CreateEntity / DropEntity MiroirTests that
@@ -168,7 +168,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
   // ##############################################################################################
   // ##############################################################################################
   private resolveRemappedPlayfieldSeedModel(runTarget: TestbedUuids): MetaModel | undefined {
-    const seed = this.options.testBedModelAndInstances;
+    const seed = this.options.integTestbedResetParams;
     if (!seed) {
       return undefined;
     }
@@ -335,7 +335,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     // Create/drop-entity runner suites skip playfield reset and manage deployment in-test.
     if (
       !internalMiroirConfig.client.emulateServer ||
-      (this.options.testBedModelAndInstances && !this.options.skipRunTargetPlayfieldReset)
+      (this.options.integTestbedResetParams && !this.options.skipRunTargetPlayfieldReset)
     ) {
       await ensureLibraryPlayfield({
         domainController,
@@ -431,7 +431,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       return;
     }
     const emulateServer = this.runnerTestContext.internalMiroirConfig.client.emulateServer === true;
-    const playfieldSeed: RunnerLibraryPlayfieldSeed | undefined = this.options.testBedModelAndInstances;
+    const resetParams: IntegTestbedResetParams | undefined = this.options.integTestbedResetParams;
     const { canonicalApplicationUuid, canonicalDeploymentUuid } =
       this.resolveCanonicalModelRemap(this.runnerTestContext.runTarget);
     await beforeEachTest(
@@ -447,18 +447,17 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
           miroirDeploymentUuid: deployment_Miroir.uuid,
           miroirSelfApplicationUuid: selfApplicationMiroir.uuid,
         } : undefined,
-        ...(playfieldSeed
+        ...(resetParams
           ? {
-              ...playfieldSeed,
-              // Remap the *provided* seed metaModel for ephemeral runTargets.
-              // Do not replace with defaultLibraryAppModel — Action suites may seed
-              // custom entities (e.g. composite-PK TestEntityCompositePK).
-              testbedModel: remapLibraryAppModelForRunTarget(
-                playfieldSeed.testbedModel,
-                canonicalApplicationUuid,
-                canonicalDeploymentUuid,
-                this.runnerTestContext.runTarget,
-              ),
+              integTestbedResetParams: {
+                ...resetParams,
+                testbedModel: remapLibraryAppModelForRunTarget(
+                  resetParams.testbedModel,
+                  canonicalApplicationUuid,
+                  canonicalDeploymentUuid,
+                  this.runnerTestContext.runTarget,
+                ),
+              },
             }
           : {}),
       },

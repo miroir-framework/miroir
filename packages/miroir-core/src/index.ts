@@ -1454,10 +1454,18 @@ export {
   runnerTestJzodSchema,
 } from "./5_tests/RunnerTestTools.js";
 export {
+  composeIntegTestbedResetParams,
+  type IntegTestbedResetParams,
+} from "./5_tests/composeIntegTestbedResetParams.js";
+export {
   resolveSuitePlayfieldSeed,
   type SuitePlayfieldSeed,
   type TestConfigurationPlayfield,
 } from "./5_tests/resolveSuitePlayfieldSeed.js";
+export {
+  resolveSuiteTestbedInitApplicationParameters,
+  type TestbedInitApplicationParametersRef,
+} from "./5_tests/resolveSuiteTestbedInitApplicationParameters.js";
 export {
   isRunnerTestRunTargetUuid,
   getTestbedUuidsForTestSuite,

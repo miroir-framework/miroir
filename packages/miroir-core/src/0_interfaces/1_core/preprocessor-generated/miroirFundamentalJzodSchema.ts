@@ -6733,6 +6733,26 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "testbedInitApplicationParameters": {
+            "type": "union",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed init params",
+                "description": "Named init parameters reference for integ testbed reset (#258)"
+              }
+            },
+            "definition": [
+              {
+                "type": "literal",
+                "definition": "libraryTestbedInitParams"
+              },
+              {
+                "type": "literal",
+                "definition": "appForTestTestbedInitParams"
+              }
+            ]
+          },
           "miroirTests": {
             "type": "array",
             "definition": {
@@ -7485,6 +7505,26 @@ export const miroirFundamentalJzodSchema = {
                         }
                       }
                     }
+                  },
+                  "testbedInitApplicationParameters": {
+                    "type": "union",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Testbed init params",
+                        "description": "Named init parameters reference for integ testbed reset (#258)"
+                      }
+                    },
+                    "definition": [
+                      {
+                        "type": "literal",
+                        "definition": "libraryTestbedInitParams"
+                      },
+                      {
+                        "type": "literal",
+                        "definition": "appForTestTestbedInitParams"
+                      }
+                    ]
                   },
                   "miroirTests": {
                     "type": "array",

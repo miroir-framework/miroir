@@ -563,7 +563,7 @@ export function resetAndinitializeDeploymentCompositeAction(
       endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
       payload: {
         _resolvableAppMetaModel: appMetaModel,
-        _runnerTestInitConfig: {
+        _runnerTestInitConfig: { // why pass this, the action sequence is empty?
           applicationUuid,
           deploymentUuid,
           initApplicationParameters,
