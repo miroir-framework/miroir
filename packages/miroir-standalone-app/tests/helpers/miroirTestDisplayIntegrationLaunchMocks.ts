@@ -1,6 +1,22 @@
 import { vi } from 'vitest';
 
 import type { UiIntegrationTestRunRequest } from '../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js';
+
+vi.mock('../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js', async () => {
+  const { loadApplicationRunnerUuidIndexFromFolders } = await import(
+    'miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js'
+  );
+  const index = loadApplicationRunnerUuidIndexFromFolders();
+  return {
+    useSelectedApplicationRunnerUuidIndex: () => index,
+    useSelectedApplicationMiroirTests: () => [],
+    useSelectedApplicationMiroirTestSuiteRegistries: (fallback: unknown[] = []) => ({
+      runner: {},
+      transformer: {},
+      instances: fallback,
+    }),
+  };
+});
 import {
   defaultUiIntegrationFilterForSuite,
   hasIntegrationTestFilterSelection,

@@ -24,11 +24,13 @@ import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
 import {
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
-  UI_INTEGRATION_RUNNER_UUID_INDEX,
   buildUiIntegrationOrchestratorCreateSessionParams,
   uiIntegrationRunnerSuiteEntryFromDefinition,
 } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
-import { listCliRunnerIntegrationSuiteKeysFromFolders } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+import {
+  listCliRunnerIntegrationSuiteKeysFromFolders,
+  loadApplicationRunnerUuidIndexFromFolders,
+} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { miroirAppStartup } from "../src/startup.js";
 import {
   loadRunnerOrActionMiroirTestSuite,
@@ -36,6 +38,8 @@ import {
 } from "./helpers/runMiroirRunnerTestsFromCLI.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 import { loadTestConfigFiles } from "./utils/fileTools.js";
+
+const applicationRunnerUuidIndex = loadApplicationRunnerUuidIndexFromFolders();
 
 const pageLabel = "miroir-runner-tests.integ";
 
@@ -95,7 +99,7 @@ function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
     pageLabel,
     runTarget,
     suite.testParams,
-    UI_INTEGRATION_RUNNER_UUID_INDEX,
+    applicationRunnerUuidIndex,
   );
 }
 

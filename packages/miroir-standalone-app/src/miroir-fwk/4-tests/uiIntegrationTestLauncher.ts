@@ -30,8 +30,8 @@ import {
 import { transformerIdentityToRunTarget } from "./resolveTransformerTestSessionOptions.js";
 import {
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
-  UI_INTEGRATION_RUNNER_UUID_INDEX,
   buildUiIntegrationOrchestratorCreateSessionParams,
+  resolveUiIntegrationRunnerUuidIndex,
   uiIntegrationRunnerSuiteEntryFromDefinition,
   type UiIntegrationRunnerSuiteEntry,
 } from "./uiIntegrationTestRunnerSuiteRegistry.js";
@@ -201,7 +201,7 @@ async function runRunnerOrActionIntegrationSuite(
       "ui-integration-test",
       runTarget,
       request.suiteDefinition.testParams,
-      UI_INTEGRATION_RUNNER_UUID_INDEX,
+      resolveUiIntegrationRunnerUuidIndex(request.runnerUuidIndex),
     ),
   );
 

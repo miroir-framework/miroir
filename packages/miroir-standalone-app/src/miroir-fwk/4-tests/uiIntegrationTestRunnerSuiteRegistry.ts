@@ -49,13 +49,29 @@ export const RUNNER_CREATE_ENTITY_SUITE_KEY = miroirTest_runner_create_entity.na
 export const RUNNER_FREEZE_APPLICATION_VERSION_SUITE_KEY =
   miroirTest_runner_freeze_application_version.name;
 
-/** Runners keyed by uuid for UI integration runnerTest resolution via leaf `runnerRef`. */
-export const UI_INTEGRATION_RUNNER_UUID_INDEX: Record<string, Runner> = {
+/**
+ * @deprecated Last hardcoded snapshot. CLI uses `loadApplicationRunnerUuidIndexFromFolders()`;
+ * UI uses the selected application's `currentModel.runners`.
+ */
+export const UI_INTEGRATION_RUNNER_UUID_INDEX_LEGACY: Record<string, Runner> = {
   ...RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
   [lendDocumentRunner.uuid]: lendDocumentRunner,
   [mcpLendDocumentRunner.uuid]: mcpLendDocumentRunner,
   [returnDocumentRunner.uuid]: returnDocumentRunner,
 };
+
+/** @deprecated Alias of {@link UI_INTEGRATION_RUNNER_UUID_INDEX_LEGACY}. */
+export const UI_INTEGRATION_RUNNER_UUID_INDEX = UI_INTEGRATION_RUNNER_UUID_INDEX_LEGACY;
+
+/** Live index when it has entries; empty `{}` is treated as missing so RTL / unloaded model can fall back. */
+export function resolveUiIntegrationRunnerUuidIndex(
+  requested?: Record<string, Runner>,
+): Record<string, Runner> {
+  if (requested && Object.keys(requested).length > 0) {
+    return requested;
+  }
+  return UI_INTEGRATION_RUNNER_UUID_INDEX;
+}
 
 export type UiIntegrationRunnerTestSuiteEntry = {
   kind: "runnerTest";

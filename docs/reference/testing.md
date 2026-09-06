@@ -1146,7 +1146,7 @@ await session.teardown();
    - Miroir app: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/<uuid>.json`
    - Other apps: that app's **model** section `…/<app>_model/a311f363-…/<uuid>.json`
 2. Set `name` to the CLI / UI suite key (e.g. `myNewSuite`).
-3. CLI discovery reads `APPLICATION_MIROIR_TEST_SOURCE_FOLDERS` — no hardcoded key list and no `UI_INTEGRATION_RUNNER_SUITE_REGISTRY` row. Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`.
+3. CLI discovery scans `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>` (`discoverApplicationMiroirTestSourceFolders`). Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`. Runner `runnerRef` lookup uses sibling Runner folders (`loadApplicationRunnerUuidIndexFromFolders`).
 4. Optional: export `miroirTest_myNewSuite` from the deployment package `index.ts` if other TypeScript wants a named import. Rebuild that package.
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.
 6. Run: `MIROIR_TEST_SUITES=myNewSuite MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core`.
@@ -1163,7 +1163,7 @@ Playfield **model + instances** belong on the suite or a `TestConfiguration`, no
    Do not set both. Do **not** paste Entity arrays into TypeScript.
 2. `TestConfiguration` instances follow Query / `MiroirTest`: Miroir app → **data** (`miroir_data/675ccd46-…/`); any other app → that app’s **model** section. Payload is `name` / `description` + `testbedModel` + `testbedEntitiesAndInstances` only.
 3. Session kind (`runner` / `action` / `transformer`) is inferred from the suite leaves. UI launchability comes from the **currently selected application's** MiroirTest instances, not from `UI_INTEGRATION_RUNNER_SUITE_REGISTRY`.
-4. Put the JSON in the application folder listed in `APPLICATION_MIROIR_TEST_SOURCE_FOLDERS` so CLI `testMiroir --mode integ` can find it.
+4. Put the JSON in that application's MiroirTest entity folder (`…/assets/<app>_data|model/a311f363-…/`) so CLI discovery can find it. Runner tests need the Runner JSON in the sibling `e54d7dc1-…` folder.
 5. Run: `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites myNewSuite --mode integ`.
 
 ---

@@ -15,6 +15,7 @@ import {
 } from "miroir-core";
 
 import { useMiroirContextService, useSnackbar } from "miroir-react";
+import { useSelectedApplicationRunnerUuidIndex } from "../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js";
 import { packageName } from "../../../../constants.js";
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
@@ -91,6 +92,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
   const { handleAsyncAction } = useSnackbar();
   const miroirContextService = useMiroirContextService();
   const { isRunning: integRunInProgress } = useIntegTestRunCoordinator();
+  const runnerUuidIndex = useSelectedApplicationRunnerUuidIndex();
 
   const resolvedRunMode = miroirTestSuite
     ? resolveRunMode(miroirTestSuite.definition, runMode)
@@ -159,6 +161,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
         runTargetMode: integrationRunTargetMode ?? DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
         hostMode: "isolated",
         filter: testFilter,
+        runnerUuidIndex,
       },
       await loadBrowserUiIntegrationTestLauncherEnvironment(),
     );

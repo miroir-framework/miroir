@@ -147,6 +147,10 @@ vi.mock('../../src/miroir-fwk/4-tests/uiIntegrationTestRunState.js', () => ({
   setLastUiIntegrationTestRunResult: vi.fn(),
 }));
 
+vi.mock('../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js', () => ({
+  useSelectedApplicationRunnerUuidIndex: () => ({}),
+}));
+
 import { RunAllMiroirTestsButton } from '../../src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.js';
 
 function asMiroirTest(instance: unknown): MiroirTestDefinition {

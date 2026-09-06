@@ -3,6 +3,7 @@ import type {
   IntegrationTestSessionKind,
   MiroirTestRunFilter,
   MiroirTestSuite,
+  Runner,
   TestbedUuids,
   TestSuiteResult,
 } from "miroir-core";
@@ -18,6 +19,11 @@ export type UiIntegrationTestRunRequest = {
   runTargetMode: UiIntegrationTestRunTargetMode;
   /** Default `isolated` — data-isolated bootstrap (Gap A). */
   hostMode?: IntegrationTestHostMode;
+  /**
+   * Runner uuid → instance for `runnerRef` lookup.
+   * UI: selected application's loaded Runners. CLI: folder-derived index.
+   */
+  runnerUuidIndex?: Record<string, Runner>;
 };
 
 export type UiIntegrationTestRunInspectorSnapshot = {

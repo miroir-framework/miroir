@@ -1347,7 +1347,13 @@ export {
 } from "./5_tests/inferIntegrationSessionKind.js";
 export {
   APPLICATION_MIROIR_TEST_SOURCE_FOLDERS,
+  APPLICATION_MIROIR_TEST_SOURCE_FOLDERS_LEGACY,
+  DEPLOYMENT_PACKAGE_PREFIX,
   ENTITY_MIROIR_TEST_UUID,
+  ENTITY_RUNNER_UUID,
+  buildRunnerUuidIndex,
+  isRunnerInstance,
+  runnerEntityFolderRelativePath,
   type ApplicationMiroirTestSourceFolder,
 } from "./5_tests/applicationMiroirTestFolders.js";
 export {

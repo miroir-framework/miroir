@@ -13,7 +13,13 @@ import {
   loadMiroirTestSuiteFromCatalog,
   suiteKeyFromMiroirTestInstance,
 } from "../../src/5_tests/applicationMiroirTestCatalog";
-import { ENTITY_MIROIR_TEST_UUID } from "../../src/5_tests/applicationMiroirTestFolders";
+import {
+  ENTITY_MIROIR_TEST_UUID,
+  ENTITY_RUNNER_UUID,
+  buildRunnerUuidIndex,
+  isRunnerInstance,
+  runnerEntityFolderRelativePath,
+} from "../../src/5_tests/applicationMiroirTestFolders";
 
 function runnerSuiteInstance(name: string): MiroirTestDefinition {
   return {
@@ -188,5 +194,29 @@ describe("applicationMiroirTestCatalog", () => {
     expect(() => loadMiroirTestSuiteFromCatalog(catalog, "no_such_suite")).toThrow(
       /Unknown MiroirTest suite key/,
     );
+  });
+
+  it("derives the sibling Runner folder from a MiroirTest source folder", () => {
+    expect(
+      runnerEntityFolderRelativePath(
+        `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_MIROIR_TEST_UUID}`,
+      ),
+    ).toBe(
+      `packages/miroir-test-app_deployment-library/assets/library_model/${ENTITY_RUNNER_UUID}`,
+    );
+  });
+
+  it("builds a runner uuid index from Runner instances", () => {
+    const runner = {
+      uuid: "cc853632-f158-43fa-b9ed-437c9c25f539",
+      parentUuid: ENTITY_RUNNER_UUID,
+      name: "lendDocument",
+      application: "app",
+      defaultLabel: "Lend",
+      definition: { runnerType: "customRunner" },
+    };
+    expect(isRunnerInstance(runner)).toBe(true);
+    expect(isRunnerInstance({ parentUuid: ENTITY_MIROIR_TEST_UUID, uuid: "x" })).toBe(false);
+    expect(buildRunnerUuidIndex([runner as never])[runner.uuid].name).toBe("lendDocument");
   });
 });

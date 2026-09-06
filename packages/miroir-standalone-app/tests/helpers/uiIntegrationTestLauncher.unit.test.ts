@@ -10,7 +10,10 @@ import {
   type MiroirTestDefinition,
   type MiroirTestSuite,
 } from "miroir-core";
-import { loadApplicationMiroirTestCatalog } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+import {
+  loadApplicationMiroirTestCatalog,
+  loadApplicationRunnerUuidIndexFromFolders,
+} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 
 import {
   isUiIntegrationSuiteRunSuccessful,
@@ -22,6 +25,7 @@ import {
   buildUiIntegrationOrchestratorCreateSessionParams,
   listUiIntegrationRunnerSuiteKeys,
   resolveUiIntegrationOrchestratorSessionKind,
+  resolveUiIntegrationRunnerUuidIndex,
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
   UI_INTEGRATION_RUNNER_UUID_INDEX,
   uiIntegrationRunnerSuiteEntryFromDefinition,
@@ -31,6 +35,7 @@ import {
 const applicationMiroirTestCatalogByKey = indexApplicationMiroirTestsByKey(
   loadApplicationMiroirTestCatalog(),
 );
+const applicationRunnerUuidIndex = loadApplicationRunnerUuidIndexFromFolders();
 
 function runnerSuiteEntryFromFolders(suiteKey: string): UiIntegrationRunnerSuiteEntry {
   const catalogEntry = applicationMiroirTestCatalogByKey[suiteKey];
@@ -87,13 +92,13 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       "test",
       runTarget,
       {},
-      UI_INTEGRATION_RUNNER_UUID_INDEX,
+      applicationRunnerUuidIndex,
     );
     expect(runnerParams.kind).toBe("runner");
     if (runnerParams.kind === "runner") {
       expect(runnerParams.resolvedRunner).toBeDefined();
       expect(runnerParams.sessionSpecificOptions?.runnerUuidIndex).toBe(
-        UI_INTEGRATION_RUNNER_UUID_INDEX,
+        applicationRunnerUuidIndex,
       );
       expect(runnerParams.sessionSpecificOptions?.integTestbedResetParams).toBeDefined();
     }
@@ -104,7 +109,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       "test",
       runTarget,
       {},
-      UI_INTEGRATION_RUNNER_UUID_INDEX,
+      applicationRunnerUuidIndex,
     );
     expect(actionParams.kind).toBe("action");
     if (actionParams.kind === "action") {
@@ -142,7 +147,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       "test",
       runTarget,
       {},
-      UI_INTEGRATION_RUNNER_UUID_INDEX,
+      applicationRunnerUuidIndex,
     );
     expect(params.kind).toBe("action");
     if (params.kind !== "action") {
@@ -184,7 +189,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
         "test",
         runTarget,
         {},
-        UI_INTEGRATION_RUNNER_UUID_INDEX,
+        applicationRunnerUuidIndex,
       );
       expect(params.kind, key).toBe("runner");
       if (params.kind !== "runner") {
@@ -252,7 +257,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
         "test",
         runTarget,
         {},
-        UI_INTEGRATION_RUNNER_UUID_INDEX,
+        applicationRunnerUuidIndex,
       );
       expect(params.kind, key).toBe("action");
       if (params.kind !== "action") {
@@ -320,7 +325,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
         "test",
         runTarget,
         {},
-        UI_INTEGRATION_RUNNER_UUID_INDEX,
+        applicationRunnerUuidIndex,
       );
       expect(params.kind, key).toBe("action");
       if (params.kind !== "action") {
@@ -359,7 +364,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
       "test",
       runTarget,
       {},
-      UI_INTEGRATION_RUNNER_UUID_INDEX,
+      applicationRunnerUuidIndex,
     );
     expect(params.kind).toBe("runner");
     if (params.kind !== "runner") {
@@ -407,7 +412,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
         "test",
         runTarget,
         {},
-        UI_INTEGRATION_RUNNER_UUID_INDEX,
+        applicationRunnerUuidIndex,
       ),
     ).toThrow(/no suite-owned playfield/);
   });
@@ -432,7 +437,7 @@ describe("uiIntegrationTestRunnerSuiteRegistry (B3)", () => {
         "test",
         runTarget,
         {},
-        UI_INTEGRATION_RUNNER_UUID_INDEX,
+        applicationRunnerUuidIndex,
       );
       expect(params.kind, key).toBe("runner");
       if (params.kind !== "runner") {
@@ -453,6 +458,19 @@ describe("uiIntegrationTestTransformerSuiteRegistry (B7)", () => {
     expect(listUiIntegrationTransformerSuiteKeys()).toContain("miroirCoreTransformers");
     const entry = resolveUiIntegrationTransformerSuite("miroirCoreTransformers");
     expect(entry.suiteDefinition.miroirTestLabel).toBe("miroirCoreTransformers");
+  });
+});
+
+describe("resolveUiIntegrationRunnerUuidIndex", () => {
+  it("uses a non-empty requested index", () => {
+    expect(resolveUiIntegrationRunnerUuidIndex(applicationRunnerUuidIndex)).toBe(
+      applicationRunnerUuidIndex,
+    );
+  });
+
+  it("falls back to the legacy snapshot when the requested index is missing or empty", () => {
+    expect(resolveUiIntegrationRunnerUuidIndex(undefined)).toBe(UI_INTEGRATION_RUNNER_UUID_INDEX);
+    expect(resolveUiIntegrationRunnerUuidIndex({})).toBe(UI_INTEGRATION_RUNNER_UUID_INDEX);
   });
 });
 

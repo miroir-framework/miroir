@@ -10,9 +10,11 @@ import {
   type Action2VoidReturnType,
   type LoggerInterface,
   type MiroirTestDefinition,
+  type Runner,
 } from 'miroir-core';
 
 import { useMiroirContextService, useSnackbar } from 'miroir-react';
+import { useSelectedApplicationRunnerUuidIndex } from '../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js';
 import { packageName } from '../../../../constants.js';
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
@@ -106,6 +108,7 @@ async function runLaunchableIntegrationBatch(params: {
   miroirTests: MiroirTestDefinition[];
   integrationProfileName?: string;
   integrationRunTargetMode?: UiIntegrationTestRunTargetMode;
+  runnerUuidIndex?: Record<string, Runner>;
 }): Promise<{ resultsBySuiteKey: MiroirTestSuiteResultsMap; failures: string[] }> {
   const sortedLaunchable = selectLaunchableIntegrationInstances(params.miroirTests);
   if (sortedLaunchable.length === 0) {
@@ -150,6 +153,7 @@ async function runLaunchableIntegrationBatch(params: {
           profileName: params.integrationProfileName ?? DEFAULT_UI_INTEGRATION_PROFILE_NAME,
           runTargetMode: params.integrationRunTargetMode ?? DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
           hostMode: 'isolated',
+          runnerUuidIndex: params.runnerUuidIndex,
         },
         batchEnv,
       );
@@ -182,6 +186,7 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
   const { handleAsyncAction } = useSnackbar();
   const miroirContextService = useMiroirContextService();
   const { isRunning: integRunInProgress } = useIntegTestRunCoordinator();
+  const runnerUuidIndex = useSelectedApplicationRunnerUuidIndex();
 
   const onUnitAction = async (): Promise<Action2VoidReturnType> => {
     const tracker = miroirContextService.miroirContext.miroirActivityTracker;
@@ -221,6 +226,7 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
       miroirTests,
       integrationProfileName,
       integrationRunTargetMode,
+      runnerUuidIndex,
     });
 
     if (onTestComplete) {

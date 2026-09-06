@@ -7,12 +7,15 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 export {
+  discoverApplicationMiroirTestSourceFolders,
   listCliRunnerIntegrationSuiteKeysFromFolders,
   listCliTransformerIntegrationSuiteKeysFromFolders,
   listCliUnitSuiteKeysFromFolders,
   loadApplicationMiroirTestCatalog,
   loadApplicationMiroirTestsFromFolders,
+  loadApplicationRunnerUuidIndexFromFolders,
   loadMiroirCoreTestSuiteFromFolders,
+  resolveApplicationMiroirTestSourceFolders,
   resolveCliSuiteKeysFromCatalog,
   resolveMonorepoRoot,
 } from "./loadApplicationMiroirTestsFromFolders.js";
