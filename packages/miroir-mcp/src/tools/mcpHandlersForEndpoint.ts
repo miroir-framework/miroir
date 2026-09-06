@@ -216,8 +216,31 @@ export async function handleMcpAction(
     // log.info(`${toolName} - received domainController:`, domainController);
     log.info(`${toolName} - received applicationDeploymentMap:`, applicationDeploymentMap);
 
-    // Validate parameters
-    const validatedParams = schema.parse(params);
+    const parsedParams = schema.safeParse(params);
+    if (!parsedParams.success) {
+      const message = parsedParams.error.issues
+        .map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`)
+        .join("; ");
+      log.info(`${toolName} - validation failed:`, message);
+      const subObject = {
+        status: "error",
+        action: toolName,
+        error: {
+          type: "validation_error",
+          message,
+        },
+      };
+      return {
+        content: [
+          {
+            type: "text",
+            parsed: subObject,
+            text: JSON.stringify(subObject, null, 2),
+          },
+        ],
+      };
+    }
+    const validatedParams = parsedParams.data;
     log.info(`${toolName} - validated params:`, validatedParams);
 
     // Build the action
