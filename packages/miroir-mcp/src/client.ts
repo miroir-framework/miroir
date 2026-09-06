@@ -3,7 +3,12 @@
  * code: `dist/index.js` is the Node CLI (shebang + Express).
  */
 export { MCP_HTTP_ENDPOINT } from "./mcpConstants.js";
-export { callMcpToolViaHttp, listMcpToolsViaHttp, sendMcpRequestViaHttp } from "./mcpHttpClient.js";
+export {
+  callMcpToolViaHttp,
+  listMcpToolsViaHttp,
+  resolveMcpHttpFetch,
+  sendMcpRequestViaHttp,
+} from "./mcpHttpClient.js";
 export type { McpHttpFetch } from "./mcpHttpClient.js";
 export {
   MCP_TOOL_NAME_MAX_LENGTH,
