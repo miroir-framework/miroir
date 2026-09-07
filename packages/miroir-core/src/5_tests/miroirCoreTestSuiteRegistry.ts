@@ -52,7 +52,17 @@ export const MIROIR_TEST_SUITE_REGISTRY: Record<string, MiroirTestSuiteLoader> =
   return MIROIR_TEST_SUITE_REGISTRY_NAMES.reduce(
     (acc, name) => {
       acc[name] = async () => {
-        return { default: deployment[`miroirTest_${name}`].definition as MiroirTestSuite };
+        const instance =
+          name === "alterObject"
+            ? deployment.miroirTest_alterObject_atPath
+            : name === "jzodTypeCheck"
+              ? deployment.miroirTest_jzodTypeCheck_TransformerTestSuite
+              : name === "menu"
+                ? deployment.miroirTest_menu_build
+                : name === "metaModelTransformers"
+                  ? deployment.miroirTest_metaModelTransformersTest
+                  : deployment[`miroirTest_${name}`];
+        return { default: instance.definition as MiroirTestSuite };
       };
       return acc;
     },

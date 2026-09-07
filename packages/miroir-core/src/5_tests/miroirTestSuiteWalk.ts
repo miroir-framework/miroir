@@ -88,21 +88,16 @@ export async function runMiroirTestSuiteWalk(
 
   const allTests = miroirTestSuite.miroirTests;
   const availableLeafLabels = allTests.map(miroirTestNodeLabel);
-  const { testList: innerTestList, filterProvidedButEmpty } = resolveSuiteInnerFilter(
+  const { testList: innerTestList } = resolveSuiteInnerFilter(
     filter,
     miroirTestSuite.miroirTestLabel,
     availableLeafLabels,
+    {
+      suiteName: testSuitePath[0],
+      throwOnUnmatched: testSuitePath.length === 1,
+    },
   );
   const innerFilter: { testList: TestSuiteListFilter | undefined } = { testList: innerTestList };
-
-  if (filterProvidedButEmpty) {
-    log.warn(
-      `MiroirTest filter matched no tests in suite "${miroirTestSuite.miroirTestLabel}". ` +
-        `Filter keys must be the suite miroirTestLabel (e.g. "runner.returnDocument" for --suites runner_return_document), ` +
-        `not the registry key or a bare leaf label at the wrong level. ` +
-        `Available leaves: ${availableLeafLabels.join(", ")}`,
-    );
-  }
   const selectedTests = allTests.filter((entry) =>
     isMiroirTestLeafSelected(miroirTestNodeLabel(entry), innerFilter?.testList),
   );

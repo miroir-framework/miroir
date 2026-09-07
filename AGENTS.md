@@ -111,8 +111,8 @@ Entity-backed tests use the unified **`MiroirTest`** model. Select them only via
 # Rebuild deployment after MiroirTest JSON changes
 npm run build -w miroir-test-app_deployment-miroir
 
-# MiroirTest CLI — dynamic import by registry key (preferred)
-npm run testMiroir -w miroir-core -- --suites mustache,alterObject --mode unit
+# MiroirTest CLI — select by instance name (preferred)
+npm run testMiroir -w miroir-core -- --suites mustache,alterObject_atPath --mode unit
 
 # MiroirTest integration (runs in standalone-app; --mode integ is an alias for integration)
 npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration

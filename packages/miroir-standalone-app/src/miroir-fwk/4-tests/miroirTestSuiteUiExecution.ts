@@ -16,19 +16,23 @@ import type { UiIntegrationTransformerSuiteEntry } from './uiIntegrationTestTran
 export type MiroirTestListExecutionCapabilities = {
   hasUnitLeaves: boolean;
   hasIntegrationLeaves: boolean;
-  /** Suite identity keys (name / label / uuid) with at least one unit-capable leaf. */
+  /** Suite identity keys (instance `name`, else label / uuid) with at least one unit-capable leaf. */
   unitSuiteKeys: string[];
   /** Suite identity keys with at least one integration-capable leaf. */
   integrationSuiteKeys: string[];
   /**
-   * Registry keys for UI-launchable integ suites in the list
+   * Suite keys (`name`) for UI-launchable integ suites in the list
    * (`resolveUiIntegrationRunnerSuiteKey` ∩ integ leaves).
    */
   launchableIntegrationSuiteKeys: string[];
 };
 
 function listSuiteIdentityKey(instance: MiroirTestDefinition): string {
-  return instance.name || instance.definition.miroirTestLabel || instance.uuid;
+  const name = instance.name?.trim();
+  if (name) {
+    return name;
+  }
+  return instance.definition.miroirTestLabel || instance.uuid;
 }
 
 /**

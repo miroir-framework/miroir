@@ -137,7 +137,7 @@ Comprehensive guide explaining:
 
 ## Testing Commands
 
-Transformer skills use **MiroirTest** suites (registry key `miroirCoreTransformers` for the main transformer catalog):
+Transformer skills use **MiroirTest** suites (suite key `miroirCoreTransformers` for the main transformer catalog):
 
 ```bash
 # Preferred — MiroirTest CLI

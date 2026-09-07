@@ -170,8 +170,8 @@ export function listCliTransformerIntegrationSuiteKeysFromFolders(
 }
 
 /**
- * Expand `*` / empty to every key in `availableKeys`, then resolve legacy aliases
- * (`menu` → `menu_build`) against the folder catalog.
+ * Expand `*` / empty to every key in `availableKeys`, then resolve suite keys
+ * (instance `name` or `uuid`) against the folder catalog.
  */
 export function resolveCliSuiteKeysFromCatalog(
   rawKeys: string[],

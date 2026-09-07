@@ -63,8 +63,9 @@ export function resolveMiroirTestSuiteKeys(rawKeys: string[]): string[] {
 }
 
 /**
- * Accepts either canonical `{ testList: { "<miroirTestLabel>": ["<leaf>", …] } }`
- * or shorthand `{ "<miroirTestLabel>": ["<leaf>", …] }` (documented CLI form).
+ * Accepts either canonical `{ testList: { "<suite name>": ["<leaf>", …] } }`
+ * or shorthand `{ "<suite name>": ["<leaf>", …] }` (documented CLI form). Nested
+ * keys remain `miroirTestLabel`.
  */
 export function normalizeMiroirTestRunFilter(
   parsed: Record<string, unknown>,

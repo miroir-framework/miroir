@@ -170,29 +170,33 @@ describe("applicationMiroirTestCatalog", () => {
     expect(registries.runner.EntityPrimaryKey).toBeUndefined();
   });
 
-  it("resolves legacy CLI keys that are prefixes of the instance name", () => {
-    const catalog = buildApplicationMiroirTestCatalog([
-      unitTransformerInstance("menu_build"),
-      unitTransformerInstance("jzodTypeCheck_TransformerTestSuite"),
-    ]);
-    expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu")).toBe("menu_build");
-    expect(resolveApplicationMiroirTestSuiteKey(catalog, "jzodTypeCheck")).toBe(
-      "jzodTypeCheck_TransformerTestSuite",
-    );
-    expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu_build")).toBe("menu_build");
-  });
-
-  it("loads a suite definition from the catalog by name or legacy prefix", () => {
+  it("resolves --suites tokens by instance name or uuid only", () => {
     const catalog = buildApplicationMiroirTestCatalog([
       unitTransformerInstance("menu_build"),
       runnerSuiteInstance("runner_return_document"),
     ]);
-    expect(loadMiroirTestSuiteFromCatalog(catalog, "menu").miroirTestLabel).toBe("menu_build");
+    expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu")).toBeUndefined();
+    expect(resolveApplicationMiroirTestSuiteKey(catalog, "jzodTypeCheck")).toBeUndefined();
+    expect(resolveApplicationMiroirTestSuiteKey(catalog, "menu_build")).toBe("menu_build");
+    expect(
+      resolveApplicationMiroirTestSuiteKey(catalog, "00000000-0000-4000-8000-000000000001"),
+    ).toBe("runner_return_document");
+  });
+
+  it("loads a suite definition from the catalog by name only", () => {
+    const catalog = buildApplicationMiroirTestCatalog([
+      unitTransformerInstance("menu_build"),
+      runnerSuiteInstance("runner_return_document"),
+    ]);
+    expect(loadMiroirTestSuiteFromCatalog(catalog, "menu_build").miroirTestLabel).toBe("menu_build");
     expect(loadMiroirTestSuiteFromCatalog(catalog, "runner_return_document").miroirTestType).toBe(
       "miroirTestSuite",
     );
+    expect(() => loadMiroirTestSuiteFromCatalog(catalog, "menu")).toThrow(
+      /Unknown suite key "menu". Use instance name/,
+    );
     expect(() => loadMiroirTestSuiteFromCatalog(catalog, "no_such_suite")).toThrow(
-      /Unknown MiroirTest suite key/,
+      /Unknown suite key "no_such_suite". Use instance name/,
     );
   });
 

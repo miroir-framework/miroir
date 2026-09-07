@@ -48,7 +48,7 @@ describe("integrationTestProfileCatalog (B6)", () => {
 });
 
 describe("resolveUiIntegrationRunnerSuiteKey (B6-d0)", () => {
-  it("maps instance name and miroirTestLabel to registry key runner_return_document", async () => {
+  it("uses instance name as the UI suite key for Library return", async () => {
     const { resolveUiIntegrationRunnerSuiteKey, isUiIntegrationRunnerSuiteSupportedForInstance } =
       await import("../../src/miroir-fwk/4-tests/resolveUiIntegrationRunnerSuiteKey.js");
     const { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } = await import(
@@ -73,16 +73,16 @@ describe("resolveUiIntegrationRunnerSuiteKey (B6-d0)", () => {
       ),
     ).toBe(true);
 
-    const byLabelOnly = {
+    const renamed = {
       ...miroirTest_runner_return_document,
       name: "other-name",
     };
     expect(
       resolveUiIntegrationRunnerSuiteKey(
-        byLabelOnly as never,
+        renamed as never,
         UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
         UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY,
       ),
-    ).toBe("runner_return_document");
+    ).toBe("other-name");
   });
 });

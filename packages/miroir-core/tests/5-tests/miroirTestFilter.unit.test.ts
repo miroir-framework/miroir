@@ -22,19 +22,23 @@ describe("miroirTestFilter (runner_lend_document / runner_return_document)", () 
     });
   });
 
-  it("selects return leaf via suite label key", () => {
+  it("selects return leaf via instance name key", () => {
     const filter = normalizeMiroirTestRunFilter({
-      "runner.returnDocument": ["Return Book Test Composite Action"],
+      runner_return_document: ["Return Book Test Composite Action"],
     });
-    const { testList } = resolveSuiteInnerFilter(filter, RETURN_SUITE_LABEL, RETURN_LEAVES);
+    const { testList } = resolveSuiteInnerFilter(filter, RETURN_SUITE_LABEL, RETURN_LEAVES, {
+      suiteName: "runner_return_document",
+    });
     expect(isMiroirTestLeafSelected(RETURN_LEAVES[0], testList)).toBe(true);
   });
 
-  it("selects lend leaf via suite label key", () => {
+  it("selects lend leaf via instance name key", () => {
     const filter = normalizeMiroirTestRunFilter({
-      "runner.lendDocument": ["Lend Book Test Composite Action"],
+      runner_lend_document: ["Lend Book Test Composite Action"],
     });
-    const { testList } = resolveSuiteInnerFilter(filter, LEND_SUITE_LABEL, LEND_LEAVES);
+    const { testList } = resolveSuiteInnerFilter(filter, LEND_SUITE_LABEL, LEND_LEAVES, {
+      suiteName: "runner_lend_document",
+    });
     expect(isMiroirTestLeafSelected(LEND_LEAVES[0], testList)).toBe(true);
   });
 
@@ -51,14 +55,37 @@ describe("miroirTestFilter (runner_lend_document / runner_return_document)", () 
     expect(isMiroirTestLeafSelected(RETURN_LEAVES[0], testList)).toBe(true);
   });
 
-  it("warns when registry key used instead of suite label", () => {
+  it("throws when suite label is used instead of instance name at the catalog root", () => {
     const filter = normalizeMiroirTestRunFilter({
-      runner_return_document: ["Return Book Test Composite Action"],
+      "runner.returnDocument": ["Return Book Test Composite Action"],
+    });
+    expect(() =>
+      resolveSuiteInnerFilter(filter, RETURN_SUITE_LABEL, RETURN_LEAVES, {
+        suiteName: "runner_return_document",
+      }),
+    ).toThrow(/Did you mean "runner_return_document"/);
+  });
+
+  it("throws when a leaf label is unknown", () => {
+    const filter = normalizeMiroirTestRunFilter({
+      runner_return_document: ["this leaf does not exist"],
+    });
+    expect(() =>
+      resolveSuiteInnerFilter(filter, RETURN_SUITE_LABEL, RETURN_LEAVES, {
+        suiteName: "runner_return_document",
+      }),
+    ).toThrow(/Unknown MiroirTest leaf label "this leaf does not exist"/);
+  });
+
+  it("skips unmatched sibling branches when throwOnUnmatched is false", () => {
+    const filter = normalizeMiroirTestRunFilter({
+      "runner.returnDocument": ["Return Book Test Composite Action"],
     });
     const { testList, filterProvidedButEmpty } = resolveSuiteInnerFilter(
       filter,
-      RETURN_SUITE_LABEL,
-      RETURN_LEAVES,
+      LEND_SUITE_LABEL,
+      LEND_LEAVES,
+      { suiteName: "runner_lend_document", throwOnUnmatched: false },
     );
     expect(filterProvidedButEmpty).toBe(true);
     expect(testList).toEqual([]);

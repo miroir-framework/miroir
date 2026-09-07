@@ -50,7 +50,13 @@ Field naming uses `miroirTestType`, `miroirTestLabel`, `miroirTests`.
 
 ## Running unit tests (CLI)
 
-**Prefer argv** over env vars (see [Parameter surface](../../reference/testing.md#parameter-surface-argv-preferred)):
+**Prefer argv** over env vars (see [Parameter surface](../../reference/testing.md#parameter-surface-argv-preferred)). Select suites by instance `name`:
+
+| Name | Example | Used in |
+|------|---------|---------|
+| **Suite key** (`name`) | `runner_return_document` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite `miroirTestLabel`** | `runner.returnDocument` | display; **nested** `--filter` keys only |
+| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action` | `--filter` **values**, UI leaf checkboxes |
 
 ```bash
 # Preferred — argv
@@ -58,21 +64,21 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 
 # Filter to specific test labels
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
+  --filter '{"mustache":["should extract patterns with double braces"]}'
 
 # Legacy — env (still supported; argv wins when both are set)
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-MIROIR_TEST_SUITES=alterObject,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=alterObject_atPath,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 ```
 
-See [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) for the full filter model (registry key vs `miroirTestLabel`, runner examples).
+See [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) for the full filter model (suite key (`name`) vs `miroirTestLabel`, runner examples).
 
 **Environment variables:**
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `MIROIR_TEST_SUITES` | Comma-separated registry keys, or `*` for all | `*` |
+| `MIROIR_TEST_SUITES` | Comma-separated suite keys (`name`), or `*` for all | `*` |
 | `MIROIR_TEST_MODE` | `unit` or `integration` (`integ` accepted) | `unit` |
 | `MIROIR_TEST_FILTER` | JSON filter object — see [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) | (none) |
 
@@ -106,13 +112,13 @@ Invalid configuration prints a full usage message before any test runs. See [ref
 
 ### Filtering one leaf
 
-Filter by suite **`miroirTestLabel`**, not the registry key:
+Filter by suite key (`name`) at the catalog root; nested keys stay `miroirTestLabel`:
 
 ```bash
-# Runner — key is runner.returnDocument
+# Runner — catalog-root key is runner_return_document
 npm run testMiroir -w miroir-standalone-app -- \
   --suites runner_return_document --mode integ --profile emulatedServer-sql \
-  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
+  --filter '{"runner_return_document":["Return Book Test Composite Action"]}'
 
 # Transformer — nested suite labels
 npm run testMiroir -w miroir-standalone-app -- \

@@ -190,7 +190,7 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 
 # Filter to specific test labels (suite miroirTestLabel → leaf labels)
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
+  --filter '{"mustache":["should extract patterns with double braces"]}'
 
 # Legacy — env vars (still supported; argv wins when both are set)
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
@@ -315,13 +315,13 @@ npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites domain_controller_model_undo_redo --mode integ
 ```
 
-Filter keys use the suite **`miroirTestLabel`**, not the registry key (see [Filtering](#filtering-miroirtest-cases)):
+Catalog-root filter keys use instance **`name`** (see [Filtering](#filtering-miroirtest-cases)):
 
 ```bash
-# One runner leaf — key is runner.returnDocument
+# One runner leaf — catalog-root key is runner_return_document
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites runner_return_document --mode integ \
-  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
+  --filter '{"runner_return_document":["Return Book Test Composite Action"]}'
 
 # One transformer leaf — nested labels under miroirCoreTransformers
 npm run testMiroir -w miroir-standalone-app -- \
@@ -523,7 +523,7 @@ npm run testMiroir -w miroir-standalone-app -- \
 # Return leaf only — preferred form (suite miroirTestLabel → leaf miroirTestLabel)
 npm run testMiroir -w miroir-standalone-app -- \
   --suites runner_return_document --mode integ --profile emulatedServer-sql \
-  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
+  --filter '{"runner_return_document":["Return Book Test Composite Action"]}'
 
 # Same run — shorthand when the suite has a single level of leaves (leaf key only; value ignored)
 npm run testMiroir -w miroir-standalone-app -- \
@@ -632,7 +632,7 @@ npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql \
   --suites domain_controller_data_crud \
   --mode integ \
-  --filter '{"domainController.data.crud":["Refresh all Instances"]}'
+  --filter '{"domain_controller_data_crud":["Refresh all Instances"]}'
 ```
 
 Copy the six-character `runId` from `RUN … START` or `#??????.sN.#`, then `grep $RUNID` on the log file. For query payload detail on the same leaf, re-run with `VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query-local` (narrow) or `scope-query` (adds DomainController hops).
@@ -1042,7 +1042,7 @@ npm run testMiroir -w miroir-core
 
 | File | Role |
 |------|------|
-| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Registry key → deployment export |
+| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Deprecated name-list snapshot → deployment export |
 | `src/5_tests/parseMiroirTestCliConfig.ts` | CLI/env parsing (`MIROIR_TEST_*`) |
 | `src/5_tests/runMiroirCoreTestsFromCLI.ts` | Main entry called by both vitest entries |
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |
@@ -1179,26 +1179,26 @@ Playfield **model + instances** belong on the suite or a `TestConfiguration`, no
 
 | Name | Example | Used in |
 |------|---------|---------|
-| **Registry key** | `runner_return_document`, `domain_controller_data_crud`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI suite key |
-| **Suite `miroirTestLabel`** | `runner.returnDocument`, `miroirCoreTransformers`, nested `plus` | Filter object **keys** (when nested) |
-| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action`, `plus with empty args fails` | Filter object **values** (string array) |
+| **Suite key** (`name`) | `runner_return_document`, `domain_controller_data_crud`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite `miroirTestLabel`** | `runner.returnDocument`, `miroirCoreTransformers`, nested `plus` | display; **nested** `--filter` keys only |
+| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action`, `plus with empty args fails` | `--filter` **values**, UI leaf checkboxes |
 
-For **runner** suites the registry key and suite label often differ: `--suites runner_return_document` but filter key `runner.returnDocument`. For **transformer** suites such as `miroirCoreTransformers` they usually match; nest intermediate suite labels in the filter JSON.
+`--suites` and catalog-root `--filter` keys are instance `name`. Nested `--filter` keys stay `miroirTestLabel` (inline suites have no `name`). For **transformer** suites such as `miroirCoreTransformers` the name and root label usually match; nest intermediate suite labels in the filter JSON.
 
 Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) and each leaf’s `miroirTestLabel`.
 
 ### JSON shapes (equivalent after normalization)
 
-**Recommended — shorthand** (suite label → leaf labels):
+**Recommended — shorthand** (suite key (`name`) → leaf labels):
 
 ```json
-{ "runner.returnDocument": ["Return Book Test Composite Action"] }
+{ "runner_return_document": ["Return Book Test Composite Action"] }
 ```
 
 **Canonical** (explicit `testList`):
 
 ```json
-{ "testList": { "runner.returnDocument": ["Return Book Test Composite Action"] } }
+{ "testList": { "runner_return_document": ["Return Book Test Composite Action"] } }
 ```
 
 **Single flat suite — leaf key only** (when every filter key matches a leaf label in that suite; array values are ignored):
@@ -1222,7 +1222,7 @@ Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) an
 ```bash
 npm run testMiroir -w miroir-standalone-app -- \
   --suites runner_return_document --mode integ --profile emulatedServer-sql \
-  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
+  --filter '{"runner_return_document":["Return Book Test Composite Action"]}'
 ```
 
 #### 2. One leaf per library runner suite
@@ -1250,13 +1250,13 @@ Nest objects for intermediate suite labels; use a string array for the leaf list
 
 ```bash
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
+  --filter '{"mustache":["should extract patterns with double braces"]}'
 ```
 
 #### 5. Legacy environment-variable form
 
 ```bash
-MIROIR_TEST_FILTER='{"runner.returnDocument":["Return Book Test Composite Action"]}' \
+MIROIR_TEST_FILTER='{"runner_return_document":["Return Book Test Composite Action"]}' \
   npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites runner_return_document --mode integ
 ```
@@ -1266,11 +1266,11 @@ MIROIR_TEST_FILTER='{"runner.returnDocument":["Return Book Test Composite Action
 | What you typed | What happens |
 |----------------|--------------|
 | `'{"Return Book Test Composite Action": "*"}'` (no `testList`, leaf as top-level key) | **Works** after fix — treated as leaf-key shorthand when the label exists in the suite |
-| `'{"runner_return_document":["Return Book Test Composite Action"]}'` | **No match** — key must be `runner.returnDocument` (suite label), not registry key |
-| `'{"testList":{"Return Book Test Composite Action":["*"]}}'` with wrong nesting | **No match** + console warning — use `runner.returnDocument` as the key unless using leaf-key shorthand |
+| `'{"runner.returnDocument":["Return Book Test Composite Action"]}'` | **Error** — catalog-root key must be the suite key (`name`), not `miroirTestLabel` |
+| `'{"testList":{"Return Book Test Composite Action":["*"]}}'` with wrong nesting | **Error** — use `runner_return_document` as the key unless using leaf-key shorthand |
 | Wildcard `"*"` as a leaf name | **Not supported** — list explicit leaf labels or omit `--filter` |
 
-When the filter matches nothing, Vitest still runs the file but all cases are **skipped**; the runner logs a warning listing available leaf labels.
+When a catalog-root filter key or leaf label is unknown, the run **throws** and lists the instance `name`, suite label, and available leaves.
 
 After changing filter logic in `miroir-core`, rebuild before running standalone-app tests:
 

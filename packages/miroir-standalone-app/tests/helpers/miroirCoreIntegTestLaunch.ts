@@ -79,7 +79,7 @@ export function formatMiroirCoreIntegTestUsage(): string {
     "  (programmatic) bundledDeploymentData   Required on IntegrationTestSession options; not settable via env alone",
     "",
     "Optional:",
-    "  MIROIR_TEST_FILTER='{\"<miroirTestLabel>\":[\"<leaf miroirTestLabel>\"]}'   JSON filter (see testing.md#filtering-miroirtest-cases)",
+    "  MIROIR_TEST_FILTER='{\"<suite name>\":[\"<leaf miroirTestLabel>\"]}'   JSON filter (see testing.md#filtering-miroirtest-cases)",
     "",
     "Example with profile (no manual MIROIR_TEST_POSTGRES_HOST):",
     `  npm run testMiroir -w miroir-standalone-app -- --profile ${DEFAULT_PROFILE_KEY} --suites miroirCoreTransformers --mode integ`,

@@ -88,10 +88,25 @@ export function classifyApplicationMiroirTestCliLaunchKind(
   return undefined;
 }
 
+function unknownSuiteKeyError(
+  catalog: ApplicationMiroirTestCatalogEntry[],
+  rawKey: string,
+): Error {
+  const available = catalog.map((entry) => entry.suiteKey).join(", ");
+  const byLabel = catalog.find((entry) => entry.suiteDefinition.miroirTestLabel === rawKey);
+  if (byLabel) {
+    return new Error(
+      `Unknown suite key "${rawKey}". Use instance name. Did you mean "${byLabel.suiteKey}"? ("${rawKey}" is miroirTestLabel, not a suite key). Available: ${available}`,
+    );
+  }
+  return new Error(
+    `Unknown suite key "${rawKey}". Use instance name. Available: ${available}`,
+  );
+}
+
 /**
  * Resolve a CLI `--suites` token to a catalog key.
- * Accepts instance `name`, suite `miroirTestLabel`, and legacy registry prefixes
- * (`menu` → `menu_build`, `jzodTypeCheck` → `jzodTypeCheck_TransformerTestSuite`).
+ * Accepts instance `name` or instance `uuid` only.
  */
 export function resolveApplicationMiroirTestSuiteKey(
   catalog: ApplicationMiroirTestCatalogEntry[],
@@ -101,15 +116,9 @@ export function resolveApplicationMiroirTestSuiteKey(
   if (exact) {
     return exact.suiteKey;
   }
-  const byLabel = catalog.find((entry) => entry.suiteDefinition.miroirTestLabel === rawKey);
-  if (byLabel) {
-    return byLabel.suiteKey;
-  }
-  const prefixMatches = catalog.filter(
-    (entry) => entry.suiteKey.startsWith(`${rawKey}_`) || entry.suiteKey.startsWith(rawKey),
-  );
-  if (prefixMatches.length === 1) {
-    return prefixMatches[0].suiteKey;
+  const byUuid = catalog.find((entry) => entry.instance.uuid === rawKey);
+  if (byUuid) {
+    return byUuid.suiteKey;
   }
   return undefined;
 }
@@ -121,11 +130,7 @@ export function resolveApplicationMiroirTestSuiteKeys(
   return rawKeys.map((rawKey) => {
     const resolved = resolveApplicationMiroirTestSuiteKey(catalog, rawKey);
     if (!resolved) {
-      throw new Error(
-        `Unknown MiroirTest suite key "${rawKey}". Available: ${catalog
-          .map((entry) => entry.suiteKey)
-          .join(", ")}`,
-      );
+      throw unknownSuiteKeyError(catalog, rawKey);
     }
     return resolved;
   });
@@ -136,14 +141,10 @@ export function loadMiroirTestSuiteFromCatalog(
   catalog: ApplicationMiroirTestCatalogEntry[],
   suiteKey: string,
 ): MiroirTestSuite {
-  const resolved = resolveApplicationMiroirTestSuiteKey(catalog, suiteKey) ?? suiteKey;
+  const resolved = resolveApplicationMiroirTestSuiteKeys(catalog, [suiteKey])[0];
   const entry = catalog.find((item) => item.suiteKey === resolved);
   if (!entry) {
-    throw new Error(
-      `Unknown MiroirTest suite key "${suiteKey}". Available: ${catalog
-        .map((item) => item.suiteKey)
-        .join(", ")}`,
-    );
+    throw unknownSuiteKeyError(catalog, suiteKey);
   }
   return entry.suiteDefinition;
 }

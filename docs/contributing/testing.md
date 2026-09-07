@@ -39,7 +39,13 @@ Rules:
 
 ## Running tests
 
-**Prefer argv** (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Env vars remain for CI / legacy; see [Parameter surface](../reference/testing.md#parameter-surface-argv-preferred) in the reference.
+**Prefer argv** (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Env vars remain for CI / legacy; see [Parameter surface](../reference/testing.md#parameter-surface-argv-preferred) in the reference. Select MiroirTest suites by instance `name`:
+
+| Name | Example | Used in |
+|------|---------|---------|
+| **Suite key** (`name`) | `runner_return_document` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite `miroirTestLabel`** | `runner.returnDocument` | display; **nested** `--filter` keys only |
+| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action` | `--filter` **values**, UI leaf checkboxes |
 
 ### Repo-wide non-regression (`npm run nonreg`)
 
@@ -78,7 +84,7 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 
 # Multiple suites
-npm run testMiroir -w miroir-core -- --suites alterObject,EntityPrimaryKey --mode unit
+npm run testMiroir -w miroir-core -- --suites alterObject_atPath,EntityPrimaryKey --mode unit
 
 # All registered suites
 npm run testMiroir -w miroir-core -- --mode unit

@@ -39,7 +39,7 @@ describe("runUiIntegrationTestSuite (B3)", () => {
         hostMode: "isolated",
         filter: {
           testList: {
-            "runner.returnDocument": [RETURN_BOOK_LEAF],
+            runner_return_document: [RETURN_BOOK_LEAF],
           },
         },
       },
