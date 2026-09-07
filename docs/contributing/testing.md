@@ -197,10 +197,10 @@ npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunc
 
 Requires Postgres (Node emulated SQL via test mocks). Full detail: [reference/testing.md § MiroirTestDisplayIntegrationLaunch](../reference/testing.md#miroirtestdisplayintegrationlaunchintegtesttsx--ui-integration-launch-b6-d1).
 
-### Per-file vitest
+### Catalog vitest host (`testMiroir` already uses these)
 
 ```bash
-# Unit entry directly
+# Unit catalog host (prefer `testMiroir --mode unit`)
 npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
 
 # Integration entry directly
@@ -247,7 +247,8 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 
 | File | Role |
 |------|------|
-| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Registry key → deployment export (38 suites, including `virtualAttributes` for #82) |
+| `src/5_tests/loadApplicationMiroirTestsFromFolders.ts` | Folder catalog used by `testMiroir` (suite key = instance `name`) |
+| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Deprecated name-list snapshot |
 | `src/5_tests/parseMiroirTestCliConfig.ts` | CLI/env parsing for `MIROIR_TEST_*` vars |
 | `src/5_tests/runMiroirCoreTestsFromCLI.ts` | Main entry for both vitest files |
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |
@@ -267,12 +268,11 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 
 ## Adding or migrating tests
 
-1. Create or edit a `MiroirTest` JSON instance under the entity data directory.
-2. Export from `packages/miroir-test-app_deployment-miroir/index.ts`.
-3. Add the key to `MIROIR_TEST_SUITE_REGISTRY_NAMES` in `miroirCoreTestSuiteRegistry.ts`.
-4. Rebuild the deployment package.
-5. Run `tests/4_services/miroirTest.schema.unit.test.ts` to validate JSON shape.
-6. Run the new suite with `testMiroir`.
+1. Create or edit a `MiroirTest` JSON instance in the application's MiroirTest folder (set `name` to the suite key).
+2. Optional: export `miroirTest_<name>` from the deployment package `index.ts` if other TypeScript wants a named import.
+3. Rebuild the deployment package if you added a named export.
+4. Run `tests/4_services/miroirTest.schema.unit.test.ts` to validate JSON shape.
+5. Run the new suite with `testMiroir` (`--suites <name>`). Do **not** add a per-suite vitest wrapper.
 
 For migrations from legacy `UnitTest` / `TransformerTest`, see `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`.
 

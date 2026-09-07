@@ -6,11 +6,12 @@ This page is the authoritative reference for how tests are structured, run, and 
 
 ## Overview
 
-Miroir has three test layers:
+Miroir has these test layers:
 
 | Layer | Location | Launcher | Store / runtime |
 |-------|----------|----------|-----------------|
-| **Unit** | `miroir-core` | `testMiroir` / `testByFile` | In-memory, no persistence |
+| **Unit (MiroirTest)** | `miroir-core` | `testMiroir` | In-memory, no persistence |
+| **Unit (PLATFORM)** | package `tests/` | `testByFile` + optional `RUN_TEST` | TypeScript files that are not entity-backed |
 | **MiroirTest integration** | `miroir-standalone-app` | `testMiroir` (`MIROIR_TEST_*`) | `IntegrationTestSession` — direct PersistenceStoreController / domainController |
 | **App-stack integration** | `miroir-standalone-app` | `testByFile` (`VITE_MIROIR_*`) | `setupMiroirTest` — emulated or real HTTPS server |
 
@@ -234,11 +235,13 @@ npm test -w miroir-test-app_deployment-library -- "App-action validation"
 
 ### Via `testByFile`
 
+`testByFile` is the PLATFORM / vitest-host launcher. To run MiroirTest suites, prefer `testMiroir` (it already points vitest at `miroir-core-tests.unit.test.ts` with catalog selection). Direct host invocation:
+
 ```bash
 npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
 ```
 
-This runs `tests/miroir-core-tests.unit.test.ts` directly with vitest, inheriting `MIROIR_TEST_SUITES` from the environment.
+This runs the catalog host file, inheriting `MIROIR_TEST_SUITES` from the environment. It is not a way to select a suite by filename.
 
 ---
 
@@ -1030,7 +1033,7 @@ npm run testMiroir -w miroir-core
   scripts/test-miroir-core.ts
     vitest → miroir-core-tests.unit.test.ts
       runMiroirCoreTestsFromCLI (no testSession)
-        loadMiroirCoreTestSuite → runMiroirTests (in-memory)
+        loadMiroirCoreTestSuiteFromFolders → runMiroirTests (in-memory)
 ```
 
 ---
@@ -1149,7 +1152,9 @@ await session.teardown();
 3. CLI discovery scans `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>` (`discoverApplicationMiroirTestSourceFolders`). Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`. Runner `runnerRef` lookup uses sibling Runner folders (`loadApplicationRunnerUuidIndexFromFolders`).
 4. Optional: export `miroirTest_myNewSuite` from the deployment package `index.ts` if other TypeScript wants a named import. Rebuild that package.
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.
-6. Run: `MIROIR_TEST_SUITES=myNewSuite MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core`.
+6. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`.
+
+Do **not** add a per-suite `*.unit.test.ts` wrapper. Vitest filename / `RUN_TEST` stays for PLATFORM TypeScript tests only.
 
 The last hardcoded snapshots (`MIROIR_TEST_SUITE_REGISTRY_NAMES`, `MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES`, `UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY`) are kept for reference only.
 

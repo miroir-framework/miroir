@@ -19,7 +19,7 @@ Legacy `UnitTest` and `TransformerTest` entities remain in the deployment for ba
 
 | Mode | Launcher | Vitest entry | Typical suites |
 |------|----------|-------------|----------------|
-| **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | All miroir-core registry suites except `miroirCoreTransformers` |
+| **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | Catalog unit suites (`--suites`) |
 | **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `miroirCoreTransformers`, etc. via `MIROIR_TEST_*` |
 | **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD (Data.CRUD deprecated), PersistenceStoreController (incl. attribute projection), extractors |
 | **Runner / Action integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | `runner_lend_document`, `runner_return_document`, `domain_controller_data_crud` |
@@ -196,12 +196,11 @@ Legacy **Unit Test** / **Transformer Test** reports still exist; prefer **Miroir
 
 ## Writing new tests
 
-1. Add a `MiroirTest` JSON instance under the entity data directory (RFC 4122 v4 UUID as filename).
-2. Export from `packages/miroir-test-app_deployment-miroir/index.ts`.
-3. Add the key to `MIROIR_TEST_SUITE_REGISTRY_NAMES` in `miroirCoreTestSuiteRegistry.ts`.
-4. Rebuild: `npm run build -w miroir-test-app_deployment-miroir`.
-5. Validate schema: run `tests/4_services/miroirTest.schema.unit.test.ts`.
-6. Run: `MIROIR_TEST_SUITES=myNewSuite MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core`.
+1. Add a `MiroirTest` JSON instance in the application's MiroirTest folder (RFC 4122 v4 UUID as filename; set `name` to the suite key).
+2. Optional: export `miroirTest_<name>` from the deployment package `index.ts` if other TypeScript wants a named import.
+3. Rebuild that package if you added a named export: `npm run build -w miroir-test-app_deployment-miroir`.
+4. Validate schema: run `tests/4_services/miroirTest.schema.unit.test.ts`.
+5. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`. Do **not** add a per-suite vitest wrapper.
 
 For migrations from legacy `UnitTest` / `TransformerTest`, use `migrateLegacyTestInstance` in `scripts/miroirTestMigrateDefinition.ts` and the manifest `miroir-test-migration-map.json`.
 

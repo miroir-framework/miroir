@@ -105,7 +105,7 @@ always favor integration tests to unit tests, avoid mocking when possible
 
 ### Core Testing Commands
 
-Entity-backed tests use the unified **`MiroirTest`** model. Prefer `testMiroir` for suite selection; `testByFile` + `RUN_TEST` remains for per-file selective runs.
+Entity-backed tests use the unified **`MiroirTest`** model. Select them only via `testMiroir` / the UI catalog. `testByFile` + `RUN_TEST` is for PLATFORM TypeScript tests only.
 
 ```bash
 # Rebuild deployment after MiroirTest JSON changes
@@ -117,8 +117,8 @@ npm run testMiroir -w miroir-core -- --suites mustache,alterObject --mode unit
 # MiroirTest integration (runs in standalone-app; --mode integ is an alias for integration)
 npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 
-# Per-file vitest (RUN_TEST gate on most loaders)
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+# PLATFORM vitest (filename / optional RUN_TEST)
+RUN_TEST=Transformer_ResultSchema.failures npm run testByFile -w miroir-core -- Transformer_ResultSchema.failures
 
 # Schema / migration smoke
 npm run testByFile -w miroir-core -- miroirTest.migration

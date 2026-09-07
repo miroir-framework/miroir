@@ -38,7 +38,7 @@
     {
       "id": "unit-transformerResultSchema",
       "tier": "unit",
-      "title": "#88 — resolveTransformerResultSchema (MiroirTest suite)",
+      "title": "#88 — resolveTransformerResultSchema PLATFORM inventory",
       "requires": "none",
       "argv": [
         "npm",

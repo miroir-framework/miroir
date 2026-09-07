@@ -20,18 +20,13 @@ This skill guides the creation and modification of **Composite** Miroir Transfor
 **BEFORE starting any transformer work, verify current test state:**
 
 ```bash
-# MiroirTest CLI (preferred) — registry key miroirCoreTransformers
 npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode integration
-
-# Per-file vitest (equivalent selective gate)
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 If tests are failing, inform the user of the baseline state before proceeding.
 
-During remaining steps, use the filter passed to the `runTransformerTestSuite` function to execute only relevant test cases. To facilitate later investigations, leave the updated filter commented out at the very end of the session (its default value shall be `undefined`).
+During remaining steps, pass `--filter` to `testMiroir` to execute only relevant leaves.
 
 ---
 
@@ -62,7 +57,7 @@ Much simpler than library transformers - only JSON changes!
 ### Step 1: Run Pre-flight Tests ✅
 Establish baseline before any changes.
 ```bash
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
 ```
 
 ### Step 2: Write Test Cases First (TDD) 📝
@@ -74,7 +69,7 @@ Add test cases to the test suite:
 ### Step 3: Run Tests (Expect Failure) ❌
 Verify the test fails before implementation:
 ```bash
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
 ```
 
 ### Step 4: Create TransformerDefinition JSON 📄
@@ -94,7 +89,7 @@ In `packages/miroir-core/src/2_domain/Transformers.ts`:
 ### Step 6: Run Tests (Expect Success) ✅
 Verify everything works:
 ```bash
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
 npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
@@ -457,30 +452,13 @@ Access nested object properties.
 ## Debugging
 
 ### Run Specific Tests Only
-Modify the filter in `transformers.unit.test.ts`:
-```ts
-await runUnitTransformerTests._runTransformerTestSuite(
-  vitest,
-  [],
-  transformerTestSuite_miroirTransformers,
-  {
-    testList: {
-      miroirCoreTransformers: {
-        runtimeTransformerTests: {
-          "<transformerName>": [
-            "specific test case name"
-          ]
-        }
-      }
-    }
-  },
-  // ... rest of parameters
-);
+```bash
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit --filter '{"miroirCoreTransformers":["specific test case name"]}'
 ```
 
 ### Enable Debug Logging
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
 ```
 
 ---
