@@ -656,8 +656,6 @@ The final argument is a Vitest file-name filter (not a suite key). Examples:
 | `ExtractorTemplatePersistenceStoreRunner.integ` | Extractor template runner |
 | `uiIntegrationTestLauncher.integ` | Node proof of the UI launcher (runner + transformer leaves, emulated SQL) |
 | `uiIntegrationTestLauncher.realServer.integ` | Node proof of the UI launcher against live `miroir-server` (`--storage` / `--profile realServer-*`) |
-| `Runner_Miroir.integ` | Legacy runner integration (prefer `testMiroir` runner entry) |
-| `Runner_Library.integ` | Legacy runner integration (prefer the `testMiroir` runner entry) |
 | `ReportPage.integ` | Report view React smoke tests |
 | `BlobEditorField.integ` | Blob editor component tests (no store required) |
 
@@ -829,8 +827,8 @@ App-stack integration paths use **`runAppStackIntegrationBootstrap`** (`tests/he
 |---------------|------|-----------|--------------------------|--------------|
 | `IntegrationTestSession` | `transformer` | `testApplication` | (local PersistenceStoreController — no HTTP phases) | `miroir-core-tests.integ.test.ts` |
 | `AppStackIntegrationTestSession` | `appStackPersistenceStoreController` | `libraryDeployment` | wire + deployMiroir + deployLibrary | `4_storage/*.integ.test.tsx` |
-| `DomainControllerIntegrationTestSession` | `domainController` | profile-dependent (see below) | profile-dependent | `3_controllers/DomainController.integ.*` |
-| `RunnerTestSession` | `runner` | `libraryDeployment` | wire + deployMiroir | `miroir-runner-tests.integ`, `Runner_Miroir.integ` |
+| `DomainControllerIntegrationTestSession` | `domainController` | profile-dependent (see below) | profile-dependent | `testMiroir --suites domain_controller_*` |
+| `RunnerTestSession` | `runner` | `libraryDeployment` | wire + deployMiroir | `miroir-runner-tests.integ` (`testMiroir`) |
 
 `describeSession(kind)` (or `describeIntegrationTestSession(kind, profile)` for
 `domainController`) returns `{ kind, bootstrapPhases, playfield, defaultHostMode, embeddedCapable }`.

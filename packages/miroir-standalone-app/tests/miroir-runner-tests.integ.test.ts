@@ -23,7 +23,6 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
 import {
-  UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
   buildUiIntegrationOrchestratorCreateSessionParams,
   uiIntegrationRunnerSuiteEntryFromDefinition,
 } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
@@ -82,9 +81,7 @@ if (config.filter?.testList) {
 }
 
 function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
-  const registryEntry =
-    uiIntegrationRunnerSuiteEntryFromDefinition(suiteKey, suite) ??
-    UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey];
+  const registryEntry = uiIntegrationRunnerSuiteEntryFromDefinition(suiteKey, suite);
   if (!registryEntry) {
     throw new Error(`Unknown runner/action suite key: ${suiteKey}`);
   }

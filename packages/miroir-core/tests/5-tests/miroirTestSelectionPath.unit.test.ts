@@ -54,4 +54,29 @@ describe("MiroirTest selection path", () => {
     });
     expect(stubs.map((file) => posixRel(STANDALONE_TESTS, file))).toEqual([]);
   });
+
+  it("does not keep deprecated MiroirTest integ twins", () => {
+    const forbidden = [
+      "4_view/Runner_CreateEntity.integ.test.tsx",
+      "4_view/Runner_DropEntity.integ.test.tsx",
+      "4_view/Runner_Miroir.integ.test.tsx",
+      "4_view/Runner_Library.ts",
+    ];
+    const present = listTsFiles(STANDALONE_TESTS)
+      .map((file) => posixRel(STANDALONE_TESTS, file))
+      .filter((rel) => forbidden.includes(rel));
+    const deprecatedTwins = listTsFiles(STANDALONE_TESTS)
+      .filter((file) => {
+        const text = readFileSync(file, "utf8");
+        return (
+          text.includes("@deprecated Prefer MiroirTest") ||
+          text.includes("Kept green until G8 cutover")
+        );
+      })
+      .map((file) => posixRel(STANDALONE_TESTS, file));
+    expect(
+      [...new Set([...present, ...deprecatedTwins])].sort(),
+      "integ twins run via testMiroir (runner_create_entity / runner_drop_entity / runner_lend_document / runner_return_document)",
+    ).toEqual([]);
+  });
 });
