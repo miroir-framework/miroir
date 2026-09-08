@@ -89,6 +89,10 @@ export function shouldShowAppMenuItem(
     selfApplication === ctx.adminSelfApplicationUuid ||
     selfApplication === ctx.miroirSelfApplicationUuid
   ) {
+    const scope = "menuItemScope" in item ? item.menuItemScope : undefined;
+    if (scope === "data") {
+      return true;
+    }
     return ctx.showModelTools;
   }
 

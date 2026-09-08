@@ -102,7 +102,10 @@ export const Sidebar: FC<{
         menuUuid: menuDefaultAdmin.uuid
       },
     ]
-    .filter(section => context.showModelTools)
+    .filter(
+      (section) =>
+        context.showModelTools || section.applicationUuid === adminSelfApplication.uuid,
+    )
     .map((section, index) => (
       <>
         {index > 0 && <ThemedDivider />}

@@ -9,6 +9,7 @@
   "description": "Declarative platform right linking a MiroirUser to an AdminApplication or Deployment target. Capability strings are provisional until #71; no runtime enforcement in #219.",
   "defaultInstanceDetailsReportUuid": "fbe615b3-b670-40d1-ac0d-de6e0c7c847e",
   "viewAttributes": [
+    "name",
     "miroirUser",
     "capability",
     "targetType",
@@ -28,6 +29,18 @@
       }
     },
     "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
       "miroirUser": {
         "type": "uuid",
         "tag": {

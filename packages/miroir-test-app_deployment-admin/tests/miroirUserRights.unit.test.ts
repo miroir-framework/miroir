@@ -349,6 +349,9 @@ describe("Admin reports and menu for MiroirUser / MiroirRight", () => {
       .map((i) => i.reportUuid);
     expect(reportUuids).toContain(userList!.uuid);
     expect(reportUuids).toContain(rightList!.uuid);
+    const rightsItem = items.find((i) => i.reportUuid === rightList!.uuid);
+    expect(rightsItem?.menuItemScope).toBe("data");
+    expect(rightsItem?.section).toBe("data");
   });
 
   it("package index.ts exports the new reports", () => {
