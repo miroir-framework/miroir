@@ -105,7 +105,11 @@ if (runThis) {
       expect(credential.miroirUser).toBe(ALICE_UUID);
       expect(String(credential.passwordHash).startsWith("scrypt$")).toBe(true);
       const files = readdirSync(join(ADMIN_ASSETS, `admin_data/${CREDENTIAL_ENTITY}`));
-      expect(files).toEqual([`${ALICE_CREDENTIAL_UUID}.json`]);
+      const credentials = files
+        .filter((name) => name.endsWith(".json"))
+        .map((name) => readJson(join(ADMIN_ASSETS, `admin_data/${CREDENTIAL_ENTITY}/${name}`)));
+      expect(credentials.filter((row) => row.miroirUser === ALICE_UUID)).toHaveLength(1);
+      expect(credentials.filter((row) => row.miroirUser === BOB_UUID)).toHaveLength(0);
     });
   });
 

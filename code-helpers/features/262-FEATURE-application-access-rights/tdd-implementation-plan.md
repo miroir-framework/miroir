@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../219-FEATURE-preliminary User and Rights model in Admin app (prep for #71)/tdd-implementation-plan.md`](../219-FEATURE-preliminary%20User%20and%20Rights%20model%20in%20Admin%20app%20%28prep%20for%20%2371%29/tdd-implementation-plan.md) ✅ · [`../71-FEATURE-user-authentication/tdd-implementation-plan.md`](../71-FEATURE-user-authentication/tdd-implementation-plan.md) ✅  
 Working branch: `cursor/262-application-access-rights`
 
-**Resume note:** Slices 0–1 DONE.
+**Resume note:** Slices 0–2 DONE.
 
 ---
 
@@ -53,7 +53,7 @@ This plan does **not** evaluate deployment-scoped grants, harden capability taxo
 |---|---|---|---|
 | 0 | Characterize open access + #219 scan + seed grants | ✅ | `access.262.phase0` + `miroirUserRights` |
 | 1 | `hasAccess` on real Admin assets (tracer) | ✅ | `access.262.phase1` |
-| 2 | Carol seed + login | ⬜ | `access.262.phase2` + `miroirUserRights` + `modelValidation` |
+| 2 | Carol seed + login | ✅ | `access.262.phase2` + `miroirUserRights` |
 | 3 | REST 403 / allow via deployment → application | ⬜ | `access.262.phase3` |
 | 4 | UI selector + deep-link hide | ⬜ | `access.262.phase4` |
 | 5 | Nonreg, docs, scan retirement, AC | ⬜ | nonreg step + docs |
@@ -192,7 +192,7 @@ Added `AccessPolicy.ts` (`hasAccess`, `assertAccess`, `ALWAYS_ALLOW_APPLICATION_
 
 ## Slice 2 — Carol seed + login
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -232,7 +232,7 @@ RUN_TEST=authentication.71 npm run testByFile -w miroir-core -- authentication.7
 
 ### Realization
 
-<Appended on completion.>
+Added Carol user `30634877-…` (`carol` / active) and credential `23f39cd9-…` (`carol-dev`, scrypt, no `description` — credential mlSchema has no description field). Login succeeds; Library `hasAccess` is false; Admin always-allow is true. Loosened #71 “exactly one credential file” to “one Alice credential and none for Bob” so Carol’s file is allowed. `modelValidation` still reports pre-existing Entity/`description` issues on Alice’s credential and the Entity rows; Carol’s instance no longer adds a new failure.
 
 ---
 

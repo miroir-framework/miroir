@@ -1,0 +1,9 @@
+{
+  "uuid": "30634877-08ae-44f3-a230-d899e22333d5",
+  "parentName": "MiroirUser",
+  "parentUuid": "d20d09e5-0685-4fc7-b9bd-fcfa3845127a",
+  "name": "Carol",
+  "username": "carol",
+  "status": "active",
+  "description": "Active platform user with no application grants (#262). Can open Admin and Miroir only."
+}

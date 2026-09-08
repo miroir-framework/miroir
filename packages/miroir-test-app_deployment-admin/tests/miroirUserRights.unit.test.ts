@@ -156,6 +156,22 @@ describe("MiroirUser model and seed data", () => {
     expect(definition.status).toBeDefined();
   });
 
+  it("seeds Carol as an active user with no MiroirRight rows", () => {
+    const carol = listAdminDataInstanceFiles(
+      findAdminEntityByName("MiroirUser", modelDir)!.uuid as string,
+      dataDir,
+    )
+      .map(readJsonInstance)
+      .find((instance) => instance.username === "carol");
+    expect(carol?.uuid).toBe("30634877-08ae-44f3-a230-d899e22333d5");
+    expect(carol?.status).toBe("active");
+    const rights = listAdminDataInstanceFiles(
+      findAdminEntityByName("MiroirRight", modelDir)!.uuid as string,
+      dataDir,
+    ).map(readJsonInstance);
+    expect(rights.some((row) => row.miroirUser === carol?.uuid)).toBe(false);
+  });
+
   it("has at least two MiroirUser seed instances with active/inactive status", () => {
     const entity = findAdminEntityByName("MiroirUser", modelDir);
     expect(entity?.uuid).toBeTruthy();

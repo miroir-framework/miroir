@@ -62,8 +62,8 @@ if (runThis) {
       expect(deploymentGrant.targetUuid).toBe(LIBRARY_DEPLOYMENT);
     });
 
-    it("has no Carol user seed", () => {
-      expect(existsSync(join(USER_DIR, `${CAROL}.json`))).toBe(false);
+    it("has a Carol user seed", () => {
+      expect(existsSync(join(USER_DIR, `${CAROL}.json`))).toBe(true);
     });
   });
 }
