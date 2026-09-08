@@ -1344,6 +1344,8 @@ export {
   ACCESS_DENIED,
   ADMIN_APPLICATION_UUID,
   ALWAYS_ALLOW_APPLICATION_TARGETS,
+  DESIGNER_APPLICATION_UUID,
+  LIBRARY_APPLICATION_UUID,
   ENTITY_ADMIN_APPLICATION_UUID,
   ENTITY_DEPLOYMENT_UUID,
   ENTITY_MIROIR_RIGHT_UUID,
@@ -1366,7 +1368,9 @@ export {
 } from "./1_core/authentication/AuthenticationHttp.js";
 export {
   authorizationHeaders,
+  nextPageWhenAccessDenied,
   nextPageWhenAuthGate,
+  visibleUserApplications,
 } from "./1_core/authentication/AuthenticationUi.js";
 export {
   RestClient,

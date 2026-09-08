@@ -6,6 +6,7 @@ import {
   noValue,
 } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
+import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
 import {
   adminSelfApplication,
   deployment_Admin,
@@ -31,6 +32,8 @@ export const ApplicationSelector: FC<{
 }> = ({ applicationUuid, onApplicationChange }) => {
   const context = useMiroirContextService();
   const persistedToolsPageState: any = context.toolsPageState;
+  const { visible, candidates } = useApplicationAccess();
+  const hiddenUserApplications = candidates.filter((uuid) => !visible.includes(uuid));
   
   // Ref for debouncing application UUID updates
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -88,7 +91,12 @@ export const ApplicationSelector: FC<{
                     targetEntityFilterInstancesBy: {
                       attributeName: "uuid",
                       not: true,
-                      values: [noValue.uuid, selfApplicationMiroir.uuid, adminSelfApplication.uuid],
+                      values: [
+                        noValue.uuid,
+                        selfApplicationMiroir.uuid,
+                        adminSelfApplication.uuid,
+                        ...hiddenUserApplications,
+                      ],
                     },
                     targetEntityOrderInstancesBy: "name",
                   },
@@ -99,7 +107,7 @@ export const ApplicationSelector: FC<{
         },
       },
     }),
-    []
+    [hiddenUserApplications.join("|")]
   );
 
   // ##################################################################################

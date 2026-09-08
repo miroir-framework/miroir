@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../219-FEATURE-preliminary User and Rights model in Admin app (prep for #71)/tdd-implementation-plan.md`](../219-FEATURE-preliminary%20User%20and%20Rights%20model%20in%20Admin%20app%20%28prep%20for%20%2371%29/tdd-implementation-plan.md) ✅ · [`../71-FEATURE-user-authentication/tdd-implementation-plan.md`](../71-FEATURE-user-authentication/tdd-implementation-plan.md) ✅  
 Working branch: `cursor/262-application-access-rights`
 
-**Resume note:** Slices 0–3 DONE.
+**Resume note:** Slices 0–4 DONE.
 
 ---
 
@@ -55,7 +55,7 @@ This plan does **not** evaluate deployment-scoped grants, harden capability taxo
 | 1 | `hasAccess` on real Admin assets (tracer) | ✅ | `access.262.phase1` |
 | 2 | Carol seed + login | ✅ | `access.262.phase2` + `miroirUserRights` |
 | 3 | REST 403 / allow via deployment → application | ✅ | `access.262.phase3` |
-| 4 | UI selector + deep-link hide | ⬜ | `access.262.phase4` |
+| 4 | UI selector + deep-link hide | ✅ | `access.262.phase4` |
 | 5 | Nonreg, docs, scan retirement, AC | ⬜ | nonreg step + docs |
 
 ---
@@ -286,7 +286,7 @@ Added `applicationTargetForDeployment`, `deploymentsFromInstances`, and `assertA
 
 ## Slice 4 — UI hide + deep-link
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -328,7 +328,7 @@ Manual (after GREEN): log in as `carol` / `carol-dev` — selector has no Librar
 
 ### Realization
 
-<Appended on completion.>
+`visibleUserApplications` and `nextPageWhenAccessDenied` live next to the #71 login gate. Selector adds denied Library/Designer uuids to the existing NOT-IN filter. `PageDispatcher` navigates to `/?page=home` when hatch is on, Admin data is loaded, and the URL application is not granted. Filter stays off until Admin Application rows are in cache so Alice is not bounced before rights load. Sidebar Admin/Miroir tools are unchanged.
 
 ---
 

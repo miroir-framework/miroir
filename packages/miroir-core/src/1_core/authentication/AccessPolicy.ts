@@ -30,6 +30,8 @@ export const ACCESS_DENIED: AccessDeniedBody = {
 
 export const ADMIN_APPLICATION_UUID = "55af124e-8c05-4bae-a3ef-0933d41daa92";
 export const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
+export const LIBRARY_APPLICATION_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
+export const DESIGNER_APPLICATION_UUID = "880831db-4f76-40b1-97c0-6a2f3f4ffccb";
 
 export const ALWAYS_ALLOW_APPLICATION_TARGETS: AccessTarget[] = [
   { targetType: "application", targetUuid: ADMIN_APPLICATION_UUID },
