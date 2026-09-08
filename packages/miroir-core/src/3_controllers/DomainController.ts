@@ -110,6 +110,7 @@ import {
   miroirModelEntities,
 } from "../1_core/Model";
 import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partialMutationGuard.js";
+import { assertCredentialInstanceMutationAllowed } from "../1_core/authentication/AuthenticationPolicy.js";
 import { findPresentModelEntityFromDomainState } from "../2_domain/ExtractorVirtualAttributes.js";
 import { stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes.js";
 import {
@@ -1032,6 +1033,13 @@ export class DomainController implements DomainControllerInterface {
     instanceAction: InstanceAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2VoidReturnType> {
+    const rejectedCredential = assertCredentialInstanceMutationAllowed(instanceAction);
+    if (!rejectedCredential.allowed) {
+      return Promise.resolve(
+        new Action2Error("FailedToHandleAction", rejectedCredential.errorMessage),
+      );
+    }
+
     const rejectedPartial = rejectPartialMutationInstanceAction(instanceAction);
     if (rejectedPartial) {
       log.error(
@@ -2875,8 +2883,16 @@ export class DomainController implements DomainControllerInterface {
     currentModelEnvironment?: MiroirModelEnvironment,
     endpointApplicationMap?: EndpointApplicationMap,
     actionParamValues?: Record<string, unknown>,
+    principal?: { miroirUserUuid: string; username: string },
   ): Promise<Action2VoidReturnType> {
     log.debug("DomainController handleAction START actionType=", domainAction["actionType"]);
+    if (principal) {
+      log.debug(
+        "DomainController handleAction principal",
+        principal.username,
+        principal.miroirUserUuid,
+      );
+    }
     return this.miroirContext.miroirActivityTracker.trackAction(
       domainAction.actionType,
       (domainAction as any).actionLabel,

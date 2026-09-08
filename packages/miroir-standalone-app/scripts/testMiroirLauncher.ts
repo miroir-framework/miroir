@@ -63,7 +63,11 @@ export function resolveVitestEntry(
     }
     return {
       vitestEntry: miroirCoreTestVitestEntry(resolvedCoreConfig.executionMode),
-      spawnEnv: { ...env, ...miroirTestCliConfigToEnv(resolvedCoreConfig) },
+      spawnEnv: {
+        ...env,
+        ...miroirTestCliConfigToEnv(resolvedCoreConfig),
+        MIROIR_AUTH_ENABLED: env.MIROIR_AUTH_ENABLED ?? "0",
+      },
     };
   }
 
@@ -74,7 +78,11 @@ export function resolveVitestEntry(
   };
   return {
     vitestEntry: MIROIR_RUNNER_TEST_VITEST_ENTRY,
-    spawnEnv: { ...env, ...miroirTestCliConfigToEnv(resolvedRunnerConfig) },
+    spawnEnv: {
+      ...env,
+      ...miroirTestCliConfigToEnv(resolvedRunnerConfig),
+      MIROIR_AUTH_ENABLED: env.MIROIR_AUTH_ENABLED ?? "0",
+    },
   };
 }
 

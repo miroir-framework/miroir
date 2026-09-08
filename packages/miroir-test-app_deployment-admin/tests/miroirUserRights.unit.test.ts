@@ -123,7 +123,7 @@ describe("MiroirUser model and seed data", () => {
     );
   });
 
-  it("MiroirUser mlSchema includes name, status; description optional", () => {
+  it("MiroirUser mlSchema includes name, username, status; description optional", () => {
     const entity = findAdminEntityByName("MiroirUser", modelDir);
     expect(entity).toBeDefined();
     const definition = getMlSchemaDefinition(entity as Record<string, unknown>);
@@ -131,6 +131,10 @@ describe("MiroirUser model and seed data", () => {
     expect(definition.name).toBeDefined();
     expect(definition.name.type).toBe("string");
     expect(definition.name.optional).not.toBe(true);
+
+    expect(definition.username).toBeDefined();
+    expect(definition.username.type).toBe("string");
+    expect(definition.username.optional).not.toBe(true);
 
     expect(definition.status).toBeDefined();
     expect(definition.status.type).toBe("string");
@@ -163,6 +167,7 @@ describe("MiroirUser model and seed data", () => {
       expect(instance.parentUuid).toBe(entity!.uuid);
       expect(instance.parentName).toBe("MiroirUser");
       expect(typeof instance.name).toBe("string");
+      expect(typeof instance.username).toBe("string");
       expect(["active", "inactive"]).toContain(instance.status);
     }
     const statuses = new Set(instances.map((i) => i.status));
@@ -394,12 +399,15 @@ describe("Admin bundled data classification", () => {
   it("does not list MiroirUser / MiroirRight entity uuids in ADMIN_MODEL_PARENT_UUIDS_ARRAY", () => {
     const user = findAdminEntityByName("MiroirUser", modelDir);
     const right = findAdminEntityByName("MiroirRight", modelDir);
+    const credential = findAdminEntityByName("MiroirUserCredential", modelDir);
     expect(user?.uuid).toBeTruthy();
     expect(right?.uuid).toBeTruthy();
+    expect(credential?.uuid).toBeTruthy();
 
     const modelParents = readAdminModelParentUuidsFromSandboxSource();
     expect(modelParents).not.toContain(user!.uuid);
     expect(modelParents).not.toContain(right!.uuid);
+    expect(modelParents).not.toContain(credential!.uuid);
 
     // Same rule as existing Admin data entities
     expect(modelParents).not.toContain(ADMIN_APPLICATION_ENTITY_UUID);
@@ -413,6 +421,8 @@ describe("Admin bundled data classification", () => {
 
     expect(dataParents).toContain(user.uuid as string);
     expect(dataParents).toContain(right.uuid as string);
+    const credential = findAdminEntityByName("MiroirUserCredential", modelDir)!;
+    expect(dataParents).toContain(credential.uuid as string);
     expect(listAdminDataInstanceFiles(user.uuid as string, dataDir).length).toBeGreaterThanOrEqual(2);
     expect(listAdminDataInstanceFiles(right.uuid as string, dataDir).length).toBeGreaterThanOrEqual(2);
   });

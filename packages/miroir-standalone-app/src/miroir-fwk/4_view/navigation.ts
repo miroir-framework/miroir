@@ -8,6 +8,7 @@
  *
  * Usage:
  *   navigate(pageUrl("settings"))
+ *   navigate(pageUrl("login"))
  *   navigate(reportUrl(app, deployment, section, reportUuid, instanceUuid))
  *   navigate(eventsUrl(eventId))
  *   navigate(instanceUrl(deployment, section, entity, instance))

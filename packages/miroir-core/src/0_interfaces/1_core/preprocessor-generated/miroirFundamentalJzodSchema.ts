@@ -13483,6 +13483,20 @@ export const miroirFundamentalJzodSchema = {
               },
               "filesystemDeploymentRootDirectory": {
                 "type": "string"
+              },
+              "authentication": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "enabled": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "tokenSecret": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
               }
             }
           }

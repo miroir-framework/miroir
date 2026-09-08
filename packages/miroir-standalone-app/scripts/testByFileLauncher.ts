@@ -42,6 +42,7 @@ export function prepareTestByFileLaunch(
   const spawnEnv: NodeJS.ProcessEnv = {
     ...env,
     VITE_TEST_MODE: "true",
+    MIROIR_AUTH_ENABLED: env.MIROIR_AUTH_ENABLED ?? "0",
   };
 
   // Profile wins over --storage for the resolved storage hint passed to Vitest.

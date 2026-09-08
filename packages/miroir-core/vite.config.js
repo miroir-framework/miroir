@@ -55,6 +55,10 @@ export default defineConfig({
     root: "./tests",
     globals: true,
     watch: false,
+    env: {
+      // Product default is auth on; PLATFORM tests stay on today's open API unless a case opts in.
+      MIROIR_AUTH_ENABLED: process.env.MIROIR_AUTH_ENABLED ?? "0",
+    },
     // environment: '',
     // environment: 'happy-dom',
     // setupFiles: ['./setup.ts'],

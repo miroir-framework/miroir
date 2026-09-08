@@ -3450,6 +3450,10 @@ export type MiroirConfigServer = {
         rootApiUrl: string;
         mcpUrl?: string | undefined;
         filesystemDeploymentRootDirectory: string;
+        authentication?: {
+            enabled?: boolean | undefined;
+            tokenSecret?: string | undefined;
+        } | undefined;
     };
 };
 export type MiroirConfig = "miroirConfigClient" | "miroirConfigServer";
@@ -10041,7 +10045,7 @@ export const serverConfigForClientConfig: z.ZodType<ServerConfigForClientConfig>
 export const miroirConfigForClientStub: z.ZodType<MiroirConfigForClientStub> = z.object({emulateServer:z.literal(true), filesystemDeploymentRootDirectory:z.string(), rootApiUrl:z.string(), deploymentStorageConfig:z.lazy(() =>deploymentStorageConfig)}).strict();
 export const miroirConfigForRestClient: z.ZodType<MiroirConfigForRestClient> = z.object({emulateServer:z.literal(false), serverConfig:z.lazy(() =>serverConfigForClientConfig)}).strict();
 export const miroirConfigClient: z.ZodType<MiroirConfigClient> = z.object({miroirConfigType:z.literal("client"), client:z.union([z.lazy(() =>miroirConfigForClientStub), z.lazy(() =>miroirConfigForRestClient)])}).strict();
-export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({miroirConfigType:z.literal("server"), server:z.object({rootApiUrl:z.string(), mcpUrl:z.string().optional(), filesystemDeploymentRootDirectory:z.string()}).strict()}).strict();
+export const miroirConfigServer: z.ZodType<MiroirConfigServer> = z.object({miroirConfigType:z.literal("server"), server:z.object({rootApiUrl:z.string(), mcpUrl:z.string().optional(), filesystemDeploymentRootDirectory:z.string(), authentication:z.object({enabled:z.boolean().optional(), tokenSecret:z.string().optional()}).strict().optional()}).strict()}).strict();
 export const miroirConfig: z.ZodType<MiroirConfig> = z.union([z.literal("miroirConfigClient"), z.literal("miroirConfigServer")]);
 export const commit: z.ZodType<Commit> = z.object({date:z.date(), selfApplication:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpoint:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
 export const applicationEvolutionTrace: z.ZodType<ApplicationEvolutionTrace> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string().optional(), applicationUuid:z.string().uuid(), branchName:z.string(), timestamp:z.date().optional()}).strict();

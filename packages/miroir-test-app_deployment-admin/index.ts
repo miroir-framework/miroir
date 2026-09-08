@@ -6,6 +6,7 @@ export { default as entityViewParams } from "./assets/admin_model/16dbfe28-e1d7-
 export { default as entityImport } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ff3d211b-7eb6-473a-afbf-503bb70a5c26.json" with { type: "json" };
 export { default as entityMiroirUser } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d20d09e5-0685-4fc7-b9bd-fcfa3845127a.json" with { type: "json" };
 export { default as entityMiroirRight } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a6136fc7-949b-4d64-9f13-dd3afce1ab3c.json" with { type: "json" };
+export { default as entityMiroirUserCredential } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/6c3ab489-1a36-4981-b5d0-bb3e02cfceed.json" with { type: "json" };
 
 // Admin Model - Reports
 export { default as reportViewParamsDetails } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/57b3d7ef-8c12-4891-893e-35bab00b2037.json" with { type: "json" };
@@ -75,3 +76,6 @@ export { default as miroirUser_BobInactive } from "./assets/admin_data/d20d09e5-
 // Admin Data - MiroirRight
 export { default as miroirRight_AliceLibraryAppAdmin } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/48b2048f-507f-40ee-a890-b6eca83596f5.json" with { type: "json" };
 export { default as miroirRight_AliceLibraryDeploymentRead } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/587f92f8-7140-434b-b9ff-f7f5d2e461b2.json" with { type: "json" };
+
+// Admin Data - MiroirUserCredential
+export { default as miroirUserCredential_AliceDev } from "./assets/admin_data/6c3ab489-1a36-4981-b5d0-bb3e02cfceed/c179dcf9-f39b-4b16-b8d6-3e39895bfd35.json" with { type: "json" };
