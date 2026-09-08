@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../219-FEATURE-preliminary User and Rights model in Admin app (prep for #71)/tdd-implementation-plan.md`](../219-FEATURE-preliminary%20User%20and%20Rights%20model%20in%20Admin%20app%20%28prep%20for%20%2371%29/tdd-implementation-plan.md) ✅ · [`../71-FEATURE-user-authentication/tdd-implementation-plan.md`](../71-FEATURE-user-authentication/tdd-implementation-plan.md) ✅  
 Working branch: `cursor/262-application-access-rights`
 
-**Resume note:** Plan written; slices pending.
+**Resume note:** Slice 0 DONE.
 
 ---
 
@@ -51,7 +51,7 @@ This plan does **not** evaluate deployment-scoped grants, harden capability taxo
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize open access + #219 scan + seed grants | ⬜ | `access.262.phase0` + `miroirUserRights` |
+| 0 | Characterize open access + #219 scan + seed grants | ✅ | `access.262.phase0` + `miroirUserRights` |
 | 1 | `hasAccess` on real Admin assets (tracer) | ⬜ | `access.262.phase1` |
 | 2 | Carol seed + login | ⬜ | `access.262.phase2` + `miroirUserRights` + `modelValidation` |
 | 3 | REST 403 / allow via deployment → application | ⬜ | `access.262.phase3` |
@@ -109,7 +109,7 @@ Carol password (documented, like Alice): **`carol-dev`**. Hash with the same scr
 
 ## Slice 0 — Characterize current open access
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -138,7 +138,7 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights
 
 ### Realization
 
-<Appended on completion.>
+Characterization tests lock today’s identity-only gate (`assertRequestAllowed` has no target), the two Alice `MiroirRight` seeds, absence of Carol, and absence of `AccessPolicy.ts`. `miroirUserRights` enforcement scan still green. No production code changed.
 
 ---
 
