@@ -223,10 +223,14 @@ This preliminary issue is complete when:
 
 ## Follow-up after this issue
 
-Feature #71 can then focus on:
+Feature #71 landed identity (login, token, hatch) without evaluating `MiroirRight`.
 
-1. Authentication strategy and identity proofing.
-2. Binding authenticated principal to modeled `MiroirUser`.
-3. Authorization enforcement points and evaluation semantics (including hardening C2 capability taxonomy if needed).
-4. Test matrix for allow/deny behavior across application/deployment boundaries.
-5. Optional later extensions: group/role subjects (revisit C4), structured capabilities (revisit C2), staged Admin upgrades (revisit C6).
+Application-level **enforcement** is [#262](https://github.com/miroir-framework/miroir/issues/262) — [`../262-FEATURE-application-access-rights/analysis.md`](../262-FEATURE-application-access-rights/analysis.md).
+
+Still later:
+
+1. Deployment-level evaluation (same checker, new callers) — after #262.
+2. Capability taxonomy (revisit C2).
+3. Group/role subjects (revisit C4).
+4. MCP / CLI / Electron gating (#71 R3).
+5. Staged Admin upgrades (revisit C6).
