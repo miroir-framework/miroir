@@ -51,6 +51,21 @@
       ]
     },
     {
+      "id": "unit-262-application-access",
+      "tier": "unit",
+      "title": "#262 — application access evaluation",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-core",
+        "--",
+        "access.262"
+      ]
+    },
+    {
       "id": "unit-transformerResultSchema",
       "tier": "unit",
       "title": "#88 — resolveTransformerResultSchema PLATFORM inventory",

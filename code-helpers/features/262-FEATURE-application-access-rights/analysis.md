@@ -10,7 +10,7 @@ Related analyses: [`../71-FEATURE-user-authentication/analysis.md`](../71-FEATUR
 Key sources: [`AuthenticationPolicy.ts`](../../../packages/miroir-core/src/1_core/authentication/AuthenticationPolicy.ts) · [`server.ts`](../../../packages/miroir-server/src/server.ts) · [`RestServer.ts`](../../../packages/miroir-core/src/4_services/RestServer.ts) · [`ApplicationSelector.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/interactive/ApplicationSelector.tsx) · [`Sidebar.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/Sidebar.tsx) · [`MiroirRight` entity](../../../packages/miroir-test-app_deployment-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a6136fc7-949b-4d64-9f13-dd3afce1ab3c.json)
 
 **Document role:** analysis and architectural decision record (decisions confirmed with the user).  
-**Status:** decisions confirmed — implementation per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** implemented — [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 ---
 
@@ -20,7 +20,7 @@ Key sources: [`AuthenticationPolicy.ts`](../../../packages/miroir-core/src/1_cor
 |---|---|---|
 | Platform user + rights **model only** | [#219](https://github.com/miroir-framework/miroir/issues/219) | ✅ |
 | Identity proofing + hatch | [#71](https://github.com/miroir-framework/miroir/issues/71) | ✅ |
-| **Application access evaluation** | **#262 (this document)** | **this** |
+| **Application access evaluation** | **#262 (this document)** | ✅ |
 | Deployment-level evaluation (same checker, new callers) | follow-up | later |
 | Capability taxonomy (`read` / `write` / `admin`) | #219 C2 deferred | later |
 | Groups / roles as grant subjects | #219 C4 deferred | later |
@@ -249,7 +249,7 @@ No rights for Bob. No Carol. No Designer grant.
 
 ### 3.3 #219 enforcement scan (misaligned with this issue)
 
-[`miroirUserRights.unit.test.ts`](../../../packages/miroir-test-app_deployment-admin/tests/miroirUserRights.unit.test.ts) describe `no MiroirRight runtime enforcement` (lines 364–392) expects **zero** hits of `checkMiroirRight|authorizeMiroir|hasMiroirAccess|evaluateMiroirRight` under core/server/stores. Comment: “transitional guard — delete when #71 lands”. #71 kept it green by not evaluating rights. This issue deletes or replaces that describe.
+[`miroirUserRights.unit.test.ts`](../../../packages/miroir-test-app_deployment-admin/tests/miroirUserRights.unit.test.ts) still expects **zero** hits of `checkMiroirRight|authorizeMiroir|hasMiroirAccess|evaluateMiroirRight` under core/server/stores. #262 evaluates rights as `hasAccess` / `AccessPolicy` instead.
 
 ### 3.4 Application selector (misaligned)
 

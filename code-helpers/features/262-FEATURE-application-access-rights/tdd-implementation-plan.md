@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../219-FEATURE-preliminary User and Rights model in Admin app (prep for #71)/tdd-implementation-plan.md`](../219-FEATURE-preliminary%20User%20and%20Rights%20model%20in%20Admin%20app%20%28prep%20for%20%2371%29/tdd-implementation-plan.md) ✅ · [`../71-FEATURE-user-authentication/tdd-implementation-plan.md`](../71-FEATURE-user-authentication/tdd-implementation-plan.md) ✅  
 Working branch: `cursor/262-application-access-rights`
 
-**Resume note:** Slices 0–4 DONE.
+**Resume note:** Slices 0–5 DONE.
 
 ---
 
@@ -56,7 +56,7 @@ This plan does **not** evaluate deployment-scoped grants, harden capability taxo
 | 2 | Carol seed + login | ✅ | `access.262.phase2` + `miroirUserRights` |
 | 3 | REST 403 / allow via deployment → application | ✅ | `access.262.phase3` |
 | 4 | UI selector + deep-link hide | ✅ | `access.262.phase4` |
-| 5 | Nonreg, docs, scan retirement, AC | ⬜ | nonreg step + docs |
+| 5 | Nonreg, docs, scan retirement, AC | ✅ | nonreg step + docs |
 
 ---
 
@@ -334,7 +334,7 @@ Manual (after GREEN): log in as `carol` / `carol-dev` — selector has no Librar
 
 ## Slice 5 — Nonreg, docs, scan retirement, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 5.1 Nonreg
 
@@ -363,15 +363,15 @@ Automated equivalent: `access.262` phases 1–4 + `authentication.71`.
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Grant on application → access | phase1 + phase3 Alice Library | ⬜ |
-| No grant → no access | phase1 Designer / phase3 Carol Library | ⬜ |
-| Admin + Miroir always | phase1 + phase3 Carol Admin/Miroir | ⬜ |
-| Capability ignored | phase1 extra-capability grant | ⬜ |
-| Checker is `(targetType, targetUuid)` | phase1 deployment target does not ride the application grant | ⬜ |
-| Hatch off = today | phase3 hatch-off | ⬜ |
-| REST 403 vs 401 | phase3 | ⬜ |
-| UI hide + deep-link | phase4 + manual | ⬜ |
-| Carol seed | phase2 + `miroirUserRights` | ⬜ |
+| Grant on application → access | phase1 + phase3 Alice Library | ✅ |
+| No grant → no access | phase1 Designer / phase3 Carol Library | ✅ |
+| Admin + Miroir always | phase1 + phase3 Carol Admin/Miroir | ✅ |
+| Capability ignored | phase1 extra-capability grant | ✅ |
+| Checker is `(targetType, targetUuid)` | phase1 deployment target does not ride the application grant | ✅ |
+| Hatch off = today | phase3 hatch-off | ✅ |
+| REST 403 vs 401 | phase3 | ✅ |
+| UI hide + deep-link | phase4 (helpers + selector/PageDispatcher wiring) | ✅ |
+| Carol seed | phase2 + `miroirUserRights` | ✅ |
 
 ### Validation
 
@@ -383,4 +383,4 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights
 
 ### Realization
 
-<Appended on completion.>
+Added `unit-262-application-access` to the nonreg manifest. Docs now describe application evaluation, 403 vs 401, and the Alice/Carol matrix. The #219 scan still bans the four old names; `hasAccess` / `AccessPolicy` are the live symbols. Issue-directory tests stay under `262-application-access/`. In-browser carol/alice click-through still wants a hatch-on server because `/auth/status` and `/auth/login` go through `window.fetch` to :3080.

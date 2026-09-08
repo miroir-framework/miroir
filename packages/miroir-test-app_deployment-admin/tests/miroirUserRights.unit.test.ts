@@ -376,8 +376,8 @@ describe("Admin reports and menu for MiroirUser / MiroirRight", () => {
   });
 });
 
-// transitional guard — delete when #71 lands
-describe("no MiroirRight runtime enforcement", () => {
+// #219 name ban — #262 evaluates rights as hasAccess / AccessPolicy, not these symbols
+describe("MiroirRight does not use the retired #219 enforcement names", () => {
   const ENFORCEMENT_PATTERN =
     /checkMiroirRight|authorizeMiroir|hasMiroirAccess|evaluateMiroirRight/;
 

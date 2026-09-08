@@ -225,7 +225,7 @@ This preliminary issue is complete when:
 
 Feature #71 landed identity (login, token, hatch) without evaluating `MiroirRight`.
 
-Application-level **enforcement** is [#262](https://github.com/miroir-framework/miroir/issues/262) — [`../262-FEATURE-application-access-rights/analysis.md`](../262-FEATURE-application-access-rights/analysis.md).
+Application-level **enforcement** landed in [#262](https://github.com/miroir-framework/miroir/issues/262) — [`../262-FEATURE-application-access-rights/analysis.md`](../262-FEATURE-application-access-rights/analysis.md) (`hasAccess` / `AccessPolicy`; the four #219 banned names stay unused).
 
 Still later:
 

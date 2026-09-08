@@ -1,6 +1,6 @@
-# Authentication (#71)
+# Authentication (#71) and application access (#262)
 
-Platform users prove identity with a username and password stored in the **Admin** application (`MiroirUser` + `MiroirUserCredential`). Successful login returns a Bearer token. `MiroirRight` is **not** evaluated in this increment.
+Platform users prove identity with a username and password stored in the **Admin** application (`MiroirUser` + `MiroirUserCredential`). Successful login returns a Bearer token. After identity, `MiroirRight` is evaluated for **application** access: any grant on `(user, targetType, targetUuid)` is enough (`capability` is ignored). Admin and Miroir are always allowed. Designer and Library need an explicit grant. Hatch-off skips both identity and rights (today’s open API).
 
 ## Hatch (startup only)
 
@@ -26,10 +26,20 @@ Token secret (optional): `server.authentication.tokenSecret` or `MIROIR_AUTH_TOK
 | GET | `/auth/status` | Public. `{ "enabled": boolean }` only |
 | POST | `/auth/login` | Public. Body `{ "username", "password" }` → `{ token, principal }` |
 | POST | `/auth/change-password` | Requires Bearer. Body `{ "currentPassword", "newPassword" }` → `{ changed: true }`. Updates only the principal’s `MiroirUserCredential`. |
-| CRUD / action / query | existing REST | Requires `Authorization: Bearer <token>` |
+| CRUD / action / query | existing REST | Requires `Authorization: Bearer <token>`, then application access |
 | `/api/copilotkit` | same Express app | Same Bearer gate |
 
-Seed login (dev only): username `alice`, password `alice-dev`. Change it after first use. User `bob` is inactive and cannot log in.
+Seed logins (dev only):
+
+| Username | Password | Application access |
+|---|---|---|
+| `alice` | `alice-dev` | Library granted. Designer denied. Admin and Miroir always allowed. |
+| `carol` | `carol-dev` | No application grants. Admin and Miroir always allowed. Library and Designer denied. |
+| `bob` | — | Inactive; cannot log in. |
+
+Change seed passwords after first use.
+
+Denied application REST returns **403** `{ "status": "error", "errorType": "AccessDenied" }`. Missing or unusable identity still returns **401** `AuthenticationRequired`. Unknown `deploymentUuid` is 403. The UI hides ungranted apps from the selector and sends a denied report URL to `/?page=home`. CopilotKit stays identity-only (no deployment on the request).
 
 Generic CRUD/query responses strip `passwordHash`. Generic create/update/delete of `MiroirUserCredential` is rejected; only `POST /auth/change-password` may update the principal’s hash. Duplicate `username` or credential FK values fail closed at login (same `AuthenticationFailed` body). After login, REST/CopilotKit re-bind the token to the current Admin directory so a deactivated user cannot keep using an unexpired token. The browser treats an expired or malformed stored token as logged out, and `RestClient` clears the session on `AuthenticationRequired`.
 
