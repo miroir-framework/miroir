@@ -9,7 +9,7 @@ Prerequisite: [#219 Preliminary User and Rights model](https://github.com/miroir
 Key sources: [`packages/miroir-server/src/server.ts`](../../../packages/miroir-server/src/server.ts) · [`packages/miroir-core/src/4_services/RestServer.ts`](../../../packages/miroir-core/src/4_services/RestServer.ts) · [`packages/miroir-core/src/3_controllers/DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts) · [`packages/miroir-core/src/4_services/RestClient.ts`](../../../packages/miroir-core/src/4_services/RestClient.ts) · [`packages/miroir-core/src/4_services/RestClientStub.ts`](../../../packages/miroir-core/src/4_services/RestClientStub.ts)
 
 **Document role:** analysis and architectural decision record (decisions confirmed with the user in the grilling rounds).  
-**Status:** decisions confirmed — implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** implemented on `cursor/71-user-authentication-08fb` (slices 0–6). See TDD plan.
 
 ---
 

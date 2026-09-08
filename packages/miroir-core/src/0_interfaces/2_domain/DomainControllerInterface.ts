@@ -151,6 +151,7 @@ export interface DomainControllerInterface {
     currentModel?: MiroirModelEnvironment,
     endpointApplicationMap?: EndpointApplicationMap,
     actionParamValues?: Record<string, unknown>,
+    principal?: { miroirUserUuid: string; username: string },
   ): Promise<Action2VoidReturnType>;
   /**
    * data access must accomodate different styles of access

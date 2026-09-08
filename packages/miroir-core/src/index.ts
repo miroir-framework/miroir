@@ -1302,7 +1302,43 @@ export { PersistenceStoreControllerManager } from "./4_services/PersistenceStore
 export {
   mountApplicationDeployment, startLocalPersistenceStoreControllers
 } from "./4_services/PersistenceStoreControllerTools.js";
-export { RestClient } from "./4_services/RestClient.js";
+export {
+  AUTHENTICATION_FAILED,
+  ENTITY_MIROIR_USER_CREDENTIAL_UUID,
+  ENTITY_MIROIR_USER_UUID,
+  assertRequestAllowed,
+  bearerTokenFromAuthorizationHeader,
+  buildAuthStatusBody,
+  changePassword,
+  extractPrincipalFromAuthorizationHeader,
+  getProcessTokenSecret,
+  hashPassword,
+  findCredentialInstance,
+  identityDirectoryFromInstances,
+  issueBearerToken,
+  loginWithPassword,
+  persistChangedPasswordHash,
+  resolveAuthenticationEnabled,
+  setProcessTokenSecret,
+  verifyBearerToken,
+  verifyPassword,
+  type AuthenticationEnabledInputs,
+  type AuthenticationFailedBody,
+  type AuthenticationRequiredBody,
+  type AuthPrincipal,
+  type AuthStatusBody,
+  type IdentityCredential,
+  type IdentityDirectory,
+  type IdentityUser,
+  type LoginFailure,
+  type LoginSuccess,
+  type RequestAllowed,
+} from "./1_core/authentication/AuthenticationPolicy.js";
+export {
+  authorizationHeaders,
+  nextPageWhenAuthGate,
+} from "./1_core/authentication/AuthenticationUi.js";
+export { RestClient, setRestClientAuthorizationTokenGetter } from "./4_services/RestClient.js";
 export { RestClientStub } from "./4_services/RestClientStub";
 export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";

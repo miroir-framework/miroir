@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../219-FEATURE-preliminary User and Rights model in Admin app (prep for #71)/tdd-implementation-plan.md`](../219-FEATURE-preliminary%20User%20and%20Rights%20model%20in%20Admin%20app%20%28prep%20for%20%2371%29/tdd-implementation-plan.md) ✅  
 Working branch: `cursor/71-user-authentication-08fb`
 
-**Resume note:** Plan written; slices pending.
+**Resume note:** Slices 0–6 done. Vitest `authentication.71` covers hatch, login, refusals, self-change (policy + `RestClientStub` HTTP persist), UI gate helpers, CopilotKit/launcher source contracts. Server `POST /auth/change-password` persists via `updateInstance` on the principal’s credential. Generated `MiroirConfigServer` type not regenerated (`devBuild` deferred); runtime reads `server.authentication` via a typed extra-key cast, like `corsAllowedOrigins`.
 
 ---
 
@@ -51,13 +51,13 @@ This plan does **not** evaluate `MiroirRight`, gate MCP/CLI/Electron, add OIDC, 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize open API + unread hatch stub + #219 users | ⬜ | `authentication.71.phase0` + `miroirUserRights` |
-| 1 | Hatch + `/auth/status` + 401 when on without token | ⬜ | `authentication.71.phase1` |
-| 2 | Username + credential entity + Alice seed + login + principal | ⬜ | Admin `modelValidation` + `authentication.71.phase2` |
-| 3 | Login refusals (inactive / unknown / bad password) | ⬜ | `authentication.71.phase3` |
-| 4 | Self-change password | ⬜ | `authentication.71.phase4` |
-| 5 | Web login page + RestClient Bearer | ⬜ | `authentication.71.phase5` |
-| 6 | CopilotKit gate, launchers, nonreg, docs, AC | ⬜ | nonreg step + docs + #219 enforcement still green |
+| 0 | Characterize open API + unread hatch stub + #219 users | ✅ | `authentication.71.phase0` + `miroirUserRights` |
+| 1 | Hatch + `/auth/status` + 401 when on without token | ✅ | `authentication.71.phase1` |
+| 2 | Username + credential entity + Alice seed + login + principal | ✅ | `authentication.71.phase2` + `miroirUserRights` |
+| 3 | Login refusals (inactive / unknown / bad password) | ✅ | `authentication.71.phase3` |
+| 4 | Self-change password | ✅ | `authentication.71.phase4` |
+| 5 | Web login page + RestClient Bearer | ✅ | `authentication.71.phase5` |
+| 6 | CopilotKit gate, launchers, nonreg, docs, AC | ✅ | `authentication.71.phase6` + nonreg step + docs |
 
 ---
 
@@ -114,7 +114,7 @@ Copied from the analysis decision record. Deviations go in the slice Realization
 
 ## Slice 0 — Characterize current open API
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -149,13 +149,13 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights
 
 ### Realization
 
-<Appended on completion.>
+Phase 0 tests now lock the *current* contracts after later slices: seven REST routes still have no `/auth/*`; `handleAction` has an optional last `principal`; `monoUserAutentification` is unread; `MiroirUser` includes `username`; `MiroirUserCredential` exists. Original negatives (no username / no credential) were replaced in Slice 2 rather than kept as dead assertions.
 
 ---
 
 ## Slice 1 — Tracer: hatch, status, reject unauthenticated when on
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -208,13 +208,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-server/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+`AuthenticationPolicy.resolveAuthenticationEnabled` is the only precedence function (CLI > env > config > on). `RestClientStub` and Express both call `assertRequestAllowed` / `buildAuthStatusBody`. Tests default `MIROIR_AUTH_ENABLED=0` in vite `test.env` and launchers. Jzod `server.authentication` added; generated `MiroirConfigServer` not rebuilt — runtime uses a local extra-key type.
 
 ---
 
 ## Slice 2 — Login binds a `MiroirUser` (tracer completion)
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -270,13 +270,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+Admin assets: `username` on `MiroirUser`; entity `6c3ab489-…` + Alice seed `c179dcf9-…` (`alice-dev`). Policy owns scrypt + HMAC token. `POST /auth/login` on Express and stub; `authPrincipal` threaded into REST handlers → optional `handleAction` last arg. Emulated stub directory seeded from Admin JSON exports in `setupMiroirPlatform`.
 
 ---
 
 ## Slice 3 — Login refusals
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -308,13 +308,13 @@ RUN_TEST=authentication.71.phase3 npm run testByFile -w miroir-core -- authentic
 
 ### Realization
 
-<Appended on completion.>
+`loginWithPassword` returns the same `AUTHENTICATION_FAILED` body for inactive Bob, unknown user, bad password, and empty credentials. No username in the body.
 
 ---
 
 ## Slice 4 — Self-change password
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -350,13 +350,13 @@ RUN_TEST=authentication.71.phase4 npm run testByFile -w miroir-core -- authentic
 
 ### Realization
 
-<Appended on completion.>
+`changePassword` + `persistChangedPasswordHash` update only the principal’s row. Stub `POST /auth/change-password` requires Bearer and rewrites the in-memory directory. Express persists via `updateInstance` on Admin data (principal’s credential only). Unauthenticated change → `AuthenticationRequired`.
 
 ---
 
 ## Slice 5 — Web login gate and RestClient Bearer
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -404,13 +404,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+`nextPageWhenAuthGate` / `authorizationHeaders` live in `AuthenticationUi.ts`. `PageDispatcher` redirects with `<Navigate>` when status is on and there is no token. `LoginPage` at `?page=login`. `setRestClientAuthorizationTokenGetter` injects Bearer. UI `authenticationEnabled` defaults **false** until `/auth/status` so hatch-off tests keep today’s chrome.
 
 ---
 
 ## Slice 6 — CopilotKit gate, launchers, nonreg, docs, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -468,7 +468,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 
 ### Realization
 
-<Appended on completion.>
+`/api/copilotkit` uses the same `assertRequestAllowed`. Launchers and vitest `test.env` default hatch off. Nonreg step `unit-71-authentication`. Docs: `docs/reference/authentication.md` + pointer in `docs/index.md` and `build-it-yourself.md`. Issue-dir tests kept (platform `/auth` is not MiroirTest). `devBuild` for generated `MiroirConfigServer` deferred.
 
 ---
 
@@ -476,12 +476,12 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| User can be securely authenticated (username/password → `MiroirUser`) | Slice 2 login test | ⬜ |
-| Shared remote webapp: unauthenticated REST rejected when enabled | Slice 1 401 | ⬜ |
-| Hatch restores present behavior (tests/nonreg) | Slice 1 off path + launchers + Slice 6 | ⬜ |
-| Hatch is CLI/config/env, not Admin/app data | Slice 1 resolver tests; no Admin flag entity | ⬜ |
-| UI hidden when off; login page when on | Slice 5 | ⬜ |
-| Self-change password | Slice 4 | ⬜ |
-| Inactive cannot authenticate | Slice 3 | ⬜ |
-| No `MiroirRight` evaluation | #219 enforcement scan | ⬜ |
-| R3 holes documented; token/principal reusable | Slice 6 docs + policy module | ⬜ |
+| User can be securely authenticated (username/password → `MiroirUser`) | Slice 2 login test | ✅ |
+| Shared remote webapp: unauthenticated REST rejected when enabled | Slice 1 401 | ✅ |
+| Hatch restores present behavior (tests/nonreg) | Slice 1 off path + launchers + Slice 6 | ✅ |
+| Hatch is CLI/config/env, not Admin/app data | Slice 1 resolver tests; no Admin flag entity | ✅ |
+| UI hidden when off; login page when on | Slice 5 | ✅ |
+| Self-change password | Slice 4 | ✅ |
+| Inactive cannot authenticate | Slice 3 | ✅ |
+| No `MiroirRight` evaluation | #219 enforcement scan | ✅ |
+| R3 holes documented; token/principal reusable | Slice 6 docs + policy module | ✅ |

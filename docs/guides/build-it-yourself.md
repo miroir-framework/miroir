@@ -209,6 +209,7 @@ The server now accepts parameters via explicit CLI flags:
 - `--certsdir <dir>`: Path to the directory containing TLS certificates (default: `<repo-root>/certs/`)
 - `--cert <file>`: Path to the TLS certificate file (default: `<certsdir>/localhost.pem`)
 - `--key <file>`: Path to the TLS key file (default: `<certsdir>/localhost-key.pem`)
+- `--disable-auth` / `--enable-auth`: Startup hatch for user authentication (default **on**; last flag wins). See [Authentication](../reference/authentication.md).
 - `-h`, `--help`: Show usage information
 
 All parameters are optional; defaults are chosen to work out of the box for local development. You can override any of them as needed.

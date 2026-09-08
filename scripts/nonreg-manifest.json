@@ -36,6 +36,21 @@
       ]
     },
     {
+      "id": "unit-71-authentication",
+      "tier": "unit",
+      "title": "#71 — authentication hatch, login, token, password",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-core",
+        "--",
+        "authentication.71"
+      ]
+    },
+    {
       "id": "unit-transformerResultSchema",
       "tier": "unit",
       "title": "#88 — resolveTransformerResultSchema PLATFORM inventory",

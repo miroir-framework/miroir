@@ -30,6 +30,8 @@ import {
   PersistenceStoreControllerManager,
   RestClient,
   RestClientStub,
+  identityDirectoryFromInstances,
+  setRestClientAuthorizationTokenGetter,
   SpecificLoggerOptionsMap,
   templateEvaluationParams,
   type ApplicationDeploymentMap,
@@ -57,6 +59,7 @@ import {
   ElectronServerDomainControllerProxy,
 } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
+import { getAuthToken, setAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authSession.js";
 import { miroirAppStartup } from "./startup.js";
 
 import { packageName } from "./constants.js";
@@ -68,6 +71,9 @@ import {
   deployment_Admin,
   deployment_Miroir,
   entityDeployment,
+  miroirUser_AliceAdmin,
+  miroirUser_BobInactive,
+  miroirUserCredential_AliceDev,
 } from "miroir-test-app_deployment-admin";
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
@@ -291,6 +297,12 @@ export async function setupMiroirPlatform(
     (restClient as RestClientStub).setPersistenceStoreControllerManager(
       persistenceStoreControllerManagerForServer,
     );
+    (restClient as RestClientStub).setIdentityDirectory(
+      identityDirectoryFromInstances(
+        [miroirUser_AliceAdmin, miroirUser_BobInactive],
+        [miroirUserCredential_AliceDev],
+      ),
+    );
   }
 
   return {
@@ -335,6 +347,16 @@ async function setupClient(
 async function startWebApp(root: Root) {
   // Initialize performance monitoring configuration
   initializePerformanceConfig();
+  setRestClientAuthorizationTokenGetter(() => getAuthToken());
+  try {
+    const statusResponse = await fetch("/auth/status");
+    const statusBody = await statusResponse.json();
+    if (typeof statusBody?.enabled === "boolean") {
+      setAuthenticationEnabled(statusBody.enabled);
+    }
+  } catch {
+    setAuthenticationEnabled(false);
+  }
 
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);

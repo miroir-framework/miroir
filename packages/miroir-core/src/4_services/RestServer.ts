@@ -397,11 +397,21 @@ export async function restActionHandler(
           const result = await domainController.handleAction(
             action,
             applicationDeploymentMap,
-            defaultMiroirModelEnvironment
+            defaultMiroirModelEnvironment,
+            undefined,
+            undefined,
+            params?.authPrincipal,
           ); // TODO: get the right model for the app / deployment
           return continuationFunction(response)(result);
         } else {
-          const result = await domainController.handleAction(action, applicationDeploymentMap);
+          const result = await domainController.handleAction(
+            action,
+            applicationDeploymentMap,
+            undefined,
+            undefined,
+            undefined,
+            params?.authPrincipal,
+          );
           log.info(
             "restActionHandler handled action",
             action.actionType,

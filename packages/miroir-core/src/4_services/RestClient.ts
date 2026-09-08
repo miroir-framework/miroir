@@ -11,6 +11,14 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
+let authorizationTokenGetter: (() => string | undefined) | undefined;
+
+export function setRestClientAuthorizationTokenGetter(
+  getter: (() => string | undefined) | undefined,
+): void {
+  authorizationTokenGetter = getter;
+}
+
 
 // ##############################################################################################
 export class RestClient implements RestClientInterface {
@@ -25,7 +33,11 @@ export class RestClient implements RestClientInterface {
   ): Promise<RestClientCallReturnType> {
     // log.info("RestClient call", method, endpoint, args)
     const { body, ...customConfig } = args;
-    const headers = { "Content-Type": "application/json" };
+    const token = authorizationTokenGetter?.();
+    const headers = {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
 
     const config = {
       method: method,

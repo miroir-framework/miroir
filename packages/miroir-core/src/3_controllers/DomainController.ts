@@ -2875,8 +2875,16 @@ export class DomainController implements DomainControllerInterface {
     currentModelEnvironment?: MiroirModelEnvironment,
     endpointApplicationMap?: EndpointApplicationMap,
     actionParamValues?: Record<string, unknown>,
+    principal?: { miroirUserUuid: string; username: string },
   ): Promise<Action2VoidReturnType> {
     log.debug("DomainController handleAction START actionType=", domainAction["actionType"]);
+    if (principal) {
+      log.debug(
+        "DomainController handleAction principal",
+        principal.username,
+        principal.miroirUserUuid,
+      );
+    }
     return this.miroirContext.miroirActivityTracker.trackAction(
       domainAction.actionType,
       (domainAction as any).actionLabel,

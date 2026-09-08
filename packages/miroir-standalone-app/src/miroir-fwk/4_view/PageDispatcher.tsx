@@ -22,8 +22,9 @@
 import React, { Suspense, useEffect, useMemo } from "react";
 import { Navigate, type Params, useParams, useSearchParams } from "react-router-dom";
 
-import { LoggerInterface, MiroirLoggerFactory, type ApplicationSection } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, nextPageWhenAuthGate, type ApplicationSection } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
+import { getAuthenticationEnabled, getAuthToken } from "./auth/authSession.js";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -39,6 +40,7 @@ const ReportDisplay        = React.lazy(() => import("./routes/ReportDisplay.js"
 const RunnersPage          = React.lazy(() => import("./routes/Runners.js").then(m => ({ default: m.RunnersPage })));
 const SearchPage           = React.lazy(() => import("./routes/SearchPage.js").then(m => ({ default: m.SearchPage })));
 const SettingsPage         = React.lazy(() => import("./routes/SettingsPage.js").then(m => ({ default: m.SettingsPage })));
+const LoginPage            = React.lazy(() => import("./routes/LoginPage.js").then(m => ({ default: m.LoginPage })));
 const TransformerBuilderPage = React.lazy(() => import("./routes/TransformerBuilderPage.js").then(m => ({ default: m.TransformerBuilderPage })));
 const MiroirEventsPage     = React.lazy(() => import("./pages/MiroirEventsPage.js").then(m => ({ default: m.MiroirEventsPage })));
 const ErrorLogsPageDEFUNCT = React.lazy(() => import("./ErrorLogsPageDEFUNCT.js").then(m => ({ default: m.ErrorLogsPageDEFUNCT })));
@@ -107,9 +109,24 @@ function PageContent(): React.JSX.Element {
 
   log.debug("[PageDispatcher] render: wildcardPath=", wildcardPath, "page=", page, "search=", searchParams.toString());
 
+  const intended = `/?${searchParams.toString()}` || "/?page=home";
+  if (page !== "login") {
+    const gated = nextPageWhenAuthGate({
+      enabled: getAuthenticationEnabled(),
+      hasToken: !!getAuthToken(),
+      intended,
+    });
+    if (gated !== intended) {
+      return <Navigate to={gated} replace />;
+    }
+  }
+
   // ── Primary: query-param mode ─────────────────────────────────────────
   if (page) {
     switch (page) {
+      case "login":
+        return <LoginPage />;
+
       case "home":
         return <HomePage />;
 
@@ -151,6 +168,9 @@ function PageContent(): React.JSX.Element {
   const pathPage = segments[0] ?? "home";
 
   switch (pathPage) {
+    case "login":
+      return <LoginPage />;
+
     case "home":
       return <HomePage />;
 
