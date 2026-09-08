@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../219-FEATURE-preliminary User and Rights model in Admin app (prep for #71)/tdd-implementation-plan.md`](../219-FEATURE-preliminary%20User%20and%20Rights%20model%20in%20Admin%20app%20%28prep%20for%20%2371%29/tdd-implementation-plan.md) ✅ · [`../71-FEATURE-user-authentication/tdd-implementation-plan.md`](../71-FEATURE-user-authentication/tdd-implementation-plan.md) ✅  
 Working branch: `cursor/262-application-access-rights`
 
-**Resume note:** Slices 0–2 DONE.
+**Resume note:** Slices 0–3 DONE.
 
 ---
 
@@ -54,7 +54,7 @@ This plan does **not** evaluate deployment-scoped grants, harden capability taxo
 | 0 | Characterize open access + #219 scan + seed grants | ✅ | `access.262.phase0` + `miroirUserRights` |
 | 1 | `hasAccess` on real Admin assets (tracer) | ✅ | `access.262.phase1` |
 | 2 | Carol seed + login | ✅ | `access.262.phase2` + `miroirUserRights` |
-| 3 | REST 403 / allow via deployment → application | ⬜ | `access.262.phase3` |
+| 3 | REST 403 / allow via deployment → application | ✅ | `access.262.phase3` |
 | 4 | UI selector + deep-link hide | ⬜ | `access.262.phase4` |
 | 5 | Nonreg, docs, scan retirement, AC | ⬜ | nonreg step + docs |
 
@@ -238,7 +238,7 @@ Added Carol user `30634877-…` (`carol` / active) and credential `23f39cd9-…`
 
 ## Slice 3 — REST 403 after identity
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -280,7 +280,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-server/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+Added `applicationTargetForDeployment`, `deploymentsFromInstances`, and `assertAccessForDeployment` (hatch off skips rights; unknown deployment is 403). `RestClientStub` and Express CRUD/query/action run that after identity. Admin boxed query now also loads `MiroirRight` + `Deployment` in one trip. CopilotKit stays identity-only (no `deploymentUuid`). Emulated Vite stub now includes Carol plus the four deployment rows so hatch-on local REST can resolve targets.
 
 ---
 

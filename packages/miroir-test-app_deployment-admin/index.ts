@@ -59,6 +59,8 @@ export { default as adminApplication_Miroir } from "./assets/admin_data/25d935e7
 // Admin Data - Deployments
 export { default as deployment_Admin } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/18db21bf-f8d3-4f6a-8296-84b69f6dc48b.json" with { type: "json" };
 export { default as deployment_Miroir } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/10ff36f2-50a3-48d8-b80f-e48e5d13af8e.json" with { type: "json" };
+export { default as deployment_Library } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json" with { type: "json" };
+export { default as deployment_Designer } from "./assets/admin_data/7959d814-400c-4e80-988f-a00fe582ab98/f0359240-e849-4546-8158-75f4a8ae5831.json" with { type: "json" };
 
 // Admin Data - Store Based Configurations
 export { default as adminStoreBasedConfiguration } from "./assets/admin_data/9f9170da-538d-425c-8cb7-551640623eed/5a7f7ecd-eaa5-44f7-a059-816eb15d164d.json" with { type: "json" };

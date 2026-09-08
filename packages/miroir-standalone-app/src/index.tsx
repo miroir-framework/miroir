@@ -30,6 +30,8 @@ import {
   PersistenceStoreControllerManager,
   RestClient,
   RestClientStub,
+  accessGrantsFromInstances,
+  deploymentsFromInstances,
   identityDirectoryFromInstances,
   setRestClientAuthorizationInvalidationHandler,
   setRestClientAuthorizationTokenGetter,
@@ -70,11 +72,17 @@ import { resolveWebLogConfigWithMeta, VITE_MIROIR_LOG_CONFIG_VALUES } from "./co
 import {
   adminSelfApplication,
   deployment_Admin,
+  deployment_Designer,
+  deployment_Library,
   deployment_Miroir,
   entityDeployment,
+  miroirRight_AliceLibraryAppAdmin,
+  miroirRight_AliceLibraryDeploymentRead,
   miroirUser_AliceAdmin,
   miroirUser_BobInactive,
+  miroirUser_Carol,
   miroirUserCredential_AliceDev,
+  miroirUserCredential_CarolDev,
 } from "miroir-test-app_deployment-admin";
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
@@ -300,10 +308,22 @@ export async function setupMiroirPlatform(
     );
     (restClient as RestClientStub).setIdentityDirectory(
       identityDirectoryFromInstances(
-        [miroirUser_AliceAdmin, miroirUser_BobInactive],
-        [miroirUserCredential_AliceDev],
+        [miroirUser_AliceAdmin, miroirUser_BobInactive, miroirUser_Carol],
+        [miroirUserCredential_AliceDev, miroirUserCredential_CarolDev],
       ),
     );
+    (restClient as RestClientStub).setAccessDirectory({
+      grants: accessGrantsFromInstances([
+        miroirRight_AliceLibraryAppAdmin,
+        miroirRight_AliceLibraryDeploymentRead,
+      ]),
+      deployments: deploymentsFromInstances([
+        deployment_Admin,
+        deployment_Miroir,
+        deployment_Library,
+        deployment_Designer,
+      ]),
+    });
   }
 
   return {

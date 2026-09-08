@@ -97,3 +97,59 @@ export function assertAccess(args: {
   }
   return { allowed: false, status: 403, body: ACCESS_DENIED };
 }
+
+export type AccessDeployment = {
+  uuid: string;
+  selfApplication: string;
+};
+
+export type AccessDirectory = {
+  grants: AccessGrant[];
+  deployments: AccessDeployment[];
+};
+
+export function deploymentsFromInstances(value: unknown): AccessDeployment[] {
+  return normalizeInstanceList(value)
+    .map((row) => ({
+      uuid: String(row.uuid ?? ""),
+      selfApplication: String(row.selfApplication ?? ""),
+    }))
+    .filter((row) => row.uuid && row.selfApplication);
+}
+
+export function applicationTargetForDeployment(
+  deploymentUuid: string | undefined,
+  deployments: AccessDeployment[],
+): AccessTarget | undefined {
+  if (!deploymentUuid) {
+    return undefined;
+  }
+  const found = deployments.find((row) => row.uuid === deploymentUuid);
+  if (!found) {
+    return undefined;
+  }
+  return { targetType: "application", targetUuid: found.selfApplication };
+}
+
+export function assertAccessForDeployment(args: {
+  enabled: boolean;
+  principal: { miroirUserUuid: string } | undefined;
+  deploymentUuid: string | undefined;
+  grants: AccessGrant[];
+  deployments: AccessDeployment[];
+  alwaysAllow: AccessTarget[];
+}): AccessDecision {
+  if (!args.enabled) {
+    return { allowed: true };
+  }
+  const target = applicationTargetForDeployment(args.deploymentUuid, args.deployments);
+  if (!target) {
+    return { allowed: false, status: 403, body: ACCESS_DENIED };
+  }
+  return assertAccess({
+    principal: args.principal,
+    target,
+    grants: args.grants,
+    alwaysAllow: args.alwaysAllow,
+  });
+}

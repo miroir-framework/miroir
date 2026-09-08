@@ -7,6 +7,11 @@ import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface";
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import {
+  ALWAYS_ALLOW_APPLICATION_TARGETS,
+  assertAccessForDeployment,
+  type AccessDirectory,
+} from "../1_core/authentication/AccessPolicy.js";
+import {
   assertRequestAllowed,
   bindPrincipalToDirectory,
   extractPrincipalFromAuthorizationHeader,
@@ -31,6 +36,7 @@ export class RestClientStub implements RestClientInterface {
   private persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
   private serverDomainController: DomainControllerInterface | undefined;
   private identityDirectory: import("../1_core/authentication/AuthenticationPolicy.js").IdentityDirectory | undefined;
+  private accessDirectory: AccessDirectory | undefined;
 
   constructor(private rootApiUrl: string) {}
 
@@ -38,6 +44,10 @@ export class RestClientStub implements RestClientInterface {
     directory: import("../1_core/authentication/AuthenticationPolicy.js").IdentityDirectory,
   ) {
     this.identityDirectory = directory;
+  }
+
+  setAccessDirectory(directory: AccessDirectory) {
+    this.accessDirectory = directory;
   }
 
   setPersistenceStoreControllerManager(
@@ -97,6 +107,28 @@ export class RestClientStub implements RestClientInterface {
       return {
         status: gate.status,
         data: gate.body,
+        headers: new Headers(),
+        url: this.rootApiUrl + endpoint,
+      };
+    }
+
+    const deploymentUuidForAccess =
+      args["deploymentUuid"] ??
+      (body ?? {})["deploymentUuid"] ??
+      ((body ?? {})["payload"] ?? {})["deploymentUuid"];
+    const access = assertAccessForDeployment({
+      enabled: authEnabled,
+      principal,
+      deploymentUuid:
+        typeof deploymentUuidForAccess === "string" ? deploymentUuidForAccess : undefined,
+      grants: this.accessDirectory?.grants ?? [],
+      deployments: this.accessDirectory?.deployments ?? [],
+      alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
+    });
+    if (!access.allowed) {
+      return {
+        status: access.status,
+        data: access.body,
         headers: new Headers(),
         url: this.rootApiUrl + endpoint,
       };

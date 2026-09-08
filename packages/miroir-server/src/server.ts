@@ -28,10 +28,17 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
+  ACCESS_DENIED,
+  ALWAYS_ALLOW_APPLICATION_TARGETS,
   AUTH_CHANGE_PASSWORD_ACTION_LABEL,
+  accessGrantsFromInstances,
+  assertAccessForDeployment,
   assertRequestAllowed,
   bindPrincipalToDirectory,
   buildAuthStatusBody,
+  deploymentsFromInstances,
+  ENTITY_DEPLOYMENT_UUID,
+  ENTITY_MIROIR_RIGHT_UUID,
   ENTITY_MIROIR_USER_CREDENTIAL_UUID,
   ENTITY_MIROIR_USER_UUID,
   extractPrincipalFromAuthorizationHeader,
@@ -430,11 +437,33 @@ for (const c of deploymentsToOpen) {
   );
 }
 
+function deploymentUuidFromHttpRequest(request: CustomRequest): string | undefined {
+  const params = request.params as Record<string, unknown> | undefined;
+  const body = request.body as Record<string, unknown> | undefined;
+  const fromParams = params?.deploymentUuid;
+  if (typeof fromParams === "string" && fromParams) {
+    return fromParams;
+  }
+  if (typeof body?.deploymentUuid === "string" && body.deploymentUuid) {
+    return body.deploymentUuid;
+  }
+  const payload = body?.payload;
+  if (payload && typeof payload === "object") {
+    const fromPayload = (payload as Record<string, unknown>).deploymentUuid;
+    if (typeof fromPayload === "string" && fromPayload) {
+      return fromPayload;
+    }
+  }
+  return undefined;
+}
+
 async function loadAdminIdentityDirectory(): Promise<
   | {
       ok: true;
       directory: ReturnType<typeof identityDirectoryFromInstances>;
       credentialsValue: unknown;
+      grants: ReturnType<typeof accessGrantsFromInstances>;
+      deployments: ReturnType<typeof deploymentsFromInstances>;
     }
   | { ok: false; errorMessage: string }
 > {
@@ -458,6 +487,14 @@ async function loadAdminIdentityDirectory(): Promise<
               extractorOrCombinerType: "extractorInstancesByEntity",
               parentUuid: ENTITY_MIROIR_USER_CREDENTIAL_UUID,
             },
+            rights: {
+              extractorOrCombinerType: "extractorInstancesByEntity",
+              parentUuid: ENTITY_MIROIR_RIGHT_UUID,
+            },
+            deployments: {
+              extractorOrCombinerType: "extractorInstancesByEntity",
+              parentUuid: ENTITY_DEPLOYMENT_UUID,
+            },
           },
         },
       },
@@ -478,6 +515,8 @@ async function loadAdminIdentityDirectory(): Promise<
       identityQuery.returnedDomainElement?.credentials,
     ),
     credentialsValue: identityQuery.returnedDomainElement?.credentials,
+    grants: accessGrantsFromInstances(identityQuery.returnedDomainElement?.rights),
+    deployments: deploymentsFromInstances(identityQuery.returnedDomainElement?.deployments),
   };
 }
 
@@ -502,17 +541,43 @@ async function resolveGatedPrincipal(
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
 for (const op of restServerDefaultHandlers) {
   const operationHandler = async (request: CustomRequest, response: any, context: any) => {
-    const principal = authenticationEnabled
-      ? await resolveGatedPrincipal(
-          typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-        )
-      : undefined;
+    const authorizationHeader =
+      typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined;
+    let principal = undefined;
+    let grants: ReturnType<typeof accessGrantsFromInstances> = [];
+    let deployments: ReturnType<typeof deploymentsFromInstances> = [];
+    if (authenticationEnabled) {
+      const extracted = await extractPrincipalFromAuthorizationHeader(
+        authorizationHeader,
+        getProcessTokenSecret(),
+      );
+      const directory = await loadAdminIdentityDirectory();
+      if (extracted && directory.ok) {
+        principal = bindPrincipalToDirectory(extracted, directory.directory);
+      }
+      if (directory.ok) {
+        grants = directory.grants;
+        deployments = directory.deployments;
+      }
+    }
     const gate = assertRequestAllowed({
       enabled: authenticationEnabled,
       principal,
     });
     if (!gate.allowed) {
       response.status(gate.status).json(gate.body);
+      return;
+    }
+    const access = assertAccessForDeployment({
+      enabled: authenticationEnabled,
+      principal,
+      deploymentUuid: deploymentUuidFromHttpRequest(request),
+      grants,
+      deployments,
+      alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
+    });
+    if (!access.allowed) {
+      response.status(access.status).json(access.body ?? ACCESS_DENIED);
       return;
     }
     const body = request.body;
