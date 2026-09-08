@@ -12,6 +12,7 @@ import {
   bindPrincipalToDirectory,
   isUsableBearerToken,
   issueBearerToken,
+  readUsableBearerPrincipal,
   loginWithPassword,
   redactCredentialSecretsFromValue,
   type IdentityDirectory,
@@ -125,6 +126,11 @@ if (runThis) {
       expect(isUsableBearerToken(expired, 1_700_000_000_000 + 2_000)).toBe(false);
       const fresh = await issueBearerToken({ miroirUserUuid: ALICE, username: "alice" }, TEST_SECRET);
       expect(isUsableBearerToken(fresh)).toBe(true);
+      expect(readUsableBearerPrincipal(fresh)).toEqual({
+        miroirUserUuid: ALICE,
+        username: "alice",
+      });
+      expect(readUsableBearerPrincipal(expired, 1_700_000_000_000 + 2_000)).toBeUndefined();
     });
 
     it("clears the stored token when RestClient sees AuthenticationRequired", async () => {

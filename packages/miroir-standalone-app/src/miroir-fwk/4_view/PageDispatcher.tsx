@@ -110,10 +110,14 @@ function PageContent(): React.JSX.Element {
   log.debug("[PageDispatcher] render: wildcardPath=", wildcardPath, "page=", page, "search=", searchParams.toString());
 
   const intended = `/?${searchParams.toString()}` || "/?page=home";
+  const hasToken = isUsableBearerToken(getAuthToken());
+  if (page === "login" && getAuthenticationEnabled() && hasToken) {
+    return <Navigate to={searchParams.get("return") || "/?page=home"} replace />;
+  }
   if (page !== "login") {
     const gated = nextPageWhenAuthGate({
       enabled: getAuthenticationEnabled(),
-      hasToken: isUsableBearerToken(getAuthToken()),
+      hasToken,
       intended,
     });
     if (gated !== intended) {

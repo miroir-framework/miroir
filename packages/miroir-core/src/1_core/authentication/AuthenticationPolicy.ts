@@ -171,11 +171,24 @@ export function getProcessTokenSecret(env: Record<string, string | undefined> = 
 }
 
 function bytesToBase64Url(bytes: Uint8Array): string {
-  return Buffer.from(bytes).toString("base64url");
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(bytes).toString("base64url");
+  }
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
 function base64UrlToBytes(value: string): Uint8Array {
-  return new Uint8Array(Buffer.from(value, "base64url"));
+  const padded = value.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((value.length + 3) % 4);
+  const binary = globalThis.atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index++) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return bytes;
 }
 
 async function hmacSha256Base64Url(secret: string, data: string): Promise<string> {
@@ -392,20 +405,39 @@ export function bindPrincipalToDirectory(
   return { miroirUserUuid: user.uuid, username: user.username };
 }
 
-export function isUsableBearerToken(token: string | undefined, nowMs: number = Date.now()): boolean {
+function readTokenPayload(token: string | undefined): TokenPayload | undefined {
   if (!token) {
-    return false;
+    return undefined;
   }
   const parts = token.split(".");
   if (parts.length !== 2) {
-    return false;
+    return undefined;
   }
   try {
     const payload = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[0]))) as TokenPayload;
-    return typeof payload.exp === "number" && payload.exp > Math.floor(nowMs / 1000);
+    if (!payload.u || !payload.n || typeof payload.exp !== "number") {
+      return undefined;
+    }
+    return payload;
   } catch {
-    return false;
+    return undefined;
   }
+}
+
+export function isUsableBearerToken(token: string | undefined, nowMs: number = Date.now()): boolean {
+  const payload = readTokenPayload(token);
+  return payload !== undefined && payload.exp > Math.floor(nowMs / 1000);
+}
+
+export function readUsableBearerPrincipal(
+  token: string | undefined,
+  nowMs: number = Date.now(),
+): AuthPrincipal | undefined {
+  const payload = readTokenPayload(token);
+  if (!payload || payload.exp <= Math.floor(nowMs / 1000)) {
+    return undefined;
+  }
+  return { miroirUserUuid: payload.u, username: payload.n };
 }
 
 export const AUTH_CHANGE_PASSWORD_ACTION_LABEL = "auth.change-password";

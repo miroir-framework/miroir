@@ -1320,6 +1320,7 @@ export {
   identityDirectoryFromInstances,
   isUsableBearerToken,
   issueBearerToken,
+  readUsableBearerPrincipal,
   loginWithPassword,
   persistChangedPasswordHash,
   redactCredentialSecretsFromValue,

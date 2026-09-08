@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { pageUrl, reportUrl } from '../../navigation.js';
 import { cleanLevel } from '../../constants.js';
+import { UserAccountMenu } from '../../auth/UserAccountMenu.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { applyPerformanceDisplayGate } from '../../tools/performanceDisplayGate.js';
@@ -29,8 +30,6 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {log = logger});
-
-const settings = ['Setting1', 'Setting2', 'Setting3', 'Setting4'];
 
 const APP_BAR_ICON_HOVER = 'rgba(255, 255, 255, 0.08)';
 const APP_BAR_ICON_ACTIVE = 'rgba(255, 255, 255, 0.12)';
@@ -734,34 +733,7 @@ export function AppBar(props:AppBarProps) {
                   </IconButton>
                 </Tooltip>
               )} */}
-            {/* User settings menu */}
-            {/* <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="AVATAR" src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip> */}
-            {/* <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu> */}
+            <UserAccountMenu />
           </Box>
         </Toolbar>
       </Box>
