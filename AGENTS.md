@@ -105,7 +105,7 @@ always favor integration tests to unit tests, avoid mocking when possible
 
 ### Core Testing Commands
 
-Entity-backed tests use the unified **`MiroirTest`** model. Select them only via `testMiroir` / the UI catalog. `testByFile` + `RUN_TEST` is for PLATFORM TypeScript tests only.
+Entity-backed tests use the unified **`MiroirTest`** model. Select them only via `testMiroir` / the UI catalog. `testByFile` + `RUN_TEST` is for PLATFORM TypeScript tests that have **no** MiroirTest entity. Discovery / selection / execution: `docs/reference/testing.md`.
 
 ```bash
 # Rebuild deployment after MiroirTest JSON changes

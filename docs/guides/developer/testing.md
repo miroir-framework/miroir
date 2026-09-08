@@ -1,6 +1,6 @@
 # Testing Guide
 
-> Full reference including all env vars, store backends, and programmatic API: [docs/reference/testing.md](../../reference/testing.md)
+> Full reference (discovery / selection / execution, env vars, store backends, programmatic API): [docs/reference/testing.md](../../reference/testing.md#discovery-selection-and-execution)
 
 ---
 
@@ -206,7 +206,7 @@ Legacy **Unit Test** / **Transformer Test** reports still exist; prefer **Miroir
 2. Optional: export `miroirTest_<name>` from the deployment package `index.ts` if other TypeScript wants a named import.
 3. Rebuild that package if you added a named export: `npm run build -w miroir-test-app_deployment-miroir`.
 4. Validate schema: run `tests/4_services/miroirTest.schema.unit.test.ts`.
-5. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`. Do **not** add a per-suite vitest wrapper.
+5. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`. TypeScript files that have no MiroirTest entity are PLATFORM — launch those with `testByFile`.
 
 For migrations from legacy `UnitTest` / `TransformerTest`, use `migrateLegacyTestInstance` in `scripts/miroirTestMigrateDefinition.ts` and the manifest `miroir-test-migration-map.json`.
 

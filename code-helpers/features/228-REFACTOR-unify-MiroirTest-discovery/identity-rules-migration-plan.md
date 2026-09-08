@@ -3,7 +3,7 @@
 Issue: [miroir-framework/miroir#228](https://github.com/miroir-framework/miroir/issues/228)  
 AC: *Identity rules: one canonical suite key (or uuid) for selection; document how labels/names map without silent no-match.*
 
-**Status:** slices 0–6 implemented (2026-09-07). Do not rename instances or change `nonreg-manifest.json` in this work. Unit-tier nonreg snapshot: `test-results/nonreg/20260907T172101Z` (23 passed, 0 failed, 0 skipped).
+**Status:** slices 0–6 implemented (2026-09-07). Issue #228 ACs complete: identity rules in code; inventory + PLATFORM split in live testing docs; `nonreg-manifest.json` stays curated (not generated). Do not rename instances or change the manifest in this work. Unit-tier nonreg snapshot: `test-results/nonreg/20260907T172101Z` (23 passed, 0 failed, 0 skipped).
 
 Inventory date: 2026-09-07. Catalog: 54 `miroirTestSuite` instances under deployment `assets/…/a311f363-…`.
 

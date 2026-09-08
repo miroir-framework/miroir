@@ -119,37 +119,36 @@ Field naming: `miroirTestType`, `miroirTestLabel`, `miroirTests`. Legacy `unitTe
 
 ---
 
-## Suite registry
+## Discovery, selection, and execution
 
-The registry maps short string keys → deployment exports:
+Three concerns. They are not the same list.
 
-```
-packages/miroir-core/src/5_tests/miroirCoreTestSuiteRegistry.ts
-```
+| Concern | Answers | Source |
+|---------|---------|--------|
+| **Discovery** | Which MiroirTest suites exist | **CLI:** folder catalog — `discoverApplicationMiroirTestSourceFolders` / `loadApplicationMiroirTestCatalog` over `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>`. **UI:** selected application's LocalCache (`useSelectedApplicationMiroirTests`). Same conceptual catalog, two loaders. |
+| **Selection** | Which of those run | `--suites` / `MIROIR_TEST_SUITES` / UI = instance `name` (optional `uuid` on `--suites`). `--filter` / UI checkboxes pick **leaves** (catalog-root key = `name`; nested keys and values = `miroirTestLabel`). See [Filtering MiroirTest cases](#filtering-miroirtest-cases). |
+| **Execution** | How a selected suite or leaf runs | Leaf kinds infer session (`transformer` / `runner` / `action`) and unit vs integ. Playfield lives on the suite or a `TestConfiguration`; Runner JSON is a sibling folder. `FunctionCallTestRegistry` is a capability whitelist, not a suite catalog. |
 
-Current registered suites (38 total, sorted):
+`scripts/nonreg-manifest.json` is a **curated** step list (unit catalog sweep, selected integ suites, app-stack files). It is not generated from the catalog and is not a discovery source.
 
-```
-adminTransformers, alterObject, ansiColumnsToJzodSchema, buildAnyKeyMap,
-defaultValueForMLSchema, EntityPrimaryKey, getAttributeTypesFromJzodSchema,
-jzodObjectFlatten, JzodSchemaReferencesList, JzodSchemaReferencesSet,
-jzodToCopilotKitParameter, jzodToJsonSchema, jzodToJzod_Summary,
-jzodTransitiveDependencySet, jzodTypeCheck, jzodUnion_RecursiveUnfold,
-jzodUnionResolvedTypeForArray, jzodUnionResolvedTypeForObject,
-localizeJzodSchemaReferenceContext, menu, mergePositionBased,
-metaModelTransformers, miroirCoreTransformers, modelUpdates, mustache,
-pilot_transformer_plus, queries_library, resolveConditionalSchema,
-resolveQueryTemplates, resolveSchemaReferenceInContext,
-selectUnionBranchFromDiscriminator, tools, transformerInterfaceCheck,
-transformerResultSchema, unfoldSchemaOnce, unionArrayChoices,
-unionObjectChoices, virtualAttributes
-```
+Name-list snapshots (`MIROIR_TEST_SUITE_REGISTRY_NAMES`, `MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES`, `UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY`) are reference-only.
+
+### MiroirTest vs PLATFORM
+
+| Kind | How it exists | How you run it |
+|------|----------------|----------------|
+| **MiroirTest** | Deployment JSON entity | `testMiroir` / UI catalog. Suite key = instance `name`. |
+| **PLATFORM** | TypeScript under `tests/` with **no** MiroirTest entity | `testByFile` + optional `RUN_TEST` |
+
+PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/schema apparatus (`parseMiroirTestCliConfig.unit.test.ts`, `miroirTest.schema.unit.test.ts`), LocalCache memory measure, store-layer integ (`PersistenceStoreController.integ`), view RTL (`JzodElementEditor.test.tsx`), and similar. `RUN_TEST` applies only to those files.
+
+### Notable catalog suites
 
 **`virtualAttributes`** — issue #82: lazy instance-local Entity attributes (`tag.value.virtualAttribute`). MiroirTest `functionCallTest` + `queryTest` (evaluate / strip / project / filter / orderBy / same-query runtimeTransformers). Sequelize skip + SQL compile: `packages/miroir-store-postgres/test/virtualAttributes.unit.test.ts`. List/details display: `packages/miroir-standalone-app/tests/4_view/virtualAttributes.integ.test.tsx`.
 
 **`transformerResultSchema`** — issue #88: `functionCallTest` leaves call `resolveTransformerResultSchema` (pure schema inference, no transformer runtime). Reference: [transformer-result-schema.md](./transformer-result-schema.md). Nonreg step: `unit-transformerResultSchema`.
 
-`miroirCoreTransformers` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). All other registry suites are unit-safe unless they declare integ expectations.
+`miroirCoreTransformers` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). Other catalog suites are unit-safe unless they declare integ expectations.
 
 ---
 
@@ -1152,9 +1151,7 @@ await session.teardown();
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.
 6. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`.
 
-Do **not** add a per-suite `*.unit.test.ts` wrapper. Vitest filename / `RUN_TEST` stays for PLATFORM TypeScript tests only.
-
-The last hardcoded snapshots (`MIROIR_TEST_SUITE_REGISTRY_NAMES`, `MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES`, `UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY`) are kept for reference only.
+TypeScript files that have **no** MiroirTest entity are PLATFORM — launch those with `testByFile` (optional `RUN_TEST`). See [MiroirTest vs PLATFORM](#miroirtest-vs-platform).
 
 #### Integration suite (UI / CLI `testMiroir --mode integ`)
 

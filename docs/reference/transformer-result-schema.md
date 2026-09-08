@@ -99,4 +99,4 @@ Failures include `typePath`, optional `transformerPath` / `innerError` for neste
 
 MiroirTest asset: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/0d3bd258-a8f9-4a0c-8cd9-bcf5607b50ad.json` (suite key `transformerResultSchema`).
 
-See also [Testing reference — suite registry](./testing.md#suite-registry).
+See also [Testing reference — notable catalog suites](./testing.md#notable-catalog-suites).
