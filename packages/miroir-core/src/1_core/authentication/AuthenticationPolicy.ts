@@ -190,16 +190,32 @@ async function hmacSha256Base64Url(secret: string, data: string): Promise<string
   return bytesToBase64Url(new Uint8Array(signature));
 }
 
+async function scryptDerive(
+  password: string,
+  salt: Buffer,
+  keylen: number,
+  options: { N: number; r: number; p: number },
+): Promise<Buffer> {
+  const { scrypt } = await import("node:crypto");
+  return new Promise((resolve, reject) => {
+    scrypt(password, salt, keylen, options, (error, derivedKey) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(derivedKey);
+    });
+  });
+}
+
 export async function hashPassword(password: string): Promise<string> {
-  const { randomBytes, scrypt } = await import("node:crypto");
-  const { promisify } = await import("node:util");
-  const scryptAsync = promisify(scrypt);
+  const { randomBytes } = await import("node:crypto");
   const salt = randomBytes(16);
-  const derived = (await scryptAsync(password, salt, SCRYPT_KEYLEN, {
+  const derived = await scryptDerive(password, salt, SCRYPT_KEYLEN, {
     N: SCRYPT_N,
     r: SCRYPT_R,
     p: SCRYPT_P,
-  })) as Buffer;
+  });
   return `scrypt$${SCRYPT_N}$${SCRYPT_R}$${SCRYPT_P}$${salt.toString("base64url")}$${derived.toString("base64url")}`;
 }
 
@@ -216,10 +232,7 @@ export async function verifyPassword(password: string, storedHash: string): Prom
   if (!n || !r || !p || salt.length === 0 || expected.length === 0) {
     return false;
   }
-  const { scrypt } = await import("node:crypto");
-  const { promisify } = await import("node:util");
-  const scryptAsync = promisify(scrypt);
-  const derived = (await scryptAsync(password, salt, expected.length, { N: n, r, p })) as Buffer;
+  const derived = await scryptDerive(password, salt, expected.length, { N: n, r, p });
   if (derived.length !== expected.length) {
     return false;
   }

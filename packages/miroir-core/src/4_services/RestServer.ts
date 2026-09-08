@@ -420,7 +420,7 @@ export async function restActionHandler(
             defaultMiroirModelEnvironment,
             undefined,
             undefined,
-            params?.authPrincipal,
+            urlParams?.authPrincipal,
           ); // TODO: get the right model for the app / deployment
           return continuationFunction(response)(redactCredentialSecretsFromValue(result));
         } else {
@@ -430,7 +430,7 @@ export async function restActionHandler(
             undefined,
             undefined,
             undefined,
-            params?.authPrincipal,
+            urlParams?.authPrincipal,
           );
           log.info(
             "restActionHandler handled action",

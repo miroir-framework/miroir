@@ -466,7 +466,10 @@ async function loadAdminIdentityDirectory(): Promise<
     defaultMetaModelEnvironment,
   );
   if (identityQuery instanceof Action2Error) {
-    return { ok: false, errorMessage: identityQuery.errorMessage };
+    return {
+      ok: false,
+      errorMessage: identityQuery.errorMessage ?? "Authentication directory query failed",
+    };
   }
   return {
     ok: true,
