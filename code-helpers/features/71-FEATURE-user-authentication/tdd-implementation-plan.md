@@ -468,7 +468,7 @@ VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirCo
 
 ### Realization
 
-`/api/copilotkit` uses the same `assertRequestAllowed`. Launchers and vitest `test.env` default hatch off. Nonreg step `unit-71-authentication`. Docs: `docs/reference/authentication.md` + pointer in `docs/index.md` and `build-it-yourself.md`. Issue-dir tests kept (platform `/auth` is not MiroirTest). `devBuild` for generated `MiroirConfigServer` deferred.
+`/api/copilotkit` uses the same `assertRequestAllowed`. Launchers and vitest `test.env` default hatch off. Nonreg step `unit-71-authentication`. Docs: `docs/reference/authentication.md` + pointer in `docs/index.md` and `build-it-yourself.md`. Issue-dir tests kept (platform `/auth` is not MiroirTest). Generated `MiroirConfigServer` / Jzod artifacts updated to include `server.authentication`. Review follow-up: redact `passwordHash` on REST, block generic credential CUD except labeled self-change, re-bind principal to current user status, fail closed on duplicate usernames/credentials, clear expired browser sessions.
 
 ---
 

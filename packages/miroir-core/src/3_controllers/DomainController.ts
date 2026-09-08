@@ -110,6 +110,7 @@ import {
   miroirModelEntities,
 } from "../1_core/Model";
 import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partialMutationGuard.js";
+import { assertCredentialInstanceMutationAllowed } from "../1_core/authentication/AuthenticationPolicy.js";
 import { findPresentModelEntityFromDomainState } from "../2_domain/ExtractorVirtualAttributes.js";
 import { stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes.js";
 import {
@@ -1032,6 +1033,13 @@ export class DomainController implements DomainControllerInterface {
     instanceAction: InstanceAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2VoidReturnType> {
+    const rejectedCredential = assertCredentialInstanceMutationAllowed(instanceAction);
+    if (!rejectedCredential.allowed) {
+      return Promise.resolve(
+        new Action2Error("FailedToHandleAction", rejectedCredential.errorMessage),
+      );
+    }
+
     const rejectedPartial = rejectPartialMutationInstanceAction(instanceAction);
     if (rejectedPartial) {
       log.error(

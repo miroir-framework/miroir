@@ -8,6 +8,7 @@ import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import {
   assertRequestAllowed,
+  bindPrincipalToDirectory,
   extractPrincipalFromAuthorizationHeader,
   getProcessTokenSecret,
   resolveAuthenticationEnabled,
@@ -80,10 +81,14 @@ export class RestClientStub implements RestClientInterface {
     }
 
     const authEnabled = resolveAuthenticationEnabled({ env: process.env });
-    const principal = await extractPrincipalFromAuthorizationHeader(
+    const extracted = await extractPrincipalFromAuthorizationHeader(
       authorizationHeader,
       getProcessTokenSecret(),
     );
+    const principal =
+      extracted && this.identityDirectory
+        ? bindPrincipalToDirectory(extracted, this.identityDirectory)
+        : extracted;
     const gate = assertRequestAllowed({
       enabled: authEnabled,
       principal,

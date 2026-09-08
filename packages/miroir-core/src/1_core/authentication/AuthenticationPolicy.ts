@@ -303,13 +303,16 @@ export async function loginWithPassword(
   if (!username || !password) {
     return { ok: false, status: 401, body: AUTHENTICATION_FAILED };
   }
-  const user = directory.users.find((candidate) => candidate.username === username);
-  const credential = user
-    ? directory.credentials.find((row) => row.miroirUser === user.uuid)
-    : undefined;
-  if (!user || user.status !== "active" || !credential) {
+  const users = directory.users.filter((candidate) => candidate.username === username);
+  if (users.length !== 1) {
     return { ok: false, status: 401, body: AUTHENTICATION_FAILED };
   }
+  const user = users[0];
+  const credentials = directory.credentials.filter((row) => row.miroirUser === user.uuid);
+  if (user.status !== "active" || credentials.length !== 1) {
+    return { ok: false, status: 401, body: AUTHENTICATION_FAILED };
+  }
+  const credential = credentials[0];
   const matches = await verifyPassword(password, credential.passwordHash);
   if (!matches) {
     return { ok: false, status: 401, body: AUTHENTICATION_FAILED };
@@ -361,6 +364,94 @@ export function findCredentialInstance(
   );
 }
 
+export function bindPrincipalToDirectory(
+  principal: AuthPrincipal,
+  directory: IdentityDirectory,
+): AuthPrincipal | undefined {
+  const users = directory.users.filter((row) => row.uuid === principal.miroirUserUuid);
+  if (users.length !== 1) {
+    return undefined;
+  }
+  const user = users[0];
+  if (user.status !== "active" || user.username !== principal.username) {
+    return undefined;
+  }
+  return { miroirUserUuid: user.uuid, username: user.username };
+}
+
+export function isUsableBearerToken(token: string | undefined, nowMs: number = Date.now()): boolean {
+  if (!token) {
+    return false;
+  }
+  const parts = token.split(".");
+  if (parts.length !== 2) {
+    return false;
+  }
+  try {
+    const payload = JSON.parse(new TextDecoder().decode(base64UrlToBytes(parts[0]))) as TokenPayload;
+    return typeof payload.exp === "number" && payload.exp > Math.floor(nowMs / 1000);
+  } catch {
+    return false;
+  }
+}
+
+export const AUTH_CHANGE_PASSWORD_ACTION_LABEL = "auth.change-password";
+
+export function redactCredentialSecretsFromValue(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(redactCredentialSecretsFromValue);
+  }
+  if (!value || typeof value !== "object" || Object.getPrototypeOf(value) !== Object.prototype) {
+    return value;
+  }
+  const record = value as Record<string, unknown>;
+  const next: Record<string, unknown> = {};
+  const stripHash =
+    String(record.parentUuid ?? "") === ENTITY_MIROIR_USER_CREDENTIAL_UUID && "passwordHash" in record;
+  for (const [key, child] of Object.entries(record)) {
+    if (stripHash && key === "passwordHash") {
+      continue;
+    }
+    next[key] = redactCredentialSecretsFromValue(child);
+  }
+  return next;
+}
+
+export function assertCredentialInstanceMutationAllowed(action: {
+  actionType: string;
+  actionLabel?: string;
+  payload?: { parentUuid?: string; objects?: unknown };
+}): { allowed: true } | { allowed: false; errorMessage: string } {
+  if (
+    action.actionType !== "createInstance" &&
+    action.actionType !== "updateInstance" &&
+    action.actionType !== "deleteInstance" &&
+    action.actionType !== "deleteInstanceWithCascade"
+  ) {
+    return { allowed: true };
+  }
+  const objects = Array.isArray(action.payload?.objects) ? action.payload.objects : [];
+  const touchesCredential =
+    action.payload?.parentUuid === ENTITY_MIROIR_USER_CREDENTIAL_UUID ||
+    objects.some(
+      (row) =>
+        !!row &&
+        typeof row === "object" &&
+        String((row as { parentUuid?: unknown }).parentUuid ?? "") ===
+          ENTITY_MIROIR_USER_CREDENTIAL_UUID,
+    );
+  if (!touchesCredential) {
+    return { allowed: true };
+  }
+  if (action.actionType === "updateInstance" && action.actionLabel === AUTH_CHANGE_PASSWORD_ACTION_LABEL) {
+    return { allowed: true };
+  }
+  return {
+    allowed: false,
+    errorMessage: "MiroirUserCredential can only be updated via POST /auth/change-password",
+  };
+}
+
 export async function changePassword(
   args: {
     principal: AuthPrincipal;
@@ -372,10 +463,13 @@ export async function changePassword(
   | { ok: true; passwordHash: string }
   | { ok: false; status: 401; body: AuthenticationFailedBody }
 > {
-  const credential = directory.credentials.find((row) => row.miroirUser === args.principal.miroirUserUuid);
-  if (!credential || !args.currentPassword || !args.newPassword) {
+  const credentials = directory.credentials.filter(
+    (row) => row.miroirUser === args.principal.miroirUserUuid,
+  );
+  if (credentials.length !== 1 || !args.currentPassword || !args.newPassword) {
     return { ok: false, status: 401, body: AUTHENTICATION_FAILED };
   }
+  const credential = credentials[0];
   const matches = await verifyPassword(args.currentPassword, credential.passwordHash);
   if (!matches) {
     return { ok: false, status: 401, body: AUTHENTICATION_FAILED };

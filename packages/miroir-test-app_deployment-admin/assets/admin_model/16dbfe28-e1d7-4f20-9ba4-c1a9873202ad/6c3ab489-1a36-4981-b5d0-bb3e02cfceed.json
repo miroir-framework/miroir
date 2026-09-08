@@ -29,7 +29,8 @@
           "value": {
             "id": 5,
             "defaultLabel": "User",
-            "description": "MiroirUser this credential authenticates.",
+            "description": "MiroirUser this credential authenticates. 1:1 — duplicate FKs fail closed at login.",
+            "unique": true,
             "display": {
               "editable": false
             },

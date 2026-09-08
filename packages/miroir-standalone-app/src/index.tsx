@@ -31,6 +31,7 @@ import {
   RestClient,
   RestClientStub,
   identityDirectoryFromInstances,
+  setRestClientAuthorizationInvalidationHandler,
   setRestClientAuthorizationTokenGetter,
   SpecificLoggerOptionsMap,
   templateEvaluationParams,
@@ -59,7 +60,7 @@ import {
   ElectronServerDomainControllerProxy,
 } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
-import { getAuthToken, setAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authSession.js";
+import { getAuthToken, setAuthToken, setAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authSession.js";
 import { miroirAppStartup } from "./startup.js";
 
 import { packageName } from "./constants.js";
@@ -348,6 +349,7 @@ async function startWebApp(root: Root) {
   // Initialize performance monitoring configuration
   initializePerformanceConfig();
   setRestClientAuthorizationTokenGetter(() => getAuthToken());
+  setRestClientAuthorizationInvalidationHandler(() => setAuthToken(undefined));
   try {
     const statusResponse = await fetch("/auth/status");
     const statusBody = await statusResponse.json();

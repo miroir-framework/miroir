@@ -28,7 +28,9 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
+  AUTH_CHANGE_PASSWORD_ACTION_LABEL,
   assertRequestAllowed,
+  bindPrincipalToDirectory,
   buildAuthStatusBody,
   ENTITY_MIROIR_USER_CREDENTIAL_UUID,
   ENTITY_MIROIR_USER_UUID,
@@ -428,14 +430,80 @@ for (const c of deploymentsToOpen) {
   );
 }
 
+async function loadAdminIdentityDirectory(): Promise<
+  | {
+      ok: true;
+      directory: ReturnType<typeof identityDirectoryFromInstances>;
+      credentialsValue: unknown;
+    }
+  | { ok: false; errorMessage: string }
+> {
+  const identityQuery = await domainController.handleBoxedExtractorOrQueryAction(
+    {
+      actionType: "runBoxedQueryAction",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      payload: {
+        application: adminSelfApplication.uuid,
+        applicationSection: "data",
+        queryExecutionStrategy: "storage",
+        query: {
+          application: adminSelfApplication.uuid,
+          queryType: "boxedQueryWithExtractorCombinerTransformer",
+          extractors: {
+            users: {
+              extractorOrCombinerType: "extractorInstancesByEntity",
+              parentUuid: ENTITY_MIROIR_USER_UUID,
+            },
+            credentials: {
+              extractorOrCombinerType: "extractorInstancesByEntity",
+              parentUuid: ENTITY_MIROIR_USER_CREDENTIAL_UUID,
+            },
+          },
+        },
+      },
+    },
+    applicationDeploymentMap,
+    defaultMetaModelEnvironment,
+  );
+  if (identityQuery instanceof Action2Error) {
+    return { ok: false, errorMessage: identityQuery.errorMessage };
+  }
+  return {
+    ok: true,
+    directory: identityDirectoryFromInstances(
+      identityQuery.returnedDomainElement?.users,
+      identityQuery.returnedDomainElement?.credentials,
+    ),
+    credentialsValue: identityQuery.returnedDomainElement?.credentials,
+  };
+}
+
+async function resolveGatedPrincipal(
+  authorizationHeader: string | undefined,
+): Promise<ReturnType<typeof bindPrincipalToDirectory>> {
+  const extracted = await extractPrincipalFromAuthorizationHeader(
+    authorizationHeader,
+    getProcessTokenSecret(),
+  );
+  if (!extracted) {
+    return undefined;
+  }
+  const identity = await loadAdminIdentityDirectory();
+  if (!identity.ok) {
+    return undefined;
+  }
+  return bindPrincipalToDirectory(extracted, identity.directory);
+}
+
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
 for (const op of restServerDefaultHandlers) {
   const operationHandler = async (request: CustomRequest, response: any, context: any) => {
-    const principal = await extractPrincipalFromAuthorizationHeader(
-      typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-      getProcessTokenSecret(),
-    );
+    const principal = authenticationEnabled
+      ? await resolveGatedPrincipal(
+          typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
+        )
+      : undefined;
     const gate = assertRequestAllowed({
       enabled: authenticationEnabled,
       principal,
@@ -520,54 +588,6 @@ for (const op of restServerDefaultHandlers) {
   );
 }
 
-async function loadAdminIdentityDirectory(): Promise<
-  | {
-      ok: true;
-      directory: ReturnType<typeof identityDirectoryFromInstances>;
-      credentialsValue: unknown;
-    }
-  | { ok: false; errorMessage: string }
-> {
-  const identityQuery = await domainController.handleBoxedExtractorOrQueryAction(
-    {
-      actionType: "runBoxedQueryAction",
-      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
-      payload: {
-        application: adminSelfApplication.uuid,
-        applicationSection: "data",
-        queryExecutionStrategy: "storage",
-        query: {
-          application: adminSelfApplication.uuid,
-          queryType: "boxedQueryWithExtractorCombinerTransformer",
-          extractors: {
-            users: {
-              extractorOrCombinerType: "extractorInstancesByEntity",
-              parentUuid: ENTITY_MIROIR_USER_UUID,
-            },
-            credentials: {
-              extractorOrCombinerType: "extractorInstancesByEntity",
-              parentUuid: ENTITY_MIROIR_USER_CREDENTIAL_UUID,
-            },
-          },
-        },
-      },
-    },
-    applicationDeploymentMap,
-    defaultMetaModelEnvironment,
-  );
-  if (identityQuery instanceof Action2Error) {
-    return { ok: false, errorMessage: identityQuery.errorMessage };
-  }
-  return {
-    ok: true,
-    directory: identityDirectoryFromInstances(
-      identityQuery.returnedDomainElement?.users,
-      identityQuery.returnedDomainElement?.credentials,
-    ),
-    credentialsValue: identityQuery.returnedDomainElement?.credentials,
-  };
-}
-
 app.post("/auth/login", async (request: CustomRequest, response: any) => {
   const identity = await loadAdminIdentityDirectory();
   if (!identity.ok) {
@@ -594,9 +614,8 @@ app.post("/auth/login", async (request: CustomRequest, response: any) => {
 });
 
 app.post("/auth/change-password", async (request: CustomRequest, response: any) => {
-  const principal = await extractPrincipalFromAuthorizationHeader(
+  const principal = await resolveGatedPrincipal(
     typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-    getProcessTokenSecret(),
   );
   if (!principal) {
     response.status(401).json({
@@ -638,6 +657,7 @@ app.post("/auth/change-password", async (request: CustomRequest, response: any) 
   const persistResult = await domainController.handleAction(
     {
       actionType: "updateInstance",
+      actionLabel: AUTH_CHANGE_PASSWORD_ACTION_LABEL,
       endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: adminSelfApplication.uuid,
@@ -691,10 +711,11 @@ mcpServer.mountHttpRoutes(app);
 
 // AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
 app.use("/api/copilotkit", async (request: any, response: any, next: any) => {
-  const principal = await extractPrincipalFromAuthorizationHeader(
-    typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-    getProcessTokenSecret(),
-  );
+  const principal = authenticationEnabled
+    ? await resolveGatedPrincipal(
+        typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
+      )
+    : undefined;
   const gate = assertRequestAllowed({
     enabled: authenticationEnabled,
     principal,

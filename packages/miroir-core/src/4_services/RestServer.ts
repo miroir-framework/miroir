@@ -40,6 +40,10 @@ import {
 
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { actionsWithDeploymentInPayload } from "../1_core/Instance";
+import {
+  assertCredentialInstanceMutationAllowed,
+  redactCredentialSecretsFromValue,
+} from "../1_core/authentication/AuthenticationPolicy.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestServer");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -48,7 +52,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 
 // function wrapResults(instances: string[]): HttpResponseBodyFormat {
 function wrapResults(instances: any[]): HttpResponseBodyFormat {
-  return { instances };
+  return { instances: redactCredentialSecretsFromValue(instances) as any[] };
 }
 
 // export const actionsWithDeploymentInPayload = instanceEndpointV1.definition.actions.map(
@@ -269,6 +273,22 @@ export async function restMethodsPostPutDeleteHandler(
 
   const targetDataStore = localPersistenceStoreController
 
+  const crudInstances = body?.crudInstances ?? [];
+  for (const instance of crudInstances) {
+    const guard = assertCredentialInstanceMutationAllowed({
+      actionType: method === "delete" ? "deleteInstance" : method === "post" ? "createInstance" : "updateInstance",
+      payload: {
+        parentUuid: (instance as { parentUuid?: string } | undefined)?.parentUuid,
+        objects: [instance],
+      },
+    });
+    if (!guard.allowed) {
+      return continuationFunction(response)(
+        new Action2Error("FailedToHandleAction", guard.errorMessage),
+      );
+    }
+  }
+
   // THIS IS A COSTLY LOG!!!
   // log.trace(
   //   "restMethodsPostPutDeleteHandler deploymentUuid",
@@ -402,7 +422,7 @@ export async function restActionHandler(
             undefined,
             params?.authPrincipal,
           ); // TODO: get the right model for the app / deployment
-          return continuationFunction(response)(result);
+          return continuationFunction(response)(redactCredentialSecretsFromValue(result));
         } else {
           const result = await domainController.handleAction(
             action,
@@ -419,7 +439,7 @@ export async function restActionHandler(
             result,
             // JSON.stringify(result, undefined, 2)
           );
-          return continuationFunction(response)(result);
+          return continuationFunction(response)(redactCredentialSecretsFromValue(result));
         }
       } else {
         /**
@@ -487,7 +507,7 @@ export async function queryActionHandler(
         applicationDeploymentMap,
         defaultMiroirModelEnvironment,
       );
-      return continuationFunction(response)(result);
+      return continuationFunction(response)(redactCredentialSecretsFromValue(result));
     },
     {
       exitExtra: (result) => summarizeQueryHopResult(result),
@@ -552,7 +572,7 @@ export async function queryTemplateActionHandler(
       "RestServer queryTemplateActionHandler used deployment_Miroir domainController result=", result
       // JSON.stringify(result, undefined, 2)
     );
-    return continuationFunction(response)(result);
+    return continuationFunction(response)(redactCredentialSecretsFromValue(result));
   } else {
     // we're on the client, called by RestMswServerStub
     // uses the local cache, needs to have done a Model "rollback" action on the client
@@ -595,7 +615,7 @@ export async function queryTemplateActionHandler(
     log.info("RestServer queryTemplateActionHandler used local cache result=", result);
     // log.info("RestServer queryTemplateActionHandler used local cache result=", JSON.stringify(result, undefined, 2));
 
-    return continuationFunction(response)(result);
+    return continuationFunction(response)(redactCredentialSecretsFromValue(result));
   }
 }
 

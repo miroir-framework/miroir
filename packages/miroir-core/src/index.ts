@@ -1304,9 +1304,12 @@ export {
 } from "./4_services/PersistenceStoreControllerTools.js";
 export {
   AUTHENTICATION_FAILED,
+  AUTH_CHANGE_PASSWORD_ACTION_LABEL,
   ENTITY_MIROIR_USER_CREDENTIAL_UUID,
   ENTITY_MIROIR_USER_UUID,
+  assertCredentialInstanceMutationAllowed,
   assertRequestAllowed,
+  bindPrincipalToDirectory,
   bearerTokenFromAuthorizationHeader,
   buildAuthStatusBody,
   changePassword,
@@ -1315,9 +1318,11 @@ export {
   hashPassword,
   findCredentialInstance,
   identityDirectoryFromInstances,
+  isUsableBearerToken,
   issueBearerToken,
   loginWithPassword,
   persistChangedPasswordHash,
+  redactCredentialSecretsFromValue,
   resolveAuthenticationEnabled,
   setProcessTokenSecret,
   verifyBearerToken,
@@ -1342,7 +1347,11 @@ export {
   authorizationHeaders,
   nextPageWhenAuthGate,
 } from "./1_core/authentication/AuthenticationUi.js";
-export { RestClient, setRestClientAuthorizationTokenGetter } from "./4_services/RestClient.js";
+export {
+  RestClient,
+  setRestClientAuthorizationInvalidationHandler,
+  setRestClientAuthorizationTokenGetter,
+} from "./4_services/RestClient.js";
 export { RestClientStub } from "./4_services/RestClientStub";
 export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";

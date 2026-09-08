@@ -22,7 +22,7 @@
 import React, { Suspense, useEffect, useMemo } from "react";
 import { Navigate, type Params, useParams, useSearchParams } from "react-router-dom";
 
-import { LoggerInterface, MiroirLoggerFactory, nextPageWhenAuthGate, type ApplicationSection } from "miroir-core";
+import { isUsableBearerToken, LoggerInterface, MiroirLoggerFactory, nextPageWhenAuthGate, type ApplicationSection } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
 import { getAuthenticationEnabled, getAuthToken } from "./auth/authSession.js";
 
@@ -113,7 +113,7 @@ function PageContent(): React.JSX.Element {
   if (page !== "login") {
     const gated = nextPageWhenAuthGate({
       enabled: getAuthenticationEnabled(),
-      hasToken: !!getAuthToken(),
+      hasToken: isUsableBearerToken(getAuthToken()),
       intended,
     });
     if (gated !== intended) {

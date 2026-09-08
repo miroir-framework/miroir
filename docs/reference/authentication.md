@@ -31,6 +31,8 @@ Token secret (optional): `server.authentication.tokenSecret` or `MIROIR_AUTH_TOK
 
 Seed login (dev only): username `alice`, password `alice-dev`. Change it after first use. User `bob` is inactive and cannot log in.
 
+Generic CRUD/query responses strip `passwordHash`. Generic create/update/delete of `MiroirUserCredential` is rejected; only `POST /auth/change-password` may update the principal’s hash. Duplicate `username` or credential FK values fail closed at login (same `AuthenticationFailed` body). After login, REST/CopilotKit re-bind the token to the current Admin directory so a deactivated user cannot keep using an unexpired token. The browser treats an expired or malformed stored token as logged out, and `RestClient` clears the session on `AuthenticationRequired`.
+
 ## Not gated yet (R3)
 
 MCP (`mcpUrl`, default port 4080), `miroir-cli`, and Electron IPC stay open. They should reuse `AuthPrincipal`, `extractPrincipalFromAuthorizationHeader`, and `assertRequestAllowed` later.
