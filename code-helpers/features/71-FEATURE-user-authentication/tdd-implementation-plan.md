@@ -350,7 +350,7 @@ RUN_TEST=authentication.71.phase4 npm run testByFile -w miroir-core -- authentic
 
 ### Realization
 
-`changePassword` + `persistChangedPasswordHash` update only the principal’s row. Stub `POST /auth/change-password` requires Bearer and rewrites the in-memory directory. Express persists via `updateInstance` on Admin data (principal’s credential only). Unauthenticated change → `AuthenticationRequired`.
+`changePassword` + `persistChangedPasswordHash` update only the principal’s row. `handleAuthHttpRoute` (used by `RestClientStub`) requires Bearer and rewrites the in-memory directory. Express persists via `updateInstance` on Admin data (principal’s credential only). Unauthenticated change → `AuthenticationRequired`. HTTP tests call `handleAuthHttpRoute` so they do not pull `RestServer` / missing deployment `dist`.
 
 ---
 

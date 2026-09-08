@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { handleAuthHttpRoute } from "../../../../src/1_core/authentication/AuthenticationHttp.js";
 import {
   AUTHENTICATION_FAILED,
   changePassword,
@@ -14,7 +15,6 @@ import {
   setProcessTokenSecret,
   type IdentityDirectory,
 } from "../../../../src/1_core/authentication/AuthenticationPolicy.js";
-import { RestClientStub } from "../../../../src/4_services/RestClientStub.js";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =
@@ -139,45 +139,49 @@ if (runThis) {
 
     it("POST /auth/change-password requires a Bearer token and then accepts the new password", async () => {
       setProcessTokenSecret(TEST_SECRET);
-      const stub = new RestClientStub("http://localhost");
-      stub.setIdentityDirectory(loadMutableDirectory());
+      let directory = loadMutableDirectory();
 
-      const unauthenticated = await stub.post(
-        "/auth/change-password",
-        "/auth/change-password",
-        { currentPassword: "alice-dev", newPassword: "alice-new" },
-      );
-      expect(unauthenticated.status).toBe(401);
-      expect(unauthenticated.data).toEqual({
-        status: "error",
-        errorType: "AuthenticationRequired",
+      const unauthenticated = await handleAuthHttpRoute({
+        url: "/auth/change-password",
+        body: { currentPassword: "alice-dev", newPassword: "alice-new" },
+        directory,
+      });
+      expect(unauthenticated).toEqual({
+        status: 401,
+        data: { status: "error", errorType: "AuthenticationRequired" },
       });
 
-      const login = await stub.post("/auth/login", "/auth/login", {
-        username: "alice",
-        password: "alice-dev",
+      const login = await handleAuthHttpRoute({
+        url: "/auth/login",
+        body: { username: "alice", password: "alice-dev" },
+        directory,
       });
-      expect(login.status).toBe(200);
-      const token = (login.data as { token: string }).token;
-      const changed = await stub.post(
-        "/auth/change-password",
-        "/auth/change-password",
-        { currentPassword: "alice-dev", newPassword: "alice-new" },
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      expect(changed.status).toBe(200);
-      expect(changed.data).toEqual({ changed: true });
+      expect(login?.status).toBe(200);
+      const token = (login?.data as { token: string }).token;
+      const changed = await handleAuthHttpRoute({
+        url: "/auth/change-password",
+        body: { currentPassword: "alice-dev", newPassword: "alice-new" },
+        authorizationHeader: `Bearer ${token}`,
+        directory,
+      });
+      expect(changed?.status).toBe(200);
+      expect(changed?.data).toEqual({ changed: true });
+      if (changed?.directory) {
+        directory = changed.directory;
+      }
 
-      const oldLogin = await stub.post("/auth/login", "/auth/login", {
-        username: "alice",
-        password: "alice-dev",
+      const oldLogin = await handleAuthHttpRoute({
+        url: "/auth/login",
+        body: { username: "alice", password: "alice-dev" },
+        directory,
       });
-      expect(oldLogin.status).toBe(401);
-      const newLogin = await stub.post("/auth/login", "/auth/login", {
-        username: "alice",
-        password: "alice-new",
+      expect(oldLogin?.status).toBe(401);
+      const newLogin = await handleAuthHttpRoute({
+        url: "/auth/login",
+        body: { username: "alice", password: "alice-new" },
+        directory,
       });
-      expect(newLogin.status).toBe(200);
+      expect(newLogin?.status).toBe(200);
     });
   });
 }

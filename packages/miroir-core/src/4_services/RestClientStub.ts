@@ -8,13 +8,11 @@ import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import {
   assertRequestAllowed,
-  buildAuthStatusBody,
   extractPrincipalFromAuthorizationHeader,
   getProcessTokenSecret,
-  loginWithPassword,
-  persistChangedPasswordHash,
   resolveAuthenticationEnabled,
 } from "../1_core/authentication/AuthenticationPolicy.js";
+import { handleAuthHttpRoute } from "../1_core/authentication/AuthenticationHttp.js";
 import { packageName } from "../constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { restServerDefaultHandlers } from "./RestServer";
@@ -60,101 +58,28 @@ export class RestClientStub implements RestClientInterface {
   ): Promise<RestClientCallReturnType> {
     // log.info("RestClient call", method, endpoint, args)
     const { body, ...customConfig } = args;
-    const pathOnly = (rawUrl.split("?")[0] ?? rawUrl).replace(/\/+$/, "") || "/";
-    if (pathOnly === "/auth/status" || endpoint.split("?")[0]?.endsWith("/auth/status")) {
-      const enabled = resolveAuthenticationEnabled({ env: process.env });
-      return {
-        status: 200,
-        data: buildAuthStatusBody(enabled),
-        headers: new Headers(),
-        url: this.rootApiUrl + endpoint,
-      };
-    }
-
-    if (pathOnly === "/auth/login" || endpoint.split("?")[0]?.endsWith("/auth/login")) {
-      const directory = this.identityDirectory;
-      if (!directory) {
-        return {
-          status: 500,
-          data: { status: "error", errorType: "AuthenticationDirectoryMissing" },
-          headers: new Headers(),
-          url: this.rootApiUrl + endpoint,
-        };
-      }
-      const result = await loginWithPassword(
-        {
-          username: String(body?.username ?? ""),
-          password: String(body?.password ?? ""),
-        },
-        directory,
-        getProcessTokenSecret(),
-      );
-      if (!result.ok) {
-        return {
-          status: result.status,
-          data: result.body,
-          headers: new Headers(),
-          url: this.rootApiUrl + endpoint,
-        };
+    const authorizationHeader =
+      customConfig?.headers?.Authorization ?? customConfig?.headers?.authorization;
+    const authHttp = await handleAuthHttpRoute({
+      url: rawUrl,
+      endpoint,
+      body,
+      authorizationHeader,
+      directory: this.identityDirectory,
+    });
+    if (authHttp) {
+      if (authHttp.directory) {
+        this.identityDirectory = authHttp.directory;
       }
       return {
-        status: 200,
-        data: { token: result.token, principal: result.principal },
-        headers: new Headers(),
-        url: this.rootApiUrl + endpoint,
-      };
-    }
-
-    if (pathOnly === "/auth/change-password" || endpoint.split("?")[0]?.endsWith("/auth/change-password")) {
-      const incoming =
-        customConfig?.headers?.Authorization ?? customConfig?.headers?.authorization;
-      const principal = await extractPrincipalFromAuthorizationHeader(
-        incoming,
-        getProcessTokenSecret(),
-      );
-      if (!principal) {
-        return {
-          status: 401,
-          data: { status: "error", errorType: "AuthenticationRequired" },
-          headers: new Headers(),
-          url: this.rootApiUrl + endpoint,
-        };
-      }
-      const directory = this.identityDirectory;
-      if (!directory) {
-        return {
-          status: 500,
-          data: { status: "error", errorType: "AuthenticationDirectoryMissing" },
-          headers: new Headers(),
-          url: this.rootApiUrl + endpoint,
-        };
-      }
-      const result = await persistChangedPasswordHash({
-        directory,
-        principal,
-        currentPassword: String(body?.currentPassword ?? ""),
-        newPassword: String(body?.newPassword ?? ""),
-      });
-      if (!result.ok) {
-        return {
-          status: result.status,
-          data: result.body,
-          headers: new Headers(),
-          url: this.rootApiUrl + endpoint,
-        };
-      }
-      this.identityDirectory = result.directory;
-      return {
-        status: 200,
-        data: { changed: true },
+        status: authHttp.status,
+        data: authHttp.data,
         headers: new Headers(),
         url: this.rootApiUrl + endpoint,
       };
     }
 
     const authEnabled = resolveAuthenticationEnabled({ env: process.env });
-    const authorizationHeader =
-      customConfig?.headers?.Authorization ?? customConfig?.headers?.authorization;
     const principal = await extractPrincipalFromAuthorizationHeader(
       authorizationHeader,
       getProcessTokenSecret(),
@@ -171,8 +96,6 @@ export class RestClientStub implements RestClientInterface {
         url: this.rootApiUrl + endpoint,
       };
     }
-    // authorizationHeader reserved for Slice 2 token bind
-    void authorizationHeader;
 
     if (this.persistenceStoreControllerManager === undefined) {
       throw new Error("RestClientStub: persistenceStoreControllerManager is not set");

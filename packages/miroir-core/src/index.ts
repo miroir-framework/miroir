@@ -1335,6 +1335,10 @@ export {
   type RequestAllowed,
 } from "./1_core/authentication/AuthenticationPolicy.js";
 export {
+  handleAuthHttpRoute,
+  type AuthHttpResult,
+} from "./1_core/authentication/AuthenticationHttp.js";
+export {
   authorizationHeaders,
   nextPageWhenAuthGate,
 } from "./1_core/authentication/AuthenticationUi.js";
