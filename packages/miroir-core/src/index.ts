@@ -1341,6 +1341,21 @@ export {
   type RequestAllowed,
 } from "./1_core/authentication/AuthenticationPolicy.js";
 export {
+  ACCESS_DENIED,
+  ADMIN_APPLICATION_UUID,
+  ALWAYS_ALLOW_APPLICATION_TARGETS,
+  ENTITY_ADMIN_APPLICATION_UUID,
+  ENTITY_DEPLOYMENT_UUID,
+  ENTITY_MIROIR_RIGHT_UUID,
+  accessGrantsFromInstances,
+  assertAccess,
+  hasAccess,
+  type AccessDecision,
+  type AccessDeniedBody,
+  type AccessGrant,
+  type AccessTarget,
+} from "./1_core/authentication/AccessPolicy.js";
+export {
   handleAuthHttpRoute,
   type AuthHttpResult,
 } from "./1_core/authentication/AuthenticationHttp.js";

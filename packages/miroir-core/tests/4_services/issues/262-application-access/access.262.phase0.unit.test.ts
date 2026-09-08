@@ -43,8 +43,8 @@ if (runThis) {
       ).toEqual({ allowed: true });
     });
 
-    it("AccessPolicy.ts does not exist yet", () => {
-      expect(existsSync(ACCESS_POLICY)).toBe(false);
+    it("AccessPolicy.ts exists", () => {
+      expect(existsSync(ACCESS_POLICY)).toBe(true);
     });
 
     it("seeds exactly two MiroirRight rows: Alice Library application + Alice Library deployment", () => {

@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../219-FEATURE-preliminary User and Rights model in Admin app (prep for #71)/tdd-implementation-plan.md`](../219-FEATURE-preliminary%20User%20and%20Rights%20model%20in%20Admin%20app%20%28prep%20for%20%2371%29/tdd-implementation-plan.md) ✅ · [`../71-FEATURE-user-authentication/tdd-implementation-plan.md`](../71-FEATURE-user-authentication/tdd-implementation-plan.md) ✅  
 Working branch: `cursor/262-application-access-rights`
 
-**Resume note:** Slice 0 DONE.
+**Resume note:** Slices 0–1 DONE.
 
 ---
 
@@ -52,7 +52,7 @@ This plan does **not** evaluate deployment-scoped grants, harden capability taxo
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize open access + #219 scan + seed grants | ✅ | `access.262.phase0` + `miroirUserRights` |
-| 1 | `hasAccess` on real Admin assets (tracer) | ⬜ | `access.262.phase1` |
+| 1 | `hasAccess` on real Admin assets (tracer) | ✅ | `access.262.phase1` |
 | 2 | Carol seed + login | ⬜ | `access.262.phase2` + `miroirUserRights` + `modelValidation` |
 | 3 | REST 403 / allow via deployment → application | ⬜ | `access.262.phase3` |
 | 4 | UI selector + deep-link hide | ⬜ | `access.262.phase4` |
@@ -144,7 +144,7 @@ Characterization tests lock today’s identity-only gate (`assertRequestAllowed`
 
 ## Slice 1 — `hasAccess` on real Admin assets (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -186,7 +186,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+Added `AccessPolicy.ts` (`hasAccess`, `assertAccess`, `ALWAYS_ALLOW_APPLICATION_TARGETS`, `accessGrantsFromInstances`). Tests load real Admin right JSON and pass **application-typed** grants only, so Alice + `{ deployment, Library deployment }` is false without making the evaluator ignore `targetType`. Capability is not a match key. Did not re-export `MIROIR_APPLICATION_UUID` from `index.ts` (already exported by `evolutionTracePolicy.ts`). Phase 0 now asserts `AccessPolicy.ts` exists.
 
 ---
 
