@@ -18,14 +18,14 @@ import {
   storeManagementEndpoint,
 } from "miroir-test-app_deployment-miroir";
 
-import { reportPageParamsFromSearchParams } from "../../../src/miroir-fwk/4_view/PageDispatcher.js";
-import { resolveRepoRoot } from "../../helpers/integrationTestProfiles.js";
+import { reportPageParamsFromSearchParams } from "../../src/miroir-fwk/4_view/PageDispatcher.js";
+import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "externalService.267.phase0" ||
-  RUN_TEST === "externalService.267.phase0.unit.test";
+  RUN_TEST === "externalService" ||
+  RUN_TEST === "externalService.unit.test";
 
 const ENDPOINT_ENTITY_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
 const REPO_ROOT = resolveRepoRoot();
@@ -62,7 +62,7 @@ function readEndpointAsset(relativePath: string): EndpointDefinition {
   return JSON.parse(readFileSync(join(REPO_ROOT, relativePath), "utf8")) as EndpointDefinition;
 }
 
-describe.skipIf(!shouldRun)("externalService #267 phase0 — current contracts", () => {
+describe.skipIf(!shouldRun)("externalService — current contracts", () => {
   it("lists 13 endpoint source assets under miroir_data and library_model", () => {
     expect(existsSync(MIROIR_DATA_ENDPOINT_DIR)).toBe(true);
     expect(existsSync(LIBRARY_MODEL_ENDPOINT_DIR)).toBe(true);

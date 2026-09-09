@@ -154,6 +154,7 @@ let configFilePath = "../config/miroirConfig.server.json";
 let argCertsDir: string | undefined;
 let argCertFile: string | undefined;
 let argKeyFile: string | undefined;
+let registeredSecretNames: string[] = [];
 
 try {
   const parsed = parseServerArgs(process.argv.slice(2), process.env);
@@ -165,9 +166,10 @@ try {
   argCertFile = parsed.certFile;
   argKeyFile = parsed.keyFile;
   registerSecrets(parsed.secrets);
+  registeredSecretNames = Object.keys(parsed.secrets);
 } catch (error) {
   if (error instanceof ParseServerArgsError) {
-    console.error(error.message);
+    console.error(`Error: ${error.message}`);
     printUsageAndExit();
   }
   throw error;
@@ -178,6 +180,11 @@ console.log(`  --config   : ${configFilePath}`);
 console.log(`  --certsdir : ${argCertsDir ?? '(default: <repo-root>/certs/)'}`);
 console.log(`  --cert     : ${argCertFile ?? process.env.MIROIR_TLS_CERT ?? '(default: <certsdir>/localhost.pem)'}`);
 console.log(`  --key      : ${argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? '(default: <certsdir>/localhost-key.pem)'}`);
+console.log(
+  `  --secret   : ${registeredSecretNames.length > 0
+    ? `${registeredSecretNames.length} named secret(s) registered: ${registeredSecretNames.join(", ")}`
+    : "(none registered — external-service endpoints with a credentialKey will fail at call time)"}`
+);
 
 const configFileContents = JSON.parse(
   readFileSync(new URL(configFilePath, import.meta.url)).toString()
@@ -558,6 +565,9 @@ for (const op of restServerDefaultHandlers) {
       alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
     });
     if (!access.allowed) {
+      myLogger.warn(
+        `access denied: user=${principal?.username ?? "anonymous"} deployment=${deploymentUuidFromHttpRequest(request) ?? "(none)"} url=${request.originalUrl}`
+      );
       response.status(access.status).json(access.body ?? ACCESS_DENIED);
       return;
     }

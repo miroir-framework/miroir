@@ -10,7 +10,7 @@ Key sources: [`packages/miroir-core/src/3_controllers/DomainController.ts`](../.
 External references: [Spotify Web API OpenAPI schema](https://developer.spotify.com/reference/web-api/open-api-schema.yaml), [Spotify "Building with AI" guide](https://developer.spotify.com/documentation/web-api/tutorials/building-with-ai)
 
 **Document role:** analysis **and** architectural decision record.
-**Status:** decisions confirmed with user (design grilling, 2026-09-09). Revised after adversarial review — see [`./adversarial-review.md`](./adversarial-review.md), R1–R20 all dispositioned and applied. Implementation phasing deferred to `tdd-implementation-plan.md`.
+**Status:** implemented (2026-09-09). Decisions confirmed with user (design grilling); revised after adversarial review — see [`./adversarial-review.md`](./adversarial-review.md), R1–R20 all dispositioned and applied. Vertical TDD slices completed per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 ---
 

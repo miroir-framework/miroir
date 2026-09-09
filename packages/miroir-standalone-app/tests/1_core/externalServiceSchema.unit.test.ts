@@ -11,13 +11,13 @@ import {
 } from "miroir-core";
 import { entityDefinitionEndpoint } from "miroir-test-app_deployment-miroir";
 
-import { resolveRepoRoot } from "../../helpers/integrationTestProfiles.js";
+import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "externalServiceSchema.267.phase1" ||
-  RUN_TEST === "externalServiceSchema.267.phase1.unit.test";
+  RUN_TEST === "externalServiceSchema" ||
+  RUN_TEST === "externalServiceSchema.unit.test";
 
 const ENDPOINT_ENTITY_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
 const MIROIR_SELF_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
@@ -98,7 +98,7 @@ function bothKeysEndpointInstance(): Record<string, unknown> {
   };
 }
 
-describe.skipIf(!shouldRun)("externalService #267 phase1 — Endpoint definition key-union", () => {
+describe.skipIf(!shouldRun)("externalServiceSchema — Endpoint definition key-union", () => {
   it("validates an Endpoint whose definition is the externalService branch", () => {
     const check = checkModelValidationInstance(
       entityDefinitionEndpoint.mlSchema,

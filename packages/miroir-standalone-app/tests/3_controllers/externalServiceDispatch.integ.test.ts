@@ -1,10 +1,10 @@
 /**
- * #267 Slice 4 — Dispatch seam: extractor restriction (D6), closed switches,
+ * External service dispatch seam — Dispatch seam: extractor restriction (D6), closed switches,
  * composite invocation (Goal 5), client-side hard errors (D5).
  *
  * Run:
  * ```bash
- * RUN_TEST=externalServiceDispatch.267.phase4 npm run testByFile -w miroir-standalone-app -- externalServiceDispatch.267.phase4 --profile emulatedServer-filesystem
+ * RUN_TEST=externalServiceDispatch npm run testByFile -w miroir-standalone-app -- externalServiceDispatch --profile emulatedServer-filesystem
  * ```
  */
 import { readFileSync } from "node:fs";
@@ -44,9 +44,9 @@ import {
   runQuery,
 } from "miroir-core";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { FileSystemExtractorRunner } from "../../../../miroir-store-filesystem/src/4_services/FileSystemExtractorRunner.js";
-import { sqlStringForExtractor } from "../../../../miroir-store-postgres/src/1_core/SqlGenerator.js";
-import { MixedSqlDbInstanceStoreSection } from "../../../../miroir-store-postgres/src/4_services/sqlDbInstanceStoreSectionMixin.js";
+import { FileSystemExtractorRunner } from "../../../miroir-store-filesystem/src/4_services/FileSystemExtractorRunner.js";
+import { sqlStringForExtractor } from "../../../miroir-store-postgres/src/1_core/SqlGenerator.js";
+import { MixedSqlDbInstanceStoreSection } from "../../../miroir-store-postgres/src/4_services/sqlDbInstanceStoreSectionMixin.js";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
@@ -59,30 +59,30 @@ import {
 } from "miroir-test-app_deployment-library";
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
-import { loglevelnext } from "../../../src/loglevelnextImporter.js";
-import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../../src/miroir-fwk/4-tests/tests-utils.js";
-import { miroirAppStartup } from "../../../src/startup.js";
-import { cleanLevel, packageName } from "../../3_controllers/constants.js";
-import { AppStackIntegrationTestSession } from "../../helpers/IntegrationTestSession.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { miroirAppStartup } from "../../src/startup.js";
+import { cleanLevel, packageName } from "./constants.js";
+import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 import {
   libraryEntitiesAndInstances,
   libraryTestbedInitParams,
-} from "../../helpers/libraryPlayfieldSeeds.js";
-import { loadTestConfigFiles } from "../../utils/fileTools.js";
+} from "../helpers/libraryPlayfieldSeeds.js";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
 import {
   startFakeExternalServiceServer,
   type FakeExternalServiceServer,
-} from "../../utils/fakeExternalServiceServer.js";
+} from "../utils/fakeExternalServiceServer.js";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "externalServiceDispatch.267.phase4" ||
-  RUN_TEST === "externalServiceDispatch.267.phase4.integ.test";
+  RUN_TEST === "externalServiceDispatch" ||
+  RUN_TEST === "externalServiceDispatch.integ.test";
 
-const ISSUE_DIR = dirname(fileURLToPath(import.meta.url));
+const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), "fixtures");
 const PLAYLIST_OK = JSON.parse(
-  readFileSync(join(ISSUE_DIR, "fixtures/playlist-ok.json"), "utf8"),
+  readFileSync(join(FIXTURES_DIR, "playlist-ok.json"), "utf8"),
 ) as { name: string; tracks: { total: number } };
 
 const PLAYLIST_NAME_LITERAL = "Rock Classics";
@@ -117,7 +117,7 @@ if (!importedLoggerOptions) {
   throw new Error("importedLoggerOptions is undefined");
 }
 const loggerOptions: LoggerOptions = importedLoggerOptions;
-const fileName = "externalServiceDispatch.267.phase4.integ.test";
+const fileName = "externalServiceDispatch.integ.test";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -296,7 +296,7 @@ async function commitTestEndpoint(): Promise<void> {
 beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
     throw new Error(
-      "externalServiceDispatch.267.phase4 requires emulateServer: true (in-process server path).",
+      "externalServiceDispatch requires emulateServer: true (in-process server path).",
     );
   }
 
@@ -318,7 +318,7 @@ beforeAll(async () => {
   domainController = executionEnvironment.domainController;
   if (!executionEnvironment.domainControllerForServer) {
     throw new Error(
-      "externalServiceDispatch.267.phase4 Cycle 3 requires the emulated-server DomainController (persistenceStoreAccessMode === local).",
+      "externalServiceDispatch Cycle 3 requires the emulated-server DomainController (persistenceStoreAccessMode === local).",
     );
   }
   serverDomainController = executionEnvironment.domainControllerForServer;
@@ -351,7 +351,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceDispatch #267 phase4 — Cycle 1 extractor restriction (D6)", () => {
+describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 1 extractor restriction (D6)", () => {
   it("extractorFromAction targeting Library lendDocument (actions-branch) is a hard Action2Error", async () => {
     const result = await domainController.handleBoxedExtractorOrQueryAction(
       boxedFromActionQuery(LENDING_ENDPOINT_UUID, "lendDocument", {
@@ -410,7 +410,7 @@ async function expectNamedExtractorFromActionFailure(
   }
 }
 
-describe.skipIf(!shouldRun).sequential("externalServiceDispatch #267 phase4 — Cycle 2 closed switches name extractorFromAction", () => {
+describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 closed switches name extractorFromAction", () => {
   it("QuerySelectors.runQuery names extractorFromAction", async () => {
     await expectNamedExtractorFromActionFailure(() =>
       runQuery(
@@ -520,7 +520,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch #267 phase4 — 
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceDispatch #267 phase4 — Cycle 3 composite invocation (Goal 5)", () => {
+describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 3 composite invocation (Goal 5)", () => {
   it("compositeActionSequence get-playlist returns the fixture playlist", async () => {
     const result = await serverDomainController.handleAction(
       {
@@ -600,7 +600,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch #267 phase4 — 
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceDispatch #267 phase4 — Cycle 4 client-side hard errors (D5)", () => {
+describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 4 client-side hard errors (D5)", () => {
   it("sync QuerySelectors.runQuery on extractorFromAction names the extractor", async () => {
     const result = runQuery(
       {},

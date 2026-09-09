@@ -257,6 +257,10 @@ export async function executeExternalServiceOperation(
 ): Promise<Action2ReturnType> {
   const externalService = getExternalService(endpointInstance);
   if (!externalService) {
+    log.warn("external service call rejected: target endpoint is not an externalService endpoint", {
+      endpointUuid: (endpointInstance as { uuid?: string }).uuid,
+      actionType,
+    });
     return externalServiceError(
       "InvalidAction",
       "extractorFromAction is restricted to external-service GET operations (target is not an externalService endpoint)",
@@ -272,6 +276,7 @@ async function fetchExternalServiceOperation(
 ): Promise<Action2ReturnType> {
   const operation = externalService.operations.find((op) => op.operationId === actionType);
   if (!operation) {
+    log.warn("external service call rejected: unknown operation", { actionType });
     return externalServiceError(
       "InvalidAction",
       `Unknown external service operation: ${actionType}`,
@@ -279,6 +284,7 @@ async function fetchExternalServiceOperation(
     );
   }
   if (!externalService.enabledOperations.includes(actionType)) {
+    log.warn("external service call rejected: operation not enabled", { actionType });
     return externalServiceError(
       "InvalidAction",
       `External service operation is not enabled: ${actionType}`,
@@ -286,6 +292,7 @@ async function fetchExternalServiceOperation(
     );
   }
   if (String(operation.method).toUpperCase() !== "GET") {
+    log.warn("external service call rejected: non-GET operation", { actionType, method: operation.method });
     return externalServiceError(
       "InvalidAction",
       `extractorFromAction is restricted to GET operations; ${actionType} has method ${operation.method}`,
@@ -295,6 +302,7 @@ async function fetchExternalServiceOperation(
 
   const baseUrlError = assertBaseUrlAllowed(externalService.baseUrl);
   if (baseUrlError) {
+    log.warn("external service call rejected: baseUrl not allowed", { baseUrl: externalService.baseUrl });
     return baseUrlError;
   }
 
@@ -310,10 +318,17 @@ async function fetchExternalServiceOperation(
     try {
       token = resolveSecret(externalService.credentialKey);
     } catch {
+      log.warn(
+        "external service call blocked: credentialKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
+        { credentialKey: externalService.credentialKey, actionType },
+      );
       return externalServiceError("InvalidAction", "Unknown or empty secret");
     }
     headers.Authorization = `Bearer ${token}`;
   }
+
+  // Never log `headers` here: it contains the secret. The URL is built only from the materialized operation.
+  log.info("external service call", { actionType, method: operation.method, url });
 
   let response: Response;
   try {
@@ -322,6 +337,7 @@ async function fetchExternalServiceOperation(
       headers,
     });
   } catch {
+    log.warn("external service request failed (network)", { actionType, url });
     return externalServiceError(
       "ExternalServiceUpstreamFailure",
       "External service request failed",
@@ -329,12 +345,19 @@ async function fetchExternalServiceOperation(
   }
 
   if (response.status < 200 || response.status >= 300) {
+    log.warn("external service call failed", {
+      actionType,
+      url,
+      httpStatus: response.status,
+      errorType: errorTypeForHttpStatus(response.status),
+    });
     return externalServiceError(
       errorTypeForHttpStatus(response.status),
       messageForHttpStatus(response.status),
       { httpStatus: response.status },
     );
   }
+  log.debug("external service call succeeded", { actionType, httpStatus: response.status });
 
   let body: unknown;
   try {

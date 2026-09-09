@@ -1,12 +1,12 @@
 /**
- * #267 Slice 2 — extractorFromAction end-to-end against a local fake Spotify server.
+ * extractorFromAction end-to-end — extractorFromAction end-to-end against a local fake Spotify server.
  *
  * Vitest integ: live HTTP server + in-process secrets are not MiroirTest-reachable.
  *
  * Run:
  * ```bash
  * VITE_MIROIR_TEST_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/miroirConfig.test-emulatedServer-filesystem.json \
- *   RUN_TEST=externalServiceQuery.267.phase2 npm run testByFile -w miroir-standalone-app -- externalServiceQuery.267.phase2
+ *   RUN_TEST=externalServiceQuery npm run testByFile -w miroir-standalone-app -- externalServiceQuery
  * ```
  */
 import { readFileSync } from "node:fs";
@@ -62,33 +62,33 @@ import {
   spotifyServiceEndpointSyncInput,
 } from "miroir-test-app_deployment-miroir";
 
-import { loglevelnext } from "../../../src/loglevelnextImporter.js";
-import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../../src/miroir-fwk/4-tests/tests-utils.js";
-import { miroirAppStartup } from "../../../src/startup.js";
-import { cleanLevel, packageName } from "../../3_controllers/constants.js";
-import { AppStackIntegrationTestSession } from "../../helpers/IntegrationTestSession.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { miroirAppStartup } from "../../src/startup.js";
+import { cleanLevel, packageName } from "./constants.js";
+import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 import {
   libraryEntitiesAndInstances,
   libraryTestbedInitParams,
-} from "../../helpers/libraryPlayfieldSeeds.js";
-import { loadTestConfigFiles } from "../../utils/fileTools.js";
+} from "../helpers/libraryPlayfieldSeeds.js";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
 import {
   startFakeExternalServiceServer,
   type FakeExternalServiceServer,
-} from "../../utils/fakeExternalServiceServer.js";
+} from "../utils/fakeExternalServiceServer.js";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "externalServiceQuery.267.phase2" ||
-  RUN_TEST === "externalServiceQuery.267.phase2.integ.test";
+  RUN_TEST === "externalServiceQuery" ||
+  RUN_TEST === "externalServiceQuery.integ.test";
 
-const ISSUE_DIR = dirname(fileURLToPath(import.meta.url));
+const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), "fixtures");
 const PLAYLIST_OK = JSON.parse(
-  readFileSync(join(ISSUE_DIR, "fixtures/playlist-ok.json"), "utf8"),
+  readFileSync(join(FIXTURES_DIR, "playlist-ok.json"), "utf8"),
 ) as { name: string; tracks: { total: number }; unknownExtraField?: string };
 const PLAYLIST_WRONG_TYPE = JSON.parse(
-  readFileSync(join(ISSUE_DIR, "fixtures/playlist-wrong-type.json"), "utf8"),
+  readFileSync(join(FIXTURES_DIR, "playlist-wrong-type.json"), "utf8"),
 ) as { name: unknown };
 
 const PLAYLIST_NAME_LITERAL = "Rock Classics";
@@ -122,7 +122,7 @@ if (!importedLoggerOptions) {
   throw new Error("importedLoggerOptions is undefined");
 }
 const loggerOptions: LoggerOptions = importedLoggerOptions;
-const fileName = "externalServiceQuery.267.phase2.integ.test";
+const fileName = "externalServiceQuery.integ.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
@@ -272,7 +272,7 @@ async function commitTestEndpoint(): Promise<void> {
 beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
     throw new Error(
-      "externalServiceQuery.267.phase2 requires emulateServer: true (in-process server path).",
+      "externalServiceQuery requires emulateServer: true (in-process server path).",
     );
   }
 
@@ -321,7 +321,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceQuery #267 phase2 — extractorFromAction vs fake Spotify", () => {
+describe.skipIf(!shouldRun).sequential("externalServiceQuery — extractorFromAction vs fake Spotify", () => {
   it("boxed extractorFromAction returns the fixture playlist through the emulated-server path", async () => {
     expect(PLAYLIST_OK.name).toBe(PLAYLIST_NAME_LITERAL);
 

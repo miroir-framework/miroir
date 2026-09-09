@@ -1,5 +1,5 @@
 /**
- * #267 Slice 6 — store-section skip for Entity externalDataSource.kind === "http".
+ * HTTP external entity store skip — store-section skip for Entity externalDataSource.kind === "http".
  * Full deployment boot proof is Slice 7; this is the store-section-level assertion.
  */
 import { existsSync, mkdtempSync, rmSync } from "node:fs";
@@ -8,13 +8,13 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { isHttpExternalEntity, type Entity } from "miroir-core";
-import { FileSystemStoreSection } from "../../../../miroir-store-filesystem/src/4_services/FileSystemStoreSection.js";
+import { FileSystemStoreSection } from "../../../miroir-store-filesystem/src/4_services/FileSystemStoreSection.js";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "externalServiceHttpStoreSkip.267.phase6" ||
-  RUN_TEST === "externalServiceHttpStoreSkip.267.phase6.unit.test";
+  RUN_TEST === "externalServiceHttpStoreSkip" ||
+  RUN_TEST === "externalServiceHttpStoreSkip.unit.test";
 
 const HTTP_ENTITY_UUID = "56166585-b6fd-42c6-95d3-32a80c3304f7";
 const SQL_ENTITY_UUID = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
@@ -48,7 +48,7 @@ afterEach(() => {
   }
 });
 
-describe.skipIf(!shouldRun)("externalServiceHttpStoreSkip #267 phase6", () => {
+describe.skipIf(!shouldRun)("externalServiceHttpStoreSkip", () => {
   it("isHttpExternalEntity is true only for kind http", () => {
     expect(isHttpExternalEntity(httpEntity)).toBe(true);
     expect(isHttpExternalEntity(sqlEntity)).toBe(false);

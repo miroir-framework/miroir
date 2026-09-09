@@ -1,5 +1,5 @@
 /**
- * #267 Slice 7 — Spotify example app package (D7, D3 assets, D10).
+ * Spotify example app — Spotify example app package (D7, D3 assets, D10).
  *
  * Vitest integ: full deployment boot + report rendering are not MiroirTest-reachable.
  * Follows the Slice 5 report-path pattern (MemoryRouter + ReportViewWithEditor).
@@ -7,7 +7,7 @@
  *
  * Run:
  * ```bash
- * RUN_TEST=spotifyApp.267.phase7 npm run testByFile -w miroir-standalone-app -- spotifyApp.267.phase7 --profile emulatedServer-filesystem
+ * RUN_TEST=spotifyApp npm run testByFile -w miroir-standalone-app -- spotifyApp --profile emulatedServer-filesystem
  * ```
  */
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
@@ -71,19 +71,19 @@ import {
   spotifyInitApplicationVersion,
 } from "miroir-test-app_deployment-spotify";
 
-import { loglevelnext } from "../../../src/loglevelnextImporter.js";
-import { ReportPageContextProvider } from "../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
-import { ReportViewWithEditor } from "../../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
-import { DocumentOutlineContextProvider } from "../../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
-import { MiroirThemeProvider } from "../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
-import { miroirAppStartup } from "../../../src/startup.js";
-import { cleanLevel, packageName } from "../../3_controllers/constants.js";
-import { AppStackIntegrationTestSession } from "../../helpers/IntegrationTestSession.js";
-import { loadTestConfigFiles } from "../../utils/fileTools.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
+import { ReportViewWithEditor } from "../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
+import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
+import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { miroirAppStartup } from "../../src/startup.js";
+import { cleanLevel, packageName } from "../3_controllers/constants.js";
+import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
 import {
   startFakeExternalServiceServer,
   type FakeExternalServiceServer,
-} from "../../utils/fakeExternalServiceServer.js";
+} from "../utils/fakeExternalServiceServer.js";
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
@@ -102,19 +102,19 @@ vi.mock("miroir-react", async (importOriginal) => {
   };
 });
 
-vi.mock("../../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
+vi.mock("../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
   ModelDiagramReportSectionView: () => null,
 }));
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "spotifyApp.267.phase7" ||
-  RUN_TEST === "spotifyApp.267.phase7.integ.test";
+  RUN_TEST === "spotifyApp" ||
+  RUN_TEST === "spotifyApp.integ.test";
 
-const ISSUE_DIR = dirname(fileURLToPath(import.meta.url));
+const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), "fixtures");
 const PLAYLIST_OK = JSON.parse(
-  readFileSync(join(ISSUE_DIR, "fixtures/playlist-ok.json"), "utf8"),
+  readFileSync(join(FIXTURES_DIR, "playlist-ok.json"), "utf8"),
 ) as {
   id: string;
   name: string;
@@ -149,7 +149,7 @@ if (!importedLoggerOptions) {
   throw new Error("importedLoggerOptions is undefined");
 }
 const loggerOptions: LoggerOptions = importedLoggerOptions;
-const fileName = "spotifyApp.267.phase7.integ.test";
+const fileName = "spotifyApp.integ.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
@@ -337,7 +337,7 @@ function renderSpotifyReport(reportDefinition: Report, playlistId: string) {
 
 beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
-    throw new Error("spotifyApp.267.phase7 requires emulateServer: true (in-process server path).");
+    throw new Error("spotifyApp requires emulateServer: true (in-process server path).");
   }
 
   fakeServer = await startFakeExternalServiceServer({
@@ -443,7 +443,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("spotifyApp #267 phase7 — Spotify deployment boot + report", () => {
+describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot + report", () => {
   it("registers the Spotify deployment in admin assets, test config, and the testbed map", () => {
     expect(deployment_Spotify.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
     expect(deployment_Spotify_DO_NO_USE.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);

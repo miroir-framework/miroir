@@ -1,11 +1,11 @@
 /**
- * #267 Slice 3 — HTTP error semantics (D12) + SSRF/credential/allowlist guards (D13).
+ * External service HTTP guards — HTTP error semantics (D12) + SSRF/credential/allowlist guards (D13).
  *
  * Reuses the Slice 2 fixture (fake server + secrets + committed test endpoint).
  *
  * Run:
  * ```bash
- * RUN_TEST=externalServiceGuards.267.phase3 npm run testByFile -w miroir-standalone-app -- externalServiceGuards.267.phase3 --profile emulatedServer-filesystem
+ * RUN_TEST=externalServiceGuards npm run testByFile -w miroir-standalone-app -- externalServiceGuards --profile emulatedServer-filesystem
  * ```
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -50,26 +50,26 @@ import {
 } from "miroir-test-app_deployment-library";
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
 
-import { loglevelnext } from "../../../src/loglevelnextImporter.js";
-import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../../src/miroir-fwk/4-tests/tests-utils.js";
-import { miroirAppStartup } from "../../../src/startup.js";
-import { cleanLevel, packageName } from "../../3_controllers/constants.js";
-import { AppStackIntegrationTestSession } from "../../helpers/IntegrationTestSession.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { miroirAppStartup } from "../../src/startup.js";
+import { cleanLevel, packageName } from "./constants.js";
+import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 import {
   libraryEntitiesAndInstances,
   libraryTestbedInitParams,
-} from "../../helpers/libraryPlayfieldSeeds.js";
-import { loadTestConfigFiles } from "../../utils/fileTools.js";
+} from "../helpers/libraryPlayfieldSeeds.js";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
 import {
   startFakeExternalServiceServer,
   type FakeExternalServiceServer,
-} from "../../utils/fakeExternalServiceServer.js";
+} from "../utils/fakeExternalServiceServer.js";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "externalServiceGuards.267.phase3" ||
-  RUN_TEST === "externalServiceGuards.267.phase3.integ.test";
+  RUN_TEST === "externalServiceGuards" ||
+  RUN_TEST === "externalServiceGuards.integ.test";
 
 const PLAYLIST_RESPONSE_SCHEMA = {
   type: "object",
@@ -105,7 +105,7 @@ if (!importedLoggerOptions) {
   throw new Error("importedLoggerOptions is undefined");
 }
 const loggerOptions: LoggerOptions = importedLoggerOptions;
-const fileName = "externalServiceGuards.267.phase3.integ.test";
+const fileName = "externalServiceGuards.integ.test";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -305,7 +305,7 @@ async function queryPlaylist(playlistId: string, actionType?: string): Promise<u
 beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
     throw new Error(
-      "externalServiceGuards.267.phase3 requires emulateServer: true (in-process server path).",
+      "externalServiceGuards requires emulateServer: true (in-process server path).",
     );
   }
 
@@ -351,7 +351,7 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards #267 phase3 — D12 HTTP mapping", () => {
+describe.skipIf(!shouldRun).sequential("externalServiceGuards — D12 HTTP mapping", () => {
   it.each([
     {
       status: 401,
@@ -440,7 +440,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards #267 phase3 — D1
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards #267 phase3 — credential failures", () => {
+describe.skipIf(!shouldRun).sequential("externalServiceGuards — credential failures", () => {
   it("unknown credentialKey fails closed before any fetch", async () => {
     const result = await executeExternalServiceOperation(
       syntheticEndpoint({ credentialKey: "does-not-exist" }),
@@ -465,7 +465,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards #267 phase3 — cr
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards #267 phase3 — SSRF default-deny", () => {
+describe.skipIf(!shouldRun).sequential("externalServiceGuards — SSRF default-deny", () => {
   it("without the test opt-in, the fixture loopback http baseUrl is rejected", async () => {
     clearAllowedInsecureBaseUrlsForTests();
     try {
@@ -497,7 +497,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards #267 phase3 — SS
   });
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceGuards #267 phase3 — operation allowlist", () => {
+describe.skipIf(!shouldRun).sequential("externalServiceGuards — operation allowlist", () => {
   it("operationId present in operations[] but not in enabledOperations is rejected", async () => {
     const result = await executeExternalServiceOperation(
       syntheticEndpoint({

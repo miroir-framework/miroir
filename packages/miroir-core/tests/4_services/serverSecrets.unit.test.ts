@@ -1,5 +1,5 @@
 /**
- * #267 Slice 2 — named secrets, CLI parse, redaction, no process.env dump.
+ * Named server secrets — named secrets, CLI parse, redaction, no process.env dump.
  * Not MiroirTest-reachable: startup/config internals (miroir-server has no vitest).
  */
 import { existsSync, readFileSync } from "node:fs";
@@ -19,17 +19,17 @@ import {
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "serverSecrets.267.phase2" ||
-  RUN_TEST === "serverSecrets.267.phase2.unit.test";
+  RUN_TEST === "serverSecrets" ||
+  RUN_TEST === "serverSecrets.unit.test";
 
-const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../..");
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const SERVER_TS = join(REPO_ROOT, "packages/miroir-server/src/server.ts");
 
 afterEach(() => {
   clearSecrets();
 });
 
-describe.skipIf(!shouldRun)("serverSecrets #267 phase2 — SecretStore + parseServerArgs + redaction", () => {
+describe.skipIf(!shouldRun)("serverSecrets — SecretStore + parseServerArgs + redaction", () => {
   it("parseServerArgs([--secret, a=b]) returns secret map {a:b}", () => {
     const parsed = parseServerArgs(["--secret", "a=b"]);
     expect(parsed.secrets).toEqual({ a: "b" });

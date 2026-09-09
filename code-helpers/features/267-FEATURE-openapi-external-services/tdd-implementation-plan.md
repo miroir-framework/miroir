@@ -17,7 +17,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/267
 Working branch: `267-FEATURE-openapi-external-services`
 
-**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE. Slice 2 DONE. Slice 3 DONE. Slice 4 DONE. Slice 5 DONE. Slice 6 DONE. Slice 7 DONE.**
+**Resume note:** All slices DONE (2026-09-09). Slice order & granularity confirmed by the user; revised after plan adversarial review (P1–P24 all dispositioned and applied).
 
 ---
 
@@ -38,15 +38,15 @@ This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize endpoint/dispatch/report contracts | ✅ | `externalService.267.phase0.unit.test.ts` + modelValidation |
-| 1 | Endpoint `definition` key-union refactor (D1) | ✅ | `externalServiceSchema.267.phase1.unit.test.ts` + nonreg |
-| 2 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify, incl. named secrets (D4, D5 server, D6, D11) | ✅ | `externalServiceQuery.267.phase2.integ.test.ts` |
-| 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ✅ | `externalServiceGuards.267.phase3.integ.test.ts` |
-| 4 | Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5) | ✅ | `externalServiceDispatch.267.phase4.integ.test.ts` |
-| 5 | Report path: template extractor + param forwarding + async report-load routing (D5 client, D8) | ✅ | `externalServiceReport.267.phase5.integ.test.tsx` |
+| 0 | Characterize endpoint/dispatch/report contracts | ✅ | `externalService.unit.test.ts` + modelValidation |
+| 1 | Endpoint `definition` key-union refactor (D1) | ✅ | `externalServiceSchema.unit.test.ts` + nonreg |
+| 2 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify, incl. named secrets (D4, D5 server, D6, D11) | ✅ | `externalServiceQuery.integ.test.ts` |
+| 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ✅ | `externalServiceGuards.integ.test.ts` |
+| 4 | Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5) | ✅ | `externalServiceDispatch.integ.test.ts` |
+| 5 | Report path: template extractor + param forwarding + async report-load routing (D5 client, D8) | ✅ | `externalServiceReport.integ.test.tsx` |
 | 6 | Sync transformer + bounded converter + Entity `kind: "http"` schema (D2, D3) | ✅ | MiroirTest `externalServiceSync` (unit) + `externalServiceSyncExecute` (integ) |
-| 7 | Spotify example app package (D7, D3, D10) | ✅ | modelValidation + `spotifyApp.267.phase7.integ.test.tsx` |
-| 8 | Nonreg, docs, cleanup, AC, opt-in live test | ⬜ | nonreg step + tracer narrative |
+| 7 | Spotify example app package (D7, D3, D10) | ✅ | modelValidation + `spotifyApp.integ.test.tsx` |
+| 8 | Nonreg, docs, cleanup, AC, opt-in live test | ✅ | nonreg step `externalServices-spotify` + tracer narrative |
 
 ---
 
@@ -89,7 +89,7 @@ From the analysis decision record (binding; deviations go into the slice's Reali
 | MiroirTest suite `externalServiceSync` (unit) | uuid `f4e5dde0-3dba-493b-a208-04494dbbb2f5` — register in the folder catalog (`loadApplicationMiroirTestsFromFolders` / `listCliUnitSuiteKeysFromFolders`) |
 | MiroirTest suite `externalServiceSyncExecute` (integ) | uuid `394242e7-6443-41b8-b061-9bf2bcf06f17` — same catalog registration |
 | MiroirTest suite `externalServiceQuery` (integ, Slice 8 migration target) | uuid `008325cb-2d7e-4dea-97cd-0daa36c143bb` |
-| Issue-scoped vitest dir | `tests/**/issues/267-openapi-external-services/` |
+| Feature-named vitest (post-#238 cleanup) | `tests/1_core/externalService*.unit.test.ts`, `tests/3_controllers/externalService*.integ.test.ts`, `tests/4_view/{externalServiceReport,spotifyApp}.integ.test.tsx`, `tests/external-services/spotifyLive.integ.test.ts`, `miroir-core/tests/4_services/{serverSecrets,externalServiceHttpStoreSkip}.unit.test.ts` |
 | Nonreg step | `externalServices-spotify` |
 
 ---
@@ -707,27 +707,32 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 - Server/electron/docker image copy of Spotify assets is still optional packaging (docker seed Deployment exists). Slice 8 tracer narrative (`node …/miroir-server/release/index.js --secret spotifyUser=<token>` then playlist report URL) needs those assets on the server filesystem.
 - Issue-dir cleanup will move/rename `spotifyApp.267.phase7.integ.test.tsx` with the other 267 vitest files.
 
+**Post-slice fixes (2026-09-10, live-run feedback):**
+- **Registration inventory gap:** the live server denied the playlist report's `/query` with HTTP 403 — the #262 access gate (`assertAccessForDeployment`) had **no MiroirRight grants** for the Spotify application/deployment (only Admin + Miroir apps are always-allowed; Library has explicit grants). Added `MiroirRight` assets to `miroir-test-app_deployment-admin`: Alice admin on the Spotify application (`f46164d0-…`), Alice read (`9a968c7b-…`) and Dave read (`dc0b66d8-…`) on the Spotify deployment. The D7 inventory should have included rights grants.
+- **Observability (user request):** `server.ts` startup now prints registered secret **names** (`--secret : N named secret(s) registered: …`, never values) and warns when none are registered; access-gate denials are warn-logged (user/deployment/url); `ExternalServiceClient` logs dispatch (operationId/method/url — never headers), every fail-closed rejection, and call outcomes (httpStatus/errorType).
+- **Usage pitfall confirmed:** `LIVE_SPOTIFY_TOKEN` is only the opt-in *test* env var (8.2); the server reads `--secret spotifyUser=<token>` or `MIROIR_SECRET_SPOTIFYUSER`.
+
 ---
 
 ## Slice 8 — Nonreg, docs, cleanup, AC, opt-in live test
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 8.1 Nonreg
 
-- Add `externalServices-spotify` step to `scripts/nonreg-manifest.json` (phase 2/3/4/5/7 tests + `externalServiceSync` / `externalServiceSyncExecute` suites).
+- Added `externalServices-spotify` step to `scripts/nonreg-manifest.json` — single `bash -c` bundle: MiroirTest `externalServiceSync` (unit) + `externalServiceSyncExecute` (integ, `emulatedServer-filesystem`), `serverSecrets` + `externalServiceHttpStoreSkip` (`miroir-core`), and app-stack `externalServiceQuery` / `Guards` / `Dispatch` / `Report` / `spotifyApp` (`miroir-standalone-app`, `--profile emulatedServer-filesystem`).
 
 ### 8.2 Opt-in live test (D9)
 
-- `spotifyLive.267.phase8.integ.test.ts`: skipped unless `LIVE_SPOTIFY_TOKEN` (env) is set; runs the Slice 2 query against real Spotify; never logs env/headers (D4); not part of nonreg.
+- `packages/miroir-standalone-app/tests/external-services/spotifyLive.integ.test.ts`: `describe.skipIf(!process.env.LIVE_SPOTIFY_TOKEN)`; Slice 2-style boxed `extractorFromAction` against `https://api.spotify.com/v1` with `registerSecrets({ spotifyUser: LIVE_SPOTIFY_TOKEN })` and public playlist `37i9dQZF1DX0XUsuxWHRQd`; no env/header logging; not in nonreg.
 
 ### 8.3 Docs
 
-- `analysis.md` status → implemented; progress table DONE; `docs/reference/testing.md` notes the new suite keys; `docs/reference/data-architecture-deployments.md` gains the external-service endpoint paragraph; **issue #267 AC text updated** ("upserts the endpoint actions" → operations + entity, matching the D1 repair).
+- `analysis.md` status → **implemented**; `docs/reference/testing.md` documents suite keys + PLATFORM vitest locations; `docs/reference/data-architecture-deployments.md` — external-service endpoint paragraph; issue #267 AC bullet updated (`operations[]` + entity, not "endpoint actions").
 
 ### 8.4 Issue-directory cleanup
 
-- Migrate still-valuable assertions from `tests/**/issues/267-openapi-external-services/` into feature-named suites (candidate: the end-to-end query path → MiroirTest suite `externalServiceQuery`, uuid `008325cb-…`, if the harness gains a fake-server fixture; otherwise keep as a feature-named vitest file); delete the issue directory (per `docs/contributing/testing.md`, #238 rule).
+- Migrated all `#267` issue-dir vitest files to feature-named paths (layer dirs + `tests/external-services/` for live test); fixtures beside consumers (`3_controllers/fixtures/`, `4_view/fixtures/`); deleted `tests/**/issues/267-openapi-external-services/`. MiroirTest `externalServiceQuery` (uuid `008325cb-…`) not migrated — harness cannot start fake HTTP server; end-to-end query stays PLATFORM vitest (`externalServiceQuery.integ.test.ts`). Kept `tests/utils/fakeExternalServiceServer.ts`.
 
 ### 8.5 Tracer bullet (narrative)
 
@@ -735,19 +740,19 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 2. Open the standalone app → Spotify deployment → playlist report URL with `&playlistId=<id>`.
 3. Report shows playlist name, owner, first ≤100 tracks, total — fetched server-side from Spotify (fake server in tests).
 
-Automated equivalent: `spotifyApp.267.phase7.integ.test.ts` + `externalServiceQuery.267.phase2.integ.test.ts`.
+Automated equivalent: `spotifyApp.integ.test.tsx` + `externalServiceQuery.integ.test.ts`.
 
 ### AC checklist (#267)
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| External service definable as Endpoint instance (raw doc + `credentialKey`), editable via generic editor | Slice 1 schema test + Slice 7 assets (`modelValidation`) | ⬜ |
-| `--secret spotifyUser=<token>`; token never in repo/model/REST responses | Slice 2 secrets cycles + redaction tests; Slice 2 header assertion | ⬜ |
-| Sync transformer produces reviewable `compositeActionSequence`; executing it upserts operations + entity | `externalServiceSync` + `externalServiceSyncExecute` suites | ⬜ |
-| Report at `?…&playlistId=<id>` displays playlist (name, owner, ≤100 tracks, total), server-fetched | Slice 5 + Slice 7 integ tests | ⬜ |
-| External data read-only; non-GET not exposed | Slice 4 cycle 1; Slice 6 non-GET-skip assertion | ⬜ |
-| Client-side without server → clear error | Slice 4 cycle 4 | ⬜ |
-| Integration tests vs fake server, dummy secrets, no real token | Slices 2–7 fixtures; Slice 8 opt-in live test separate | ⬜ |
+| External service definable as Endpoint instance (raw doc + `credentialKey`), editable via generic editor | Slice 1 schema test + Slice 7 assets (`modelValidation`) | ✅ |
+| `--secret spotifyUser=<token>`; token never in repo/model/REST responses | Slice 2 secrets cycles + redaction tests; Slice 2 header assertion | ✅ |
+| Sync transformer produces reviewable `compositeActionSequence`; executing it upserts operations + entity | `externalServiceSync` + `externalServiceSyncExecute` suites | ✅ |
+| Report at `?…&playlistId=<id>` displays playlist (name, owner, ≤100 tracks, total), server-fetched | Slice 5 + Slice 7 integ tests | ✅ |
+| External data read-only; non-GET not exposed | Slice 4 cycle 1; Slice 6 non-GET-skip assertion | ✅ |
+| Client-side without server → clear error | Slice 4 cycle 4 | ✅ |
+| Integration tests vs fake server, dummy secrets, no real token | Slices 2–7 fixtures; Slice 8 opt-in live test separate | ✅ |
 
 ### Validation
 
@@ -757,4 +762,14 @@ npm run nonreg
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+**Done (2026-09-09):**
+
+- **Nonreg:** `scripts/nonreg-manifest.json` step `externalServices-spotify` (tier `default`, `requires: none`) — chained `bash -c` covering all listed MiroirTest + PLATFORM tests on `emulatedServer-filesystem` where required.
+- **Live test:** `tests/external-services/spotifyLive.integ.test.ts` — opt-in only; boots Spotify deployment on emulated server; real HTTPS (no loopback opt-in); never logs token/headers.
+- **#238 cleanup:** issue directories removed; tests renamed without `.267.phaseN` infix; RUN_TEST filters updated (`externalServiceQuery`, `serverSecrets`, etc.).
+- **Docs:** analysis status, testing reference (suite keys + vitest map), data-architecture external-service paragraph; gh issue #267 AC sync bullet fixed.
+- **`miroir-core` devDependency:** `miroir-store-filesystem` added for `externalServiceHttpStoreSkip.unit.test.ts` (moved from standalone-app issue dir).
+
+**Deviations:**
+- Nonreg bundle is one `bash -c` step (id `externalServices-spotify`) rather than nine separate manifest rows — matches plan's single step id; differs from #246/#247 multi-step pattern.
+- `externalServiceHttpStoreSkip` lives in `miroir-core/tests/4_services/` (plan Slice 6 file was under standalone-app issue dir; nonreg task specified miroir-core).

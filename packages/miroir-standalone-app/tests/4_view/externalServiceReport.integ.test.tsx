@@ -1,5 +1,5 @@
 /**
- * #267 Slice 5 — Report path: extractorTemplateFromAction + param forwarding
+ * External service report path — Report path: extractorTemplateFromAction + param forwarding
  * + async report-load routing (D5 client, D8).
  *
  * Vitest integ (.tsx + MemoryRouter): React report rendering and URL dispatch
@@ -8,7 +8,7 @@
  *
  * Run:
  * ```bash
- * RUN_TEST=externalServiceReport.267.phase5 npm run testByFile -w miroir-standalone-app -- externalServiceReport.267.phase5 --profile emulatedServer-filesystem
+ * RUN_TEST=externalServiceReport npm run testByFile -w miroir-standalone-app -- externalServiceReport --profile emulatedServer-filesystem
  * ```
  */
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
@@ -72,25 +72,25 @@ import {
   defaultStoredMiroirTheme,
 } from "miroir-test-app_deployment-miroir";
 
-import { loglevelnext } from "../../../src/loglevelnextImporter.js";
-import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../../src/miroir-fwk/4-tests/tests-utils.js";
-import { ReportPageContextProvider } from "../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
-import { ReportViewWithEditor } from "../../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
-import { DocumentOutlineContextProvider } from "../../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
-import { MiroirThemeProvider } from "../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
-import { reportPageParamsFromSearchParams } from "../../../src/miroir-fwk/4_view/PageDispatcher.js";
-import { miroirAppStartup } from "../../../src/startup.js";
-import { cleanLevel, packageName } from "../../3_controllers/constants.js";
-import { AppStackIntegrationTestSession } from "../../helpers/IntegrationTestSession.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
+import { ReportViewWithEditor } from "../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
+import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
+import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { reportPageParamsFromSearchParams } from "../../src/miroir-fwk/4_view/PageDispatcher.js";
+import { miroirAppStartup } from "../../src/startup.js";
+import { cleanLevel, packageName } from "../3_controllers/constants.js";
+import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 import {
   libraryEntitiesAndInstances,
   libraryTestbedInitParams,
-} from "../../helpers/libraryPlayfieldSeeds.js";
-import { loadTestConfigFiles } from "../../utils/fileTools.js";
+} from "../helpers/libraryPlayfieldSeeds.js";
+import { loadTestConfigFiles } from "../utils/fileTools.js";
 import {
   startFakeExternalServiceServer,
   type FakeExternalServiceServer,
-} from "../../utils/fakeExternalServiceServer.js";
+} from "../utils/fakeExternalServiceServer.js";
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
@@ -110,28 +110,28 @@ vi.mock("miroir-react", async (importOriginal) => {
 });
 
 // Vitest/happy-dom cannot load miroir-diagram-class → svg-toolbelt (CJS `exports` in an ESM package).
-vi.mock("../../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
+vi.mock("../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
   ModelDiagramReportSectionView: () => null,
 }));
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "externalServiceReport.267.phase5" ||
-  RUN_TEST === "externalServiceReport.267.phase5.integ.test";
+  RUN_TEST === "externalServiceReport" ||
+  RUN_TEST === "externalServiceReport.integ.test";
 
-const ISSUE_DIR = dirname(fileURLToPath(import.meta.url));
+const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), "fixtures");
 const PLAYLIST_OK = JSON.parse(
-  readFileSync(join(ISSUE_DIR, "fixtures/playlist-ok.json"), "utf8"),
+  readFileSync(join(FIXTURES_DIR, "playlist-ok.json"), "utf8"),
 ) as {
   name: string;
   tracks: { total: number; items: { track: { name: string } }[] };
 };
 const PLAYLIST_REPORT = JSON.parse(
-  readFileSync(join(ISSUE_DIR, "fixtures/playlistReport.267.phase5.json"), "utf8"),
+  readFileSync(join(FIXTURES_DIR, "playlistReport.json"), "utf8"),
 ) as Report;
 const MIXED_REPORT = JSON.parse(
-  readFileSync(join(ISSUE_DIR, "fixtures/mixedPlaylistReport.267.phase5.json"), "utf8"),
+  readFileSync(join(FIXTURES_DIR, "mixedPlaylistReport.json"), "utf8"),
 ) as Report;
 
 const PLAYLIST_NAME_LITERAL = "Rock Classics";
@@ -182,7 +182,7 @@ if (!importedLoggerOptions) {
   throw new Error("importedLoggerOptions is undefined");
 }
 const loggerOptions: LoggerOptions = importedLoggerOptions;
-const fileName = "externalServiceReport.267.phase5.integ.test";
+const fileName = "externalServiceReport.integ.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
@@ -385,7 +385,7 @@ function renderReport(reportDefinition: Report, playlistId: string) {
 beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
     throw new Error(
-      "externalServiceReport.267.phase5 requires emulateServer: true (in-process server path).",
+      "externalServiceReport requires emulateServer: true (in-process server path).",
     );
   }
 
@@ -446,7 +446,7 @@ afterAll(async () => {
 });
 
 describe.skipIf(!shouldRun).sequential(
-  "externalServiceReport #267 phase5 — report path + extractorTemplateFromAction",
+  "externalServiceReport — report path + extractorTemplateFromAction",
   () => {
     it("reportPageParamsFromSearchParams forwards unknown keys such as playlistId", () => {
       const searchParams = new URLSearchParams(
