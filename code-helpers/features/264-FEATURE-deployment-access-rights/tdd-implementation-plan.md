@@ -300,7 +300,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-server/tsconfig.json
 
 ### Realization
 
-No extra adapter: Slice 1 union already runs in `RestClientStub` / Express. Phase3 proves Dave Library 200, Designer 403, Admin/Miroir 200; Carol Library 403; Alice Library 200; hatch off and 401 unchanged.
+No extra adapter: Slice 1 union already runs in `RestClientStub` / Express. Phase3 proves Dave Library allowed, Designer 403, Admin/Miroir allowed; Carol Library 403; Alice Library allowed; hatch off and 401 unchanged. Allowed calls on this stub have no persistence manager, so they reject with `persistenceStoreControllerManager is not set` after the gate (not a swallowed exception counted as HTTP 200).
 
 ---
 

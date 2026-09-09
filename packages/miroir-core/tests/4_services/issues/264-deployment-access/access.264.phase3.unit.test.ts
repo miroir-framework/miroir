@@ -1,5 +1,9 @@
 /**
- * #264 Slice 3 — REST access after identity: Library 200 for Dave, 403 for Carol.
+ * #264 Slice 3 — REST access after identity: Library allowed for Dave, 403 for Carol.
+ *
+ * This stub has no persistence manager. Passing the access gate therefore throws
+ * `RestClientStub: persistenceStoreControllerManager is not set`. Denied calls
+ * return 401/403 without throwing. Do not treat arbitrary exceptions as success.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -68,24 +72,33 @@ function stubWithDirectory() {
   return stub;
 }
 
-async function stubCall(
+const POST_ACCESS_GATE_ERROR =
+  "RestClientStub: persistenceStoreControllerManager is not set";
+
+function stubCall(
   stub: RestClientStub,
   deploymentUuid: string,
   authorization?: string,
 ) {
-  try {
-    return await stub.call(
-      "/CRUD/:deploymentUuid/:section/entity/:parentUuid/all",
-      "get",
-      `/CRUD/${deploymentUuid}/data/entity/00000000-0000-4000-8000-000000000001/all`,
-      {
-        deploymentUuid,
-        headers: authorization ? { Authorization: authorization } : {},
-      },
-    );
-  } catch (error) {
-    return { passedAccessGate: true as const, error: String(error) };
-  }
+  return stub.call(
+    "/CRUD/:deploymentUuid/:section/entity/:parentUuid/all",
+    "get",
+    `/CRUD/${deploymentUuid}/data/entity/00000000-0000-4000-8000-000000000001/all`,
+    {
+      deploymentUuid,
+      headers: authorization ? { Authorization: authorization } : {},
+    },
+  );
+}
+
+async function expectAccessAllowed(
+  stub: RestClientStub,
+  deploymentUuid: string,
+  authorization?: string,
+) {
+  await expect(stubCall(stub, deploymentUuid, authorization)).rejects.toThrow(
+    POST_ACCESS_GATE_ERROR,
+  );
 }
 
 if (runThis) {
@@ -102,8 +115,7 @@ if (runThis) {
 
     it("lets a Library call through without a token when the hatch is off", async () => {
       process.env.MIROIR_AUTH_ENABLED = "0";
-      const result = await stubCall(stubWithDirectory(), LIBRARY_DEPLOYMENT);
-      expect(result).toMatchObject({ passedAccessGate: true });
+      await expectAccessAllowed(stubWithDirectory(), LIBRARY_DEPLOYMENT);
     });
 
     it("allows Dave on Library and 403s Designer", async () => {
@@ -111,7 +123,7 @@ if (runThis) {
       const daveToken = await tokenFor("dave", "dave-dev");
       const stub = stubWithDirectory();
       const auth = `Bearer ${daveToken}`;
-      expect(await stubCall(stub, LIBRARY_DEPLOYMENT, auth)).toMatchObject({ passedAccessGate: true });
+      await expectAccessAllowed(stub, LIBRARY_DEPLOYMENT, auth);
       expect(await stubCall(stub, DESIGNER_DEPLOYMENT, auth)).toEqual(
         expect.objectContaining({ status: 403, data: ACCESS_DENIED }),
       );
@@ -122,14 +134,14 @@ if (runThis) {
       const daveToken = await tokenFor("dave", "dave-dev");
       const stub = stubWithDirectory();
       const auth = `Bearer ${daveToken}`;
-      expect(await stubCall(stub, ADMIN_DEPLOYMENT, auth)).toMatchObject({ passedAccessGate: true });
-      expect(await stubCall(stub, MIROIR_DEPLOYMENT, auth)).toMatchObject({ passedAccessGate: true });
+      await expectAccessAllowed(stub, ADMIN_DEPLOYMENT, auth);
+      await expectAccessAllowed(stub, MIROIR_DEPLOYMENT, auth);
       expect(await stubCall(stub, UNKNOWN_DEPLOYMENT, auth)).toEqual(
         expect.objectContaining({ status: 403, data: ACCESS_DENIED }),
       );
     });
 
-    it("keeps Carol 403 and Alice 200 on Library, and 401s a missing token", async () => {
+    it("keeps Carol 403 and Alice allowed on Library, and 401s a missing token", async () => {
       process.env.MIROIR_AUTH_ENABLED = "1";
       const carolToken = await tokenFor("carol", "carol-dev");
       const aliceToken = await tokenFor("alice", "alice-dev");
@@ -137,9 +149,7 @@ if (runThis) {
       expect(await stubCall(stub, LIBRARY_DEPLOYMENT, `Bearer ${carolToken}`)).toEqual(
         expect.objectContaining({ status: 403, data: ACCESS_DENIED }),
       );
-      expect(await stubCall(stub, LIBRARY_DEPLOYMENT, `Bearer ${aliceToken}`)).toMatchObject({
-        passedAccessGate: true,
-      });
+      await expectAccessAllowed(stub, LIBRARY_DEPLOYMENT, `Bearer ${aliceToken}`);
       expect(await stubCall(stub, LIBRARY_DEPLOYMENT)).toEqual(
         expect.objectContaining({
           status: 401,
