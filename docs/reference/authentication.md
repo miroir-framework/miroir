@@ -1,6 +1,12 @@
-# Authentication (#71) and application access (#262)
+# Authentication (#71) and access (#262, #264)
 
-Platform users prove identity with a username and password stored in the **Admin** application (`MiroirUser` + `MiroirUserCredential`). Successful login returns a Bearer token. After identity, `MiroirRight` is evaluated for **application** access: any grant on `(user, targetType, targetUuid)` is enough (`capability` is ignored). Admin and Miroir are always allowed. Designer and Library need an explicit grant. Hatch-off skips both identity and rights (today’s open API).
+Platform users prove identity with a username and password stored in the **Admin** application (`MiroirUser` + `MiroirUserCredential`). Successful login returns a Bearer token. After identity, `MiroirRight` is evaluated as a **union**:
+
+- An **application** grant on `(user, targetType=application, targetUuid)` allows every deployment of that application.
+- A **deployment** grant on `(user, targetType=deployment, targetUuid)` allows that deployment only.
+- Either is enough. `capability` is ignored. Admin and Miroir (and their deployments) are always allowed. Designer and Library need a grant of either kind.
+
+Hatch-off skips both identity and rights (today’s open API).
 
 ## Hatch (startup only)
 
@@ -26,26 +32,27 @@ Token secret (optional): `server.authentication.tokenSecret` or `MIROIR_AUTH_TOK
 | GET | `/auth/status` | Public. `{ "enabled": boolean }` only |
 | POST | `/auth/login` | Public. Body `{ "username", "password" }` → `{ token, principal }` |
 | POST | `/auth/change-password` | Requires Bearer. Body `{ "currentPassword", "newPassword" }` → `{ changed: true }`. Updates only the principal’s `MiroirUserCredential`. |
-| CRUD / action / query | existing REST | Requires `Authorization: Bearer <token>`, then application access |
+| CRUD / action / query | existing REST | Requires `Authorization: Bearer <token>`, then application **or** deployment access |
 | `/api/copilotkit` | same Express app | Same Bearer gate |
 
 Seed logins (dev only):
 
-| Username | Password | Application access |
+| Username | Password | Access |
 |---|---|---|
-| `alice` | `alice-dev` | Library granted. Designer denied. Admin and Miroir always allowed. |
-| `carol` | `carol-dev` | No application grants. Admin and Miroir always allowed. Library and Designer denied. |
+| `alice` | `alice-dev` | Library application grant (covers the Library filesystem deployment). Designer denied. Admin and Miroir always allowed. |
+| `dave` | `dave-dev` | Library **filesystem deployment** grant only (no Library application grant). Designer denied. Admin and Miroir always allowed. |
+| `carol` | `carol-dev` | No application or deployment grants. Admin and Miroir always allowed. Library and Designer denied. |
 | `bob` | — | Inactive; cannot log in. |
 
 Change seed passwords after first use.
 
-Denied application REST returns **403** `{ "status": "error", "errorType": "AccessDenied" }`. Missing or unusable identity still returns **401** `AuthenticationRequired`. Unknown `deploymentUuid` is 403. The UI hides ungranted apps from the selector and sends a denied report URL to `/?page=home`. CopilotKit stays identity-only (no deployment on the request).
+Denied REST returns **403** `{ "status": "error", "errorType": "AccessDenied" }`. Missing or unusable identity still returns **401** `AuthenticationRequired`. Unknown `deploymentUuid` is 403. The UI shows an application if the user has an application grant **or** any granted deployment of that application, and sends a denied report URL to `/?page=home`. CopilotKit stays identity-only (no `deploymentUuid` on the request). A second Library deployment (same-app narrowing) is not in this increment.
 
 Generic CRUD/query responses strip `passwordHash`. Generic create/update/delete of `MiroirUserCredential` is rejected; only `POST /auth/change-password` may update the principal’s hash. Duplicate `username` or credential FK values fail closed at login (same `AuthenticationFailed` body). After login, REST/CopilotKit re-bind the token to the current Admin directory so a deactivated user cannot keep using an unexpired token. The browser treats an expired or malformed stored token as logged out, and `RestClient` clears the session on `AuthenticationRequired`.
 
-## Not gated yet (R3)
+## Not gated yet
 
-MCP (`mcpUrl`, default port 4080), `miroir-cli`, and Electron IPC stay open. They should reuse `AuthPrincipal`, `extractPrincipalFromAuthorizationHeader`, and `assertRequestAllowed` later.
+MCP (`mcpUrl`, default port 4080), `miroir-cli`, and Electron IPC stay open. Follow-up: [#263](https://github.com/miroir-framework/miroir/issues/263).
 
 ## Legacy
 

@@ -1367,6 +1367,7 @@ export {
   type AuthHttpResult,
 } from "./1_core/authentication/AuthenticationHttp.js";
 export {
+  applicationIsReachable,
   authorizationHeaders,
   nextPageWhenAccessDenied,
   nextPageWhenAuthGate,

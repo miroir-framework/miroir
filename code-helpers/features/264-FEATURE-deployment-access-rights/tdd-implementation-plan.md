@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../262-FEATURE-application-access-rights/tdd-implementation-plan.md`](../262-FEATURE-application-access-rights/tdd-implementation-plan.md) ✅  
 Working branch: `cursor/264-deployment-access-rights`
 
-**Resume note:** Plan written. Slices 0–5 pending.
+**Resume note:** Slices 0–5 DONE. `npm run nonreg` 53/53 (2026-09-09).
 
 ---
 
@@ -49,12 +49,12 @@ This plan does **not** add a second Library Deployment (analysis G4), harden cap
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize application-only adapter + no Dave | ⬜ | `access.264.phase0` + `access.262` |
-| 1 | Union in `assertAccessForDeployment` (tracer) | ⬜ | `access.264.phase1` |
-| 2 | Dave seed + login | ⬜ | `access.264.phase2` + `miroirUserRights` |
-| 3 | REST 200/403 with Dave via `RestClientStub` | ⬜ | `access.264.phase3` |
-| 4 | UI: Dave sees Library; deep-link | ⬜ | `access.264.phase4` |
-| 5 | Nonreg, docs, AC | ⬜ | nonreg step + docs |
+| 0 | Characterize application-only adapter + no Dave | ✅ | `access.264.phase0` + `access.262` |
+| 1 | Union in `assertAccessForDeployment` (tracer) | ✅ | `access.264.phase1` |
+| 2 | Dave seed + login | ✅ | `access.264.phase2` + `miroirUserRights` |
+| 3 | REST 200/403 with Dave via `RestClientStub` | ✅ | `access.264.phase3` |
+| 4 | UI: Dave sees Library; deep-link | ✅ | `access.264.phase4` |
+| 5 | Nonreg, docs, AC | ✅ | nonreg step + docs |
 
 ---
 
@@ -107,7 +107,7 @@ Dave password hash: same scrypt scheme as Alice / Carol (`hashPassword` / seed s
 
 ## Slice 0 — Characterize application-only adapter
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -143,13 +143,13 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights
 
 ### Realization
 
-<Appended on completion.>
+Characterization locks: no Dave files; exactly two Alice `MiroirRight` rows; `hasAccess` stays type-exact; `assertAccessForDeployment` allows Alice on full grants and **denies** Alice when only the real deployment grant is passed; Carol denied on Library; `visibleUserApplications` ignores deployment grants. `access.262` 26/26 and `miroirUserRights` 20/20 green. No production code changed.
 
 ---
 
 ## Slice 1 — Union in `assertAccessForDeployment` (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -201,13 +201,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+`assertAccessForDeployment` allows if `hasAccess(applicationTarget)` or `hasAccess(deploymentTarget)`. Same `ALWAYS_ALLOW_APPLICATION_TARGETS`. `hasAccess` unchanged. Phase 0 dropped the “deployment-only denies” lock because that is now the opposite. `access.264` phase1 green; `access.262` 26/26; core `tsc` green.
 
 ---
 
 ## Slice 2 — Dave seed + login
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -250,13 +250,13 @@ RUN_TEST=authentication.71 npm run testByFile -w miroir-core -- authentication.7
 
 ### Realization
 
-<Appended on completion.>
+Added Dave user `e2343a39-…` (`dave` / active), credential `cc3bc0aa-…` (`dave-dev`, scrypt), right `0509f559-…` (Library filesystem deployment only). Exported from admin `index.ts` / `index.d.ts` and wired into the emulated `RestClientStub` directory in standalone-app `index.tsx`. Loosened #262 “exactly two rights” counts. Dave’s instances pass `modelValidation`; the three remaining `modelValidation` failures are the pre-existing Entity / Alice-credential checks from #262. `miroirUserRights` 21/21; `authentication.71` 43/43.
 
 ---
 
 ## Slice 3 — REST 200/403 with Dave
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -300,13 +300,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-server/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+No extra adapter: Slice 1 union already runs in `RestClientStub` / Express. Phase3 proves Dave Library 200, Designer 403, Admin/Miroir 200; Carol Library 403; Alice Library 200; hatch off and 401 unchanged.
 
 ---
 
 ## Slice 4 — UI: Dave sees Library
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -357,13 +357,13 @@ Manual (after GREEN, hatch-on server): log in as `dave` / `dave-dev` — selecto
 
 ### Realization
 
-<Appended on completion.>
+Added `applicationIsReachable` and optional `deployments` on `visibleUserApplications`. `useApplicationAccess` loads Deployment rows and uses the union for selector + `canAccessApplication`. `hasAccess` still false for Dave on `{ application, Library }`. `access.264` 23/23; `access.262` 26/26. Rebuilt `miroir-core`. Standalone `tsc` still fails on pre-existing `ReportSectionListDisplay.tsx` / `ReportTools.ts`; `useApplicationAccess.ts` is clean.
 
 ---
 
 ## Slice 5 — Nonreg, docs, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 5.1 Nonreg
 
@@ -405,7 +405,15 @@ npm run testByFile -w miroir-test-app_deployment-admin -- miroirUserRights
 
 ### Realization
 
-<Appended on completion.>
+Added `unit-264-deployment-access` after restored `unit-262-application-access` in `scripts/nonreg-manifest.json` (first insert accidentally replaced 262). Docs describe union evaluation and the Alice / Dave / Carol matrix. Analysis ACs ticked. Issue-directory tests kept.
+
+Slice validation: `access.264` 23/23, `access.262` 26/26, `authentication.71` 43/43, `miroirUserRights` 21/21. `miroir-core` and `miroir-server` `tsc --noEmit --skipLibCheck` pass. Admin package rebuilt.
+
+Admin `modelValidation` was a nonreg hard fail (3 pre-existing checks from #71/#262). Unblocked without changing `hasAccess`:
+- Dropped invalid `unique: true` on `MiroirUser.username` and `MiroirUserCredential.miroirUser` tags (jzod tag schema has no `unique`; duplicate username/FK still fail closed at login — `authentication.71.phase7`).
+- Removed Alice credential `description` (not in credential mlSchema). Dave/Carol instances already passed. Result: 45/45.
+
+Standalone `tsc` still fails on pre-existing `ReportSectionListDisplay.tsx:432` and `ReportTools.ts:85` (untouched by this branch). Full `npm run nonreg`: **53 passed, 0 failed** (`test-results/nonreg/20260909T065723Z`, ~26.6 min). Includes restored `unit-262-application-access`, `unit-264-deployment-access`, and green `default-admin-modelValidation`.
 
 ---
 
@@ -415,15 +423,15 @@ Canonical list: [`./analysis.md`](./analysis.md) § Acceptance Criteria.
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Deployment grant → that deployment’s REST + UI | phase1 + phase3 + phase4 Dave | ⬜ |
-| Application grant → every deployment of that app | phase1 Alice application-only filter + phase3 Alice | ⬜ |
-| No grants → deny (403 after identity) | phase1 / phase3 Carol Library | ⬜ |
-| Deployment grant does not grant another deployment or application | phase1 Designer; phase2 `hasAccess` application Library false for Dave | ⬜ |
-| Admin / Miroir (and their deployments) always allowed | phase1 / phase3 Dave Admin/Miroir | ⬜ |
-| Capability ignored | inherited `hasAccess`; no new match key | ⬜ |
-| Hatch off = open API | phase1 + phase3 | ⬜ |
-| 401 vs 403 vs unknown deployment | phase3 | ⬜ |
-| Dave seed; Library visible, Designer not; Carol still denied | phase2 + phase4 | ⬜ |
-| Deep-link denied → home | phase4 Carol | ⬜ |
-| `hasAccess` generic; banned names unused | phase1 + `miroirUserRights` | ⬜ |
-| MCP / CLI / Electron ungated | non-goal / docs | ⬜ |
+| Deployment grant → that deployment’s REST + UI | phase1 + phase3 + phase4 Dave | ✅ |
+| Application grant → every deployment of that app | phase1 Alice application-only filter + phase3 Alice | ✅ |
+| No grants → deny (403 after identity) | phase1 / phase3 Carol Library | ✅ |
+| Deployment grant does not grant another deployment or application | phase1 Designer; phase2 `hasAccess` application Library false for Dave | ✅ |
+| Admin / Miroir (and their deployments) always allowed | phase1 / phase3 Dave Admin/Miroir | ✅ |
+| Capability ignored | inherited `hasAccess`; no new match key | ✅ |
+| Hatch off = open API | phase1 + phase3 | ✅ |
+| 401 vs 403 vs unknown deployment | phase3 | ✅ |
+| Dave seed; Library visible, Designer not; Carol still denied | phase2 + phase4 | ✅ |
+| Deep-link denied → home | phase4 Carol | ✅ |
+| `hasAccess` generic; banned names unused | phase1 + `miroirUserRights` | ✅ |
+| MCP / CLI / Electron ungated | non-goal / docs | ✅ |

@@ -11,23 +11,23 @@ Identity: [#71](https://github.com/miroir-framework/miroir/issues/71) · Model: 
 Key sources: [`AccessPolicy.ts`](../../../packages/miroir-core/src/1_core/authentication/AccessPolicy.ts) · [`AuthenticationUi.ts`](../../../packages/miroir-core/src/1_core/authentication/AuthenticationUi.ts) · [`useApplicationAccess.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/auth/useApplicationAccess.ts) · [`server.ts`](../../../packages/miroir-server/src/server.ts) · [`RestClientStub.ts`](../../../packages/miroir-core/src/4_services/RestClientStub.ts) · [`MiroirRight` entity](../../../packages/miroir-test-app_deployment-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a6136fc7-949b-4d64-9f13-dd3afce1ab3c.json)
 
 **Document role:** analysis and architectural decision record.  
-**Status:** decisions confirmed with the user (2026-09-09). Implementation plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** implemented — [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 ## Acceptance Criteria
 
-Locked with D1–D5. Unticked until implementation.
+Locked with D1–D5. Ticked after slices 1–5 + `npm run nonreg` 53/53.
 
-- [ ] A deployment grant on `(user, targetType=deployment, targetUuid)` allows that deployment’s REST and the UI that reaches it. `capability` is ignored.
-- [ ] An application grant still allows every deployment whose `selfApplication` is that application.
-- [ ] No application grant and no deployment grant → that deployment is denied (**403** `AccessDenied` after identity).
-- [ ] A deployment grant does not grant a different deployment, nor a different application.
-- [ ] Admin (`55af124e-8c05-4bae-a3ef-0933d41daa92`) and Miroir (`360fcf1f-f0d4-4f8a-9262-07886e70fa15`), and the deployments that belong to them, stay always allowed without per-user rows.
-- [ ] Authentication off → no rights check (today’s open API).
-- [ ] Missing identity → **401**. Denied deployment after identity → **403**. Unknown `deploymentUuid` → **403**.
-- [ ] UI does not present a path that only a denied deployment can serve; a deep link to a denied deployment does not show that deployment’s data.
-- [ ] Seeds and tests demonstrate deployment-only access: **Dave** (`dave` / `dave-dev`) has only the Library filesystem deployment grant (no Library application grant). Library appears in Dave’s UI; Designer does not. Carol still has neither.
-- [ ] `hasAccess` stays generic. The four #219 banned names stay unused.
-- [ ] MCP, CLI, and Electron stay ungated ([#263](https://github.com/miroir-framework/miroir/issues/263)).
+- [x] A deployment grant on `(user, targetType=deployment, targetUuid)` allows that deployment’s REST and the UI that reaches it. `capability` is ignored.
+- [x] An application grant still allows every deployment whose `selfApplication` is that application.
+- [x] No application grant and no deployment grant → that deployment is denied (**403** `AccessDenied` after identity).
+- [x] A deployment grant does not grant a different deployment, nor a different application.
+- [x] Admin (`55af124e-8c05-4bae-a3ef-0933d41daa92`) and Miroir (`360fcf1f-f0d4-4f8a-9262-07886e70fa15`), and the deployments that belong to them, stay always allowed without per-user rows.
+- [x] Authentication off → no rights check (today’s open API).
+- [x] Missing identity → **401**. Denied deployment after identity → **403**. Unknown `deploymentUuid` → **403**.
+- [x] UI does not present a path that only a denied deployment can serve; a deep link to a denied deployment does not show that deployment’s data.
+- [x] Seeds and tests demonstrate deployment-only access: **Dave** (`dave` / `dave-dev`) has only the Library filesystem deployment grant (no Library application grant). Library appears in Dave’s UI; Designer does not. Carol still has neither.
+- [x] `hasAccess` stays generic. The four #219 banned names stay unused.
+- [x] MCP, CLI, and Electron stay ungated ([#263](https://github.com/miroir-framework/miroir/issues/263)).
 
 ---
 
@@ -38,7 +38,7 @@ Locked with D1–D5. Unticked until implementation.
 | Platform user + rights **model only** | [#219](https://github.com/miroir-framework/miroir/issues/219) | ✅ |
 | Identity proofing + hatch | [#71](https://github.com/miroir-framework/miroir/issues/71) | ✅ identity; MCP/CLI/Electron → #263 |
 | Application access evaluation | [#262](https://github.com/miroir-framework/miroir/issues/262) | ✅ |
-| **Deployment access evaluation** | **#264 (this document)** | **this** |
+| **Deployment access evaluation** | **#264 (this document)** | ✅ implemented |
 | Capability taxonomy | later | later |
 | Groups / roles as grant subjects | later | later |
 | Gate MCP / CLI / Electron | [#263](https://github.com/miroir-framework/miroir/issues/263) | later |
