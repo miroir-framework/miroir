@@ -39,7 +39,7 @@ Testable contract for this increment. Proven by `access.262` (phases 1–4), `au
 | Platform user + rights **model only** | [#219](https://github.com/miroir-framework/miroir/issues/219) | ✅ |
 | Identity proofing + hatch | [#71](https://github.com/miroir-framework/miroir/issues/71) | ✅ |
 | **Application access evaluation** | **#262 (this document)** | ✅ |
-| Deployment-level evaluation (same checker, new callers) | follow-up | later |
+| Deployment-level evaluation (same checker, new callers) | [#264](https://github.com/miroir-framework/miroir/issues/264) | later |
 | Capability taxonomy (`read` / `write` / `admin`) | #219 C2 deferred | later |
 | Groups / roles as grant subjects | #219 C4 deferred | later |
 | Gate MCP / CLI / Electron | #71 R3 | later |
