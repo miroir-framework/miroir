@@ -14,6 +14,7 @@ import {
   resolveFundamentalSchemaForDeployment,
   resolveJzodSchemaReferenceInContext,
   getEndpointActions,
+  redactCredentialSecretsFromValue,
   type EndpointDefinition,
   type MetaModel,
   type MiroirModelEnvironment,
@@ -211,7 +212,7 @@ export async function handleMcpAction(
   modelEnvironmentOverride?: MiroirModelEnvironment,
 ): Promise<{ content: Array<{ type: string; text: string; parsed: Record<string, any> }> }> {
   try {
-    log.info(`${toolName} - received params:`, JSON.stringify(params, null, 2));
+    log.info(`${toolName} - received params:`, JSON.stringify(redactCredentialSecretsFromValue(params), null, 2));
     log.info(`${toolName} - received schema:`, JSON.stringify(schema, null, 2));
 
     // log.info(`${toolName} - received domainController:`, domainController);
@@ -246,7 +247,7 @@ export async function handleMcpAction(
 
     // Build the action
     const action = actionBuilder(validatedParams);
-    log.info(`${toolName} - constructed action:`, JSON.stringify(action, null, 2));
+    log.info(`${toolName} - constructed action:`, JSON.stringify(redactCredentialSecretsFromValue(action), null, 2));
 
     const libraryDeploymentUuid = resolveLibraryDeploymentUuid(applicationDeploymentMap);
     const defaultLibraryModelEnvironment = modelEnvironmentOverride ?? getDefaultLibraryModelEnvironmentDEFUNCT(
@@ -275,7 +276,7 @@ export async function handleMcpAction(
       defaultLibraryModelEnvironment as any as MiroirModelEnvironment, // defaultMiroirModelEnvironment,
     );
 
-    log.info(`${toolName} - result:`, JSON.stringify(result, null, 2));
+    log.info(`${toolName} - result:`, JSON.stringify(redactCredentialSecretsFromValue(result), null, 2));
 
     // Format response for MCP
     if (result.status === "ok") {
@@ -420,7 +421,7 @@ export function mcpToolHandler(
       "applicationDeploymentMap",
       applicationDeploymentMap,
       "payload",
-      JSON.stringify(payload, null, 2)
+      JSON.stringify(redactCredentialSecretsFromValue(payload), null, 2)
     );
     return handleMcpAction(
       toolName,

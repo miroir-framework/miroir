@@ -1,0 +1,7 @@
+{
+  "id": "test-playlist-wrong-type",
+  "name": 12345,
+  "tracks": {
+    "total": 3
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "test-playlist-001",
+  "name": "Rock Classics",
+  "description": "A fixture playlist with extra unknown fields for D11 stripping.",
+  "unknownExtraField": "should-be-stripped",
+  "anotherUnknown": 42,
+  "tracks": {
+    "total": 17,
+    "href": "https://example.test/tracks",
+    "items": []
+  }
+}

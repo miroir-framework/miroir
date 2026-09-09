@@ -427,7 +427,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           failureMessage:
             "could not find extractorOrCombinerType for extractor: " +
             JSON.stringify(extractorOrCombiner),
-          query: extractorOrCombiner,
+          query: JSON.stringify(extractorOrCombiner),
         })
       );
       break;

@@ -47,6 +47,9 @@ import {
   identityDirectoryFromInstances,
   loginWithPassword,
   persistChangedPasswordHash,
+  ParseServerArgsError,
+  parseServerArgs,
+  registerSecrets,
   resolveAuthenticationEnabled,
   restServerDefaultHandlers,
   setProcessTokenSecret,
@@ -140,6 +143,7 @@ function printUsageAndExit(exitCode = 1): never {
   console.error(`  --key      <path>   Path to the TLS private key file (.pem)`);
   console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_KEY`);
   myLogger.error(`                      (default: <certsdir>/localhost-key.pem)`);
+  console.error(`  --secret   <name>=<value>  Named secret (repeatable). Env fallback: MIROIR_SECRET_<NAME>`);
   console.error(`  --disable-auth      Disable user authentication (today's open API)`);
   console.error(`  --enable-auth       Enable user authentication (overrides config/env)`);
   console.error(`  -h, --help          Show this help message and exit`);
@@ -151,44 +155,22 @@ let argCertsDir: string | undefined;
 let argCertFile: string | undefined;
 let argKeyFile: string | undefined;
 
-for (let i = 2; i < process.argv.length; i++) {
-  const arg = process.argv[i];
-  if (arg === "--help" || arg === "-h") {
+try {
+  const parsed = parseServerArgs(process.argv.slice(2), process.env);
+  if (parsed.help) {
     printUsageAndExit(0);
-  } else if (arg === "--config") {
-    if (i + 1 < process.argv.length) {
-      configFilePath = process.argv[++i];
-    } else {
-      console.error("Error: --config requires a file path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--certsdir") {
-    if (i + 1 < process.argv.length) {
-      argCertsDir = process.argv[++i];
-    } else {
-      console.error("Error: --certsdir requires a directory path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--cert") {
-    if (i + 1 < process.argv.length) {
-      argCertFile = process.argv[++i];
-    } else {
-      console.error("Error: --cert requires a file path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--key") {
-    if (i + 1 < process.argv.length) {
-      argKeyFile = process.argv[++i];
-    } else {
-      console.error("Error: --key requires a file path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--disable-auth" || arg === "--enable-auth") {
-    // consumed by resolveAuthenticationEnabled(process.argv)
-  } else if (arg.startsWith("-")) {
-    console.error(`Error: Unknown option: ${arg}`);
+  }
+  configFilePath = parsed.configFilePath;
+  argCertsDir = parsed.certsDir;
+  argCertFile = parsed.certFile;
+  argKeyFile = parsed.keyFile;
+  registerSecrets(parsed.secrets);
+} catch (error) {
+  if (error instanceof ParseServerArgsError) {
+    console.error(error.message);
     printUsageAndExit();
   }
+  throw error;
 }
 
 console.log(`Server startup parameters:`);
@@ -203,7 +185,6 @@ const configFileContents = JSON.parse(
 
 const miroirConfig: MiroirConfigServer = configFileContents as MiroirConfigServer;
 myLogger.info('miroirConfig',miroirConfig)
-myLogger.info(`process.env`, JSON.stringify(process.env, null, 2));
 myLogger.info(`import.meta`, JSON.stringify((import.meta as any), null, 2));
 
 const restPortFromConfig: number = Number(
@@ -871,7 +852,6 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const http = await import('http');
   http.createServer(app).listen(restPortFromConfig, () => {
-    // myLogger.info("process.env", process.env);
     myLogger.info("templateEvaluationParams", templateEvaluationParams);
     myLogger.info(`Server running in ${getMiroirEnvironmentMode()} mode`);
     myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);

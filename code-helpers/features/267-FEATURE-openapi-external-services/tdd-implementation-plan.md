@@ -17,7 +17,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/267
 Working branch: `267-FEATURE-openapi-external-services`
 
-**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE.**
+**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE. Slice 2 DONE. Slice 3 DONE.**
 
 ---
 
@@ -40,8 +40,8 @@ This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure 
 |---|---|---|---|
 | 0 | Characterize endpoint/dispatch/report contracts | ✅ | `externalService.267.phase0.unit.test.ts` + modelValidation |
 | 1 | Endpoint `definition` key-union refactor (D1) | ✅ | `externalServiceSchema.267.phase1.unit.test.ts` + nonreg |
-| 2 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify, incl. named secrets (D4, D5 server, D6, D11) | ⬜ | `externalServiceQuery.267.phase2.integ.test.ts` |
-| 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ⬜ | `externalServiceGuards.267.phase3.integ.test.ts` |
+| 2 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify, incl. named secrets (D4, D5 server, D6, D11) | ✅ | `externalServiceQuery.267.phase2.integ.test.ts` |
+| 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ✅ | `externalServiceGuards.267.phase3.integ.test.ts` |
 | 4 | Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5) | ⬜ | `externalServiceDispatch.267.phase4.integ.test.ts` |
 | 5 | Report path: template extractor + param forwarding + async report-load routing (D5 client, D8) | ⬜ | `externalServiceReport.267.phase5.integ.test.tsx` |
 | 6 | Sync transformer + bounded converter + Entity `kind: "http"` schema (D2, D3) | ⬜ | MiroirTest `externalServiceSync` (unit) + `externalServiceSyncExecute` (integ) |
@@ -245,7 +245,7 @@ npm run nonreg
 
 ## Slice 2 — Tracer bullet: `extractorFromAction` end-to-end against fake Spotify, incl. named secrets (D4, D5 server, D6 resolved form, D11)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -298,13 +298,29 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+**Intercept.** `DomainController.executeBoxedExtractorOrQueryAction`, `persistenceStoreAccessMode == "local"` branch, **before** `handlePersistenceActionForLocalPersistenceStore`. Helper `resolveExtractorFromActionInBoxedQuery` finds `extractors[*].extractorOrCombinerType === "extractorFromAction"`, then `loadEndpointInstanceFromLocalPersistenceStore(application, applicationDeploymentMap, endpointUuid)` which calls `persistenceStoreLocalOrRemote.readLocalPersistenceSectionInstances(application, map, "model", entityEndpointVersion.uuid)` (`3d8da4d4-…`) and `find(i => i.uuid === endpointUuid)`. **Never** `currentModelEnvironment.endpointsByUuid` (P1). Each hit runs shared `executeExternalServiceOperation(endpointInstance, actionType, parameterBindings)`. `ActionSuccess.returnedDomainElement` is written to `contextResults[extractorName]`. Remaining store extractors stay on the query and go through persistence so combiners/transformers see the merged context. If the query is only external extractors (this slice’s tracer), the intercept returns `{ status: "ok", returnedDomainElement: contextResults }` without a persistence handoff.
+
+**Dispatch.** `handleApplicationAction` (return type `Action2ReturnType`) tries the same store load + `getExternalService` + `executeExternalServiceOperation` when `persistenceStoreAccessMode === "local"`. `handleAction` stays `Action2VoidReturnType`: `Action2Error` is returned, success is mapped to `ACTION_OK`. Missing `readLocalPersistenceSectionInstances` (Slice 0 stub DC) falls through to the existing `endpointsByUuid` composite path.
+
+**Schema.** Resolved `extractorFromAction { endpointUuid, actionType, parameterBindings: record of string|any }` added on Query Entity + Query EntityVersion and ensured in `getMiroirFundamentalJzodSchema` on **`extractorReturningObject` and `extractorOrCombiner`** (direct union member). **Not** added to `extractorOrCombinerReturningObject` — that union is assumed to have `parentUuid`/`applicationSection` by store selectors; putting the new type there broke `devBuild`. Template form is Slice 5. Closed-switch naming is Slice 4; only compile fix: `AsyncQuerySelectors` default `query` is `JSON.stringify(...)`.
+
+**Secrets / CLI / redaction.** `SecretStore` (`registerSecrets` / `resolveSecret` / `clearSecrets`; no iteration API). `parseServerArgs` extracted to `miroir-core`; `server.ts` wires `--secret`, `MIROIR_SECRET_*`, `registerSecrets`, and the live `process.env` dump is gone. Extended `redactCredentialSecretsFromValue` lives in `4_services/redactCredentialSecrets.ts` (layer-1 `AuthenticationPolicy` cannot import SecretStore). Applied to REST, MCP handler logs, `handleApplicationAction` domainAction dump, PSC query-result dump. Fetch request is never logged.
+
+**HTTP.** `ExternalServiceClient.executeExternalServiceOperation`: path `{param}` from `parameterMappings` + bindings; `Authorization: Bearer <resolveSecret(credentialKey)>`; D11 lenient validate; non-2xx is generic `FailedToGetInstances` (Slice 3 maps `errorType`). Loopback opt-in: module set + `allowInsecureBaseUrlsForTests([baseUrl])`. Fake server: `tests/utils/fakeExternalServiceServer.ts` (`listen(0)` on `127.0.0.1`); CORS OPTIONS answered but **not** recorded (happy-dom preflight).
+
+**Validation.** Rebuild first, then:
+- `externalServiceQuery.267.phase2` — 4 passed (needs `--profile emulatedServer-filesystem`; plan command omitted it)
+- `serverSecrets.267.phase2` — 8 passed
+- tsc core / server / standalone-app — clean
+- Slice 0 (5) + Slice 1 (4) — passed
+
+**Deviations.** (1) `extractorFromAction` is a sibling on `extractorOrCombiner`, not a member of `extractorOrCombinerReturningObject`. (2) Integ `testByFile` requires `--profile emulatedServer-filesystem`. (3) Fake-server CORS for happy-dom. (4) Redaction module is `4_services/redactCredentialSecrets.ts`, not `RestServer.ts`. (5) `handleAction` not widened.
 
 ---
 
 ## Slice 3 — Hardening: HTTP error semantics + SSRF/credential guards (D12, D13)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -334,7 +350,26 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+**Done (2026-09-09):**
+
+- RED: `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceGuards.267.phase3.integ.test.ts` — 17 tests. First RED signal: HTTP 401 still mapped to `FailedToGetInstances` (`--bail=1` stopped after cycle 1). Cycles 2–4 were already implemented in Slice 2 (`resolveSecret` fail-closed before `fetch`, `assertBaseUrlAllowed` default-deny, `enabledOperations` / unknown `operationId`); they went green once cycle 1 mapping landed (verified in the same file).
+- GREEN D12: hand-written `ActionErrorType` (`packages/miroir-core/src/0_interfaces/2_domain/DomainElement.ts` — not `1_core/`) gained `ExternalServiceUnauthorized` | `ExternalServiceNotFound` | `ExternalServiceRateLimited` | `ExternalServiceUpstreamFailure`. `fetchExternalServiceOperation` maps **before** D11 validation: 401/403 → Unauthorized (message names token expiry / restart); 404 → NotFound; 429 → RateLimited; other non-2xx / network (`ECONNREFUSED` after closing a second fake server) / invalid JSON → UpstreamFailure. A 404 body that would fail `responseSchema` (`name: 123`) still yields `ExternalServiceNotFound`.
+- GREEN D13 gaps: none to fill. Tests prove default-deny without opt-in (fixture `http://127.0.0.1:…`, `169.254.x.x`, `10.x` / `192.168.x.x`, `http://example.com`) and fail-closed credentials (unknown key / empty secret → zero `receivedRequests`). Allowlist: `operationId` in `operations[]` but not `enabledOperations`; `operationId` absent from `operations[]`.
+- Refactor: one `externalServiceError(errorType, message, context)` constructor used by every client failure path (HTTP, network, JSON, credentials, SSRF, allowlist, missing path param, non-externalService instance). D11 success-body type mismatch stays `FailedToGetInstances`.
+- Fake server: `rawBody` / optional `body` so 200-invalid-JSON can be served without `JSON.stringify`.
+- **Generated `actionError` schema:** it *does* enumerate `errorType`, but that union is assembled from Endpoint `actionErrors` literals on store/instance actions plus `FailedToResolveTemplate` (`getMiroirFundamentalJzodSchema.ts`). It is **not** the `Action2Error` catalog (already missing `InvalidAction` and the rest of the hand-written union). Adding the four ExternalService* literals there would be a Jzod schema change this slice forbids and would still not make `ActionError` ≡ `ActionErrorType`. **No schema asset edit, no `devBuild`.** Authority for D12 is the hand-written union + `Action2Error`.
+- **Validation** (rebuild `miroir-core` after the mapping change; `--profile emulatedServer-filesystem` required, same as Slice 2):
+  - `externalServiceGuards.267.phase3` — 17 passed
+  - `externalServiceQuery.267.phase2` — 4 passed
+  - `tsc --noEmit --skipLibCheck` miroir-core + miroir-standalone-app — clean
+
+**Deviations:**
+- HTTP status cases run through the committed Slice 2 endpoint + boxed `extractorFromAction` (proves the intercept preserves `errorType`). Credential / SSRF / allowlist / closed-server network cases call `executeExternalServiceOperation` directly (same helper the intercept uses) so the store is not mutated per case.
+- Setup commits the test endpoint once in `beforeAll` (no per-test `resetIntegTestbed`); HTTP fixtures are swapped via `setFixture`.
+- 403 is mapped like 401 (`ExternalServiceUnauthorized`) per the task text; the slice bullet only named 401.
+- `ActionErrorType` lives in `0_interfaces/2_domain/DomainElement.ts` (user prompt said `1_core`).
+
+**For Slice 4:** D12/D13 guards are on `executeExternalServiceOperation` / `fetchExternalServiceOperation`. Intercept already returns the `Action2Error` unchanged. Slice 4 must **not** re-wrap these into `FailedToGetInstances` / generic `InvalidAction` in closed extractor switches. Extractor restriction (non-external / non-GET), closed-switch naming, composite `get-playlist`, and client-side hard errors are still Slice 4. Loopback still needs `allowInsecureBaseUrlsForTests`. `testByFile` needs `--profile emulatedServer-filesystem`.
 
 ---
 

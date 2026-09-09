@@ -1310,6 +1310,18 @@ export {
 } from "./4_services/PersistenceStoreController.js";
 export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
+  clearSecrets,
+  registerSecrets,
+  resolveSecret,
+} from "./4_services/SecretStore.js";
+export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";
+export {
+  allowInsecureBaseUrlsForTests,
+  clearAllowedInsecureBaseUrlsForTests,
+  executeExternalServiceOperation,
+} from "./4_services/ExternalServiceClient.js";
+export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";
+export {
   mountApplicationDeployment, startLocalPersistenceStoreControllers
 } from "./4_services/PersistenceStoreControllerTools.js";
 export {
@@ -1333,7 +1345,6 @@ export {
   readUsableBearerPrincipal,
   loginWithPassword,
   persistChangedPasswordHash,
-  redactCredentialSecretsFromValue,
   resolveAuthenticationEnabled,
   setProcessTokenSecret,
   verifyBearerToken,

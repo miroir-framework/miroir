@@ -1,7 +1,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
-import { getEndpointActions } from '../0_interfaces/1_core/endpointDefinition.js';
+import { getEndpointActions, getExternalService } from '../0_interfaces/1_core/endpointDefinition.js';
 import { Uuid } from '../0_interfaces/1_core/EntityVersion.js';
 import {
   DomainControllerInterface,
@@ -162,6 +162,23 @@ import {
   unNullify,
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
+import { executeExternalServiceOperation } from "../4_services/ExternalServiceClient.js";
+import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
+
+type ExtractorFromActionResolved = {
+  extractorOrCombinerType: "extractorFromAction";
+  endpointUuid: string;
+  actionType: string;
+  parameterBindings?: Record<string, unknown>;
+};
+
+function isExtractorFromActionResolved(value: unknown): value is ExtractorFromActionResolved {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    (value as { extractorOrCombinerType?: unknown }).extractorOrCombinerType === "extractorFromAction"
+  );
+}
 
 export const templateEvaluationParams = {
   env: { NODE_ENV: getMiroirEnvironmentMode() === "dev" ? "development" : "production" },
@@ -860,9 +877,20 @@ export class DomainController implements DomainControllerInterface {
          * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
          */
 
+        const resolvedQueryOrError = await this.resolveExtractorFromActionInBoxedQuery(
+          runBoxedExtractorOrQueryAction,
+          applicationDeploymentMap,
+        );
+        if (resolvedQueryOrError.kind === "error") {
+          return resolvedQueryOrError.error;
+        }
+        if (resolvedQueryOrError.kind === "done") {
+          return resolvedQueryOrError.result;
+        }
+
         const result: Action2ReturnType =
           await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalPersistenceStore(
-            runBoxedExtractorOrQueryAction,
+            resolvedQueryOrError.action,
             applicationDeploymentMap,
           );
         // const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(
@@ -2921,12 +2949,16 @@ export class DomainController implements DomainControllerInterface {
           applicationUuid !== selfApplicationMiroir.uuid ||
           (domainAction as any).actionType == "entity_DuplicateAttribute" 
         )) {
-          return this.handleApplicationAction(
+          const applicationResult = await this.handleApplicationAction(
             domainAction,
             applicationDeploymentMap,
             currentModelEnvironment,
             actionParamValues,
           );
+          if (applicationResult instanceof Action2Error) {
+            return applicationResult;
+          }
+          return ACTION_OK;
         } else {
           return this.handleActionInternal(
             domainAction,
@@ -2946,24 +2978,15 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment,
     actionParamValues?: Record<string, unknown>,
-  ): Promise<Action2VoidReturnType> {
+  ): Promise<Action2ReturnType> {
     log.info(
       "DomainController handleApplicationAction",
       domainAction.actionType,
       "domainAction",
-      JSON.stringify(domainAction, null, 2),
+      JSON.stringify(redactCredentialSecretsFromValue(domainAction), null, 2),
       "endpoints",
       JSON.stringify(Object.keys(currentModelEnvironment?.endpointsByUuid || {}), null, 2),
     );
-    if (!currentModelEnvironment) {
-      return Promise.resolve(
-        new Action2Error(
-          "InvalidAction",
-          "DomainController handleApplicationAction call is missing currentModelEnvironment argument",
-          [],
-        ),
-      );
-    }
     if (!(domainAction as any).endpoint) {
       return Promise.resolve(
         new Action2Error(
@@ -2978,6 +3001,40 @@ export class DomainController implements DomainControllerInterface {
         new Action2Error(
           "InvalidAction",
           "DomainController handleApplicationAction missing actionType in action",
+          [],
+        ),
+      );
+    }
+    if (this.persistenceStoreAccessMode === "local") {
+      const application =
+        (domainAction as any).payload?.application ??
+        currentModelEnvironment?.currentModel?.applicationUuid;
+      if (application) {
+        const endpointInstance = await this.loadEndpointInstanceFromLocalPersistenceStore(
+          application,
+          applicationDeploymentMap,
+          (domainAction as any).endpoint,
+        );
+        if (
+          !(endpointInstance instanceof Action2Error) &&
+          getExternalService(endpointInstance)
+        ) {
+          return executeExternalServiceOperation(
+            endpointInstance,
+            (domainAction as any).actionType,
+            {
+              ...(actionParamValues ?? {}),
+              ...((domainAction as any).payload ?? {}),
+            },
+          );
+        }
+      }
+    }
+    if (!currentModelEnvironment) {
+      return Promise.resolve(
+        new Action2Error(
+          "InvalidAction",
+          "DomainController handleApplicationAction call is missing currentModelEnvironment argument",
           [],
         ),
       );
@@ -3055,7 +3112,7 @@ export class DomainController implements DomainControllerInterface {
       );
     }
 
-    const result = this.handleCompositeActionTemplate(
+    const result = await this.handleCompositeActionTemplate(
       currentActionDefinition.actionImplementation.definition as CompositeActionTemplate,
       applicationDeploymentMap,
       currentModelEnvironment,
@@ -3065,7 +3122,116 @@ export class DomainController implements DomainControllerInterface {
         deploymentUuid: applicationDeploymentMap[currentEndpointDefinition.application],
       },
     );
-    return result;
+    return result as Action2ReturnType;
+  }
+
+  /**
+   * #267 P1 — Endpoint instances for external-service execution are loaded from the
+   * local persistence store model section, never from currentModelEnvironment.endpointsByUuid.
+   */
+  private async loadEndpointInstanceFromLocalPersistenceStore(
+    application: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    endpointUuid: string,
+  ): Promise<EndpointDefinition | Action2Error> {
+    const reader = this.persistenceStoreLocalOrRemote?.readLocalPersistenceSectionInstances;
+    if (typeof reader !== "function") {
+      return new Action2Error(
+        "InvalidAction",
+        "Could not load endpoint from the local persistence store model section",
+      );
+    }
+    const instances = await this.persistenceStoreLocalOrRemote.readLocalPersistenceSectionInstances(
+      application,
+      applicationDeploymentMap,
+      "model",
+      entityEndpointVersion.uuid,
+    );
+    const found = instances.find((instance) => instance.uuid === endpointUuid);
+    if (!found) {
+      return new Action2Error(
+        "InvalidAction",
+        "Could not load endpoint from the local persistence store model section",
+      );
+    }
+    return found as EndpointDefinition;
+  }
+
+  /**
+   * #267 D5 — run extractorFromAction on the server before the persistence-store handoff.
+   * Store-backed extractors stay in the query; external results are seeded into contextResults
+   * so combiners/transformers see the merged context in the existing runQuery pass.
+   */
+  private async resolveExtractorFromActionInBoxedQuery(
+    action: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<
+    | { kind: "error"; error: Action2Error }
+    | { kind: "done"; result: Action2ReturnType }
+    | { kind: "continue"; action: RunBoxedQueryAction }
+  > {
+    const query = action.payload.query;
+    const extractors = (query.extractors ?? {}) as Record<string, unknown>;
+    const externalEntries = Object.entries(extractors).filter(([, extractor]) =>
+      isExtractorFromActionResolved(extractor),
+    );
+    if (externalEntries.length === 0) {
+      return { kind: "continue", action };
+    }
+
+    const contextResults: Record<string, unknown> = { ...(query.contextResults ?? {}) };
+    for (const [name, extractor] of externalEntries) {
+      if (!isExtractorFromActionResolved(extractor)) {
+        continue;
+      }
+      const endpointInstance = await this.loadEndpointInstanceFromLocalPersistenceStore(
+        action.payload.application,
+        applicationDeploymentMap,
+        extractor.endpointUuid,
+      );
+      if (endpointInstance instanceof Action2Error) {
+        return { kind: "error", error: endpointInstance };
+      }
+      const executed = await executeExternalServiceOperation(
+        endpointInstance,
+        extractor.actionType,
+        extractor.parameterBindings ?? {},
+      );
+      if (executed instanceof Action2Error) {
+        return { kind: "error", error: executed };
+      }
+      contextResults[name] = executed.returnedDomainElement;
+    }
+
+    const remainingExtractors = Object.fromEntries(
+      Object.entries(extractors).filter(([, extractor]) => !isExtractorFromActionResolved(extractor)),
+    );
+    const hasRemainingWork =
+      Object.keys(remainingExtractors).length > 0 ||
+      Object.keys(query.combiners ?? {}).length > 0 ||
+      Object.keys(query.runtimeTransformers ?? {}).length > 0;
+
+    if (!hasRemainingWork) {
+      return {
+        kind: "done",
+        result: { status: "ok", returnedDomainElement: contextResults },
+      };
+    }
+
+    return {
+      kind: "continue",
+      action: {
+        ...action,
+        payload: {
+          ...action.payload,
+          query: {
+            ...query,
+            extractors: remainingExtractors as typeof query.extractors,
+            contextResults,
+          },
+        },
+      },
+    };
   }
   // ##############################################################################################
   private async handleActionInternal(

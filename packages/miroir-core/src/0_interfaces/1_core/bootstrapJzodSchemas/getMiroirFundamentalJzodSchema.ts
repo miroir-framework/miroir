@@ -46,6 +46,67 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 });
 
 
+const EXTRACTOR_FROM_ACTION_SCHEMA = {
+  type: "object",
+  definition: {
+    extractorOrCombinerType: {
+      type: "literal",
+      tag: {
+        value: {
+          canBeTemplate: false,
+          display: { editable: false },
+          defaultLabel: "Extractor Or Combiner Type",
+        },
+      },
+      definition: "extractorFromAction",
+    },
+    endpointUuid: { type: "uuid" },
+    actionType: { type: "string" },
+    parameterBindings: {
+      type: "record",
+      definition: {
+        type: "union",
+        definition: [{ type: "string" }, { type: "any" }],
+      },
+    },
+  },
+} as const;
+
+function schemaReferencePath(entry: unknown): string | undefined {
+  if (!entry || typeof entry !== "object") {
+    return undefined;
+  }
+  const definition = (entry as { definition?: { relativePath?: unknown } }).definition;
+  return typeof definition?.relativePath === "string" ? definition.relativePath : undefined;
+}
+
+/**
+ * #267 Slice 2 — resolved `extractorFromAction` on Query extractor unions.
+ * Template twin (`extractorTemplateFromAction`) is Slice 5.
+ */
+function ensureExtractorFromActionInQueryContext(context: Record<string, any> | undefined): void {
+  if (!context) {
+    return;
+  }
+  context.extractorFromAction = EXTRACTOR_FROM_ACTION_SCHEMA;
+  const extractorFromActionRef = {
+    type: "schemaReference",
+    definition: { relativePath: "extractorFromAction" },
+  };
+  for (const unionName of ["extractorReturningObject", "extractorOrCombiner"] as const) {
+    const union = context[unionName];
+    if (!union || !Array.isArray(union.definition)) {
+      continue;
+    }
+    const already = union.definition.some(
+      (entry: unknown) => schemaReferencePath(entry) === "extractorFromAction",
+    );
+    if (!already) {
+      union.definition.push(extractorFromActionRef);
+    }
+  }
+}
+
 function endpointEntityActionsSchemaContext(entityDefinitionEndpointDefinition: any): Record<string, unknown> {
   const definitionFieldSchema = entityDefinitionEndpointDefinition?.mlSchema?.definition?.definition;
   if (definitionFieldSchema?.type === "union" && Array.isArray(definitionFieldSchema.definition)) {
@@ -233,6 +294,9 @@ export function getMiroirFundamentalJzodSchema(
     entityDefinitionQueryVersionV1.mlSchema.definition.definition,
     miroirFundamentalJzodSchemaUuid
   ) as any;
+  ensureExtractorFromActionInQueryContext(
+    entityDefinitionQueryVersionV1WithAbsoluteReferences.context,
+  );
 
 
   // log.info(
