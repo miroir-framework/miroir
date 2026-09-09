@@ -44,7 +44,7 @@ On the home page (click on the `Home` when the application selector equals `no v
 
 <img src="../tutorials/libraryTutorial/miroir-install_application.png" alt="Install Application" width="80%"/>
 
-Select the **library-model.json** and **library-data.jaon** files, and deploy the application on the filesystem:
+Select the **library-model.json** and **library-data.json** files, and deploy the application on the filesystem:
 
 <img src="../tutorials/libraryTutorial/miroir-install_application-library.png" alt="Install the Library Application" width="80%"/>
 
