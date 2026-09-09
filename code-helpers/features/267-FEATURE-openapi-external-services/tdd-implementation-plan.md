@@ -17,7 +17,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/267
 Working branch: `267-FEATURE-openapi-external-services`
 
-**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE.**
+**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE.**
 
 ---
 
@@ -39,7 +39,7 @@ This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize endpoint/dispatch/report contracts | ✅ | `externalService.267.phase0.unit.test.ts` + modelValidation |
-| 1 | Endpoint `definition` key-union refactor (D1) | ⬜ | `externalServiceSchema.267.phase1.unit.test.ts` + nonreg |
+| 1 | Endpoint `definition` key-union refactor (D1) | ✅ | `externalServiceSchema.267.phase1.unit.test.ts` + nonreg |
 | 2 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify, incl. named secrets (D4, D5 server, D6, D11) | ⬜ | `externalServiceQuery.267.phase2.integ.test.ts` |
 | 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ⬜ | `externalServiceGuards.267.phase3.integ.test.ts` |
 | 4 | Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5) | ⬜ | `externalServiceDispatch.267.phase4.integ.test.ts` |
@@ -162,7 +162,7 @@ npm run testByFile -w miroir-test-app_deployment-library -- tests/modelValidatio
 
 ## Slice 1 — Endpoint `definition` key-union refactor (D1)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -208,7 +208,38 @@ npm run nonreg
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+**Done (2026-09-09):**
+
+- RED: `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceSchema.267.phase1.unit.test.ts` — 4/4: externalService branch validates; both-keys rejected; 13 existing endpoint assets still validate; guards narrow XOR (including fail-closed on both-keys).
+- GREEN schema: Endpoint Entity `mlSchema` (`3d8da4d4-…`) and EntityVersion (`e3c1cc69-…`) — `definition` is an untagged `type: "union"` of two objects (actions shape XOR `{ externalService }`). `requestSchema` / `responseSchema` are `schemaReference` → `jzodElement` (`fe9b7d99-…`). Regenerated types via `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` (do not hand-edit `miroirFundamentalType.ts`).
+- Guard pair: `getEndpointActions` / `getExternalService` in `packages/miroir-core/src/0_interfaces/1_core/endpointDefinition.ts`, exported from `miroir-core`. Both-keys → both return `undefined` (fail-closed).
+- **XOR strictness (no extra schema refinement):**
+  1. Jzod objects compile to `z.object(...).strict()` unless `nonStrict` (`jzod` `JzodToZod.ts`). Zod `z.union` of two strict objects rejects a both-keys instance.
+  2. Runtime `jzodTypeCheck` (`checkModelValidationInstance` / modelValidation) did **not** accept untagged object unions: missing `discriminator` used to skip key-inclusion. `selectUnionBranchFromDiscriminator` now treats a missing/empty discriminator as key-inclusion (every value key must exist on the branch). Both-keys therefore matches **neither** branch (`externalService` is not on the actions object; `actions` is not on the externalService object). The schema itself has **no** `discriminator` field (no instance migration).
+- **13 production reader modules** narrowed with the guard pair (only idiom; no per-reader casts of `.definition.actions`):
+  1. `DomainController.ts` (`handleApplicationAction` — unknown actionType if no actions branch; no external-service dispatch)
+  2. `Instance.ts`
+  3. `schemaChangeKind.ts` *(extra vs P9; found via tsc)*
+  4. `schemaForDeployment.ts` *(extra vs P9; found via tsc)*
+  5. `getMiroirFundamentalJzodSchema.ts` (hardcoded endpoint JSON via `getEndpointActions(...) ?? []`; Entity mlSchema context via local `endpointEntityActionsSchemaContext()` that walks the **schema** union, not an instance)
+  6. `EndpointToolRegistry.ts` (well-formedness = `uuid && name && getEndpointActions` → skips externalService)
+  7. `mcpHandlersForEndpoint.ts`
+  8. `mcpToolDescriptionFromActionDefinition.ts`
+  9. `commandsFromEndpoint.ts`
+  10. `miroirCopilotKitActions.ts`
+  11. `RunnerView.tsx`
+  12. `resolveMcpToolAction.ts`
+  13. `EndpointActionCaller.tsx` (replaced transformer `referencePath: ["currentEndpoint","definition","actions"]` with `getEndpointActions`)
+- Slice 0 grep inventory re-run: remaining `.definition.actions` are comments (`RestServer.ts`, leftover CopilotKit comments), the bootstrap **schema**-walker, the guard module itself, and `listSelfApplicationUuidPaths.unit.test.ts.snap` (`endpoints.*.definition.actions.*` — still correct for actions-branch endpoints). Named tests updated: `modelEndpointActions.unit.test.ts`, `schemaChangeKind.unit.test.ts`, `schemaForDeployment.unit.test.ts`.
+- **Validation:** rebuild OK; phase1 4/4; miroir `modelValidation` 152/152; library `modelValidation` 181/181; `tsc --noEmit --skipLibCheck` green for miroir-core, miroir-mcp, miroir-cli, miroir-standalone-app, miroir-ai; `npm run nonreg` **53 passed / 0 failed / 0 skipped** (tier=default, profile=emulatedServer-sql, 1707s, snapshot `test-results/nonreg/20260909T172008Z`).
+
+**Deviations:**
+- `EndpointToolRegistry.listTools` is not constructed in the unit test (needs DomainController + local cache). The test asserts the guard pair that `listTools` now uses (`getEndpointActions` undefined → skip, no throw).
+- Guards live in layer `0_interfaces/1_core/` (not `1_core/Endpoint.ts`) so bootstrap assembly can import them without an upward layer-1 dependency. Types are structural (`EndpointDefinitionLike`) so `devBuild` can run before new generated types exist.
+- Unblocked Slice 1 `tsc` on pre-existing implicit-`any` map callbacks in `jzodElementToJsonSchema.ts` / `jzodElementToTS.ts`, and two unrelated standalone-app assertion/`Entity[]` mismatches in `ReportSectionListDisplay.tsx` / `ReportTools.ts`.
+- `jzodTypeCheck` key-inclusion for missing discriminator is a small runtime change required for D1 XOR under `checkModelValidationInstance`; existing MiroirTest `selectUnionBranchFromDiscriminator` always passes an explicit discriminator string.
+
+**For Slice 2:** `getEndpointActions` / `getExternalService` from `miroir-core`. `externalService.operations` is an **array** (lookup later: `operations.find(op => op.operationId === actionType)`). `parameterMappings`: `Array<{ name, in, required? }>`. `securityScheme`: `{ type, scheme, bearerFormat? }`. Untagged union — no `kind` field. `handleApplicationAction` does **not** execute the externalService branch yet (`getEndpointActions` undefined → existing “unknown actionType”). `listTools` skips externalService endpoints (MCP exposure remains a non-goal). Rebuild order before tests that import `entityDefinitionEndpoint`: `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`. Export note: `entityDefinitionEndpoint` is the EntityVersion JSON (`e3c1cc69`); `entityEndpointVersion` is the Entity JSON (`3d8da4d4`); both mlSchemas were updated.
 
 ---
 
