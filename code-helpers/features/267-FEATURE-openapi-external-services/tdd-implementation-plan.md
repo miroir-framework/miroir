@@ -17,7 +17,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/267
 Working branch: `267-FEATURE-openapi-external-services`
 
-**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE. Slice 2 DONE. Slice 3 DONE. Slice 4 DONE. Slice 5 DONE.**
+**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE. Slice 2 DONE. Slice 3 DONE. Slice 4 DONE. Slice 5 DONE. Slice 6 DONE. Slice 7 DONE.**
 
 ---
 
@@ -44,8 +44,8 @@ This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure 
 | 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ✅ | `externalServiceGuards.267.phase3.integ.test.ts` |
 | 4 | Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5) | ✅ | `externalServiceDispatch.267.phase4.integ.test.ts` |
 | 5 | Report path: template extractor + param forwarding + async report-load routing (D5 client, D8) | ✅ | `externalServiceReport.267.phase5.integ.test.tsx` |
-| 6 | Sync transformer + bounded converter + Entity `kind: "http"` schema (D2, D3) | ⬜ | MiroirTest `externalServiceSync` (unit) + `externalServiceSyncExecute` (integ) |
-| 7 | Spotify example app package (D7, D3, D10) | ⬜ | modelValidation + `spotifyApp.267.phase7.integ.test.ts` |
+| 6 | Sync transformer + bounded converter + Entity `kind: "http"` schema (D2, D3) | ✅ | MiroirTest `externalServiceSync` (unit) + `externalServiceSyncExecute` (integ) |
+| 7 | Spotify example app package (D7, D3, D10) | ✅ | modelValidation + `spotifyApp.267.phase7.integ.test.tsx` |
 | 8 | Nonreg, docs, cleanup, AC, opt-in live test | ⬜ | nonreg step + tracer narrative |
 
 ---
@@ -494,6 +494,8 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 - Mixed store extractor is written as resolved `extractorByPrimaryKey` inside `extractorTemplates` (Templates already accepts that form). External side uses `extractorTemplateFromAction`.
 - `testByFile` already adds `--bail=1`; do not pass `--bail` again.
 
+**Follow-up (2026-09-09, after Slice 6):** 17 Report `modelValidation` failures were a Slice 5 leftover. `extractorOrCombinerTemplate` gained a union member `{ relativePath: "extractorTemplateFromAction" }` **without** `absolutePath`. Query typecheck works because the Query entity context defines that name locally; Report typecheck walks `extractorOrCombinerTemplateRecord` via the fundamental schema, then `resolveJzodSchemaReferenceInContext` looks up a relative-only ref in the **current** (Report) context — which never had the name (`could not resolve reference {"relativePath":"extractorTemplateFromAction"}`). Fix: add `absolutePath: miroirFundamentalJzodSchemaUuid` on the `extractorTemplateFromAction` schemaReference in `extractorOrCombinerTemplate` and `extractorTemplateReturningObject` (`getMiroirFundamentalJzodSchema.ts` + regen). Not a discriminator-mapping bug; Slice 1 XOR/strictness untouched. Report Entity/EntityVersion assets did not need a copied schema. After fix: miroir `modelValidation` 152/152, library 181/181.
+
 **For Slice 6/7:** Hand-write Spotify query/report assets with this template shape:
 
 ```json
@@ -513,7 +515,7 @@ Report sections in the Slice 5 tests are `jsonReportSection` with `fetchedDataRe
 
 ## Slice 6 — Sync transformer + bounded OpenAPI→Jzod converter + Entity `kind: "http"` schema (D2, D3)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -554,13 +556,79 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+**Done (2026-09-09):**
+
+- **Part A first (P2).** Entity `externalDataSource` gained `kind?: "sql" | "http"` (absent = `"sql"`) and `endpoint?: uuid` on Entity-of-Entity (`16dbfe28-…/16dbfe28-….json`), Entity-of-EntityVersion, and the EntityVersion snapshots (`381ab1be-…`, `bdd7ad43-…`). Regen: `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`. Generated Zod is `.strict()`: `kind: z.enum(["sql","http"]).optional()`, `endpoint: z.string().uuid().optional()`, plus existing `schema?` / `tableName?`.
+- **Store skip.** `isHttpExternalEntity` / `isSqlExternalEntity` in `packages/miroir-core/src/1_core/Entity/entityExternalDataSource.ts` (exported from `miroir-core`). Postgres `bootFromPersistedState` and `createStorageSpaceForInstancesOfEntity` skip `kind === "http"`; `isExternal` uses `isSqlExternalEntity` so HTTP entities never become Sequelize models. Filesystem / indexedDb / mongodb `createStorageSpaceForInstancesOfEntity` skip; bundled data + model sections log-and-skip. Proof: `externalServiceHttpStoreSkip.267.phase6.unit.test.ts` (predicate + filesystem creates no folder). Full deployment-boot proof is Slice 7. Use `conceptLevel: "Model"` + `externalDataSource.kind: "http"` — do **not** use `conceptLevel: "External"` (that still means SQL catalog).
+- **RED Test A.** MiroirTest `transformerTest` suite `externalServiceSync` (`f4e5dde0-…`). Folder catalog auto-discovers JSON under `packages/miroir-test-app_deployment-*/assets/*/a311f363-…/`; suite key = instance **`name`**. `transformerTest`-only → `cliLaunchKind: "unit"`. No hardcoded registry. Named exports `miroirTest_externalServiceSync` / `miroirTest_externalServiceSyncExecute` added to deployment-miroir `index.ts` (not added to `defaultMiroirMetaModel.tests` — that list is a curated bootstrap subset).
+- **Excerpt asset (not inline source of truth).** `packages/miroir-test-app_deployment-miroir/assets/test-resources/spotifyOpenApiExcerpt.get-playlist.json` — faithful Spotify OAS subset for GET `/playlists/{playlist_id}` plus `PlaylistObject` / `PlaylistOwnerObject` / `PagingPlaylistTrackObject` / `PlaylistTrackObject` / `TrackObject` / `ArtistObject` / `ImageObject`. `PlaylistObject.tracks` is deprecated in the live Spotify doc; still the D3 bound. `owner`/`tracks` are `allOf` (flattened). `PlaylistTrackObject.track` is `oneOf` Track|Episode — converter picks the unique object variant that has the bound fields (`artists`, `duration_ms`). Suite JSON **embeds** the excerpt because `transformerTest` has no `fixtureRef`; regenerate with `generate_externalServiceSync_suites.py`.
+- **Asserted behavior.** Output is `compositeActionSequence`: `updateInstance` upserts `operations[]` `{ operationId: "get-playlist", method: "GET", path: "/playlists/{playlist_id}", parameterMappings, responseSchema }`; `createEntity` for SpotifyPlaylist `56166585-…` with `idAttribute: "id"`, `externalDataSource: { kind: "http", endpoint: "0e5cb172-…" }`, bounded `mlSchema`. OAS `nullable: true` → Jzod `nullable` (e.g. `images.height`, `owner.display_name`). Unbounded / ambiguous `oneOf`/`anyOf` → `TransformerFailure` (`queryFailure` + `innerError.failureMessage`). Scope includes `change-playlist-details` (PUT) and it is skipped.
+- **RED Test B (P3).** MiroirTest `actionTest` suite `externalServiceSyncExecute` (`394242e7-…`, `runTarget` Library). Lands operations + SpotifyPlaylist. **No HTTP.** Existing playfield fields required (`testbedModel` + `testbedEntitiesAndInstances: []` + `testbedInitApplicationParameters: "libraryTestbedInitParams"`). Must run `--profile emulatedServer-filesystem`. Assertions use `extractorInstancesByEntity` + `orderBy` name (list, not uuid-keyed record) + `find` + `resultAccessPath`. Extra assertion hits `externalDataSource` directly because `ENTITY_PRESENT_MODEL_DEFINITION_FIELDS` strips `idAttribute` / `externalDataSource` / `mlSchema` from entity-level compares. `handleTestCompositeAction` still swallows composite `Action2Error` and returns `ACTION_OK` (existing runner quirk — not fixed here).
+- **Loop-closure.** Phase 2 integ gained `it("loop-closure: query runs against operations produced by syncExternalServiceSchema")`: apply transformer → take materialized `operations[]` → `updateInstance`+commit → existing `extractorFromAction` vs fake server. Hand-written endpoint tests kept. D11 lenient validation accepts the larger synced schema vs the small fixture.
+- **GREEN transformer.** TransformerDefinition `c615ff0e-…` (`transformer_syncExternalServiceSchema_json`) + `Transformers.ts` export in `miroirCoreTransformers` + `TransformersForRuntime` `inMemoryTransformerImplementations` / `applicationTransformerDefinitions`. Handler lives in `syncExternalServiceSchema.ts` (deep module; only `handleTransformer_syncExternalServiceSchema` imported). Inputs from **transformerParams** (P11): `(openApiDocument, appModel, scope)` with transformer-field fallback. `transformerResultSchema` is the compositeActionSequence shape. `yaml` `^2.8.0` on `miroir-core` (tsup-bundled; accepted per D2/P22). `ExternalServiceClient` does **not** import it.
+- **Converter rules.** Bounded `$ref` resolution; `allOf` flattened; `oneOf`/`anyOf` error unless a bound path uniquely picks one object variant; non-GET skipped; default bound for `get-playlist`: id, name, owner.id/display_name, images.url/height/width, tracks.total, tracks.items.track.{id,name,artists.id/name,duration_ms}. `createEntity` payload is `entities[]` only (Entity-complete / #217).
+- **P11 production invocation.** Do **not** use `POST /query` / `defaultMiroirModelEnvironment` as the app model. Supply `transformerParams.appModel` from `localCache.currentModelEnvironment(app, map)` (accepts `endpointsByUuid`, `endpoints[]`, or `currentModel.endpoints`). Tests use `{ endpoints: [endpoint] }` plus `defaultMetaModelEnvironment` as the transformer *context*.
+- **Generated-JSON size (D2 reviewability)** against the committed get-playlist excerpt (not the full live Spotify YAML):
+
+  | artefact | compact | pretty |
+  |---|---|---|
+  | Spotify excerpt (`spotifyOpenApiExcerpt.get-playlist.json`) | 3493 B | 7033 B |
+  | generated `compositeActionSequence` | **3373 B** | **10058 B** |
+  | first `operations[]` entry | 956 B | 2330 B |
+  | bounded `responseSchema` / entity `mlSchema` | 755 B | — |
+
+  2 actions (`updateInstance`, `createEntity`), 1 GET operation. Composite compact size is slightly *under* the excerpt because unused Playlist/Track fields are dropped — reviewable at ~3.4 KB / ~10 KB pretty.
+
+**Validation** (rebuild first; integ needs `--profile emulatedServer-filesystem`):
+- `testMiroir -w miroir-core -- --suites externalServiceSync --mode unit` — 3/3 passed
+- `testMiroir -w miroir-standalone-app -- --suites externalServiceSyncExecute --mode integration --profile emulatedServer-filesystem` — 1 passed (one Windows `UNKNOWN` file-lock flake on admin Deployment upsert; retry passed)
+- `RUN_TEST=externalServiceQuery.267.phase2 … --profile emulatedServer-filesystem` — 5/5 including loop-closure
+- `RUN_TEST=externalServiceHttpStoreSkip.267.phase6` — 2/2
+- phase3 / phase4 / phase5 same profile — 17 / 13 / 5 passed (no regression)
+- `tsc --noEmit --skipLibCheck` miroir-core, standalone-app, store-postgres, store-filesystem — clean
+- `testByFile -w miroir-test-app_deployment-miroir -- modelValidation.unit.test.ts` — Entity / EntityVersion / MiroirTest (catalog) / TransformerDefinition path OK. **17 Report failures** were a Slice 5 leftover (`extractorTemplateFromAction` relative-only schemaReference); **fixed after this slice** (see Slice 5 Realization follow-up). Vitest root is `./tests`, so the filter is `modelValidation.unit.test.ts`.
+
+**Deviations:**
+- `transformerTest` cannot import fixtures → excerpt **embedded** in suite JSON, generated from the committed file.
+- Integ suite needs existing playfield fields + `--profile emulatedServer-filesystem` (default local profile is Postgres).
+- Bound-path `oneOf` that uniquely selects one object variant is converted (Spotify `track`); unbounded / ambiguous `oneOf`/`anyOf` still error.
+- Suites are **not** in `defaultMiroirMetaModel.tests` (avoids bloating bootstrap with the embedded excerpt). Folder catalog is the `testMiroir` registration.
+- modelValidation Report failures were Slice 5 `extractorTemplateFromAction` resolution (fixed in the Slice 5 Realization follow-up), not the Entity `kind` change.
+
+**For Slice 7:** Dogfood the sync, then commit reviewed Endpoint `operations[]` + SpotifyPlaylist Entity. Do **not** create the Spotify package in this slice.
+
+```js
+const env = localCache.currentModelEnvironment(spotifyApplicationUuid, applicationDeploymentMap);
+const composite = transformer_extended_apply(
+  "runtime", [], undefined,
+  { transformerType: "syncExternalServiceSchema", interpolation: "runtime" },
+  "value",
+  env,
+  {
+    openApiDocument: excerptOrYamlString, // committed excerpt or real Spotify YAML
+    appModel: env,                         // endpointsByUuid / currentModel.endpoints
+    scope: ["get-playlist"],
+    endpointUuid: "0e5cb172-12ea-4467-8598-5889338ae454",
+    entityUuid: "56166585-b6fd-42c6-95d3-32a80c3304f7",
+    entityVersionUuid: "1a34fdf2-67c8-411d-9be4-a9265089ac51",
+  },
+);
+// review composite, then handleCompositeAction / DomainController; commit.
+```
+
+HTTP entities: stores skip bootstrap (`isHttpExternalEntity`); Postgres does not treat them as SQL-external Sequelize models. Rebuild store packages after core. Re-prove skip after boot:
+
+```
+npm run testMiroir -w miroir-core -- --suites externalServiceSync --mode unit
+npm run testMiroir -w miroir-standalone-app -- --suites externalServiceSyncExecute --mode integration --profile emulatedServer-filesystem
+RUN_TEST=externalServiceQuery.267.phase2 npm run testByFile -w miroir-standalone-app -- externalServiceQuery.267.phase2 --profile emulatedServer-filesystem
+```
 
 ---
 
 ## Slice 7 — Spotify example app package (D7, D3 assets, D10 display)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -599,7 +667,45 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+**Done (2026-09-09):**
+
+- **RED.** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/spotifyApp.267.phase7.integ.test.tsx` (`.tsx` because it renders `ReportViewWithEditor`, same as Slice 5). Vitest integ, `--profile emulatedServer-filesystem`. First fail: package unresolved. Later fails: AppStack Library playfield needs Library in `applicationDeploymentMap`; `getByText("Born to Run")` is ambiguous once both report sections render. `modelValidation` first fail: Query `selfApplication` is not on the Query schema.
+- **Package.** `packages/miroir-test-app_deployment-spotify/` mirrors Library: unscoped name `miroir-test-app_deployment-spotify` (workspace `-w` and Library are unscoped; not `@miroir-framework/…`). Layout: `package.json`, `tsconfig.json`, `tsup.config.js`, `vite.config.js` (`test.root: "."` so `tests/modelValidation.unit.test.ts` is found — Library uses `root: "./tests"`), `index.ts` / `index.d.ts`, `src/Spotify.ts`, `assets/spotify_model/` + empty `assets/spotify_data/` (`.gitkeep` only), `assets/deployment/`, `assets/admin_data/`, `assets/test-resources/spotifyOpenApiExcerpt.get-playlist.json`. Dist after build ≈ 19.4 KB (init params stay in the test — importing `defaultMiroirMetaModel` into the package bundled the whole metamodel).
+- **Allocated UUIDs used as specified.** Unversioned app (like Library): Entity `parentDefinitionVersionUuid` = `1a34fdf2-…`; **no** EntityVersion instance file. Synthetic init ApplicationVersion `7e2c9a14-6b5f-4d83-a1e0-3c8f9b2d4e71` lives only in `Spotify.ts`.
+- **Dogfood (Slice 6 recipe).** `npx tsx packages/miroir-test-app_deployment-spotify/scripts/dogfood-sync-spotify-schema.ts` (`npm run dogfood-sync -w miroir-test-app_deployment-spotify`). Input = committed faithful excerpt (same as Slice 6), **not** the live 283 KB YAML. `transformer_extended_apply` + `syncExternalServiceSchema` + `scope: ["get-playlist"]`. Reviewed output written as assets; `operations[]` / `mlSchema` were **not** hand-written. Post-review only: Entity `defaultInstanceDetailsReportUuid` → playlist report. Provenance: `openApiDocument` = `JSON.stringify(excerpt)` (3493 B). Sizes: excerpt compact 3498 B; `operations[0]` 956 B; `mlSchema` 755 B; endpoint pretty file 7943 B; entity pretty file 2651 B. Endpoint `baseUrl: "https://api.spotify.com/v1"`, `credentialKey: "spotifyUser"`, `enabledOperations: ["get-playlist"]`. Entity: `conceptLevel: "Model"`, `idAttribute: "id"`, `externalDataSource: { kind: "http", endpoint: 0e5cb172-… }`.
+- **Query / Report.** Query `371aed0c-…` and Report `10ce3252-…` use Slice 5 `extractorTemplateFromAction` + `getFromParameters` / `referenceName: "playlistId"`. Report: `objectInstanceReportSection` (parentUuid SpotifyPlaylist, `fetchedDataReference: "playlist"`) + `jsonReportSection` for tracks from runtime `accessDynamicPath` (`playlist` → `tracks` → `items`). Label: `"Tracks (first 100 of ${playlist.tracks.total})"`. Menu links to the report; SelfApplication `homePageUrl` does too.
+- **Registration (D7).** Root `workspaces: ["packages/*"]` (glob suffices). `package-lock.json` workspace entry. `build-all.sh` `ALL_PACKAGES` / `STAGE_STANDALONE_DEPS` / `STAGE_DEPLOY_TEST` next to Library. Admin `Deployment` + `AdminApplication` assets + `deployment_Spotify` / `adminApplication_Spotify` exports. Filesystem test admin store copies under `packages/miroir-standalone-app/tests/assets/admin_data/`. Config JSONs that already had Library `deploymentStorageConfig` / `storeSectionConfiguration` gained `fd47d115-…` (standalone-app tests/src/4-tests, `ci/tests/config`, MCP `applicationDeploymentMap`). `packages/miroir-standalone-app/package.json` dep + `index.tsx` `deploymentsFromInstances`. Docker seed Deployment (Library-style `/data`-relative paths). Menu is in the package model. **`defaultSelfApplicationDeploymentMap` unchanged** — Library is not there either; tests compose `{ …default, Library, Spotify }`.
+- **Test setup.** AppStack still boots Library playfield → keep Library in the map. Create/open Spotify store in `beforeAll`; `resetAndinitializeDeploymentCompositeAction` with `defaultSpotifyAppModel` + `spotifyTestbedInitParams` in `beforeEach`. **Do not** put Spotify in `resetAndInitApplicationDeployment` (that helper hardcodes Miroir selfApplication/branch/version). After seed, `updateInstance`+`commit` overrides endpoint `baseUrl` to the fake server. Dummy secret `spotifyUser`. `allowInsecureBaseUrlsForTests`. Package assets keep production `https://api.spotify.com/v1`.
+- **Boot proof.** `SpotifyPlaylist` present; no runtime folder `spotify_data/56166585-…` and no such folder in package assets (`isHttpExternalEntity` skip).
+
+**Validation:**
+- `npm run build -w miroir-test-app_deployment-spotify` — ESM 19.43 KB
+- `npm run testByFile -w miroir-test-app_deployment-spotify -- tests/modelValidation.unit.test.ts` — 7/7
+- `RUN_TEST=spotifyApp.267.phase7 … --profile emulatedServer-filesystem` — 3/3
+- `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — clean
+- Regression: phase0 5, phase2 5, phase3 17, phase4 13, phase5 5; miroir `modelValidation` 152; library `modelValidation` 181
+
+**Deviations:**
+- Package name unscoped (matches Library / `-w` validation).
+- Phase7 test is `.tsx`.
+- No EntityVersion instance file (unversioned, Entity `parentDefinitionVersionUuid` only).
+- `openApiDocument` is the faithful excerpt, not the live Spotify YAML (reviewability; same excerpt as Slice 6).
+- `defaultSelfApplicationDeploymentMap` not extended (Library pattern).
+- Query has no `selfApplication` (schema extra — Report may have it).
+- Vitest root `"."` (Library is `"./tests"`).
+- Init params live in the test, not the package.
+- `miroir-server` package.json / ncc exclude / electron `extraResources` / `extract-*-model` not added (Library-specific packaging; no Spotify bundle extract).
+- Report test uses `getAllByText` because the objectInstance dump and the tracks list both contain the first track name.
+
+**For Slice 8:**
+- Integ file is `spotifyApp.267.phase7.integ.test.tsx`; always pass `--profile emulatedServer-filesystem`.
+- Nonreg step `externalServices-spotify` should include phase2/3/4/5/7 + `externalServiceSync` / `externalServiceSyncExecute`.
+- Live test: override `baseUrl` only in the test (or a test-only endpoint copy); never bake the fake URL or a real token into package assets. `LIVE_SPOTIFY_TOKEN` → `--secret spotifyUser=…`.
+- AppStack sessions still require Library in `applicationDeploymentMap` even when the subject is Spotify.
+- Query `selfApplication` fails `modelValidation`; do not add it.
+- Re-running `dogfood-sync` overwrites the Entity and drops `defaultInstanceDetailsReportUuid` — re-apply after sync.
+- Server/electron/docker image copy of Spotify assets is still optional packaging (docker seed Deployment exists). Slice 8 tracer narrative (`node …/miroir-server/release/index.js --secret spotifyUser=<token>` then playlist report URL) needs those assets on the server filesystem.
+- Issue-dir cleanup will move/rename `spotifyApp.267.phase7.integ.test.tsx` with the other 267 vitest files.
 
 ---
 

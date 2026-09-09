@@ -4618,6 +4618,44 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "coreTransformerForBuildPlusRuntime_syncExternalServiceSchema": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
+            },
+            "context": {}
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "syncExternalServiceSchema"
+          },
+          "openApiDocument": {
+            "type": "any",
+            "optional": true,
+            "description": "OpenAPI 3 document as YAML/JSON string or object. Prefer transformerParams.openApiDocument."
+          },
+          "appModel": {
+            "type": "any",
+            "optional": true,
+            "description": "Application model containing the externalService endpoint to upsert. Prefer transformerParams.appModel from localCache.currentModelEnvironment(app, map)."
+          },
+          "scope": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "description": "operationId values to sync. Non-GET operations in scope are skipped."
+          }
+        }
+      },
       "mlsTransformerForBuildPlusRuntime_resolveConditionalSchema": {
         "type": "object",
         "extend": [
@@ -5238,6 +5276,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_syncExternalServiceSchema"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime_dataflowSequence"
             }
           }
@@ -5512,6 +5557,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime_numericOp"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_syncExternalServiceSchema"
             }
           },
           {
@@ -8785,11 +8837,35 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "External Data Source",
-                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the Entity has conceptLevel 'External'.",
+                "description": "Configuration for entities whose data lives outside Miroir-managed storage. kind http (plus endpoint) means the data is fetched from an external HTTP Endpoint; absent kind is equivalent to sql.",
                 "id": 17
               }
             },
             "definition": {
+              "kind": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "sql",
+                  "http"
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Kind",
+                    "description": "Storage kind. Absent is equivalent to sql. http means Miroir stores must not create storage or route SELECTs for this entity."
+                  }
+                }
+              },
+              "endpoint": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint",
+                    "description": "When kind is http, the Endpoint instance that serves this entity's data."
+                  }
+                }
+              },
               "schema": {
                 "type": "string",
                 "optional": true,
@@ -9042,10 +9118,34 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "External Data Source",
-                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'."
+                "description": "Configuration for entities whose data lives outside Miroir-managed storage. kind http (plus endpoint) means the data is fetched from an external HTTP Endpoint; absent kind is equivalent to sql."
               }
             },
             "definition": {
+              "kind": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "sql",
+                  "http"
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Kind",
+                    "description": "Storage kind. Absent is equivalent to sql. http means Miroir stores must not create storage or route SELECTs for this entity."
+                  }
+                }
+              },
+              "endpoint": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint",
+                    "description": "When kind is http, the Endpoint instance that serves this entity's data."
+                  }
+                }
+              },
               "schema": {
                 "type": "string",
                 "optional": true,
@@ -13951,6 +14051,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "extractorTemplateFromAction"
             }
           }
@@ -31422,6 +31523,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_syncExternalServiceSchema"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_dataflowSequence"
             }
           }
@@ -32933,6 +33041,43 @@ export const miroirFundamentalJzodSchema = {
                 "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
               }
             }
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_syncExternalServiceSchema": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "syncExternalServiceSchema"
+          },
+          "openApiDocument": {
+            "type": "any",
+            "optional": true,
+            "description": "OpenAPI 3 document as YAML/JSON string or object. Prefer transformerParams.openApiDocument."
+          },
+          "appModel": {
+            "type": "any",
+            "optional": true,
+            "description": "Application model containing the externalService endpoint to upsert. Prefer transformerParams.appModel from localCache.currentModelEnvironment(app, map)."
+          },
+          "scope": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "description": "operationId values to sync. Non-GET operations in scope are skipped."
           }
         }
       },
@@ -38982,12 +39127,36 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "External Data Source",
-                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the Entity has conceptLevel 'External'.",
+                "description": "Configuration for entities whose data lives outside Miroir-managed storage. kind http (plus endpoint) means the data is fetched from an external HTTP Endpoint; absent kind is equivalent to sql.",
                 "id": 17,
                 "isTemplate": true
               }
             },
             "definition": {
+              "kind": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "sql",
+                  "http"
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Kind",
+                    "description": "Storage kind. Absent is equivalent to sql. http means Miroir stores must not create storage or route SELECTs for this entity."
+                  }
+                }
+              },
+              "endpoint": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint",
+                    "description": "When kind is http, the Endpoint instance that serves this entity's data."
+                  }
+                }
+              },
               "schema": {
                 "type": "string",
                 "optional": true,
@@ -40316,8 +40485,8 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateFromAction",
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateFromAction"
             }
           }
         ]
@@ -40637,6 +40806,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_numericOp"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_syncExternalServiceSchema"
             }
           },
           {
@@ -41703,6 +41879,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "extractorTemplateFromAction"
             }
           }

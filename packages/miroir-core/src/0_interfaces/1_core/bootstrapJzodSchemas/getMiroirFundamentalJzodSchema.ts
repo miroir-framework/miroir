@@ -2039,7 +2039,14 @@ export function getMiroirFundamentalJzodSchema(
             },
             {
               type: "schemaReference",
-              definition: { relativePath: "extractorTemplateFromAction" },
+              definition: {
+                // absolutePath required: Report (and other) typechecks resolve this
+                // union from the fundamental schema, then look up the member in
+                // the *current* relative context — Report's context does not
+                // define extractorTemplateFromAction.
+                absolutePath: miroirFundamentalJzodSchemaUuid,
+                relativePath: "extractorTemplateFromAction",
+              },
             },
           ],
         },
@@ -4250,6 +4257,7 @@ export function getMiroirFundamentalJzodSchema(
             {
               type: "schemaReference",
               definition: {
+                absolutePath: miroirFundamentalJzodSchemaUuid,
                 relativePath: "extractorTemplateFromAction",
               },
             },

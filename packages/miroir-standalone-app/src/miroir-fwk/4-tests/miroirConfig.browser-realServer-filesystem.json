@@ -56,6 +56,20 @@
             "emulatedServerType": "filesystem",
             "directory": "miroir-standalone-app/tests/tmp/library_data"
           }
+        },
+        "fd47d115-67e2-4870-8339-1c26665d1d15": {
+          "admin": {
+            "emulatedServerType": "filesystem",
+            "directory": "miroir-standalone-app/tests/tmp/miroir_admin"
+          },
+          "model": {
+            "emulatedServerType": "filesystem",
+            "directory": "miroir-standalone-app/tests/tmp/spotify_model"
+          },
+          "data": {
+            "emulatedServerType": "filesystem",
+            "directory": "miroir-standalone-app/tests/tmp/spotify_data"
+          }
         }
       }
     },

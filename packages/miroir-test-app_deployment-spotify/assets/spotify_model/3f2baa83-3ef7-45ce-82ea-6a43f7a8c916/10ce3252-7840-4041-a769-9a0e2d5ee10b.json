@@ -1,0 +1,59 @@
+{
+  "uuid": "10ce3252-7840-4041-a769-9a0e2d5ee10b",
+  "selfApplication": "00514586-bf72-4de3-beea-0a627c821404",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "SpotifyPlaylistReport",
+  "defaultLabel": "Spotify playlist (name, owner, first page of tracks, total)",
+  "definition": {
+    "extractorTemplates": {
+      "playlist": {
+        "extractorOrCombinerType": "extractorTemplateFromAction",
+        "endpointUuid": "0e5cb172-12ea-4467-8598-5889338ae454",
+        "actionType": "get-playlist",
+        "parameterBindings": {
+          "playlist_id": {
+            "transformerType": "getFromParameters",
+            "referenceName": "playlistId"
+          }
+        }
+      }
+    },
+    "runtimeTransformers": {
+      "tracks": {
+        "transformerType": "accessDynamicPath",
+        "interpolation": "runtime",
+        "objectAccessPath": [
+          {
+            "transformerType": "getFromContext",
+            "interpolation": "runtime",
+            "referenceName": "playlist"
+          },
+          "tracks",
+          "items"
+        ]
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "label": "Playlist",
+            "parentUuid": "56166585-b6fd-42c6-95d3-32a80c3304f7",
+            "fetchedDataReference": "playlist"
+          }
+        },
+        {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Tracks (first 100 of ${playlist.tracks.total})",
+            "fetchedDataReference": "tracks"
+          }
+        }
+      ]
+    }
+  }
+}

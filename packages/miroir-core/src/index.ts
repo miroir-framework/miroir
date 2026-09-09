@@ -773,6 +773,14 @@ export {
   resolveInstanceParentUuid,
   serializeCompositeKeyValue
 } from "./1_core/Entity/EntityPrimaryKey";
+export {
+  isHttpExternalEntity,
+  isSqlExternalEntity,
+} from "./1_core/Entity/entityExternalDataSource";
+export type {
+  EntityExternalDataSourceCarrier,
+  ExternalDataSourceLike,
+} from "./1_core/Entity/entityExternalDataSource";
 export type { EntityPrimaryKeySource } from "./1_core/Entity/EntityPrimaryKey";
 export {
   applyEntityOnlyRename,

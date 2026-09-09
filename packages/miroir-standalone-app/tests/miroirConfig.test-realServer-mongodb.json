@@ -61,6 +61,23 @@
             "connectionString": "mongodb://localhost:27017",
             "database": "library"
           }
+        },
+        "fd47d115-67e2-4870-8339-1c26665d1d15": {
+          "admin": {
+            "emulatedServerType": "mongodb",
+            "connectionString": "mongodb://localhost:27017",
+            "database": "miroir-admin"
+          },
+          "model": {
+            "emulatedServerType": "mongodb",
+            "connectionString": "mongodb://localhost:27017",
+            "database": "spotify"
+          },
+          "data": {
+            "emulatedServerType": "mongodb",
+            "connectionString": "mongodb://localhost:27017",
+            "database": "spotify"
+          }
         }
       }
     },

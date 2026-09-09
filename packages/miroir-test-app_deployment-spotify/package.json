@@ -1,0 +1,46 @@
+{
+  "name": "miroir-test-app_deployment-spotify",
+  "private": true,
+  "version": "0.5.0-rc.1",
+  "description": "Example Spotify external-service application assets for the Miroir Framework",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "index.d.ts",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "package.json",
+    "index.d.ts",
+    "dist/index.js",
+    "dist/index.js.map",
+    "dist/assets/**/*.json"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "devBuild": "npm run build",
+    "dogfood-sync": "tsx ./scripts/dogfood-sync-spotify-schema.ts",
+    "test": "vitest run --poolOptions.threads.singleThread -t",
+    "testByFile": "vitest run --poolOptions.forks.singleFork --reporter=verbose"
+  },
+  "nx": {
+    "implicitDependencies": [
+      "!miroir-core"
+    ]
+  },
+  "devDependencies": {
+    "miroir-core": "*",
+    "miroir-test-app_deployment-admin": "*",
+    "miroir-test-app_deployment-miroir": "*",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  }
+}

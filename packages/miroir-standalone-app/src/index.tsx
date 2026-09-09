@@ -74,6 +74,7 @@ import {
   deployment_Admin,
   deployment_Designer,
   deployment_Library,
+  deployment_Spotify,
   deployment_Miroir,
   entityDeployment,
   miroirRight_AliceLibraryAppAdmin,
@@ -325,6 +326,7 @@ export async function setupMiroirPlatform(
         deployment_Admin,
         deployment_Miroir,
         deployment_Library,
+        deployment_Spotify,
         deployment_Designer,
       ]),
     });

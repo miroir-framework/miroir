@@ -1,0 +1,128 @@
+{
+  "uuid": "0e5cb172-12ea-4467-8598-5889338ae454",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "00514586-bf72-4de3-beea-0a627c821404",
+  "name": "SpotifyService",
+  "version": "1",
+  "description": "Spotify Web API external service. operations[] and responseSchema are produced by syncExternalServiceSchema (do not hand-write).",
+  "definition": {
+    "externalService": {
+      "openApiDocument": "{\"openapi\":\"3.0.0\",\"info\":{\"title\":\"Spotify Web API excerpt — get-playlist\",\"version\":\"0.0.1\",\"description\":\"Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf.\"},\"paths\":{\"/playlists/{playlist_id}\":{\"parameters\":[{\"$ref\":\"#/components/parameters/PathPlaylistId\"}],\"get\":{\"operationId\":\"get-playlist\",\"summary\":\"Get Playlist\",\"parameters\":[{\"name\":\"fields\",\"in\":\"query\",\"required\":false,\"schema\":{\"type\":\"string\"}}],\"responses\":{\"200\":{\"description\":\"A playlist\",\"content\":{\"application/json\":{\"schema\":{\"$ref\":\"#/components/schemas/PlaylistObject\"}}}}}},\"put\":{\"operationId\":\"change-playlist-details\",\"summary\":\"Change Playlist Details\",\"responses\":{\"200\":{\"description\":\"Playlist updated\"}}}}},\"components\":{\"parameters\":{\"PathPlaylistId\":{\"name\":\"playlist_id\",\"in\":\"path\",\"required\":true,\"schema\":{\"type\":\"string\"}}},\"schemas\":{\"ImageObject\":{\"type\":\"object\",\"required\":[\"url\",\"height\",\"width\"],\"properties\":{\"url\":{\"type\":\"string\"},\"height\":{\"type\":\"integer\",\"nullable\":true},\"width\":{\"type\":\"integer\",\"nullable\":true}}},\"PlaylistUserObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"href\":{\"type\":\"string\"},\"type\":{\"type\":\"string\"},\"uri\":{\"type\":\"string\"}}},\"PlaylistOwnerObject\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PlaylistUserObject\"},{\"type\":\"object\",\"properties\":{\"display_name\":{\"type\":\"string\",\"nullable\":true}}}]},\"PagingObject\":{\"type\":\"object\",\"required\":[\"href\",\"items\",\"limit\",\"next\",\"offset\",\"previous\",\"total\"],\"properties\":{\"href\":{\"type\":\"string\"},\"limit\":{\"type\":\"integer\"},\"next\":{\"type\":\"string\",\"nullable\":true},\"offset\":{\"type\":\"integer\"},\"previous\":{\"type\":\"string\",\"nullable\":true},\"total\":{\"type\":\"integer\"},\"items\":{\"type\":\"array\",\"items\":{}}}},\"SimplifiedArtistObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"artist\"]}}},\"TrackObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"artists\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/SimplifiedArtistObject\"}},\"duration_ms\":{\"type\":\"integer\"},\"href\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"track\"]}}},\"EpisodeObject\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"type\":{\"type\":\"string\",\"enum\":[\"episode\"]}}},\"PlaylistTrackObject\":{\"type\":\"object\",\"properties\":{\"track\":{\"oneOf\":[{\"$ref\":\"#/components/schemas/TrackObject\"},{\"$ref\":\"#/components/schemas/EpisodeObject\"}]}}},\"PagingPlaylistTrackObject\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PagingObject\"},{\"type\":\"object\",\"properties\":{\"items\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/PlaylistTrackObject\"}}}}]},\"PlaylistObject\":{\"type\":\"object\",\"properties\":{\"collaborative\":{\"type\":\"boolean\"},\"description\":{\"type\":\"string\",\"nullable\":true},\"href\":{\"type\":\"string\"},\"id\":{\"type\":\"string\"},\"images\":{\"type\":\"array\",\"items\":{\"$ref\":\"#/components/schemas/ImageObject\"}},\"name\":{\"type\":\"string\"},\"owner\":{\"allOf\":[{\"$ref\":\"#/components/schemas/PlaylistOwnerObject\"}]},\"public\":{\"type\":\"boolean\"},\"snapshot_id\":{\"type\":\"string\"},\"tracks\":{\"type\":\"object\",\"allOf\":[{\"$ref\":\"#/components/schemas/PagingPlaylistTrackObject\"}]},\"type\":{\"type\":\"string\"},\"uri\":{\"type\":\"string\"}}}}}}",
+      "baseUrl": "https://api.spotify.com/v1",
+      "securityScheme": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "credentialKey": "spotifyUser",
+      "enabledOperations": [
+        "get-playlist"
+      ],
+      "operations": [
+        {
+          "operationId": "get-playlist",
+          "method": "GET",
+          "path": "/playlists/{playlist_id}",
+          "parameterMappings": [
+            {
+              "name": "playlist_id",
+              "in": "path",
+              "required": true
+            },
+            {
+              "name": "fields",
+              "in": "query"
+            }
+          ],
+          "responseSchema": {
+            "type": "object",
+            "definition": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "object",
+                "definition": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "display_name": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              },
+              "images": {
+                "type": "array",
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "height": {
+                      "type": "number",
+                      "nullable": true
+                    },
+                    "width": {
+                      "type": "number",
+                      "nullable": true
+                    }
+                  }
+                }
+              },
+              "tracks": {
+                "type": "object",
+                "definition": {
+                  "total": {
+                    "type": "number"
+                  },
+                  "items": {
+                    "type": "array",
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "track": {
+                          "type": "object",
+                          "definition": {
+                            "id": {
+                              "type": "string"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "artists": {
+                              "type": "array",
+                              "definition": {
+                                "type": "object",
+                                "definition": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            },
+                            "duration_ms": {
+                              "type": "number"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

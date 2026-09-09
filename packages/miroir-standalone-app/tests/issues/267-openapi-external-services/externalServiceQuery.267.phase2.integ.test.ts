@@ -27,9 +27,13 @@ import {
   clearAllowedInsecureBaseUrlsForTests,
   clearSecrets,
   ConfigurationService,
+  defaultMetaModelEnvironment,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
+  getExternalService,
+  transformer_extended_apply,
+  TransformerFailure,
   LoggerInterface,
   LoggerOptions,
   MiroirActivityTracker,
@@ -54,6 +58,8 @@ import {
 import {
   defaultMiroirMetaModel,
   selfApplicationMiroir,
+  spotifyOpenApiExcerptGetPlaylist,
+  spotifyServiceEndpointSyncInput,
 } from "miroir-test-app_deployment-miroir";
 
 import { loglevelnext } from "../../../src/loglevelnextImporter.js";
@@ -381,5 +387,96 @@ describe.skipIf(!shouldRun).sequential("externalServiceQuery #267 phase2 — ext
     expect(queryResult instanceof Action2Error).toBe(true);
     const message = (queryResult as Action2Error).errorMessage ?? "";
     expect(message.toLowerCase()).toMatch(/validat|type|mismatch/);
+  });
+
+  it("loop-closure: query runs against operations produced by syncExternalServiceSchema", async () => {
+    const syncInputEndpoint = {
+      ...spotifyServiceEndpointSyncInput,
+      uuid: TEST_ENDPOINT_UUID,
+      application: selfApplicationLibrary.uuid,
+      definition: {
+        externalService: {
+          ...spotifyServiceEndpointSyncInput.definition.externalService,
+          baseUrl: fakeServer.baseUrl,
+          credentialKey: "fakeSpotify",
+          enabledOperations: ["get-playlist"],
+          operations: [],
+        },
+      },
+    };
+    const syncResult = transformer_extended_apply(
+      "runtime",
+      [],
+      undefined,
+      { transformerType: "syncExternalServiceSchema", interpolation: "runtime" } as any,
+      "value",
+      defaultMetaModelEnvironment,
+      {
+        openApiDocument: spotifyOpenApiExcerptGetPlaylist,
+        appModel: { endpoints: [syncInputEndpoint] },
+        scope: ["get-playlist"],
+        endpointUuid: TEST_ENDPOINT_UUID,
+      },
+    );
+    expect(syncResult instanceof TransformerFailure, JSON.stringify(syncResult)).toBe(false);
+    const operations = (syncResult as {
+      payload: {
+        actionSequence: Array<{
+          payload?: { objects?: Array<{ definition?: { externalService?: { operations?: unknown[] } } }> };
+        }>;
+      };
+    }).payload.actionSequence[0].payload?.objects?.[0].definition?.externalService?.operations;
+    expect(Array.isArray(operations) && operations.length).toBeGreaterThan(0);
+    expect((operations as Array<{ operationId: string }>)[0].operationId).toBe("get-playlist");
+
+    const handWritten = testEndpointInstance(fakeServer.baseUrl);
+    const handWrittenExternal = getExternalService(handWritten);
+    expect(handWrittenExternal, "hand-written test endpoint must be an externalService").toBeDefined();
+    const updateResult = await domainController.handleAction(
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: selfApplicationLibrary.uuid,
+          applicationSection: "model",
+          objects: [
+            {
+              ...handWritten,
+              definition: {
+                externalService: {
+                  ...handWrittenExternal,
+                  operations,
+                },
+              },
+            } as EntityInstance,
+          ],
+        },
+      },
+      applicationDeploymentMap,
+      defaultLibraryModelEnvironment,
+    );
+    expect(updateResult instanceof Action2Error, JSON.stringify(updateResult)).toBe(false);
+    const commitResult = await domainController.handleAction(
+      {
+        actionType: "commit",
+        endpoint: MODEL_ENDPOINT,
+        payload: { application: selfApplicationLibrary.uuid },
+      },
+      applicationDeploymentMap,
+      defaultLibraryModelEnvironment,
+    );
+    expect(commitResult instanceof Action2Error, JSON.stringify(commitResult)).toBe(false);
+
+    fakeServer.receivedRequests.length = 0;
+    const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+      boxedGetPlaylistQuery(PLAYLIST_ID_OK) as any,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+    );
+    expect(queryResult instanceof Action2Error, JSON.stringify(queryResult)).toBe(false);
+    const playlist = (queryResult as { returnedDomainElement: { playlist: { name: string } } })
+      .returnedDomainElement.playlist;
+    expect(playlist.name).toBe(PLAYLIST_NAME_LITERAL);
+    expect(fakeServer.receivedRequests).toHaveLength(1);
   });
 });

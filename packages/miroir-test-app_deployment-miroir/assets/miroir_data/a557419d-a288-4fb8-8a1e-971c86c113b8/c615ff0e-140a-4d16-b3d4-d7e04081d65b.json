@@ -1,0 +1,72 @@
+{
+  "uuid": "c615ff0e-140a-4d16-b3d4-d7e04081d65b",
+  "name": "syncExternalServiceSchema",
+  "defaultLabel": "syncExternalServiceSchema",
+  "description": "Design-time sync: (openApiDocument, appModel, scope) → compositeActionSequence that upserts externalService.operations[] and creates the bounded HTTP entity. Production invocation supplies appModel from localCache.currentModelEnvironment(app, map) — not defaultMiroirModelEnvironment / POST /query.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "admin",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "any",
+      "output": "object"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "syncExternalServiceSchema"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "openApiDocument": {
+            "type": "any",
+            "optional": true,
+            "description": "OpenAPI 3 document as YAML/JSON string or object. Prefer transformerParams.openApiDocument."
+          },
+          "appModel": {
+            "type": "any",
+            "optional": true,
+            "description": "Application model containing the externalService endpoint to upsert. Prefer transformerParams.appModel from localCache.currentModelEnvironment(app, map)."
+          },
+          "scope": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "description": "operationId values to sync. Non-GET operations in scope are skipped."
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "object",
+        "definition": {
+          "actionType": {
+            "type": "literal",
+            "definition": "compositeActionSequence"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "uuid",
+            "optional": true
+          },
+          "payload": {
+            "type": "any"
+          }
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_syncExternalServiceSchema"
+  }
+}
