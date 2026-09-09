@@ -11,6 +11,18 @@ Key sources: [`packages/miroir-server/src/server.ts`](../../../packages/miroir-s
 **Document role:** analysis and architectural decision record (decisions confirmed with the user in the grilling rounds).  
 **Status:** implemented on `cursor/71-user-authentication-08fb` (slices 0–6). See TDD plan.
 
+### Surface scope labels (R1 / R2 / R3)
+
+Which callers are rejected when auth is on. These are grilling-option IDs kept as names in this document (D6).
+
+| Label | Surfaces gated | Surfaces left open |
+|---|---|---|
+| **R1** | REST `CRUD` / `action` / `query` / `queryTemplate` and CopilotKit `/api/copilotkit` on `miroir-server` (:3080). SPA/static and `/auth/*` stay public (change-password still needs a Bearer). | MCP (`mcpUrl`, default :4080), `miroir-cli` token client, Electron IPC. Named holes. CLI against an auth-on server gets 401. |
+| **R2** | Every HTTP listener, including MCP. | CLI token flag and Electron IPC. |
+| **R3** | The whole product: REST, CopilotKit, MCP, CLI login/token flag, Electron IPC. | None of those doors. |
+
+This increment implements **R1** and is designed so **R3** is later “apply the same gate,” not a rewrite (`AuthPrincipal`, `extractPrincipalFromAuthorizationHeader`, `assertRequestAllowed`, `resolveAuthenticationEnabled` stay process-agnostic). R3 is the end goal, not done here.
+
 ---
 
 ## Sequencing

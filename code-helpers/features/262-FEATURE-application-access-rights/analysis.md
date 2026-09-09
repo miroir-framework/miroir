@@ -12,6 +12,24 @@ Key sources: [`AuthenticationPolicy.ts`](../../../packages/miroir-core/src/1_cor
 **Document role:** analysis and architectural decision record (decisions confirmed with the user).  
 **Status:** implemented — [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
+## Acceptance Criteria
+
+Testable contract for this increment. Proven by `access.262` (phases 1–4), `authentication.71`, and Admin `miroirUserRights`. All items are met.
+
+- [x] A `MiroirRight` on `(user, targetType=application, targetUuid)` grants that application’s data and UI. `capability` is ignored (any grant counts).
+- [x] No matching application grant → no access to that application’s data or UI.
+- [x] Admin (`55af124e-8c05-4bae-a3ef-0933d41daa92`) and Miroir (`360fcf1f-f0d4-4f8a-9262-07886e70fa15`) are accessible to every authenticated user without a per-user grant.
+- [x] Designer and Library require an explicit grant. Alice has Library. Carol (`carol` / `carol-dev`) has no application grants and is denied Library and Designer.
+- [x] A deployment-scoped grant does not grant application access. Deployment rights stay stored; they are not evaluated.
+- [x] The checker is keyed by `(targetType, targetUuid)` plus principal, grants, and an always-allow list. It does not hard-code Application vs Deployment.
+- [x] When authentication is disabled, rights are not evaluated (today’s open API).
+- [x] REST after a successful identity check: denied application → **403** `AccessDenied`. Missing or unusable identity still **401**. Unknown `deploymentUuid` → deny (403).
+- [x] REST maps `deploymentUuid` → `Deployment.selfApplication`, then checks application access.
+- [x] UI hides ungranted applications from the selector and menus. A deep link to a denied application does not show that app’s UI (home).
+- [x] MCP, CLI, and Electron stay ungated in this increment (follow-up [#263](https://github.com/miroir-framework/miroir/issues/263)).
+- [x] The four #219 banned names stay unused: `checkMiroirRight`, `authorizeMiroir`, `hasMiroirAccess`, `evaluateMiroirRight`.
+- [x] Nonreg includes `unit-262-application-access` (`access.262`).
+
 ---
 
 ## Sequencing

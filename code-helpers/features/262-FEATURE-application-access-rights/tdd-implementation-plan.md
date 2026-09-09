@@ -361,6 +361,8 @@ Automated equivalent: `access.262` phases 1–4 + `authentication.71`.
 
 ### AC checklist (#262)
 
+Canonical list: [`./analysis.md`](./analysis.md) § Acceptance Criteria.
+
 | Criterion | Proven by | Status |
 |---|---|---|
 | Grant on application → access | phase1 + phase3 Alice Library | ✅ |

@@ -1,0 +1,9 @@
+{
+  "uuid": "ac47391c-aa18-448c-a149-095e3884230f",
+  "parentName": "AdminApplication",
+  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+  "name": "testApplication_CreateEntity",
+  "defaultLabel": "The testApplication_CreateEntity Application.",
+  "description": "This Application contains the testApplication_CreateEntity model and data.",
+  "selfApplication": "ac47391c-aa18-448c-a149-095e3884230f"
+}
