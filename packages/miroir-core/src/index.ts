@@ -513,6 +513,16 @@ export {
 } from "./0_interfaces/1_core/EntityVersion.js";
 export { HttpMethod, HttpMethodsArray, HttpMethodsObject } from "./0_interfaces/1_core/Http.js";
 export {
+  getEndpointActions,
+  getExternalService,
+} from "./0_interfaces/1_core/endpointDefinition.js";
+export type {
+  EndpointActionsBranch,
+  EndpointDefinitionLike,
+  EndpointExternalService,
+  EndpointExternalServiceBranch,
+} from "./0_interfaces/1_core/endpointDefinition.js";
+export {
   ApplicationSectionOpposite,
   EntityInstanceWithName,
   EntityInstanceWithNameSchema

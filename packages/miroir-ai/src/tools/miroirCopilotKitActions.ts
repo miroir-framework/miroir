@@ -8,6 +8,7 @@ import type { Action, Parameter } from "@copilotkit/shared";
 
 import {
   Action2Error,
+  getEndpointActions,
   jzodToCopilotKitParameter,
   jzodToJsonSchema,
   LoggerInterface,
@@ -47,22 +48,25 @@ if (!endpointDefinition || endpointDefinition.length === 0) {
   throw new Error("Lending endpoint definition not found: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
 }
 
-if (!endpointDefinition[0].definition.actions[0].actionParameters.payload) {
+const lendingEndpointActions = getEndpointActions(endpointDefinition[0]);
+if (!lendingEndpointActions || !lendingEndpointActions[0]?.actionParameters.payload) {
   throw new Error("Lending endpoint action parameters not found for endpoint: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
 }
 
-if (endpointDefinition[0].definition.actions[0].actionParameters.payload.type !== "object") {
+const firstLendingAction = lendingEndpointActions[0];
+const firstLendingActionPayload = firstLendingAction.actionParameters.payload;
+if (!firstLendingActionPayload || firstLendingActionPayload.type !== "object") {
   throw new Error("Lending endpoint action parameters payload type is not 'object' for endpoint: " + "212f2784-5b68-43b2-8ee0-89b1c6fdd0de");
 }
 
 // const lendDocumentActionJzodParameters = Object.entries(endpointDefinition[0].definition.actions[0].actionParameters.payload.definition);
 const lendDocumentActionCopilotKitParameters = jzodToCopilotKitParameter(
   "payload",
-  endpointDefinition[0].definition.actions[0].actionParameters.payload
+  firstLendingActionPayload
 ).attributes ?? [];
 
 const lendDocumentActionJsonSchema = jzodToJsonSchema(
-  endpointDefinition[0].definition.actions[0].actionParameters.payload as JzodObject,
+  firstLendingActionPayload as JzodObject,
 );
 
 // const lendDocumentActionJsonSchemaParameters = lendDocumentActionJsonSchema.properties
@@ -136,7 +140,7 @@ export function createLendDocumentTool(
 ): MiroirAction {
   return {
     name: "lendDocument",
-    description: endpointDefinition![0].definition.actions[0].actionParameters.actionType?.tag?.value?.description ?? "",
+    description: firstLendingAction.actionParameters.actionType?.tag?.value?.description ?? "",
     parameters: lendDocumentActionCopilotKitParameters,
     handler: createLendDocumentExecutor(domainController, applicationDeploymentMap),
   };

@@ -52,6 +52,23 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
+/** Maps report-page search params to typed report page params; unknown keys are not forwarded. */
+export function reportPageParamsFromSearchParams(
+  searchParams: URLSearchParams,
+): Params<ReportUrlParamKeys> | undefined {
+  const page = searchParams.get("page");
+  if (page !== "report") {
+    return undefined;
+  }
+  return {
+    application: searchParams.get("application") ?? "",
+    deploymentUuid: searchParams.get("deploymentUuid") ?? "",
+    applicationSection: searchParams.get("applicationSection") ?? "data",
+    reportUuid: searchParams.get("reportUuid") ?? "",
+    instanceUuid: searchParams.get("instanceUuid") ?? undefined,
+  } satisfies Params<ReportUrlParamKeys>;
+}
+
 // ---------------------------------------------------------------------------
 // ReportWrapper
 // Sets context deployment/section and delegates to ReportDisplay.
@@ -96,18 +113,10 @@ function PageContent(): React.JSX.Element {
   const reportUuid = searchParams.get("reportUuid") ?? "";
   const instanceUuid = searchParams.get("instanceUuid") ?? undefined;
 
-  const reportPageParams = useMemo(() => {
-    if (page !== "report") {
-      return undefined;
-    }
-    return {
-      application,
-      deploymentUuid,
-      applicationSection,
-      reportUuid,
-      instanceUuid,
-    } satisfies Params<ReportUrlParamKeys>;
-  }, [page, application, deploymentUuid, applicationSection, reportUuid, instanceUuid]);
+  const reportPageParams = useMemo(
+    () => reportPageParamsFromSearchParams(searchParams),
+    [searchParams],
+  );
 
   log.debug("[PageDispatcher] render: wildcardPath=", wildcardPath, "page=", page, "search=", searchParams.toString());
 

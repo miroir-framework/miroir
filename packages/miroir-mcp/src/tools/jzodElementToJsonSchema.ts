@@ -264,7 +264,7 @@ function jzodElementToJsonSchemaInner(
       if (!jzodElement.definition || !Array.isArray(jzodElement.definition)) {
         throw new Error("Tuple definition missing or invalid");
       }
-      const prefixItems = jzodElement.definition.map((item) =>
+      const prefixItems = jzodElement.definition.map((item: JzodElement) =>
         jzodElementToJsonSchemaInner(item as any, undefined, propertyNameMapping, childOptions(options)),
       );
       return {
@@ -280,7 +280,7 @@ function jzodElementToJsonSchemaInner(
         throw new Error("Union definition missing or invalid");
       }
 
-      const convertedMembers = jzodElement.definition.map((member) =>
+      const convertedMembers = jzodElement.definition.map((member: JzodElement) =>
         jzodElementToJsonSchemaInner(member as any, undefined, propertyNameMapping, childOptions(options)),
       );
 

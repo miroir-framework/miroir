@@ -17,7 +17,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/267
 Working branch: `267-FEATURE-openapi-external-services`
 
-**Resume note:** plan written, **pending user confirmation of slice order & granularity** (per skill workflow) — no slice started. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice.
+**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE.**
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize endpoint/dispatch/report contracts | ⬜ | `externalService.267.phase0.unit.test.ts` + modelValidation |
+| 0 | Characterize endpoint/dispatch/report contracts | ✅ | `externalService.267.phase0.unit.test.ts` + modelValidation |
 | 1 | Endpoint `definition` key-union refactor (D1) | ⬜ | `externalServiceSchema.267.phase1.unit.test.ts` + nonreg |
 | 2 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify, incl. named secrets (D4, D5 server, D6, D11) | ⬜ | `externalServiceQuery.267.phase2.integ.test.ts` |
 | 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ⬜ | `externalServiceGuards.267.phase3.integ.test.ts` |
@@ -110,7 +110,7 @@ From the analysis decision record (binding; deviations go into the slice's Reali
 
 ## Slice 0 — Characterize endpoint schema, dispatch, and report param contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -136,7 +136,27 @@ npm run testByFile -w miroir-test-app_deployment-library -- tests/modelValidatio
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE: what was actually done, deviations, problems met & solved.>
+**Done (2026-09-09):**
+
+- Added `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalService.267.phase0.unit.test.ts` — 5 passing characterization tests (inventory, Jzod validation of all 13 endpoint assets via `checkModelValidationInstance` + `entityDefinitionEndpoint.mlSchema`, `defaultMiroirMetaModel.endpoints` counts/alias pairs, `handleApplicationAction` → `Action2Error` "not supported yet" for `libraryImplementation`, `reportPageParamsFromSearchParams` drops `playlistId`).
+- Extracted `reportPageParamsFromSearchParams(searchParams)` into `PageDispatcher.tsx` (exported); `PageContent` useMemo now delegates to it — behavior unchanged.
+- **Deviations:** none — counts match analysis §3.7 (13 assets, 12 registrations, 10 unique uuids, alias pairs `bbd08cbb`/`ed520de4`). No endpoint asset uses `libraryImplementation`; dispatch test uses a minimal synthetic endpoint in `endpointsByUuid` and calls private `handleApplicationAction` on a bare `DomainController` (empty constructor deps).
+- **Validation:** all three commands passed without a pre-build (`phase0` 5/5; miroir `modelValidation` 152/152; library `modelValidation` 181/181).
+- **Grep inventory** (test files touching `definition.actions` or endpoint JSON shape — re-run before Slice 1):
+
+  | File | Why |
+  |---|---|
+  | `packages/miroir-core/tests/1_core/modelEndpointActions.unit.test.ts` | reads `endpoint?.definition?.actions` from ModelEndpoint JSON |
+  | `packages/miroir-core/tests/1_core/__snapshots__/listSelfApplicationUuidPaths.unit.test.ts.snap` | snapshot path includes `endpoints.*.definition.actions.*` |
+  | `packages/miroir-core/tests/1_core/applicationVersionFreeze.actionSchema.unit.test.ts` | references endpoint entity uuid / action schemas |
+  | `packages/miroir-core/tests/2_domain/ModelEntityActionTransformer.unit.test.ts` | endpoint uuid in model fixtures |
+  | `packages/miroir-core/tests/2_domain/evolutionTrace.persist.unit.test.ts` | endpoint uuid in trace fixtures |
+  | `packages/miroir-core/tests/2_domain/evolutionTrace.policy.unit.test.ts` | endpoint uuid in trace fixtures |
+  | `packages/miroir-mcp/tests/integration/endpointToolRegistry.integ.test.ts` | inline endpoint JSON + hardcoded endpoint uuids |
+  | `packages/miroir-standalone-app/tests/3_controllers/applicationVersionFreeze.integ.test.ts` | endpoint uuid in freeze integ |
+  | `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalService.267.phase0.unit.test.ts` | this slice |
+
+- **Note for later slices:** MenuEndpoint (`c6b849a3`) exists as a source asset but is **not** registered in `defaultMiroirMetaModel.endpoints` (12 registered, 11 miroir_data uuids minus the duplicate aliases).
 
 ---
 

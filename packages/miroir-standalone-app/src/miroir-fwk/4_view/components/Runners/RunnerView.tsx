@@ -25,6 +25,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
   Domain2ElementFailed,
+  getEndpointActions,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   MiroirLoggerFactory,
   templateEvaluationParams,
@@ -132,7 +133,7 @@ export function StoredRunnerView(props: {
 
   const currentActionDefinition: Action | undefined =
     storedRunner?.definition.runnerType === "actionRunner"
-      ? currentEndpointDefinition?.definition.actions.find(
+      ? getEndpointActions(currentEndpointDefinition)?.find(
           (ac) => ac.actionParameters.actionType.definition == (storedRunner.definition as any).action
         )
       : undefined;

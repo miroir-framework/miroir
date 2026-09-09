@@ -82,7 +82,7 @@ export const reportSectionsFormSchema = (
         currentDeploymentReportsEntitiesMapping?.[applicationSection];
       const targetPresentEntity = findEntityFromUuid(
         {
-          entities: sectionMapping?.entities,
+          entities: sectionMapping?.entities ?? [],
         },
         entityUuid,
       );

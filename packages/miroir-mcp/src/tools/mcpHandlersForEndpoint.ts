@@ -13,6 +13,7 @@ import {
   MiroirLoggerFactory,
   resolveFundamentalSchemaForDeployment,
   resolveJzodSchemaReferenceInContext,
+  getEndpointActions,
   type EndpointDefinition,
   type MetaModel,
   type MiroirModelEnvironment,
@@ -442,7 +443,7 @@ export function mcpToolEntry(
   actionType: string,
   toolName: string,
 ): McpRequestHandler<any> {
-  const actionDef = endpoint.definition.actions.find(
+  const actionDef = getEndpointActions(endpoint)?.find(
     (action: any) => action.actionParameters.actionType.definition === actionType
   );
   if (!actionDef) {

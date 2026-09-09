@@ -25,6 +25,7 @@ import {
   jzodUnion_RecursivelyUnfold_ReturnTypeError,
   jzodUnion_RecursivelyUnfold_ReturnTypeOK,
 } from "../jzodUnion_RecursivelyUnfoldInterface";
+import { getEndpointActions } from "../endpointDefinition.js";
 import { zodParseErrorJzodSchema } from "../zodParseError";
 import {
   createLocalizedInnerResolutionStoreForExtendedSchemas,
@@ -44,6 +45,17 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
   log = logger;
 });
 
+
+function endpointEntityActionsSchemaContext(entityDefinitionEndpointDefinition: any): Record<string, unknown> {
+  const definitionFieldSchema = entityDefinitionEndpointDefinition?.mlSchema?.definition?.definition;
+  if (definitionFieldSchema?.type === "union" && Array.isArray(definitionFieldSchema.definition)) {
+    const actionsBranch = definitionFieldSchema.definition.find(
+      (branch: any) => branch?.type === "object" && branch?.definition?.actions,
+    );
+    return actionsBranch?.definition?.actions?.context ?? {};
+  }
+  return definitionFieldSchema?.definition?.actions?.context ?? {};
+}
 
 function makeObjectsMandatory (element: JzodElement): JzodElement {
   if (element.type === "object") {
@@ -2387,10 +2399,10 @@ export function getMiroirFundamentalJzodSchema(
             errorType: {
               type: "union",
               definition: [
-                ...(storeManagementEndpoint as any).definition.actions
+                ...(getEndpointActions(storeManagementEndpoint as any) ?? [])
                   .filter((e: any) => !!e.actionErrors)
                   .map((e: any) => e.actionErrors),
-                ...(instanceEndpointVersionV1 as any).definition.actions
+                ...(getEndpointActions(instanceEndpointVersionV1 as any) ?? [])
                   .filter((e: any) => !!e.actionErrors)
                   .map((e: any) => e.actionErrors),
                 {
@@ -2543,79 +2555,79 @@ export function getMiroirFundamentalJzodSchema(
             },
           ],
         },
-        modelActionInitModelParams: modelEndpointVersionV1.definition.actions.find(
+        modelActionInitModelParams: ((getEndpointActions(modelEndpointVersionV1) ?? []).find(
           (a: any) => a.actionParameters.actionType.definition == "initModel",
-        )?.actionParameters.payload.definition.params,
+        ) as any)?.actionParameters.payload.definition.params,
         modelActionCommit: {
           type: "object",
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "commit",
           )?.actionParameters,
         },
         modelActionRollback: {
           type: "object",
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "rollback",
           )?.actionParameters,
         },
         modelActionInitModel: {
           type: "object",
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "initModel",
           )?.actionParameters,
         },
         modelActionResetModel: {
           type: "object",
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "resetModel",
           )?.actionParameters,
         },
         modelActionResetData: {
           type: "object",
           tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "resetData",
           )?.actionParameters,
         },
         modelActionAlterEntityAttribute: {
           type: "object",
           tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "alterEntityAttribute",
           )?.actionParameters,
         },
         modelActionCreateEntity: {
           type: "object",
           tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "createEntity",
           )?.actionParameters,
         },
         modelActionDropEntity: {
           type: "object",
           tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "dropEntity",
           )?.actionParameters,
         },
         modelActionRenameEntity: {
           type: "object",
           tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "renameEntity",
           )?.actionParameters,
         },
         modelActionFreezeApplicationVersion: {
           type: "object",
           tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
-          definition: modelEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "freezeApplicationVersion",
           )?.actionParameters,
         },
         modelAction: {
           type: "union",
           discriminator: "actionType",
-          definition: modelEndpointVersionV1.definition.actions
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? [])
           .map((e: any) => ({
             type: "object",
             tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
@@ -2624,20 +2636,20 @@ export function getMiroirFundamentalJzodSchema(
         },
         testAction_runTestCompositeAction: {
           type: "object",
-          definition: testEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(testEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "runTestCompositeAction",
           )?.actionParameters,
         },
         testAction_runTestCase: {
           type: "object",
-          definition: testEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(testEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "runTestCase",
           )?.actionParameters,
         },
         instanceCUDAction: {
           type: "union",
           discriminator: "actionType",
-          definition: instanceEndpointVersionV1.definition.actions
+          definition: (getEndpointActions(instanceEndpointVersionV1) ?? [])
             .filter((e: any) =>
               ["createInstance", "updateInstance", "deleteInstance"].includes(
                 e.actionParameters.actionType.definition,
@@ -2652,7 +2664,7 @@ export function getMiroirFundamentalJzodSchema(
         instanceAction: {
           type: "union",
           discriminator: "actionType",
-          definition: instanceEndpointVersionV1.definition.actions.map((e: any) => ({
+          definition: (getEndpointActions(instanceEndpointVersionV1) ?? []).map((e: any) => ({
             type: "object",
             tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
             definition: e.actionParameters,
@@ -2661,7 +2673,7 @@ export function getMiroirFundamentalJzodSchema(
         undoRedoAction: {
           type: "union",
           discriminator: "actionType",
-          definition: undoRedoEndpointVersionV1.definition.actions.map((e: any) => ({
+          definition: (getEndpointActions(undoRedoEndpointVersionV1) ?? []).map((e: any) => ({
             type: "object",
             tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
             definition: e.actionParameters,
@@ -2670,7 +2682,7 @@ export function getMiroirFundamentalJzodSchema(
         transactionalInstanceAction: {
           type: "object",
           tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
-          definition: domainEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(domainEndpointVersionV1) ?? []).find(
             (a: any) =>
               a.actionParameters.actionType &&
               a.actionParameters.actionType.definition == "transactionalInstanceAction",
@@ -2716,8 +2728,8 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "instanceAction",
               },
             },
-            ...localCacheEndpointVersionV1.definition.actions.map(
-              (e: Record<string, JzodElement>) => ({
+            ...(getEndpointActions(localCacheEndpointVersionV1) ?? []).map(
+              (e: any) => ({
                 type: "object",
                 definition: e.actionParameters,
               }),
@@ -2727,7 +2739,7 @@ export function getMiroirFundamentalJzodSchema(
         storeManagementAction: {
           type: "union",
           discriminator: "actionType",
-          definition: storeManagementEndpoint.definition.actions.map((e: any) => ({
+          definition: (getEndpointActions(storeManagementEndpoint) ?? []).map((e: any) => ({
             type: "object",
             definition: e.actionParameters,
           })),
@@ -2790,8 +2802,8 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "storeManagementAction",
               },
             },
-            ...persistenceEndpointVersionV1.definition.actions.map(
-              (e: Record<string, JzodElement>) => ({
+            ...(getEndpointActions(persistenceEndpointVersionV1) ?? []).map(
+              (e: any) => ({
                 type: "object",
                 definition: e.actionParameters,
               }),
@@ -2801,7 +2813,7 @@ export function getMiroirFundamentalJzodSchema(
         localPersistenceAction: {
           type: "union",
           discriminator: "actionType",
-          definition: persistenceEndpointVersionV1.definition.actions.slice(0, 3).map((e: any) => ({
+          definition: (getEndpointActions(persistenceEndpointVersionV1) ?? []).slice(0, 3).map((e: any) => ({
             type: "object",
             definition: e.actionParameters,
           })),
@@ -2809,41 +2821,41 @@ export function getMiroirFundamentalJzodSchema(
         restPersistenceAction: {
           type: "union",
           discriminator: "actionType",
-          definition: persistenceEndpointVersionV1.definition.actions.slice(4).map((e: any) => ({
+          definition: (getEndpointActions(persistenceEndpointVersionV1) ?? []).slice(4).map((e: any) => ({
             type: "object",
             definition: e.actionParameters,
           })),
         },
         runBoxedQueryTemplateAction: {
           type: "object",
-          definition: queryEndpointVersionV1.definition.actions[0].actionParameters,
+          definition: (getEndpointActions(queryEndpointVersionV1) ?? [])[0].actionParameters,
         },
         // runBoxedExtractorTemplateAction: {
         //   type: "object",
-        //   definition: queryEndpointVersionV1.definition.actions[3].actionParameters,
+        //   definition: (getEndpointActions(queryEndpointVersionV1) ?? [])[3].actionParameters,
         // },
         runBoxedQueryAction: {
           type: "object",
-          definition: queryEndpointVersionV1.definition.actions[1].actionParameters,
+          definition: (getEndpointActions(queryEndpointVersionV1) ?? [])[1].actionParameters,
         },
         // ################################################################################
         compositeRunBoxedQueryAction: {
           type: "object",
-          definition: domainEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(domainEndpointVersionV1) ?? []).find(
             (a: any) =>
               a.actionParameters?.actionType?.definition == "compositeRunBoxedQueryAction",
           )?.actionParameters,
         },
         compositeRunBoxedQueryTemplateAction: {
           type: "object",
-          definition: domainEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(domainEndpointVersionV1) ?? []).find(
             (a: any) =>
               a.actionParameters?.actionType?.definition == "compositeRunBoxedQueryTemplateAction",
           )?.actionParameters,
         },
-        compositeActionDefinition: domainEndpointVersionV1.definition.actions.find(
+        compositeActionDefinition: ((getEndpointActions(domainEndpointVersionV1) ?? []).find(
           (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
-        )?.actionParameters.payload.definition.actionSequence.definition,
+        ) as any)?.actionParameters.payload.definition.actionSequence.definition,
         compositeRunTestAssertion: {
           type: "object",
           tag: {
@@ -2881,7 +2893,7 @@ export function getMiroirFundamentalJzodSchema(
         },
         compositeActionSequence: {
           type: "object",
-          definition: domainEndpointVersionV1.definition.actions.find(
+          definition: (getEndpointActions(domainEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
           )?.actionParameters,
         },
@@ -2990,9 +3002,9 @@ export function getMiroirFundamentalJzodSchema(
                 relativePath: "compositeActionSequence",
               },
             },
-            ...domainEndpointVersionV1.definition.actions
+            ...(getEndpointActions(domainEndpointVersionV1) ?? [])
             .filter((e: any) => e.actionParameters?.actionType?.definition != "compositeActionSequence")
-            .map((e: Record<string, JzodElement>) => ({
+            .map((e: any) => ({
               type: "object",
               definition: e.actionParameters,
             })),
@@ -3198,8 +3210,7 @@ export function getMiroirFundamentalJzodSchema(
           {
             type: "never",
           },
-        ...entityDefinitionEndpointDefinition.mlSchema.definition.definition.definition.actions
-          .context,
+        ...endpointEntityActionsSchemaContext(entityDefinitionEndpointDefinition),
         // endpointDefinition: entityDefinitionEndpointDefinition.mlSchema.definition.definition,
         endpointDefinition: entityDefinitionEndpointDefinition.mlSchema,
         // ########################################################################################

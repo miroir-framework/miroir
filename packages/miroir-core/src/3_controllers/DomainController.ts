@@ -1,6 +1,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
+import { getEndpointActions } from '../0_interfaces/1_core/endpointDefinition.js';
 import { Uuid } from '../0_interfaces/1_core/EntityVersion.js';
 import {
   DomainControllerInterface,
@@ -3013,7 +3014,7 @@ export class DomainController implements DomainControllerInterface {
         ),
       );
     }
-    const currentActionDefinition = currentEndpointDefinition.definition.actions.find(
+    const currentActionDefinition = getEndpointActions(currentEndpointDefinition)?.find(
       (ac) => ac.actionParameters.actionType.definition == (domainAction as any).actionType,
     );
     // log.info(

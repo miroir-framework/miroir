@@ -355,22 +355,13 @@ export function selectUnionBranchFromDiscriminator<T extends MiroirModelEnvironm
   modelEnvironment: T,
   relativeReferenceJzodContext: {[k:string]: JzodElement},
 ): SelectUnionBranchFromDiscriminatorReturnType {
-  // const discriminators: string | string[] | undefined = !discriminator
-  if (!discriminator) {
-    return {
-      status: "error",
-      error: "selectUnionBranchFromDiscriminator called for union-type value object without discriminator",
-      discriminator,
-      valuePath: valueObjectPath,
-      typePath,
-      value: valueObject,
-      // type: 
-      objectUnionChoices,
-    };
-  }
-  const discriminators: (string | string[])[]  = Array.isArray(discriminator)
-    ? discriminator
-    : [discriminator];
+  // Untagged object unions (no discriminator): match by key inclusion — every
+  // value key must exist on the branch (issue #267 D1 key-union / XOR).
+  const discriminators: (string | string[])[] = !discriminator
+    ? []
+    : Array.isArray(discriminator)
+      ? discriminator
+      : [discriminator];
 
   // TODO: remove, object union choices should already be flattened in unionObjectChoices
   // WHY CAN objectUnionChoices NOT be flattened already?
