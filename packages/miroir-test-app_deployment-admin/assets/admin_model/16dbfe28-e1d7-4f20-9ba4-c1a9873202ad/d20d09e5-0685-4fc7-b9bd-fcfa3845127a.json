@@ -46,7 +46,6 @@
             "id": 8,
             "defaultLabel": "Username",
             "description": "Unique login id (not the display name). Duplicate usernames fail closed at login.",
-            "unique": true,
             "display": {
               "editable": true
             }

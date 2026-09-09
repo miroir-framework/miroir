@@ -1,0 +1,9 @@
+{
+  "uuid": "e2343a39-f5d9-4898-83b4-74e2ccc33125",
+  "parentName": "MiroirUser",
+  "parentUuid": "d20d09e5-0685-4fc7-b9bd-fcfa3845127a",
+  "name": "Dave",
+  "username": "dave",
+  "status": "active",
+  "description": "Active platform user with only a Library filesystem deployment grant (#264)."
+}

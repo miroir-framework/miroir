@@ -4,11 +4,13 @@ import {
   ALWAYS_ALLOW_APPLICATION_TARGETS,
   DESIGNER_APPLICATION_UUID,
   ENTITY_ADMIN_APPLICATION_UUID,
+  ENTITY_DEPLOYMENT_UUID,
   ENTITY_MIROIR_RIGHT_UUID,
   LIBRARY_APPLICATION_UUID,
   accessGrantsFromInstances,
+  applicationIsReachable,
   defaultSelfApplicationDeploymentMap,
-  hasAccess,
+  deploymentsFromInstances,
   visibleUserApplications,
 } from "miroir-core";
 import {
@@ -32,6 +34,15 @@ const APPLICATIONS_SELECTOR_PARAMS = {
     application: adminSelfApplication.uuid,
     applicationSection: "data" as const,
     entityUuid: ENTITY_ADMIN_APPLICATION_UUID,
+  },
+};
+
+const DEPLOYMENTS_SELECTOR_PARAMS = {
+  queryType: "localCacheEntityInstancesExtractor" as const,
+  definition: {
+    application: adminSelfApplication.uuid,
+    applicationSection: "data" as const,
+    entityUuid: ENTITY_DEPLOYMENT_UUID,
   },
 };
 
@@ -65,8 +76,17 @@ export function useApplicationAccess() {
         RIGHTS_SELECTOR_PARAMS,
       ),
     ) ?? [];
+  const deploymentRows =
+    useSelector((state: ReduxStateWithUndoRedo) =>
+      selectInstanceArrayForDeploymentSectionEntity(
+        state,
+        applicationDeploymentMap,
+        DEPLOYMENTS_SELECTOR_PARAMS,
+      ),
+    ) ?? [];
   const ready = applications.length > 0;
   const grants = useMemo(() => accessGrantsFromInstances(rights), [rights]);
+  const deployments = useMemo(() => deploymentsFromInstances(deploymentRows), [deploymentRows]);
   const filterEnabled = enabled && ready;
   const visible = useMemo(
     () =>
@@ -74,9 +94,10 @@ export function useApplicationAccess() {
         enabled: filterEnabled,
         principal,
         grants,
+        deployments,
         candidates: USER_SELECTABLE_APPLICATION_UUIDS,
       }),
-    [filterEnabled, principal, grants],
+    [filterEnabled, principal, grants, deployments],
   );
 
   return {
@@ -91,10 +112,11 @@ export function useApplicationAccess() {
       if (!applicationUuid || !filterEnabled) {
         return true;
       }
-      return hasAccess({
+      return applicationIsReachable({
         principal,
-        target: { targetType: "application", targetUuid: applicationUuid },
+        applicationUuid,
         grants,
+        deployments,
         alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
       });
     },

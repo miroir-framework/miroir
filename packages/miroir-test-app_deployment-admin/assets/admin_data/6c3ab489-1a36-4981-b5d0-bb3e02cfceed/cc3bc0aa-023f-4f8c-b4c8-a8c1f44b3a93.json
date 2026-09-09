@@ -1,0 +1,8 @@
+{
+  "uuid": "cc3bc0aa-023f-4f8c-b4c8-a8c1f44b3a93",
+  "parentName": "MiroirUserCredential",
+  "parentUuid": "6c3ab489-1a36-4981-b5d0-bb3e02cfceed",
+  "miroirUser": "e2343a39-f5d9-4898-83b4-74e2ccc33125",
+  "passwordHash": "scrypt$16384$8$1$rpSiEZfDNCq4HQtaByEtnw$CjKysGBgjmTNLNirYUrlmQ9MO400z-ttYrlc4EhSfNo",
+  "algorithm": "scrypt"
+}

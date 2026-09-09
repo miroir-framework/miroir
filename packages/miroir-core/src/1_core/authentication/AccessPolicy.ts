@@ -144,14 +144,26 @@ export function assertAccessForDeployment(args: {
   if (!args.enabled) {
     return { allowed: true };
   }
-  const target = applicationTargetForDeployment(args.deploymentUuid, args.deployments);
-  if (!target) {
+  const applicationTarget = applicationTargetForDeployment(args.deploymentUuid, args.deployments);
+  if (!applicationTarget || !args.deploymentUuid) {
     return { allowed: false, status: 403, body: ACCESS_DENIED };
   }
-  return assertAccess({
-    principal: args.principal,
-    target,
-    grants: args.grants,
-    alwaysAllow: args.alwaysAllow,
-  });
+  const deploymentTarget = { targetType: "deployment", targetUuid: args.deploymentUuid };
+  const allowed =
+    hasAccess({
+      principal: args.principal,
+      target: applicationTarget,
+      grants: args.grants,
+      alwaysAllow: args.alwaysAllow,
+    }) ||
+    hasAccess({
+      principal: args.principal,
+      target: deploymentTarget,
+      grants: args.grants,
+      alwaysAllow: args.alwaysAllow,
+    });
+  if (allowed) {
+    return { allowed: true };
+  }
+  return { allowed: false, status: 403, body: ACCESS_DENIED };
 }

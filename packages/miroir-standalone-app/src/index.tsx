@@ -78,11 +78,14 @@ import {
   entityDeployment,
   miroirRight_AliceLibraryAppAdmin,
   miroirRight_AliceLibraryDeploymentRead,
+  miroirRight_DaveLibraryDeployment,
   miroirUser_AliceAdmin,
   miroirUser_BobInactive,
   miroirUser_Carol,
+  miroirUser_Dave,
   miroirUserCredential_AliceDev,
   miroirUserCredential_CarolDev,
+  miroirUserCredential_DaveDev,
 } from "miroir-test-app_deployment-admin";
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
@@ -308,14 +311,15 @@ export async function setupMiroirPlatform(
     );
     (restClient as RestClientStub).setIdentityDirectory(
       identityDirectoryFromInstances(
-        [miroirUser_AliceAdmin, miroirUser_BobInactive, miroirUser_Carol],
-        [miroirUserCredential_AliceDev, miroirUserCredential_CarolDev],
+        [miroirUser_AliceAdmin, miroirUser_BobInactive, miroirUser_Carol, miroirUser_Dave],
+        [miroirUserCredential_AliceDev, miroirUserCredential_CarolDev, miroirUserCredential_DaveDev],
       ),
     );
     (restClient as RestClientStub).setAccessDirectory({
       grants: accessGrantsFromInstances([
         miroirRight_AliceLibraryAppAdmin,
         miroirRight_AliceLibraryDeploymentRead,
+        miroirRight_DaveLibraryDeployment,
       ]),
       deployments: deploymentsFromInstances([
         deployment_Admin,

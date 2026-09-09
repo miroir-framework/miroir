@@ -75,11 +75,14 @@ export { default as adminImport } from "./assets/admin_data/ff3d211b-7eb6-473a-a
 export { default as miroirUser_AliceAdmin } from "./assets/admin_data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/1c39328c-7de4-44ae-bcf1-5bbc38d8e267.json" with { type: "json" };
 export { default as miroirUser_BobInactive } from "./assets/admin_data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/95fa298f-79f8-428c-8980-3443d486c1d8.json" with { type: "json" };
 export { default as miroirUser_Carol } from "./assets/admin_data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/30634877-08ae-44f3-a230-d899e22333d5.json" with { type: "json" };
+export { default as miroirUser_Dave } from "./assets/admin_data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/e2343a39-f5d9-4898-83b4-74e2ccc33125.json" with { type: "json" };
 
 // Admin Data - MiroirRight
 export { default as miroirRight_AliceLibraryAppAdmin } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/48b2048f-507f-40ee-a890-b6eca83596f5.json" with { type: "json" };
 export { default as miroirRight_AliceLibraryDeploymentRead } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/587f92f8-7140-434b-b9ff-f7f5d2e461b2.json" with { type: "json" };
+export { default as miroirRight_DaveLibraryDeployment } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/0509f559-2a1f-4bf2-ae2d-732aa6cc3202.json" with { type: "json" };
 
 // Admin Data - MiroirUserCredential
 export { default as miroirUserCredential_AliceDev } from "./assets/admin_data/6c3ab489-1a36-4981-b5d0-bb3e02cfceed/c179dcf9-f39b-4b16-b8d6-3e39895bfd35.json" with { type: "json" };
 export { default as miroirUserCredential_CarolDev } from "./assets/admin_data/6c3ab489-1a36-4981-b5d0-bb3e02cfceed/23f39cd9-f56e-4400-bd87-87e5d51798c1.json" with { type: "json" };
+export { default as miroirUserCredential_DaveDev } from "./assets/admin_data/6c3ab489-1a36-4981-b5d0-bb3e02cfceed/cc3bc0aa-023f-4f8c-b4c8-a8c1f44b3a93.json" with { type: "json" };

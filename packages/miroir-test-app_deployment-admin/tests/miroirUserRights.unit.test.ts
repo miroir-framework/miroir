@@ -172,6 +172,25 @@ describe("MiroirUser model and seed data", () => {
     expect(rights.some((row) => row.miroirUser === carol?.uuid)).toBe(false);
   });
 
+  it("seeds Dave as an active user with only a Library deployment grant", () => {
+    const dave = listAdminDataInstanceFiles(
+      findAdminEntityByName("MiroirUser", modelDir)!.uuid as string,
+      dataDir,
+    )
+      .map(readJsonInstance)
+      .find((instance) => instance.username === "dave");
+    expect(dave?.uuid).toBe("e2343a39-f5d9-4898-83b4-74e2ccc33125");
+    expect(dave?.status).toBe("active");
+    const rights = listAdminDataInstanceFiles(
+      findAdminEntityByName("MiroirRight", modelDir)!.uuid as string,
+      dataDir,
+    ).map(readJsonInstance);
+    const daveRights = rights.filter((row) => row.miroirUser === dave?.uuid);
+    expect(daveRights).toHaveLength(1);
+    expect(daveRights[0]?.targetType).toBe("deployment");
+    expect(daveRights[0]?.targetUuid).toBe("f714bb2f-a12d-4e71-a03b-74dcedea6eb4");
+  });
+
   it("has at least two MiroirUser seed instances with active/inactive status", () => {
     const entity = findAdminEntityByName("MiroirUser", modelDir);
     expect(entity?.uuid).toBeTruthy();

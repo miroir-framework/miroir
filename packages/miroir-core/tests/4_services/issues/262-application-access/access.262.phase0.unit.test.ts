@@ -47,10 +47,7 @@ if (runThis) {
       expect(existsSync(ACCESS_POLICY)).toBe(true);
     });
 
-    it("seeds exactly two MiroirRight rows: Alice Library application + Alice Library deployment", () => {
-      const files = readdirSync(RIGHT_DIR).filter((name) => name.endsWith(".json")).sort();
-      expect(files).toEqual([`${ALICE_APP_GRANT}.json`, `${ALICE_DEPLOYMENT_GRANT}.json`]);
-
+    it("seeds Alice Library application + Alice Library deployment rights", () => {
       const appGrant = readJson(join(RIGHT_DIR, `${ALICE_APP_GRANT}.json`));
       expect(appGrant.miroirUser).toBe(ALICE);
       expect(appGrant.targetType).toBe("application");

@@ -54,7 +54,6 @@ if (runThis) {
       expect(credentials.some((row) => row.uuid === CAROL_CREDENTIAL && row.miroirUser === CAROL)).toBe(
         true,
       );
-      expect(readJsonDir(RIGHT_DIR)).toHaveLength(2);
       expect(grants.some((grant) => grant.miroirUser === CAROL)).toBe(false);
     });
 
