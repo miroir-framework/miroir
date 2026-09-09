@@ -992,6 +992,7 @@ export {
   type RemapSelfApplicationUuidModelOptions,
 } from "./1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
 export { defaultReport } from "./1_core/Report.js";
+export { queryContainsExternalExtractor } from "./1_core/queryContainsExternalExtractor.js";
 export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
 export {
   describe,

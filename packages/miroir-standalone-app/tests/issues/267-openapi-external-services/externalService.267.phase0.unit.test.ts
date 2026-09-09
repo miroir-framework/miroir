@@ -149,7 +149,7 @@ describe.skipIf(!shouldRun)("externalService #267 phase0 — current contracts",
     expect((result as Action2Error).errorMessage).toContain("libraryImplementation");
   });
 
-  it("reportPageParamsFromSearchParams drops unknown search params such as playlistId", () => {
+  it("reportPageParamsFromSearchParams forwards unknown search params such as playlistId", () => {
     const searchParams = new URLSearchParams(
       "page=report&application=app&deploymentUuid=dep&applicationSection=data&reportUuid=rep&playlistId=abc",
     );
@@ -160,7 +160,7 @@ describe.skipIf(!shouldRun)("externalService #267 phase0 — current contracts",
       applicationSection: "data",
       reportUuid: "rep",
       instanceUuid: undefined,
+      playlistId: "abc",
     });
-    expect(params).not.toHaveProperty("playlistId");
   });
 });

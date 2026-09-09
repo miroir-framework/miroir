@@ -11,6 +11,7 @@ import {
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
+  queryContainsExternalExtractor,
   resolveReportQueryLoadAttributes,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
@@ -47,6 +48,7 @@ export interface ReportViewWithEditorProps extends ReportViewProps {
 }
 
 const fetchedDataJzodSchema = {};
+const EMPTY_EXTERNAL_REPORT_DATA: Record<string, any> = {};
 let count = 0;
 // ###############################################################################################
 export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
@@ -143,7 +145,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     reportDataQueryResults instanceof Domain2ElementFailed
       ? undefined
       : reportDataQueryResults.resolvedQuery;
-  const reportData =
+  const usesExternalExtractor = queryContainsExternalExtractor(resolvedQuery);
+  const reduxReportData =
     reportDataQueryResults instanceof Domain2ElementFailed
       ? reportDataQueryResults
       : reportDataQueryResults.reportData;
@@ -180,6 +183,21 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     reportQueryLoadService,
     reportQueryLoadRequest,
   );
+
+  const externalQueryFingerprint =
+    usesExternalExtractor && reportQueryLoadRequest
+      ? reportQueryLoadService.fingerprint(reportQueryLoadRequest)
+      : undefined;
+  const stashedExternalContext =
+    externalQueryFingerprint !== undefined
+      ? reportQueryLoadService.getResult(externalQueryFingerprint)
+      : undefined;
+  const reportData =
+    usesExternalExtractor
+      ? ((stashedExternalContext && typeof stashedExternalContext === "object"
+          ? stashedExternalContext
+          : EMPTY_EXTERNAL_REPORT_DATA) as Domain2QueryReturnType<Record<string, any>>)
+      : reduxReportData;
 
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];

@@ -14,6 +14,8 @@ export type FakeExternalServiceFixture = {
   /** Sent as-is (for invalid-JSON / non-JSON D12 cases). */
   rawBody?: string;
   contentType?: string;
+  /** Optional pause before responding (loading-state tests). */
+  delayMs?: number;
 };
 
 export type FakeExternalServiceServer = {
@@ -38,6 +40,16 @@ function writeCorsHeaders(res: ServerResponse): void {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+}
+
+function writeFixtureResponse(res: ServerResponse, fixture: FakeExternalServiceFixture): void {
+  res.statusCode = fixture.status ?? 200;
+  res.setHeader("Content-Type", fixture.contentType ?? "application/json");
+  if (fixture.rawBody !== undefined) {
+    res.end(fixture.rawBody);
+    return;
+  }
+  res.end(JSON.stringify(fixture.body ?? {}));
 }
 
 /**
@@ -72,13 +84,11 @@ export async function startFakeExternalServiceServer(
       res.end(JSON.stringify({ error: { status: 404, message: `No fixture for ${method} ${path}` } }));
       return;
     }
-    res.statusCode = fixture.status ?? 200;
-    res.setHeader("Content-Type", fixture.contentType ?? "application/json");
-    if (fixture.rawBody !== undefined) {
-      res.end(fixture.rawBody);
+    if (fixture.delayMs && fixture.delayMs > 0) {
+      setTimeout(() => writeFixtureResponse(res, fixture), fixture.delayMs);
       return;
     }
-    res.end(JSON.stringify(fixture.body ?? {}));
+    writeFixtureResponse(res, fixture);
   });
 
   await new Promise<void>((resolve, reject) => {

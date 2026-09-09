@@ -72,6 +72,36 @@ const EXTRACTOR_FROM_ACTION_SCHEMA = {
   },
 } as const;
 
+/** Template twin: bindings are transformer templates (getFromParameters / getFromContext / constant). */
+const EXTRACTOR_TEMPLATE_FROM_ACTION_SCHEMA = {
+  type: "object",
+  definition: {
+    extractorOrCombinerType: {
+      type: "literal",
+      tag: {
+        value: {
+          canBeTemplate: false,
+          display: { editable: false },
+          defaultLabel: "Extractor Or Combiner Type",
+        },
+      },
+      definition: "extractorTemplateFromAction",
+    },
+    endpointUuid: { type: "uuid" },
+    actionType: { type: "string" },
+    parameterBindings: {
+      type: "record",
+      definition: {
+        type: "schemaReference",
+        definition: {
+          absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          relativePath: "coreTransformerForBuildPlusRuntime",
+        },
+      },
+    },
+  },
+} as const;
+
 function schemaReferencePath(entry: unknown): string | undefined {
   if (!entry || typeof entry !== "object") {
     return undefined;
@@ -82,13 +112,14 @@ function schemaReferencePath(entry: unknown): string | undefined {
 
 /**
  * #267 Slice 2 — resolved `extractorFromAction` on Query extractor unions.
- * Template twin (`extractorTemplateFromAction`) is Slice 5.
+ * #267 Slice 5 — template twin `extractorTemplateFromAction` on extractorTemplate* unions.
  */
 function ensureExtractorFromActionInQueryContext(context: Record<string, any> | undefined): void {
   if (!context) {
     return;
   }
   context.extractorFromAction = EXTRACTOR_FROM_ACTION_SCHEMA;
+  context.extractorTemplateFromAction = EXTRACTOR_TEMPLATE_FROM_ACTION_SCHEMA;
   const extractorFromActionRef = {
     type: "schemaReference",
     definition: { relativePath: "extractorFromAction" },
@@ -1994,12 +2025,23 @@ export function getMiroirFundamentalJzodSchema(
          *  (it should display an error if incorrect, in this case `itemsOrder= []`).
          */
         extractorOrCombinerTemplate: {
-          type: "schemaReference",
-          definition: {
-            // reference starting by "miroirTemplate_" will be reproduced as is by template generation
-            absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-            relativePath: "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner",
-          },
+          type: "union",
+          discriminator: "extractorOrCombinerType",
+          definition: [
+            {
+              type: "schemaReference",
+              definition: {
+                // reference starting by "miroirTemplate_" will be reproduced as is by template generation
+                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                relativePath:
+                  "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: { relativePath: "extractorTemplateFromAction" },
+            },
+          ],
         },
         extractorOrCombinerTemplateRecord: {
           type: "record",
@@ -4173,6 +4215,7 @@ export function getMiroirFundamentalJzodSchema(
         //     },
         //   },
         // },
+        extractorTemplateFromAction: EXTRACTOR_TEMPLATE_FROM_ACTION_SCHEMA,
         extractorTemplateCombinerOneToOne: {
           type: "schemaReference",
           definition: {
@@ -4202,6 +4245,12 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 relativePath: "extractorTemplateExtractorByPrimaryKey",
+              },
+            },
+            {
+              type: "schemaReference",
+              definition: {
+                relativePath: "extractorTemplateFromAction",
               },
             },
           ],

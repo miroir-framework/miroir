@@ -52,7 +52,15 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
 
-/** Maps report-page search params to typed report page params; unknown keys are not forwarded. */
+const REPORT_URL_KNOWN_PARAM_KEYS = new Set([
+  "application",
+  "deploymentUuid",
+  "applicationSection",
+  "reportUuid",
+  "instanceUuid",
+]);
+
+/** Maps report-page search params to typed report page params; unknown keys are forwarded (D8). */
 export function reportPageParamsFromSearchParams(
   searchParams: URLSearchParams,
 ): Params<ReportUrlParamKeys> | undefined {
@@ -60,13 +68,22 @@ export function reportPageParamsFromSearchParams(
   if (page !== "report") {
     return undefined;
   }
-  return {
+  // Params<> is readonly (and an index signature once ReportUrlParamKeys is
+  // widened); build a mutable bag then return it as the route-params type.
+  const params: Record<string, string | undefined> = {
     application: searchParams.get("application") ?? "",
     deploymentUuid: searchParams.get("deploymentUuid") ?? "",
     applicationSection: searchParams.get("applicationSection") ?? "data",
     reportUuid: searchParams.get("reportUuid") ?? "",
     instanceUuid: searchParams.get("instanceUuid") ?? undefined,
-  } satisfies Params<ReportUrlParamKeys>;
+  };
+  for (const [key, value] of searchParams.entries()) {
+    if (key === "page" || REPORT_URL_KNOWN_PARAM_KEYS.has(key)) {
+      continue;
+    }
+    params[key] = value;
+  }
+  return params as Params<ReportUrlParamKeys>;
 }
 
 // ---------------------------------------------------------------------------

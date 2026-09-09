@@ -17,7 +17,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/267
 Working branch: `267-FEATURE-openapi-external-services`
 
-**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE. Slice 2 DONE. Slice 3 DONE. Slice 4 DONE.**
+**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE. Slice 2 DONE. Slice 3 DONE. Slice 4 DONE. Slice 5 DONE.**
 
 ---
 
@@ -43,7 +43,7 @@ This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure 
 | 2 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify, incl. named secrets (D4, D5 server, D6, D11) | ✅ | `externalServiceQuery.267.phase2.integ.test.ts` |
 | 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ✅ | `externalServiceGuards.267.phase3.integ.test.ts` |
 | 4 | Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5) | ✅ | `externalServiceDispatch.267.phase4.integ.test.ts` |
-| 5 | Report path: template extractor + param forwarding + async report-load routing (D5 client, D8) | ⬜ | `externalServiceReport.267.phase5.integ.test.tsx` |
+| 5 | Report path: template extractor + param forwarding + async report-load routing (D5 client, D8) | ✅ | `externalServiceReport.267.phase5.integ.test.tsx` |
 | 6 | Sync transformer + bounded converter + Entity `kind: "http"` schema (D2, D3) | ⬜ | MiroirTest `externalServiceSync` (unit) + `externalServiceSyncExecute` (integ) |
 | 7 | Spotify example app package (D7, D3, D10) | ⬜ | modelValidation + `spotifyApp.267.phase7.integ.test.ts` |
 | 8 | Nonreg, docs, cleanup, AC, opt-in live test | ⬜ | nonreg step + tracer narrative |
@@ -431,7 +431,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ## Slice 5 — Report path: `extractorTemplateFromAction` + param forwarding + async report-load routing (D5 client, D8)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -470,7 +470,44 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+**Done (2026-09-09):**
+
+- RED/GREEN: `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceReport.267.phase5.integ.test.tsx` — 5 tests (`.tsx` + MemoryRouter + AppStack session + fake server). Reports are passed as `reportDefinition` props (not committed). Endpoint `c8f2a1b4-…` is committed to the **server** store each `beforeEach` (same Slice 2 fixture, richer `responseSchema`: id, name, `tracks.total`, `tracks.items[].track.{id,name}`).
+- **D8 / params.** `reportPageParamsFromSearchParams` forwards unknown search keys generically (`playlistId: "abc"`). Skips `page` and the known keys. Legacy path-segment `ReportWrapper` params **untouched**. `ReportUrlParamKeys = ReportUrlKnownParamKeys | (string & {})` in `constants.ts`. Builder uses a mutable `Record<string, string | undefined>` then casts to `Params<ReportUrlParamKeys>` (RR `Params<>` is readonly / index-signature once the union is widened — TS2542). Phase 0 lock flipped to expect forwarding.
+- **Schema.** `extractorTemplateFromAction { endpointUuid, actionType, parameterBindings: record of coreTransformerForBuildPlusRuntime }` on Query Entity + Query EntityVersion and in `getMiroirFundamentalJzodSchema`: named context key + member of `extractorOrCombinerTemplate` (union with the generated `miroirTemplate_…_extractorOrCombiner`) and `extractorTemplateReturningObject`. **Not** added to `extractorOrCombinerReturningObject` (Slice 2/4 constraint). Regen: `build -w miroir-test-app_deployment-miroir && devBuild -w miroir-core`.
+- **Templates.ts.** `resolveExtractorTemplate` default branch: if type is `extractorTemplateFromAction` **or** `extractorFromAction`, resolve each binding via `transformer_extended_apply` when it has `transformerType`, else pass through. Returns `{ extractorOrCombinerType: "extractorFromAction", endpointUuid, actionType, parameterBindings }`. Cases stay in `default` (not switch labels) so it compiled before regen.
+- **Async report load (P6).** Domain predicate `queryContainsExternalExtractor` (`packages/miroir-core/src/1_core/queryContainsExternalExtractor.ts`) — true if any extractor/extractorTemplate type is `extractorFromAction` or `extractorTemplateFromAction`. `isReportQueryLoadSegmentSufficient` returns **false** when the predicate is true (empty load-targets used to be vacuously sufficient). `createReportQueryLoadExecutor`: if external, POST the **whole** boxed query via `domainController.handleBoxedExtractorOrQueryAction` with `queryExecutionStrategy: "storage"` (endpoint `9e404b3c-…`); throw on `Action2Error`; return `returnedDomainElement`. Store-only path unchanged. `ReportQueryLoadService` stashes that result (`getResult(key)`); invalidate/error clears it.
+- **View.** `useQueryTemplateResults`: still resolves templates client-side, but skips sync Redux `runQuery` and returns `reportData: {}` when the predicate is true. `ReportViewWithEditor` renders `service.getResult(fingerprint)` for external queries; loading/error keep existing strings `"Loading report data…"` / `"Report async load failed (showing cached data if available)."`. Stable `EMPTY_EXTERNAL_REPORT_DATA` avoids Formik `enableReinitialize` loops. No new `useEffect` — existing `useEnsureReportQueryLoaded` / `useReportQueryLoadService` seam.
+- **Mixed query.** Store `extractorByPrimaryKey` Country France (`d3139a6d-…` / `b62fc20b-…`) + external playlist template + `combinerOneToOne` `franceAgain`. Testbed seed extended with `Country3` — `libraryEntitiesAndInstances` is authors/books/publishers only; without France the server filesystem extract fails (`InstanceNotFound`). Asserts `"Rock Classics"`, `"Born to Run"`, `"France"`.
+
+**Validation** (`--profile emulatedServer-filesystem` required for integ; rebuild first):
+- `externalServiceReport.267.phase5` — 5 passed
+- `externalService.267.phase0` — 5 passed
+- `externalServiceQuery.267.phase2` — 4 passed
+- `externalServiceGuards.267.phase3` — 17 passed
+- `externalServiceDispatch.267.phase4` — 13 passed
+- `tsc --noEmit --skipLibCheck` miroir-standalone-app + miroir-core — clean
+
+**Deviations:**
+- Harness mocks: `useParams` (established ReportPage convention), `JsonDisplayHelper`, and `ModelDiagramReportSectionView` (vitest/happy-dom cannot load `miroir-diagram-class` → `svg-toolbelt` CJS `exports`). Fake server is the only HTTP fake. Optional `delayMs` on fixtures so the loading-state test can observe `"Loading report data…"`.
+- Reports are **not** committed to the store; only the test endpoint is.
+- Mixed store extractor is written as resolved `extractorByPrimaryKey` inside `extractorTemplates` (Templates already accepts that form). External side uses `extractorTemplateFromAction`.
+- `testByFile` already adds `--bail=1`; do not pass `--bail` again.
+
+**For Slice 6/7:** Hand-write Spotify query/report assets with this template shape:
+
+```json
+{
+  "extractorOrCombinerType": "extractorTemplateFromAction",
+  "endpointUuid": "<spotify endpoint uuid>",
+  "actionType": "get-playlist",
+  "parameterBindings": {
+    "playlist_id": { "transformerType": "getFromParameters", "referenceName": "playlistId" }
+  }
+}
+```
+
+Report sections in the Slice 5 tests are `jsonReportSection` with `fetchedDataReference` pointing at the extractor/combiner key (raw object, no Entity). URL: `?page=report&application=…&deploymentUuid=…&applicationSection=data&reportUuid=…&playlistId=<id>` — `playlistId` is forwarded into `pageParams` and then into the query template context, so `getFromParameters` / `referenceName: "playlistId"` works. The report async path POSTs the **whole** boxed query (`queryExecutionStrategy: "storage"`) when `queryContainsExternalExtractor` is true; do not use sync `useQueryTemplateResults` / Redux `runQuery` for external extractors. Loopback still needs `allowInsecureBaseUrlsForTests`. `testByFile` needs `--profile emulatedServer-filesystem`. Do not add `extractorFromAction` to `extractorOrCombinerReturningObject`. Slice 6 still owns the sync transformer, `kind: "http"`, and the Spotify package is Slice 7.
 
 ---
 

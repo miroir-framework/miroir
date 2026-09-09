@@ -13,6 +13,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   noValue,
+  queryContainsExternalExtractor,
   ReduxDeploymentsState,
   resolveQueryTemplateWithExtractorCombinerTransformer,
   SyncBoxedExtractorOrQueryRunnerMap,
@@ -174,14 +175,27 @@ export function useQueryTemplateResults(
     return result;
   }, [pageParams, query, resolvedTemplateQuery]);
 
+  const skipSyncReduxQuery = queryContainsExternalExtractor(reportDataQuery);
+  const reduxReportDataQuery: BoxedQueryWithExtractorCombinerTransformer = useMemo(
+    () =>
+      skipSyncReduxQuery
+        ? {
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: reportDataQuery.application ?? "",
+            pageParams: reportDataQuery.pageParams ?? pageParams,
+          }
+        : reportDataQuery,
+    [skipSyncReduxQuery, reportDataQuery, pageParams],
+  );
+
   const deploymentEntityStateFetchQueryParams: SyncQueryRunnerExtractorAndParams<ReduxDeploymentsState> =
     useMemo(
       () =>
         getQueryRunnerParamsForReduxDeploymentsState(
-          reportDataQuery,
+          reduxReportDataQuery,
           deploymentEntityStateSelectorMap
         ),
-      [deploymentEntityStateSelectorMap, reportDataQuery]
+      [deploymentEntityStateSelectorMap, reduxReportDataQuery]
     );
 
   const reportData: Domain2QueryReturnType<Domain2QueryReturnType<Record<string, any>>> =
@@ -191,7 +205,10 @@ export function useQueryTemplateResults(
       applicationDeploymentMap
     );
   // log.info("useQueryTemplateResults reportData from stored Query", reportData);
-  return {reportData, resolvedQuery: reportDataQuery};
+  return {
+    reportData: skipSyncReduxQuery ? {} : reportData,
+    resolvedQuery: reportDataQuery,
+  };
 };
 
 // ################################################################################################

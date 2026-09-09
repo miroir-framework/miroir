@@ -7,6 +7,15 @@
   "tracks": {
     "total": 17,
     "href": "https://example.test/tracks",
-    "items": []
+    "items": [
+      {
+        "track": {
+          "id": "track-001",
+          "name": "Born to Run",
+          "artists": [{ "name": "Bruce Springsteen" }],
+          "duration_ms": 269000
+        }
+      }
+    ]
   }
 }

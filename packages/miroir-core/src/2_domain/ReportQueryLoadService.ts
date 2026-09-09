@@ -34,7 +34,7 @@ export interface ReportQueryLoadRequest {
  */
 export type ReportQueryLoadExecutor = (
   request: ReportQueryLoadRequest,
-) => Promise<void>;
+) => Promise<unknown>;
 
 /** Optional #214 probe: true ⇒ skip network (segment already sufficient). */
 export type ReportQueryLoadSegmentSufficiencyProbe = (
@@ -69,6 +69,7 @@ export function fingerprintReportQueryLoadRequest(
 export class ReportQueryLoadService {
   private readonly statusByKey = new Map<string, ReportLoadStatus>();
   private readonly errorByKey = new Map<string, unknown>();
+  private readonly resultByKey = new Map<string, unknown>();
   private readonly inFlightByKey = new Map<string, Promise<ReportLoadStatus>>();
   private readonly isSegmentSufficient?: ReportQueryLoadSegmentSufficiencyProbe;
 
@@ -89,6 +90,11 @@ export class ReportQueryLoadService {
 
   getError(key: string): unknown | undefined {
     return this.errorByKey.get(key);
+  }
+
+  /** Stashed server query context for external-extractor report loads (D5). */
+  getResult(key: string): unknown | undefined {
+    return this.resultByKey.get(key);
   }
 
   /**
@@ -130,7 +136,10 @@ export class ReportQueryLoadService {
     this.errorByKey.delete(key);
 
     const promise = this.executeLoad(request)
-      .then((): ReportLoadStatus => {
+      .then((result): ReportLoadStatus => {
+        if (result !== undefined) {
+          this.resultByKey.set(key, result);
+        }
         this.statusByKey.set(key, "ready");
         this.errorByKey.delete(key);
         return "ready";
@@ -138,6 +147,7 @@ export class ReportQueryLoadService {
       .catch((error: unknown): ReportLoadStatus => {
         this.statusByKey.set(key, "error");
         this.errorByKey.set(key, error);
+        this.resultByKey.delete(key);
         return "error";
       })
       .finally(() => {
@@ -152,6 +162,7 @@ export class ReportQueryLoadService {
   invalidate(key: string): void {
     this.statusByKey.delete(key);
     this.errorByKey.delete(key);
+    this.resultByKey.delete(key);
     this.inFlightByKey.delete(key);
   }
 }

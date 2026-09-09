@@ -314,13 +314,45 @@ export function resolveExtractorTemplate(
       const extractorType =
         (extractorOrCombinerTemplate as { extractorOrCombinerType?: string })
           ?.extractorOrCombinerType ?? "unknown";
+      if (
+        extractorType === "extractorTemplateFromAction" ||
+        extractorType === "extractorFromAction"
+      ) {
+        const template = extractorOrCombinerTemplate as {
+          endpointUuid?: unknown;
+          actionType?: unknown;
+          parameterBindings?: Record<string, unknown>;
+          label?: string;
+        };
+        const resolvedBindings: Record<string, unknown> = {};
+        for (const [bindingName, bindingValue] of Object.entries(template.parameterBindings ?? {})) {
+          resolvedBindings[bindingName] =
+            bindingValue &&
+            typeof bindingValue === "object" &&
+            (bindingValue as { transformerType?: unknown }).transformerType
+              ? transformer_extended_apply(
+                  "build",
+                  [],
+                  template.label ?? bindingName,
+                  bindingValue as any,
+                  "value",
+                  modelEnvironment,
+                  queryParams,
+                  contextResults,
+                )
+              : bindingValue;
+        }
+        return {
+          extractorOrCombinerType: "extractorFromAction",
+          endpointUuid: template.endpointUuid,
+          actionType: template.actionType,
+          parameterBindings: resolvedBindings,
+        } as ExtractorOrCombiner;
+      }
       return {
         queryFailure: "QueryNotExecutable",
         failureOrigin: ["Templates", "resolveExtractorTemplate"],
-        failureMessage:
-          extractorType === "extractorFromAction"
-            ? "extractorFromAction cannot be resolved on the Templates path (template form is not this switch's job)"
-            : "unsupported extractorOrCombinerType: " + extractorType,
+        failureMessage: "unsupported extractorOrCombinerType: " + extractorType,
         query: JSON.stringify(extractorOrCombinerTemplate),
       };
     }
