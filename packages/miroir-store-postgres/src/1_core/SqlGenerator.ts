@@ -758,11 +758,15 @@ export function  sqlStringForExtractor(
       );
       break;
     }
+    case "extractorFromAction":
     default: {
+      const extractorType =
+        (extractor as { extractorOrCombinerType?: string })?.extractorOrCombinerType ?? "unknown";
       throw new Error(
-        "sqlForExtractor not implemented for extractorOrCombinerType of extractor: " + extractor
+        extractorType === "extractorFromAction"
+          ? "sqlForExtractor does not support extractorFromAction (runAsSql is unsupported for external-service extractors)"
+          : "sqlForExtractor not implemented for extractorOrCombinerType: " + extractorType,
       );
-      break;
     }
   }
 }

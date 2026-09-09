@@ -311,12 +311,18 @@ export function resolveExtractorTemplate(
       break;
     }
     default: {
+      const extractorType =
+        (extractorOrCombinerTemplate as { extractorOrCombinerType?: string })
+          ?.extractorOrCombinerType ?? "unknown";
       return {
         queryFailure: "QueryNotExecutable",
-        failureOrigin: ["AsyncQuerySelectors", "resolveExtractorTemplate"],
+        failureOrigin: ["Templates", "resolveExtractorTemplate"],
+        failureMessage:
+          extractorType === "extractorFromAction"
+            ? "extractorFromAction cannot be resolved on the Templates path (template form is not this switch's job)"
+            : "unsupported extractorOrCombinerType: " + extractorType,
         query: JSON.stringify(extractorOrCombinerTemplate),
       };
-      break;
     }
   }
 }

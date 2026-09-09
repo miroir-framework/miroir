@@ -17,7 +17,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/267
 Working branch: `267-FEATURE-openapi-external-services`
 
-**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE. Slice 2 DONE. Slice 3 DONE.**
+**Resume note:** slice order & granularity **confirmed by the user** (2026-09-09) — implementation in progress, slices executed sequentially by subagents. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice. **Slice 0 DONE. Slice 1 DONE. Slice 2 DONE. Slice 3 DONE. Slice 4 DONE.**
 
 ---
 
@@ -42,7 +42,7 @@ This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure 
 | 1 | Endpoint `definition` key-union refactor (D1) | ✅ | `externalServiceSchema.267.phase1.unit.test.ts` + nonreg |
 | 2 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify, incl. named secrets (D4, D5 server, D6, D11) | ✅ | `externalServiceQuery.267.phase2.integ.test.ts` |
 | 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ✅ | `externalServiceGuards.267.phase3.integ.test.ts` |
-| 4 | Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5) | ⬜ | `externalServiceDispatch.267.phase4.integ.test.ts` |
+| 4 | Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5) | ✅ | `externalServiceDispatch.267.phase4.integ.test.ts` |
 | 5 | Report path: template extractor + param forwarding + async report-load routing (D5 client, D8) | ⬜ | `externalServiceReport.267.phase5.integ.test.tsx` |
 | 6 | Sync transformer + bounded converter + Entity `kind: "http"` schema (D2, D3) | ⬜ | MiroirTest `externalServiceSync` (unit) + `externalServiceSyncExecute` (integ) |
 | 7 | Spotify example app package (D7, D3, D10) | ⬜ | modelValidation + `spotifyApp.267.phase7.integ.test.ts` |
@@ -375,7 +375,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ## Slice 4 — Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -405,7 +405,27 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion, together with Status ✅ DONE.>
+**Done (2026-09-09):**
+
+- RED/GREEN: `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceDispatch.267.phase4.integ.test.ts` — 13 tests (cycles 1–4). Fixture adds POST `create-playlist` on the Slice 2/3 test endpoint (`c8f2a1b4-…`).
+- **Cycle 1 (D6).** `executeExternalServiceOperation` hard-errors before `fetch` when the target is not an `externalService` endpoint (`extractorFromAction is restricted to external-service GET operations (target is not an externalService endpoint)`) or when `operation.method !== "GET"` (`…restricted to GET operations; ${actionType} has method ${method}`). Library `lendDocument` and POST `create-playlist` both return `Action2Error` with zero fake-server requests. Errors are **not** re-wrapped.
+- **Cycle 2 (closed switches).** Default / explicit branches name `extractorFromAction` (defense in depth). Inventory verified and updated: `QuerySelectors.ts`, `AsyncQuerySelectors.ts`, `ExtractorRunnerInMemory.ts`, `FileSystemExtractorRunner.ts`, `SqlGenerator.ts`, `sqlDbInstanceStoreSectionMixin.ts`, `Templates.ts`. Extra found: `ReduxDeploymentsStateQuerySelectors.ts`. Do **not** write `case "extractorFromAction"` on `ExtractorOrCombinerReturningObject` (TS2367 — the type is not in that union); use `String((select as {extractorOrCombinerType?: string}).extractorOrCombinerType)` in `default`. Store-package tests import filesystem/postgres **source** (FileSystemExtractorRunner is not on the filesystem package index).
+- **Cycle 3 (Goal 5 / P8).** `handleAction` keeps the static `defaultEndpointApplicationMap` as the **Miroir-core fast path**. For any other endpoint, when `persistenceStoreAccessMode === "local"`, `findEndpointInstanceAcrossLocalStores` scans each application in `applicationDeploymentMap` via `readLocalPersistenceSectionInstances(…, "model", entityEndpointVersion.uuid)` and uses the instance’s `application` field; static non-Miroir (Library lending) is fallback only if the scan misses. `handleApplicationAction` takes that resolved uuid and still executes external ops only in `local` mode (D5). `handleAction` / `handleCompositeAction` now return `Action2ReturnType` (success payload is no longer collapsed to `ACTION_OK`). Composite steps stash `actionLabel → localContext[returnedDomainElement]`; `executeCompositeRunBoxedQueryAction` merges `localContext` into `query.contextResults`. Cycle 3 tests call **`domainControllerForServer`** (emulated-server DC, `local` mode) — the session’s client DC is `remote` and would run `compositeActionSequence` in-process without a generic `POST /action` transport (analysis non-goal). Bootstrap now exposes `domainControllerForServer` on `MiroirTestExecutionEnvironment`.
+- **Cycle 4 (D5).** Sync `runQuery` names `extractorFromAction` (`cannot be executed on the sync QuerySelectors path`); the `runQuery` wrapper now **propagates** the inner `failureMessage` (it previously dropped it, leaving `ReferenceNotFound` with an empty message). `runAsSql: true` is rejected in `resolveExtractorFromActionInBoxedQuery` (`extractorFromAction cannot be executed with runAsSql (SQL generation is unsupported)`) with zero fake-server requests.
+
+**Validation** (`--profile emulatedServer-filesystem` required; rebuild `miroir-core` after controller/selector changes):
+- `externalServiceDispatch.267.phase4` — 13 passed
+- `externalServiceGuards.267.phase3` — 17 passed
+- `externalServiceQuery.267.phase2` — 4 passed
+- `tsc --noEmit --skipLibCheck` miroir-core, miroir-standalone-app, miroir-store-filesystem, miroir-store-postgres — clean
+
+**Deviations:**
+- Cycle 3 is proven on the **server** DomainController, not the client session DC. D5 forbids running `executeExternalServiceOperation` on `remote`; there is no generic remote application-action bus.
+- Library lending stays on the static map as a miss-fallback and as the remote-client path for that known endpoint. Dynamic resolution **replaces** the static lookup for unknown / new endpoints on the local/server path.
+- Extra closed switch: `ReduxDeploymentsStateQuerySelectors.ts`.
+- `handleAction` return type widened (Slice 2 left it as `Action2VoidReturnType`) so composite steps can pass payloads.
+
+**For Slice 5:** Mixed store+external boxed queries: intercept runs `extractorFromAction` first, writes `contextResults`, strips those extractors, remaining store extractors go through persistence; combiners/transformers see the merged context. All-external queries return `{ status: "ok", returnedDomainElement: contextResults }` with no persistence handoff. Report load must use the **async server** boxed-query route (`POST /query`), never sync Redux `runQuery` / `runAsSql`. Do not add `extractorFromAction` to `extractorOrCombinerReturningObject`. Template form (`extractorTemplateFromAction`) and `PageDispatcher` are still Slice 5. Composite `get-playlist` works server-side; a browser/client composite will not fetch (D5, no `POST /action`). Loopback still needs `allowInsecureBaseUrlsForTests`. `testByFile` needs `--profile emulatedServer-filesystem`.
 
 ---
 

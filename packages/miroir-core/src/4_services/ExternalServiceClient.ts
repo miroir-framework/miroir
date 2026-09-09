@@ -259,7 +259,7 @@ export async function executeExternalServiceOperation(
   if (!externalService) {
     return externalServiceError(
       "InvalidAction",
-      "executeExternalServiceOperation requires an externalService endpoint instance",
+      "extractorFromAction is restricted to external-service GET operations (target is not an externalService endpoint)",
     );
   }
   return fetchExternalServiceOperation(externalService, actionType, bindingStrings(bindings));
@@ -283,6 +283,13 @@ async function fetchExternalServiceOperation(
       "InvalidAction",
       `External service operation is not enabled: ${actionType}`,
       { actionType },
+    );
+  }
+  if (String(operation.method).toUpperCase() !== "GET") {
+    return externalServiceError(
+      "InvalidAction",
+      `extractorFromAction is restricted to GET operations; ${actionType} has method ${operation.method}`,
+      { actionType, method: operation.method },
     );
   }
 

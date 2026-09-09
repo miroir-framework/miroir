@@ -318,6 +318,7 @@ export async function runAppStackIntegrationBootstrap(
 
   return {
     domainController,
+    domainControllerForServer,
     applicationDeploymentMap:
       hostExecutionEnvironment?.applicationDeploymentMap ?? applicationDeploymentMap,
     testApplicationUuid,
