@@ -6,7 +6,7 @@
 > no mocks (the fake server is the sanctioned service-boundary fake, per analysis D9).
 > Applicative interfaces under test: the `Endpoint` union schema, the `extractorFromAction` /
 > `extractorTemplateFromAction` query schema, the sync TransformerDefinition, and the Spotify
-> deployment assets. Tracer bullet (Slice 3): a boxed query containing `extractorFromAction`,
+> deployment assets. Tracer bullet (Slice 2): a boxed query containing `extractorFromAction`,
 > executed on the server path, returns playlist data from the fake Spotify server with the
 > named secret injected as `Authorization: Bearer`.
 >
@@ -14,23 +14,23 @@
 > only when the user explicitly asks. Each slice ends with its Validation commands; on
 > success its Realization summary is appended and its Status flips to ✅ DONE.
 
-Analysis: [`./analysis.md`](./analysis.md) · Adversarial review: [`./adversarial-review.md`](./adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/267
+Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/267
 Working branch: `267-FEATURE-openapi-external-services`
 
-**Resume note:** plan written, **pending user confirmation of slice order & granularity** (per skill workflow) — no slice started.
+**Resume note:** plan written, **pending user confirmation of slice order & granularity** (per skill workflow) — no slice started. Revised after plan adversarial review (P1–P24 all dispositioned and applied): secrets folded into the tracer slice (tracer-first), hardening vs dispatch-guard slices split, Entity `externalDataSource.kind` schema change moved into the sync slice.
 
 ---
 
 ## Scope
 
-- Endpoint `definition` key-union refactor (D1) and all `.definition.actions` readers.
-- Named server secrets (D4) + redaction/logging hygiene (incl. `server.ts` `process.env` dump).
+- Endpoint `definition` key-union refactor (D1) and **all** `.definition.actions` readers.
+- Named server secrets (D4) + redaction/logging hygiene (incl. `server.ts` `process.env` dump) — folded into the tracer slice.
 - `extractorFromAction` / `extractorTemplateFromAction`, server-only execution, report-path routing (D5, D6, D8).
 - `ExternalServiceClient` with error semantics (D12) and SSRF/credential guards (D13); lenient validation (D11).
-- Sync transformer + bounded OpenAPI→Jzod converter (D2, D3).
+- Sync transformer + bounded OpenAPI→Jzod converter (D2, D3) + Entity `externalDataSource.kind: "http"` schema change and store-bootstrap skip.
 - New `miroir-test-app_deployment-spotify` example package (D7), first-page display (D10).
 
-This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure of external operations; generic `POST /action` transport for application actions; pagination following; non-GET operations; rate-limit backoff; entity-per-component normalization; dedicated admin UI (analysis Non-goals — later, unscheduled).
+This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure of external operations; generic `POST /action` transport for application actions; pagination following; non-GET operations; rate-limit backoff; entity-per-component normalization; dedicated admin UI; legacy path-segment URL mode changes (analysis Non-goals — later, unscheduled).
 
 ---
 
@@ -39,14 +39,14 @@ This plan does **not** cover: token refresh; per-user tokens; MCP tool exposure 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize endpoint/dispatch/report contracts | ⬜ | `externalService.267.phase0.unit.test.ts` + modelValidation |
-| 1 | Endpoint `definition` key-union refactor (D1) | ⬜ | schema validation test + nonreg safety net |
-| 2 | Named secrets + redaction/logging hygiene (D4) | ⬜ | `serverSecrets.267.phase2.unit.test.ts` |
-| 3 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify (D5 server, D6, D11) | ⬜ | `externalServiceQuery.267.phase3.integ.test.ts` |
-| 4 | Error semantics + SSRF/guard rails (D12, D13, restrictions) | ⬜ | `externalServiceGuards.267.phase4.integ.test.ts` |
-| 5 | Report path: template extractor + param forwarding + client routing (D5 client, D8) | ⬜ | `externalServiceReport.267.phase5.integ.test.ts` |
-| 6 | Sync transformer + bounded OpenAPI→Jzod converter (D2, D3) | ⬜ | MiroirTest suites `externalServiceSync` (unit) + `externalServiceSyncExecute` (integ) |
+| 1 | Endpoint `definition` key-union refactor (D1) | ⬜ | `externalServiceSchema.267.phase1.unit.test.ts` + nonreg |
+| 2 | **Tracer**: `extractorFromAction` end-to-end vs fake Spotify, incl. named secrets (D4, D5 server, D6, D11) | ⬜ | `externalServiceQuery.267.phase2.integ.test.ts` |
+| 3 | Hardening: HTTP error semantics + SSRF/credential guards (D12, D13) | ⬜ | `externalServiceGuards.267.phase3.integ.test.ts` |
+| 4 | Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5) | ⬜ | `externalServiceDispatch.267.phase4.integ.test.ts` |
+| 5 | Report path: template extractor + param forwarding + async report-load routing (D5 client, D8) | ⬜ | `externalServiceReport.267.phase5.integ.test.tsx` |
+| 6 | Sync transformer + bounded converter + Entity `kind: "http"` schema (D2, D3) | ⬜ | MiroirTest `externalServiceSync` (unit) + `externalServiceSyncExecute` (integ) |
 | 7 | Spotify example app package (D7, D3, D10) | ⬜ | modelValidation + `spotifyApp.267.phase7.integ.test.ts` |
-| 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step + tracer narrative |
+| 8 | Nonreg, docs, cleanup, AC, opt-in live test | ⬜ | nonreg step + tracer narrative |
 
 ---
 
@@ -56,19 +56,19 @@ From the analysis decision record (binding; deviations go into the slice's Reali
 
 | Decision | Choice |
 |---|---|
-| D1 | `Endpoint.definition` = untagged key-union: `{ actions, actionDefinition?, actionTransformer?, actionMigrations? }` XOR `{ externalService }`; operations live in `externalService.operations[]`, addressed by `actionType == operationId`; no instance migration; strict branches so both-keys fails |
-| D2 | Sync = pure transformer `(openApiDocument, appModelEnvironment, scope) → compositeActionSequence`; method/path/params/responseSchema materialized into `operations[]` at sync time; `openApiDocument` is inert provenance at runtime; only GET operations produce operations |
-| D3 | One external entity per operation response, bounded inlined subset; `idAttribute: "id"`; `externalDataSource: { kind: "http", endpoint }`; stores skip bootstrap for `kind: "http"` |
-| D4 | `--secret <name>=<value>` repeatable + `MIROIR_SECRET_<NAME>` fallback; module-level secret map, never serialized; key+value redaction incl. MCP + logs; remove `server.ts` `process.env` log; fail closed on unknown/empty `credentialKey` |
-| D5 | Server-process-only execution; report call sites detect the extractor and route via `POST /query`; server `DomainController` intercepts before the persistence-store handoff; sync Redux path and `runAsSql` hard-error |
-| D6 | `extractorFromAction { endpointUuid, actionType, parameterBindings }` restricted to external-service GET operations; template + resolved forms; all closed extractor switches updated |
-| D7 | New self-contained `miroir-test-app_deployment-spotify`; registration inventory: workspace, `build-all.sh`, admin `Deployment` instance, deployment map/config, menu, standalone-app imports |
-| D8 | `PageDispatcher` forwards unknown search params into `pageParams`; `playlistId` consumed via `getFromParameters` |
-| D9 | Plain local fake HTTP server + recorded fixtures; dummy secrets; opt-in live test behind env var; MSW not used |
+| D1 | `Endpoint.definition` = untagged key-union: `{ actions, actionDefinition?, actionTransformer?, actionMigrations? }` XOR `{ externalService }`; operations live in `externalService.operations[]` (**array**, looked up by `op.operationId === actionType`); no instance migration; strict branches so both-keys fails |
+| D2 | Sync = pure transformer `(openApiDocument, appModel, scope) → compositeActionSequence`-shaped JSON; method/path/params/responseSchema materialized into `operations[]` at sync time; `openApiDocument` is inert provenance at runtime; only GET operations produce operations |
+| D3 | One external entity per operation response, bounded inlined subset; `idAttribute: "id"`; `externalDataSource: { kind: "http", endpoint }` (absent `kind` = `"sql"`); stores skip bootstrap for `kind: "http"` |
+| D4 | `--secret <name>=<value>` repeatable + `MIROIR_SECRET_<NAME>` fallback; module-level secret map, never serialized, never logged (incl. no `process.env` dump, no request logging); key+value redaction on REST **and** MCP **and** controller/query-runner object-dump logs; fail closed on unknown/empty `credentialKey` |
+| D5 | Server-process-only execution; the whole boxed query containing an external extractor routes server-side (`POST /query`); server `DomainController` intercepts in the `persistenceStoreAccessMode == "local"` branch before the persistence-store handoff; sync Redux path and `runAsSql` hard-error |
+| D6 | `extractorFromAction { endpointUuid, actionType, parameterBindings }` restricted to external-service GET operations; template + resolved forms; **all** closed extractor switches name the new type |
+| D7 | New self-contained `miroir-test-app_deployment-spotify`; registration inventory: workspace, `build-all.sh`, admin `Deployment` instance, `defaultSelfApplicationDeploymentMap`/config, menu, standalone-app imports |
+| D8 | `PageDispatcher` forwards unknown search params into `pageParams` (via a pure, tested `reportPageParamsFromSearchParams`); `playlistId` consumed via `getFromParameters`; legacy path-segment mode unchanged |
+| D9 | Plain local fake HTTP server + recorded fixtures; dummy secrets; opt-in live test behind env var (Slice 8); MSW not used |
 | D10 | First page (≤100 tracks) + `tracks.total` displayed; no `next` following |
 | D11 | Lenient validation: strip unknown keys, error on known-field type mismatch, log drift; success bodies only |
-| D12 | HTTP status → `Action2Error` `errorType` family (`ExternalServiceUnauthorized` / `NotFound` / `RateLimited` / `UpstreamFailure`) before validation; error bodies never validated |
-| D13 | HTTPS-only; deny private/link-local/loopback unless explicit server opt-in (fake server needs it); requests built only from materialized `operations[]`; `operationId ∈ enabledOperations` |
+| D12 | HTTP status → `Action2Error` `errorType` family (`ExternalServiceUnauthorized` / `ExternalServiceNotFound` / `ExternalServiceRateLimited` / `ExternalServiceUpstreamFailure`, added to the `ActionErrorType` union) before validation; error bodies never validated |
+| D13 | HTTPS-only; deny private/link-local/loopback unless explicit named server opt-in (the test fixture uses it); requests built only from materialized `operations[]`; `operationId ∈ enabledOperations` |
 
 ---
 
@@ -86,8 +86,9 @@ From the analysis decision record (binding; deviations go into the slice's Reali
 | `SpotifyPlaylistReport` Report | `10ce3252-7840-4041-a769-9a0e2d5ee10b` |
 | Spotify `Menu` | `1b4b181d-4616-4391-a41f-33bbee4fd356` |
 | `syncExternalServiceSchema` TransformerDefinition | `c615ff0e-140a-4d16-b3d4-d7e04081d65b` |
-| MiroirTest suite `externalServiceSync` (unit) | uuid `f4e5dde0-3dba-493b-a208-04494dbbb2f5` |
-| MiroirTest suite `externalServiceQuery` (integ, slice 8 migration target) | uuid `008325cb-2d7e-4dea-97cd-0daa36c143bb` |
+| MiroirTest suite `externalServiceSync` (unit) | uuid `f4e5dde0-3dba-493b-a208-04494dbbb2f5` — register in the folder catalog (`loadApplicationMiroirTestsFromFolders` / `listCliUnitSuiteKeysFromFolders`) |
+| MiroirTest suite `externalServiceSyncExecute` (integ) | uuid `394242e7-6443-41b8-b061-9bf2bcf06f17` — same catalog registration |
+| MiroirTest suite `externalServiceQuery` (integ, Slice 8 migration target) | uuid `008325cb-2d7e-4dea-97cd-0daa36c143bb` |
 | Issue-scoped vitest dir | `tests/**/issues/267-openapi-external-services/` |
 | Nonreg step | `externalServices-spotify` |
 
@@ -98,32 +99,32 @@ From the analysis decision record (binding; deviations go into the slice's Reali
 | Purpose | Command |
 |---|---|
 | MiroirTest `externalServiceSync` (unit) | `npm run testMiroir -w miroir-core -- --suites externalServiceSync --mode unit` |
-| MiroirTest (integ) | `npm run testMiroir -w miroir-standalone-app -- --suites externalServiceSyncExecute --mode integration` |
-| Issue vitest files | `RUN_TEST=<name> npm run testByFile -w <pkg> -- <name>` |
+| MiroirTest `externalServiceSyncExecute` (integ) | `npm run testMiroir -w miroir-standalone-app -- --suites externalServiceSyncExecute --mode integration` |
+| Issue vitest files | `RUN_TEST=<name> npm run testByFile -w <pkg> -- <name>` (packages with `testByFile`: miroir-core, miroir-standalone-app — **not** miroir-server, which has no vitest setup) |
 | Deployment validation | `npm run testByFile -w miroir-test-app_deployment-<app> -- tests/modelValidation.unit.test.ts` |
-| Schema rebuild (core schemas touched) | `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` |
+| Schema rebuild (core schemas touched) | `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` — **always before** the slice's test run |
 | Type check (per touched package) | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` |
 | Safety net | `npm run nonreg` |
 
 ---
 
-## Slice 0 — Characterize endpoint schema, dispatch, and report query path
+## Slice 0 — Characterize endpoint schema, dispatch, and report param contracts
 
 **Status:** ⬜ pending
 
 ### Goal
 
-Lock current contracts so the D1 refactor and the D5 call-site changes have a safety net: the 13 endpoint assets validate against the current schema; `handleApplicationAction` rejects non-`compositeActionTemplate` implementations with its current error; reports run queries through the sync Redux path; `PageDispatcher` strips unknown search params (current, misaligned behavior — locked, then changed in Slice 5).
+Lock current contracts so later refactors have a safety net. Characterization tests **pass on day one** (that is their purpose — they are not RED→GREEN cycles).
 
-### 0.1 RED → GREEN — contract characterization
+### 0.1 Characterization (passing) tests
 
-**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalService.267.phase0.unit.test.ts` (vitest — framework-internal machinery: Jzod validation and dispatch errors are not reachable through MiroirTest).
+**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalService.267.phase0.unit.test.ts` (vitest — `PageDispatcher` param parsing and endpoint-asset inventory are not MiroirTest-reachable; the dispatch-error part uses the real DomainController).
 
-Behavior asserted:
-- All 13 endpoint source assets (11 `miroir_data` + 2 `library_model`, enumerated in analysis §3.7) validate against the current `Endpoint` Jzod schema.
+Behavior locked:
+- All 13 endpoint source assets (11 `miroir_data` + 2 `library_model`, analysis §3.7) validate against the current `Endpoint` Jzod schema.
 - `handleApplicationAction` on an action with `actionImplementationType: "libraryImplementation"` returns `Action2Error` "not supported yet" (`DomainController.ts:3042-3055`).
-- `PageDispatcher`-parsed params for `?page=report&…&playlistId=xyz` do **not** contain `playlistId` (locks the misalignment; flipped by Slice 5's test).
-- Inventory file: programmatic list of the 13 endpoint assets + the 12 `defaultMiroirMetaModel.endpoints` registrations over 10 unique uuids (both alias pairs recorded).
+- `reportPageParamsFromSearchParams` (extracted pure function, see below) currently drops `playlistId` — locks the misalignment Slice 5 flips. (Assert the function, not a rendered route.)
+- Inventory: programmatic list of the 13 endpoint assets; the 12 `defaultMiroirMetaModel.endpoints` registrations over 10 unique uuids (both alias pairs: `bbd08cbb`, `ed520de4`); **grep inventory of test files asserting `definition.actions` / endpoint JSON equality** — named here so Slice 1's first signal is fast, with nonreg as backstop.
 
 ### Validation
 
@@ -145,41 +146,43 @@ npm run testByFile -w miroir-test-app_deployment-library -- tests/modelValidatio
 
 ### Goal
 
-An application designer can store an Endpoint instance whose `definition` is an `externalService` object (schema accepts it, both-keys rejected); every existing endpoint and reader behaves exactly as before.
+Enabling refactor (justified: the untagged union is the minimum schema change without which Slice 2 cannot store its endpoint fixture; the `.definition.actions` reader blast radius is why it stands alone). After it: an Endpoint instance with an `externalService` branch validates; both-keys is rejected; every existing endpoint and reader behaves exactly as before.
 
-**Layers cut:** JSON asset (Endpoint entity `mlSchema` + EntityVersion) → generated types (`devBuild`) → readers (narrowing guards) → MCP/CLI/admin UI compile.
+**Layers cut:** JSON asset (Endpoint entity `mlSchema` + EntityVersion) → generated types (`devBuild`) → readers (narrowing guards) → MCP/CLI/AI/admin UI compile.
 
 ### 1.1 RED
 
-**Test:** extend `externalService.267.phase0.unit.test.ts` → `…phase1.unit.test.ts` (vitest — same justification: Jzod schema validation is framework-internal).
+**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceSchema.267.phase1.unit.test.ts` (vitest — Jzod schema validation is framework-internal machinery).
 
 Behavior asserted:
 - An endpoint instance with `definition: { externalService: { openApiDocument, baseUrl, securityScheme, credentialKey, enabledOperations, operations: [] } }` **validates** against the new schema.
 - An instance with both `actions` and `externalService` keys is **rejected** (XOR invariant — requires strict branches; if Jzod objects strip unknown keys, add the explicit refinement and assert it).
 - The 13 existing assets still validate (untagged union → no migration).
-- `EndpointToolRegistry.listTools` skips an externalService endpoint without throwing (well-formedness guard narrowed); `commandsFromEndpoint`, `EndpointActionCaller`, `resolveMcpToolAction` compile and behave unchanged for actions endpoints.
+- `EndpointToolRegistry.listTools` skips an externalService endpoint without throwing; all narrowed readers behave unchanged for actions endpoints.
 
 ### 1.2 GREEN
 
-- Edit Endpoint entity `mlSchema` (uuid `3d8da4d4-…`, authoritative) + EntityVersion `e3c1cc69-…`: `definition` becomes the untagged union; `externalService` branch: `openApiDocument: string`, `baseUrl: string`, `securityScheme` (bearer object), `credentialKey?: string`, `enabledOperations: string[]`, `operations[]` = `{ operationId, method, path, parameterMappings, requestSchema?, responseSchema, security? }`.
-- Rebuild chain: `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`.
-- Narrow every `.definition.actions` reader (analysis §3.7): `DomainController`, `miroir-mcp` `EndpointToolRegistry` + `Tools.ts`, CLI `commandsFromEndpoint.ts`, `EndpointActionCaller`, `RunnerView` / `resolveMcpToolAction`, bootstrap accessors in `getMiroirFundamentalJzodSchema.ts`.
+- Edit Endpoint entity `mlSchema` (uuid `3d8da4d4-…`, authoritative post-#217) + EntityVersion `e3c1cc69-…`: `definition` becomes the untagged union; `externalService` branch: `openApiDocument: string`, `baseUrl: string`, `securityScheme` (bearer object), `credentialKey?: string`, `enabledOperations: string[]`, `operations: Array<{ operationId, method, path, parameterMappings, requestSchema?, responseSchema, security? }>`.
+- Rebuild chain **before testing**: `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`.
+- Single narrowing guard pair in `miroir-core` (`getEndpointActions(endpoint)` / `getExternalService(endpoint)`), applied at **every** `.definition.actions` reader: `DomainController`, `miroir-mcp` `EndpointToolRegistry.ts` (well-formedness test), `mcpHandlersForEndpoint.ts`, `mcpToolDescriptionFromActionDefinition.ts`, `miroir-core/src/1_core/Instance.ts`, CLI `commandsFromEndpoint.ts`, `miroir-ai` `miroirCopilotKitActions.ts`, `EndpointActionCaller.tsx`, `RunnerView` / `resolveMcpToolAction`, and the bootstrap accessors in `getMiroirFundamentalJzodSchema.ts` that read `.definition.actions` off hardcoded endpoint JSON.
 
 ### 1.3 Refactor checkpoint
 
-- Extract the union-narrowing guard once (`getEndpointActions(endpoint)` / `getExternalService(endpoint)` in `miroir-core`), use it at every reader — no per-reader ad-hoc casts.
-- Analysis misalignment mapped: §3.1 (dispatch gap is Slice 3's extension point; this slice only refactors the shape).
+- The guard pair is the only narrowing idiom — no per-reader ad-hoc casts.
+- Slice 0's grep inventory of endpoint-JSON-sensitive tests is re-run; named files updated if the union changes their expectations.
 
 ### Validation
 
 ```bash
-RUN_TEST=externalService.267.phase1 npm run testByFile -w miroir-standalone-app -- externalService.267.phase1
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+RUN_TEST=externalServiceSchema.267.phase1 npm run testByFile -w miroir-standalone-app -- externalServiceSchema.267.phase1
 npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
 npm run testByFile -w miroir-test-app_deployment-library -- tests/modelValidation.unit.test.ts
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 npx tsc --noEmit --skipLibCheck -p packages/miroir-mcp/tsconfig.json
 npx tsc --noEmit --skipLibCheck -p packages/miroir-cli/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-ai/tsconfig.json
 npm run nonreg
 ```
 
@@ -189,91 +192,56 @@ npm run nonreg
 
 ---
 
-## Slice 2 — Named secrets + redaction/logging hygiene (D4)
+## Slice 2 — Tracer bullet: `extractorFromAction` end-to-end against fake Spotify, incl. named secrets (D4, D5 server, D6 resolved form, D11)
 
 **Status:** ⬜ pending
 
 ### Goal
 
-An application maintainer can launch `miroir-server` with `--secret spotifyUser=<token>` (or `MIROIR_SECRET_SPOTIFYUSER`), have the value held in a module-level server secret store, never logged, never serialized into REST/MCP responses — and `process.env` is no longer dumped at startup.
+A boxed query containing `extractorFromAction { endpointUuid, actionType: "get-playlist", parameterBindings }`, executed through the server path (emulated server = in-process `persistenceStoreAccessMode: "local"`), returns playlist data fetched live from a local fake Spotify server, with `Authorization: Bearer <secret>` injected from a named launch-time secret — the first observable behavior, proving the thinnest end-to-end path (schema → intercept → dispatch → HTTP → validation → context result).
 
-**Layers cut:** service (`miroir-core/src/4_services/SecretStore.ts`, new) → server startup (`server.ts` CLI loop + env fallback + log removal) → redaction (`RestServer.ts`, MCP handlers).
+**Layers cut:** bootstrap Jzod schema (new extractor type) → generated types → `DomainController` (intercept + external-service execution) → `SecretStore` + `ExternalServiceClient` (new services) → server startup (`--secret`, env fallback, `process.env` log removal) → redaction → test infra (fake HTTP server fixture).
+
+### Test fixture contract (binding for Slices 2–5, 7)
+
+- **Fake server**: `packages/miroir-standalone-app/tests/utils/fakeExternalServiceServer.ts` — `http.createServer` on an ephemeral port (`app.listen(0)` pattern, as in `miroir-mcp` integ tests); started in `beforeAll`, stopped in `afterAll`; serves recorded fixture JSON from the issue test dir; records received requests for assertions.
+- **Secrets**: `registerSecrets({ fakeSpotify: "test-token" })` in `beforeAll`; `clearSecrets()` in `afterAll` (module-level map would leak across vitest files). Emulated-server tests never run the `server.ts` CLI loop — in-process registration is the test path; CLI parsing is tested separately (below).
+- **Loopback opt-in (D13)**: named, explicit — `ExternalServiceClient` config flag `allowedInsecureBaseUrls` (server option / `SecretStore`-adjacent test API `allowInsecureBaseUrlsForTests([baseUrl])`); the fixture uses it; default denies (proven in Slice 3).
+- **Endpoint instance**: the test external-service endpoint (hand-written `operations[]` entry: `operationId: "get-playlist"`, `method: "GET"`, `path: "/playlists/{playlist_id}"`, bounded `responseSchema`) is **committed to the server persistence store** (model section of the test deployment) during setup — the intercept reads it from the store, never from `currentModelEnvironment` (which is `defaultMiroirModelEnvironment` on the REST path, `RestServer.ts:505-509`).
 
 ### 2.1 RED
 
-**Test:** `packages/miroir-server/tests/issues/267-openapi-external-services/serverSecrets.267.phase2.unit.test.ts` (vitest — server startup/config internals are not reachable through MiroirTest).
+**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceQuery.267.phase2.integ.test.ts` (vitest integ — a live fake HTTP server lifecycle + in-process secret registration are not expressible as declarative MiroirTest JSON: MiroirTest `beforeAll` is a composite action and `queryTest` cannot run in integration mode).
 
 Behavior asserted:
-- `parseServerArgs(["--secret", "spotifyUser=abc"])` yields secret map `{ spotifyUser: "abc" }`; repeatable; malformed entries rejected with usage error; unknown options still rejected.
-- `MIROIR_SECRET_SPOTIFYUSER` env fallback works; CLI wins over env.
-- `resolveSecret("spotifyUser")` returns the value; `resolveSecret("nope")` / empty value → fail-closed error (no leak of the map contents in the message).
-- Redaction: a REST-response-shaped object containing a registered secret value (or keys named `authorization`/`token`/`credential`/`secret`) is redacted by the extended `redactCredentialSecretsFromValue`.
-- Startup logging never includes `process.env` (assert the `server.ts:206` dump is gone/guarded).
+- Query result context contains the playlist object from the fake server (name equals the fixture literal — independent source of truth).
+- The fake server received exactly one request: path `/playlists/<id>` (bound parameter), header `Authorization: Bearer test-token`.
+- The query still works when the caller's `currentModel` is `defaultMiroirModelEnvironment` (the production REST case — the endpoint is loaded from the server store).
+- Unknown fields injected by the fake server are stripped (D11); a wrong-typed known field fails with a validation error (not a crash).
+- Secrets unit cycles (in `miroir-core`, vitest — startup/config internals are not MiroirTest-reachable; `miroir-server` has no vitest setup, so `SecretStore` + `parseServerArgs` live in `miroir-core`): `parseServerArgs(["--secret", "a=b"])` → map; repeatable; malformed rejected; `MIROIR_SECRET_<NAME>` fallback, CLI wins; `resolveSecret` unknown/empty → fail-closed error without leaking map contents; extended `redactCredentialSecretsFromValue` redacts registered secret **values** and `authorization`/`token`/`credential`/`secret` **keys**; startup logging contains no `process.env` dump.
 
 ### 2.2 GREEN
 
-- New `SecretStore` in `miroir-core/src/4_services/` (module-level map; `registerSecrets`, `resolveSecret` fail-closed; no serialization API — deliberately not iterable/JSON-able).
-- `server.ts`: extract pure `parseServerArgs` (testable), add `--secret`, env fallback, remove/guard the `process.env` log line.
-- Extend `redactCredentialSecretsFromValue`: key-based (`authorization`/`token`/`credential`/`secret`, case-insensitive) + value-based (registered secrets); apply to MCP handlers' logging/result paths (`mcpHandlersForEndpoint.ts`).
+- **Secrets (D4):** new `SecretStore` (`miroir-core/src/4_services/SecretStore.ts`): module-level map, `registerSecrets` / `resolveSecret` (fail-closed) / `clearSecrets`; deliberately no serialization/iteration API. Pure `parseServerArgs` extracted to `miroir-core` (testable); `server.ts` shrinks to wiring: `--secret` in the CLI loop (`server.ts:154-191`), env fallback, and **removal/guarding of the `process.env` log (`server.ts:206`)**. Redaction: extend `redactCredentialSecretsFromValue` (key- and value-based); apply to REST responses (existing call sites), MCP handlers (`mcpHandlersForEndpoint.ts` logs params/results unredacted today), and controller/query-runner object-dump logs (`DomainController.ts:2949-2953`, `PersistenceStoreController.ts:193-198`). The token lives only in `SecretStore` and the `Authorization` header; the outgoing request is never logged.
+- **Schema (D6 resolved form):** add `extractorFromAction` to the bootstrap unions in `getMiroirFundamentalJzodSchema.ts` — at minimum `extractorReturningObject` and `extractorOrCombiner` (resolved forms only; template twins are Slice 5) — then regen (`devBuild -w miroir-core`). Slice 2 tests use the **resolved** query form only.
+- **Intercept (D5 server):** in `executeBoxedExtractorOrQueryAction`'s `persistenceStoreAccessMode == "local"` branch (`DomainController.ts:857-865`), before `handlePersistenceActionForLocalPersistenceStore`: if the query contains `extractorFromAction` → load the endpoint instance from the **local persistence store** (model section, `deploymentUuid` from the boxed query) → `executeExternalServiceOperation(endpointInstance, actionType, bindings)` → unwrap `ActionSuccess` payload into `contextResults`. Store-backed extractors in the same query still delegate to the persistence path; combiners run over the merged context.
+- **Dispatch:** `handleApplicationAction` gains the external-service branch (guarded to `persistenceStoreAccessMode === "local"`), taking the endpoint **instance** (not depending on `endpointsByUuid`); its return type generalizes to `Action2ReturnType` so a payload exists to unwrap. `executeExternalServiceOperation` is the single helper shared by the intercept and the branch.
+- **HTTP (D11):** `ExternalServiceClient` (new, `miroir-core/src/4_services/`): build the request from the materialized operation only (path templating from `parameterBindings`), inject the secret, `fetch`, lenient validation (strip unknown keys, error on known-field mismatch). Happy path + validation only — status/error mapping is Slice 3.
 
 ### 2.3 Refactor checkpoint
 
-- `parseServerArgs` extraction deepens `server.ts` (startup script shrinks to wiring).
-- Analysis misalignment mapped: §3.3 (env dump, key-only redaction) resolved here.
+- One `executeExternalServiceOperation` helper — no duplicated dispatch between intercept and `handleApplicationAction`.
+- `parseServerArgs` extraction deepens `server.ts` (startup shrinks to wiring).
+- Analysis misalignments mapped: §3.1 (dispatch extension point), §3.2 (server intercept), §3.3 (env dump, key-only redaction) all resolved here.
 
 ### Validation
 
 ```bash
-RUN_TEST=serverSecrets.267.phase2 npm run testByFile -w miroir-server -- serverSecrets.267.phase2
-npx tsc --noEmit --skipLibCheck -p packages/miroir-server/tsconfig.json
-npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
-```
-
-### Realization
-
-<Appended on completion, together with Status ✅ DONE.>
-
----
-
-## Slice 3 — Tracer bullet: `extractorFromAction` end-to-end against fake Spotify (D5 server, D6 resolved form, D11)
-
-**Status:** ⬜ pending
-
-### Goal
-
-A boxed query containing `extractorFromAction { endpointUuid, actionType: "get-playlist", parameterBindings }`, executed through the server path (emulated server = in-process `persistenceStoreAccessMode: "local"`), returns playlist data fetched live from a local fake Spotify server, with `Authorization: Bearer <secret>` injected from the named secret — something no query could do before.
-
-**Layers cut:** bootstrap Jzod schema (new extractor type) → generated types → `DomainController` (intercept + external-service dispatch branch) → `ExternalServiceClient` (new) → test infra (fake HTTP server fixture).
-
-### 3.1 RED
-
-**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceQuery.267.phase3.integ.test.ts` (vitest integ — requires a live fake HTTP server lifecycle and secret registration, not expressible as declarative MiroirTest JSON).
-
-Fixture: fake HTTP server on `127.0.0.1:<ephemeral>` serving a recorded `get-playlist` response (fixture JSON in the test dir); test external-service endpoint instance (hand-written `operations[]` entry: `operationId: "get-playlist"`, `method: "GET"`, `path: "/playlists/{playlist_id}"`, bounded `responseSchema`) added to the test deployment's model; server opt-in flag allowing the loopback base URL (D13); `registerSecrets({ fakeSpotify: "test-token" })`.
-
-Behavior asserted:
-- Query result context contains the playlist object from the fake server (name matches the fixture — independent source of truth).
-- The fake server received `Authorization: Bearer test-token` and path `/playlists/<id>` with the bound parameter.
-- Unknown fields injected by the fake server are stripped (D11); a wrong-typed known field fails with a validation error (not a crash).
-
-### 3.2 GREEN
-
-- Bootstrap schema: add `extractorFromAction` to the extractor unions in `getMiroirFundamentalJzodSchema.ts` (+ regen via `devBuild -w miroir-core`); resolved form only (template form is Slice 5).
-- `DomainController`: when a boxed query contains `extractorFromAction`, intercept **before** `handlePersistenceActionForLocalPersistenceStore`; resolve endpoint → externalService branch → `operations[actionType]`; execute via the same helper the new `handleApplicationAction` external-service branch uses; unwrap `ActionSuccess` payload into the extractor context result.
-- `handleApplicationAction`: add the external-service branch (guarded to `persistenceStoreAccessMode === "local"`); generalize the return type to `Action2ReturnType` so a payload exists to unwrap.
-- `ExternalServiceClient` (new, `miroir-core/src/4_services/`): build request from the materialized operation only (path templating from `parameterBindings`), inject secret, `fetch`, D11 lenient validation. Happy path + validation only — error mapping is Slice 4.
-
-### 3.3 Refactor checkpoint
-
-- Single `executeExternalServiceOperation` helper shared by the query intercept and `handleApplicationAction` (no duplicated dispatch).
-- Analysis misalignment mapped: §3.1 dispatch gap (extension point) implemented here; §3.2 server intercept.
-
-### Validation
-
-```bash
-RUN_TEST=externalServiceQuery.267.phase3 npm run testByFile -w miroir-standalone-app -- externalServiceQuery.267.phase3
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+RUN_TEST=externalServiceQuery.267.phase2 npm run testByFile -w miroir-standalone-app -- externalServiceQuery.267.phase2
+RUN_TEST=serverSecrets.267.phase2 npm run testByFile -w miroir-core -- serverSecrets.267.phase2
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-server/tsconfig.json
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
@@ -283,36 +251,33 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ---
 
-## Slice 4 — Error semantics + SSRF/guard rails (D12, D13, D6 restriction, D5 hard errors)
+## Slice 3 — Hardening: HTTP error semantics + SSRF/credential guards (D12, D13)
 
 **Status:** ⬜ pending
 
 ### Goal
 
-Every failure mode of an external call surfaces as a clear, stable `Action2Error` (never a Jzod mismatch, never a crash), and the mutation/SSRF side-channels are closed — one hardening slice, several RED → GREEN cycles against the same seam (`ExternalServiceClient` + dispatch guards).
+Every failure mode of an external call surfaces as a clear, stable `Action2Error` (never a Jzod mismatch, never a crash), and the SSRF/credential side-channels are closed — one hardening slice, several RED → GREEN cycles against the same seam (`ExternalServiceClient` + dispatch guards), reusing the Slice 2 fixture.
 
-**Layers cut:** controller + service only (no schema change).
+**Layers cut:** controller + service + `ActionErrorType` union (no Jzod schema change).
 
-### 4.1–4.6 RED → GREEN cycles
+### 3.1–3.4 RED → GREEN cycles
 
-**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceGuards.267.phase4.integ.test.ts` (same vehicle justification as Slice 3), extending the Slice 3 fixture.
+**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceGuards.267.phase3.integ.test.ts` (same vehicle justification as Slice 2).
 
-1. **HTTP error mapping (D12):** fake server 401 → `ExternalServiceUnauthorized` ("restart with a fresh token"-style message); 404 → `ExternalServiceNotFound`; 429 → `ExternalServiceRateLimited`; 500 / network failure / invalid JSON → `ExternalServiceUpstreamFailure`. The error body is never validated against `responseSchema`.
+1. **HTTP error mapping (D12):** fake server 401 → `ExternalServiceUnauthorized` (message points at token expiry/restart); 404 → `ExternalServiceNotFound`; 429 → `ExternalServiceRateLimited`; 500 / network failure / invalid JSON → `ExternalServiceUpstreamFailure`. The error body is never validated against `responseSchema`. GREEN extends the hand-written `ActionErrorType` union (`DomainElement.ts:172-201`) with the four literals.
 2. **Credential failures (D4/D13):** unknown `credentialKey` and empty secret → fail-closed `Action2Error` **before** any `fetch` (fake server asserts zero requests received).
-3. **SSRF guard (D13):** `baseUrl` with `http://`, loopback, link-local, or private host → rejected unless the explicit server opt-in flag is set (Slice 3's fixture uses the opt-in; this cycle proves the default denies).
+3. **SSRF guard (D13):** `baseUrl` with `http://`, loopback, link-local, or private host → rejected unless the named opt-in (`allowedInsecureBaseUrls`) is set — the Slice 2 fixture uses the opt-in; this cycle proves the default denies.
 4. **Operation allowlist (D13):** `actionType` naming an `operationId` outside `enabledOperations` → error.
-5. **Mutation side-channel (D6):** `extractorFromAction` targeting a non-external-service action (e.g. Library `lendDocument`) or a non-GET operation → hard error.
-6. **Client-side hard errors (D5):** sync `QuerySelectors.runQuery` on a query containing `extractorFromAction` → clear `QueryNotExecutable`-style error naming the extractor; `runAsSql: true` on such a query → hard error (SQL generation unsupported).
 
-### 4.7 Refactor checkpoint
+### 3.5 Refactor checkpoint
 
-- Error-construction helpers shared across cycles (one `externalServiceError(errorType, message, context)`); no per-cycle ad-hoc error shapes.
-- Analysis misalignment mapped: remainder of §3.2 (closed switches' default branches now name the new extractor explicitly).
+- One `externalServiceError(errorType, message, context)` constructor — no per-cycle ad-hoc error shapes.
 
 ### Validation
 
 ```bash
-RUN_TEST=externalServiceGuards.267.phase4 npm run testByFile -w miroir-standalone-app -- externalServiceGuards.267.phase4
+RUN_TEST=externalServiceGuards.267.phase3 npm run testByFile -w miroir-standalone-app -- externalServiceGuards.267.phase3
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 ```
 
@@ -322,41 +287,78 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ---
 
-## Slice 5 — Report path: `extractorTemplateFromAction` + param forwarding + client routing (D5 client, D8)
+## Slice 4 — Dispatch seam: extractor restriction, closed switches, composite invocation, client hard errors (D5, D6, Goal 5)
 
 **Status:** ⬜ pending
 
 ### Goal
 
-A report viewer can open `?page=report&…&reportUuid=…&playlistId=<id>` and see playlist data fetched server-side — the report query path detects the external extractor and routes it to the server instead of the sync Redux selector.
+The dispatch seam is correct everywhere: the extractor refuses anything but external-service GET operations (mutation side-channel closed), every closed extractor switch names the new type, a composite action sequence can invoke `get-playlist` like any other action (Goal 5), and client-side execution paths fail with a clear error.
 
-**Layers cut:** bootstrap schema (template form) → `Templates.ts` resolution → `PageDispatcher` (param forwarding) → `ReportHooks`/`ReportViewWithEditor` (detection + remote routing) → view (report renders returned context).
+**Layers cut:** controller + domain selectors/runners (no schema change).
+
+### 4.1–4.4 RED → GREEN cycles
+
+**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceDispatch.267.phase4.integ.test.ts` (cycles 1–3 need the fake server; cycle 4 does not).
+
+1. **Extractor restriction (D6):** `extractorFromAction` targeting a non-external-service action (e.g. Library `lendDocument`) or a non-GET operation → hard error.
+2. **Closed switches name the type:** `QuerySelectors.ts`, `AsyncQuerySelectors.ts`, `ExtractorRunnerInMemory.ts`, `FileSystemExtractorRunner.ts`, `SqlGenerator.ts` (`runAsSql` → hard error), `sqlDbInstanceStoreSectionMixin.ts`, `Templates.ts` — each default branch names `extractorFromAction` explicitly (defense in depth if the intercept is skipped).
+3. **Composite invocation (Goal 5):** a `compositeActionSequence` step `{ actionType: "get-playlist", endpoint: <spotify endpoint uuid> }` executes server-side and returns the playlist. GREEN requires fixing endpoint→application resolution: `handleAction` enters `handleApplicationAction` only via the static `EndpointApplicationMap` (`Deployment.ts:92-105`), which cannot list new endpoints — resolve the endpoint's application **dynamically from the endpoint instance's `application` field** instead of only the static map.
+4. **Client-side hard errors (D5):** sync `QuerySelectors.runQuery` on a query containing `extractorFromAction` → clear error naming the extractor; `runAsSql: true` on such a query → hard error.
+
+### 4.5 Refactor checkpoint
+
+- Dynamic endpoint→application resolution replaces (not duplicates) the static-map lookup; the static map remains as the Miroir-core fast path.
+
+### Validation
+
+```bash
+RUN_TEST=externalServiceDispatch.267.phase4 npm run testByFile -w miroir-standalone-app -- externalServiceDispatch.267.phase4
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+```
+
+### Realization
+
+<Appended on completion, together with Status ✅ DONE.>
+
+---
+
+## Slice 5 — Report path: `extractorTemplateFromAction` + param forwarding + async report-load routing (D5 client, D8)
+
+**Status:** ⬜ pending
+
+### Goal
+
+A report viewer can open `?page=report&…&reportUuid=…&playlistId=<id>` and see playlist data fetched server-side — the report's **async load path** detects the external extractor and routes the whole boxed query to the server; the view renders the returned context.
+
+**Layers cut:** bootstrap schema (template form) → `Templates.ts` resolution → `PageDispatcher` (pure param builder + forwarding) → report load service (`createReportQueryLoadExecutor` / `useEnsureReportQueryLoaded`) → view (loading/error states, returned context).
 
 ### 5.1 RED
 
-**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceReport.267.phase5.integ.test.ts` (vitest integ — React report rendering + URL dispatch are not reachable through MiroirTest).
+**Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/externalServiceReport.267.phase5.integ.test.tsx` (vitest integ, `.tsx` + `MemoryRouter` — React report rendering and URL dispatch are not MiroirTest-reachable; follows the `ReportPage.integ.test.tsx` pattern).
 
 Behavior asserted:
-- `?page=report&…&playlistId=abc` → `pageParams.playlistId === "abc"` (flips the Slice 0 characterization).
-- A report whose query template uses `extractorTemplateFromAction` with a `getFromParameters`-bound `playlist_id` renders the fake-server playlist (name + first track), fetched via the server route (assert: fake server received exactly one request; Redux sync path not taken).
-- A report mixing store-backed extractors and one external extractor in the same query renders both data sources (context merge).
+- Pure `reportPageParamsFromSearchParams("?page=report&…&playlistId=abc")` includes `playlistId: "abc"` (flips the Slice 0 lock); `ReportUrlParamKeys`/params typing widened so this is not a type lie; legacy path-segment mode unchanged (non-goal).
+- A report whose query template uses `extractorTemplateFromAction` with a `getFromParameters`-bound `playlist_id` renders the fake-server playlist (name + first track from the fixture — behavior, not "Redux was not called").
+- Loading → loaded (and error) states render from the async path.
+- A query mixing store-backed extractors and one external extractor executes **wholly server-side** (store extractors via the persistence path, external via the intercept, combiners over the merged context) and renders both data sources.
 
 ### 5.2 GREEN
 
-- Bootstrap schema: `extractorTemplateFromAction` (bindings as transformer templates) + regen; `Templates.ts` resolves it into `extractorFromAction`.
-- `PageDispatcher`: forward unknown search params into `pageParams` (generic forwarding, not a hardcoded `playlistId` key).
-- Report query path (`useQueryTemplateResults` / `ReportViewWithEditor`): detect external extractors in the resolved query → issue a server-routed boxed query (`POST /query` via the existing remote persistence client) → feed the returned context into rendering. Store-backed extractors in the same query keep their current path.
+- Bootstrap schema: `extractorTemplateFromAction` (bindings as transformer templates) added to the `extractorTemplate*` unions + regen; `Templates.ts` resolves it into `extractorFromAction` (same pattern as `extractorByPrimaryKey`).
+- `PageDispatcher`: extract pure `reportPageParamsFromSearchParams(searchParams)` with generic unknown-key forwarding; widen the param types.
+- Report load path: extend the **async** seam (`useEnsureReportQueryLoaded` / `createReportQueryLoadExecutor` — already async, unlike the sync `useQueryTemplateResults` hook): when `queryContainsExternalExtractor`, route the whole boxed query via `POST /query` (remote persistence client), stash the returned context, and let the view render it with loading/error states. The sync Redux path is never expected to execute an external extractor (Slice 4 cycle 4 is the guard).
 
 ### 5.3 Refactor checkpoint
 
-- Detection logic in one domain-level predicate (`queryContainsExternalExtractor`), not inline in the view.
-- Analysis misalignment mapped: §3.5 (closed param union) resolved here; §3.2 client-side routing completed.
+- `queryContainsExternalExtractor` is one domain-level predicate, not inline view logic.
+- Analysis misalignment mapped: §3.5 (closed param union) and §3.2 (client routing) resolved here.
 
 ### Validation
 
 ```bash
-RUN_TEST=externalServiceReport.267.phase5 npm run testByFile -w miroir-standalone-app -- externalServiceReport.267.phase5
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+RUN_TEST=externalServiceReport.267.phase5 npm run testByFile -w miroir-standalone-app -- externalServiceReport.267.phase5
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
@@ -366,43 +368,44 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ---
 
-## Slice 6 — Sync transformer + bounded OpenAPI→Jzod converter (D2, D3 schema generation)
+## Slice 6 — Sync transformer + bounded OpenAPI→Jzod converter + Entity `kind: "http"` schema (D2, D3)
 
 **Status:** ⬜ pending
 
 ### Goal
 
-An application designer can run the `syncExternalServiceSchema` transformer on the endpoint's stored Spotify OpenAPI doc with scope `["get-playlist"]`, review the produced `compositeActionSequence` (materialized `operations[]` + `SpotifyPlaylist` entity upsert), execute it through the standard composite-action machinery, and immediately query the synced model — the review-then-execute loop, with no hand-written assets.
+An application designer can run the `syncExternalServiceSchema` transformer on the endpoint's stored Spotify OpenAPI doc with scope `["get-playlist"]`, review the produced `compositeActionSequence`-shaped JSON (materialized `operations[]` + `SpotifyPlaylist` entity upsert), execute it through the standard composite-action machinery, and see the synced model elements land — the review-then-execute loop, with no hand-written assets.
 
-**Layers cut:** TransformerDefinition asset + runtime handler (`TransformersForRuntime.ts` pattern) → converter (new, bounded) → composite action execution → model (endpoint + entity upserts).
+**Layers cut:** Entity meta-model schema (`externalDataSource.kind`) → generated types → store bootstrap skip → TransformerDefinition asset + runtime handler → converter → composite action execution.
 
 ### 6.1 RED
 
-**Test:** MiroirTest `transformerTest` suite `externalServiceSync` (unit, `miroir-core`) — the transformer is a pure function, the ideal MiroirTest vehicle. Input assets: the **real** Spotify OpenAPI excerpt stored as a test asset (imported, not inlined) + a test app model environment containing the Slice 1-shaped Spotify endpoint (doc only, no operations yet).
+**Test A (unit):** MiroirTest `transformerTest` suite `externalServiceSync` (`miroir-core`, unit) — the transformer is a pure function, the ideal MiroirTest vehicle. Inputs are **transformer parameters** (`(openApiDocument, appModel, scope)` — unit runners always pass `defaultMetaModelEnvironment` as context, so the app model must be a parameter); the Spotify OpenAPI excerpt and the test endpoint are imported as **real assets**, not inline copies.
 
 Behavior asserted:
-- Output is a `compositeActionSequence` containing: an endpoint `updateInstance` whose `operations["get-playlist"]` carries materialized `method: "GET"`, `path: "/playlists/{playlist_id}"`, parameter mappings, and a bounded Jzod `responseSchema`; and a `createEntity` for `SpotifyPlaylist` with `idAttribute: "id"`, `externalDataSource: { kind: "http", endpoint: "0e5cb172-…" }`, and the bounded `mlSchema` (name, owner, images, `tracks.total`, `tracks.items[].track.{id,name,artists,duration_ms}`).
+- Output conforms to the `compositeActionSequence` shape and contains: an endpoint `updateInstance` whose `operations[]` gains an entry with `operationId: "get-playlist"`, `method: "GET"`, `path: "/playlists/{playlist_id}"`, parameter mappings, and a bounded Jzod `responseSchema`; and a `createEntity` for `SpotifyPlaylist` with `idAttribute: "id"`, `externalDataSource: { kind: "http", endpoint: "0e5cb172-…" }`, and the bounded `mlSchema` (name, owner, images, `tracks.total`, `tracks.items[].track.{id,name,artists,duration_ms}`).
 - Conversion rules: OAS `nullable: true` → Jzod `nullable`; `allOf` flattened; `oneOf`/`anyOf` outside the bounded subset rejected with a clear transformer error; non-GET operations in scope are skipped (read-only by construction).
-- The transformer runs against the **app's own** model environment (not `defaultMiroirModelEnvironment`).
 
-**Then (integration):** MiroirTest `actionTest` suite `externalServiceSyncExecute` (integration, `miroir-standalone-app`): execute the generated `compositeActionSequence` on a test deployment, then run the Slice 3 query against the **synced** model (fake server up) — the loop closes with no hand-written operation/entity.
+**Test B (integration):** MiroirTest `actionTest` suite `externalServiceSyncExecute` (`miroir-standalone-app`, integration) — proves only that the generated `compositeActionSequence` lands: after execution, the test deployment's model contains the upserted endpoint `operations[]` and the `SpotifyPlaylist` entity. **No HTTP** (MiroirTest cannot start a fake server — the "query the synced model against the fake server" loop-closure lives in the Slice 2 vitest fixture, extended here to run against the synced model instead of the hand-written one).
 
 ### 6.2 GREEN
 
-- TransformerDefinition asset (uuid `c615ff0e-…`) + handler registered per the `TransformersForRuntime.ts` pattern (`applicationTransformerDefinitions`); add the `yaml` dependency to `miroir-core` (sync-time parsing only; runtime never parses — D2).
-- Bounded converter (new module used by the handler): `$ref` resolution bounded to the subset; mapping rules per the assertions above.
+- **Entity meta-model first** (prerequisite for any `kind: "http"` instance): `externalDataSource` gains `kind?: "sql" | "http"` (absent = `"sql"`) and `endpoint?: uuid` on the Entity `mlSchema` (authoritative) + EntityVersion-of-EntityVersion; the generated Zod is `.strict()` today (`schema?`, `tableName?` only) — regen via the build chain. Store bootstrap: Postgres `isExternal` predicate (`SqlDbStoreSection.ts`) excludes `kind === "http"` (no Sequelize model, no SELECT); filesystem `createStorageSpaceForInstancesOfEntity` skips `kind: "http"`; indexedDb/mongodb equivalents.
+- **Transformer:** TransformerDefinition asset (uuid `c615ff0e-…`) + handler registered per the `TransformersForRuntime.ts` pattern (`applicationTransformerDefinitions`); output declared with `transformerResultSchema` = compositeActionSequence shape (a transformer returns JSON; callers execute it via `handleCompositeAction`). Production entry point: invoked with the app's own model environment via `localCache.currentModelEnvironment(spotifyApplication, map)` (Transformer Builder / runner — **not** `POST /query`, which passes `defaultMiroirModelEnvironment`).
+- **Converter** (new module behind the handler — deep module, no internals exported): `$ref` resolution bounded to the subset; mapping rules per the assertions. Add the `yaml` dependency to `miroir-core` (sync-time parsing only; note: this pulls the parser into the standalone-app bundle — accepted per D2's client-or-server sync; the runtime fetch path must not import it).
 
 ### 6.3 Refactor checkpoint
 
-- Converter is a deep module behind the transformer handler (small interface: doc + scope + model → composite action); no converter internals exported.
-- Generated JSON size sanity-checked against the real Spotify doc (record the size in the Realization — reviewability is a D2 requirement).
+- Converter output size sanity-checked against the real Spotify doc (record the size in the Realization — reviewability is a D2 requirement).
+- Analysis misalignment mapped: §3.4 (`kind: "http"` schema + store skip) resolved here; Slice 7 only consumes it.
 
 ### Validation
 
 ```bash
+npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
 npm run testMiroir -w miroir-core -- --suites externalServiceSync --mode unit
 npm run testMiroir -w miroir-standalone-app -- --suites externalServiceSyncExecute --mode integration
-npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+RUN_TEST=externalServiceQuery.267.phase2 npm run testByFile -w miroir-standalone-app -- externalServiceQuery.267.phase2
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 ```
 
@@ -418,30 +421,29 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Goal
 
-A report viewer can start the standalone app with the Spotify deployment, open the playlist report, paste a playlist ID in the URL, and see the playlist (name, owner, first ≤100 tracks, total) — a self-contained example app, its endpoint/entity assets **generated by dogfooding the Slice 6 sync** on the real Spotify doc (reviewed, then committed).
+A report viewer can start the standalone app with the Spotify deployment, open the playlist report, paste a playlist ID in the URL, and see the playlist (name, owner, first ≤100 tracks, total) — a self-contained example app whose endpoint/entity assets are **generated by dogfooding the Slice 6 sync** on the real Spotify doc (reviewed, then committed).
 
-**Layers cut:** new package (assets + `index.ts`/`Spotify.ts` assembly, mirroring `Library.ts`) → registration inventory → store bootstrap skip for `externalDataSource.kind: "http"` → report assets.
+**Layers cut:** new package (assets + assembly, mirroring `Library.ts`) → registration inventory → report assets.
 
 ### 7.1 RED
 
 **Test:** `packages/miroir-standalone-app/tests/issues/267-openapi-external-services/spotifyApp.267.phase7.integ.test.ts` (vitest integ — full deployment boot + report rendering; not MiroirTest-reachable) + the new package's `modelValidation`.
 
 Behavior asserted:
-- The Spotify deployment boots (filesystem profile) with the `SpotifyPlaylist` entity present in the model and **no storage space created** for it (all store backends skip `kind: "http"`).
+- The Spotify deployment boots (filesystem profile) with the `SpotifyPlaylist` entity present in the model and **no storage space created** for it (consumes Slice 6's skip).
+- `defaultSelfApplicationDeploymentMap` / the admin `Deployment` instance contain `fd47d115-…` (registration is behaviorally proven, not checklisted).
 - The playlist report renders the fake-server playlist via `playlistId` URL param: name, owner, first page of tracks, and `tracks.total` ("first 100 of N" — D10).
 - `modelValidation` passes for `miroir-test-app_deployment-spotify`.
 
 ### 7.2 GREEN
 
 - New package `miroir-test-app_deployment-spotify` (layout mirrors `miroir-test-app_deployment-library`): SelfApplication `00514586-…`, branch `cddedb5a-…`, Deployment `fd47d115-…`, Menu `1b4b181d-…`, Endpoint `0e5cb172-…`, Entity `56166585-…` + EntityVersion `1a34fdf2-…`, Query `371aed0c-…` (`extractorTemplateFromAction`, `playlistId` via `getFromParameters`), Report `10ce3252-…` (objectInstance section + tracks list section fed by a runtime transformer projecting `tracks.items`).
-- Endpoint `operations[]` + entity `mlSchema` produced by running the Slice 6 sync on the real doc; reviewed; committed (the raw doc embedded as `openApiDocument` provenance).
-- Registration inventory (analysis D7): `build-all.sh`, admin `Deployment` instance, deployment map / config JSON, menu wiring, standalone-app imports.
-- Store bootstrap skip for `externalDataSource.kind: "http"` (filesystem, indexedDb, postgres, mongodb).
+- Endpoint `operations[]` + entity `mlSchema` produced by running the Slice 6 sync on the real doc; reviewed; committed (raw doc embedded as `openApiDocument` provenance).
+- Registration inventory (analysis D7): `build-all.sh`, admin `Deployment` instance, `defaultSelfApplicationDeploymentMap` / config JSON, menu wiring, standalone-app imports.
 
 ### 7.3 Refactor checkpoint
 
 - Pure-data slice rule: proof = `modelValidation` + rebuild + Slice 0 inventory lock (diff reviewable); the boot/report test is the behavioral proof.
-- Analysis misalignment mapped: §3.4 (`kind: "http"` skip) resolved here.
 
 ### Validation
 
@@ -458,41 +460,45 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ---
 
-## Slice 8 — Nonreg, docs, cleanup, AC
+## Slice 8 — Nonreg, docs, cleanup, AC, opt-in live test
 
 **Status:** ⬜ pending
 
 ### 8.1 Nonreg
 
-- Add `externalServices-spotify` step to `scripts/nonreg-manifest.json` (phase 3/4/5/7 integ tests + `externalServiceSync` suites).
+- Add `externalServices-spotify` step to `scripts/nonreg-manifest.json` (phase 2/3/4/5/7 tests + `externalServiceSync` / `externalServiceSyncExecute` suites).
 
-### 8.2 Docs
+### 8.2 Opt-in live test (D9)
 
-- `analysis.md` status → implemented; progress table DONE; `docs/reference/testing.md` notes the new suite keys; `docs/reference/data-architecture-deployments.md` gains the external-service endpoint paragraph.
+- `spotifyLive.267.phase8.integ.test.ts`: skipped unless `LIVE_SPOTIFY_TOKEN` (env) is set; runs the Slice 2 query against real Spotify; never logs env/headers (D4); not part of nonreg.
 
-### 8.3 Issue-directory cleanup
+### 8.3 Docs
+
+- `analysis.md` status → implemented; progress table DONE; `docs/reference/testing.md` notes the new suite keys; `docs/reference/data-architecture-deployments.md` gains the external-service endpoint paragraph; **issue #267 AC text updated** ("upserts the endpoint actions" → operations + entity, matching the D1 repair).
+
+### 8.4 Issue-directory cleanup
 
 - Migrate still-valuable assertions from `tests/**/issues/267-openapi-external-services/` into feature-named suites (candidate: the end-to-end query path → MiroirTest suite `externalServiceQuery`, uuid `008325cb-…`, if the harness gains a fake-server fixture; otherwise keep as a feature-named vitest file); delete the issue directory (per `docs/contributing/testing.md`, #238 rule).
 
-### 8.4 Tracer bullet (narrative)
+### 8.5 Tracer bullet (narrative)
 
 1. Launch server: `node packages/miroir-server/release/index.js --secret spotifyUser=<token>`.
 2. Open the standalone app → Spotify deployment → playlist report URL with `&playlistId=<id>`.
 3. Report shows playlist name, owner, first ≤100 tracks, total — fetched server-side from Spotify (fake server in tests).
 
-Automated equivalent: `spotifyApp.267.phase7.integ.test.ts` + `externalServiceQuery.267.phase3.integ.test.ts`.
+Automated equivalent: `spotifyApp.267.phase7.integ.test.ts` + `externalServiceQuery.267.phase2.integ.test.ts`.
 
 ### AC checklist (#267)
 
 | Criterion | Proven by | Status |
 |---|---|---|
 | External service definable as Endpoint instance (raw doc + `credentialKey`), editable via generic editor | Slice 1 schema test + Slice 7 assets (`modelValidation`) | ⬜ |
-| `--secret spotifyUser=<token>`; token never in repo/model/REST responses | Slice 2 tests; Slice 3 header assertion | ⬜ |
+| `--secret spotifyUser=<token>`; token never in repo/model/REST responses | Slice 2 secrets cycles + redaction tests; Slice 2 header assertion | ⬜ |
 | Sync transformer produces reviewable `compositeActionSequence`; executing it upserts operations + entity | `externalServiceSync` + `externalServiceSyncExecute` suites | ⬜ |
 | Report at `?…&playlistId=<id>` displays playlist (name, owner, ≤100 tracks, total), server-fetched | Slice 5 + Slice 7 integ tests | ⬜ |
-| External data read-only; non-GET not exposed | Slice 4 cycle 5; Slice 6 non-GET-skip assertion | ⬜ |
-| Client-side without server → clear error | Slice 4 cycle 6 | ⬜ |
-| Integration tests vs fake server, dummy secrets, no real token | Slices 3–7 test fixtures | ⬜ |
+| External data read-only; non-GET not exposed | Slice 4 cycle 1; Slice 6 non-GET-skip assertion | ⬜ |
+| Client-side without server → clear error | Slice 4 cycle 4 | ⬜ |
+| Integration tests vs fake server, dummy secrets, no real token | Slices 2–7 fixtures; Slice 8 opt-in live test separate | ⬜ |
 
 ### Validation
 
