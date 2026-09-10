@@ -266,6 +266,20 @@ export async function executeExternalServiceOperation(
       "extractorFromAction is restricted to external-service GET operations (target is not an externalService endpoint)",
     );
   }
+  for (const [name, value] of Object.entries(bindings)) {
+    if (value !== null && typeof value === "object") {
+      const failure = value as { queryFailure?: string; failureMessage?: string };
+      const message = failure.queryFailure
+        ? `External service parameter "${name}" could not be resolved: ${failure.failureMessage ?? failure.queryFailure}`
+        : `External service parameter "${name}" resolved to a non-scalar value (unresolved template parameter?)`;
+      log.warn("external service call blocked: unresolvable parameter binding", {
+        actionType,
+        parameter: name,
+        queryFailure: failure.queryFailure,
+      });
+      return externalServiceError("InvalidAction", message, { parameter: name });
+    }
+  }
   return fetchExternalServiceOperation(externalService, actionType, bindingStrings(bindings));
 }
 

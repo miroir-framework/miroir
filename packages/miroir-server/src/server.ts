@@ -41,6 +41,7 @@ import {
   ENTITY_MIROIR_RIGHT_UUID,
   ENTITY_MIROIR_USER_CREDENTIAL_UUID,
   ENTITY_MIROIR_USER_UUID,
+  deploymentUuidFromHttpRequest,
   extractPrincipalFromAuthorizationHeader,
   findCredentialInstance,
   getProcessTokenSecret,
@@ -180,11 +181,10 @@ console.log(`  --config   : ${configFilePath}`);
 console.log(`  --certsdir : ${argCertsDir ?? '(default: <repo-root>/certs/)'}`);
 console.log(`  --cert     : ${argCertFile ?? process.env.MIROIR_TLS_CERT ?? '(default: <certsdir>/localhost.pem)'}`);
 console.log(`  --key      : ${argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? '(default: <certsdir>/localhost-key.pem)'}`);
-console.log(
-  `  --secret   : ${registeredSecretNames.length > 0
-    ? `${registeredSecretNames.length} named secret(s) registered: ${registeredSecretNames.join(", ")}`
-    : "(none registered — external-service endpoints with a credentialKey will fail at call time)"}`
-);
+const secretsSummary = registeredSecretNames.length > 0
+  ? `${registeredSecretNames.length} named secret(s) registered: ${registeredSecretNames.join(", ")}`
+  : "(none registered — external-service endpoints with a credentialKey will fail at call time)";
+console.log(`  --secret   : ${secretsSummary}`);
 
 const configFileContents = JSON.parse(
   readFileSync(new URL(configFilePath, import.meta.url)).toString()
@@ -423,26 +423,6 @@ for (const c of deploymentsToOpen) {
     applicationDeploymentMap,
     defaultMetaModelEnvironment
   );
-}
-
-function deploymentUuidFromHttpRequest(request: CustomRequest): string | undefined {
-  const params = request.params as Record<string, unknown> | undefined;
-  const body = request.body as Record<string, unknown> | undefined;
-  const fromParams = params?.deploymentUuid;
-  if (typeof fromParams === "string" && fromParams) {
-    return fromParams;
-  }
-  if (typeof body?.deploymentUuid === "string" && body.deploymentUuid) {
-    return body.deploymentUuid;
-  }
-  const payload = body?.payload;
-  if (payload && typeof payload === "object") {
-    const fromPayload = (payload as Record<string, unknown>).deploymentUuid;
-    if (typeof fromPayload === "string" && fromPayload) {
-      return fromPayload;
-    }
-  }
-  return undefined;
 }
 
 async function loadAdminIdentityDirectory(): Promise<

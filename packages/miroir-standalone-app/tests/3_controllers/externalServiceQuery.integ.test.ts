@@ -479,4 +479,31 @@ describe.skipIf(!shouldRun).sequential("externalServiceQuery — extractorFromAc
     expect(playlist.name).toBe(PLAYLIST_NAME_LITERAL);
     expect(fakeServer.receivedRequests).toHaveLength(1);
   });
+
+  it("unresolved (object-valued) parameter binding is a clear error, never an HTTP call with '[object Object]'", async () => {
+    // Live-bug regression: when a query template's getFromParameters reference is missing from the
+    // page params, resolution yields a TransformerFailure object; it must not be String()-ified
+    // into the request path.
+    fakeServer.receivedRequests.length = 0;
+    const query = boxedGetPlaylistQuery("ignored");
+    (query.payload.query.extractors.playlist as { parameterBindings: Record<string, unknown> })
+      .parameterBindings = {
+      playlist_id: {
+        queryFailure: "ReferenceNotFound",
+        failureMessage: "could not find reference playlistId in pageParams",
+      },
+    };
+
+    const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+      query as any,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+    );
+
+    expect(queryResult instanceof Action2Error).toBe(true);
+    const message = (queryResult as Action2Error).errorMessage ?? "";
+    expect(message).toContain("playlist_id");
+    expect(message).toContain("playlistId");
+    expect(fakeServer.receivedRequests).toHaveLength(0);
+  });
 });

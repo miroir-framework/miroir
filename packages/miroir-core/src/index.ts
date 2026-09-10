@@ -1393,6 +1393,9 @@ export {
   type AccessTarget,
 } from "./1_core/authentication/AccessPolicy.js";
 export {
+  deploymentUuidFromHttpRequest,
+} from "./1_core/authentication/deploymentUuidFromHttpRequest.js";
+export {
   handleAuthHttpRoute,
   type AuthHttpResult,
 } from "./1_core/authentication/AuthenticationHttp.js";
