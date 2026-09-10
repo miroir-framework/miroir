@@ -1,0 +1,23 @@
+{
+  "uuid": "fd47d115-67e2-4870-8339-1c26665d1d15",
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "name": "SpotifyApplicationFilesystemDeployment",
+  "defaultLabel": "SpotifyApplicationFilesystemDeployment",
+  "selfApplication": "00514586-bf72-4de3-beea-0a627c821404",
+  "description": "Filesystem Deployment for the Spotify example application (Docker). Uses paths relative to filesystemDeploymentRootDirectory (/data) without '..' traversal.",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-test-app_deployment-admin/assets"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-test-app_deployment-spotify/assets/spotify_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-test-app_deployment-spotify/assets/spotify_data"
+    }
+  }
+}

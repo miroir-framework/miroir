@@ -36,9 +36,54 @@
       ]
     },
     {
+      "id": "unit-71-authentication",
+      "tier": "unit",
+      "title": "#71 — authentication hatch, login, token, password",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-core",
+        "--",
+        "authentication.71"
+      ]
+    },
+    {
+      "id": "unit-262-application-access",
+      "tier": "unit",
+      "title": "#262 — application access evaluation",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-core",
+        "--",
+        "access.262"
+      ]
+    },
+    {
+      "id": "unit-264-deployment-access",
+      "tier": "unit",
+      "title": "#264 — deployment access evaluation",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-core",
+        "--",
+        "access.264"
+      ]
+    },
+    {
       "id": "unit-transformerResultSchema",
       "tier": "unit",
-      "title": "#88 — resolveTransformerResultSchema (MiroirTest suite)",
+      "title": "#88 — resolveTransformerResultSchema PLATFORM inventory",
       "requires": "none",
       "argv": [
         "npm",
@@ -847,6 +892,17 @@
         "miroir-standalone-app",
         "--",
         "gridPagination.unit"
+      ]
+    },
+    {
+      "id": "externalServices-spotify",
+      "tier": "default",
+      "title": "#267 \u2014 external services + Spotify (nonreg bundle)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testMiroir -w miroir-core -- --suites externalServiceSync --mode unit && npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites externalServiceSyncExecute --mode integ && npm run testByFile -w miroir-core -- serverSecrets && npm run testByFile -w miroir-core -- externalServiceHttpStoreSkip && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceQuery && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceGuards && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceDispatch && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceReport && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem spotifyApp"
       ]
     },
     {

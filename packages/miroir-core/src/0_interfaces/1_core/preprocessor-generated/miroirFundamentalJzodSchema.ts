@@ -4742,6 +4742,44 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "coreTransformerForBuildPlusRuntime_syncExternalServiceSchema": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
+            },
+            "context": {}
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "syncExternalServiceSchema"
+          },
+          "openApiDocument": {
+            "type": "any",
+            "optional": true,
+            "description": "OpenAPI 3 document as YAML/JSON string or object. Prefer transformerParams.openApiDocument."
+          },
+          "appModel": {
+            "type": "any",
+            "optional": true,
+            "description": "Application model containing the externalService endpoint to upsert. Prefer transformerParams.appModel from localCache.currentModelEnvironment(app, map)."
+          },
+          "scope": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "description": "operationId values to sync. Non-GET operations in scope are skipped."
+          }
+        }
+      },
       "mlsTransformerForBuildPlusRuntime_resolveConditionalSchema": {
         "type": "object",
         "extend": [
@@ -5376,6 +5414,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_syncExternalServiceSchema"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime_dataflowSequence"
             }
           }
@@ -5664,6 +5709,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime_numericOp"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_syncExternalServiceSchema"
             }
           },
           {
@@ -8937,11 +8989,35 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "External Data Source",
-                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the Entity has conceptLevel 'External'.",
+                "description": "Configuration for entities whose data lives outside Miroir-managed storage. kind http (plus endpoint) means the data is fetched from an external HTTP Endpoint; absent kind is equivalent to sql.",
                 "id": 17
               }
             },
             "definition": {
+              "kind": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "sql",
+                  "http"
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Kind",
+                    "description": "Storage kind. Absent is equivalent to sql. http means Miroir stores must not create storage or route SELECTs for this entity."
+                  }
+                }
+              },
+              "endpoint": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint",
+                    "description": "When kind is http, the Endpoint instance that serves this entity's data."
+                  }
+                }
+              },
               "schema": {
                 "type": "string",
                 "optional": true,
@@ -9194,10 +9270,34 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "External Data Source",
-                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'."
+                "description": "Configuration for entities whose data lives outside Miroir-managed storage. kind http (plus endpoint) means the data is fetched from an external HTTP Endpoint; absent kind is equivalent to sql."
               }
             },
             "definition": {
+              "kind": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "sql",
+                  "http"
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Kind",
+                    "description": "Storage kind. Absent is equivalent to sql. http means Miroir stores must not create storage or route SELECTs for this entity."
+                  }
+                }
+              },
+              "endpoint": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint",
+                    "description": "When kind is http, the Endpoint instance that serves this entity's data."
+                  }
+                }
+              },
               "schema": {
                 "type": "string",
                 "optional": true,
@@ -12365,6 +12465,19 @@ export const miroirFundamentalJzodSchema = {
                   "relativePath": "jzodElement"
                 },
                 "context": {}
+              },
+              "urlParamFields": {
+                "type": "array",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "URL Param Fields"
+                  }
+                },
+                "definition": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -13635,6 +13748,20 @@ export const miroirFundamentalJzodSchema = {
               },
               "filesystemDeploymentRootDirectory": {
                 "type": "string"
+              },
+              "authentication": {
+                "type": "object",
+                "optional": true,
+                "definition": {
+                  "enabled": {
+                    "type": "boolean",
+                    "optional": true
+                  },
+                  "tokenSecret": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
               }
             }
           }
@@ -14076,11 +14203,24 @@ export const miroirFundamentalJzodSchema = {
         "type": "never"
       },
       "extractorOrCombinerTemplate": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner"
-        }
+        "type": "union",
+        "discriminator": "extractorOrCombinerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "extractorTemplateFromAction"
+            }
+          }
+        ]
       },
       "extractorOrCombinerTemplateRecord": {
         "type": "record",
@@ -14446,6 +14586,78 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "extractorFromAction": {
+        "type": "object",
+        "definition": {
+          "extractorOrCombinerType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "Extractor Or Combiner Type"
+              }
+            },
+            "definition": "extractorFromAction"
+          },
+          "endpointUuid": {
+            "type": "uuid"
+          },
+          "actionType": {
+            "type": "string"
+          },
+          "parameterBindings": {
+            "type": "record",
+            "definition": {
+              "type": "union",
+              "definition": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "any"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "extractorTemplateFromAction": {
+        "type": "object",
+        "definition": {
+          "extractorOrCombinerType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "Extractor Or Combiner Type"
+              }
+            },
+            "definition": "extractorTemplateFromAction"
+          },
+          "endpointUuid": {
+            "type": "uuid"
+          },
+          "actionType": {
+            "type": "string"
+          },
+          "parameterBindings": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "coreTransformerForBuildPlusRuntime"
+              }
+            }
+          }
+        }
+      },
       "extractorOrCombinerReturningObject": {
         "type": "union",
         "discriminator": "extractorOrCombinerType",
@@ -14581,6 +14793,14 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "relativePath": "combinerOneToOne",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "extractorFromAction",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -14953,6 +15173,14 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": "extractorOrCombinerType",
         "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "extractorFromAction",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
           {
             "type": "schemaReference",
             "definition": {
@@ -21876,7 +22104,7 @@ export const miroirFundamentalJzodSchema = {
             }
           },
           "definition": {
-            "type": "object",
+            "type": "union",
             "tag": {
               "value": {
                 "defaultLabel": "Definition",
@@ -21885,183 +22113,165 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             },
-            "definition": {
-              "actions": {
-                "type": "schemaReference",
-                "context": {
-                  "action": {
-                    "type": "object",
-                    "tag": {
-                      "value": {
-                        "defaultLabel": "Action",
-                        "display": {
-                          "editable": true,
-                          "displayedAttributeValueWhenFolded": "actionParameters.actionType.definition"
-                        }
-                      }
-                    },
-                    "definition": {
-                      "actionParameters": {
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "actions": {
+                    "type": "schemaReference",
+                    "context": {
+                      "action": {
                         "type": "object",
-                        "definition": {
-                          "actionType": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodLiteral"
-                            }
-                          },
-                          "actionName": {
-                            "type": "schemaReference",
-                            "optional": true,
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodLiteral"
-                            }
-                          },
-                          "actionLabel": {
-                            "type": "schemaReference",
-                            "optional": true,
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodAttributePlainStringWithValidations"
-                            }
-                          },
-                          "endpoint": {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodLiteral"
-                            }
-                          },
-                          "configuration": {
-                            "type": "schemaReference",
-                            "optional": true,
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodElement"
-                            }
-                          },
-                          "deploymentUuid": {
-                            "type": "schemaReference",
-                            "optional": true,
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodPlainAttribute"
-                            }
-                          },
-                          "nameGivenToResult": {
-                            "type": "schemaReference",
-                            "optional": true,
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodAttributePlainStringWithValidations"
-                            }
-                          },
-                          "payload": {
-                            "type": "schemaReference",
-                            "optional": true,
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodElement"
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Action",
+                            "display": {
+                              "editable": true,
+                              "displayedAttributeValueWhenFolded": "actionParameters.actionType.definition"
                             }
                           }
-                        }
-                      },
-                      "actionImplementation": {
-                        "type": "union",
-                        "optional": true,
-                        "discriminator": "actionImplementationType",
-                        "definition": [
-                          {
+                        },
+                        "definition": {
+                          "actionParameters": {
                             "type": "object",
                             "definition": {
-                              "actionImplementationType": {
-                                "type": "literal",
-                                "definition": "libraryImplementation"
+                              "actionType": {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodLiteral"
+                                }
                               },
-                              "inMemoryImplementationFunctionName": {
-                                "type": "string"
+                              "actionName": {
+                                "type": "schemaReference",
+                                "optional": true,
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodLiteral"
+                                }
                               },
-                              "sqlImplementationFunctionName": {
-                                "type": "string",
-                                "optional": true
+                              "actionLabel": {
+                                "type": "schemaReference",
+                                "optional": true,
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodAttributePlainStringWithValidations"
+                                }
+                              },
+                              "endpoint": {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodLiteral"
+                                }
+                              },
+                              "configuration": {
+                                "type": "schemaReference",
+                                "optional": true,
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodElement"
+                                }
+                              },
+                              "deploymentUuid": {
+                                "type": "schemaReference",
+                                "optional": true,
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodPlainAttribute"
+                                }
+                              },
+                              "nameGivenToResult": {
+                                "type": "schemaReference",
+                                "optional": true,
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodAttributePlainStringWithValidations"
+                                }
+                              },
+                              "payload": {
+                                "type": "schemaReference",
+                                "optional": true,
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodElement"
+                                }
                               }
                             }
                           },
-                          {
-                            "type": "object",
-                            "definition": {
-                              "actionImplementationType": {
-                                "type": "literal",
-                                "definition": "compositeActionTemplate"
+                          "actionImplementation": {
+                            "type": "union",
+                            "optional": true,
+                            "discriminator": "actionImplementationType",
+                            "definition": [
+                              {
+                                "type": "object",
+                                "definition": {
+                                  "actionImplementationType": {
+                                    "type": "literal",
+                                    "definition": "libraryImplementation"
+                                  },
+                                  "inMemoryImplementationFunctionName": {
+                                    "type": "string"
+                                  },
+                                  "sqlImplementationFunctionName": {
+                                    "type": "string",
+                                    "optional": true
+                                  }
+                                }
                               },
-                              "definition": {
-                                "type": "any",
-                                "tag": {
-                                  "value": {
-                                    "defaultLabel": "Composite Action Definition",
-                                    "display": {
-                                      "editable": true
-                                    },
-                                    "ifThenElseMMLS": {
-                                      "mmlsReference": {
-                                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                                        "relativePath": "compositeActionTemplate"
+                              {
+                                "type": "object",
+                                "definition": {
+                                  "actionImplementationType": {
+                                    "type": "literal",
+                                    "definition": "compositeActionTemplate"
+                                  },
+                                  "definition": {
+                                    "type": "any",
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Composite Action Definition",
+                                        "display": {
+                                          "editable": true
+                                        },
+                                        "ifThenElseMMLS": {
+                                          "mmlsReference": {
+                                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                            "relativePath": "compositeActionTemplate"
+                                          }
+                                        }
                                       }
                                     }
                                   }
                                 }
                               }
-                            }
-                          }
-                        ]
-                      },
-                      "actionErrors": {
-                        "type": "union",
-                        "discriminator": "type",
-                        "optional": true,
-                        "definition": [
-                          {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodEnum"
-                            }
+                            ]
                           },
-                          {
-                            "type": "schemaReference",
-                            "definition": {
-                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                              "relativePath": "jzodLiteral"
-                            }
+                          "actionErrors": {
+                            "type": "union",
+                            "discriminator": "type",
+                            "optional": true,
+                            "definition": [
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodEnum"
+                                }
+                              },
+                              {
+                                "type": "schemaReference",
+                                "definition": {
+                                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                  "relativePath": "jzodLiteral"
+                                }
+                              }
+                            ]
                           }
-                        ]
-                      }
-                    }
-                  },
-                  "actionsArray": {
-                    "type": "array",
-                    "definition": {
-                      "type": "schemaReference",
-                      "definition": {
-                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                        "relativePath": "action"
-                      }
-                    }
-                  },
-                  "actionsUnion": {
-                    "type": "object",
-                    "definition": {
-                      "type": {
-                        "type": "literal",
-                        "definition": "union"
+                        }
                       },
-                      "discriminator": {
-                        "type": "string",
-                        "optional": true
-                      },
-                      "definition": {
+                      "actionsArray": {
                         "type": "array",
                         "definition": {
                           "type": "schemaReference",
@@ -22070,50 +22280,383 @@ export const miroirFundamentalJzodSchema = {
                             "relativePath": "action"
                           }
                         }
+                      },
+                      "actionsUnion": {
+                        "type": "object",
+                        "definition": {
+                          "type": {
+                            "type": "literal",
+                            "definition": "union"
+                          },
+                          "discriminator": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "definition": {
+                            "type": "array",
+                            "definition": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "action"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "actionsArray"
+                    },
+                    "tag": {
+                      "value": {
+                        "id": 10,
+                        "defaultLabel": "Endpoint Parameter",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    }
+                  },
+                  "actionDefinition": {
+                    "type": "schemaReference",
+                    "optional": true,
+                    "definition": {
+                      "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
+                      "relativePath": "jzodObject"
+                    },
+                    "tag": {
+                      "value": {
+                        "id": 11,
+                        "defaultLabel": "Endpoint Definition",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    }
+                  },
+                  "actionTransformer": {
+                    "type": "any",
+                    "optional": true
+                  },
+                  "actionMigrations": {
+                    "type": "any",
+                    "optional": true
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "externalService": {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "External Service",
+                        "display": {
+                          "editable": true
+                        }
+                      }
+                    },
+                    "definition": {
+                      "openApiDocument": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "OpenAPI Document"
+                          }
+                        }
+                      },
+                      "baseUrl": {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Base URL"
+                          }
+                        }
+                      },
+                      "securityScheme": {
+                        "type": "union",
+                        "discriminator": "type",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Security Scheme"
+                          }
+                        },
+                        "definition": [
+                          {
+                            "type": "object",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "HTTP Bearer"
+                              }
+                            },
+                            "definition": {
+                              "type": {
+                                "type": "literal",
+                                "definition": "http",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Type"
+                                  }
+                                }
+                              },
+                              "scheme": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Scheme"
+                                  }
+                                }
+                              },
+                              "bearerFormat": {
+                                "type": "string",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Bearer Format"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "OAuth2 Client Credentials"
+                              }
+                            },
+                            "definition": {
+                              "type": {
+                                "type": "literal",
+                                "definition": "oauth2ClientCredentials",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Type"
+                                  }
+                                }
+                              },
+                              "tokenUrl": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Token URL"
+                                  }
+                                }
+                              },
+                              "clientIdKey": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Client ID Secret Name"
+                                  }
+                                }
+                              },
+                              "clientSecretKey": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Client Secret Secret Name"
+                                  }
+                                }
+                              },
+                              "scopes": {
+                                "type": "string",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Scopes"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "OAuth2 Authorization Code"
+                              }
+                            },
+                            "definition": {
+                              "type": {
+                                "type": "literal",
+                                "definition": "oauth2AuthorizationCode",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Type"
+                                  }
+                                }
+                              },
+                              "tokenUrl": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Token URL"
+                                  }
+                                }
+                              },
+                              "clientIdKey": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Client ID Secret Name"
+                                  }
+                                }
+                              },
+                              "clientSecretKey": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Client Secret Secret Name"
+                                  }
+                                }
+                              },
+                              "refreshTokenKey": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Refresh Token Secret Name"
+                                  }
+                                }
+                              },
+                              "scopes": {
+                                "type": "string",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Scopes"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "credentialKey": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Credential Key"
+                          }
+                        }
+                      },
+                      "enabledOperations": {
+                        "type": "array",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Enabled Operations"
+                          }
+                        },
+                        "definition": {
+                          "type": "string"
+                        }
+                      },
+                      "operations": {
+                        "type": "array",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Operations"
+                          }
+                        },
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "operationId": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Operation Id"
+                                }
+                              }
+                            },
+                            "method": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Method"
+                                }
+                              }
+                            },
+                            "path": {
+                              "type": "string",
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Path"
+                                }
+                              }
+                            },
+                            "parameterMappings": {
+                              "type": "array",
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Parameter Mappings"
+                                }
+                              },
+                              "definition": {
+                                "type": "object",
+                                "definition": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "in": {
+                                    "type": "string"
+                                  },
+                                  "required": {
+                                    "type": "boolean",
+                                    "optional": true
+                                  }
+                                }
+                              }
+                            },
+                            "requestSchema": {
+                              "type": "schemaReference",
+                              "optional": true,
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "jzodElement"
+                              },
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Request Schema"
+                                }
+                              }
+                            },
+                            "responseSchema": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "jzodElement"
+                              },
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Response Schema"
+                                }
+                              }
+                            },
+                            "security": {
+                              "type": "array",
+                              "optional": true,
+                              "definition": {
+                                "type": "string"
+                              },
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Security"
+                                }
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
-                },
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "actionsArray"
-                },
-                "tag": {
-                  "value": {
-                    "id": 10,
-                    "defaultLabel": "Endpoint Parameter",
-                    "display": {
-                      "editable": true
-                    }
-                  }
                 }
-              },
-              "actionDefinition": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "1e8dab4b-65a3-4686-922e-ce89a2d62aa9",
-                  "relativePath": "jzodObject"
-                },
-                "tag": {
-                  "value": {
-                    "id": 11,
-                    "defaultLabel": "Endpoint Definition",
-                    "display": {
-                      "editable": true
-                    }
-                  }
-                }
-              },
-              "actionTransformer": {
-                "type": "any",
-                "optional": true
-              },
-              "actionMigrations": {
-                "type": "any",
-                "optional": true
               }
-            }
+            ]
           }
         }
       },
@@ -30062,6 +30605,13 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorFromAction",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
@@ -30116,6 +30666,13 @@ export const miroirFundamentalJzodSchema = {
             }
           }
         ]
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorFromAction": {
+        "type": "schemaReference",
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "extractorFromAction"
+        }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject": {
         "type": "union",
@@ -31263,6 +31820,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_numericOp"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_syncExternalServiceSchema"
             }
           },
           {
@@ -32900,6 +33464,43 @@ export const miroirFundamentalJzodSchema = {
                 "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
               }
             }
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_syncExternalServiceSchema": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "syncExternalServiceSchema"
+          },
+          "openApiDocument": {
+            "type": "any",
+            "optional": true,
+            "description": "OpenAPI 3 document as YAML/JSON string or object. Prefer transformerParams.openApiDocument."
+          },
+          "appModel": {
+            "type": "any",
+            "optional": true,
+            "description": "Application model containing the externalService endpoint to upsert. Prefer transformerParams.appModel from localCache.currentModelEnvironment(app, map)."
+          },
+          "scope": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "description": "operationId values to sync. Non-GET operations in scope are skipped."
           }
         }
       },
@@ -34572,6 +35173,13 @@ export const miroirFundamentalJzodSchema = {
         "type": "union",
         "discriminator": "extractorOrCombinerType",
         "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorFromAction",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
           {
             "type": "schemaReference",
             "definition": {
@@ -38942,12 +39550,36 @@ export const miroirFundamentalJzodSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "External Data Source",
-                "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the Entity has conceptLevel 'External'.",
+                "description": "Configuration for entities whose data lives outside Miroir-managed storage. kind http (plus endpoint) means the data is fetched from an external HTTP Endpoint; absent kind is equivalent to sql.",
                 "id": 17,
                 "isTemplate": true
               }
             },
             "definition": {
+              "kind": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "sql",
+                  "http"
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Kind",
+                    "description": "Storage kind. Absent is equivalent to sql. http means Miroir stores must not create storage or route SELECTs for this entity."
+                  }
+                }
+              },
+              "endpoint": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint",
+                    "description": "When kind is http, the Endpoint instance that serves this entity's data."
+                  }
+                }
+              },
               "schema": {
                 "type": "string",
                 "optional": true,
@@ -40262,12 +40894,25 @@ export const miroirFundamentalJzodSchema = {
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate": {
-        "type": "schemaReference",
-        "definition": {
-          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner"
-        },
-        "context": {}
+        "type": "union",
+        "discriminator": "extractorOrCombinerType",
+        "definition": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombiner"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateFromAction"
+            }
+          }
+        ]
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_indexedDbStoreSectionConfiguration": {
         "type": "schemaReference",
@@ -40302,6 +40947,40 @@ export const miroirFundamentalJzodSchema = {
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
           "relativePath": "bundledStoreSectionConfiguration"
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateFromAction": {
+        "type": "object",
+        "definition": {
+          "extractorOrCombinerType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "Extractor Or Combiner Type"
+              }
+            },
+            "definition": "extractorTemplateFromAction"
+          },
+          "endpointUuid": {
+            "type": "uuid"
+          },
+          "actionType": {
+            "type": "string"
+          },
+          "parameterBindings": {
+            "type": "record",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+              }
+            }
+          }
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntimeWithoutArray": {
@@ -40564,6 +41243,13 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_numericOp"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_syncExternalServiceSchema"
             }
           },
           {
@@ -41625,6 +42311,13 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "relativePath": "extractorTemplateExtractorByPrimaryKey"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "extractorTemplateFromAction"
             }
           }
         ]

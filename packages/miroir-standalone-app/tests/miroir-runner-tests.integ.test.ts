@@ -23,10 +23,13 @@ import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
 import {
-  UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
-  UI_INTEGRATION_RUNNER_UUID_INDEX,
   buildUiIntegrationOrchestratorCreateSessionParams,
+  uiIntegrationRunnerSuiteEntryFromDefinition,
 } from "../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import {
+  listCliRunnerIntegrationSuiteKeysFromFolders,
+  loadApplicationRunnerUuidIndexFromFolders,
+} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { miroirAppStartup } from "../src/startup.js";
 import {
   loadRunnerOrActionMiroirTestSuite,
@@ -34,6 +37,8 @@ import {
 } from "./helpers/runMiroirRunnerTestsFromCLI.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
 import { loadTestConfigFiles } from "./utils/fileTools.js";
+
+const applicationRunnerUuidIndex = loadApplicationRunnerUuidIndexFromFolders();
 
 const pageLabel = "miroir-runner-tests.integ";
 
@@ -43,7 +48,11 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
   log = logger;
 });
 
-const config = parseMiroirRunnerTestCliConfig(process.env, process.argv.slice(2));
+const config = parseMiroirRunnerTestCliConfig(
+  process.env,
+  process.argv.slice(2),
+  listCliRunnerIntegrationSuiteKeysFromFolders(),
+);
 const { miroirConfig, logConfig } = await loadTestConfigFiles(env);
 const loggerOptions = logConfig as any as LoggerOptions;
 
@@ -72,7 +81,7 @@ if (config.filter?.testList) {
 }
 
 function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
-  const registryEntry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey];
+  const registryEntry = uiIntegrationRunnerSuiteEntryFromDefinition(suiteKey, suite);
   if (!registryEntry) {
     throw new Error(`Unknown runner/action suite key: ${suiteKey}`);
   }
@@ -87,7 +96,7 @@ function createSessionParamsForSuite(suiteKey: string, suite: MiroirTestSuite) {
     pageLabel,
     runTarget,
     suite.testParams,
-    UI_INTEGRATION_RUNNER_UUID_INDEX,
+    applicationRunnerUuidIndex,
   );
 }
 

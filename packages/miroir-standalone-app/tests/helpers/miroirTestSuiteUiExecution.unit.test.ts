@@ -150,7 +150,7 @@ describe('classifyMiroirTestListExecutionCapabilities (T1)', () => {
     });
   });
 
-  it('keeps non-launchable integ suites out of launchableIntegrationSuiteKeys', () => {
+  it('treats integ suites from the current application as launchable without a hardcoded registry', () => {
     const unregisteredInteg: MiroirTestDefinition = {
       uuid: '00000000-0000-4000-8000-000000000099',
       parentUuid: 'a311f363-e238-4203-bdfc-29e8c160c26b',
@@ -178,8 +178,8 @@ describe('classifyMiroirTestListExecutionCapabilities (T1)', () => {
     expect(caps.hasIntegrationLeaves).toBe(true);
     expect(caps.unitSuiteKeys).toEqual(['EntityPrimaryKey']);
     expect(caps.integrationSuiteKeys).toEqual(['unregistered_integ_suite']);
-    expect(caps.launchableIntegrationSuiteKeys).toEqual([]);
-    expect(isSupportedInstance(unregisteredInteg)).toBe(false);
+    expect(caps.launchableIntegrationSuiteKeys).toEqual(['unregistered_integ_suite']);
+    expect(isSupportedInstance(unregisteredInteg)).toBe(true);
   });
 
   it('returns empty aggregates for an empty list', () => {

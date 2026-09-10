@@ -1,0 +1,36 @@
+{
+  "uuid": "c5a26705-4e81-4b3a-9d12-0f8e6a1b2c3d",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "Slice5PlaylistReport",
+  "defaultLabel": "Slice 5 playlist report (extractorTemplateFromAction)",
+  "definition": {
+    "extractorTemplates": {
+      "playlist": {
+        "extractorOrCombinerType": "extractorTemplateFromAction",
+        "endpointUuid": "c8f2a1b4-6d3e-4a91-9b07-2e5c8d1f4a63",
+        "actionType": "get-playlist",
+        "parameterBindings": {
+          "playlist_id": {
+            "transformerType": "getFromParameters",
+            "referenceName": "playlistId"
+          }
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Playlist",
+            "fetchedDataReference": "playlist"
+          }
+        }
+      ]
+    }
+  }
+}

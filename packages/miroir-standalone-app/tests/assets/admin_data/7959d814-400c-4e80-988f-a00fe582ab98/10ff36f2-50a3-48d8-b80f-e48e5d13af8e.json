@@ -2,9 +2,9 @@
   "uuid": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
   "parentName": "Deployment",
   "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
-  "name": "Deployment of application miroir",
-  "defaultLabel": "The deployment of application miroir",
-  "description": "The description of deployment of application miroir",
+  "name": "Deployment of application Miroir",
+  "defaultLabel": "The deployment of application Miroir",
+  "description": "The description of deployment of application Miroir",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "configuration": {
     "admin": {

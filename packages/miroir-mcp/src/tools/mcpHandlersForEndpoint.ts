@@ -13,6 +13,8 @@ import {
   MiroirLoggerFactory,
   resolveFundamentalSchemaForDeployment,
   resolveJzodSchemaReferenceInContext,
+  getEndpointActions,
+  redactCredentialSecretsFromValue,
   type EndpointDefinition,
   type MetaModel,
   type MiroirModelEnvironment,
@@ -210,19 +212,42 @@ export async function handleMcpAction(
   modelEnvironmentOverride?: MiroirModelEnvironment,
 ): Promise<{ content: Array<{ type: string; text: string; parsed: Record<string, any> }> }> {
   try {
-    log.info(`${toolName} - received params:`, JSON.stringify(params, null, 2));
+    log.info(`${toolName} - received params:`, JSON.stringify(redactCredentialSecretsFromValue(params), null, 2));
     log.info(`${toolName} - received schema:`, JSON.stringify(schema, null, 2));
 
     // log.info(`${toolName} - received domainController:`, domainController);
     log.info(`${toolName} - received applicationDeploymentMap:`, applicationDeploymentMap);
 
-    // Validate parameters
-    const validatedParams = schema.parse(params);
+    const parsedParams = schema.safeParse(params);
+    if (!parsedParams.success) {
+      const message = parsedParams.error.issues
+        .map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`)
+        .join("; ");
+      log.info(`${toolName} - validation failed:`, message);
+      const subObject = {
+        status: "error",
+        action: toolName,
+        error: {
+          type: "validation_error",
+          message,
+        },
+      };
+      return {
+        content: [
+          {
+            type: "text",
+            parsed: subObject,
+            text: JSON.stringify(subObject, null, 2),
+          },
+        ],
+      };
+    }
+    const validatedParams = parsedParams.data;
     log.info(`${toolName} - validated params:`, validatedParams);
 
     // Build the action
     const action = actionBuilder(validatedParams);
-    log.info(`${toolName} - constructed action:`, JSON.stringify(action, null, 2));
+    log.info(`${toolName} - constructed action:`, JSON.stringify(redactCredentialSecretsFromValue(action), null, 2));
 
     const libraryDeploymentUuid = resolveLibraryDeploymentUuid(applicationDeploymentMap);
     const defaultLibraryModelEnvironment = modelEnvironmentOverride ?? getDefaultLibraryModelEnvironmentDEFUNCT(
@@ -251,7 +276,7 @@ export async function handleMcpAction(
       defaultLibraryModelEnvironment as any as MiroirModelEnvironment, // defaultMiroirModelEnvironment,
     );
 
-    log.info(`${toolName} - result:`, JSON.stringify(result, null, 2));
+    log.info(`${toolName} - result:`, JSON.stringify(redactCredentialSecretsFromValue(result), null, 2));
 
     // Format response for MCP
     if (result.status === "ok") {
@@ -396,7 +421,7 @@ export function mcpToolHandler(
       "applicationDeploymentMap",
       applicationDeploymentMap,
       "payload",
-      JSON.stringify(payload, null, 2)
+      JSON.stringify(redactCredentialSecretsFromValue(payload), null, 2)
     );
     return handleMcpAction(
       toolName,
@@ -419,7 +444,7 @@ export function mcpToolEntry(
   actionType: string,
   toolName: string,
 ): McpRequestHandler<any> {
-  const actionDef = endpoint.definition.actions.find(
+  const actionDef = getEndpointActions(endpoint)?.find(
     (action: any) => action.actionParameters.actionType.definition === actionType
   );
   if (!actionDef) {

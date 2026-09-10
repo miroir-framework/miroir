@@ -1,0 +1,11 @@
+{
+  "uuid": "0509f559-2a1f-4bf2-ae2d-732aa6cc3202",
+  "parentName": "MiroirRight",
+  "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
+  "name": "Dave — Library deployment",
+  "miroirUser": "e2343a39-f5d9-4898-83b4-74e2ccc33125",
+  "targetType": "deployment",
+  "targetUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+  "capability": "read",
+  "description": "Dave — Library filesystem deployment grant only (#264)."
+}

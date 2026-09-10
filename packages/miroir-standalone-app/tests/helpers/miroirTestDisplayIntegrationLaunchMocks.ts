@@ -1,14 +1,31 @@
 import { vi } from 'vitest';
 
 import type { UiIntegrationTestRunRequest } from '../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js';
+
+vi.mock('../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js', async () => {
+  const { loadApplicationRunnerUuidIndexFromFolders } = await import(
+    'miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js'
+  );
+  const index = loadApplicationRunnerUuidIndexFromFolders();
+  return {
+    useSelectedApplicationRunnerUuidIndex: () => index,
+    useSelectedApplicationMiroirTests: () => [],
+    useSelectedApplicationMiroirTestSuiteRegistries: (fallback: unknown[] = []) => ({
+      runner: {},
+      transformer: {},
+      instances: fallback,
+    }),
+  };
+});
 import {
   defaultUiIntegrationFilterForSuite,
   hasIntegrationTestFilterSelection,
   RETURN_BOOK_LEAF,
   RUNNER_RETURN_DOCUMENT_LABEL,
+  RUNNER_RETURN_DOCUMENT_SUITE_KEY,
 } from './uiIntegrationTestLaunchFilterHelpers.js';
 
-export { RETURN_BOOK_LEAF, RUNNER_RETURN_DOCUMENT_LABEL };
+export { RETURN_BOOK_LEAF, RUNNER_RETURN_DOCUMENT_LABEL, RUNNER_RETURN_DOCUMENT_SUITE_KEY };
 
 vi.mock('../../src/miroir-fwk/4_view/components/Reports/TestExecutionPanel.js', () => ({
   TestExecutionPanel: () => null,
@@ -53,7 +70,7 @@ vi.mock('../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js', async (impo
           filter: hasIntegrationTestFilterSelection(request.filter)
             ? request.filter
             : defaultUiIntegrationFilterForSuite(request.suiteKey) ?? {
-                testList: { [RUNNER_RETURN_DOCUMENT_LABEL]: [RETURN_BOOK_LEAF] },
+                testList: { [RUNNER_RETURN_DOCUMENT_SUITE_KEY]: [RETURN_BOOK_LEAF] },
               },
         },
         env,

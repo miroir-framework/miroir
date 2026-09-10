@@ -1,6 +1,6 @@
 # Testing Guide
 
-> Full reference including all env vars, store backends, and programmatic API: [docs/reference/testing.md](../../reference/testing.md)
+> Full reference (discovery / selection / execution, env vars, store backends, programmatic API): [docs/reference/testing.md](../../reference/testing.md#discovery-selection-and-execution)
 
 ---
 
@@ -19,7 +19,7 @@ Legacy `UnitTest` and `TransformerTest` entities remain in the deployment for ba
 
 | Mode | Launcher | Vitest entry | Typical suites |
 |------|----------|-------------|----------------|
-| **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | All miroir-core registry suites except `miroirCoreTransformers` |
+| **Unit** | `testMiroir` | `miroir-core-tests.unit.test.ts` | Catalog unit suites (`--suites`) |
 | **MiroirTest integ** | `testMiroir` | `miroir-core-tests.integ.test.ts` | `miroirCoreTransformers`, etc. via `MIROIR_TEST_*` |
 | **App-stack integ** | `testByFile` | Per-file (`DomainController.integ.*`, storage, view) | DomainController CRUD (Data.CRUD deprecated), PersistenceStoreController (incl. attribute projection), extractors |
 | **Runner / Action integ** | `testMiroir` + `VITE_MIROIR_*` | `miroir-runner-tests.integ.test.ts` | `runner_lend_document`, `runner_return_document`, `domain_controller_data_crud` |
@@ -50,7 +50,13 @@ Field naming uses `miroirTestType`, `miroirTestLabel`, `miroirTests`.
 
 ## Running unit tests (CLI)
 
-**Prefer argv** over env vars (see [Parameter surface](../../reference/testing.md#parameter-surface-argv-preferred)):
+**Prefer argv** over env vars (see [Parameter surface](../../reference/testing.md#parameter-surface-argv-preferred)). Select suites by instance `name`:
+
+| Name | Example | Used in |
+|------|---------|---------|
+| **Suite key** (`name`) | `runner_return_document` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite `miroirTestLabel`** | `runner.returnDocument` | display; **nested** `--filter` keys only |
+| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action` | `--filter` **values**, UI leaf checkboxes |
 
 ```bash
 # Preferred — argv
@@ -58,21 +64,21 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 
 # Filter to specific test labels
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
+  --filter '{"mustache":["should extract patterns with double braces"]}'
 
 # Legacy — env (still supported; argv wins when both are set)
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-MIROIR_TEST_SUITES=alterObject,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=alterObject_atPath,EntityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 ```
 
-See [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) for the full filter model (registry key vs `miroirTestLabel`, runner examples).
+See [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) for the full filter model (suite key (`name`) vs `miroirTestLabel`, runner examples).
 
 **Environment variables:**
 
 | Variable | Purpose | Default |
 |----------|---------|---------|
-| `MIROIR_TEST_SUITES` | Comma-separated registry keys, or `*` for all | `*` |
+| `MIROIR_TEST_SUITES` | Comma-separated suite keys (`name`), or `*` for all | `*` |
 | `MIROIR_TEST_MODE` | `unit` or `integration` (`integ` accepted) | `unit` |
 | `MIROIR_TEST_FILTER` | JSON filter object — see [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) | (none) |
 
@@ -106,13 +112,13 @@ Invalid configuration prints a full usage message before any test runs. See [ref
 
 ### Filtering one leaf
 
-Filter by suite **`miroirTestLabel`**, not the registry key:
+Filter by suite key (`name`) at the catalog root; nested keys stay `miroirTestLabel`:
 
 ```bash
-# Runner — key is runner.returnDocument
+# Runner — catalog-root key is runner_return_document
 npm run testMiroir -w miroir-standalone-app -- \
   --suites runner_return_document --mode integ --profile emulatedServer-sql \
-  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
+  --filter '{"runner_return_document":["Return Book Test Composite Action"]}'
 
 # Transformer — nested suite labels
 npm run testMiroir -w miroir-standalone-app -- \
@@ -196,12 +202,11 @@ Legacy **Unit Test** / **Transformer Test** reports still exist; prefer **Miroir
 
 ## Writing new tests
 
-1. Add a `MiroirTest` JSON instance under the entity data directory (RFC 4122 v4 UUID as filename).
-2. Export from `packages/miroir-test-app_deployment-miroir/index.ts`.
-3. Add the key to `MIROIR_TEST_SUITE_REGISTRY_NAMES` in `miroirCoreTestSuiteRegistry.ts`.
-4. Rebuild: `npm run build -w miroir-test-app_deployment-miroir`.
-5. Validate schema: run `tests/4_services/miroirTest.schema.unit.test.ts`.
-6. Run: `MIROIR_TEST_SUITES=myNewSuite MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core`.
+1. Add a `MiroirTest` JSON instance in the application's MiroirTest folder (RFC 4122 v4 UUID as filename; set `name` to the suite key).
+2. Optional: export `miroirTest_<name>` from the deployment package `index.ts` if other TypeScript wants a named import.
+3. Rebuild that package if you added a named export: `npm run build -w miroir-test-app_deployment-miroir`.
+4. Validate schema: run `tests/4_services/miroirTest.schema.unit.test.ts`.
+5. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`. TypeScript files that have no MiroirTest entity are PLATFORM — launch those with `testByFile`.
 
 For migrations from legacy `UnitTest` / `TransformerTest`, use `migrateLegacyTestInstance` in `scripts/miroirTestMigrateDefinition.ts` and the manifest `miroir-test-migration-map.json`.
 

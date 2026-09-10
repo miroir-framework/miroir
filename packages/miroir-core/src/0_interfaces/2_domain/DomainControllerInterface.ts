@@ -105,7 +105,7 @@ export interface DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment,
     actionParamValues: Record<string, any>
-  ): Promise<Action2VoidReturnType>;
+  ): Promise<Action2ReturnType>;
   // ##############################################################################################
   handleTestCompositeAction(
     testAction: TestCompositeAction,
@@ -151,7 +151,8 @@ export interface DomainControllerInterface {
     currentModel?: MiroirModelEnvironment,
     endpointApplicationMap?: EndpointApplicationMap,
     actionParamValues?: Record<string, unknown>,
-  ): Promise<Action2VoidReturnType>;
+    principal?: { miroirUserUuid: string; username: string },
+  ): Promise<Action2ReturnType>;
   /**
    * data access must accomodate different styles of access
    * => compile-time dependency on types in miroir-core? Or use "any"?

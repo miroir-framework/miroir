@@ -608,6 +608,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             inputMLSchema={
               reportSectionDefinitionFromFormik.definition.inputMLSchema as JzodObject
             }
+            urlParamFields={reportSectionDefinitionFromFormik.definition.urlParamFields}
             application={props.application}
             applicationDeploymentMap={props.applicationDeploymentMap}
             deploymentUuid={props.deploymentUuid}

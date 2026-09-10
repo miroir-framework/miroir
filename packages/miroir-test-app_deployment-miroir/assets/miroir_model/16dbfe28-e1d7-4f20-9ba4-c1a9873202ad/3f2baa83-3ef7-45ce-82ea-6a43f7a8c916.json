@@ -662,6 +662,19 @@
                       "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                       "relativePath": "jzodElement"
                     }
+                  },
+                  "urlParamFields": {
+                    "type": "array",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "id": 4,
+                        "defaultLabel": "URL Param Fields"
+                      }
+                    },
+                    "definition": {
+                      "type": "string"
+                    }
                   }
                 }
               }

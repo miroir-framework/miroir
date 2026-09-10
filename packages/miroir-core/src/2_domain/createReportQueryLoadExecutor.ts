@@ -29,6 +29,8 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
+import { defaultMiroirModelEnvironment } from "../1_core/Model.js";
+import { queryContainsExternalExtractor } from "../1_core/queryContainsExternalExtractor.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "createReportQueryLoadExecutor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -180,7 +182,44 @@ export function createReportQueryLoadExecutor(
     );
   }
 
-  return async (request: ReportQueryLoadRequest): Promise<void> => {
+  return async (request: ReportQueryLoadRequest): Promise<unknown> => {
+    if (queryContainsExternalExtractor(request.resolvedQuery)) {
+      const section =
+        request.applicationSection ?? options?.applicationSection ?? "data";
+      const resolved = request.resolvedQuery as BoxedQueryWithExtractorCombinerTransformer;
+      const queryAction: RunBoxedQueryAction = {
+        actionType: "runBoxedQueryAction",
+        endpoint: RUN_BOXED_QUERY_ENDPOINT,
+        payload: {
+          application: request.application,
+          applicationSection: section,
+          queryExecutionStrategy: "storage",
+          query: {
+            ...resolved,
+            queryType: "boxedQueryWithExtractorCombinerTransformer",
+            application: request.application,
+            pageParams: resolved.pageParams ?? {},
+            queryParams: request.queryParams ?? {},
+            contextResults: resolved.contextResults ?? {},
+          },
+        },
+      };
+      log.info("createReportQueryLoadExecutor: whole-query POST /query for external extractor");
+      const result = await domainController.handleBoxedExtractorOrQueryAction(
+        queryAction,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      );
+      if (isErrorResult(result)) {
+        throw new Error(
+          `createReportQueryLoadExecutor: external boxed query failed: ${
+            result.errorMessage ?? result.status
+          }`,
+        );
+      }
+      return result.returnedDomainElement;
+    }
+
     const loadTargets = reportQueryLoadTargetsFromResolvedReportQuery(
       request.resolvedQuery
     );

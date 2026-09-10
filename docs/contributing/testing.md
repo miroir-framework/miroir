@@ -1,6 +1,6 @@
 # Testing Guidelines for Contributors
 
-> Full reference (all env vars, store backends, programmatic API): [docs/reference/testing.md](../reference/testing.md)
+> Full reference (discovery / selection / execution, env vars, store backends, programmatic API): [docs/reference/testing.md](../reference/testing.md#discovery-selection-and-execution)
 
 ---
 
@@ -39,7 +39,13 @@ Rules:
 
 ## Running tests
 
-**Prefer argv** (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Env vars remain for CI / legacy; see [Parameter surface](../reference/testing.md#parameter-surface-argv-preferred) in the reference.
+**Prefer argv** (`--suites`, `--mode`, `--filter`, `--profile`, `--storage`). Env vars remain for CI / legacy; see [Parameter surface](../reference/testing.md#parameter-surface-argv-preferred) in the reference. Select MiroirTest suites by instance `name`:
+
+| Name | Example | Used in |
+|------|---------|---------|
+| **Suite key** (`name`) | `runner_return_document` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite `miroirTestLabel`** | `runner.returnDocument` | display; **nested** `--filter` keys only |
+| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action` | `--filter` **values**, UI leaf checkboxes |
 
 ### Repo-wide non-regression (`npm run nonreg`)
 
@@ -78,9 +84,9 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
 
 # Multiple suites
-npm run testMiroir -w miroir-core -- --suites alterObject,EntityPrimaryKey --mode unit
+npm run testMiroir -w miroir-core -- --suites alterObject_atPath,EntityPrimaryKey --mode unit
 
-# All registered suites
+# All catalog suites
 npm run testMiroir -w miroir-core -- --mode unit
 
 # LocalCache memory measure — also in nonreg:unit
@@ -197,10 +203,10 @@ npm run testByFile -w miroir-standalone-app -- MiroirTestDisplayIntegrationLaunc
 
 Requires Postgres (Node emulated SQL via test mocks). Full detail: [reference/testing.md § MiroirTestDisplayIntegrationLaunch](../reference/testing.md#miroirtestdisplayintegrationlaunchintegtesttsx--ui-integration-launch-b6-d1).
 
-### Per-file vitest
+### Catalog vitest host (`testMiroir` already uses these)
 
 ```bash
-# Unit entry directly
+# Unit catalog host (prefer `testMiroir --mode unit`)
 npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
 
 # Integration entry directly
@@ -225,8 +231,8 @@ VITE_TEST_MODE=true npx vitest run tests/helpers/miroirCoreIntegTestLaunch.unit.
 VITE_TEST_MODE=true npx vitest run tests/5-tests/parseMiroirTestCliConfig.unit.test.ts \
   -w miroir-core
 
-# Suite registry loader
-VITE_TEST_MODE=true npx vitest run tests/5-tests/miroirTestSuiteRegistry.unit.test.ts \
+# Catalog characterization
+VITE_TEST_MODE=true npx vitest run tests/5-tests/loadApplicationMiroirTestsFromFolders.unit.test.ts \
   -w miroir-core
 ```
 
@@ -247,7 +253,8 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 
 | File | Role |
 |------|------|
-| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Registry key → deployment export (38 suites, including `virtualAttributes` for #82) |
+| `src/5_tests/loadApplicationMiroirTestsFromFolders.ts` | Folder catalog used by `testMiroir` (suite key = instance `name`) |
+| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Deprecated name-list snapshot |
 | `src/5_tests/parseMiroirTestCliConfig.ts` | CLI/env parsing for `MIROIR_TEST_*` vars |
 | `src/5_tests/runMiroirCoreTestsFromCLI.ts` | Main entry for both vitest files |
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |
@@ -267,12 +274,11 @@ VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.
 
 ## Adding or migrating tests
 
-1. Create or edit a `MiroirTest` JSON instance under the entity data directory.
-2. Export from `packages/miroir-test-app_deployment-miroir/index.ts`.
-3. Add the key to `MIROIR_TEST_SUITE_REGISTRY_NAMES` in `miroirCoreTestSuiteRegistry.ts`.
-4. Rebuild the deployment package.
-5. Run `tests/4_services/miroirTest.schema.unit.test.ts` to validate JSON shape.
-6. Run the new suite with `testMiroir`.
+1. Create or edit a `MiroirTest` JSON instance in the application's MiroirTest folder (set `name` to the suite key).
+2. Optional: export `miroirTest_<name>` from the deployment package `index.ts` if other TypeScript wants a named import.
+3. Rebuild the deployment package if you added a named export.
+4. Run `tests/4_services/miroirTest.schema.unit.test.ts` to validate JSON shape.
+5. Run the new suite with `testMiroir` (`--suites <name>`). TypeScript files that have no MiroirTest entity are PLATFORM — launch those with `testByFile`.
 
 For migrations from legacy `UnitTest` / `TransformerTest`, see `code-helpers/features/196-FEATURE-migrate-tests-to-MiroirTest/plan.md`.
 
@@ -296,12 +302,14 @@ Activity tracking results are printed via `displayMiroirTestResults` after each 
 
 ---
 
-## What is intentionally not migrated
+## PLATFORM tests (no MiroirTest equivalent)
 
-- Legacy `UnitTest` / `TransformerTest` deployment JSON (frozen)
-- `miroirTest.tools.unit.test.ts` (tests legacy `UnitTestTools` helpers)
-- Class E/F vitest-only tests without entity instances
-- Known failing edge cases (e.g. some `ansiColumnsToJzodSchema` integration nested tests)
+TypeScript under `tests/` with no entity instance. Launch with `testByFile` (optional `RUN_TEST`):
+
+- Apparatus / helper units (`parseMiroirTestCliConfig`, `IntegrationTestSession.unit`, `miroirTest.schema`)
+- LocalCache memory measure
+- App-stack integ (`PersistenceStoreController.integ`, extractors, view RTL)
+- Frozen legacy `UnitTest` / `TransformerTest` JSON and `miroirTest.tools.unit.test.ts` (helpers for those)
 
 ---
 

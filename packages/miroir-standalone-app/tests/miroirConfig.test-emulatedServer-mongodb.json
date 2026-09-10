@@ -1,7 +1,7 @@
 {
   "client": {
     "emulateServer": true,
-    "rootApiUrl":"https://localhost:3080",
+    "rootApiUrl": "https://localhost:3080",
     "filesystemDeploymentRootDirectory": "/users/nono/documents/devhome/miroir-app-dev/packages",
     "deploymentStorageConfig": {
       "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
@@ -83,9 +83,31 @@
           "connectionString": "mongodb://localhost:27017",
           "database": "miroir-appForTest_modelVersion"
         }
+      },
+      "fd47d115-67e2-4870-8339-1c26665d1d15": {
+        "admin": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-admin"
+        },
+        "model": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-app"
+        },
+        "data": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-app"
+        },
+        "modelVersion": {
+          "emulatedServerType": "mongodb",
+          "connectionString": "mongodb://localhost:27017",
+          "database": "miroir-app_modelVersion"
+        }
       }
     },
-    "deploymentMode":"monoUser",
+    "deploymentMode": "monoUser",
     "monoUserAutentification": false,
     "monoUserVersionControl": false,
     "versionControlForDataConceptLevel": false

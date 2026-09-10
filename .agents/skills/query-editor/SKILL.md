@@ -13,18 +13,13 @@ This skill guides the creation and modification of Miroir Queries following Test
 **BEFORE starting any transformer work, verify current test state to avoid investigating unrelated issues:**
 
 ```bash
-# MiroirTest CLI (preferred)
 npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
-npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode integration
-
-# Per-file vitest alternative
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 If tests are failing, inform the user of the baseline state before proceeding.
 
-During remaining steps, use the filter passed to the `runTransformerTestSuite` function to execute only relevant test cases. To facilitate later investigations, leave the updated filter commented out at the very end of the session (its default value shall be `undefined`).
+During remaining steps, pass `--filter` to `testMiroir` to execute only relevant leaves.
 
 ---
 
@@ -64,7 +59,7 @@ Add test case(s) to the appropriate test suite file:
 ### Step 3: Run the Test (Expect Failure)
 
 ```bash
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
 ```
 
 ### Step 4: Implement the Transformer
@@ -74,7 +69,7 @@ Create/modify the transformer definition and implementation.
 ### Step 5: Run Tests Again (Expect Success)
 
 ```bash
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
 npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
@@ -99,7 +94,7 @@ Follow these steps in order for a new library-implemented transformer:
 Establish baseline before any changes.
 
 ```bash
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
 ```
 
 #### Step 2: Write Test Cases First (TDD)
@@ -147,7 +142,7 @@ In `packages/miroir-core/scripts/generate-ts-types.ts`:
 #### Step 7: Run devBuild and Tests
 
 ```bash
-npm run devBuild -w miroir-core && RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit' && npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
+npm run devBuild -w miroir-core && npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit && npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration
 ```
 
 #### Step 8: Create or Update documentation
@@ -401,7 +396,7 @@ export const handleTransformer_<name> = (
 | Transformer implementations | `packages/miroir-core/src/2_domain/TransformersForRuntime.ts` |
 | **Schema registration (CRITICAL)** | `packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts` |
 | Transformer tools | `packages/miroir-core/src/2_domain/Transformer_tools.ts` |
-| Test suite (unit) | `packages/miroir-core/tests/2_domain/transformers.unit.test.ts` |
+| Test suite (unit) | `npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit` |
 | Test suite (integ) | `packages/miroir-standalone-app/tests/miroir-core-tests.integ.test.ts` (via `testMiroir`) |
 | Test data | `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` |
 | Generated types | `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |

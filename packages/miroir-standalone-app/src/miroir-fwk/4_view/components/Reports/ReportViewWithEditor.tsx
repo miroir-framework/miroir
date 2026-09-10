@@ -11,6 +11,7 @@ import {
   getApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
+  queryContainsExternalExtractor,
   resolveReportQueryLoadAttributes,
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
@@ -47,6 +48,7 @@ export interface ReportViewWithEditorProps extends ReportViewProps {
 }
 
 const fetchedDataJzodSchema = {};
+const EMPTY_EXTERNAL_REPORT_DATA: Record<string, any> = {};
 let count = 0;
 // ###############################################################################################
 export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
@@ -143,7 +145,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     reportDataQueryResults instanceof Domain2ElementFailed
       ? undefined
       : reportDataQueryResults.resolvedQuery;
-  const reportData =
+  const usesExternalExtractor = queryContainsExternalExtractor(resolvedQuery);
+  const reduxReportData =
     reportDataQueryResults instanceof Domain2ElementFailed
       ? reportDataQueryResults
       : reportDataQueryResults.reportData;
@@ -180,6 +183,45 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     reportQueryLoadService,
     reportQueryLoadRequest,
   );
+
+  const externalQueryFingerprint =
+    usesExternalExtractor && reportQueryLoadRequest
+      ? reportQueryLoadService.fingerprint(reportQueryLoadRequest)
+      : undefined;
+  const stashedExternalContext =
+    externalQueryFingerprint !== undefined
+      ? reportQueryLoadService.getResult(externalQueryFingerprint)
+      : undefined;
+  const reportData =
+    usesExternalExtractor
+      ? ((stashedExternalContext && typeof stashedExternalContext === "object"
+          ? stashedExternalContext
+          : EMPTY_EXTERNAL_REPORT_DATA) as Domain2QueryReturnType<Record<string, any>>)
+      : reduxReportData;
+
+  // #267 — reports declaring URL-param input sections keep rendering their
+  // sections when the query fails (e.g. missing playlistId), so the user can
+  // still fill the input and re-run via the OK button.
+  const reportHasUrlParamInputSection = useMemo(() => {
+    const visit = (section: any): boolean => {
+      if (!section) return false;
+      if (Array.isArray(section)) return section.some(visit);
+      if (
+        section.type === "inputReportSection" &&
+        (section.definition?.urlParamFields?.length ?? 0) > 0
+      ) {
+        return true;
+      }
+      if (section.type === "list" && Array.isArray(section.definition)) {
+        return section.definition.some(visit);
+      }
+      if (section.type === "grid" && Array.isArray(section.definition)) {
+        return section.definition.some((row: any) => Array.isArray(row) && row.some(visit));
+      }
+      return false;
+    };
+    return visit(props.reportDefinition?.definition?.section);
+  }, [props.reportDefinition]);
 
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];
@@ -369,6 +411,14 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         {reportQueryLoadStatus === "error" ? (
           <ThemedSpan>Report async load failed (showing cached data if available).</ThemedSpan>
         ) : null}
+        {reportData &&
+        typeof reportData === "object" &&
+        ((reportData as any).elementType === "failure" || "queryFailure" in reportData) &&
+        reportHasUrlParamInputSection ? (
+          <ThemedSpan style={{ color: "red" }}>
+            Report query failed — set the parameters below and click OK to re-run.
+          </ThemedSpan>
+        ) : null}
         {/* While async report load is in flight, skip EntityNotFound failure dump — expected for lazy-on-refresh entities. */}
         {reportQueryLoadStatus === "loading" &&
         reportData &&
@@ -376,7 +426,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         ((reportData as any).queryFailure === "ReferenceNotFound" ||
           (reportData as any).queryFailure === "EntityNotFound" ||
           (reportData as any).elementType === "failure") ? null : props.applicationSection ? (
-          reportData.elementType == "failure" ? (
+          reportData.elementType == "failure" && !reportHasUrlParamInputSection ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
           ) : // (<>failure</>)
           props.deploymentUuid ? (

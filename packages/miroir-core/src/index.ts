@@ -515,6 +515,16 @@ export {
 } from "./0_interfaces/1_core/EntityVersion.js";
 export { HttpMethod, HttpMethodsArray, HttpMethodsObject } from "./0_interfaces/1_core/Http.js";
 export {
+  getEndpointActions,
+  getExternalService,
+} from "./0_interfaces/1_core/endpointDefinition.js";
+export type {
+  EndpointActionsBranch,
+  EndpointDefinitionLike,
+  EndpointExternalService,
+  EndpointExternalServiceBranch,
+} from "./0_interfaces/1_core/endpointDefinition.js";
+export {
   ApplicationSectionOpposite,
   EntityInstanceWithName,
   EntityInstanceWithNameSchema
@@ -765,6 +775,14 @@ export {
   resolveInstanceParentUuid,
   serializeCompositeKeyValue
 } from "./1_core/Entity/EntityPrimaryKey";
+export {
+  isHttpExternalEntity,
+  isSqlExternalEntity,
+} from "./1_core/Entity/entityExternalDataSource";
+export type {
+  EntityExternalDataSourceCarrier,
+  ExternalDataSourceLike,
+} from "./1_core/Entity/entityExternalDataSource";
 export type { EntityPrimaryKeySource } from "./1_core/Entity/EntityPrimaryKey";
 export {
   applyEntityOnlyRename,
@@ -984,6 +1002,7 @@ export {
   type RemapSelfApplicationUuidModelOptions,
 } from "./1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
 export { defaultReport } from "./1_core/Report.js";
+export { queryContainsExternalExtractor } from "./1_core/queryContainsExternalExtractor.js";
 export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
 export {
   describe,
@@ -1302,9 +1321,99 @@ export {
 } from "./4_services/PersistenceStoreController.js";
 export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
+  clearSecrets,
+  registerSecrets,
+  resolveSecret,
+} from "./4_services/SecretStore.js";
+export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";
+export {
+  allowInsecureBaseUrlsForTests,
+  clearAllowedInsecureBaseUrlsForTests,
+  clearExternalServiceTokenCacheForTests,
+  executeExternalServiceOperation,
+} from "./4_services/ExternalServiceClient.js";
+export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";
+export {
   mountApplicationDeployment, startLocalPersistenceStoreControllers
 } from "./4_services/PersistenceStoreControllerTools.js";
-export { RestClient } from "./4_services/RestClient.js";
+export {
+  AUTHENTICATION_FAILED,
+  AUTH_CHANGE_PASSWORD_ACTION_LABEL,
+  ENTITY_MIROIR_USER_CREDENTIAL_UUID,
+  ENTITY_MIROIR_USER_UUID,
+  assertCredentialInstanceMutationAllowed,
+  assertRequestAllowed,
+  bindPrincipalToDirectory,
+  bearerTokenFromAuthorizationHeader,
+  buildAuthStatusBody,
+  changePassword,
+  extractPrincipalFromAuthorizationHeader,
+  getProcessTokenSecret,
+  hashPassword,
+  findCredentialInstance,
+  identityDirectoryFromInstances,
+  isUsableBearerToken,
+  issueBearerToken,
+  readUsableBearerPrincipal,
+  loginWithPassword,
+  persistChangedPasswordHash,
+  resolveAuthenticationEnabled,
+  setProcessTokenSecret,
+  verifyBearerToken,
+  verifyPassword,
+  type AuthenticationEnabledInputs,
+  type AuthenticationFailedBody,
+  type AuthenticationRequiredBody,
+  type AuthPrincipal,
+  type AuthStatusBody,
+  type IdentityCredential,
+  type IdentityDirectory,
+  type IdentityUser,
+  type LoginFailure,
+  type LoginSuccess,
+  type RequestAllowed,
+} from "./1_core/authentication/AuthenticationPolicy.js";
+export {
+  ACCESS_DENIED,
+  ADMIN_APPLICATION_UUID,
+  ALWAYS_ALLOW_APPLICATION_TARGETS,
+  DESIGNER_APPLICATION_UUID,
+  LIBRARY_APPLICATION_UUID,
+  ENTITY_ADMIN_APPLICATION_UUID,
+  ENTITY_DEPLOYMENT_UUID,
+  ENTITY_MIROIR_RIGHT_UUID,
+  accessGrantsFromInstances,
+  applicationTargetForDeployment,
+  assertAccess,
+  assertAccessForDeployment,
+  deploymentsFromInstances,
+  hasAccess,
+  type AccessDecision,
+  type AccessDeniedBody,
+  type AccessDeployment,
+  type AccessDirectory,
+  type AccessGrant,
+  type AccessTarget,
+} from "./1_core/authentication/AccessPolicy.js";
+export {
+  deploymentUuidFromHttpRequest,
+} from "./1_core/authentication/deploymentUuidFromHttpRequest.js";
+export {
+  handleAuthHttpRoute,
+  type AuthHttpResult,
+} from "./1_core/authentication/AuthenticationHttp.js";
+export {
+  applicationIsReachable,
+  authorizationHeaders,
+  nextPageWhenAccessDenied,
+  nextPageWhenAuthGate,
+  visibleUserApplications,
+} from "./1_core/authentication/AuthenticationUi.js";
+export {
+  RestClient,
+  setRestClientAuthorizationInvalidationHandler,
+  setRestClientAuthorizationTokenGetter,
+} from "./4_services/RestClient.js";
 export { RestClientStub } from "./4_services/RestClientStub";
 export { restServerDefaultHandlers } from "./4_services/RestServer.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";
@@ -1347,6 +1456,41 @@ export {
   type MiroirTestSuiteExecutionCapabilities,
   type MiroirTestSuiteUiExecutionMode,
 } from "./5_tests/inferIntegrationSessionKind.js";
+export {
+  APPLICATION_MIROIR_TEST_SOURCE_FOLDERS,
+  APPLICATION_MIROIR_TEST_SOURCE_FOLDERS_LEGACY,
+  DEPLOYMENT_PACKAGE_PREFIX,
+  ENTITY_MIROIR_TEST_UUID,
+  ENTITY_RUNNER_UUID,
+  buildRunnerUuidIndex,
+  isRunnerInstance,
+  runnerEntityFolderRelativePath,
+  type ApplicationMiroirTestSourceFolder,
+} from "./5_tests/applicationMiroirTestFolders.js";
+export {
+  buildApplicationMiroirTestCatalog,
+  buildUiIntegrationRunnerSuiteRegistryFromCatalog,
+  buildUiIntegrationSuiteRegistriesFromMiroirTests,
+  buildUiIntegrationTransformerSuiteRegistryFromCatalog,
+  catalogEntryFromMiroirTest,
+  classifyApplicationMiroirTestCliLaunchKind,
+  inferUiIntegrationRunnerSuiteKind,
+  indexApplicationMiroirTestsByKey,
+  isMiroirTestSuiteInstance,
+  isUiIntegrationLaunchableSuite,
+  listCliRunnerIntegrationSuiteKeys,
+  listCliTransformerIntegrationSuiteKeys,
+  listCliUnitSuiteKeys,
+  loadMiroirTestSuiteFromCatalog,
+  resolveApplicationMiroirTestSuiteKey,
+  resolveApplicationMiroirTestSuiteKeys,
+  suiteKeyFromMiroirTestInstance,
+  type ApplicationMiroirTestCatalogEntry,
+  type ApplicationMiroirTestCliLaunchKind,
+  type UiIntegrationRunnerSuiteKind,
+  type UiIntegrationRunnerSuiteRegistryMap,
+  type UiIntegrationTransformerSuiteRegistryMap,
+} from "./5_tests/applicationMiroirTestCatalog.js";
 export {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,
@@ -1566,6 +1710,7 @@ export {
 export {
   listMiroirTestSuiteKeys,
   loadMiroirCoreTestSuite,
+  MIROIR_TEST_SUITE_REGISTRY_NAMES,
   type MiroirTestSuiteKey,
   type MiroirTestSuiteLoader,
 } from "./5_tests/miroirCoreTestSuiteRegistry.js";

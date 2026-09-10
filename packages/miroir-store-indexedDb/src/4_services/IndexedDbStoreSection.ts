@@ -4,6 +4,7 @@ import {
   EntityVersion,
   LoggerInterface,
   Entity,
+  isHttpExternalEntity,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface
@@ -91,6 +92,15 @@ export class IndexedDbStoreSection
       "Entities",
       this.localUuidIndexedDb.getSubLevels()
     );
+    if (isHttpExternalEntity(entity)) {
+      log.info(
+        this.logHeader,
+        "createStorageSpaceForInstancesOfEntity skipping storage for http external entity",
+        entity.name,
+        entity.uuid,
+      );
+      return Promise.resolve(ACTION_OK);
+    }
     if (!this.localUuidIndexedDb.hasSubLevel(entity.uuid)) {
       this.localUuidIndexedDb.addSubLevels([entity.uuid]);
     } else {

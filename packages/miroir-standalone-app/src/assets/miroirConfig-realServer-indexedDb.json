@@ -42,6 +42,20 @@
             "emulatedServerType": "indexedDb",
             "indexedDbName": "library-uuid-indexedDb"
           }
+        },
+        "fd47d115-67e2-4870-8339-1c26665d1d15": {
+          "admin": {
+            "emulatedServerType": "indexedDb",
+            "indexedDbName": "miroir-uuid-indexedDb"
+          },
+          "model": {
+            "emulatedServerType": "indexedDb",
+            "indexedDbName": "spotify-uuid-indexedDb"
+          },
+          "data": {
+            "emulatedServerType": "indexedDb",
+            "indexedDbName": "spotify-uuid-indexedDb"
+          }
         }
       }
     },

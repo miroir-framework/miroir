@@ -3,6 +3,7 @@
   "parentName": "MiroirUser",
   "parentUuid": "d20d09e5-0685-4fc7-b9bd-fcfa3845127a",
   "name": "Alice Admin",
+  "username": "alice",
   "status": "active",
   "description": "Sample active platform user for Admin rights prep (#219)."
 }

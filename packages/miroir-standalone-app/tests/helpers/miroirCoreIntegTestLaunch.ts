@@ -4,8 +4,13 @@ import path from "node:path";
 import {
   listMiroirTestSuiteKeys,
   parseMiroirTestCliArgs,
+  resolveApplicationMiroirTestSuiteKey,
   type MiroirTestCliConfig,
 } from "miroir-core";
+import {
+  listCliUnitSuiteKeysFromFolders,
+  loadApplicationMiroirTestCatalog,
+} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 
 import type { TestSessionForIntegOptions } from "./IntegrationTestSession.js";
 import { resolveDefaultFilesystemDeploymentRoot } from "./IntegrationTestSession.js";
@@ -74,7 +79,7 @@ export function formatMiroirCoreIntegTestUsage(): string {
     "  (programmatic) bundledDeploymentData   Required on IntegrationTestSession options; not settable via env alone",
     "",
     "Optional:",
-    "  MIROIR_TEST_FILTER='{\"<miroirTestLabel>\":[\"<leaf miroirTestLabel>\"]}'   JSON filter (see testing.md#filtering-miroirtest-cases)",
+    "  MIROIR_TEST_FILTER='{\"<suite name>\":[\"<leaf miroirTestLabel>\"]}'   JSON filter (see testing.md#filtering-miroirtest-cases)",
     "",
     "Example with profile (no manual MIROIR_TEST_POSTGRES_HOST):",
     `  npm run testMiroir -w miroir-standalone-app -- --profile ${DEFAULT_PROFILE_KEY} --suites miroirCoreTransformers --mode integ`,
@@ -128,8 +133,15 @@ export function validateMiroirCoreIntegTestLaunch(
     );
   }
 
-  const knownSuiteKeys = new Set(listMiroirTestSuiteKeys());
-  const unknownSuiteKeys = config.suiteKeys.filter((key) => !knownSuiteKeys.has(key));
+  const catalog = loadApplicationMiroirTestCatalog();
+  const knownSuiteKeys = new Set([
+    ...listCliUnitSuiteKeysFromFolders(),
+    ...listMiroirTestSuiteKeys(),
+  ]);
+  const unknownSuiteKeys = config.suiteKeys.filter((key) => {
+    const resolved = resolveApplicationMiroirTestSuiteKey(catalog, key) ?? key;
+    return !knownSuiteKeys.has(resolved) && !knownSuiteKeys.has(key);
+  });
   if (unknownSuiteKeys.length > 0) {
     errors.push(`Unknown MIROIR_TEST_SUITES key(s): ${unknownSuiteKeys.join(", ")}`);
   }

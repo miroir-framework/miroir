@@ -160,7 +160,7 @@ Both skills share the same test infrastructure:
 
 ```bash
 # Unit tests (in-memory)
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
 
 # Integration tests (database)
 npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration

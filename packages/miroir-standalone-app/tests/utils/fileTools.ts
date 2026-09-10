@@ -96,21 +96,17 @@ function resolveLogConfigPath(selection: string): string {
 // ################################################################################################
 export async function loadTestConfigFiles(
   env: any,
-): Promise<{ miroirConfig: MiroirConfigClient | undefined; logConfig: LoggerOptions | undefined }> {
+): Promise<{ miroirConfig: MiroirConfigClient; logConfig: LoggerOptions }> {
   try {
-    let miroirConfig: MiroirConfigClient | undefined = undefined;
-    if (env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
-      miroirConfig = applyPortableFilesystemDeploymentRoot(
-        await loadTestSingleConfigFile<MiroirConfigClient>(
-          env.VITE_MIROIR_TEST_CONFIG_FILENAME ?? "",
-        ),
-        env,
-      );
-    } else {
+    if (!env.VITE_MIROIR_TEST_CONFIG_FILENAME) {
       throw new Error(
         "Environment variable VITE_MIROIR_TEST_CONFIG_FILENAME not found. Tests must find this variable, pointing to a valid test configuration file",
       );
     }
+    const miroirConfig = applyPortableFilesystemDeploymentRoot(
+      await loadTestSingleConfigFile<MiroirConfigClient>(env.VITE_MIROIR_TEST_CONFIG_FILENAME),
+      env,
+    );
 
     // Log config: default to the low-noise catch-all preset so nonreg / plain
     // test runs don't drown. Override explicitly via VITE_MIROIR_LOG_CONFIG_FILENAME

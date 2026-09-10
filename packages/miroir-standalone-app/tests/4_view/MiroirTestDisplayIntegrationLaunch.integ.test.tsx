@@ -1,9 +1,11 @@
+// Mocks must load before MiroirTestDisplay / button imports.
+import '../helpers/miroirTestDisplayIntegrationLaunchMocks.js';
+
 import React from 'react';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { expect as vitestExpect } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-
 
 import { miroirTest_runner_return_document } from 'miroir-test-app_deployment-library';
 import {
@@ -32,7 +34,6 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 
 import { RUNNER_RETURN_DOCUMENT_LABEL } from '../helpers/miroirTestDisplayIntegrationLaunchMocks.js';
-import '../helpers/miroirTestDisplayIntegrationLaunchMocks.js';
 import { ReportPageContextProvider } from '../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js';
 
 const miroirActivityTracker = new MiroirActivityTracker();

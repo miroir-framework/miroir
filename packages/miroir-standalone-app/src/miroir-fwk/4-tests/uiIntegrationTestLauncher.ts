@@ -30,8 +30,9 @@ import {
 import { transformerIdentityToRunTarget } from "./resolveTransformerTestSessionOptions.js";
 import {
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
-  UI_INTEGRATION_RUNNER_UUID_INDEX,
   buildUiIntegrationOrchestratorCreateSessionParams,
+  resolveUiIntegrationRunnerUuidIndex,
+  uiIntegrationRunnerSuiteEntryFromDefinition,
   type UiIntegrationRunnerSuiteEntry,
 } from "./uiIntegrationTestRunnerSuiteRegistry.js";
 import { resolveUiIntegrationTransformerSuite } from "./uiIntegrationTestTransformerSuiteRegistry.js";
@@ -200,7 +201,7 @@ async function runRunnerOrActionIntegrationSuite(
       "ui-integration-test",
       runTarget,
       request.suiteDefinition.testParams,
-      UI_INTEGRATION_RUNNER_UUID_INDEX,
+      resolveUiIntegrationRunnerUuidIndex(request.runnerUuidIndex),
     ),
   );
 
@@ -257,8 +258,7 @@ async function runTransformerIntegrationSuite(
   environment: UiIntegrationTestLauncherEnvironment,
   hostMode: NonNullable<UiIntegrationTestRunRequest["hostMode"]>,
 ): Promise<UiIntegrationTestRunResult> {
-  // Ensures the suite key is registered (throws with a clear message if not).
-  resolveUiIntegrationTransformerSuite(request.suiteKey);
+  resolveUiIntegrationTransformerSuite(request.suiteKey, request.suiteDefinition);
 
   const { miroirConfig, logConfig } = await environment.loadConfigForProfile(request.profileName);
   await assertRealServerReachableIfNeeded(request, environment, miroirConfig);
@@ -363,11 +363,12 @@ export async function runUiIntegrationTestSuite(
     );
   }
 
-  const suiteEntry = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[request.suiteKey];
+  const suiteEntry =
+    uiIntegrationRunnerSuiteEntryFromDefinition(request.suiteKey, request.suiteDefinition) ??
+    UI_INTEGRATION_RUNNER_SUITE_REGISTRY[request.suiteKey];
   if (!suiteEntry) {
     throw new Error(
-      `Unknown UI integration runner suite: ${request.suiteKey}. ` +
-        `Valid keys: ${Object.keys(UI_INTEGRATION_RUNNER_SUITE_REGISTRY).sort().join(", ")}`,
+      `Suite "${request.suiteKey}" is not a UI-launchable runner/action integration suite`,
     );
   }
   const runTarget = resolveUiIntegrationTestRunTarget(

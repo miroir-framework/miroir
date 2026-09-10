@@ -6,7 +6,10 @@ import {
 
 export const MIROIR_RUNNER_TEST_VITEST_ENTRY = "miroir-runner-tests.integ.test" as const;
 
-/** Registry keys for runner / action MiroirTest suites (not `Object.keys` on suite JSON). */
+/**
+ * @deprecated Use `listCliRunnerIntegrationSuiteKeys(loadApplicationMiroirTestCatalog())`.
+ * Last hardcoded snapshot of runner / action suite keys.
+ */
 export const MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES = [
   "runner_lend_document",
   "runner_return_document",
@@ -34,11 +37,12 @@ function listRunnerTestSuiteKeys(): string[] {
 export function parseMiroirRunnerTestCliConfig(
   env: NodeJS.ProcessEnv,
   argv: string[],
+  allSuiteKeys: string[] = listRunnerTestSuiteKeys(),
 ): MiroirTestCliConfig {
   const config = resolveMiroirTestCliConfigFromPartial(
     env,
     parseMiroirTestCliArgs(argv, { integModeAlias: true }),
-    listRunnerTestSuiteKeys(),
+    allSuiteKeys,
   );
 
   if (config.executionMode !== "integration") {

@@ -60,6 +60,7 @@ describe("testByFileLauncher profile (Gap D5)", () => {
 
     expect(vitestArgs).toEqual(["PersistenceStoreController.integ"]);
     expect(spawnEnv.VITE_TEST_MODE).toBe("true");
+    expect(spawnEnv.MIROIR_AUTH_ENABLED).toBe("0");
     expect(spawnEnv.VITE_MIROIR_TEST_CONFIG_FILENAME).toContain(
       "miroirConfig.test-emulatedServer-sql.json",
     );

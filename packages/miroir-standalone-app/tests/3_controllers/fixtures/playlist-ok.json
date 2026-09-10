@@ -1,0 +1,21 @@
+{
+  "id": "test-playlist-001",
+  "name": "Rock Classics",
+  "description": "A fixture playlist with extra unknown fields for D11 stripping.",
+  "unknownExtraField": "should-be-stripped",
+  "anotherUnknown": 42,
+  "tracks": {
+    "total": 17,
+    "href": "https://example.test/tracks",
+    "items": [
+      {
+        "track": {
+          "id": "track-001",
+          "name": "Born to Run",
+          "artists": [{ "name": "Bruce Springsteen" }],
+          "duration_ms": 269000
+        }
+      }
+    ]
+  }
+}

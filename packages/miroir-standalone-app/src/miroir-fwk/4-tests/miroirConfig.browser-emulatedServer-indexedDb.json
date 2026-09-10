@@ -72,6 +72,24 @@
           "emulatedServerType": "indexedDb",
           "indexedDbName": "ui-integ-appForTest_modelVersion"
         }
+      },
+      "fd47d115-67e2-4870-8339-1c26665d1d15": {
+        "admin": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-admin"
+        },
+        "model": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-spotify"
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-spotify"
+        },
+        "modelVersion": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-spotify_modelVersion"
+        }
       }
     },
     "deploymentMode": "monoUser",

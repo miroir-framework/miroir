@@ -1,3 +1,4 @@
+import { getEndpointActions } from "../../0_interfaces/1_core/endpointDefinition.js";
 import type { Uuid } from "../../0_interfaces/1_core/EntityVersion";
 import type {
   EndpointDefinition,
@@ -178,7 +179,7 @@ function fingerprintEndpoints(endpoints: EndpointDefinition[] | undefined) {
 function extractEndpointActionTypes(endpoints: EndpointDefinition[]): string[] {
   const actionTypes = new Set<string>();
   for (const endpoint of endpoints) {
-    for (const action of endpoint.definition?.actions ?? []) {
+    for (const action of getEndpointActions(endpoint) ?? []) {
       const actionType = action.actionParameters?.actionType;
       if (actionType?.type === "literal" && typeof actionType.definition === "string") {
         actionTypes.add(actionType.definition);

@@ -6,6 +6,19 @@ import { DomainControllerInterface } from "../0_interfaces/2_domain/DomainContro
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface";
 import { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
+import {
+  ALWAYS_ALLOW_APPLICATION_TARGETS,
+  assertAccessForDeployment,
+  type AccessDirectory,
+} from "../1_core/authentication/AccessPolicy.js";
+import {
+  assertRequestAllowed,
+  bindPrincipalToDirectory,
+  extractPrincipalFromAuthorizationHeader,
+  getProcessTokenSecret,
+  resolveAuthenticationEnabled,
+} from "../1_core/authentication/AuthenticationPolicy.js";
+import { handleAuthHttpRoute } from "../1_core/authentication/AuthenticationHttp.js";
 import { packageName } from "../constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { restServerDefaultHandlers } from "./RestServer";
@@ -22,8 +35,20 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 export class RestClientStub implements RestClientInterface {
   private persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;
   private serverDomainController: DomainControllerInterface | undefined;
+  private identityDirectory: import("../1_core/authentication/AuthenticationPolicy.js").IdentityDirectory | undefined;
+  private accessDirectory: AccessDirectory | undefined;
 
   constructor(private rootApiUrl: string) {}
+
+  setIdentityDirectory(
+    directory: import("../1_core/authentication/AuthenticationPolicy.js").IdentityDirectory,
+  ) {
+    this.identityDirectory = directory;
+  }
+
+  setAccessDirectory(directory: AccessDirectory) {
+    this.accessDirectory = directory;
+  }
 
   setPersistenceStoreControllerManager(
     persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface
@@ -43,6 +68,72 @@ export class RestClientStub implements RestClientInterface {
     args: any = {}
   ): Promise<RestClientCallReturnType> {
     // log.info("RestClient call", method, endpoint, args)
+    const { body, ...customConfig } = args;
+    const authorizationHeader =
+      customConfig?.headers?.Authorization ?? customConfig?.headers?.authorization;
+    const authHttp = await handleAuthHttpRoute({
+      url: rawUrl,
+      endpoint,
+      body,
+      authorizationHeader,
+      directory: this.identityDirectory,
+    });
+    if (authHttp) {
+      if (authHttp.directory) {
+        this.identityDirectory = authHttp.directory;
+      }
+      return {
+        status: authHttp.status,
+        data: authHttp.data,
+        headers: new Headers(),
+        url: this.rootApiUrl + endpoint,
+      };
+    }
+
+    const authEnabled = resolveAuthenticationEnabled({ env: process.env });
+    const extracted = await extractPrincipalFromAuthorizationHeader(
+      authorizationHeader,
+      getProcessTokenSecret(),
+    );
+    const principal =
+      extracted && this.identityDirectory
+        ? bindPrincipalToDirectory(extracted, this.identityDirectory)
+        : extracted;
+    const gate = assertRequestAllowed({
+      enabled: authEnabled,
+      principal,
+    });
+    if (!gate.allowed) {
+      return {
+        status: gate.status,
+        data: gate.body,
+        headers: new Headers(),
+        url: this.rootApiUrl + endpoint,
+      };
+    }
+
+    const deploymentUuidForAccess =
+      args["deploymentUuid"] ??
+      (body ?? {})["deploymentUuid"] ??
+      ((body ?? {})["payload"] ?? {})["deploymentUuid"];
+    const access = assertAccessForDeployment({
+      enabled: authEnabled,
+      principal,
+      deploymentUuid:
+        typeof deploymentUuidForAccess === "string" ? deploymentUuidForAccess : undefined,
+      grants: this.accessDirectory?.grants ?? [],
+      deployments: this.accessDirectory?.deployments ?? [],
+      alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
+    });
+    if (!access.allowed) {
+      return {
+        status: access.status,
+        data: access.body,
+        headers: new Headers(),
+        url: this.rootApiUrl + endpoint,
+      };
+    }
+
     if (this.persistenceStoreControllerManager === undefined) {
       throw new Error("RestClientStub: persistenceStoreControllerManager is not set");
     }
@@ -50,7 +141,6 @@ export class RestClientStub implements RestClientInterface {
       throw new Error("RestClientStub: serverDomainController is not set");
     }
 
-    const { body, ...customConfig } = args;
     const deploymentUuid = args["deploymentUuid"] ?? (body ?? {})["deploymentUuid"];
     const parentUuid = args["parentUuid"] ?? (body ?? {})["parentUuid"] ?? (body ?? {})["deploymentUuid"];
     const section = args["section"] ?? (body ?? {})["section"];
@@ -99,6 +189,7 @@ export class RestClientStub implements RestClientInterface {
           deploymentUuid,
           parentUuid,
           section,
+          authPrincipal: principal,
           ...args,
         }
       );

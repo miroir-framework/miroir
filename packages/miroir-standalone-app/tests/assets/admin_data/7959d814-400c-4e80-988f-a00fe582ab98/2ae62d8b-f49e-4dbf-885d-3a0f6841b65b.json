@@ -1,0 +1,32 @@
+{
+  "uuid": "2ae62d8b-f49e-4dbf-885d-3a0f6841b65b",
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "name": "Deployment of application testApplication_CreateEntity",
+  "defaultLabel": "The deployment of application testApplication_CreateEntity",
+  "description": "The description of deployment of application testApplication_CreateEntity",
+  "selfApplication": "2ffe2114-26eb-458b-9adb-ef841ad7ea0b",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "miroirAdmin",
+      "forceNullOptionalAttributeToUndefined": true
+    },
+    "model": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "testApplication_CreateEntity"
+    },
+    "data": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "testApplication_CreateEntity"
+    },
+    "modelVersion": {
+      "emulatedServerType": "sql",
+      "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+      "schema": "testApplication_CreateEntity_modelVersion"
+    }
+  }
+}

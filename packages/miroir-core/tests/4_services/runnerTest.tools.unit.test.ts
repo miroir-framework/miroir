@@ -206,7 +206,7 @@ describe("runnerTest tools", () => {
     });
     const resolved = resolveRunnerTestLeaf({
       leaf,
-      pageLabel: "Runner_Miroir.integ.test",
+      pageLabel: "miroir-runner-tests.integ",
       buildContext,
       runTarget,
       sessionTestParams,
@@ -242,7 +242,7 @@ describe("runnerTest tools", () => {
 
     const resolved = resolveRunnerTestLeaf({
       leaf,
-      pageLabel: "Runner_Miroir.integ.test",
+      pageLabel: "miroir-runner-tests.integ",
       buildContext,
       runTarget,
       sessionTestParams,
@@ -263,7 +263,7 @@ describe("runnerTest tools", () => {
     const { runTarget, sessionTestParams } = runnerLibrarySessionContext(suite);
     const resolved = resolveRunnerTestLeaf({
       leaf,
-      pageLabel: "Runner_Miroir.integ.test",
+      pageLabel: "miroir-runner-tests.integ",
       buildContext,
       runTarget,
       sessionTestParams,

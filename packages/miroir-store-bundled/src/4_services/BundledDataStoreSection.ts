@@ -10,6 +10,7 @@ import {
   Domain2ElementFailed,
   Entity,
   EntityVersion,
+  isHttpExternalEntity,
   EntityInstance,
   EntityInstanceCollection,
   ExtractorRunnerInMemory,
@@ -94,8 +95,15 @@ export class BundledDataStoreSection
 
   // ##############################################################################################
   async createStorageSpaceForInstancesOfEntity(
-    _entity: Entity,
+    entity: Entity,
   ): Promise<Action2VoidReturnType> {
+    if (isHttpExternalEntity(entity)) {
+      log.info(
+        "createStorageSpaceForInstancesOfEntity skipping storage for http external entity",
+        entity.name,
+        entity.uuid,
+      );
+    }
     return Promise.resolve(ACTION_OK);
   }
 

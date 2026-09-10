@@ -125,6 +125,9 @@ export type AppStackIntegrationSessionOptions = IntegTestHostOptions & {
   adminDeployment: Deployment;
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration;
   libraryPlayfieldEnsureMode?: LibraryPlayfieldEnsureMode;
+  /** Passed through to app-stack bootstrap wiring (setupMiroirTest). */
+  miroirActivityTracker?: MiroirActivityTracker;
+  miroirEventService?: MiroirEventService;
 };
 
 /** Alias kept for existing standalone-app imports. */

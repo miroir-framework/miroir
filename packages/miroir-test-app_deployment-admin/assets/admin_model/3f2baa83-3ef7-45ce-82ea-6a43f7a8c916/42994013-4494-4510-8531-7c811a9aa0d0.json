@@ -21,7 +21,7 @@
         "parentName": "MiroirRight",
         "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
         "fetchedDataReference": "miroirRights",
-        "sortByAttribute": "capability"
+        "sortByAttribute": "name"
       }
     }
   }

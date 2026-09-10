@@ -28,7 +28,32 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
+  ACCESS_DENIED,
+  ALWAYS_ALLOW_APPLICATION_TARGETS,
+  AUTH_CHANGE_PASSWORD_ACTION_LABEL,
+  accessGrantsFromInstances,
+  assertAccessForDeployment,
+  assertRequestAllowed,
+  bindPrincipalToDirectory,
+  buildAuthStatusBody,
+  deploymentsFromInstances,
+  ENTITY_DEPLOYMENT_UUID,
+  ENTITY_MIROIR_RIGHT_UUID,
+  ENTITY_MIROIR_USER_CREDENTIAL_UUID,
+  ENTITY_MIROIR_USER_UUID,
+  deploymentUuidFromHttpRequest,
+  extractPrincipalFromAuthorizationHeader,
+  findCredentialInstance,
+  getProcessTokenSecret,
+  identityDirectoryFromInstances,
+  loginWithPassword,
+  persistChangedPasswordHash,
+  ParseServerArgsError,
+  parseServerArgs,
+  registerSecrets,
+  resolveAuthenticationEnabled,
   restServerDefaultHandlers,
+  setProcessTokenSecret,
   SpecificLoggerOptionsMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
@@ -119,6 +144,9 @@ function printUsageAndExit(exitCode = 1): never {
   console.error(`  --key      <path>   Path to the TLS private key file (.pem)`);
   console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_KEY`);
   myLogger.error(`                      (default: <certsdir>/localhost-key.pem)`);
+  console.error(`  --secret   <name>=<value>  Named secret (repeatable). Env fallback: MIROIR_SECRET_<NAME>`);
+  console.error(`  --disable-auth      Disable user authentication (today's open API)`);
+  console.error(`  --enable-auth       Enable user authentication (overrides config/env)`);
   console.error(`  -h, --help          Show this help message and exit`);
   process.exit(exitCode);
 }
@@ -127,43 +155,25 @@ let configFilePath = "../config/miroirConfig.server.json";
 let argCertsDir: string | undefined;
 let argCertFile: string | undefined;
 let argKeyFile: string | undefined;
+let registeredSecretNames: string[] = [];
 
-for (let i = 2; i < process.argv.length; i++) {
-  const arg = process.argv[i];
-  if (arg === "--help" || arg === "-h") {
+try {
+  const parsed = parseServerArgs(process.argv.slice(2), process.env);
+  if (parsed.help) {
     printUsageAndExit(0);
-  } else if (arg === "--config") {
-    if (i + 1 < process.argv.length) {
-      configFilePath = process.argv[++i];
-    } else {
-      console.error("Error: --config requires a file path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--certsdir") {
-    if (i + 1 < process.argv.length) {
-      argCertsDir = process.argv[++i];
-    } else {
-      console.error("Error: --certsdir requires a directory path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--cert") {
-    if (i + 1 < process.argv.length) {
-      argCertFile = process.argv[++i];
-    } else {
-      console.error("Error: --cert requires a file path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--key") {
-    if (i + 1 < process.argv.length) {
-      argKeyFile = process.argv[++i];
-    } else {
-      console.error("Error: --key requires a file path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg.startsWith("-")) {
-    console.error(`Error: Unknown option: ${arg}`);
+  }
+  configFilePath = parsed.configFilePath;
+  argCertsDir = parsed.certsDir;
+  argCertFile = parsed.certFile;
+  argKeyFile = parsed.keyFile;
+  registerSecrets(parsed.secrets);
+  registeredSecretNames = Object.keys(parsed.secrets);
+} catch (error) {
+  if (error instanceof ParseServerArgsError) {
+    console.error(`Error: ${error.message}`);
     printUsageAndExit();
   }
+  throw error;
 }
 
 console.log(`Server startup parameters:`);
@@ -171,6 +181,10 @@ console.log(`  --config   : ${configFilePath}`);
 console.log(`  --certsdir : ${argCertsDir ?? '(default: <repo-root>/certs/)'}`);
 console.log(`  --cert     : ${argCertFile ?? process.env.MIROIR_TLS_CERT ?? '(default: <certsdir>/localhost.pem)'}`);
 console.log(`  --key      : ${argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? '(default: <certsdir>/localhost-key.pem)'}`);
+const secretsSummary = registeredSecretNames.length > 0
+  ? `${registeredSecretNames.length} named secret(s) registered: ${registeredSecretNames.join(", ")}`
+  : "(none registered — external-service endpoints with a credentialKey will fail at call time)";
+console.log(`  --secret   : ${secretsSummary}`);
 
 const configFileContents = JSON.parse(
   readFileSync(new URL(configFilePath, import.meta.url)).toString()
@@ -178,7 +192,6 @@ const configFileContents = JSON.parse(
 
 const miroirConfig: MiroirConfigServer = configFileContents as MiroirConfigServer;
 myLogger.info('miroirConfig',miroirConfig)
-myLogger.info(`process.env`, JSON.stringify(process.env, null, 2));
 myLogger.info(`import.meta`, JSON.stringify((import.meta as any), null, 2));
 
 const restPortFromConfig: number = Number(
@@ -209,6 +222,24 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json({limit: '50mb'}));
+
+const serverAuthentication = (miroirConfig.server as { authentication?: { enabled?: boolean; tokenSecret?: string } })
+  .authentication;
+const authenticationEnabled = resolveAuthenticationEnabled({
+  argv: process.argv,
+  env: process.env,
+  config: { enabled: serverAuthentication?.enabled },
+});
+myLogger.info(`Authentication enabled: ${authenticationEnabled}`);
+if (serverAuthentication?.tokenSecret) {
+  setProcessTokenSecret(serverAuthentication.tokenSecret);
+} else {
+  getProcessTokenSecret();
+}
+
+app.get("/auth/status", (_req: any, res: any) => {
+  res.json(buildAuthStatusBody(authenticationEnabled));
+});
 
 myLogger.info(`Server being set-up, going to execute on the port::${restPortFromConfig}`);
 
@@ -394,10 +425,132 @@ for (const c of deploymentsToOpen) {
   );
 }
 
+async function loadAdminIdentityDirectory(): Promise<
+  | {
+      ok: true;
+      directory: ReturnType<typeof identityDirectoryFromInstances>;
+      credentialsValue: unknown;
+      grants: ReturnType<typeof accessGrantsFromInstances>;
+      deployments: ReturnType<typeof deploymentsFromInstances>;
+    }
+  | { ok: false; errorMessage: string }
+> {
+  const identityQuery = await domainController.handleBoxedExtractorOrQueryAction(
+    {
+      actionType: "runBoxedQueryAction",
+      endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+      payload: {
+        application: adminSelfApplication.uuid,
+        applicationSection: "data",
+        queryExecutionStrategy: "storage",
+        query: {
+          application: adminSelfApplication.uuid,
+          queryType: "boxedQueryWithExtractorCombinerTransformer",
+          extractors: {
+            users: {
+              extractorOrCombinerType: "extractorInstancesByEntity",
+              parentUuid: ENTITY_MIROIR_USER_UUID,
+            },
+            credentials: {
+              extractorOrCombinerType: "extractorInstancesByEntity",
+              parentUuid: ENTITY_MIROIR_USER_CREDENTIAL_UUID,
+            },
+            rights: {
+              extractorOrCombinerType: "extractorInstancesByEntity",
+              parentUuid: ENTITY_MIROIR_RIGHT_UUID,
+            },
+            deployments: {
+              extractorOrCombinerType: "extractorInstancesByEntity",
+              parentUuid: ENTITY_DEPLOYMENT_UUID,
+            },
+          },
+        },
+      },
+    },
+    applicationDeploymentMap,
+    defaultMetaModelEnvironment,
+  );
+  if (identityQuery instanceof Action2Error) {
+    return {
+      ok: false,
+      errorMessage: identityQuery.errorMessage ?? "Authentication directory query failed",
+    };
+  }
+  return {
+    ok: true,
+    directory: identityDirectoryFromInstances(
+      identityQuery.returnedDomainElement?.users,
+      identityQuery.returnedDomainElement?.credentials,
+    ),
+    credentialsValue: identityQuery.returnedDomainElement?.credentials,
+    grants: accessGrantsFromInstances(identityQuery.returnedDomainElement?.rights),
+    deployments: deploymentsFromInstances(identityQuery.returnedDomainElement?.deployments),
+  };
+}
+
+async function resolveGatedPrincipal(
+  authorizationHeader: string | undefined,
+): Promise<ReturnType<typeof bindPrincipalToDirectory>> {
+  const extracted = await extractPrincipalFromAuthorizationHeader(
+    authorizationHeader,
+    getProcessTokenSecret(),
+  );
+  if (!extracted) {
+    return undefined;
+  }
+  const identity = await loadAdminIdentityDirectory();
+  if (!identity.ok) {
+    return undefined;
+  }
+  return bindPrincipalToDirectory(extracted, identity.directory);
+}
+
 // ##############################################################################################
 // CREATING ENDPOINTS SERVICING CRUD HANDLERS
 for (const op of restServerDefaultHandlers) {
   const operationHandler = async (request: CustomRequest, response: any, context: any) => {
+    const authorizationHeader =
+      typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined;
+    let principal = undefined;
+    let grants: ReturnType<typeof accessGrantsFromInstances> = [];
+    let deployments: ReturnType<typeof deploymentsFromInstances> = [];
+    if (authenticationEnabled) {
+      const extracted = await extractPrincipalFromAuthorizationHeader(
+        authorizationHeader,
+        getProcessTokenSecret(),
+      );
+      const directory = await loadAdminIdentityDirectory();
+      if (extracted && directory.ok) {
+        principal = bindPrincipalToDirectory(extracted, directory.directory);
+      }
+      if (directory.ok) {
+        grants = directory.grants;
+        deployments = directory.deployments;
+      }
+    }
+    const gate = assertRequestAllowed({
+      enabled: authenticationEnabled,
+      principal,
+    });
+    if (!gate.allowed) {
+      response.status(gate.status).json(gate.body);
+      return;
+    }
+    const access = assertAccessForDeployment({
+      enabled: authenticationEnabled,
+      principal,
+      deploymentUuid: deploymentUuidFromHttpRequest(request),
+      grants,
+      deployments,
+      alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
+    });
+    if (!access.allowed) {
+      myLogger.warn(
+        `access denied: user=${principal?.username ?? "anonymous"} deployment=${deploymentUuidFromHttpRequest(request) ?? "(none)"} url=${request.originalUrl}`
+      );
+      response.status(access.status).json(access.body ?? ACCESS_DENIED);
+      return;
+    }
     const body = request.body;
     myLogger.info(`[CONSOLE DEBUG] Request received: ${op.method} ${request.originalUrl}`);
     myLogger.info(
@@ -420,7 +573,7 @@ for (const op of restServerDefaultHandlers) {
         op.method,
         request.originalUrl,
         body,
-        { ...request.params, ...request.query }
+        { ...request.params, ...request.query, authPrincipal: principal }
       );
 
       myLogger.info(`[CONSOLE DEBUG] Handler completed successfully`);
@@ -474,6 +627,106 @@ for (const op of restServerDefaultHandlers) {
   );
 }
 
+app.post("/auth/login", async (request: CustomRequest, response: any) => {
+  const identity = await loadAdminIdentityDirectory();
+  if (!identity.ok) {
+    response.status(500).json({
+      status: "error",
+      errorType: "AuthenticationDirectoryMissing",
+      errorMessage: identity.errorMessage,
+    });
+    return;
+  }
+  const result = await loginWithPassword(
+    {
+      username: String(request.body?.username ?? ""),
+      password: String(request.body?.password ?? ""),
+    },
+    identity.directory,
+    getProcessTokenSecret(),
+  );
+  if (!result.ok) {
+    response.status(result.status).json(result.body);
+    return;
+  }
+  response.json({ token: result.token, principal: result.principal });
+});
+
+app.post("/auth/change-password", async (request: CustomRequest, response: any) => {
+  const principal = await resolveGatedPrincipal(
+    typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
+  );
+  if (!principal) {
+    response.status(401).json({
+      status: "error",
+      errorType: "AuthenticationRequired",
+    });
+    return;
+  }
+  const identity = await loadAdminIdentityDirectory();
+  if (!identity.ok) {
+    response.status(500).json({
+      status: "error",
+      errorType: "AuthenticationDirectoryMissing",
+      errorMessage: identity.errorMessage,
+    });
+    return;
+  }
+  const changed = await persistChangedPasswordHash({
+    directory: identity.directory,
+    principal,
+    currentPassword: String(request.body?.currentPassword ?? ""),
+    newPassword: String(request.body?.newPassword ?? ""),
+  });
+  if (!changed.ok) {
+    response.status(changed.status).json(changed.body);
+    return;
+  }
+  const existing = findCredentialInstance(identity.credentialsValue, principal.miroirUserUuid);
+  const updatedHash = changed.directory.credentials.find(
+    (row) => row.miroirUser === principal.miroirUserUuid,
+  )?.passwordHash;
+  if (!existing || !updatedHash) {
+    response.status(401).json({
+      status: "error",
+      errorType: "AuthenticationFailed",
+    });
+    return;
+  }
+  const persistResult = await domainController.handleAction(
+    {
+      actionType: "updateInstance",
+      actionLabel: AUTH_CHANGE_PASSWORD_ACTION_LABEL,
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: adminSelfApplication.uuid,
+        applicationSection: "data",
+        parentUuid: ENTITY_MIROIR_USER_CREDENTIAL_UUID,
+        objects: [
+          {
+            ...existing,
+            passwordHash: updatedHash,
+          } as any,
+        ],
+      },
+    },
+    applicationDeploymentMap,
+    defaultMetaModelEnvironment,
+    undefined,
+    undefined,
+    principal,
+  );
+  if (persistResult instanceof Action2Error) {
+    response.status(500).json({
+      status: "error",
+      errorType: "AuthenticationDirectoryMissing",
+      errorMessage: persistResult.errorMessage,
+    });
+    return;
+  }
+  response.json({ changed: true });
+});
+
 const endpointToolRegistry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
 myLogger.info("Setting up MCP server with dynamic EndpointToolRegistry");
 const mcpApp = express();
@@ -496,6 +749,22 @@ const mcpServer = await setupMcpServer(
 mcpServer.mountHttpRoutes(app);
 
 // AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
+app.use("/api/copilotkit", async (request: any, response: any, next: any) => {
+  const principal = authenticationEnabled
+    ? await resolveGatedPrincipal(
+        typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
+      )
+    : undefined;
+  const gate = assertRequestAllowed({
+    enabled: authenticationEnabled,
+    principal,
+  });
+  if (!gate.allowed) {
+    response.status(gate.status).json(gate.body);
+    return;
+  }
+  next();
+});
 app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap));
 
 // ##############################################################################################
@@ -573,7 +842,6 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const http = await import('http');
   http.createServer(app).listen(restPortFromConfig, () => {
-    // myLogger.info("process.env", process.env);
     myLogger.info("templateEvaluationParams", templateEvaluationParams);
     myLogger.info(`Server running in ${getMiroirEnvironmentMode()} mode`);
     myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);

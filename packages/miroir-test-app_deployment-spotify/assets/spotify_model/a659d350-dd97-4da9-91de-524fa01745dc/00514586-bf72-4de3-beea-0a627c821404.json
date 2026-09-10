@@ -1,0 +1,15 @@
+{
+  "uuid": "00514586-bf72-4de3-beea-0a627c821404",
+  "parentName": "SelfApplication",
+  "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+  "name": "Spotify",
+  "defaultLabel": "The Spotify selfApplication.",
+  "description": "Read-only Spotify playlist viewer backed by an external-service Endpoint.",
+  "homePageUrl": {
+    "label": "Spotify Playlist",
+    "section": "data",
+    "selfApplication": "00514586-bf72-4de3-beea-0a627c821404",
+    "reportUuid": "10ce3252-7840-4041-a769-9a0e2d5ee10b"
+  },
+  "versioningMode": "unversioned"
+}

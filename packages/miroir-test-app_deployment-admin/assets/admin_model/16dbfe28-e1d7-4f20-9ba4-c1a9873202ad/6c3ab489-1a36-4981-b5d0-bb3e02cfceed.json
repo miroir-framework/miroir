@@ -1,0 +1,71 @@
+{
+  "uuid": "6c3ab489-1a36-4981-b5d0-bb3e02cfceed",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "MiroirUserCredential",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "conceptLevel": "Model",
+  "description": "Secret credential for a MiroirUser. passwordHash is not shown in reports or generic editors; set only via /auth/login bootstrap seed and /auth/change-password.",
+  "viewAttributes": [
+    "miroirUser",
+    "uuid"
+  ],
+  "icon": "Key",
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "miroirUser": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "User",
+            "description": "MiroirUser this credential authenticates. 1:1 — duplicate FKs fail closed at login.",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "d20d09e5-0685-4fc7-b9bd-fcfa3845127a",
+              "targetEntityOrderInstancesBy": "username"
+            }
+          }
+        }
+      },
+      "passwordHash": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Password hash",
+            "description": "scrypt hash; never display or return to clients.",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "algorithm": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Algorithm",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

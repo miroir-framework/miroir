@@ -146,6 +146,28 @@ describe("shouldShowAppMenuItem", () => {
       expectShow: true,
     },
     {
+      case: "Admin data item (Rights) is visible without showModelTools",
+      item: reportLink({
+        selfApplication: adminSelfApplication.uuid,
+        menuItemScope: "data",
+        section: "data",
+        label: "Rights",
+        reportUuid: "42994013-4494-4510-8531-7c811a9aa0d0",
+      }),
+      ctx: baseCtx({ showModelTools: false }),
+      expectShow: true,
+    },
+    {
+      case: "Admin unscoped item stays behind showModelTools",
+      item: reportLink({
+        selfApplication: adminSelfApplication.uuid,
+        section: "data",
+        label: "Deployments",
+      }),
+      ctx: baseCtx({ showModelTools: false }),
+      expectShow: false,
+    },
+    {
       case: "model item, edit off",
       item: reportLink({ menuItemScope: "model", section: "model" }),
       ctx: baseCtx(),

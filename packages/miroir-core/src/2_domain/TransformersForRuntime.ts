@@ -140,8 +140,10 @@ import {
   transformer_ansiColumnsToJzodSchema,
   transformer_defaultValueForMLSchema,
   transformer_duplicateApplicationModel,
+  transformer_syncExternalServiceSchema,
   metaModelTransformers,
 } from "./Transformers";
+import { handleTransformer_syncExternalServiceSchema } from "./syncExternalServiceSchema";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { defaultAdminApplicationDeploymentMapNOTGOOD, type ApplicationDeploymentMap } from "../1_core/Deployment";
 
@@ -1096,6 +1098,7 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_currentTimestamp,
   handleTransformer_currentDate,
   handleTransformer_numericOp,
+  handleTransformer_syncExternalServiceSchema,
   handleTransformer_pivot,
   handleTransformer_unpivot,
 };
@@ -1144,6 +1147,7 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   currentTimestamp: transformer_currentTimestamp,
   currentDate: transformer_currentDate,
   numericOp: transformer_numericOp,
+  syncExternalServiceSchema: transformer_syncExternalServiceSchema,
   pivot: transformer_pivot,
   unpivot: transformer_unpivot,
   defaultValueForMLSchema: transformer_defaultValueForMLSchema,

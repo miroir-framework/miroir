@@ -11,6 +11,32 @@ const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLe
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
+let authorizationTokenGetter: (() => string | undefined) | undefined;
+let authorizationInvalidationHandler: (() => void) | undefined;
+
+export function setRestClientAuthorizationTokenGetter(
+  getter: (() => string | undefined) | undefined,
+): void {
+  authorizationTokenGetter = getter;
+}
+
+export function setRestClientAuthorizationInvalidationHandler(
+  handler: (() => void) | undefined,
+): void {
+  authorizationInvalidationHandler = handler;
+}
+
+function maybeInvalidateAuthorization(status: number, data: unknown): void {
+  if (
+    status === 401 &&
+    data &&
+    typeof data === "object" &&
+    (data as { errorType?: unknown }).errorType === "AuthenticationRequired"
+  ) {
+    authorizationInvalidationHandler?.();
+  }
+}
+
 
 // ##############################################################################################
 export class RestClient implements RestClientInterface {
@@ -25,7 +51,11 @@ export class RestClient implements RestClientInterface {
   ): Promise<RestClientCallReturnType> {
     // log.info("RestClient call", method, endpoint, args)
     const { body, ...customConfig } = args;
-    const headers = { "Content-Type": "application/json" };
+    const token = authorizationTokenGetter?.();
+    const headers = {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
 
     const config = {
       method: method,
@@ -50,6 +80,7 @@ export class RestClient implements RestClientInterface {
       const responseText: string = await response.text();
       log.info("RestClient response length", responseText.length, response.ok, response.status);
       data = responseText.length > 0 ? JSON.parse(responseText) : undefined;
+      maybeInvalidateAuthorization(response.status, data);
       // log.info("RestClient parsed response", data);
       // For non-OK responses, if we have structured error data, use it
       if (data && typeof data === 'object' && data.error) {

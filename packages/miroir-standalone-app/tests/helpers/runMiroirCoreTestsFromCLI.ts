@@ -1,7 +1,6 @@
 import {
   defaultMetaModelEnvironment,
   displayMiroirTestResults,
-  loadMiroirCoreTestSuite,
   MiroirActivityTracker,
   MiroirEventService,
   type MiroirTestCliConfig,
@@ -12,6 +11,7 @@ import {
   type RunnerTestSessionInterface,
   type VitestNamespace,
 } from "miroir-core";
+import { loadMiroirCoreTestSuiteFromFolders } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 import { onFailedRunExport } from "./writeFailedRunExport.js";
 
 export async function runMiroirCoreTestsFromCLI(
@@ -67,7 +67,7 @@ export async function runMiroirCoreTestsFromCLI(
   });
 
   for (const suiteKey of config.suiteKeys) {
-    const miroirTestSuite = await loadMiroirCoreTestSuite(suiteKey);
+    const miroirTestSuite = loadMiroirCoreTestSuiteFromFolders(suiteKey);
     loadedSuites.push({
       suiteKey,
       definition: miroirTestSuite as MiroirTestSuite,

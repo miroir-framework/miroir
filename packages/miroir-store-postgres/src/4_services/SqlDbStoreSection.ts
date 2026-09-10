@@ -3,6 +3,8 @@ import {
   Action2VoidReturnType,
   LoggerInterface,
   Entity,
+  isHttpExternalEntity,
+  isSqlExternalEntity,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
@@ -95,6 +97,15 @@ export class SqlDbStoreSection
         if (!presentCarrier.mlSchema) {
           return prev;
         }
+        if (isHttpExternalEntity(presentCarrier)) {
+          log.info(
+            this.logHeader,
+            "bootFromPersistedState skipping http external entity",
+            presentCarrier.name,
+            presentCarrier.uuid,
+          );
+          return prev;
+        }
         const part = this.getAccessToDataSectionEntity(presentCarrier)
         const result = Object.assign(prev, part);
         log.info(
@@ -115,7 +126,7 @@ export class SqlDbStoreSection
     entity: Entity,
   ): EntityUuidIndexedSequelizeModel {
     const idAttribute: string | string[] = entity.idAttribute ?? "uuid";
-    const isExternal = entity.conceptLevel === "External" || !!entity.externalDataSource;
+    const isExternal = isSqlExternalEntity(entity);
     const effectiveSchema = isExternal && entity.externalDataSource?.schema
       ? entity.externalDataSource.schema
       : this.schema;
@@ -165,6 +176,16 @@ export class SqlDbStoreSection
   async createStorageSpaceForInstancesOfEntity(
     entity: Entity,
   ): Promise<Action2VoidReturnType> {
+    if (isHttpExternalEntity(entity)) {
+      log.info(
+        this.logHeader,
+        "createStorageSpaceForInstancesOfEntity",
+        "skipping storage for http external entity",
+        entity.name,
+        entity.uuid,
+      );
+      return Promise.resolve(ACTION_OK);
+    }
     this.sqlSchemaTableAccess = Object.assign(
       {},
       this.sqlSchemaTableAccess,

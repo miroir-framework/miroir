@@ -75,7 +75,7 @@ A specialized skill for creating and updating **Library-Implemented** Miroir Tra
 
 ```bash
 # Unit tests (in-memory execution)
-RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
+npm run testMiroir -w miroir-core -- --suites miroirCoreTransformers --mode unit
 
 # Integration tests (PostgreSQL execution)
 npm run testMiroir -w miroir-standalone-app -- --suites miroirCoreTransformers --mode integration

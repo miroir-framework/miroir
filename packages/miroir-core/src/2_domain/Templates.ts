@@ -311,12 +311,50 @@ export function resolveExtractorTemplate(
       break;
     }
     default: {
+      const extractorType =
+        (extractorOrCombinerTemplate as { extractorOrCombinerType?: string })
+          ?.extractorOrCombinerType ?? "unknown";
+      if (
+        extractorType === "extractorTemplateFromAction" ||
+        extractorType === "extractorFromAction"
+      ) {
+        const template = extractorOrCombinerTemplate as {
+          endpointUuid?: unknown;
+          actionType?: unknown;
+          parameterBindings?: Record<string, unknown>;
+          label?: string;
+        };
+        const resolvedBindings: Record<string, unknown> = {};
+        for (const [bindingName, bindingValue] of Object.entries(template.parameterBindings ?? {})) {
+          resolvedBindings[bindingName] =
+            bindingValue &&
+            typeof bindingValue === "object" &&
+            (bindingValue as { transformerType?: unknown }).transformerType
+              ? transformer_extended_apply(
+                  "build",
+                  [],
+                  template.label ?? bindingName,
+                  bindingValue as any,
+                  "value",
+                  modelEnvironment,
+                  queryParams,
+                  contextResults,
+                )
+              : bindingValue;
+        }
+        return {
+          extractorOrCombinerType: "extractorFromAction",
+          endpointUuid: template.endpointUuid,
+          actionType: template.actionType,
+          parameterBindings: resolvedBindings,
+        } as ExtractorOrCombiner;
+      }
       return {
         queryFailure: "QueryNotExecutable",
-        failureOrigin: ["AsyncQuerySelectors", "resolveExtractorTemplate"],
+        failureOrigin: ["Templates", "resolveExtractorTemplate"],
+        failureMessage: "unsupported extractorOrCombinerType: " + extractorType,
         query: JSON.stringify(extractorOrCombinerTemplate),
       };
-      break;
     }
   }
 }

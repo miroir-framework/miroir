@@ -198,6 +198,8 @@ export class MiroirMcpServer {
       }
     });
 
+    // Optional Streamable HTTP SSE probe. POST-only; clients should not hit this
+    // on the wire (`resolveMcpHttpFetch` answers GET locally).
     targetApp.get(MCP_HTTP_ENDPOINT, (_req, res) => {
       res.status(405).set("Allow", "POST").json({
         jsonrpc: "2.0",

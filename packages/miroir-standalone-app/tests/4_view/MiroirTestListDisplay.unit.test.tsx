@@ -117,7 +117,7 @@ describe('MiroirTestListDisplay dual bar (T3)', () => {
     expect(screen.queryByText('Integration run settings')).not.toBeInTheDocument();
   });
 
-  it('hides integ chrome when integ suites are present but none are UI-launchable', () => {
+  it('shows integ chrome for application integ suites that are not in the legacy registry', () => {
     render(
       <MiroirTestListDisplay
         miroirTests={[asMiroirTest(miroirTest_EntityPrimaryKey), unregisteredIntegSuite()]}
@@ -127,8 +127,8 @@ describe('MiroirTestListDisplay dual bar (T3)', () => {
     );
 
     expect(screen.getByRole('button', { name: 'Run All Unit Tests' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Run All Integration Tests' })).not.toBeInTheDocument();
-    expect(screen.queryByText('Integration run settings')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Run All Integration Tests' })).toBeInTheDocument();
+    expect(screen.getByText('Integration run settings')).toBeInTheDocument();
   });
 
   it('shows integ-only chrome when the list has launchable integ and no unit suites', () => {

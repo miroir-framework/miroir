@@ -113,7 +113,8 @@ export default defineConfig({
       '/action':        { target: apiBase, secure: false },
       '/CRUD':          { target: apiBase, secure: false },
       '/api/copilotkit': { target: apiBase, secure: false },
-      '/mcp':            { target: apiBase, secure: false }
+      '/mcp':            { target: apiBase, secure: false },
+      '/auth':           { target: apiBase, secure: false },
     }
   },
   test: {
@@ -125,7 +126,8 @@ export default defineConfig({
     testTimeout: 180000, // 3 minutes for complex tests
     setupFiles: ['./setup.ts'],
     env: {
-      VITE_TEST_MODE: 'true'
+      VITE_TEST_MODE: 'true',
+      MIROIR_AUTH_ENABLED: process.env.MIROIR_AUTH_ENABLED ?? '0',
     },
     // Configure React Testing Library act warnings
     pool: 'threads',

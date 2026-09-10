@@ -10,6 +10,7 @@
   "defaultInstanceDetailsReportUuid": "c9de2107-e58e-461e-b2fc-4e3a2ce7179d",
   "viewAttributes": [
     "name",
+    "username",
     "status",
     "description",
     "uuid"
@@ -32,6 +33,19 @@
           "value": {
             "id": 5,
             "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "username": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Username",
+            "description": "Unique login id (not the display name). Duplicate usernames fail closed at login.",
             "display": {
               "editable": true
             }

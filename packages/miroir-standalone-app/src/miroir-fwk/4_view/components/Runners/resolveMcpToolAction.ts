@@ -1,4 +1,4 @@
-import type { Action, EndpointDefinition } from "miroir-core";
+import { getEndpointActions, type Action, type EndpointDefinition } from "miroir-core";
 import { toolNameFor } from "miroir-mcp/client";
 
 export function resolveMcpToolAction(
@@ -11,10 +11,10 @@ export function resolveMcpToolAction(
   }
   const takenNames = new Set<string>();
   const sortedEndpoints = [...endpoints]
-    .filter((endpoint) => endpoint?.uuid && endpoint?.name && endpoint?.definition?.actions)
+    .filter((endpoint) => endpoint?.uuid && endpoint?.name && getEndpointActions(endpoint))
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
   for (const endpoint of sortedEndpoints) {
-    const sortedActions = [...(endpoint.definition.actions ?? [])].sort((left, right) =>
+    const sortedActions = [...(getEndpointActions(endpoint) ?? [])].sort((left, right) =>
       String(left?.actionParameters?.actionType?.definition).localeCompare(
         String(right?.actionParameters?.actionType?.definition),
       ),

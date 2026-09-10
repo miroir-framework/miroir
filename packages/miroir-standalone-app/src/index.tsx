@@ -13,13 +13,16 @@ import { createRoot, Root } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import {
+  accessGrantsFromInstances,
   Action2Error,
   circularReplacer,
   ConfigurationService,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
+  deploymentsFromInstances,
   expect,
   getMiroirEnvironmentMode,
+  identityDirectoryFromInstances,
   LoggerInterface,
   MiroirActivityTracker,
   MiroirConfigClient,
@@ -30,6 +33,8 @@ import {
   PersistenceStoreControllerManager,
   RestClient,
   RestClientStub,
+  setRestClientAuthorizationInvalidationHandler,
+  setRestClientAuthorizationTokenGetter,
   SpecificLoggerOptionsMap,
   templateEvaluationParams,
   type ApplicationDeploymentMap,
@@ -40,17 +45,18 @@ import {
   type StoreOrBundleAction,
   type StoreUnitConfiguration,
 } from "miroir-core";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import {
   LocalCacheProvider,
+  MiroirContextReactProvider,
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController,
 } from "miroir-react";
-import { MiroirContextReactProvider } from "miroir-react";
+import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { loglevelnext } from "./loglevelnextImporter.js";
-import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
+import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "./miroir-fwk/4_view/auth/authSession.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
+import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
 import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
 import {
   ElectronRestClient,
@@ -59,15 +65,25 @@ import {
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
 import { miroirAppStartup } from "./startup.js";
 
+import { resolveWebLogConfigWithMeta, VITE_MIROIR_LOG_CONFIG_VALUES } from "./config/logConfigPresets.js";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
-import { resolveWebLogConfigWithMeta, VITE_MIROIR_LOG_CONFIG_VALUES } from "./config/logConfigPresets.js";
 
 import {
   adminSelfApplication,
   deployment_Admin,
   deployment_Miroir,
   entityDeployment,
+  miroirRight_AliceLibraryAppAdmin,
+  miroirRight_AliceLibraryDeploymentRead,
+  miroirRight_DaveLibraryDeployment,
+  miroirUser_AliceAdmin,
+  miroirUser_BobInactive,
+  miroirUser_Carol,
+  miroirUser_Dave,
+  miroirUserCredential_AliceDev,
+  miroirUserCredential_CarolDev,
+  miroirUserCredential_DaveDev
 } from "miroir-test-app_deployment-admin";
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
@@ -291,6 +307,26 @@ export async function setupMiroirPlatform(
     (restClient as RestClientStub).setPersistenceStoreControllerManager(
       persistenceStoreControllerManagerForServer,
     );
+    (restClient as RestClientStub).setIdentityDirectory(
+      identityDirectoryFromInstances(
+        [miroirUser_AliceAdmin, miroirUser_BobInactive, miroirUser_Carol, miroirUser_Dave],
+        [miroirUserCredential_AliceDev, miroirUserCredential_CarolDev, miroirUserCredential_DaveDev],
+      ),
+    );
+    (restClient as RestClientStub).setAccessDirectory({
+      grants: accessGrantsFromInstances([
+        miroirRight_AliceLibraryAppAdmin,
+        miroirRight_AliceLibraryDeploymentRead,
+        miroirRight_DaveLibraryDeployment,
+      ]),
+      deployments: deploymentsFromInstances([
+        deployment_Admin,
+        deployment_Miroir,
+        // deployment_Library,
+        // deployment_Spotify,
+        // deployment_Designer,
+      ]),
+    });
   }
 
   return {
@@ -335,6 +371,17 @@ async function setupClient(
 async function startWebApp(root: Root) {
   // Initialize performance monitoring configuration
   initializePerformanceConfig();
+  setRestClientAuthorizationTokenGetter(() => getAuthToken());
+  setRestClientAuthorizationInvalidationHandler(() => setAuthToken(undefined));
+  try {
+    const statusResponse = await fetch("/auth/status");
+    const statusBody = await statusResponse.json();
+    if (typeof statusBody?.enabled === "boolean") {
+      setAuthenticationEnabled(statusBody.enabled);
+    }
+  } catch {
+    setAuthenticationEnabled(false);
+  }
 
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);

@@ -5,21 +5,12 @@ import type {
   MlSchema,
 } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { jzodToJzod_Summary } from "../../../src/1_core/jzod/JzodToJzod_Summary";
-import { miroirTest_jzodToJzod_Summary } from "miroir-test-app_deployment-miroir";
-
-import type { MiroirTestSuite } from "../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { runMiroirCoreTestSuite } from "../../helpers/runMiroirCoreTestSuite";
 
 const dummyMlSchema: MlSchema = {
   uuid: "00000000-0000-0000-0000-000000000000",
   parentUuid: "00000000-0000-0000-0000-000000000000",
   name: "dummy",
 };
-
-await runMiroirCoreTestSuite(
-  miroirTest_jzodToJzod_Summary.definition as MiroirTestSuite,
-  "jzodToJzod_Summary.unit.test",
-);
 
 /** Comparative assertion — not expressible as a single functionCallTest expectedValue. */
 const RUN_TEST = process.env.RUN_TEST;

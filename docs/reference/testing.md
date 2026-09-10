@@ -6,11 +6,12 @@ This page is the authoritative reference for how tests are structured, run, and 
 
 ## Overview
 
-Miroir has three test layers:
+Miroir has these test layers:
 
 | Layer | Location | Launcher | Store / runtime |
 |-------|----------|----------|-----------------|
-| **Unit** | `miroir-core` | `testMiroir` / `testByFile` | In-memory, no persistence |
+| **Unit (MiroirTest)** | `miroir-core` | `testMiroir` | In-memory, no persistence |
+| **Unit (PLATFORM)** | package `tests/` | `testByFile` + optional `RUN_TEST` | TypeScript files that are not entity-backed |
 | **MiroirTest integration** | `miroir-standalone-app` | `testMiroir` (`MIROIR_TEST_*`) | `IntegrationTestSession` — direct PersistenceStoreController / domainController |
 | **App-stack integration** | `miroir-standalone-app` | `testByFile` (`VITE_MIROIR_*`) | `setupMiroirTest` — emulated or real HTTPS server |
 
@@ -118,37 +119,38 @@ Field naming: `miroirTestType`, `miroirTestLabel`, `miroirTests`. Legacy `unitTe
 
 ---
 
-## Suite registry
+## Discovery, selection, and execution
 
-The registry maps short string keys → deployment exports:
+Three concerns. They are not the same list.
 
-```
-packages/miroir-core/src/5_tests/miroirCoreTestSuiteRegistry.ts
-```
+| Concern | Answers | Source |
+|---------|---------|--------|
+| **Discovery** | Which MiroirTest suites exist | **CLI:** folder catalog — `discoverApplicationMiroirTestSourceFolders` / `loadApplicationMiroirTestCatalog` over `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>`. **UI:** selected application's LocalCache (`useSelectedApplicationMiroirTests`). Same conceptual catalog, two loaders. |
+| **Selection** | Which of those run | `--suites` / `MIROIR_TEST_SUITES` / UI = instance `name` (optional `uuid` on `--suites`). `--filter` / UI checkboxes pick **leaves** (catalog-root key = `name`; nested keys and values = `miroirTestLabel`). See [Filtering MiroirTest cases](#filtering-miroirtest-cases). |
+| **Execution** | How a selected suite or leaf runs | Leaf kinds infer session (`transformer` / `runner` / `action`) and unit vs integ. Playfield lives on the suite or a `TestConfiguration`; Runner JSON is a sibling folder. `FunctionCallTestRegistry` is a capability whitelist, not a suite catalog. |
 
-Current registered suites (38 total, sorted):
+`scripts/nonreg-manifest.json` is a **curated** step list (unit catalog sweep, selected integ suites, app-stack files). It is not generated from the catalog and is not a discovery source.
 
-```
-adminTransformers, alterObject, ansiColumnsToJzodSchema, buildAnyKeyMap,
-defaultValueForMLSchema, EntityPrimaryKey, getAttributeTypesFromJzodSchema,
-jzodObjectFlatten, JzodSchemaReferencesList, JzodSchemaReferencesSet,
-jzodToCopilotKitParameter, jzodToJsonSchema, jzodToJzod_Summary,
-jzodTransitiveDependencySet, jzodTypeCheck, jzodUnion_RecursiveUnfold,
-jzodUnionResolvedTypeForArray, jzodUnionResolvedTypeForObject,
-localizeJzodSchemaReferenceContext, menu, mergePositionBased,
-metaModelTransformers, miroirCoreTransformers, modelUpdates, mustache,
-pilot_transformer_plus, queries_library, resolveConditionalSchema,
-resolveQueryTemplates, resolveSchemaReferenceInContext,
-selectUnionBranchFromDiscriminator, tools, transformerInterfaceCheck,
-transformerResultSchema, unfoldSchemaOnce, unionArrayChoices,
-unionObjectChoices, virtualAttributes
-```
+Name-list snapshots (`MIROIR_TEST_SUITE_REGISTRY_NAMES`, `MIROIR_RUNNER_TEST_SUITE_REGISTRY_NAMES`, `UI_INTEGRATION_RUNNER_SUITE_REGISTRY_LEGACY`) are reference-only.
+
+### MiroirTest vs PLATFORM
+
+| Kind | How it exists | How you run it |
+|------|----------------|----------------|
+| **MiroirTest** | Deployment JSON entity | `testMiroir` / UI catalog. Suite key = instance `name`. |
+| **PLATFORM** | TypeScript under `tests/` with **no** MiroirTest entity | `testByFile` + optional `RUN_TEST` |
+
+PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/schema apparatus (`parseMiroirTestCliConfig.unit.test.ts`, `miroirTest.schema.unit.test.ts`), LocalCache memory measure, store-layer integ (`PersistenceStoreController.integ`), view RTL (`JzodElementEditor.test.tsx`), and similar. `RUN_TEST` applies only to those files.
+
+### Notable catalog suites
 
 **`virtualAttributes`** — issue #82: lazy instance-local Entity attributes (`tag.value.virtualAttribute`). MiroirTest `functionCallTest` + `queryTest` (evaluate / strip / project / filter / orderBy / same-query runtimeTransformers). Sequelize skip + SQL compile: `packages/miroir-store-postgres/test/virtualAttributes.unit.test.ts`. List/details display: `packages/miroir-standalone-app/tests/4_view/virtualAttributes.integ.test.tsx`.
 
 **`transformerResultSchema`** — issue #88: `functionCallTest` leaves call `resolveTransformerResultSchema` (pure schema inference, no transformer runtime). Reference: [transformer-result-schema.md](./transformer-result-schema.md). Nonreg step: `unit-transformerResultSchema`.
 
-`miroirCoreTransformers` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). All other registry suites are unit-safe unless they declare integ expectations.
+`miroirCoreTransformers` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). Other catalog suites are unit-safe unless they declare integ expectations.
+
+**External services (#267):** MiroirTest suite keys `externalServiceSync` (unit, `miroir-core` — `transformerTest` for `syncExternalServiceSchema`) and `externalServiceSyncExecute` (integration, `miroir-standalone-app` — lands synced operations + entity). End-to-end HTTP against a fake Spotify server is **PLATFORM** vitest (`externalServiceQuery`, `externalServiceGuards`, `externalServiceDispatch`, `externalServiceReport`, `spotifyApp` under `tests/3_controllers/` and `tests/4_view/`); nonreg step `externalServices-spotify`. Opt-in live Spotify: `tests/external-services/spotifyLive.integ.test.ts` (`LIVE_SPOTIFY_CLIENT_ID` + `LIVE_SPOTIFY_CLIENT_SECRET` + `LIVE_SPOTIFY_REFRESH_TOKEN` obtained once via `packages/miroir-test-app_deployment-spotify/scripts/get_spotify_refresh_token.py` and registered as secret `spotifyRefreshToken`; OAuth2 refresh-token grant at accounts.spotify.com; not in nonreg).
 
 ---
 
@@ -189,7 +191,7 @@ npm run testMiroir -w miroir-core -- --suites mustache --mode unit
 
 # Filter to specific test labels (suite miroirTestLabel → leaf labels)
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
+  --filter '{"mustache":["should extract patterns with double braces"]}'
 
 # Legacy — env vars (still supported; argv wins when both are set)
 MIROIR_TEST_SUITES=mustache MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
@@ -234,11 +236,13 @@ npm test -w miroir-test-app_deployment-library -- "App-action validation"
 
 ### Via `testByFile`
 
+`testByFile` is the PLATFORM / vitest-host launcher. To run MiroirTest suites, prefer `testMiroir` (it already points vitest at `miroir-core-tests.unit.test.ts` with catalog selection). Direct host invocation:
+
 ```bash
 npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
 ```
 
-This runs `tests/miroir-core-tests.unit.test.ts` directly with vitest, inheriting `MIROIR_TEST_SUITES` from the environment.
+This runs the catalog host file, inheriting `MIROIR_TEST_SUITES` from the environment. It is not a way to select a suite by filename.
 
 ---
 
@@ -312,13 +316,13 @@ npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites domain_controller_model_undo_redo --mode integ
 ```
 
-Filter keys use the suite **`miroirTestLabel`**, not the registry key (see [Filtering](#filtering-miroirtest-cases)):
+Catalog-root filter keys use instance **`name`** (see [Filtering](#filtering-miroirtest-cases)):
 
 ```bash
-# One runner leaf — key is runner.returnDocument
+# One runner leaf — catalog-root key is runner_return_document
 npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites runner_return_document --mode integ \
-  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
+  --filter '{"runner_return_document":["Return Book Test Composite Action"]}'
 
 # One transformer leaf — nested labels under miroirCoreTransformers
 npm run testMiroir -w miroir-standalone-app -- \
@@ -520,7 +524,7 @@ npm run testMiroir -w miroir-standalone-app -- \
 # Return leaf only — preferred form (suite miroirTestLabel → leaf miroirTestLabel)
 npm run testMiroir -w miroir-standalone-app -- \
   --suites runner_return_document --mode integ --profile emulatedServer-sql \
-  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
+  --filter '{"runner_return_document":["Return Book Test Composite Action"]}'
 
 # Same run — shorthand when the suite has a single level of leaves (leaf key only; value ignored)
 npm run testMiroir -w miroir-standalone-app -- \
@@ -629,7 +633,7 @@ npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql \
   --suites domain_controller_data_crud \
   --mode integ \
-  --filter '{"domainController.data.crud":["Refresh all Instances"]}'
+  --filter '{"domain_controller_data_crud":["Refresh all Instances"]}'
 ```
 
 Copy the six-character `runId` from `RUN … START` or `#??????.sN.#`, then `grep $RUNID` on the log file. For query payload detail on the same leaf, re-run with `VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query-local` (narrow) or `scope-query` (adds DomainController hops).
@@ -653,8 +657,6 @@ The final argument is a Vitest file-name filter (not a suite key). Examples:
 | `ExtractorTemplatePersistenceStoreRunner.integ` | Extractor template runner |
 | `uiIntegrationTestLauncher.integ` | Node proof of the UI launcher (runner + transformer leaves, emulated SQL) |
 | `uiIntegrationTestLauncher.realServer.integ` | Node proof of the UI launcher against live `miroir-server` (`--storage` / `--profile realServer-*`) |
-| `Runner_Miroir.integ` | Legacy runner integration (prefer `testMiroir` runner entry) |
-| `Runner_Library.integ` | Legacy runner integration (prefer the `testMiroir` runner entry) |
 | `ReportPage.integ` | Report view React smoke tests |
 | `BlobEditorField.integ` | Blob editor component tests (no store required) |
 
@@ -826,8 +828,8 @@ App-stack integration paths use **`runAppStackIntegrationBootstrap`** (`tests/he
 |---------------|------|-----------|--------------------------|--------------|
 | `IntegrationTestSession` | `transformer` | `testApplication` | (local PersistenceStoreController — no HTTP phases) | `miroir-core-tests.integ.test.ts` |
 | `AppStackIntegrationTestSession` | `appStackPersistenceStoreController` | `libraryDeployment` | wire + deployMiroir + deployLibrary | `4_storage/*.integ.test.tsx` |
-| `DomainControllerIntegrationTestSession` | `domainController` | profile-dependent (see below) | profile-dependent | `3_controllers/DomainController.integ.*` |
-| `RunnerTestSession` | `runner` | `libraryDeployment` | wire + deployMiroir | `miroir-runner-tests.integ`, `Runner_Miroir.integ` |
+| `DomainControllerIntegrationTestSession` | `domainController` | profile-dependent (see below) | profile-dependent | `testMiroir --suites domain_controller_*` |
+| `RunnerTestSession` | `runner` | `libraryDeployment` | wire + deployMiroir | `miroir-runner-tests.integ` (`testMiroir`) |
 
 `describeSession(kind)` (or `describeIntegrationTestSession(kind, profile)` for
 `domainController`) returns `{ kind, bootstrapPhases, playfield, defaultHostMode, embeddedCapable }`.
@@ -1030,7 +1032,7 @@ npm run testMiroir -w miroir-core
   scripts/test-miroir-core.ts
     vitest → miroir-core-tests.unit.test.ts
       runMiroirCoreTestsFromCLI (no testSession)
-        loadMiroirCoreTestSuite → runMiroirTests (in-memory)
+        loadMiroirCoreTestSuiteFromFolders → runMiroirTests (in-memory)
 ```
 
 ---
@@ -1041,7 +1043,7 @@ npm run testMiroir -w miroir-core
 
 | File | Role |
 |------|------|
-| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Registry key → deployment export |
+| `src/5_tests/miroirCoreTestSuiteRegistry.ts` | Deprecated name-list snapshot → deployment export |
 | `src/5_tests/parseMiroirTestCliConfig.ts` | CLI/env parsing (`MIROIR_TEST_*`) |
 | `src/5_tests/runMiroirCoreTestsFromCLI.ts` | Main entry called by both vitest entries |
 | `src/5_tests/MiroirTestTools.ts` | Unified runner dispatching by test type |
@@ -1142,15 +1144,16 @@ await session.teardown();
 
 #### Unit suite (`testMiroir --mode unit`)
 
-1. Create a `MiroirTestDefinition` JSON in `assets/miroir_data/a311f363-…/<uuid>.json`.
-2. Export it from `packages/miroir-test-app_deployment-miroir/index.ts`:
-   ```typescript
-   export { default as miroirTest_myNewSuite } from "./assets/miroir_data/.../uuid.json" assert { type: "json" };
-   ```
-3. Add the key to `MIROIR_TEST_SUITE_REGISTRY_NAMES` in `miroirCoreTestSuiteRegistry.ts`.
-4. Rebuild: `npm run build -w miroir-test-app_deployment-miroir`.
+1. Create a `MiroirTestDefinition` JSON in the owning application's MiroirTest folder:
+   - Miroir app: `packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-…/<uuid>.json`
+   - Other apps: that app's **model** section `…/<app>_model/a311f363-…/<uuid>.json`
+2. Set `name` to the CLI / UI suite key (e.g. `myNewSuite`).
+3. CLI discovery scans `packages/miroir-test-app_deployment-*/assets/*/<MiroirTest uuid>` (`discoverApplicationMiroirTestSourceFolders`). Test runners load the suite with `loadMiroirCoreTestSuiteFromFolders` / `loadMiroirTestSuiteFromCatalog`. Runner `runnerRef` lookup uses sibling Runner folders (`loadApplicationRunnerUuidIndexFromFolders`).
+4. Optional: export `miroirTest_myNewSuite` from the deployment package `index.ts` if other TypeScript wants a named import. Rebuild that package.
 5. Validate schema: `VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts -w miroir-core`.
-6. Run: `MIROIR_TEST_SUITES=myNewSuite MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core`.
+6. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`.
+
+TypeScript files that have **no** MiroirTest entity are PLATFORM — launch those with `testByFile` (optional `RUN_TEST`). See [MiroirTest vs PLATFORM](#miroirtest-vs-platform).
 
 #### Integration suite (UI / CLI `testMiroir --mode integ`)
 
@@ -1161,8 +1164,8 @@ Playfield **model + instances** belong on the suite or a `TestConfiguration`, no
    - `testConfiguration`: uuid of a `TestConfiguration` instance.
    Do not set both. Do **not** paste Entity arrays into TypeScript.
 2. `TestConfiguration` instances follow Query / `MiroirTest`: Miroir app → **data** (`miroir_data/675ccd46-…/`); any other app → that app’s **model** section. Payload is `name` / `description` + `testbedModel` + `testbedEntitiesAndInstances` only.
-3. Add `{ kind, suiteDefinition, testbedInitApplicationParameters }` to `UI_INTEGRATION_RUNNER_SUITE_REGISTRY`. `kind` stays (`runnerTest` | `domainControllerTest` | `actionTest`). Omit `testbedInitApplicationParameters` only when every leaf has `skipRunTargetPlayfieldReset`.
-4. Export the suite from the owning deployment package and rebuild it.
+3. Session kind (`runner` / `action` / `transformer`) is inferred from the suite leaves. UI launchability comes from the **currently selected application's** MiroirTest instances, not from `UI_INTEGRATION_RUNNER_SUITE_REGISTRY`.
+4. Put the JSON in that application's MiroirTest entity folder (`…/assets/<app>_data|model/a311f363-…/`) so CLI discovery can find it. Runner tests need the Runner JSON in the sibling `e54d7dc1-…` folder.
 5. Run: `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites myNewSuite --mode integ`.
 
 ---
@@ -1175,26 +1178,26 @@ Playfield **model + instances** belong on the suite or a `TestConfiguration`, no
 
 | Name | Example | Used in |
 |------|---------|---------|
-| **Registry key** | `runner_return_document`, `domain_controller_data_crud`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI suite key |
-| **Suite `miroirTestLabel`** | `runner.returnDocument`, `miroirCoreTransformers`, nested `plus` | Filter object **keys** (when nested) |
-| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action`, `plus with empty args fails` | Filter object **values** (string array) |
+| **Suite key** (`name`) | `runner_return_document`, `domain_controller_data_crud`, `miroirCoreTransformers` | `--suites`, `MIROIR_TEST_SUITES`, UI |
+| **Suite `miroirTestLabel`** | `runner.returnDocument`, `miroirCoreTransformers`, nested `plus` | display; **nested** `--filter` keys only |
+| **Leaf `miroirTestLabel`** | `Return Book Test Composite Action`, `plus with empty args fails` | `--filter` **values**, UI leaf checkboxes |
 
-For **runner** suites the registry key and suite label often differ: `--suites runner_return_document` but filter key `runner.returnDocument`. For **transformer** suites such as `miroirCoreTransformers` they usually match; nest intermediate suite labels in the filter JSON.
+`--suites` and catalog-root `--filter` keys are instance `name`. Nested `--filter` keys stay `miroirTestLabel` (inline suites have no `name`). For **transformer** suites such as `miroirCoreTransformers` the name and root label usually match; nest intermediate suite labels in the filter JSON.
 
 Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) and each leaf’s `miroirTestLabel`.
 
 ### JSON shapes (equivalent after normalization)
 
-**Recommended — shorthand** (suite label → leaf labels):
+**Recommended — shorthand** (suite key (`name`) → leaf labels):
 
 ```json
-{ "runner.returnDocument": ["Return Book Test Composite Action"] }
+{ "runner_return_document": ["Return Book Test Composite Action"] }
 ```
 
 **Canonical** (explicit `testList`):
 
 ```json
-{ "testList": { "runner.returnDocument": ["Return Book Test Composite Action"] } }
+{ "testList": { "runner_return_document": ["Return Book Test Composite Action"] } }
 ```
 
 **Single flat suite — leaf key only** (when every filter key matches a leaf label in that suite; array values are ignored):
@@ -1218,7 +1221,7 @@ Find labels in the MiroirTest JSON under `definition.miroirTestLabel` (suite) an
 ```bash
 npm run testMiroir -w miroir-standalone-app -- \
   --suites runner_return_document --mode integ --profile emulatedServer-sql \
-  --filter '{"runner.returnDocument":["Return Book Test Composite Action"]}'
+  --filter '{"runner_return_document":["Return Book Test Composite Action"]}'
 ```
 
 #### 2. One leaf per library runner suite
@@ -1246,13 +1249,13 @@ Nest objects for intermediate suite labels; use a string array for the leaf list
 
 ```bash
 npm run testMiroir -w miroir-core -- --suites mustache --mode unit \
-  --filter '{"mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
+  --filter '{"mustache":["should extract patterns with double braces"]}'
 ```
 
 #### 5. Legacy environment-variable form
 
 ```bash
-MIROIR_TEST_FILTER='{"runner.returnDocument":["Return Book Test Composite Action"]}' \
+MIROIR_TEST_FILTER='{"runner_return_document":["Return Book Test Composite Action"]}' \
   npm run testMiroir -w miroir-standalone-app -- \
   --profile emulatedServer-sql --suites runner_return_document --mode integ
 ```
@@ -1262,11 +1265,11 @@ MIROIR_TEST_FILTER='{"runner.returnDocument":["Return Book Test Composite Action
 | What you typed | What happens |
 |----------------|--------------|
 | `'{"Return Book Test Composite Action": "*"}'` (no `testList`, leaf as top-level key) | **Works** after fix — treated as leaf-key shorthand when the label exists in the suite |
-| `'{"runner_return_document":["Return Book Test Composite Action"]}'` | **No match** — key must be `runner.returnDocument` (suite label), not registry key |
-| `'{"testList":{"Return Book Test Composite Action":["*"]}}'` with wrong nesting | **No match** + console warning — use `runner.returnDocument` as the key unless using leaf-key shorthand |
+| `'{"runner.returnDocument":["Return Book Test Composite Action"]}'` | **Error** — catalog-root key must be the suite key (`name`), not `miroirTestLabel` |
+| `'{"testList":{"Return Book Test Composite Action":["*"]}}'` with wrong nesting | **Error** — use `runner_return_document` as the key unless using leaf-key shorthand |
 | Wildcard `"*"` as a leaf name | **Not supported** — list explicit leaf labels or omit `--filter` |
 
-When the filter matches nothing, Vitest still runs the file but all cases are **skipped**; the runner logs a warning listing available leaf labels.
+When a catalog-root filter key or leaf label is unknown, the run **throws** and lists the instance `name`, suite label, and available leaves.
 
 After changing filter logic in `miroir-core`, rebuild before running standalone-app tests:
 

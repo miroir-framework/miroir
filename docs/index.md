@@ -143,6 +143,7 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 - [Custom Stores](guides/advanced/custom-stores.md) - **Coming Soon**
 - [Extending Miroir](guides/advanced/extending.md) - **Coming Soon**
 - [Security Best Practices](guides/advanced/security.md) - **Coming Soon**
+- [Authentication](reference/authentication.md) — #71 identity gate, startup hatch, #262 application access, #264 deployment access
 
 ### Context & Background
 - [Why Miroir?](guides/why-miroir.md) - Philosophy and rationale

@@ -8,6 +8,46 @@ import { MCP_HTTP_ENDPOINT } from "./mcpConstants.js";
 
 export type McpHttpFetch = NonNullable<StreamableHTTPClientTransportOptions["fetch"]>;
 
+function requestMethod(init?: RequestInit): string {
+  return (init?.method ?? "GET").toUpperCase();
+}
+
+function requestUrl(input: string | URL): string {
+  return typeof input === "string" ? input : input.href;
+}
+
+function isMcpHttpEndpoint(url: string): boolean {
+  try {
+    const path = new URL(url, "http://localhost").pathname.replace(/\/$/, "") || "/";
+    return path === MCP_HTTP_ENDPOINT || path.endsWith(MCP_HTTP_ENDPOINT);
+  } catch {
+    return url.includes(MCP_HTTP_ENDPOINT);
+  }
+}
+
+/**
+ * Streamable HTTP clients probe GET (SSE) and DELETE (session) on `/mcp`.
+ * This server is POST-only and answers those with 405; answering locally keeps
+ * the optional probe off the wire (browser Network tab).
+ */
+export function resolveMcpHttpFetch(fetchImpl?: McpHttpFetch): McpHttpFetch {
+  const inner: McpHttpFetch = fetchImpl ?? fetch;
+  return async (input, init) => {
+    const method = requestMethod(init);
+    if (
+      isMcpHttpEndpoint(requestUrl(input)) &&
+      (method === "GET" || method === "DELETE")
+    ) {
+      return new Response(null, {
+        status: 405,
+        statusText: "Method Not Allowed",
+        headers: { Allow: "POST" },
+      });
+    }
+    return inner(input, init);
+  };
+}
+
 function mcpEndpointUrl(serverUrl: string): URL {
   const trimmed = serverUrl.replace(/\/$/, "");
   if (trimmed.endsWith(MCP_HTTP_ENDPOINT)) {
@@ -25,10 +65,9 @@ async function withMcpClient<T>(
     name: "miroir-mcp-client",
     version: "1.0.0",
   });
-  const transport = new StreamableHTTPClientTransport(
-    mcpEndpointUrl(serverUrl),
-    fetchImpl ? { fetch: fetchImpl } : undefined,
-  );
+  const transport = new StreamableHTTPClientTransport(mcpEndpointUrl(serverUrl), {
+    fetch: resolveMcpHttpFetch(fetchImpl),
+  });
   await client.connect(transport);
   try {
     return await operation(client);

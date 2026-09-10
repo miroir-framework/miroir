@@ -123,7 +123,7 @@ describe("MiroirUser model and seed data", () => {
     );
   });
 
-  it("MiroirUser mlSchema includes name, status; description optional", () => {
+  it("MiroirUser mlSchema includes name, username, status; description optional", () => {
     const entity = findAdminEntityByName("MiroirUser", modelDir);
     expect(entity).toBeDefined();
     const definition = getMlSchemaDefinition(entity as Record<string, unknown>);
@@ -131,6 +131,10 @@ describe("MiroirUser model and seed data", () => {
     expect(definition.name).toBeDefined();
     expect(definition.name.type).toBe("string");
     expect(definition.name.optional).not.toBe(true);
+
+    expect(definition.username).toBeDefined();
+    expect(definition.username.type).toBe("string");
+    expect(definition.username.optional).not.toBe(true);
 
     expect(definition.status).toBeDefined();
     expect(definition.status.type).toBe("string");
@@ -152,6 +156,41 @@ describe("MiroirUser model and seed data", () => {
     expect(definition.status).toBeDefined();
   });
 
+  it("seeds Carol as an active user with no MiroirRight rows", () => {
+    const carol = listAdminDataInstanceFiles(
+      findAdminEntityByName("MiroirUser", modelDir)!.uuid as string,
+      dataDir,
+    )
+      .map(readJsonInstance)
+      .find((instance) => instance.username === "carol");
+    expect(carol?.uuid).toBe("30634877-08ae-44f3-a230-d899e22333d5");
+    expect(carol?.status).toBe("active");
+    const rights = listAdminDataInstanceFiles(
+      findAdminEntityByName("MiroirRight", modelDir)!.uuid as string,
+      dataDir,
+    ).map(readJsonInstance);
+    expect(rights.some((row) => row.miroirUser === carol?.uuid)).toBe(false);
+  });
+
+  it("seeds Dave as an active user with only a Library deployment grant", () => {
+    const dave = listAdminDataInstanceFiles(
+      findAdminEntityByName("MiroirUser", modelDir)!.uuid as string,
+      dataDir,
+    )
+      .map(readJsonInstance)
+      .find((instance) => instance.username === "dave");
+    expect(dave?.uuid).toBe("e2343a39-f5d9-4898-83b4-74e2ccc33125");
+    expect(dave?.status).toBe("active");
+    const rights = listAdminDataInstanceFiles(
+      findAdminEntityByName("MiroirRight", modelDir)!.uuid as string,
+      dataDir,
+    ).map(readJsonInstance);
+    const daveRights = rights.filter((row) => row.miroirUser === dave?.uuid);
+    expect(daveRights).toHaveLength(1);
+    expect(daveRights[0]?.targetType).toBe("deployment");
+    expect(daveRights[0]?.targetUuid).toBe("f714bb2f-a12d-4e71-a03b-74dcedea6eb4");
+  });
+
   it("has at least two MiroirUser seed instances with active/inactive status", () => {
     const entity = findAdminEntityByName("MiroirUser", modelDir);
     expect(entity?.uuid).toBeTruthy();
@@ -163,6 +202,7 @@ describe("MiroirUser model and seed data", () => {
       expect(instance.parentUuid).toBe(entity!.uuid);
       expect(instance.parentName).toBe("MiroirUser");
       expect(typeof instance.name).toBe("string");
+      expect(typeof instance.username).toBe("string");
       expect(["active", "inactive"]).toContain(instance.status);
     }
     const statuses = new Set(instances.map((i) => i.status));
@@ -328,6 +368,9 @@ describe("Admin reports and menu for MiroirUser / MiroirRight", () => {
       .map((i) => i.reportUuid);
     expect(reportUuids).toContain(userList!.uuid);
     expect(reportUuids).toContain(rightList!.uuid);
+    const rightsItem = items.find((i) => i.reportUuid === rightList!.uuid);
+    expect(rightsItem?.menuItemScope).toBe("data");
+    expect(rightsItem?.section).toBe("data");
   });
 
   it("package index.ts exports the new reports", () => {
@@ -355,8 +398,8 @@ describe("Admin reports and menu for MiroirUser / MiroirRight", () => {
   });
 });
 
-// transitional guard — delete when #71 lands
-describe("no MiroirRight runtime enforcement", () => {
+// #219 name ban — #262 evaluates rights as hasAccess / AccessPolicy, not these symbols
+describe("MiroirRight does not use the retired #219 enforcement names", () => {
   const ENFORCEMENT_PATTERN =
     /checkMiroirRight|authorizeMiroir|hasMiroirAccess|evaluateMiroirRight/;
 
@@ -394,12 +437,15 @@ describe("Admin bundled data classification", () => {
   it("does not list MiroirUser / MiroirRight entity uuids in ADMIN_MODEL_PARENT_UUIDS_ARRAY", () => {
     const user = findAdminEntityByName("MiroirUser", modelDir);
     const right = findAdminEntityByName("MiroirRight", modelDir);
+    const credential = findAdminEntityByName("MiroirUserCredential", modelDir);
     expect(user?.uuid).toBeTruthy();
     expect(right?.uuid).toBeTruthy();
+    expect(credential?.uuid).toBeTruthy();
 
     const modelParents = readAdminModelParentUuidsFromSandboxSource();
     expect(modelParents).not.toContain(user!.uuid);
     expect(modelParents).not.toContain(right!.uuid);
+    expect(modelParents).not.toContain(credential!.uuid);
 
     // Same rule as existing Admin data entities
     expect(modelParents).not.toContain(ADMIN_APPLICATION_ENTITY_UUID);
@@ -413,6 +459,8 @@ describe("Admin bundled data classification", () => {
 
     expect(dataParents).toContain(user.uuid as string);
     expect(dataParents).toContain(right.uuid as string);
+    const credential = findAdminEntityByName("MiroirUserCredential", modelDir)!;
+    expect(dataParents).toContain(credential.uuid as string);
     expect(listAdminDataInstanceFiles(user.uuid as string, dataDir).length).toBeGreaterThanOrEqual(2);
     expect(listAdminDataInstanceFiles(right.uuid as string, dataDir).length).toBeGreaterThanOrEqual(2);
   });

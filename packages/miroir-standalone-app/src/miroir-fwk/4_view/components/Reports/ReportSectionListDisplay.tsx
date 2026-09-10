@@ -431,7 +431,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
   );
   const viewParamsData = defaultViewParamsFromAdminStorageFetchQueryResults?.[
     "viewParams"
-  ] as ViewParamsData | undefined;
+  ] as unknown as ViewParamsData | undefined;
   const mlSchemaCompatibilityEnabled =
     viewParamsData?.mlSchemaTransformerCompatibility === true;
   // // ##############################################################################################

@@ -1,0 +1,23 @@
+{
+  "uuid": "0e5cb172-12ea-4467-8598-5889338ae454",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "name": "SpotifyService",
+  "version": "1",
+  "description": "Slice 6 sync-input endpoint (Library playfield). operations[] start empty; the sync transformer upserts get-playlist.",
+  "definition": {
+    "externalService": {
+      "openApiDocument": "",
+      "baseUrl": "https://api.spotify.com/v1",
+      "securityScheme": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "credentialKey": "spotifyUser",
+      "enabledOperations": ["get-playlist"],
+      "operations": []
+    }
+  }
+}
