@@ -69,7 +69,7 @@ This plan does **not** cover: OAuth PKCE in the UI; `MiroirRight.capability` as 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize SecretStore / CLI / principal-drop / caches / Admin inventory | ⬜ | `secrets.270.phase0.unit.test.ts` |
+| 0 | Characterize SecretStore / CLI / principal-drop / caches / Admin inventory | ✅ DONE | `secrets.270.phase0.unit.test.ts` |
 | 1 | **Tracer:** process-scoped persist + hydrate + fake Spotify query | ⬜ | `secretsHydrate.270.phase1.integ.test.ts` + `secretsService.270.phase1.unit.test.ts` |
 | 2 | Dedicated `/secrets` HTTP + CRUD guard (in-process persist) | ⬜ | `secretsHttp.270.phase2.integ.test.ts` |
 | 3 | MCP tool **response** redaction (`passwordHash` + `ciphertext`) | ⬜ | `secretsRedact.270.phase3.unit.test.ts` (miroir-mcp) |
@@ -176,7 +176,7 @@ Every integ that writes `MiroirSecret` rows deletes them in `afterEach`/`afterAl
 
 ## Slice 0 — Characterize current contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -220,7 +220,10 @@ RUN_TEST=secrets.270.phase0 npm run testByFile -w miroir-core -- secrets.270.pha
 
 ### Realization
 
-<Appended on completion.>
+- **File:** `packages/miroir-core/tests/4_services/issues/270-persistent-named-secrets/secrets.270.phase0.unit.test.ts` (15 tests).
+- **Locked (consumed-by):** Admin inventory (9 real / 5 emulated entities, no `MiroirSecret`, uuid `a96856df-…` unused); `parseServerArgs` rejects `--secrets-master-key`; `resolveSecret(name) → string`; no `secretsMasterKey` on `ParsedServerArgs`; no `/secrets` REST route; MCP success/error `JSON.stringify(subObject)` not redacted; OAuth cache key without `miroirUser`; `queryActionHandler` principal-less; `handleApplicationAction` / `handleAction` do not thread principal downstream.
+- **Locked (survives):** Admin menu 8 items (no Credentials/Secrets labels); `parseServerArgs(["--secret","a=b"]).secrets === { a: "b" }`; `/queryTemplate` in default handlers.
+- **Validation:** `RUN_TEST=secrets.270.phase0 npm run testByFile -w miroir-core -- secrets.270.phase0` — 15/15 passed.
 
 ---
 
