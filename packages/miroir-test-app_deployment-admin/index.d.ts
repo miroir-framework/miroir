@@ -9,6 +9,7 @@ export declare const entityImport: any;
 export declare const entityMiroirUser: any;
 export declare const entityMiroirRight: any;
 export declare const entityMiroirUserCredential: any;
+export declare const entityMiroirSecret: any;
 export declare const entityVersionAdminApplication: any;
 /** @deprecated Use entityVersionAdminApplication */
 export declare const entityDefinitionAdminApplication: any;

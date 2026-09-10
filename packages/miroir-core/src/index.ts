@@ -1322,7 +1322,16 @@ export {
   clearSecrets,
   registerSecrets,
   resolveSecret,
+  type ResolveSecretResult,
 } from "./4_services/SecretStore.js";
+export {
+  clearSecretsMasterKey,
+  decryptSecret,
+  encryptSecret,
+  getSecretsMasterKey,
+  hydrateSecrets,
+  setSecretsMasterKey,
+} from "./4_services/SecretsService.js";
 export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";
 export {
   allowInsecureBaseUrlsForTests,
@@ -1337,6 +1346,7 @@ export {
 export {
   AUTHENTICATION_FAILED,
   AUTH_CHANGE_PASSWORD_ACTION_LABEL,
+  ENTITY_MIROIR_SECRET_UUID,
   ENTITY_MIROIR_USER_CREDENTIAL_UUID,
   ENTITY_MIROIR_USER_UUID,
   assertCredentialInstanceMutationAllowed,

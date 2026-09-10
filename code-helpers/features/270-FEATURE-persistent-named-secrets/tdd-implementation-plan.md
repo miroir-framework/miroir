@@ -70,7 +70,7 @@ This plan does **not** cover: OAuth PKCE in the UI; `MiroirRight.capability` as 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize SecretStore / CLI / principal-drop / caches / Admin inventory | ✅ DONE | `secrets.270.phase0.unit.test.ts` |
-| 1 | **Tracer:** process-scoped persist + hydrate + fake Spotify query | ⬜ | `secretsHydrate.270.phase1.integ.test.ts` + `secretsService.270.phase1.unit.test.ts` |
+| 1 | **Tracer:** process-scoped persist + hydrate + fake Spotify query | ✅ DONE | `secretsHydrate.270.phase1.integ.test.ts` + `secretsService.270.phase1.unit.test.ts` |
 | 2 | Dedicated `/secrets` HTTP + CRUD guard (in-process persist) | ⬜ | `secretsHttp.270.phase2.integ.test.ts` |
 | 3 | MCP tool **response** redaction (`passwordHash` + `ciphertext`) | ⬜ | `secretsRedact.270.phase3.unit.test.ts` (miroir-mcp) |
 | 4 | Per-user secrets + principal thread + principal-scoped OAuth cache | ⬜ | `secretsPrincipal.270.phase4.integ.test.ts` |
@@ -229,7 +229,7 @@ RUN_TEST=secrets.270.phase0 npm run testByFile -w miroir-core -- secrets.270.pha
 
 ## Slice 1 — Tracer: process-scoped persist + hydrate + fake Spotify query
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -303,7 +303,20 @@ Phase0 is re-run **after** its Consumed-by-Slice-1 assertions have been updated 
 
 ### Realization
 
-<Appended on completion.>
+- **Tests:** `packages/miroir-core/tests/4_services/issues/270-persistent-named-secrets/secretsService.270.phase1.unit.test.ts` (7 tests); `packages/miroir-standalone-app/tests/3_controllers/issues/270-persistent-named-secrets/secretsHydrate.270.phase1.integ.test.ts` (2 tests). Phase0 Consumed-by Slice 1 assertions updated in place (P1): 10 real / 6 emulated entities including `a96856df-…` named MiroirSecret; `--secrets-master-key` parses; `resolveSecret` returns `{ value, scope, source }`; `secretsMasterKey` is present when flag/env is set.
+- **Entity:** present-model only `MiroirSecret` at real Admin `admin_model/16dbfe28-…/a96856df-….json` and the standalone-app emulated copy. Exported as `entityMiroirSecret` from admin `index.ts` + `index.d.ts`. No EntityVersion, no reports, no menu item. `ENTITY_MIROIR_SECRET_UUID` lives next to `ENTITY_MIROIR_USER_CREDENTIAL_UUID` in `AuthenticationPolicy.ts`.
+- **Persist/hydrate wiring that worked:** `AppStackIntegrationTestSession` with `openAdminAndMiroirStoresOnServer: true` and `miroirDeploymentStorageConfiguration` from `miroirConfig` (same pattern as Admin). Write = server-DC `createInstance` on Admin application `55af124e-…`, section `data`, INSTANCE_ENDPOINT. Read = server-DC boxed `extractorInstancesByEntity` / `queryExecutionStrategy: "storage"` / `parentUuid` MiroirSecret. Then `setSecretsMasterKey("test-secrets-master")` + `hydrateSecrets({ wrappingKey, rows })`. Playlist query uses client DC `extractorFromAction`; `Authorization: Bearer hydrated-from-row`. Teardown = server-DC `deleteInstance` in `afterEach`/`afterAll` (no leftover `*.json`).
+- **Filesystem data-section inventory:** copying the entity into `admin_model` is not enough for `upsertInstance` on `data`. Filesystem `getEntityUuids()` is `readdir` of `admin_data`. Empty collection dirs with `.gitkeep` (no instance rows) were added under real and emulated `admin_data/a96856df-…/`.
+- **Core:** `SecretsService` (`set`/`get`/`clearSecretsMasterKey`, `encryptSecret`/`decryptSecret`, `hydrateSecrets`); `SecretStore` `resolveSecret` → `{ value, scope, source }` (`registerSecrets` stays hatch); `parseServerArgs.secrets` unchanged (P3) + `secretsMasterKey?: string`; live redactor strips `ciphertext` when `parentUuid === ENTITY_MIROIR_SECRET_UUID`; `ExternalServiceClient` uses `.value` (no principal yet). `server.ts`: usage + wrapping-key presence log + hydrate-only after first open-store loop; `registerSecrets(parsed.secrets)` left standing; no import upsert (P11). Rows + no key → throw; no rows + no key → continue.
+- **Validation:**
+  - `RUN_TEST=secrets.270.phase0 … secrets.270.phase0` — 15/15 passed
+  - `RUN_TEST=secretsService.270.phase1 … secretsService.270.phase1` — 7/7 passed
+  - `RUN_TEST=serverSecrets … serverSecrets` — 8/8 passed
+  - `npm run testByFile -w miroir-test-app_deployment-admin -- modelValidation.unit.test.ts` — 48/48 passed (vitest root is `tests/`, so the `tests/` prefix filter finds no files)
+  - `RUN_TEST=secretsHydrate.270.phase1 … --profile emulatedServer-filesystem secretsHydrate.270.phase1` — 2/2 passed
+  - `RUN_TEST=externalServiceQuery … --profile emulatedServer-filesystem externalServiceQuery` — 13/13 passed
+  - `tsc --noEmit --skipLibCheck` for miroir-core, miroir-server, miroir-test-app_deployment-admin — passed
+- **Deviations:** empty `.gitkeep` collection dirs (not instance fixtures); `node:crypto` added to miroir-core `tsup` externals so AES-256-GCM stays on Node crypto.
 
 ---
 

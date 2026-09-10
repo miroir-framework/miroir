@@ -304,8 +304,8 @@ async function resolveClientCredentialsToken(
   let clientId: string;
   let clientSecret: string;
   try {
-    clientId = resolveSecret(scheme.clientIdKey);
-    clientSecret = resolveSecret(scheme.clientSecretKey);
+    clientId = resolveSecret(scheme.clientIdKey).value;
+    clientSecret = resolveSecret(scheme.clientSecretKey).value;
   } catch {
     log.warn(
       "external service call blocked: clientIdKey/clientSecretKey did not resolve to registered secrets (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -412,8 +412,8 @@ async function resolveAuthorizationCodeToken(
   let clientId: string;
   let clientSecret: string;
   try {
-    clientId = resolveSecret(scheme.clientIdKey);
-    clientSecret = resolveSecret(scheme.clientSecretKey);
+    clientId = resolveSecret(scheme.clientIdKey).value;
+    clientSecret = resolveSecret(scheme.clientSecretKey).value;
   } catch {
     log.warn(
       "external service call blocked: clientIdKey/clientSecretKey did not resolve to registered secrets (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -425,7 +425,7 @@ async function resolveAuthorizationCodeToken(
   let refreshToken = rotatedRefreshTokens.get(scheme.refreshTokenKey);
   if (!refreshToken) {
     try {
-      refreshToken = resolveSecret(scheme.refreshTokenKey);
+      refreshToken = resolveSecret(scheme.refreshTokenKey).value;
     } catch {
       log.warn(
         "external service call blocked: refreshTokenKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -535,7 +535,7 @@ async function resolveAuthorizationHeader(
   if (externalService.credentialKey) {
     let token: string;
     try {
-      token = resolveSecret(externalService.credentialKey);
+      token = resolveSecret(externalService.credentialKey).value;
     } catch {
       log.warn(
         "external service call blocked: credentialKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",

@@ -39,6 +39,7 @@ import {
   deploymentsFromInstances,
   ENTITY_DEPLOYMENT_UUID,
   ENTITY_MIROIR_RIGHT_UUID,
+  ENTITY_MIROIR_SECRET_UUID,
   ENTITY_MIROIR_USER_CREDENTIAL_UUID,
   ENTITY_MIROIR_USER_UUID,
   deploymentUuidFromHttpRequest,
@@ -49,11 +50,13 @@ import {
   loginWithPassword,
   persistChangedPasswordHash,
   ParseServerArgsError,
+  hydrateSecrets,
   parseServerArgs,
   registerSecrets,
   resolveAuthenticationEnabled,
   restServerDefaultHandlers,
   setProcessTokenSecret,
+  setSecretsMasterKey,
   SpecificLoggerOptionsMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
@@ -145,6 +148,7 @@ function printUsageAndExit(exitCode = 1): never {
   console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_KEY`);
   myLogger.error(`                      (default: <certsdir>/localhost-key.pem)`);
   console.error(`  --secret   <name>=<value>  Named secret (repeatable). Env fallback: MIROIR_SECRET_<NAME>`);
+  console.error(`  --secrets-master-key <value>  Wrapping key for persisted secrets. Env: MIROIR_SECRETS_MASTER_KEY`);
   console.error(`  --disable-auth      Disable user authentication (today's open API)`);
   console.error(`  --enable-auth       Enable user authentication (overrides config/env)`);
   console.error(`  -h, --help          Show this help message and exit`);
@@ -156,6 +160,7 @@ let argCertsDir: string | undefined;
 let argCertFile: string | undefined;
 let argKeyFile: string | undefined;
 let registeredSecretNames: string[] = [];
+let secretsMasterKey: string | undefined;
 
 try {
   const parsed = parseServerArgs(process.argv.slice(2), process.env);
@@ -168,6 +173,10 @@ try {
   argKeyFile = parsed.keyFile;
   registerSecrets(parsed.secrets);
   registeredSecretNames = Object.keys(parsed.secrets);
+  secretsMasterKey = parsed.secretsMasterKey;
+  if (secretsMasterKey) {
+    setSecretsMasterKey(secretsMasterKey);
+  }
 } catch (error) {
   if (error instanceof ParseServerArgsError) {
     console.error(`Error: ${error.message}`);
@@ -185,6 +194,7 @@ const secretsSummary = registeredSecretNames.length > 0
   ? `${registeredSecretNames.length} named secret(s) registered: ${registeredSecretNames.join(", ")}`
   : "(none registered — external-service endpoints with a credentialKey will fail at call time)";
 console.log(`  --secret   : ${secretsSummary}`);
+console.log(`  --secrets-master-key : ${secretsMasterKey ? "(set)" : "(not set)"}`);
 
 const configFileContents = JSON.parse(
   readFileSync(new URL(configFilePath, import.meta.url)).toString()
@@ -360,6 +370,45 @@ for (const c of Object.entries(configurations)) {
     defaultSelfApplicationDeploymentMap,
     defaultMetaModelEnvironment
   );
+}
+
+const secretRowsQuery = await domainController.handleBoxedExtractorOrQueryAction(
+  {
+    actionType: "runBoxedQueryAction",
+    endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+    payload: {
+      application: adminSelfApplication.uuid,
+      applicationSection: "data",
+      queryExecutionStrategy: "storage",
+      query: {
+        application: adminSelfApplication.uuid,
+        queryType: "boxedQueryWithExtractorCombinerTransformer",
+        extractors: {
+          secrets: {
+            extractorOrCombinerType: "extractorInstancesByEntity",
+            parentUuid: ENTITY_MIROIR_SECRET_UUID,
+          },
+        },
+      },
+    },
+  },
+  defaultSelfApplicationDeploymentMap,
+  defaultMetaModelEnvironment,
+);
+if (secretRowsQuery instanceof Action2Error) {
+  throw new Error(`Error fetching MiroirSecret rows: ${secretRowsQuery.errorMessage}`);
+}
+const secretRowsRaw = secretRowsQuery.returnedDomainElement?.secrets;
+const secretRows = Array.isArray(secretRowsRaw)
+  ? secretRowsRaw
+  : secretRowsRaw && typeof secretRowsRaw === "object"
+    ? Object.values(secretRowsRaw)
+    : [];
+if (secretRows.length > 0 && !secretsMasterKey) {
+  throw new Error("MiroirSecret rows exist but no wrapping key was provided");
+}
+if (secretsMasterKey) {
+  hydrateSecrets({ wrappingKey: secretsMasterKey, rows: secretRows });
 }
 
 const deploymentsQueryResults = await domainController.handleBoxedExtractorOrQueryAction({

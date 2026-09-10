@@ -17,13 +17,14 @@ export type ParsedServerArgs = {
   keyFile?: string;
   help: boolean;
   secrets: Record<string, string>;
+  secretsMasterKey?: string;
 };
 
 const DEFAULT_CONFIG_FILE_PATH = "../config/miroirConfig.server.json";
 const SECRET_ENV_PREFIX = "MIROIR_SECRET_";
 
 const USAGE =
-  "Usage: node server.js [--config <path>] [--certsdir <dir>] [--cert <path>] [--key <path>] [--secret <name>=<value>] [--disable-auth] [--enable-auth] [-h|--help]";
+  "Usage: node server.js [--config <path>] [--certsdir <dir>] [--cert <path>] [--key <path>] [--secret <name>=<value>] [--secrets-master-key <value>] [--disable-auth] [--enable-auth] [-h|--help]";
 
 function requireValue(args: string[], index: number, flag: string): { value: string; nextIndex: number } {
   if (index + 1 >= args.length) {
@@ -69,6 +70,7 @@ function secretsFromEnv(env: NodeJS.ProcessEnv | undefined): Record<string, stri
 /**
  * Parse server CLI tokens (already sliced past node + script).
  * Env fallback: MIROIR_SECRET_<NAME>. CLI --secret wins over env.
+ * Wrapping key: --secrets-master-key > env MIROIR_SECRETS_MASTER_KEY.
  */
 export function parseServerArgs(
   argv: string[],
@@ -78,6 +80,10 @@ export function parseServerArgs(
     configFilePath: DEFAULT_CONFIG_FILE_PATH,
     help: false,
     secrets: secretsFromEnv(env),
+  };
+  const envMasterKey = env?.MIROIR_SECRETS_MASTER_KEY;
+  if (envMasterKey) {
+    result.secretsMasterKey = envMasterKey;
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -104,6 +110,10 @@ export function parseServerArgs(
       const next = requireValue(argv, i, "--secret");
       const assignment = parseSecretAssignment(next.value);
       result.secrets[assignment.name] = assignment.value;
+      i = next.nextIndex;
+    } else if (arg === "--secrets-master-key") {
+      const next = requireValue(argv, i, "--secrets-master-key");
+      result.secretsMasterKey = next.value;
       i = next.nextIndex;
     } else if (arg === "--disable-auth" || arg === "--enable-auth") {
       // consumed by resolveAuthenticationEnabled(process.argv)

@@ -7,6 +7,7 @@ export { default as entityImport } from "./assets/admin_model/16dbfe28-e1d7-4f20
 export { default as entityMiroirUser } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d20d09e5-0685-4fc7-b9bd-fcfa3845127a.json" with { type: "json" };
 export { default as entityMiroirRight } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a6136fc7-949b-4d64-9f13-dd3afce1ab3c.json" with { type: "json" };
 export { default as entityMiroirUserCredential } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/6c3ab489-1a36-4981-b5d0-bb3e02cfceed.json" with { type: "json" };
+export { default as entityMiroirSecret } from "./assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a96856df-2b38-494a-8027-82617e2d64ad.json" with { type: "json" };
 
 // Admin Model - Reports
 export { default as reportViewParamsDetails } from "./assets/admin_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/57b3d7ef-8c12-4891-893e-35bab00b2037.json" with { type: "json" };

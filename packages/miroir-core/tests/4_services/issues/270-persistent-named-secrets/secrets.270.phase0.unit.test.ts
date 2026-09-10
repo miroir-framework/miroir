@@ -10,7 +10,6 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   clearSecrets,
   parseServerArgs,
-  ParseServerArgsError,
   registerSecrets,
   resolveSecret,
 } from "miroir-core";
@@ -64,33 +63,46 @@ afterEach(() => {
 
 if (runThis) {
   describe("secrets.270.phase0 consumed-by Slice 1", () => {
-    it("real Admin entity folder has exactly 9 entities, no MiroirSecret, unused secret uuid", () => {
+    it("real Admin entity folder has exactly 10 entities including MiroirSecret", () => {
       const files = listEntityJsonFiles(ADMIN_MODEL_ENTITIES);
-      expect(files).toHaveLength(9);
-      expect(entityNamesInFolder(ADMIN_MODEL_ENTITIES)).not.toContain("MiroirSecret");
+      expect(files).toHaveLength(10);
+      expect(entityNamesInFolder(ADMIN_MODEL_ENTITIES)).toContain("MiroirSecret");
       expect(existsSync(join(ADMIN_MODEL_ENTITIES, `${MIROIR_SECRET_ENTITY_UUID}.json`))).toBe(
-        false,
+        true,
+      );
+      expect(readJson(join(ADMIN_MODEL_ENTITIES, `${MIROIR_SECRET_ENTITY_UUID}.json`)).name).toBe(
+        "MiroirSecret",
       );
     });
 
-    it("emulated test-asset Admin entity folder has exactly 5 entities, no MiroirSecret", () => {
+    it("emulated test-asset Admin entity folder has exactly 6 entities including MiroirSecret", () => {
       const files = listEntityJsonFiles(EMULATED_ADMIN_MODEL_ENTITIES);
-      expect(files).toHaveLength(5);
-      expect(entityNamesInFolder(EMULATED_ADMIN_MODEL_ENTITIES)).not.toContain("MiroirSecret");
+      expect(files).toHaveLength(6);
+      expect(entityNamesInFolder(EMULATED_ADMIN_MODEL_ENTITIES)).toContain("MiroirSecret");
+      expect(
+        existsSync(join(EMULATED_ADMIN_MODEL_ENTITIES, `${MIROIR_SECRET_ENTITY_UUID}.json`)),
+      ).toBe(true);
     });
 
-    it("parseServerArgs rejects --secrets-master-key as an unknown option", () => {
-      expect(() => parseServerArgs(["--secrets-master-key", "W"])).toThrow(ParseServerArgsError);
+    it("parseServerArgs accepts --secrets-master-key", () => {
+      const parsed = parseServerArgs(["--secrets-master-key", "W"]);
+      expect(parsed.secretsMasterKey).toBe("W");
     });
 
-    it("resolveSecret is (name: string) => string via registerSecrets hatch", () => {
+    it("resolveSecret returns { value, scope, source } via registerSecrets hatch", () => {
       registerSecrets({ k: "v" });
-      expect(resolveSecret("k")).toBe("v");
-      expect(typeof resolveSecret("k")).toBe("string");
+      expect(resolveSecret("k")).toEqual({
+        value: "v",
+        scope: "process",
+        source: "hatch",
+      });
     });
 
-    it("ParsedServerArgs has no secretsMasterKey field", () => {
-      expect("secretsMasterKey" in parseServerArgs([])).toBe(false);
+    it("ParsedServerArgs exposes secretsMasterKey when the flag or env is set", () => {
+      expect("secretsMasterKey" in parseServerArgs(["--secrets-master-key", "W"])).toBe(true);
+      expect(
+        "secretsMasterKey" in parseServerArgs([], { MIROIR_SECRETS_MASTER_KEY: "env-key" }),
+      ).toBe(true);
     });
   });
 

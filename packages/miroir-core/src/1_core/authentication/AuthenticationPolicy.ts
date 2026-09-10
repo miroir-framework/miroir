@@ -350,6 +350,7 @@ export async function loginWithPassword(
 
 export const ENTITY_MIROIR_USER_UUID = "d20d09e5-0685-4fc7-b9bd-fcfa3845127a";
 export const ENTITY_MIROIR_USER_CREDENTIAL_UUID = "6c3ab489-1a36-4981-b5d0-bb3e02cfceed";
+export const ENTITY_MIROIR_SECRET_UUID = "a96856df-2b38-494a-8027-82617e2d64ad";
 
 function normalizeInstanceList(value: unknown): Record<string, unknown>[] {
   if (Array.isArray(value)) {

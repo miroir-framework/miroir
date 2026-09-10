@@ -1,4 +1,7 @@
-import { ENTITY_MIROIR_USER_CREDENTIAL_UUID } from "../1_core/authentication/AuthenticationPolicy.js";
+import {
+  ENTITY_MIROIR_SECRET_UUID,
+  ENTITY_MIROIR_USER_CREDENTIAL_UUID,
+} from "../1_core/authentication/AuthenticationPolicy.js";
 import { redactRegisteredSecretValuesInString } from "./SecretStore.js";
 
 const SENSITIVE_KEYS = new Set(["authorization", "token", "credential", "secret"]);
@@ -25,8 +28,13 @@ export function redactCredentialSecretsFromValue(value: unknown): unknown {
   const next: Record<string, unknown> = {};
   const stripHash =
     String(record.parentUuid ?? "") === ENTITY_MIROIR_USER_CREDENTIAL_UUID && "passwordHash" in record;
+  const stripCiphertext =
+    String(record.parentUuid ?? "") === ENTITY_MIROIR_SECRET_UUID && "ciphertext" in record;
   for (const [key, child] of Object.entries(record)) {
     if (stripHash && key === "passwordHash") {
+      continue;
+    }
+    if (stripCiphertext && key === "ciphertext") {
       continue;
     }
     if (isSensitiveKey(key)) {
