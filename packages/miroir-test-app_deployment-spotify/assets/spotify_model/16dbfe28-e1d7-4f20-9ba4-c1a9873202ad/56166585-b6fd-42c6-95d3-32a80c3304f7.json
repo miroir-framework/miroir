@@ -55,6 +55,7 @@
       },
       "tracks": {
         "type": "object",
+        "optional": true,
         "definition": {
           "total": {
             "type": "number"
@@ -65,6 +66,51 @@
               "type": "object",
               "definition": {
                 "track": {
+                  "type": "object",
+                  "definition": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "artists": {
+                      "type": "array",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "duration_ms": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "items": {
+        "type": "object",
+        "optional": true,
+        "definition": {
+          "total": {
+            "type": "number"
+          },
+          "items": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "item": {
                   "type": "object",
                   "definition": {
                     "id": {

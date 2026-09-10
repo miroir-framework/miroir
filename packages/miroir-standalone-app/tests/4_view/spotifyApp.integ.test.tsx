@@ -15,7 +15,7 @@ import "@testing-library/jest-dom";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import React from "react";
+import React, { useEffect } from "react";
 import { MemoryRouter } from "react-router-dom";
 import * as RRDom from "react-router-dom";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -25,6 +25,7 @@ import type {
   Deployment,
   EndpointDefinition,
   EntityInstance,
+  JzodObject,
   Report,
   StoreUnitConfiguration,
 } from "miroir-core";
@@ -39,6 +40,8 @@ import {
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
+  getReportsAndEntitiesForDeploymentUuid,
+  jzodTypeCheck,
   LoggerInterface,
   LoggerOptions,
   MiroirActivityTracker,
@@ -50,7 +53,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   resetAndInitApplicationDeployment,
 } from "miroir-core";
-import { LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
+import { LocalCacheProvider, MiroirContextReactProvider, useMiroirContextService } from "miroir-react";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
@@ -176,6 +179,16 @@ const SPOTIFY_ENDPOINT_UUID = "0e5cb172-12ea-4467-8598-5889338ae454";
 const SPOTIFY_REPORT_UUID = "10ce3252-7840-4041-a769-9a0e2d5ee10b";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
+
+/** TypedValueObjectEditor dumps this prefix in a plain <span> when jzodTypeCheck fails (no testid). */
+const TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR = /typeError:/;
+/** Innermost jzodTypeCheck error for an unknown object key (stringified into CodeBlock_ReadOnly). */
+const JZOD_UNKNOWN_ATTRIBUTE_ERROR = /not found in schema definition/;
+
+function tracksOnlySpotifyPlaylistMlSchema(liveSchema: JzodObject): JzodObject {
+  const { items: _omittedNewShapeItems, ...definitionWithoutItems } = liveSchema.definition;
+  return { type: "object", definition: definitionWithoutItems };
+}
 
 const PHASE7_PLAYLIST = {
   ...PLAYLIST_OK,
@@ -325,6 +338,22 @@ async function overrideEndpointBaseUrl(baseUrl: string): Promise<void> {
   );
 }
 
+/** RootComponent normally seeds this mapping; ReportViewWithEditor tests must do the same. */
+function SeedSpotifyDeploymentMapping({ children }: { children: React.ReactNode }) {
+  const { setDeploymentUuidToReportsEntitiesMapping } = useMiroirContextService();
+  useEffect(() => {
+    setDeploymentUuidToReportsEntitiesMapping((previous) => ({
+      ...previous,
+      [deployment_Spotify_DO_NO_USE.uuid]: getReportsAndEntitiesForDeploymentUuid(
+        selfApplicationSpotify.uuid,
+        defaultMiroirMetaModel,
+        defaultSpotifyAppModel,
+      ),
+    }));
+  }, [setDeploymentUuidToReportsEntitiesMapping]);
+  return <>{children}</>;
+}
+
 function playlistPageParams(reportUuid: string, playlistId?: string) {
   return {
     application: selfApplicationSpotify.uuid,
@@ -335,7 +364,11 @@ function playlistPageParams(reportUuid: string, playlistId?: string) {
   };
 }
 
-function renderSpotifyReport(reportDefinition: Report, playlistId?: string) {
+function renderSpotifyReport(
+  reportDefinition: Report,
+  playlistId?: string,
+  options?: { seedEntityMapping?: boolean },
+) {
   const pageParams = playlistPageParams(reportDefinition.uuid, playlistId);
   vi.spyOn(RRDom, "useParams").mockReturnValue(pageParams);
   const search = new URLSearchParams({
@@ -346,6 +379,25 @@ function renderSpotifyReport(reportDefinition: Report, playlistId?: string) {
     reportUuid: pageParams.reportUuid,
     ...(playlistId !== undefined ? { playlistId } : {}),
   }).toString();
+
+  const reportTree = (
+    <DocumentOutlineContextProvider
+      isOutlineOpen={false}
+      onToggleOutline={() => {}}
+      onNavigateToPath={() => {}}
+    >
+      <ReportPageContextProvider>
+        <ReportViewWithEditor
+          applicationSection="data"
+          application={selfApplicationSpotify.uuid}
+          applicationDeploymentMap={applicationDeploymentMap}
+          deploymentUuid={deployment_Spotify_DO_NO_USE.uuid}
+          pageParams={pageParams}
+          reportDefinition={reportDefinition}
+        />
+      </ReportPageContextProvider>
+    </DocumentOutlineContextProvider>
+  );
 
   return render(
     <MemoryRouter
@@ -360,22 +412,11 @@ function renderSpotifyReport(reportDefinition: Report, playlistId?: string) {
             testingApplication={selfApplicationSpotify.uuid}
             testingDeploymentUuid={deployment_Spotify_DO_NO_USE.uuid}
           >
-            <DocumentOutlineContextProvider
-              isOutlineOpen={false}
-              onToggleOutline={() => {}}
-              onNavigateToPath={() => {}}
-            >
-              <ReportPageContextProvider>
-                <ReportViewWithEditor
-                  applicationSection="data"
-                  application={selfApplicationSpotify.uuid}
-                  applicationDeploymentMap={applicationDeploymentMap}
-                  deploymentUuid={deployment_Spotify_DO_NO_USE.uuid}
-                  pageParams={pageParams}
-                  reportDefinition={reportDefinition}
-                />
-              </ReportPageContextProvider>
-            </DocumentOutlineContextProvider>
+            {options?.seedEntityMapping ? (
+              <SeedSpotifyDeploymentMapping>{reportTree}</SeedSpotifyDeploymentMapping>
+            ) : (
+              reportTree
+            )}
           </MiroirContextReactProvider>
         </LocalCacheProvider>
       </MiroirThemeProvider>
@@ -614,20 +655,60 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
     expect(params.get("playlistId")).toBe(PLAYLIST_ID_OK);
   });
 
+  it("new-shape playlist fails display-time jzodTypeCheck against a tracks-only SpotifyPlaylist mlSchema", () => {
+    const liveSchema = entitySpotifyPlaylist.mlSchema as JzodObject;
+    expect(
+      liveSchema.definition.items,
+      "live SpotifyPlaylist mlSchema must include optional items (the entity-schema fix)",
+    ).toBeDefined();
+
+    const staleResult = jzodTypeCheck(
+      tracksOnlySpotifyPlaylistMlSchema(liveSchema),
+      PLAYLIST_NEW_SHAPE,
+      [],
+      [],
+      defaultSpotifyModelEnvironment,
+      {},
+    );
+    expect(staleResult.status).toBe("error");
+    expect(JSON.stringify(staleResult)).toMatch(JZOD_UNKNOWN_ATTRIBUTE_ERROR);
+    expect(JSON.stringify(staleResult)).toMatch(/'items'/);
+
+    const liveResult = jzodTypeCheck(
+      liveSchema,
+      PLAYLIST_NEW_SHAPE,
+      [],
+      [],
+      defaultSpotifyModelEnvironment,
+      {},
+    );
+    expect(liveResult.status).toBe("ok");
+  });
+
   it("playlist report renders tracks from the Feb-2026 `items.items[].item` response shape", async () => {
-    renderSpotifyReport(reportSpotifyPlaylist as Report, PLAYLIST_ID_NEWSHAPE);
+    renderSpotifyReport(reportSpotifyPlaylist as Report, PLAYLIST_ID_NEWSHAPE, {
+      seedEntityMapping: true,
+    });
 
     await waitFor(
       () => {
-        expect(
-          screen.getAllByText(PLAYLIST_NEW_SHAPE.name, { exact: false }).length,
-        ).toBeGreaterThan(0);
+        // Name is an editor input (objectInstanceReportSection), not visible text.
+        expect(screen.getByDisplayValue(PLAYLIST_NEW_SHAPE.name)).toBeTruthy();
         expect(
           screen.getAllByText(NEW_SHAPE_FIRST_TRACK_LITERAL, { exact: false }).length,
         ).toBeGreaterThan(0);
       },
       { timeout: 15000 },
     );
+
+    // objectInstanceReportSection → TypedValueObjectEditor: no testid on the
+    // failure box. On jzodTypeCheck error it renders a <span>"typeError: "…</span>
+    // plus CodeBlock_ReadOnly of getInnermostTypeCheckError (the live bug dump).
+    expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
+    expect(screen.queryByText(JZOD_UNKNOWN_ATTRIBUTE_ERROR)).toBeNull();
+    expect(screen.queryByText(/Could not resolve jzod schema/)).toBeNull();
+    expect(document.body.textContent).not.toMatch(JZOD_UNKNOWN_ATTRIBUTE_ERROR);
+    expect(screen.queryByText(/Oops, ReportSectionEntityInstance could not be displayed/)).toBeNull();
   });
 
   it("playlist report tolerates a metadata-only response (no tracks/items) without a query failure", async () => {

@@ -21,17 +21,95 @@
     },
     "runtimeTransformers": {
       "tracks": {
-        "transformerType": "accessDynamicPath",
+        "transformerType": "case",
         "interpolation": "runtime",
-        "objectAccessPath": [
-          {
-            "transformerType": "getFromContext",
+        "discriminator": {
+          "transformerType": "boolExpr",
+          "interpolation": "runtime",
+          "operator": "isNotNull",
+          "left": {
+            "transformerType": "accessDynamicPath",
             "interpolation": "runtime",
-            "referenceName": "playlist"
+            "objectAccessPath": [
+              {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referenceName": "playlist"
+              },
+              "items"
+            ]
+          }
+        },
+        "whens": [
+          {
+            "when": {
+              "transformerType": "returnValue",
+              "interpolation": "runtime",
+              "value": true
+            },
+            "then": {
+              "transformerType": "accessDynamicPath",
+              "interpolation": "runtime",
+              "objectAccessPath": [
+                {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "playlist"
+                },
+                "items",
+                "items"
+              ]
+            }
+          }
+        ],
+        "else": {
+          "transformerType": "case",
+          "interpolation": "runtime",
+          "discriminator": {
+            "transformerType": "boolExpr",
+            "interpolation": "runtime",
+            "operator": "isNotNull",
+            "left": {
+              "transformerType": "accessDynamicPath",
+              "interpolation": "runtime",
+              "objectAccessPath": [
+                {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "playlist"
+                },
+                "tracks"
+              ]
+            }
           },
-          "tracks",
-          "items"
-        ]
+          "whens": [
+            {
+              "when": {
+                "transformerType": "returnValue",
+                "interpolation": "runtime",
+                "value": true
+              },
+              "then": {
+                "transformerType": "accessDynamicPath",
+                "interpolation": "runtime",
+                "objectAccessPath": [
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "playlist"
+                  },
+                  "tracks",
+                  "items"
+                ]
+              }
+            }
+          ],
+          "else": {
+            "transformerType": "returnValue",
+            "interpolation": "runtime",
+            "value": []
+          }
+        }
       }
     }
   }
