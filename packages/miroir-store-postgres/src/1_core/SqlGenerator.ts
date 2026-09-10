@@ -3924,6 +3924,23 @@ function sqlStringForPivotTransformer(
         "pivot: onDuplicates \"" + onDuplicates + "\" requires valueAttribute (existence mode allows only first/last)",
     });
   }
+  if (
+    Array.isArray(actionRuntimeTransformer.columns) &&
+    (actionRuntimeTransformer.columns as any[]).map(String).includes(rowKeyAttribute)
+  ) {
+    return new Domain2ElementFailed({
+      queryFailure: "FailedTransformer",
+      query: actionRuntimeTransformer as any,
+      failureMessage:
+        "pivot: column keys must not include the rowKeyAttribute name \"" + rowKeyAttribute + "\"",
+    });
+  }
+
+  const rowKeySql = sqlLiteral(rowKeyAttribute);
+  const columnKeySql = sqlLiteral(columnKeyAttribute);
+  const valueAttrSql = hasValueAttribute
+    ? sqlLiteral(actionRuntimeTransformer.valueAttribute as string)
+    : undefined;
 
   const applyTo = sqlStringForApplyTo(
     actionRuntimeTransformer,
@@ -3971,15 +3988,15 @@ function sqlStringForPivotTransformer(
   });
   extraWith.push({ name: unnestLabel, sql: unnestSql });
 
-  // stage 2: cells — sparse-null rule: absent keys (SQL NULL) and JSON-null cells are missing pairs
-  const cellExpr = hasValueAttribute
-    ? `element -> '${actionRuntimeTransformer.valueAttribute}'`
-    : `'true'::jsonb`;
+  // stage 2: cells — sparse-null rule; skip null keys (parity with in-memory)
+  const cellExpr = hasValueAttribute ? `element -> ${valueAttrSql}` : `'true'::jsonb`;
   const cellsLabel = transformerLabel + "_cells";
   const cellsSql =
-    `SELECT row_key, col_key, cell_val, ord FROM (SELECT (element -> '${rowKeyAttribute}') AS row_key,` +
-    ` (element ->> '${columnKeyAttribute}') AS col_key, ${cellExpr} AS cell_val, ord FROM ${sqlNameQuote(unnestLabel)}) AS ${transformerLabel}_cellsrw` +
-    ` WHERE cell_val IS NOT NULL AND jsonb_typeof(cell_val) IS DISTINCT FROM 'null'`;
+    `SELECT row_key, col_key, cell_val, ord FROM (SELECT (element -> ${rowKeySql}) AS row_key,` +
+    ` (element ->> ${columnKeySql}) AS col_key, ${cellExpr} AS cell_val, ord FROM ${sqlNameQuote(unnestLabel)}) AS ${transformerLabel}_cellsrw` +
+    ` WHERE row_key IS NOT NULL AND jsonb_typeof(row_key) IS DISTINCT FROM 'null'` +
+    ` AND col_key IS NOT NULL AND col_key <> ${rowKeySql}` +
+    ` AND cell_val IS NOT NULL AND jsonb_typeof(cell_val) IS DISTINCT FROM 'null'`;
   extraWith.push({ name: cellsLabel, sql: cellsSql });
 
   // stage 3a: columns — explicit (transformer resolving to a JSON array of strings) or data-derived
@@ -4009,12 +4026,17 @@ function sqlStringForPivotTransformer(
     extraWith.push(...(columnsSql.extraWith ?? []));
     extraWith.push({
       name: colsLabel,
-      sql: `SELECT jsonb_array_elements_text(src.${sqlNameQuote((columnsSql as any).columnNameContainingJsonValue)}) AS col_key FROM (${columnsSql.sqlStringOrObject}) AS src`,
+      sql:
+        `SELECT col_key FROM (SELECT jsonb_array_elements_text(src.${sqlNameQuote((columnsSql as any).columnNameContainingJsonValue)}) AS col_key` +
+        ` FROM (${columnsSql.sqlStringOrObject}) AS src) AS ${transformerLabel}_colsrc` +
+        ` WHERE col_key IS NOT NULL AND col_key <> ${rowKeySql}`,
     });
   } else {
     extraWith.push({
       name: colsLabel,
-      sql: `SELECT DISTINCT (element ->> '${columnKeyAttribute}') AS col_key FROM ${sqlNameQuote(unnestLabel)}`,
+      sql:
+        `SELECT DISTINCT (element ->> ${columnKeySql}) AS col_key FROM ${sqlNameQuote(unnestLabel)}` +
+        ` WHERE (element ->> ${columnKeySql}) IS NOT NULL AND (element ->> ${columnKeySql}) <> ${rowKeySql}`,
     });
   }
 
@@ -4054,7 +4076,10 @@ function sqlStringForPivotTransformer(
   const rowsLabel = transformerLabel + "_rows";
   extraWith.push({
     name: rowsLabel,
-    sql: `SELECT (element -> '${rowKeyAttribute}') AS row_key, MIN(ord) AS min_ord FROM ${sqlNameQuote(unnestLabel)} GROUP BY row_key`,
+    sql:
+      `SELECT (element -> ${rowKeySql}) AS row_key, MIN(ord) AS min_ord FROM ${sqlNameQuote(unnestLabel)}` +
+      ` WHERE (element -> ${rowKeySql}) IS NOT NULL AND jsonb_typeof(element -> ${rowKeySql}) IS DISTINCT FROM 'null'` +
+      ` GROUP BY row_key`,
   });
 
   // fillValue as prepared-statement parameter (sparse when JSON null)
@@ -4063,17 +4088,18 @@ function sqlStringForPivotTransformer(
   preparedStatementParameters.push(JSON.stringify(fillValue === undefined ? null : fillValue));
   const fillSql = `COALESCE(f.cell_val, $${fillParamIndex}::jsonb)`;
 
-  // stage 5: filled grid → per-row object (sparse: JSON-null cells dropped by the FILTER)
+  // stage 5: filled grid — correlated subquery keeps rows when cols is empty (parity with in-memory)
   const groupedLabel = transformerLabel + "_grouped";
   extraWith.push({
     name: groupedLabel,
     sql:
-      `SELECT r.row_key, r.min_ord, jsonb_build_object('${rowKeyAttribute}', r.row_key) || COALESCE(` +
-      `jsonb_object_agg(c.col_key, ${fillSql}) FILTER (WHERE jsonb_typeof(${fillSql}) IS DISTINCT FROM 'null'),` +
-      ` '{}'::jsonb) AS pivot_row` +
-      ` FROM ${sqlNameQuote(rowsLabel)} r CROSS JOIN ${sqlNameQuote(colsLabel)} c` +
+      `SELECT r.row_key, r.min_ord, jsonb_build_object(${rowKeySql}, r.row_key) || COALESCE(` +
+      `(SELECT jsonb_object_agg(c.col_key, ${fillSql}) FILTER (WHERE jsonb_typeof(${fillSql}) IS DISTINCT FROM 'null')` +
+      ` FROM ${sqlNameQuote(colsLabel)} c` +
       ` LEFT JOIN ${sqlNameQuote(reducedLabel)} f ON f.row_key = r.row_key AND f.col_key = c.col_key` +
-      ` GROUP BY r.row_key, r.min_ord`,
+      ` WHERE c.col_key IS NOT NULL AND c.col_key <> ${rowKeySql}),` +
+      ` '{}'::jsonb) AS pivot_row` +
+      ` FROM ${sqlNameQuote(rowsLabel)} r`,
   });
 
   // stage 6: final array in first-appearance row order
@@ -4120,6 +4146,13 @@ function sqlStringForUnpivotTransformer(
   const idColumns: string[] = (actionRuntimeTransformer.idColumns as any) ?? [];
   const nameInto = actionRuntimeTransformer.nameInto ?? "column";
   const valueInto = actionRuntimeTransformer.valueInto ?? "value";
+  if (nameInto === valueInto) {
+    return new Domain2ElementFailed({
+      queryFailure: "FailedTransformer",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "unpivot: nameInto and valueInto must differ (both \"" + nameInto + "\")",
+    });
+  }
   if (idColumns.includes(nameInto) || idColumns.includes(valueInto)) {
     return new Domain2ElementFailed({
       queryFailure: "FailedTransformer",
@@ -4128,6 +4161,9 @@ function sqlStringForUnpivotTransformer(
         "unpivot: nameInto/valueInto must not collide with idColumns (" + idColumns.join(", ") + ")",
     });
   }
+
+  const nameIntoSql = sqlLiteral(nameInto);
+  const valueIntoSql = sqlLiteral(valueInto);
 
   const applyTo = sqlStringForApplyTo(
     actionRuntimeTransformer,
@@ -4180,7 +4216,9 @@ function sqlStringForUnpivotTransformer(
   // stage 2: key filter — idColumns excluded; explicit columns whitelist when given
   const keyFilters: string[] = [];
   if (idColumns.length > 0) {
-    keyFilters.push(`kv.key <> ALL (ARRAY[${idColumns.map((c) => `'${c}'`).join(", ")}]::text[])`);
+    keyFilters.push(
+      `kv.key <> ALL (ARRAY[${idColumns.map((c) => sqlLiteral(c)).join(", ")}]::text[])`,
+    );
   }
   if (actionRuntimeTransformer.columns != null) {
     const columnsSql = sqlStringForRuntimeTransformer(
@@ -4215,10 +4253,10 @@ function sqlStringForUnpivotTransformer(
 
   // stage 3: melt via LATERAL jsonb_each — explicit JSON-null cells kept (D6)
   const buildObjectArgs = [
-    ...idColumns.flatMap((c) => [`'${c}'`, `element -> '${c}'`]),
-    `'${nameInto}'`,
+    ...idColumns.flatMap((c) => [sqlLiteral(c), `element -> ${sqlLiteral(c)}`]),
+    nameIntoSql,
     "kv.key",
-    `'${valueInto}'`,
+    valueIntoSql,
     "kv.value",
   ].join(", ");
   const meltedLabel = transformerLabel + "_melted";

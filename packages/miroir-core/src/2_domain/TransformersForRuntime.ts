@@ -726,6 +726,26 @@ export function defaultValueForMLSchemaTransformer(
 // ################################################################################################
 // # pivot / unpivot (issue #265) — relational reshaping transformers
 // ################################################################################################
+
+/** Coerce a cell value for sum/min/max — mirrors SQL `(cell_val #>> '{}')::numeric`. */
+function pivotCoerceNumericAggregateValue(
+  val: any,
+  transformerPath: string[],
+): number {
+  if (typeof val === "number" && Number.isFinite(val)) return val;
+  if (typeof val === "string") {
+    const n = Number(val);
+    if (Number.isFinite(n)) return n;
+  }
+  throw new TransformerFailure({
+    queryFailure: "FailedTransformer",
+    transformerPath,
+    failureOrigin: ["handleTransformer_pivot"],
+    failureMessage:
+      "pivot: numeric aggregate requires numeric cell values, got: " + JSON.stringify(val),
+  });
+}
+
 /**
  * pivot: list of row objects → one object per distinct rowKeyAttribute value,
  * with one attribute per columnKeyAttribute value.
@@ -815,6 +835,15 @@ export function handleTransformer_pivot(
     }
     columnKeys = resolvedColumns.map(String);
   }
+  if (columnKeys.includes(rowKeyAttribute)) {
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_pivot"],
+      failureMessage:
+        "pivot: column keys must not include the rowKeyAttribute name \"" + rowKeyAttribute + "\"",
+    });
+  }
 
   // D5 (issue #265): aggregate policies require valueAttribute — existence mode allows only first/last
   const onDuplicates = (transformer as any).onDuplicates ?? "first";
@@ -832,20 +861,37 @@ export function handleTransformer_pivot(
   const cellMap = new Map<any, Map<string, any>>(); // rowKey -> colKey -> reduced value (insertion order = first appearance)
   for (const row of rows) {
     const rk = row[rowKeyAttribute];
+    const colRaw = row[columnKeyAttribute];
+    // null/undefined keys are skipped in both modes (SQL cannot join on JSON null keys)
+    if (rk == null || colRaw == null) continue;
     // the row key exists even when all its cells are out of the column set or null (fill applies)
     let cells = cellMap.get(rk);
     if (!cells) {
       cells = new Map();
       cellMap.set(rk, cells);
     }
-    const cellKey = String(row[columnKeyAttribute]);
+    const cellKey = String(colRaw);
+    // a column attribute must not overwrite the row-identity field
+    if (cellKey === rowKeyAttribute) continue;
     // explicit column set: input rows outside it are ignored (SQL stage-3 join does the same)
     if (!columnKeys.includes(cellKey)) continue;
     const cellValue = hasValueAttribute ? row[transformer.valueAttribute as string] : true;
     // sparse-null rule: a plucked null/undefined behaves as a missing pair (fillValue applies)
     if (cellValue == null) continue;
     if (!cells.has(cellKey)) {
-      cells.set(cellKey, onDuplicates === "count" ? 1 : cellValue);
+      switch (onDuplicates) {
+        case "count":
+          cells.set(cellKey, 1);
+          break;
+        case "sum":
+        case "min":
+        case "max":
+          cells.set(cellKey, pivotCoerceNumericAggregateValue(cellValue, transformerPath));
+          break;
+        default:
+          cells.set(cellKey, cellValue);
+          break;
+      }
     } else {
       switch (onDuplicates) {
         case "first":
@@ -857,13 +903,29 @@ export function handleTransformer_pivot(
           cells.set(cellKey, cells.get(cellKey) + 1);
           break;
         case "sum":
-          cells.set(cellKey, cells.get(cellKey) + (typeof cellValue === "number" ? cellValue : 0));
+          cells.set(
+            cellKey,
+            pivotCoerceNumericAggregateValue(cells.get(cellKey), transformerPath) +
+              pivotCoerceNumericAggregateValue(cellValue, transformerPath),
+          );
           break;
         case "min":
-          cells.set(cellKey, Math.min(cells.get(cellKey), cellValue));
+          cells.set(
+            cellKey,
+            Math.min(
+              pivotCoerceNumericAggregateValue(cells.get(cellKey), transformerPath),
+              pivotCoerceNumericAggregateValue(cellValue, transformerPath),
+            ),
+          );
           break;
         case "max":
-          cells.set(cellKey, Math.max(cells.get(cellKey), cellValue));
+          cells.set(
+            cellKey,
+            Math.max(
+              pivotCoerceNumericAggregateValue(cells.get(cellKey), transformerPath),
+              pivotCoerceNumericAggregateValue(cellValue, transformerPath),
+            ),
+          );
           break;
       }
     }
@@ -921,6 +983,14 @@ export function handleTransformer_unpivot(
   const idColumns: string[] = (transformer.idColumns as any) ?? [];
   const nameInto = transformer.nameInto ?? "column";
   const valueInto = transformer.valueInto ?? "value";
+  if (nameInto === valueInto) {
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_unpivot"],
+      failureMessage: "unpivot: nameInto and valueInto must differ (both \"" + nameInto + "\")",
+    });
+  }
   if (idColumns.includes(nameInto) || idColumns.includes(valueInto)) {
     throw new TransformerFailure({
       queryFailure: "FailedTransformer",
