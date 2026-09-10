@@ -109,6 +109,8 @@ export {
   CoreTransformerForBuildPlusRuntime_filterList,
   CoreTransformerForBuildPlusRuntime_find,
   CoreTransformerForBuildPlusRuntime_sortList,
+  CoreTransformerForBuildPlusRuntime_pivot,
+  CoreTransformerForBuildPlusRuntime_unpivot,
   CoreTransformerForBuildPlusRuntime_listLength,
   CoreTransformerForBuildPlusRuntime_object_fromEntries,
   CoreTransformerForBuildPlusRuntime_stringOp,

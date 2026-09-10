@@ -36,6 +36,8 @@ import {
   transformer_find_json,
   transformer_object_fromEntries_json,
   transformer_sortList_json,
+  transformer_pivot_json,
+  transformer_unpivot_json,
   transformer_listLength_json,
   transformer_stringOp_json,
   transformer_currentTimestamp_json,
@@ -99,6 +101,8 @@ export const transformer_filterList: TransformerDefinition = transformer_filterL
 export const transformer_find: TransformerDefinition = transformer_find_json as TransformerDefinition;
 export const transformer_object_fromEntries: TransformerDefinition = transformer_object_fromEntries_json as TransformerDefinition;
 export const transformer_sortList: TransformerDefinition = transformer_sortList_json as TransformerDefinition;
+export const transformer_pivot: TransformerDefinition = transformer_pivot_json as TransformerDefinition;
+export const transformer_unpivot: TransformerDefinition = transformer_unpivot_json as TransformerDefinition;
 export const transformer_listLength: TransformerDefinition = transformer_listLength_json as TransformerDefinition;
 export const transformer_stringOp: TransformerDefinition = transformer_stringOp_json as TransformerDefinition;
 export const transformer_currentTimestamp: TransformerDefinition = transformer_currentTimestamp_json as TransformerDefinition;
@@ -167,6 +171,8 @@ export const miroirCoreTransformers: Record<string,TransformerDefinition> = {
   transformer_find,
   transformer_object_fromEntries,
   transformer_sortList,
+  transformer_pivot,
+  transformer_unpivot,
   transformer_listLength,
   transformer_stringOp,
   transformer_currentTimestamp,

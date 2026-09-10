@@ -22,6 +22,8 @@ import {
   type CoreTransformerForBuildPlusRuntime_find,
   type CoreTransformerForBuildPlusRuntime_object_fromEntries,
   type CoreTransformerForBuildPlusRuntime_sortList,
+  type CoreTransformerForBuildPlusRuntime_pivot,
+  type CoreTransformerForBuildPlusRuntime_unpivot,
   type CoreTransformerForBuildPlusRuntime_listLength,
   type CoreTransformerForBuildPlusRuntime_stringOp,
   type CoreTransformerForBuildPlusRuntime_currentTimestamp,
@@ -125,6 +127,8 @@ import {
   transformer_find,
   transformer_object_fromEntries,
   transformer_sortList,
+  transformer_pivot,
+  transformer_unpivot,
   transformer_listLength,
   transformer_stringOp,
   transformer_currentTimestamp,
@@ -719,6 +723,325 @@ export function defaultValueForMLSchemaTransformer(
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+// ################################################################################################
+// # pivot / unpivot (issue #265) — relational reshaping transformers
+// ################################################################################################
+
+/** Coerce a cell value for sum/min/max — mirrors SQL `(cell_val #>> '{}')::numeric`. */
+function pivotCoerceNumericAggregateValue(
+  val: any,
+  transformerPath: string[],
+): number {
+  if (typeof val === "number" && Number.isFinite(val)) return val;
+  if (typeof val === "string") {
+    const n = Number(val);
+    if (Number.isFinite(n)) return n;
+  }
+  throw new TransformerFailure({
+    queryFailure: "FailedTransformer",
+    transformerPath,
+    failureOrigin: ["handleTransformer_pivot"],
+    failureMessage:
+      "pivot: numeric aggregate requires numeric cell values, got: " + JSON.stringify(val),
+  });
+}
+
+/**
+ * pivot: list of row objects → one object per distinct rowKeyAttribute value,
+ * with one attribute per columnKeyAttribute value.
+ *
+ * Structured like the SQL CTE pipeline (analysis D4): resolve columns → reduce cells → fill → emit.
+ * Slice 1 scope: existence mode (no valueAttribute), data-derived columns, default fillValue.
+ */
+export function handleTransformer_pivot(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_pivot,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any[]> {
+  const resolvedApplyTo = resolveApplyTo_legacy(
+    transformer as any,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    queryParams,
+    contextResults,
+    label,
+    reduxDeploymentsState
+  );
+  if (!Array.isArray(resolvedApplyTo)) {
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_pivot"],
+      failureMessage: "pivot: applyTo is not an array, got: " + typeof resolvedApplyTo,
+    });
+  }
+  const rows = resolvedApplyTo as any[];
+  const rowKeyAttribute = transformer.rowKeyAttribute;
+  const columnKeyAttribute = transformer.columnKeyAttribute;
+  if (!rowKeyAttribute || !columnKeyAttribute) {
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_pivot"],
+      failureMessage: "pivot: rowKeyAttribute and columnKeyAttribute are required",
+    });
+  }
+
+  // fill stage default: false in existence mode, null when valueAttribute is set.
+  // Sparse-null rule (analysis D2, issue #265): a null fillValue means missing pairs yield absent keys.
+  const hasValueAttribute = transformer.valueAttribute != null;
+  const fillValue = "fillValue" in transformer ? (transformer as any).fillValue : hasValueAttribute ? null : false;
+  const sparseFill = fillValue == null;
+
+  // stage: column set — explicit (literal string[] or transformer resolving to string[])
+  // or data-derived from the input (first-appearance order). Analysis D3 (issue #265).
+  let columnKeys: string[];
+  if (transformer.columns == null) {
+    columnKeys = [];
+    for (const row of rows) {
+      const ck = String(row[columnKeyAttribute]);
+      if (!columnKeys.includes(ck)) columnKeys.push(ck);
+    }
+  } else if (Array.isArray(transformer.columns)) {
+    columnKeys = (transformer.columns as any[]).map(String);
+  } else {
+    const resolvedColumns = defaultTransformers.transformer_extended_apply(
+      step,
+      [...transformerPath, "columns"],
+      label,
+      transformer.columns as any,
+      resolveBuildTransformersTo,
+      modelEnvironment,
+      queryParams,
+      contextResults,
+      reduxDeploymentsState
+    );
+    if (!Array.isArray(resolvedColumns)) {
+      throw new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_pivot"],
+        failureMessage:
+          "pivot: columns transformer did not resolve to an array, got: " + typeof resolvedColumns,
+      });
+    }
+    columnKeys = resolvedColumns.map(String);
+  }
+  if (columnKeys.includes(rowKeyAttribute)) {
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_pivot"],
+      failureMessage:
+        "pivot: column keys must not include the rowKeyAttribute name \"" + rowKeyAttribute + "\"",
+    });
+  }
+
+  // D5 (issue #265): aggregate policies require valueAttribute — existence mode allows only first/last
+  const onDuplicates = (transformer as any).onDuplicates ?? "first";
+  if (!hasValueAttribute && onDuplicates !== "first" && onDuplicates !== "last") {
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_pivot"],
+      failureMessage:
+        "pivot: onDuplicates \"" + onDuplicates + "\" requires valueAttribute (existence mode allows only first/last)",
+    });
+  }
+
+  // stage: reduce cells per (rowKey, colKey) — mirrors the SQL cell-reduction CTE
+  const cellMap = new Map<any, Map<string, any>>(); // rowKey -> colKey -> reduced value (insertion order = first appearance)
+  for (const row of rows) {
+    const rk = row[rowKeyAttribute];
+    const colRaw = row[columnKeyAttribute];
+    // null/undefined keys are skipped in both modes (SQL cannot join on JSON null keys)
+    if (rk == null || colRaw == null) continue;
+    // the row key exists even when all its cells are out of the column set or null (fill applies)
+    let cells = cellMap.get(rk);
+    if (!cells) {
+      cells = new Map();
+      cellMap.set(rk, cells);
+    }
+    const cellKey = String(colRaw);
+    // a column attribute must not overwrite the row-identity field
+    if (cellKey === rowKeyAttribute) continue;
+    // explicit column set: input rows outside it are ignored (SQL stage-3 join does the same)
+    if (!columnKeys.includes(cellKey)) continue;
+    const cellValue = hasValueAttribute ? row[transformer.valueAttribute as string] : true;
+    // sparse-null rule: a plucked null/undefined behaves as a missing pair (fillValue applies)
+    if (cellValue == null) continue;
+    if (!cells.has(cellKey)) {
+      switch (onDuplicates) {
+        case "count":
+          cells.set(cellKey, 1);
+          break;
+        case "sum":
+        case "min":
+        case "max":
+          cells.set(cellKey, pivotCoerceNumericAggregateValue(cellValue, transformerPath));
+          break;
+        default:
+          cells.set(cellKey, cellValue);
+          break;
+      }
+    } else {
+      switch (onDuplicates) {
+        case "first":
+          break;
+        case "last":
+          cells.set(cellKey, cellValue);
+          break;
+        case "count":
+          cells.set(cellKey, cells.get(cellKey) + 1);
+          break;
+        case "sum":
+          cells.set(
+            cellKey,
+            pivotCoerceNumericAggregateValue(cells.get(cellKey), transformerPath) +
+              pivotCoerceNumericAggregateValue(cellValue, transformerPath),
+          );
+          break;
+        case "min":
+          cells.set(
+            cellKey,
+            Math.min(
+              pivotCoerceNumericAggregateValue(cells.get(cellKey), transformerPath),
+              pivotCoerceNumericAggregateValue(cellValue, transformerPath),
+            ),
+          );
+          break;
+        case "max":
+          cells.set(
+            cellKey,
+            Math.max(
+              pivotCoerceNumericAggregateValue(cells.get(cellKey), transformerPath),
+              pivotCoerceNumericAggregateValue(cellValue, transformerPath),
+            ),
+          );
+          break;
+      }
+    }
+  }
+
+  // stage: fill + emit rows in first-appearance order (SQL: ORDER BY min(ord))
+  const result: any[] = [];
+  for (const [rk, cells] of cellMap) {
+    const out: any = { [rowKeyAttribute]: rk };
+    for (const ck of columnKeys) {
+      if (cells.has(ck)) out[ck] = cells.get(ck);
+      else if (!sparseFill) out[ck] = fillValue;
+    }
+    result.push(out);
+  }
+  return result;
+}
+
+/**
+ * unpivot: row objects → long format `{...idColumns, [nameInto]: column, [valueInto]: value}`.
+ * D6 (issue #265): absent keys skipped, explicit nulls kept; nameInto/valueInto must not collide
+ * with idColumns; columns omitted ⇒ per-row melt of own keys minus idColumns.
+ */
+export function handleTransformer_unpivot(
+  step: Step,
+  transformerPath: string[],
+  label: string | undefined,
+  transformer: CoreTransformerForBuildPlusRuntime_unpivot,
+  resolveBuildTransformersTo: ResolveBuildTransformersTo,
+  modelEnvironment: MiroirModelEnvironment,
+  queryParams: Record<string, any>,
+  contextResults?: Record<string, any>,
+  reduxDeploymentsState?: ReduxDeploymentsState | undefined
+): TransformerReturnType<any[]> {
+  const resolvedApplyTo = resolveApplyTo_legacy(
+    transformer as any,
+    step,
+    transformerPath,
+    resolveBuildTransformersTo,
+    modelEnvironment,
+    queryParams,
+    contextResults,
+    label,
+    reduxDeploymentsState
+  );
+  if (!Array.isArray(resolvedApplyTo)) {
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_unpivot"],
+      failureMessage: "unpivot: applyTo is not an array, got: " + typeof resolvedApplyTo,
+    });
+  }
+  const rows = resolvedApplyTo as any[];
+  const idColumns: string[] = (transformer.idColumns as any) ?? [];
+  const nameInto = transformer.nameInto ?? "column";
+  const valueInto = transformer.valueInto ?? "value";
+  if (nameInto === valueInto) {
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_unpivot"],
+      failureMessage: "unpivot: nameInto and valueInto must differ (both \"" + nameInto + "\")",
+    });
+  }
+  if (idColumns.includes(nameInto) || idColumns.includes(valueInto)) {
+    throw new TransformerFailure({
+      queryFailure: "FailedTransformer",
+      transformerPath,
+      failureOrigin: ["handleTransformer_unpivot"],
+      failureMessage:
+        "unpivot: nameInto/valueInto must not collide with idColumns (" + idColumns.join(", ") + ")",
+    });
+  }
+
+  // explicit whitelist (transformer resolving to string[]); omitted ⇒ per-row melt
+  let explicitColumns: string[] | undefined;
+  if (transformer.columns != null) {
+    const resolvedColumns = Array.isArray(transformer.columns)
+      ? transformer.columns
+      : defaultTransformers.transformer_extended_apply(
+          step,
+          [...transformerPath, "columns"],
+          label,
+          transformer.columns as any,
+          resolveBuildTransformersTo,
+          modelEnvironment,
+          queryParams,
+          contextResults,
+          reduxDeploymentsState
+        );
+    if (!Array.isArray(resolvedColumns)) {
+      throw new TransformerFailure({
+        queryFailure: "FailedTransformer",
+        transformerPath,
+        failureOrigin: ["handleTransformer_unpivot"],
+        failureMessage:
+          "unpivot: columns transformer did not resolve to an array, got: " + typeof resolvedColumns,
+      });
+    }
+    explicitColumns = resolvedColumns.map(String);
+  }
+
+  const result: any[] = [];
+  for (const row of rows) {
+    const idPart: Record<string, any> = {};
+    for (const idc of idColumns) idPart[idc] = row[idc];
+    const keys = explicitColumns ?? Object.keys(row).filter((k) => !idColumns.includes(k));
+    for (const k of keys) {
+      if (!(k in row)) continue; // absent keys skipped (D6); explicit null kept as value: null
+      result.push({ ...idPart, [nameInto]: k, [valueInto]: row[k] });
+    }
+  }
+  return result;
+}
+
 const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any>> = {
   handleTransformer_menu_AddItem: defaultTransformers.handleTransformer_menu_AddItem,
   // 
@@ -773,6 +1096,8 @@ const inMemoryTransformerImplementations: Record<string, ITransformerHandler<any
   handleTransformer_currentTimestamp,
   handleTransformer_currentDate,
   handleTransformer_numericOp,
+  handleTransformer_pivot,
+  handleTransformer_unpivot,
 };
 
 // ################################################################################################
@@ -819,6 +1144,8 @@ export const applicationTransformerDefinitions: Record<string, TransformerDefini
   currentTimestamp: transformer_currentTimestamp,
   currentDate: transformer_currentDate,
   numericOp: transformer_numericOp,
+  pivot: transformer_pivot,
+  unpivot: transformer_unpivot,
   defaultValueForMLSchema: transformer_defaultValueForMLSchema,
   // MLS
   ...Object.fromEntries(

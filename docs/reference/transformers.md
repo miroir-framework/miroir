@@ -225,6 +225,8 @@ Example — extract the title of every Book:
 | `getObjectEntries` | `[key, value]` pairs of an object, as an array. | `any` | `array` | `object→list` |
 | `object_fromEntries` | Inverse of `getObjectEntries`: array of pairs → object. | `array` | `any` (result schema: `record`) | `list→object` |
 | `indexListBy` | List → dictionary (see section 7). | `array` | `object` | `list→object` |
+| `pivot` | Relational pivot: rows → matrix. One output row per distinct `rowKeyAttribute` value, one attribute per `columnKeyAttribute` value. Cells = plucked `valueAttribute`, or existence `true` when absent. Missing (row, column) pairs get `fillValue` (default `false` in existence mode; default `null` ⇒ **absent key** — null cells are sparse). `columns` (transformer resolving to `string[]`, e.g. `returnValue` wrapping a literal, or `getFromContext`) pins the column set and restricts input rows to it; omitted ⇒ data-derived. `onDuplicates` (`first`/`last`/`count`/`sum`/`min`/`max`, default `first`) resolves duplicate (row, column) pairs; aggregates are rejected in existence mode. SQL: conditional aggregation (`jsonb_object_agg` over a filled grid CTE), deterministic first-appearance row order. Issue #265. | `array` | `array` (of matrix rows) | `list→list (reshaped)` |
+| `unpivot` | Relational melt: rows → long format `{...idColumns, [nameInto]: column, [valueInto]: value}` (defaults `"column"` / `"value"`). Absent keys are skipped; explicit `null` values are kept. `columns` (transformer resolving to `string[]`) restricts the melted keys; omitted ⇒ each row melts its own keys minus `idColumns`. `nameInto`/`valueInto` colliding with `idColumns` is an error. SQL: `LATERAL jsonb_each`. Issue #265. | `array` | `array` (long rows) | `list→list (longer)` |
 
 ---
 
@@ -273,5 +275,12 @@ Miroir application itself (MLS = Miroir Meta-Language Schema), not in ordinary r
   (`sqlImplementationFunctionName`, e.g. `sqlStringForMapperListToListTransformer`), so they can be
   pushed down to Postgres queries; transformers without one (marked `-` / `TODO` / `N/A` above and
   in the definitions) run in memory only.
+- **`pivot`/`unpivot` (#265)** — canonical use case: a rights matrix from `MiroirRight` rows
+  (`rowKeyAttribute: "miroirUser"`, `columnKeyAttribute` = deployment uuid, existence cells).
+  Caveats: in SQL mode `applyTo` must be `constant`/`returnValue`/`getFromContext`/`getFromParameters`
+  (shape the query with named extractors); a `columns` object list must be plucked first
+  (`mapList` + `accessDynamicPath`); null cells are sparse (absent keys) in pivot output;
+  `unpivot` within-row key order follows insertion order in memory but jsonb key order in SQL;
+  fill-dense `pivot` ∘ `unpivot` is not a round-trip (synthetic fill cells become real rows).
 - **`dataflowSequence`** is a structural container (array of steps) and has no stock definition of
   its own; see [transformer-result-schema.md](./transformer-result-schema.md).

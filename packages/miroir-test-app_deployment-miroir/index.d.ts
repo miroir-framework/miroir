@@ -304,6 +304,8 @@ export declare const transformer_filterList_json: any;
 export declare const transformer_find_json: any;
 export declare const transformer_object_fromEntries_json: any;
 export declare const transformer_sortList_json: any;
+export declare const transformer_pivot_json: any;
+export declare const transformer_unpivot_json: any;
 export declare const transformer_listLength_json: any;
 export declare const transformer_stringOp_json: any;
 export declare const transformer_currentTimestamp_json: any;

@@ -137,6 +137,8 @@ function inventoryTransformerResultSchemas(
         "currentTimestamp",
         "currentDate",
         "mustacheStringTemplate",
+        "pivot",
+        "unpivot",
       ]);
       const CORE = [
         "returnValue",
@@ -172,6 +174,8 @@ function inventoryTransformerResultSchemas(
         "currentTimestamp",
         "currentDate",
         "numericOp",
+        "pivot",
+        "unpivot",
       ];
       const unhandled = CORE.filter((key) => !HANDLED.has(key)).sort();
       expect(unhandled).toEqual([]);

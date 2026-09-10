@@ -361,6 +361,8 @@ export { default as transformer_filterList_json } from "./assets/miroir_data/a55
 export { default as transformer_find_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/8dcbd709-08a0-4464-b60c-438262d5af36.json" with { type: "json" };
 export { default as transformer_object_fromEntries_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/74b05e4c-1575-418d-b6ea-7d59e4f4cb1f.json" with { type: "json" };
 export { default as transformer_sortList_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/c8f3a1b5-2e9d-4f6a-8c7b-3d5e9a2f1b4c.json" with { type: "json" };
+export { default as transformer_pivot_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/aa9897e5-747e-49df-9048-02bc94285b77.json" with { type: "json" };
+export { default as transformer_unpivot_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/e096343e-5287-4863-99b5-bd19357b647f.json" with { type: "json" };
 export { default as transformer_listLength_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/d9e2b3c4-1f8a-4e7b-9d6c-5a8f2b3e4c1d.json" with { type: "json" };
 export { default as transformer_stringOp_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/21bd487f-447c-4c5b-9270-580860a7a0ef.json" with { type: "json" };
 export { default as transformer_currentTimestamp_json } from "./assets/miroir_data/a557419d-a288-4fb8-8a1e-971c86c113b8/da131ffd-fa70-4902-ae02-77ba0e7e0fa8.json" with { type: "json" };

@@ -225,6 +225,8 @@ export type CoreTransformerForBuildPlusRuntime =
   | CoreTransformerForBuildPlusRuntime_filterList
   | CoreTransformerForBuildPlusRuntime_find
   | CoreTransformerForBuildPlusRuntime_sortList
+  | CoreTransformerForBuildPlusRuntime_pivot
+  | CoreTransformerForBuildPlusRuntime_unpivot
   | CoreTransformerForBuildPlusRuntime_listLength
   | CoreTransformerForBuildPlusRuntime_object_fromEntries
   | CoreTransformerForBuildPlusRuntime_stringOp
@@ -285,6 +287,8 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
     coreTransformerForBuildPlusRuntime_filterList,
     coreTransformerForBuildPlusRuntime_find,
     coreTransformerForBuildPlusRuntime_sortList,
+    coreTransformerForBuildPlusRuntime_pivot,
+    coreTransformerForBuildPlusRuntime_unpivot,
     coreTransformerForBuildPlusRuntime_listLength,
     coreTransformerForBuildPlusRuntime_object_fromEntries,
     coreTransformerForBuildPlusRuntime_stringOp,
