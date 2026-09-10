@@ -40,10 +40,8 @@ import {
 
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { actionsWithDeploymentInPayload } from "../1_core/Instance";
-import {
-  assertCredentialInstanceMutationAllowed,
-  redactCredentialSecretsFromValue,
-} from "../1_core/authentication/AuthenticationPolicy.js";
+import { assertCredentialInstanceMutationAllowed } from "../1_core/authentication/AuthenticationPolicy.js";
+import { redactCredentialSecretsFromValue } from "./redactCredentialSecrets.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestServer");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

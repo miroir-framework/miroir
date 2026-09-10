@@ -1,4 +1,4 @@
-import { type EndpointDefinition } from "miroir-core";
+import { getEndpointActions, type EndpointDefinition } from "miroir-core";
 import type { McpToolDescription } from "./mcpHandlersForEndpoint.js";
 import { jzodElementToJsonSchema } from "./jzodElementToJsonSchema.js";
 
@@ -17,7 +17,7 @@ export function mcpToolDescriptionFromActionDefinition(
   const actionType = toolName.replace('miroir_', '');
   
   // Find the action definition matching the action type
-  const actionDef = endpoint.definition.actions.find(
+  const actionDef = getEndpointActions(endpoint)?.find(
     (action: any) => action.actionParameters.actionType.definition === actionType
   );
 

@@ -41,12 +41,16 @@ import {
   ENTITY_MIROIR_RIGHT_UUID,
   ENTITY_MIROIR_USER_CREDENTIAL_UUID,
   ENTITY_MIROIR_USER_UUID,
+  deploymentUuidFromHttpRequest,
   extractPrincipalFromAuthorizationHeader,
   findCredentialInstance,
   getProcessTokenSecret,
   identityDirectoryFromInstances,
   loginWithPassword,
   persistChangedPasswordHash,
+  ParseServerArgsError,
+  parseServerArgs,
+  registerSecrets,
   resolveAuthenticationEnabled,
   restServerDefaultHandlers,
   setProcessTokenSecret,
@@ -140,6 +144,7 @@ function printUsageAndExit(exitCode = 1): never {
   console.error(`  --key      <path>   Path to the TLS private key file (.pem)`);
   console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_KEY`);
   myLogger.error(`                      (default: <certsdir>/localhost-key.pem)`);
+  console.error(`  --secret   <name>=<value>  Named secret (repeatable). Env fallback: MIROIR_SECRET_<NAME>`);
   console.error(`  --disable-auth      Disable user authentication (today's open API)`);
   console.error(`  --enable-auth       Enable user authentication (overrides config/env)`);
   console.error(`  -h, --help          Show this help message and exit`);
@@ -150,45 +155,25 @@ let configFilePath = "../config/miroirConfig.server.json";
 let argCertsDir: string | undefined;
 let argCertFile: string | undefined;
 let argKeyFile: string | undefined;
+let registeredSecretNames: string[] = [];
 
-for (let i = 2; i < process.argv.length; i++) {
-  const arg = process.argv[i];
-  if (arg === "--help" || arg === "-h") {
+try {
+  const parsed = parseServerArgs(process.argv.slice(2), process.env);
+  if (parsed.help) {
     printUsageAndExit(0);
-  } else if (arg === "--config") {
-    if (i + 1 < process.argv.length) {
-      configFilePath = process.argv[++i];
-    } else {
-      console.error("Error: --config requires a file path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--certsdir") {
-    if (i + 1 < process.argv.length) {
-      argCertsDir = process.argv[++i];
-    } else {
-      console.error("Error: --certsdir requires a directory path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--cert") {
-    if (i + 1 < process.argv.length) {
-      argCertFile = process.argv[++i];
-    } else {
-      console.error("Error: --cert requires a file path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--key") {
-    if (i + 1 < process.argv.length) {
-      argKeyFile = process.argv[++i];
-    } else {
-      console.error("Error: --key requires a file path argument.");
-      printUsageAndExit();
-    }
-  } else if (arg === "--disable-auth" || arg === "--enable-auth") {
-    // consumed by resolveAuthenticationEnabled(process.argv)
-  } else if (arg.startsWith("-")) {
-    console.error(`Error: Unknown option: ${arg}`);
+  }
+  configFilePath = parsed.configFilePath;
+  argCertsDir = parsed.certsDir;
+  argCertFile = parsed.certFile;
+  argKeyFile = parsed.keyFile;
+  registerSecrets(parsed.secrets);
+  registeredSecretNames = Object.keys(parsed.secrets);
+} catch (error) {
+  if (error instanceof ParseServerArgsError) {
+    console.error(`Error: ${error.message}`);
     printUsageAndExit();
   }
+  throw error;
 }
 
 console.log(`Server startup parameters:`);
@@ -196,6 +181,10 @@ console.log(`  --config   : ${configFilePath}`);
 console.log(`  --certsdir : ${argCertsDir ?? '(default: <repo-root>/certs/)'}`);
 console.log(`  --cert     : ${argCertFile ?? process.env.MIROIR_TLS_CERT ?? '(default: <certsdir>/localhost.pem)'}`);
 console.log(`  --key      : ${argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? '(default: <certsdir>/localhost-key.pem)'}`);
+const secretsSummary = registeredSecretNames.length > 0
+  ? `${registeredSecretNames.length} named secret(s) registered: ${registeredSecretNames.join(", ")}`
+  : "(none registered — external-service endpoints with a credentialKey will fail at call time)";
+console.log(`  --secret   : ${secretsSummary}`);
 
 const configFileContents = JSON.parse(
   readFileSync(new URL(configFilePath, import.meta.url)).toString()
@@ -203,7 +192,6 @@ const configFileContents = JSON.parse(
 
 const miroirConfig: MiroirConfigServer = configFileContents as MiroirConfigServer;
 myLogger.info('miroirConfig',miroirConfig)
-myLogger.info(`process.env`, JSON.stringify(process.env, null, 2));
 myLogger.info(`import.meta`, JSON.stringify((import.meta as any), null, 2));
 
 const restPortFromConfig: number = Number(
@@ -437,26 +425,6 @@ for (const c of deploymentsToOpen) {
   );
 }
 
-function deploymentUuidFromHttpRequest(request: CustomRequest): string | undefined {
-  const params = request.params as Record<string, unknown> | undefined;
-  const body = request.body as Record<string, unknown> | undefined;
-  const fromParams = params?.deploymentUuid;
-  if (typeof fromParams === "string" && fromParams) {
-    return fromParams;
-  }
-  if (typeof body?.deploymentUuid === "string" && body.deploymentUuid) {
-    return body.deploymentUuid;
-  }
-  const payload = body?.payload;
-  if (payload && typeof payload === "object") {
-    const fromPayload = (payload as Record<string, unknown>).deploymentUuid;
-    if (typeof fromPayload === "string" && fromPayload) {
-      return fromPayload;
-    }
-  }
-  return undefined;
-}
-
 async function loadAdminIdentityDirectory(): Promise<
   | {
       ok: true;
@@ -577,6 +545,9 @@ for (const op of restServerDefaultHandlers) {
       alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS,
     });
     if (!access.allowed) {
+      myLogger.warn(
+        `access denied: user=${principal?.username ?? "anonymous"} deployment=${deploymentUuidFromHttpRequest(request) ?? "(none)"} url=${request.originalUrl}`
+      );
       response.status(access.status).json(access.body ?? ACCESS_DENIED);
       return;
     }
@@ -871,7 +842,6 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const http = await import('http');
   http.createServer(app).listen(restPortFromConfig, () => {
-    // myLogger.info("process.env", process.env);
     myLogger.info("templateEvaluationParams", templateEvaluationParams);
     myLogger.info(`Server running in ${getMiroirEnvironmentMode()} mode`);
     myLogger.info(`Server accesses filesystem deployment root directory at: ${filesystemDeploymentRootDirectory}`);

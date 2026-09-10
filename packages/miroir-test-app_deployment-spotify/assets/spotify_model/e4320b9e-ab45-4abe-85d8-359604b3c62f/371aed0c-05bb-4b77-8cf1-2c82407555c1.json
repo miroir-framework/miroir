@@ -1,0 +1,116 @@
+{
+  "uuid": "371aed0c-05bb-4b77-8cf1-2c82407555c1",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "spotifyGetPlaylist",
+  "defaultLabel": "Get a Spotify playlist by playlistId",
+  "description": "extractorTemplateFromAction get-playlist; playlist_id is bound from the playlistId page parameter.",
+  "definition": {
+    "extractorTemplates": {
+      "playlist": {
+        "extractorOrCombinerType": "extractorTemplateFromAction",
+        "endpointUuid": "0e5cb172-12ea-4467-8598-5889338ae454",
+        "actionType": "get-playlist",
+        "parameterBindings": {
+          "playlist_id": {
+            "transformerType": "getFromParameters",
+            "referenceName": "playlistId"
+          }
+        }
+      }
+    },
+    "runtimeTransformers": {
+      "tracks": {
+        "transformerType": "case",
+        "interpolation": "runtime",
+        "discriminator": {
+          "transformerType": "boolExpr",
+          "interpolation": "runtime",
+          "operator": "isNotNull",
+          "left": {
+            "transformerType": "accessDynamicPath",
+            "interpolation": "runtime",
+            "objectAccessPath": [
+              {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referenceName": "playlist"
+              },
+              "items"
+            ]
+          }
+        },
+        "whens": [
+          {
+            "when": {
+              "transformerType": "returnValue",
+              "interpolation": "runtime",
+              "value": true
+            },
+            "then": {
+              "transformerType": "accessDynamicPath",
+              "interpolation": "runtime",
+              "objectAccessPath": [
+                {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "playlist"
+                },
+                "items",
+                "items"
+              ]
+            }
+          }
+        ],
+        "else": {
+          "transformerType": "case",
+          "interpolation": "runtime",
+          "discriminator": {
+            "transformerType": "boolExpr",
+            "interpolation": "runtime",
+            "operator": "isNotNull",
+            "left": {
+              "transformerType": "accessDynamicPath",
+              "interpolation": "runtime",
+              "objectAccessPath": [
+                {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "playlist"
+                },
+                "tracks"
+              ]
+            }
+          },
+          "whens": [
+            {
+              "when": {
+                "transformerType": "returnValue",
+                "interpolation": "runtime",
+                "value": true
+              },
+              "then": {
+                "transformerType": "accessDynamicPath",
+                "interpolation": "runtime",
+                "objectAccessPath": [
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "playlist"
+                  },
+                  "tracks",
+                  "items"
+                ]
+              }
+            }
+          ],
+          "else": {
+            "transformerType": "returnValue",
+            "interpolation": "runtime",
+            "value": []
+          }
+        }
+      }
+    }
+  }
+}

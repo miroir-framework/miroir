@@ -1,6 +1,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 
+import { getEndpointActions, getExternalService } from '../0_interfaces/1_core/endpointDefinition.js';
 import { Uuid } from '../0_interfaces/1_core/EntityVersion.js';
 import {
   DomainControllerInterface,
@@ -161,6 +162,23 @@ import {
   unNullify,
 } from "../4_services/otherTools.js";
 import { ConfigurationService } from './ConfigurationService.js';
+import { executeExternalServiceOperation } from "../4_services/ExternalServiceClient.js";
+import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
+
+type ExtractorFromActionResolved = {
+  extractorOrCombinerType: "extractorFromAction";
+  endpointUuid: string;
+  actionType: string;
+  parameterBindings?: Record<string, unknown>;
+};
+
+function isExtractorFromActionResolved(value: unknown): value is ExtractorFromActionResolved {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    (value as { extractorOrCombinerType?: unknown }).extractorOrCombinerType === "extractorFromAction"
+  );
+}
 
 export const templateEvaluationParams = {
   env: { NODE_ENV: getMiroirEnvironmentMode() === "dev" ? "development" : "production" },
@@ -859,9 +877,20 @@ export class DomainController implements DomainControllerInterface {
          * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
          */
 
+        const resolvedQueryOrError = await this.resolveExtractorFromActionInBoxedQuery(
+          runBoxedExtractorOrQueryAction,
+          applicationDeploymentMap,
+        );
+        if (resolvedQueryOrError.kind === "error") {
+          return resolvedQueryOrError.error;
+        }
+        if (resolvedQueryOrError.kind === "done") {
+          return resolvedQueryOrError.result;
+        }
+
         const result: Action2ReturnType =
           await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalPersistenceStore(
-            runBoxedExtractorOrQueryAction,
+            resolvedQueryOrError.action,
             applicationDeploymentMap,
           );
         // const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(
@@ -2884,7 +2913,7 @@ export class DomainController implements DomainControllerInterface {
     endpointApplicationMap?: EndpointApplicationMap,
     actionParamValues?: Record<string, unknown>,
     principal?: { miroirUserUuid: string; username: string },
-  ): Promise<Action2VoidReturnType> {
+  ): Promise<Action2ReturnType> {
     log.debug("DomainController handleAction START actionType=", domainAction["actionType"]);
     if (principal) {
       log.debug(
@@ -2897,11 +2926,29 @@ export class DomainController implements DomainControllerInterface {
       domainAction.actionType,
       (domainAction as any).actionLabel,
       (async () => {
-        // Derive the application UUID from the endpoint using the endpointApplicationMap.
-        // This replaces the former envelope-level `application` field.
         const resolvedEndpointApplicationMap = endpointApplicationMap ?? defaultEndpointApplicationMap;
         const endpointUuid = (domainAction as any)?.endpoint;
-        const applicationUuid = endpointUuid ? resolvedEndpointApplicationMap[endpointUuid] : undefined;
+        const staticApplicationUuid = endpointUuid
+          ? resolvedEndpointApplicationMap[endpointUuid]
+          : undefined;
+        // Miroir-core endpoints stay on the static-map fast path. Non-Miroir /
+        // unknown endpoints resolve application from the persisted endpoint instance.
+        let applicationUuid: string | undefined;
+        if (staticApplicationUuid === selfApplicationMiroir.uuid) {
+          applicationUuid = staticApplicationUuid;
+        } else if (endpointUuid && this.persistenceStoreAccessMode === "local") {
+          const found = await this.findEndpointInstanceAcrossLocalStores(
+            applicationDeploymentMap,
+            endpointUuid,
+          );
+          if (!(found instanceof Action2Error)) {
+            applicationUuid = found.application;
+          } else if (staticApplicationUuid !== undefined) {
+            applicationUuid = staticApplicationUuid;
+          }
+        } else {
+          applicationUuid = staticApplicationUuid;
+        }
         log.debug(
           "DomainController handleAction",
           domainAction.actionType,
@@ -2925,6 +2972,7 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             currentModelEnvironment,
             actionParamValues,
+            applicationUuid,
           );
         } else {
           return this.handleActionInternal(
@@ -2933,10 +2981,8 @@ export class DomainController implements DomainControllerInterface {
             currentModelEnvironment,
           );
         }
-        // return Promise.resolve();
       }).bind(this),
     );
-    // return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
@@ -2945,24 +2991,16 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment?: MiroirModelEnvironment,
     actionParamValues?: Record<string, unknown>,
-  ): Promise<Action2VoidReturnType> {
+    resolvedApplicationUuid?: string,
+  ): Promise<Action2ReturnType> {
     log.info(
       "DomainController handleApplicationAction",
       domainAction.actionType,
       "domainAction",
-      JSON.stringify(domainAction, null, 2),
+      JSON.stringify(redactCredentialSecretsFromValue(domainAction), null, 2),
       "endpoints",
       JSON.stringify(Object.keys(currentModelEnvironment?.endpointsByUuid || {}), null, 2),
     );
-    if (!currentModelEnvironment) {
-      return Promise.resolve(
-        new Action2Error(
-          "InvalidAction",
-          "DomainController handleApplicationAction call is missing currentModelEnvironment argument",
-          [],
-        ),
-      );
-    }
     if (!(domainAction as any).endpoint) {
       return Promise.resolve(
         new Action2Error(
@@ -2977,6 +3015,41 @@ export class DomainController implements DomainControllerInterface {
         new Action2Error(
           "InvalidAction",
           "DomainController handleApplicationAction missing actionType in action",
+          [],
+        ),
+      );
+    }
+    if (this.persistenceStoreAccessMode === "local") {
+      const application =
+        resolvedApplicationUuid ??
+        (domainAction as any).payload?.application ??
+        currentModelEnvironment?.currentModel?.applicationUuid;
+      if (application) {
+        const endpointInstance = await this.loadEndpointInstanceFromLocalPersistenceStore(
+          application,
+          applicationDeploymentMap,
+          (domainAction as any).endpoint,
+        );
+        if (
+          !(endpointInstance instanceof Action2Error) &&
+          getExternalService(endpointInstance)
+        ) {
+          return executeExternalServiceOperation(
+            endpointInstance,
+            (domainAction as any).actionType,
+            {
+              ...(actionParamValues ?? {}),
+              ...((domainAction as any).payload ?? {}),
+            },
+          );
+        }
+      }
+    }
+    if (!currentModelEnvironment) {
+      return Promise.resolve(
+        new Action2Error(
+          "InvalidAction",
+          "DomainController handleApplicationAction call is missing currentModelEnvironment argument",
           [],
         ),
       );
@@ -3013,7 +3086,7 @@ export class DomainController implements DomainControllerInterface {
         ),
       );
     }
-    const currentActionDefinition = currentEndpointDefinition.definition.actions.find(
+    const currentActionDefinition = getEndpointActions(currentEndpointDefinition)?.find(
       (ac) => ac.actionParameters.actionType.definition == (domainAction as any).actionType,
     );
     // log.info(
@@ -3054,7 +3127,7 @@ export class DomainController implements DomainControllerInterface {
       );
     }
 
-    const result = this.handleCompositeActionTemplate(
+    const result = await this.handleCompositeActionTemplate(
       currentActionDefinition.actionImplementation.definition as CompositeActionTemplate,
       applicationDeploymentMap,
       currentModelEnvironment,
@@ -3064,7 +3137,166 @@ export class DomainController implements DomainControllerInterface {
         deploymentUuid: applicationDeploymentMap[currentEndpointDefinition.application],
       },
     );
-    return result;
+    return result as Action2ReturnType;
+  }
+
+  /**
+   * #267 P1 — Endpoint instances for external-service execution are loaded from the
+   * local persistence store model section, never from currentModelEnvironment.endpointsByUuid.
+   */
+  private async loadEndpointInstanceFromLocalPersistenceStore(
+    application: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    endpointUuid: string,
+  ): Promise<EndpointDefinition | Action2Error> {
+    const reader = this.persistenceStoreLocalOrRemote?.readLocalPersistenceSectionInstances;
+    if (typeof reader !== "function") {
+      return new Action2Error(
+        "InvalidAction",
+        "Could not load endpoint from the local persistence store model section",
+      );
+    }
+    const instances = await this.persistenceStoreLocalOrRemote.readLocalPersistenceSectionInstances(
+      application,
+      applicationDeploymentMap,
+      "model",
+      entityEndpointVersion.uuid,
+    );
+    const found = instances.find((instance) => instance.uuid === endpointUuid);
+    if (!found) {
+      return new Action2Error(
+        "InvalidAction",
+        "Could not load endpoint from the local persistence store model section",
+      );
+    }
+    return found as EndpointDefinition;
+  }
+
+  /**
+   * #267 P8 / Goal 5 — find an Endpoint instance by uuid across local persistence
+   * stores (application is not known until the instance is loaded).
+   */
+  private async findEndpointInstanceAcrossLocalStores(
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    endpointUuid: string,
+  ): Promise<EndpointDefinition | Action2Error> {
+    const reader = this.persistenceStoreLocalOrRemote?.readLocalPersistenceSectionInstances;
+    if (typeof reader !== "function") {
+      return new Action2Error(
+        "InvalidAction",
+        "Could not load endpoint from the local persistence store model section",
+      );
+    }
+    for (const application of Object.keys(applicationDeploymentMap)) {
+      try {
+        const instances = await this.persistenceStoreLocalOrRemote.readLocalPersistenceSectionInstances(
+          application,
+          applicationDeploymentMap,
+          "model",
+          entityEndpointVersion.uuid,
+        );
+        const found = instances.find((instance) => instance.uuid === endpointUuid);
+        if (found) {
+          return found as EndpointDefinition;
+        }
+      } catch (error) {
+        log.debug(
+          "DomainController findEndpointInstanceAcrossLocalStores skipped application",
+          application,
+          error,
+        );
+      }
+    }
+    return new Action2Error(
+      "InvalidAction",
+      "Could not load endpoint from the local persistence store model section",
+    );
+  }
+
+  /**
+   * #267 D5 — run extractorFromAction on the server before the persistence-store handoff.
+   * Store-backed extractors stay in the query; external results are seeded into contextResults
+   * so combiners/transformers see the merged context in the existing runQuery pass.
+   */
+  private async resolveExtractorFromActionInBoxedQuery(
+    action: RunBoxedQueryAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<
+    | { kind: "error"; error: Action2Error }
+    | { kind: "done"; result: Action2ReturnType }
+    | { kind: "continue"; action: RunBoxedQueryAction }
+  > {
+    const query = action.payload.query;
+    const extractors = (query.extractors ?? {}) as Record<string, unknown>;
+    const externalEntries = Object.entries(extractors).filter(([, extractor]) =>
+      isExtractorFromActionResolved(extractor),
+    );
+    if (externalEntries.length === 0) {
+      return { kind: "continue", action };
+    }
+    if ((query as { runAsSql?: boolean }).runAsSql) {
+      return {
+        kind: "error",
+        error: new Action2Error(
+          "InvalidAction",
+          "extractorFromAction cannot be executed with runAsSql (SQL generation is unsupported)",
+        ),
+      };
+    }
+
+    const contextResults: Record<string, unknown> = { ...(query.contextResults ?? {}) };
+    for (const [name, extractor] of externalEntries) {
+      if (!isExtractorFromActionResolved(extractor)) {
+        continue;
+      }
+      const endpointInstance = await this.loadEndpointInstanceFromLocalPersistenceStore(
+        action.payload.application,
+        applicationDeploymentMap,
+        extractor.endpointUuid,
+      );
+      if (endpointInstance instanceof Action2Error) {
+        return { kind: "error", error: endpointInstance };
+      }
+      const executed = await executeExternalServiceOperation(
+        endpointInstance,
+        extractor.actionType,
+        extractor.parameterBindings ?? {},
+      );
+      if (executed instanceof Action2Error) {
+        return { kind: "error", error: executed };
+      }
+      contextResults[name] = executed.returnedDomainElement;
+    }
+
+    const remainingExtractors = Object.fromEntries(
+      Object.entries(extractors).filter(([, extractor]) => !isExtractorFromActionResolved(extractor)),
+    );
+    const hasRemainingWork =
+      Object.keys(remainingExtractors).length > 0 ||
+      Object.keys(query.combiners ?? {}).length > 0 ||
+      Object.keys(query.runtimeTransformers ?? {}).length > 0;
+
+    if (!hasRemainingWork) {
+      return {
+        kind: "done",
+        result: { status: "ok", returnedDomainElement: contextResults },
+      };
+    }
+
+    return {
+      kind: "continue",
+      action: {
+        ...action,
+        payload: {
+          ...action.payload,
+          query: {
+            ...query,
+            extractors: remainingExtractors as typeof query.extractors,
+            contextResults,
+          },
+        },
+      },
+    };
   }
   // ##############################################################################################
   private async handleActionInternal(
@@ -3337,7 +3569,7 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
-  ): Promise<Action2VoidReturnType> {
+  ): Promise<Action2ReturnType> {
     return this.miroirContext.miroirActivityTracker.trackAction(
       "compositeActionSequence",
       compositeActionSequence.actionLabel,
@@ -3358,9 +3590,10 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     actionParamValues: Record<string, any>,
     actionContext: Record<string, any> = {},
-  ): Promise<Action2VoidReturnType> {
+  ): Promise<Action2ReturnType> {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
+    let lastPayloadResult: Action2ReturnType = ACTION_OK;
 
     const sequenceToExecute = expandResolvableResetAndinitializeDeploymentCompositeAction(
       compositeActionSequence,
@@ -3535,6 +3768,17 @@ export class DomainController implements DomainControllerInterface {
             actionResult,
           );
         }
+        if (
+          actionResult &&
+          !(actionResult instanceof Action2Error) &&
+          actionResult.returnedDomainElement !== undefined
+        ) {
+          lastPayloadResult = actionResult;
+          const label = (currentAction as { actionLabel?: string }).actionLabel;
+          if (typeof label === "string" && label.length > 0) {
+            localContext[label] = actionResult.returnedDomainElement;
+          }
+        }
       } catch (error) {
         return new Action2Error(
           "FailedTestAction",
@@ -3547,7 +3791,7 @@ export class DomainController implements DomainControllerInterface {
         this.miroirContext.miroirActivityTracker.setCompositeAction(undefined);
       }
     }
-    return Promise.resolve(ACTION_OK);
+    return lastPayloadResult;
   }
 
   // ##############################################################################################
@@ -4251,11 +4495,23 @@ export class DomainController implements DomainControllerInterface {
       throw new Error("handleCompositeAction currentAction.payload is undefined");
     }
 
-    // actionResult = await this.handleQueryTemplateActionForServerONLY(
+    const queryPayload = currentAction.payload.payload;
     const actionResult = await this.handleBoxedExtractorOrQueryAction(
-      currentAction.payload,
+      {
+        ...currentAction.payload,
+        payload: {
+          ...queryPayload,
+          query: {
+            ...queryPayload.query,
+            contextResults: {
+              ...localContext,
+              ...(queryPayload.query.contextResults ?? {}),
+            },
+          },
+        },
+      },
       applicationDeploymentMap,
-    ); // TODO: pass the current model
+    );
     if (actionResult instanceof Action2Error) {
       log.error(
         "Error (Action2Error) on handleCompositeRunBoxedQueryAction with nameGivenToResult",
@@ -4611,12 +4867,6 @@ export class DomainController implements DomainControllerInterface {
                 "actionResult" +
                 JSON.stringify(actionResult, null, 2),
             );
-            // throw new Error(
-            //   "handleCompositeActionTemplate compositeInstanceAction error on action" +
-            //     JSON.stringify(resolveCompositeActionTemplate, null, 2) +
-            //     "actionResult" +
-            //     JSON.stringify(actionResult, null, 2)
-            // );
             return new Action2Error(
               "FailedToHandleAction",
               "handleCompositeActionTemplate compositeInstanceAction error",
@@ -4626,6 +4876,12 @@ export class DomainController implements DomainControllerInterface {
               ],
               actionResult,
             );
+          }
+          if (actionResult.returnedDomainElement !== undefined) {
+            const label = currentAction.actionLabel;
+            if (typeof label === "string" && label.length > 0) {
+              localContext[label] = actionResult.returnedDomainElement;
+            }
           }
           break;
         }

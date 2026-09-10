@@ -9,6 +9,7 @@ import {
 import * as schemaHelpers from "../../src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
 import {
   clearSchemaCacheForTests,
+  getEndpointActions,
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalJzodSchema,
   resolveFundamentalSchemaForDeployment,
@@ -125,13 +126,12 @@ describe("getMiroirFundamentalSchemaForDeployment (Phase 2.2 — extended domain
     );
     expect(lendingEndpoint).toBeDefined();
 
-    const firstAction = lendingEndpoint!.definition!.actions![0];
+    const firstAction = getEndpointActions(lendingEndpoint)![0];
     const collisionEndpoint = {
       ...lendingEndpoint!,
       uuid: "bbbbbbbb-cccc-dddd-eeee-ffffffffffff",
       name: "Lending collision",
       definition: {
-        ...lendingEndpoint!.definition!,
         actions: [
           {
             ...firstAction,
@@ -337,7 +337,7 @@ describe("resolveFundamentalSchemaForDeployment (Phase 199 — revision cache)",
       (endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
     );
     expect(lendingEndpoint).toBeDefined();
-    const firstAction = lendingEndpoint!.definition!.actions![0];
+    const firstAction = getEndpointActions(lendingEndpoint)![0];
 
     const mutatedModel = structuredClone(defaultLibraryAppModel) as MetaModel;
     mutatedModel.endpoints = mutatedModel.endpoints.map((endpoint) =>
@@ -345,9 +345,8 @@ describe("resolveFundamentalSchemaForDeployment (Phase 199 — revision cache)",
         ? {
             ...endpoint,
             definition: {
-              ...endpoint.definition!,
               actions: [
-                ...(endpoint.definition?.actions ?? []),
+                ...(getEndpointActions(endpoint) ?? []),
                 {
                   ...firstAction,
                   actionParameters: {
@@ -407,7 +406,7 @@ describe("resolveFundamentalSchemaForDeployment (Phase 200 — cold-path perform
       (endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
     );
     expect(lendingEndpoint).toBeDefined();
-    const firstAction = lendingEndpoint!.definition!.actions![0];
+    const firstAction = getEndpointActions(lendingEndpoint)![0];
 
     const mutatedModel = structuredClone(defaultLibraryAppModel) as MetaModel;
     mutatedModel.endpoints = mutatedModel.endpoints.map((endpoint) =>
@@ -415,9 +414,8 @@ describe("resolveFundamentalSchemaForDeployment (Phase 200 — cold-path perform
         ? {
             ...endpoint,
             definition: {
-              ...endpoint.definition!,
               actions: [
-                ...(endpoint.definition?.actions ?? []),
+                ...(getEndpointActions(endpoint) ?? []),
                 {
                   ...firstAction,
                   actionParameters: {

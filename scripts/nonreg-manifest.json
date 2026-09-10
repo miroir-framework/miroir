@@ -895,6 +895,17 @@
       ]
     },
     {
+      "id": "externalServices-spotify",
+      "tier": "default",
+      "title": "#267 \u2014 external services + Spotify (nonreg bundle)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testMiroir -w miroir-core -- --suites externalServiceSync --mode unit && npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites externalServiceSyncExecute --mode integ && npm run testByFile -w miroir-core -- serverSecrets && npm run testByFile -w miroir-core -- externalServiceHttpStoreSkip && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceQuery && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceGuards && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceDispatch && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceReport && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem spotifyApp"
+      ]
+    },
+    {
       "id": "full-postgres-modelValidation",
       "tier": "full",
       "title": "Deployment modelValidation \u2014 postgres",

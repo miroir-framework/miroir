@@ -1,0 +1,58 @@
+{
+  "uuid": "d6b37816-5f92-4c4b-ae23-1a9f7b2c3d4e",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "Slice5MixedPlaylistReport",
+  "defaultLabel": "Slice 5 mixed store + external report",
+  "definition": {
+    "extractorTemplates": {
+      "france": {
+        "extractorOrCombinerType": "extractorByPrimaryKey",
+        "parentName": "Country",
+        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+        "instanceUuid": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
+      },
+      "playlist": {
+        "extractorOrCombinerType": "extractorTemplateFromAction",
+        "endpointUuid": "c8f2a1b4-6d3e-4a91-9b07-2e5c8d1f4a63",
+        "actionType": "get-playlist",
+        "parameterBindings": {
+          "playlist_id": {
+            "transformerType": "getFromParameters",
+            "referenceName": "playlistId"
+          }
+        }
+      }
+    },
+    "combinerTemplates": {
+      "franceAgain": {
+        "extractorOrCombinerType": "combinerOneToOne",
+        "parentName": "Country",
+        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+        "objectReference": "france",
+        "AttributeOfObjectToCompareToReferenceUuid": "uuid"
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "Playlist",
+            "fetchedDataReference": "playlist"
+          }
+        },
+        {
+          "type": "jsonReportSection",
+          "definition": {
+            "label": "France",
+            "fetchedDataReference": "franceAgain"
+          }
+        }
+      ]
+    }
+  }
+}

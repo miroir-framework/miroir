@@ -1,0 +1,811 @@
+{
+  "uuid": "f4e5dde0-3dba-493b-a208-04494dbbb2f5",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "externalServiceSync",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Slice 6 unit transformerTest for syncExternalServiceSchema. openApiDocument is the committed Spotify get-playlist excerpt (assets/test-resources/spotifyOpenApiExcerpt.get-playlist.json), passed as transformerParams.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "externalServiceSync",
+    "miroirTests": [
+      {
+        "miroirTestType": "transformerTest",
+        "miroirTestLabel": "sync get-playlist produces compositeActionSequence with operation and SpotifyPlaylist entity",
+        "transformerName": "syncExternalServiceSchema",
+        "runTestStep": "runtime",
+        "transformer": {
+          "transformerType": "syncExternalServiceSchema",
+          "interpolation": "runtime"
+        },
+        "transformerParams": {
+          "openApiDocument": {
+            "openapi": "3.0.0",
+            "info": {
+              "title": "Spotify Web API excerpt \u2014 get-playlist",
+              "version": "0.0.1",
+              "description": "Faithful subset of https://developer.spotify.com/reference/web-api/open-api-schema.yaml for GET /playlists/{playlist_id} (operationId get-playlist) plus PUT change-playlist-details. Includes PlaylistObject, TrackObject, SimplifiedArtistObject, ImageObject, paging/owner allOf, ImageObject nullable height/width, and PlaylistTrackObject.track oneOf."
+            },
+            "paths": {
+              "/playlists/{playlist_id}": {
+                "parameters": [
+                  {
+                    "$ref": "#/components/parameters/PathPlaylistId"
+                  }
+                ],
+                "get": {
+                  "operationId": "get-playlist",
+                  "summary": "Get Playlist",
+                  "parameters": [
+                    {
+                      "name": "fields",
+                      "in": "query",
+                      "required": false,
+                      "schema": {
+                        "type": "string"
+                      }
+                    }
+                  ],
+                  "responses": {
+                    "200": {
+                      "description": "A playlist",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "$ref": "#/components/schemas/PlaylistObject"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "put": {
+                  "operationId": "change-playlist-details",
+                  "summary": "Change Playlist Details",
+                  "responses": {
+                    "200": {
+                      "description": "Playlist updated"
+                    }
+                  }
+                }
+              }
+            },
+            "components": {
+              "parameters": {
+                "PathPlaylistId": {
+                  "name": "playlist_id",
+                  "in": "path",
+                  "required": true,
+                  "schema": {
+                    "type": "string"
+                  }
+                }
+              },
+              "schemas": {
+                "ImageObject": {
+                  "type": "object",
+                  "required": [
+                    "url",
+                    "height",
+                    "width"
+                  ],
+                  "properties": {
+                    "url": {
+                      "type": "string"
+                    },
+                    "height": {
+                      "type": "integer",
+                      "nullable": true
+                    },
+                    "width": {
+                      "type": "integer",
+                      "nullable": true
+                    }
+                  }
+                },
+                "PlaylistUserObject": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "href": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "uri": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "PlaylistOwnerObject": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PlaylistUserObject"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "display_name": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      }
+                    }
+                  ]
+                },
+                "PagingObject": {
+                  "type": "object",
+                  "required": [
+                    "href",
+                    "items",
+                    "limit",
+                    "next",
+                    "offset",
+                    "previous",
+                    "total"
+                  ],
+                  "properties": {
+                    "href": {
+                      "type": "string"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "next": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "offset": {
+                      "type": "integer"
+                    },
+                    "previous": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {}
+                    }
+                  }
+                },
+                "SimplifiedArtistObject": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "artist"
+                      ]
+                    }
+                  }
+                },
+                "TrackObject": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "artists": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SimplifiedArtistObject"
+                      }
+                    },
+                    "duration_ms": {
+                      "type": "integer"
+                    },
+                    "href": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "track"
+                      ]
+                    }
+                  }
+                },
+                "EpisodeObject": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "episode"
+                      ]
+                    }
+                  }
+                },
+                "PlaylistTrackObject": {
+                  "type": "object",
+                  "properties": {
+                    "track": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/TrackObject"
+                        },
+                        {
+                          "$ref": "#/components/schemas/EpisodeObject"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "PagingPlaylistTrackObject": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PagingObject"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/PlaylistTrackObject"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "PlaylistObject": {
+                  "type": "object",
+                  "properties": {
+                    "collaborative": {
+                      "type": "boolean"
+                    },
+                    "description": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "href": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "images": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ImageObject"
+                      }
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "owner": {
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/PlaylistOwnerObject"
+                        }
+                      ]
+                    },
+                    "public": {
+                      "type": "boolean"
+                    },
+                    "snapshot_id": {
+                      "type": "string"
+                    },
+                    "tracks": {
+                      "type": "object",
+                      "allOf": [
+                        {
+                          "$ref": "#/components/schemas/PagingPlaylistTrackObject"
+                        }
+                      ]
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "uri": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "appModel": {
+            "endpoints": [
+              {
+                "uuid": "0e5cb172-12ea-4467-8598-5889338ae454",
+                "parentName": "Endpoint",
+                "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "SpotifyService",
+                "version": "1",
+                "description": "Slice 6 sync-input endpoint (Library playfield). operations[] start empty; the sync transformer upserts get-playlist.",
+                "definition": {
+                  "externalService": {
+                    "openApiDocument": "",
+                    "baseUrl": "https://api.spotify.com/v1",
+                    "securityScheme": {
+                      "type": "http",
+                      "scheme": "bearer",
+                      "bearerFormat": "JWT"
+                    },
+                    "credentialKey": "spotifyUser",
+                    "enabledOperations": [
+                      "get-playlist"
+                    ],
+                    "operations": []
+                  }
+                }
+              }
+            ]
+          },
+          "scope": [
+            "get-playlist",
+            "change-playlist-details"
+          ],
+          "entityUuid": "56166585-b6fd-42c6-95d3-32a80c3304f7",
+          "entityVersionUuid": "1a34fdf2-67c8-411d-9be4-a9265089ac51",
+          "entityName": "SpotifyPlaylist",
+          "endpointUuid": "0e5cb172-12ea-4467-8598-5889338ae454"
+        },
+        "subExpectedValue": [
+          [
+            "actionType",
+            "compositeActionSequence"
+          ],
+          [
+            "payload.actionSequence.0.actionType",
+            "updateInstance"
+          ],
+          [
+            "payload.actionSequence.0.payload.objects.0.definition.externalService.operations.0",
+            {
+              "operationId": "get-playlist",
+              "method": "GET",
+              "path": "/playlists/{playlist_id}",
+              "parameterMappings": [
+                {
+                  "name": "playlist_id",
+                  "in": "path",
+                  "required": true
+                },
+                {
+                  "name": "fields",
+                  "in": "query"
+                }
+              ],
+              "responseSchema": {
+                "type": "object",
+                "definition": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "owner": {
+                    "type": "object",
+                    "definition": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "display_name": {
+                        "type": "string",
+                        "nullable": true
+                      }
+                    }
+                  },
+                  "images": {
+                    "type": "array",
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "height": {
+                          "type": "number",
+                          "nullable": true
+                        },
+                        "width": {
+                          "type": "number",
+                          "nullable": true
+                        }
+                      }
+                    }
+                  },
+                  "tracks": {
+                    "type": "object",
+                    "definition": {
+                      "total": {
+                        "type": "number"
+                      },
+                      "items": {
+                        "type": "array",
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "track": {
+                              "type": "object",
+                              "definition": {
+                                "id": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "artists": {
+                                  "type": "array",
+                                  "definition": {
+                                    "type": "object",
+                                    "definition": {
+                                      "id": {
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "duration_ms": {
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          [
+            "payload.actionSequence.1.actionType",
+            "createEntity"
+          ],
+          [
+            "payload.actionSequence.1.payload.entities.0.uuid",
+            "56166585-b6fd-42c6-95d3-32a80c3304f7"
+          ],
+          [
+            "payload.actionSequence.1.payload.entities.0.name",
+            "SpotifyPlaylist"
+          ],
+          [
+            "payload.actionSequence.1.payload.entities.0.idAttribute",
+            "id"
+          ],
+          [
+            "payload.actionSequence.1.payload.entities.0.externalDataSource",
+            {
+              "kind": "http",
+              "endpoint": "0e5cb172-12ea-4467-8598-5889338ae454"
+            }
+          ],
+          [
+            "payload.actionSequence.1.payload.entities.0.mlSchema.definition.name",
+            {
+              "type": "string"
+            }
+          ],
+          [
+            "payload.actionSequence.1.payload.entities.0.mlSchema.definition.images.definition.definition.height",
+            {
+              "type": "number",
+              "nullable": true
+            }
+          ],
+          [
+            "payload.actionSequence.1.payload.entities.0.mlSchema.definition.owner.definition.display_name",
+            {
+              "type": "string",
+              "nullable": true
+            }
+          ],
+          [
+            "payload.actionSequence.0.payload.objects.0.definition.externalService.operations",
+            [
+              {
+                "operationId": "get-playlist",
+                "method": "GET",
+                "path": "/playlists/{playlist_id}",
+                "parameterMappings": [
+                  {
+                    "name": "playlist_id",
+                    "in": "path",
+                    "required": true
+                  },
+                  {
+                    "name": "fields",
+                    "in": "query"
+                  }
+                ],
+                "responseSchema": {
+                  "type": "object",
+                  "definition": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "owner": {
+                      "type": "object",
+                      "definition": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "display_name": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      }
+                    },
+                    "images": {
+                      "type": "array",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "url": {
+                            "type": "string"
+                          },
+                          "height": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "width": {
+                            "type": "number",
+                            "nullable": true
+                          }
+                        }
+                      }
+                    },
+                    "tracks": {
+                      "type": "object",
+                      "definition": {
+                        "total": {
+                          "type": "number"
+                        },
+                        "items": {
+                          "type": "array",
+                          "definition": {
+                            "type": "object",
+                            "definition": {
+                              "track": {
+                                "type": "object",
+                                "definition": {
+                                  "id": {
+                                    "type": "string"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "artists": {
+                                    "type": "array",
+                                    "definition": {
+                                      "type": "object",
+                                      "definition": {
+                                        "id": {
+                                          "type": "string"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "duration_ms": {
+                                    "type": "number"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "transformerTest",
+        "miroirTestLabel": "oneOf outside the bounded subset is a clear transformer error",
+        "transformerName": "syncExternalServiceSchema",
+        "runTestStep": "runtime",
+        "transformer": {
+          "transformerType": "syncExternalServiceSchema",
+          "interpolation": "runtime"
+        },
+        "transformerParams": {
+          "openApiDocument": {
+            "openapi": "3.0.0",
+            "info": {
+              "title": "oneOf outside bounded subset",
+              "version": "0.0.1"
+            },
+            "paths": {
+              "/thing": {
+                "get": {
+                  "operationId": "get-thing",
+                  "responses": {
+                    "200": {
+                      "description": "oneOf root",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "oneOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "number"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "appModel": {
+            "endpoints": [
+              {
+                "uuid": "0e5cb172-12ea-4467-8598-5889338ae454",
+                "parentName": "Endpoint",
+                "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "SpotifyService",
+                "version": "1",
+                "description": "Slice 6 sync-input endpoint (Library playfield). operations[] start empty; the sync transformer upserts get-playlist.",
+                "definition": {
+                  "externalService": {
+                    "openApiDocument": "",
+                    "baseUrl": "https://api.spotify.com/v1",
+                    "securityScheme": {
+                      "type": "http",
+                      "scheme": "bearer",
+                      "bearerFormat": "JWT"
+                    },
+                    "credentialKey": "spotifyUser",
+                    "enabledOperations": [
+                      "get-playlist"
+                    ],
+                    "operations": []
+                  }
+                }
+              }
+            ]
+          },
+          "scope": [
+            "get-thing"
+          ]
+        },
+        "subExpectedValue": [
+          [
+            "queryFailure",
+            "FailedTransformer"
+          ],
+          [
+            "innerError.failureMessage",
+            "syncExternalServiceSchema: oneOf is outside the bounded OpenAPI subset and cannot be converted"
+          ]
+        ]
+      },
+      {
+        "miroirTestType": "transformerTest",
+        "miroirTestLabel": "anyOf outside the bounded subset is a clear transformer error",
+        "transformerName": "syncExternalServiceSchema",
+        "runTestStep": "runtime",
+        "transformer": {
+          "transformerType": "syncExternalServiceSchema",
+          "interpolation": "runtime"
+        },
+        "transformerParams": {
+          "openApiDocument": {
+            "openapi": "3.0.0",
+            "info": {
+              "title": "anyOf outside bounded subset",
+              "version": "0.0.1"
+            },
+            "paths": {
+              "/thing": {
+                "get": {
+                  "operationId": "get-thing",
+                  "responses": {
+                    "200": {
+                      "description": "anyOf root",
+                      "content": {
+                        "application/json": {
+                          "schema": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "boolean"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "appModel": {
+            "endpoints": [
+              {
+                "uuid": "0e5cb172-12ea-4467-8598-5889338ae454",
+                "parentName": "Endpoint",
+                "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "SpotifyService",
+                "version": "1",
+                "description": "Slice 6 sync-input endpoint (Library playfield). operations[] start empty; the sync transformer upserts get-playlist.",
+                "definition": {
+                  "externalService": {
+                    "openApiDocument": "",
+                    "baseUrl": "https://api.spotify.com/v1",
+                    "securityScheme": {
+                      "type": "http",
+                      "scheme": "bearer",
+                      "bearerFormat": "JWT"
+                    },
+                    "credentialKey": "spotifyUser",
+                    "enabledOperations": [
+                      "get-playlist"
+                    ],
+                    "operations": []
+                  }
+                }
+              }
+            ]
+          },
+          "scope": [
+            "get-thing"
+          ]
+        },
+        "subExpectedValue": [
+          [
+            "queryFailure",
+            "FailedTransformer"
+          ],
+          [
+            "innerError.failureMessage",
+            "syncExternalServiceSchema: anyOf is outside the bounded OpenAPI subset and cannot be converted"
+          ]
+        ]
+      }
+    ]
+  }
+}

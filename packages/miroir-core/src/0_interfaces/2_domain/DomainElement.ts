@@ -198,6 +198,10 @@ export type ActionErrorType =
 | "FailedToTeardownTest"
 | "NotImplemented"
 | "InvalidAction"
+| "ExternalServiceUnauthorized"
+| "ExternalServiceNotFound"
+| "ExternalServiceRateLimited"
+| "ExternalServiceUpstreamFailure"
 ;
 
 // export class Action2Error extends Error {

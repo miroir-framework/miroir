@@ -45,7 +45,7 @@ export function jzodElementToTS(
       if (!Array.isArray(jzodElement.definition)) {
         throw new Error('Enum definition must be an array');
       }
-      return jzodElement.definition.map(val => `"${val}"`).join(' | ');
+      return jzodElement.definition.map((val: string) => `"${val}"`).join(' | ');
     }
 
     case 'schemaReference': {
@@ -110,7 +110,7 @@ export function jzodElementToTS(
         throw new Error('Tuple definition missing or invalid');
       }
       
-      const itemTypes = jzodElement.definition.map(item => 
+      const itemTypes = jzodElement.definition.map((item: JzodElement) => 
         jzodElementToTS(item as any, indentLevel)
       );
       
@@ -122,7 +122,7 @@ export function jzodElementToTS(
         throw new Error('Union definition missing or invalid');
       }
       
-      const memberTypes = jzodElement.definition.map(member => 
+      const memberTypes = jzodElement.definition.map((member: JzodElement) => 
         jzodElementToTS(member as any, indentLevel)
       );
       

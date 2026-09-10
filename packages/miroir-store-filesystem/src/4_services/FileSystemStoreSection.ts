@@ -8,6 +8,7 @@ import {
   EntityVersion,
   LoggerInterface,
   Entity,
+  isHttpExternalEntity,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface
@@ -98,6 +99,15 @@ export class FileSystemStoreSection
     entity: Entity,
   ): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "createStorageSpaceForInstancesOfEntity", entity);
+    if (isHttpExternalEntity(entity)) {
+      log.info(
+        this.logHeader,
+        "createStorageSpaceForInstancesOfEntity skipping storage for http external entity",
+        entity.name,
+        entity.uuid,
+      );
+      return Promise.resolve(ACTION_OK);
+    }
     const entityInstancesPath = path.join(this.directory, entity.uuid);
     if (!fs.existsSync(entityInstancesPath)) {
       fs.mkdirSync(entityInstancesPath, { recursive: true });

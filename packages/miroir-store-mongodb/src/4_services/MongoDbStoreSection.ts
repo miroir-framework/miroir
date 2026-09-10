@@ -4,6 +4,7 @@ import {
   EntityVersion,
   LoggerInterface,
   MetaEntity,
+  isHttpExternalEntity,
   MiroirLoggerFactory,
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
@@ -74,6 +75,15 @@ export class MongoDbStoreSection
       "Entities",
       this.localUuidMongoDb.getCollections()
     );
+    if (isHttpExternalEntity(entity)) {
+      log.info(
+        this.logHeader,
+        "createStorageSpaceForInstancesOfEntity skipping storage for http external entity",
+        entity.name,
+        entity.uuid,
+      );
+      return Promise.resolve(ACTION_OK);
+    }
     if (!this.localUuidMongoDb.hasCollection(entity.uuid)) {
       this.localUuidMongoDb.addCollections([entity.uuid]);
     } else {

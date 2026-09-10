@@ -30,6 +30,20 @@
           "schema": "library",
           "forceNullOptionalAttributeToUndefined": true
         }
+      },
+      "fd47d115-67e2-4870-8339-1c26665d1d15": {
+        "model": {
+          "emulatedServerType": "sql",
+          "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
+          "schema": "spotify",
+          "forceNullOptionalAttributeToUndefined": true
+        },
+        "data": {
+          "emulatedServerType": "sql",
+          "connectionString": "postgres://postgres:postgres@host.docker.internal:5432/postgres",
+          "schema": "spotify",
+          "forceNullOptionalAttributeToUndefined": true
+        }
       }
     },
     "deploymentMode": "monoUser",

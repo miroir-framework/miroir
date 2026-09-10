@@ -198,10 +198,34 @@
         "tag": {
           "value": {
             "defaultLabel": "External Data Source",
-            "description": "Configuration for entities whose data lives in an external (non-Miroir-managed) storage location. Only meaningful when the parent Entity has conceptLevel 'External'."
+            "description": "Configuration for entities whose data lives outside Miroir-managed storage. kind http (plus endpoint) means the data is fetched from an external HTTP Endpoint; absent kind is equivalent to sql."
           }
         },
         "definition": {
+          "kind": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "sql",
+              "http"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Kind",
+                "description": "Storage kind. Absent is equivalent to sql. http means Miroir stores must not create storage or route SELECTs for this entity."
+              }
+            }
+          },
+          "endpoint": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Endpoint",
+                "description": "When kind is http, the Endpoint instance that serves this entity's data."
+              }
+            }
+          },
           "schema": {
             "type": "string",
             "optional": true,

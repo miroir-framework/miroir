@@ -12,6 +12,7 @@ import {
   MiroirLoggerFactory,
   resolveFundamentalSchemaForDeployment,
   resolveJzodSchemaReferenceInContext,
+  getEndpointActions,
   type EndpointDefinition,
   type JzodObject,
   type MetaModel,
@@ -326,7 +327,7 @@ export function cliCommandExecutor(
  * Creates a CLI command handler from an endpoint definition and action type
  */
 function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliCommandHandler<any> {
-  const actionDef = endpoint.definition.actions.find(
+  const actionDef = getEndpointActions(endpoint)?.find(
     (action: any) => action.actionParameters.actionType.definition === actionType,
   );
   if (!actionDef) {
@@ -378,9 +379,9 @@ export const cliRequestHandlers_EntityEndpoint: CliRequestHandlers = {
 // ################################################################################################
 
 export const cliRequestHandlers_Library_lendingEndpoint: CliRequestHandlers = defaultLibraryAppModel.endpoints
-  .filter((endpoint) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
-  .reduce((acc, endpoint) => {
-    const handler = cliCommandEntry(endpoint as EndpointDefinition, "lendDocument");
+  .filter((endpoint: EndpointDefinition) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
+  .reduce((acc: CliRequestHandlers, endpoint: EndpointDefinition) => {
+    const handler = cliCommandEntry(endpoint, "lendDocument");
     acc[handler.actionEnvelope.actionType] = handler;
     return acc;
   }, {} as CliRequestHandlers);

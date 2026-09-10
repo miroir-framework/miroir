@@ -73,6 +73,11 @@ export type RunnerTestContext = CompositeActionTestContext & {
 
 export type MiroirTestExecutionEnvironment = {
   domainController: DomainControllerInterface;
+  /**
+   * Emulated-server DomainController (`persistenceStoreAccessMode === "local"`).
+   * Absent when the session is client-only / not emulating a server.
+   */
+  domainControllerForServer?: DomainControllerInterface;
   applicationDeploymentMap: ApplicationDeploymentMap;
   testApplicationUuid: string;
   persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface;

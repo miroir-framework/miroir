@@ -190,11 +190,15 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
               throw new Error("sqlForQuery combinerOneToOne not implemented");
             }
             default: {
+              const extractorType =
+                (query.select as { extractorOrCombinerType?: string })?.extractorOrCombinerType ??
+                "unknown";
               throw new Error(
-                "sqlForQuery boxedExtractorOrCombinerReturningObject not implemented for extractorOrCombinerType of select: " +
-                  query.select
+                extractorType === "extractorFromAction"
+                  ? "sqlForQuery does not support extractorFromAction (runAsSql is unsupported for external-service extractors)"
+                  : "sqlForQuery boxedExtractorOrCombinerReturningObject not implemented for extractorOrCombinerType of select: " +
+                    extractorType,
               );
-              break;
             }
           }
           // return `SELECT * FROM "${this.schema}"."${query.parentName}" WHERE "uuid" = '${query.instanceUuid}'`;

@@ -513,6 +513,16 @@ export {
 } from "./0_interfaces/1_core/EntityVersion.js";
 export { HttpMethod, HttpMethodsArray, HttpMethodsObject } from "./0_interfaces/1_core/Http.js";
 export {
+  getEndpointActions,
+  getExternalService,
+} from "./0_interfaces/1_core/endpointDefinition.js";
+export type {
+  EndpointActionsBranch,
+  EndpointDefinitionLike,
+  EndpointExternalService,
+  EndpointExternalServiceBranch,
+} from "./0_interfaces/1_core/endpointDefinition.js";
+export {
   ApplicationSectionOpposite,
   EntityInstanceWithName,
   EntityInstanceWithNameSchema
@@ -763,6 +773,14 @@ export {
   resolveInstanceParentUuid,
   serializeCompositeKeyValue
 } from "./1_core/Entity/EntityPrimaryKey";
+export {
+  isHttpExternalEntity,
+  isSqlExternalEntity,
+} from "./1_core/Entity/entityExternalDataSource";
+export type {
+  EntityExternalDataSourceCarrier,
+  ExternalDataSourceLike,
+} from "./1_core/Entity/entityExternalDataSource";
 export type { EntityPrimaryKeySource } from "./1_core/Entity/EntityPrimaryKey";
 export {
   applyEntityOnlyRename,
@@ -982,6 +1000,7 @@ export {
   type RemapSelfApplicationUuidModelOptions,
 } from "./1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
 export { defaultReport } from "./1_core/Report.js";
+export { queryContainsExternalExtractor } from "./1_core/queryContainsExternalExtractor.js";
 export { testBuildPlusRuntimeCompositeActionSuiteForRunner } from "./1_core/Runner.js";
 export {
   describe,
@@ -1300,6 +1319,19 @@ export {
 } from "./4_services/PersistenceStoreController.js";
 export { PersistenceStoreControllerManager } from "./4_services/PersistenceStoreControllerManager.js";
 export {
+  clearSecrets,
+  registerSecrets,
+  resolveSecret,
+} from "./4_services/SecretStore.js";
+export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";
+export {
+  allowInsecureBaseUrlsForTests,
+  clearAllowedInsecureBaseUrlsForTests,
+  clearExternalServiceTokenCacheForTests,
+  executeExternalServiceOperation,
+} from "./4_services/ExternalServiceClient.js";
+export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";
+export {
   mountApplicationDeployment, startLocalPersistenceStoreControllers
 } from "./4_services/PersistenceStoreControllerTools.js";
 export {
@@ -1323,7 +1355,6 @@ export {
   readUsableBearerPrincipal,
   loginWithPassword,
   persistChangedPasswordHash,
-  redactCredentialSecretsFromValue,
   resolveAuthenticationEnabled,
   setProcessTokenSecret,
   verifyBearerToken,
@@ -1362,6 +1393,9 @@ export {
   type AccessGrant,
   type AccessTarget,
 } from "./1_core/authentication/AccessPolicy.js";
+export {
+  deploymentUuidFromHttpRequest,
+} from "./1_core/authentication/deploymentUuidFromHttpRequest.js";
 export {
   handleAuthHttpRoute,
   type AuthHttpResult,

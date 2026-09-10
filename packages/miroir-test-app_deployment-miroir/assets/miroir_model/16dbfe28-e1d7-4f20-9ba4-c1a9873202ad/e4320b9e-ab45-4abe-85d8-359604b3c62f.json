@@ -422,6 +422,98 @@
               }
             }
           },
+          "extractorFromAction": {
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "extractorFromAction"
+              },
+              "endpointUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint Uuid"
+                  }
+                }
+              },
+              "actionType": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Action Type"
+                  }
+                }
+              },
+              "parameterBindings": {
+                "type": "record",
+                "definition": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "any"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "extractorTemplateFromAction": {
+            "type": "object",
+            "definition": {
+              "extractorOrCombinerType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "display": {
+                      "editable": false
+                    },
+                    "defaultLabel": "Extractor Or Combiner Type"
+                  }
+                },
+                "definition": "extractorTemplateFromAction"
+              },
+              "endpointUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint Uuid"
+                  }
+                }
+              },
+              "actionType": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Action Type"
+                  }
+                }
+              },
+              "parameterBindings": {
+                "type": "record",
+                "definition": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                }
+              }
+            }
+          },
           "extractorOrCombinerReturningObject": {
             "type": "union",
             "discriminator": "extractorOrCombinerType",
@@ -549,6 +641,12 @@
                 "type": "schemaReference",
                 "definition": {
                   "relativePath": "combinerOneToOne"
+                }
+              },
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorFromAction"
                 }
               }
             ]
@@ -885,6 +983,12 @@
             "type": "union",
             "discriminator": "extractorOrCombinerType",
             "definition": [
+              {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "extractorFromAction"
+                }
+              },
               {
                 "type": "schemaReference",
                 "definition": {

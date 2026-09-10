@@ -6,6 +6,7 @@ import {
   type EndpointDefinition,
   type LoggerInterface,
   MiroirLoggerFactory,
+  getEndpointActions,
 } from "miroir-core";
 import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-test-app_deployment-admin";
 import { entityEndpointVersion } from "miroir-test-app_deployment-miroir";
@@ -178,7 +179,7 @@ export class EndpointToolRegistry {
         `listTools: application ${applicationName} (${applicationUuid}) exposes ${endpoints.length} endpoint(s)`,
       );
       const wellFormedEndpoints = endpoints.filter((endpoint) => {
-        const wellFormed = endpoint?.uuid && endpoint?.name && endpoint?.definition?.actions;
+        const wellFormed = endpoint?.uuid && endpoint?.name && getEndpointActions(endpoint);
         if (!wellFormed) {
           log.warn(
             `listTools: skipping malformed endpoint entry for application ${applicationUuid}: ${JSON.stringify(endpoint)}`,
@@ -188,7 +189,7 @@ export class EndpointToolRegistry {
       });
       const sortedEndpoints = [...wellFormedEndpoints].sort((a, b) => a.uuid.localeCompare(b.uuid));
       for (const endpoint of sortedEndpoints) {
-        const sortedActions = [...(endpoint.definition.actions ?? [])].sort((a: any, b: any) =>
+        const sortedActions = [...(getEndpointActions(endpoint) ?? [])].sort((a: any, b: any) =>
           String(a?.actionParameters?.actionType?.definition).localeCompare(
             String(b?.actionParameters?.actionType?.definition),
           ),

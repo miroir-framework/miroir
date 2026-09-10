@@ -403,9 +403,14 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         );
       }
       default: {
+        const extractorType = String(
+          (foreignKeyParams.extractor.select as { extractorOrCombinerType?: string })
+            .extractorOrCombinerType ?? "unknown",
+        );
         throw new Error(
-          "extractRunnerInMemory extractEntityInstance can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
-            foreignKeyParams.extractor.select.extractorOrCombinerType
+          "ExtractorRunnerInMemory extractEntityInstance cannot handle extractorOrCombinerType=" +
+            extractorType +
+            (extractorType === "extractorFromAction" ? " (extractorFromAction is server-only)" : ""),
         );
       }
     }

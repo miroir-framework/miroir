@@ -3,14 +3,15 @@ export const cleanLevel = "5";
 
 
 // ################################################################################################
-// export type ReportUrlParamKeys = 'deploymentUuid' | 'applicationSection' | 'reportUuid' | 'instanceUuid';
-export type ReportUrlParamKeys =
+// Known report URL keys plus any forwarded search params (e.g. playlistId, D8).
+// `(string & {})` keeps the known-key union for autocomplete while allowing extras.
+export type ReportUrlKnownParamKeys =
   | "application"
   | "deploymentUuid"
   | "applicationSection"
   | "reportUuid"
-  | "instanceUuid"
-  ;
+  | "instanceUuid";
+export type ReportUrlParamKeys = ReportUrlKnownParamKeys | (string & {});
 
 // ################################################################################################
 // to place in admin_data/7959d814-400c-4e80-988f-a00fe582ab98/

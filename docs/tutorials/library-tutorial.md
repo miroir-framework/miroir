@@ -19,7 +19,12 @@ Use the **Deploy an Existing Application** runner:
 
 <img src="./libraryTutorial/miroir-install_application.png" alt="Install Application" width="80%"/>
 
-Select the **library-model.json** and **library-data.jaon** files, and deploy the application on your storage of choice (the choice of the storage is irrerlevant for the remainder of this tutorial, the straightforward solution being the filesystem on which you installed the Miroir platform):
+You can download the Library application Model and sample data files using the following links:
+
+- [the model (use "save as....")](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-model.json) and
+- [the sample data (use "save as...")](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-data.json)
+
+Select the **library-model.json** and **library-data.json** files, and deploy the application on your storage of choice (the choice of the storage is irrerlevant for the remainder of this tutorial, the straightforward solution being the filesystem on which you installed the Miroir platform):
 
 <img src="./libraryTutorial/miroir-install_application-library.png" alt="Install the Library Application" width="80%"/>
 

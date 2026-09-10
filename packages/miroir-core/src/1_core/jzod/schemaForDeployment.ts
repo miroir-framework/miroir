@@ -1,3 +1,4 @@
+import { getEndpointActions } from "../../0_interfaces/1_core/endpointDefinition.js";
 import type { Uuid } from "../../0_interfaces/1_core/EntityVersion";
 import { applyDeploymentDomainActionCarryOn } from "../../0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchemaHelpers";
 import { miroirFundamentalJzodSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalJzodSchema";
@@ -105,7 +106,7 @@ function buildAppActionBranches(
 
   const branches: JzodElement[] = [];
   for (const endpoint of appEndpoints) {
-    for (const action of endpoint.definition?.actions ?? []) {
+    for (const action of getEndpointActions(endpoint) ?? []) {
       const actionParameters = action.actionParameters;
       const actionTypeKey = actionTypeKeyFromLiteral(actionParameters.actionType);
       if (actionTypeKey && existingActionTypes.has(actionTypeKey)) {

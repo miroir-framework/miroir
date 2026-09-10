@@ -26,6 +26,18 @@
           "emulatedServerType": "indexedDb",
           "indexedDbName": "indexedDb-app-uuid"
         }
+      },
+      "fd47d115-67e2-4870-8339-1c26665d1d15": {
+        "model": {
+          "emulatedServerType": "sql",
+          "connectionString": "postgres://postgres:postgres@localhost:5432/postgres",
+          "schema": "spotify",
+          "forceNullOptionalAttributeToUndefined": true
+        },
+        "data": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "indexedDb-app-uuid"
+        }
       }
     },
     "deploymentMode": "monoUser",

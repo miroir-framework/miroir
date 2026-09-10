@@ -1,0 +1,9 @@
+{
+  "uuid": "00514586-bf72-4de3-beea-0a627c821404",
+  "parentName": "AdminApplication",
+  "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+  "name": "Spotify",
+  "defaultLabel": "The Spotify Application",
+  "description": "The model and data of the Spotify Application.",
+  "selfApplication": "00514586-bf72-4de3-beea-0a627c821404"
+}

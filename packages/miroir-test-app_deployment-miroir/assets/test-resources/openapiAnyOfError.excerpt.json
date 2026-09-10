@@ -1,0 +1,29 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "anyOf outside bounded subset",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/thing": {
+      "get": {
+        "operationId": "get-thing",
+        "responses": {
+          "200": {
+            "description": "anyOf root",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    { "type": "string" },
+                    { "type": "boolean" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -208,6 +208,12 @@ The admin model includes reports, menus, selfApplication, etc., so more parentUu
 
 The `bundledData.ts` file in `miroir-sandbox` uses two separate sets (`MIROIR_MODEL_PARENT_UUIDS` and `ADMIN_MODEL_PARENT_UUIDS`) to drive this classification.
 
+### External-service endpoints (HTTP)
+
+An application can declare an **external HTTP service** as an `Endpoint` instance whose `definition` uses the `externalService` branch (key-union with the legacy `actions` branch — never both). The block holds provenance (`openApiDocument`), runtime `baseUrl`, a `securityScheme` discriminated union (`type: "http"` bearer with optional `credentialKey`; `type: "oauth2ClientCredentials"` with `tokenUrl` + `clientIdKey`/`clientSecretKey`; or `type: "oauth2AuthorizationCode"` with `tokenUrl` + `clientIdKey`/`clientSecretKey`/`refreshTokenKey` and optional `scopes` — all secret **names** only, exchanged for a token at runtime), `enabledOperations`, and materialized `operations[]` (GET only at sync time). For `oauth2AuthorizationCode` the framework performs only the OAuth2 refresh-token grant: user consent is out-of-band; the refresh token is the secret named by `refreshTokenKey`; rotated refresh tokens stay in memory and are never persisted or logged. Queries use `extractorFromAction` / `extractorTemplateFromAction`; execution is **server-process-only** (`POST /query` intercept when the boxed query contains an external extractor). Sync is a pure transformer (`syncExternalServiceSchema`) producing a reviewable `compositeActionSequence` that upserts `operations[]` and companion Entities.
+
+Entities backed by HTTP responses use `externalDataSource: { kind: "http", endpoint: <endpointUuid> }` (absent `kind` means SQL catalog external). All store backends **skip bootstrap** for `kind: "http"` — no data-section folder, no Sequelize model. Named launch-time secrets (`--secret <name>=<value>`, `MIROIR_SECRET_<NAME>`) supply tokens server-side; they are never serialized into model JSON or REST responses. See [`code-helpers/features/267-FEATURE-openapi-external-services/analysis.md`](../../code-helpers/features/267-FEATURE-openapi-external-services/analysis.md) and the `miroir-test-app_deployment-spotify` example package.
+
 ---
 
 ## Application Startup Sequence

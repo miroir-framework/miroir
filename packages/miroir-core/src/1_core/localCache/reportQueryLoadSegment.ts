@@ -13,6 +13,7 @@ import {
 import { getReduxDeploymentsStateIndex } from "../../2_domain/ReduxDeploymentsState.js";
 import type { ReportQueryLoadRequest } from "../../2_domain/ReportQueryLoadService.js";
 import type { ApplicationSection } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { queryContainsExternalExtractor } from "../queryContainsExternalExtractor.js";
 
 /** One persistence read target derived from a resolved report query. */
 export type ReportQueryLoadTarget = {
@@ -235,6 +236,9 @@ export function isReportQueryLoadSegmentSufficient(
   request: ReportQueryLoadRequest,
   lookup: LocalCacheSegmentHeaderLookup
 ): boolean {
+  if (queryContainsExternalExtractor(request.resolvedQuery)) {
+    return false;
+  }
   const targets = reportQueryLoadTargetsFromResolvedReportQuery(
     request.resolvedQuery
   );

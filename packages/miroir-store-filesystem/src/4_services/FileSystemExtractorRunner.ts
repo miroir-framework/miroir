@@ -282,11 +282,15 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         break;
       }
       default: {
-        throw new Error(
-          "extractEntityInstance can not handle ExtractorTemplateReturningObject query with extractorOrCombinerType=" +
-            foreignKeyParams.extractor.select.extractorOrCombinerType
+        const extractorType = String(
+          (foreignKeyParams.extractor.select as { extractorOrCombinerType?: string })
+            .extractorOrCombinerType ?? "unknown",
         );
-        break;
+        throw new Error(
+          "FileSystemExtractorRunner extractEntityInstance cannot handle extractorOrCombinerType=" +
+            extractorType +
+            (extractorType === "extractorFromAction" ? " (extractorFromAction is server-only)" : ""),
+        );
       }
     }
   };

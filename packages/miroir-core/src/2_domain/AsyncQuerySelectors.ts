@@ -419,18 +419,22 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           );
       break;
     }
+    case "extractorFromAction":
     default: {
+      const extractorType =
+        (extractorOrCombiner as { extractorOrCombinerType?: string })?.extractorOrCombinerType ??
+        "unknown";
       return Promise.resolve(
         new Domain2ElementFailed({
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQuery"],
           failureMessage:
-            "could not find extractorOrCombinerType for extractor: " +
-            JSON.stringify(extractorOrCombiner),
-          query: extractorOrCombiner,
+            extractorType === "extractorFromAction"
+              ? "extractorFromAction cannot be executed on the AsyncQuerySelectors path"
+              : "could not find extractorOrCombinerType for extractor: " + extractorType,
+          query: JSON.stringify(extractorOrCombiner),
         })
       );
-      break;
     }
   }
 }

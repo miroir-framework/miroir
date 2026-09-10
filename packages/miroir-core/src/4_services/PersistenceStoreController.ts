@@ -51,6 +51,7 @@ import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { resolveInstanceParentUuid } from "../1_core/Entity/EntityPrimaryKey";
 import { versionHistoryEntityUuids } from "../1_core/Model.js";
 import { getVersionHistoryEntityDefinition } from "../1_core/Model.js";
+import { redactCredentialSecretsFromValue } from "./redactCredentialSecrets.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceStoreController");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -195,7 +196,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
           "handleBoxedQueryAction done  for query",
           action,
           "result",
-          JSON.stringify(result)
+          JSON.stringify(redactCredentialSecretsFromValue(result))
         );
         return result;
       },

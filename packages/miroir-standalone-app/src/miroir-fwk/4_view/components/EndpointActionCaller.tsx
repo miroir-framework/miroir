@@ -5,9 +5,9 @@ import {
 
 import { Formik, type FormikProps } from 'formik';
 import {
-  defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
+  getEndpointActions,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
   JzodObject,
   LoggerInterface,
@@ -17,10 +17,8 @@ import {
   ReduxDeploymentsState,
   resolvePathOnObject,
   SyncBoxedExtractorOrQueryRunnerMap,
-  transformer_extended_apply_wrapper,
   type Action,
   type MiroirModelEnvironment,
-  type CoreTransformerForBuildPlusRuntime,
 } from 'miroir-core';
 import {
   JsonDisplayHelper,
@@ -54,37 +52,6 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 export interface EndpointActionCallerProps {}
 
 const formikPath_EndpointActionCaller = "EndpointActionCaller";
-
-const runnerDefinition = {
-  runnerName: "EndpointActionCaller",
-  runnerLabel: "Call Endpoint Action",
-  // currentEndpointUuid : "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
-  // domainActionType : "lendDocument",
-  transformer: {
-    transformerType: "dataflowObject",
-    label: "Get Actions for Endpoint",
-    definition: {
-      actions: {
-        transformerType: "getFromParameters",
-        referencePath: ["currentEndpoint", "definition", "actions"],
-      },
-      actionTypes: {
-        transformerType: "mapList",
-        elementTransformer: {
-          transformerType: "getFromContext",
-          referencePath: [
-            "defaultInput",
-            "actionParameters",
-          ],
-        },
-        applyTo: {
-          transformerType: "getFromContext",
-          referenceName: "actions",
-        },
-      },
-    },
-  } as CoreTransformerForBuildPlusRuntime
-}
 
 // #################################################################################################
 export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
@@ -236,9 +203,8 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
           const availableEndpoints = currentInnerModel.endpoints;
 
           const currentEndpoint = useMemo(() => {
-            if (!selectedEndpointUuid) return [];
-            const endpoint = availableEndpoints.find((e) => e.uuid === selectedEndpointUuid);
-            return endpoint;
+            if (!selectedEndpointUuid) return undefined;
+            return availableEndpoints.find((e) => e.uuid === selectedEndpointUuid);
           }, [selectedEndpointUuid, availableEndpoints]);
 
           log.info("EndpointActionCaller: currentEndpoint", currentEndpoint);
@@ -247,27 +213,12 @@ export const EndpointActionCaller: FC<EndpointActionCallerProps> = () => {
             actions: Action[];
             actionTypes: Action["actionParameters"][];
           } = useMemo(() => {
-            return currentEndpoint
-              ? transformer_extended_apply_wrapper(
-                  context.miroirContext.miroirActivityTracker, // activityTracker
-                  "runtime", // step
-                  ["rootTransformer"], // transformerPath
-                  "TransformerEditor", // label
-                  runnerDefinition.transformer, // transformer
-                  "value", // resolveBuildTransformersTo
-                  defaultMiroirModelEnvironment, // currentMiroirModelEnvironment, // TODO: effectively get the currentMiroirModelEnvironment from the deploymentUuid selected as input
-                  {
-                    defaultInput: currentEndpoint || { actions: [] },
-                    currentEndpoint: currentEndpoint || { actions: [] },
-                  }, // transformerParams
-                  {}, // contextResults - pass the input to transform
-                )
-              : { actions: [], actionTypes: [] };
-          }, [
-            currentEndpoint,
-            runnerDefinition.transformer,
-            context.miroirContext.miroirActivityTracker,
-          ]);
+            const actions = getEndpointActions(currentEndpoint) ?? [];
+            return {
+              actions,
+              actionTypes: actions.map((action) => action.actionParameters),
+            };
+          }, [currentEndpoint]);
           log.info("EndpointActionCaller: availableActionsAndActionTypes", availableActionsAndActionTypes);
 
           const selectedActionName = formikContext.values[formikPath_EndpointActionCaller].action;

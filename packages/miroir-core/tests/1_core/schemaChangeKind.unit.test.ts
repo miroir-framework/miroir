@@ -4,7 +4,7 @@ import { deployment_Library_DO_NO_USE, defaultLibraryAppModel } from "miroir-tes
 import { deployment_Miroir } from "miroir-test-app_deployment-admin";
 import { selfApplicationMiroir, defaultMiroirMetaModel, entityDefinitionEntity } from "miroir-test-app_deployment-miroir";
 
-import { classifySchemaChange, computeSchemaRevision, type MetaModel } from "miroir-core";
+import { classifySchemaChange, computeSchemaRevision, getEndpointActions, type MetaModel } from "miroir-core";
 
 const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const libraryApplicationUuid = defaultLibraryAppModel.applicationUuid;
@@ -122,16 +122,15 @@ describe("computeSchemaRevision — app overlay changes (3.2)", () => {
     );
     expect(lendingEndpoint).toBeDefined();
 
-    const firstAction = lendingEndpoint!.definition!.actions![0];
+    const firstAction = getEndpointActions(lendingEndpoint)![0];
     const mutated = cloneModel(base) as MetaModel;
     mutated.endpoints = mutated.endpoints.map((endpoint) =>
       endpoint.uuid === lendingEndpoint!.uuid
         ? {
             ...endpoint,
             definition: {
-              ...endpoint.definition!,
               actions: [
-                ...(endpoint.definition?.actions ?? []),
+                ...(getEndpointActions(endpoint) ?? []),
                 {
                   ...firstAction,
                   actionParameters: {

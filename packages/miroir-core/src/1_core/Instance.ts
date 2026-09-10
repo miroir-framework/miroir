@@ -1,15 +1,16 @@
 import { instanceEndpointV1, modelEndpointV1, storeManagementEndpoint as storeManagementEndpointV1 } from "miroir-test-app_deployment-miroir";
+import { getEndpointActions } from "../0_interfaces/1_core/endpointDefinition.js";
 import type { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 
 export const actionsWithDeploymentInPayload = [
-  ...instanceEndpointV1.definition.actions.map(
+  ...(getEndpointActions(instanceEndpointV1) ?? []).map(
   (actionDef:any) => actionDef.actionParameters.actionType.definition
 ),
-  ...storeManagementEndpointV1.definition.actions.map(
-  (actionDef:any) => actionDef.actionParameters.actionType.definition
+  ...(getEndpointActions(storeManagementEndpointV1) ?? []).map(
+    (actionDef:any) => actionDef.actionParameters.actionType.definition
 ),
-...modelEndpointV1.definition.actions.map(
+...(getEndpointActions(modelEndpointV1) ?? []).map(
   (actionDef:any) => actionDef.actionParameters.actionType.definition
 )]
 

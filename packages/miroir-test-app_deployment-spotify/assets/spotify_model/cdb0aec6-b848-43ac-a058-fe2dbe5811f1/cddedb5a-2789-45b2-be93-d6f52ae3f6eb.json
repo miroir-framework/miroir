@@ -1,0 +1,9 @@
+{
+  "uuid": "cddedb5a-2789-45b2-be93-d6f52ae3f6eb",
+  "parentName": "ApplicationModelBranch",
+  "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "selfApplication": "00514586-bf72-4de3-beea-0a627c821404",
+  "headVersion": "7e2c9a14-6b5f-4d83-a1e0-3c8f9b2d4e71",
+  "name": "master",
+  "description": "The master branch of the Spotify SelfApplication"
+}

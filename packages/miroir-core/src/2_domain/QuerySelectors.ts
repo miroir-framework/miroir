@@ -1008,16 +1008,20 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
           };
       break;
     }
+    case "extractorFromAction":
     default: {
-      return {
-        elementType: "failure",
-        elementValue: {
-          queryFailure: "QueryNotExecutable",
-          query: JSON.stringify(extractorOrCombiner),
-          failureMessage: "unsupported queryType for query: " + extractorOrCombiner,
-        },
-      } as DomainElementFailed;
-      break;
+      const extractorType =
+        (extractorOrCombiner as { extractorOrCombinerType?: string })?.extractorOrCombinerType ??
+        "unknown";
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        failureOrigin: ["QuerySelector", "innerSelectDomainElementFromExtractorOrCombiner"],
+        failureMessage:
+          extractorType === "extractorFromAction"
+            ? "extractorFromAction cannot be executed on the sync QuerySelectors path"
+            : "unsupported extractorOrCombinerType for query: " + extractorType,
+        query: JSON.stringify(extractorOrCombiner),
+      });
     }
   }
 }
@@ -1141,6 +1145,9 @@ export const runQuery = <StateType>(
       return new Domain2ElementFailed({
         queryFailure: "ReferenceNotFound",
         failureOrigin: ["QuerySelector", "runQuery"],
+        failureMessage:
+          result.failureMessage ??
+          "runQuery could not run extractor: " + extractor[0],
         queryContext:
           "runQuery could not run extractor: " + extractor[0] ,
         innerError: context[extractor[0]],

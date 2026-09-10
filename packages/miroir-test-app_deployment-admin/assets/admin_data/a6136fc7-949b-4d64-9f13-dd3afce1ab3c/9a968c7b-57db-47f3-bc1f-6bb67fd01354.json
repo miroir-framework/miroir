@@ -1,0 +1,11 @@
+{
+  "uuid": "9a968c7b-57db-47f3-bc1f-6bb67fd01354",
+  "parentName": "MiroirRight",
+  "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
+  "name": "Alice — Spotify deployment",
+  "miroirUser": "1c39328c-7de4-44ae-bcf1-5bbc38d8e267",
+  "targetType": "deployment",
+  "targetUuid": "fd47d115-67e2-4870-8339-1c26665d1d15",
+  "capability": "read",
+  "description": "Alice Admin — illustrative read capability on the Spotify Deployment (#267)."
+}

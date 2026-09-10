@@ -1,0 +1,11 @@
+{
+  "uuid": "f46164d0-6306-4130-8a1c-4c30db1ed60b",
+  "parentName": "MiroirRight",
+  "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
+  "name": "Alice — Spotify application",
+  "miroirUser": "1c39328c-7de4-44ae-bcf1-5bbc38d8e267",
+  "targetType": "application",
+  "targetUuid": "00514586-bf72-4de3-beea-0a627c821404",
+  "capability": "admin",
+  "description": "Alice Admin — illustrative admin capability on the Spotify Application (#267)."
+}

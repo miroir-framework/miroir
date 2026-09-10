@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { getEndpointActions } from "miroir-core";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 
@@ -19,7 +20,7 @@ const MIROIR_TEST_SUITE = join(
 );
 
 function duplicateAttributeAction(endpoint: any) {
-  const actions = endpoint?.definition?.actions ?? [];
+  const actions = getEndpointActions(endpoint) ?? [];
   const action = actions.find(
     (a: any) => a?.actionParameters?.actionType?.definition === "entity_DuplicateAttribute",
   );
