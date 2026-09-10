@@ -1,0 +1,82 @@
+{
+  "uuid": "aa9897e5-747e-49df-9048-02bc94285b77",
+  "name": "pivot",
+  "defaultLabel": "pivot",
+  "description": "Pivots a list of row objects into a matrix: one output object per distinct rowKeyAttribute value, with one attribute per columnKeyAttribute value. Cells hold the plucked valueAttribute, or an existence boolean (true) when valueAttribute is absent. Missing (row, column) pairs get fillValue (default false in existence mode, null otherwise). Columns come from the columns parameter (literal list of strings, or transformer resolving to one) or are derived from the data. Duplicates on a (row, column) pair are resolved with onDuplicates (default first); aggregate policies are rejected in existence mode. Issue #265.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "array"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "pivot"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": {
+            "type": "any",
+            "optional": true,
+            "description": "The list of row objects to pivot. The actual type is set by the platform depending on interpolation for the transformer. In SQL mode, must be a constant/returnValue/getFromContext/getFromParameters (the sqlStringForApplyTo allowlist)."
+          },
+          "rowKeyAttribute": {
+            "type": "string",
+            "description": "Attribute of input rows whose value identifies a pivot row (e.g. \"user\")."
+          },
+          "columnKeyAttribute": {
+            "type": "string",
+            "description": "Attribute of input rows whose value becomes a column name (e.g. \"dep\")."
+          },
+          "valueAttribute": {
+            "type": "string",
+            "optional": true,
+            "description": "Attribute of input rows to pluck as the cell value. When absent, cells are existence booleans (true iff at least one input row matches the (row, column) pair)."
+          },
+          "onDuplicates": {
+            "type": "enum",
+            "optional": true,
+            "definition": ["first", "last", "count", "sum", "min", "max"],
+            "description": "Policy when several input rows share the same (row, column) pair. first/last use input order; count/sum/min/max aggregate the plucked valueAttribute. Only first/last are allowed in existence mode (no valueAttribute); other values cause a handler error. Defaults to first."
+          },
+          "columns": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer"
+            },
+            "description": "Explicit column set: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list, or getFromContext). A bare string array is NOT schema-expressible here: it also matches the transformer array branch, making the union ambiguous for jzodTypeCheck. When omitted, columns are derived from the distinct columnKeyAttribute values of the input. Object lists (e.g. Deployment rows) must be plucked first (mapList + accessDynamicPath)."
+          },
+          "fillValue": {
+            "type": "any",
+            "optional": true,
+            "description": "Value written for (row, column) pairs with no input row. Defaults to false in existence mode, null when valueAttribute is set."
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "array",
+        "definition": {
+          "type": "record",
+          "definition": {
+            "type": "any"
+          }
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_pivot",
+    "sqlImplementationFunctionName": "sqlStringForPivotTransformer"
+  }
+}

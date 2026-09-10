@@ -26,7 +26,7 @@
 - Working branch: `cursor/265-pivot-unpivot-transformers`
 - Suite file: [`33f60ac8-6511-43b1-b153-6b86e3177532.json`](../../../packages/miroir-test-app_deployment-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json) (`miroirCoreTransformers`)
 
-**Resume note:** plan reviewed (Composer Fast) and fixed — no slices started.
+**Resume note:** all slices 0–9 complete (2026-09-09) — implementation done, full nonreg green. Working tree intentionally uncommitted (commits only on explicit user request; analysis+plan committed as aae0e4176).
 
 ---
 
@@ -44,16 +44,16 @@ This plan does **not** build the checkbox-grid UI or write-back (rights-UI follo
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize baseline (suites green, census, Postgres reachable) | ⬜ | pre-flight command log |
-| 1 | Tracer: in-memory `pivot`, existence mode, data-derived columns | ⬜ | pivot existence leaf green (unit) |
-| 2 | `pivot` cell values + fill (`valueAttribute`, `fillValue`) | ⬜ | value/fill leaves green (unit) |
-| 3 | `pivot` explicit columns (literal + context reference) | ⬜ | columns leaves green (unit) |
-| 4 | `pivot` duplicate policy (`onDuplicates`, existence-mode ban) | ⬜ | duplicates leaves green (unit) |
-| 5 | `unpivot` basic melt (idColumns, whitelist, rename) | ⬜ | melt leaves green (unit) |
-| 6 | `unpivot` edge semantics (nulls, collision, per-row melt) | ⬜ | edge leaves green (unit) |
-| 7 | `pivot` SQL handler | ⬜ | pivot leaves green (`emulatedServer-sql`) |
-| 8 | `unpivot` SQL handler | ⬜ | unpivot leaves green (`emulatedServer-sql`) |
-| 9 | Nonreg, docs, tracer narrative, AC | ⬜ | `npm run nonreg` green |
+| 0 | Characterize baseline (suites green, census, Postgres reachable) | ✅ | pre-flight command log |
+| 1 | Tracer: in-memory `pivot`, existence mode, data-derived columns | ✅ | pivot existence leaf green (unit) |
+| 2 | `pivot` cell values + fill (`valueAttribute`, `fillValue`) | ✅ | value/fill leaves green (unit) |
+| 3 | `pivot` explicit columns (literal + context reference) | ✅ | columns leaves green (unit) |
+| 4 | `pivot` duplicate policy (`onDuplicates`, existence-mode ban) | ✅ | duplicates leaves green (unit) |
+| 5 | `unpivot` basic melt (idColumns, whitelist, rename) | ✅ | melt leaves green (unit) |
+| 6 | `unpivot` edge semantics (nulls, collision, per-row melt) | ✅ | edge leaves green (unit) |
+| 7 | `pivot` SQL handler | ✅ | pivot leaves green (`emulatedServer-sql`) |
+| 8 | `unpivot` SQL handler | ✅ | unpivot leaves green (`emulatedServer-sql`) |
+| 9 | Nonreg, docs, tracer narrative, AC | ✅ | `npm run nonreg` green |
 
 ---
 
@@ -97,7 +97,7 @@ Copied from the analysis decision record; binding. Deviations go into the slice'
 | Same, vitest gate | `RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'` |
 | `miroirCoreTransformers` (MiroirTest SQL integration) | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integration` |
 | Inventory test | `RUN_TEST=transformerResultSchema.inventory npm run testByFile -w miroir-core -- 'transformerResultSchema.inventory'` |
-| Deployment model validation (after any asset JSON change) | `npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts` |
+| Deployment model validation (after any asset JSON change) | `npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation` |
 | Deployment assets rebuild (after any asset JSON change) | `npm run build -w miroir-test-app_deployment-miroir` |
 | Schema/type regen (after definition/registration change) | `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core` |
 | Postgres store rebuild (after `SqlGenerator.ts` change) | `npm run build -w miroir-store-postgres` |
@@ -113,7 +113,7 @@ MIROIR_TEST_FILTER='{"testList":{"miroirCoreTransformers":{"runtimeTransformerTe
 **Dual-mode expectation rules (verified against `MiroirTransformerTestTools.ts`):**
 
 - Numeric/boolean `expectedValue` literals match SQL JSON results as-is (aggregate precedent, `33f60ac8-…json:4753-4756`) — single `expectedValue` suffices.
-- **Nulls:** unit mode normalizes expected values with `unNullify` + `removeUndefinedProperties` (`MiroirTransformerTestTools.ts:222-223, 251-252`) while actual results keep JSON `null`; SQL integration skips that normalization (`:474-477`). Any leaf asserting explicit `null` therefore splits expectations: `unitTestExpectedValue` (null keys omitted) + `integrationTestExpectedValue` (JSON `null` present).
+- **Nulls (resolved by design — sparse-null pivot):** unit mode recursively strips `null`s from expected values (`unNullify` + `removeUndefinedProperties`, `otherTools.ts:50-85`, recursive — verified) while actuals keep JSON `null`; SQL integration keeps nulls on both sides. Dense nulls are therefore unassertable in unit mode, so **pivot emits sparse output: any cell whose computed value is `null` (default value-mode fill, or plucked explicit `null`) yields an absent key in both implementations** (analysis D2, v3). Pivot leaves thus use a single `expectedValue` in both modes. **Unpivot** keeps D6 (explicit `null` cells emit `{..., value: null}` rows): its null-keeping leaf uses `subExpectedValue` in unit mode (row-presence asserted via non-null fields — the integration path ignores `subExpectedValue`) plus `integrationTestExpectedValue` with the full JSON-`null` rows for SQL mode.
 - **Failures:** error leaves use `retainAttributes: ["queryFailure"]` + `unitTestExpectedValue: { queryFailure: "FailedTransformer" }` (precedent `33f60ac8-…json:3789-3798`); `integrationTestExpectedValue` for SQL mode is set during Slice 7/8 once the SQL failure shape is observed (compile-time `QueryNotExecutable` vs runtime `FailedTransformer`).
 
 Postgres availability for the SQL profile is pre-verified: `localhost:5432` reachable (2026-09-09), profile `emulatedServer-sql` → `postgres://postgres:postgres@localhost:5432/postgres`.
@@ -148,7 +148,7 @@ npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --su
 
 ### Realization
 
-<Appended on completion.>
+Done 2026-09-09. Unit baseline: `transformers.unit` **243 passed / 1 skipped** (10:40). Inventory: 5/5 green unmodified. SQL integration baseline: `miroirCoreTransformers` with `--profile emulatedServer-sql` **243 passed** (exit 0, 5.8 min, Postgres `localhost:5432`). Census: 45 `TransformerDefinition` instances (33 real SQL / 6 `N/A` / 2 `TODO` / 2 missing / 2 composite). All contracts locked.
 
 ---
 
@@ -189,7 +189,7 @@ RED state: fails with unknown `transformerType` / missing definition.
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 RUN_TEST=transformerResultSchema.inventory npm run testByFile -w miroir-core -- 'transformerResultSchema.inventory'
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
@@ -197,7 +197,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+Done 2026-09-09. RED: pivot leaf failed as unknown `transformerType` (1 failed / 243 passed / 1 skipped). GREEN: `aa9897e5-….json` definition (full parameter surface declared, static `record<any>` result schema), deployment exports (`index.ts:364`, `index.d.ts:307`), `Transformers.ts` import/export/`miroirCoreTransformers`, `generate-ts-types.ts` both unions, `handleTransformer_pivot` in `TransformersForRuntime.ts` (existence + data-derived columns + fill; stages shaped per D4), both registries, inventory `CORE`+`HANDLED`, `index.ts` type export. `devBuild` auto-emitted `CoreTransformerForBuildPlusRuntime_pivot` (4 occurrences in `miroirFundamentalType.ts`) — no manual fundamental-schema edit needed. Validation: modelValidation ✓, suite **244 passed / 1 skipped** ✓, inventory 5/5 ✓, tsc ✓. Deviation folded in: sparse-null output (analysis D2 v3) — handler omits null-valued cell keys so dual-mode leaves keep a single `expectedValue`.
 
 ---
 
@@ -215,8 +215,8 @@ A query author can pivot plucked attribute values (not just existence) and contr
 
 **Test:** same `pivot` sub-suite; one leaf per behavior:
 
-1. **valueAttribute pluck** — fixture rows with a `capability` attribute; `valueAttribute: "capability"` ⇒ cells hold the capability string; missing pairs ⇒ `fillValue` default `null` (dual-mode null rule: `unitTestExpectedValue` omits the null-valued keys, `integrationTestExpectedValue` keeps JSON `null` — see conventions).
-2. **fillValue override** — existence mode with `fillValue: null` ⇒ missing pairs `null`, present pairs `true` (same split-expectation rule).
+1. **valueAttribute pluck** — fixture rows with a `capability` attribute; `valueAttribute: "capability"` ⇒ cells hold the capability string; missing pairs ⇒ default `fillValue` `null` ⇒ **absent keys** (sparse-null rule, single `expectedValue` both modes).
+2. **fillValue override** — existence mode with `fillValue: null` ⇒ missing pairs absent (sparse), present pairs `true` (single `expectedValue`).
 
 ### 2.2 Refactor checkpoint
 
@@ -226,13 +226,13 @@ A query author can pivot plucked attribute values (not just existence) and contr
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 ```
 
 ### Realization
 
-<Appended on completion.>
+Done 2026-09-09. RED: both new leaves failed on dense nulls (2 failed / 244 passed). GREEN: sparse-null fill in `handleTransformer_pivot` — `fillValue == null` ⇒ no key pre-fill; plucked `null`/`undefined` cells treated as missing pairs (fill applies). Suite **246 passed / 1 skipped**, modelValidation 152/152, tsc ✓. Correction folded into the plan: the R5-derived modelValidation filter is `modelValidation` (vitest root is the package's `tests/` dir; the manifest's `tests/…` form only works under the nonreg runner) — Slice 1 had silently skipped it via pipe-masking; re-run green.
 
 ---
 
@@ -259,13 +259,15 @@ A query author can pin the column set explicitly — as a literal list or a cont
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 ```
 
 ### Realization
 
-<Appended on completion.>
+Done 2026-09-09. RED: both leaves failed (2 failed / 246 passed). GREEN surfaced two design refinements, folded into analysis D3:
+1. **Explicit columns restrict the matrix** — cell writes must be guarded by `columnKeys.includes(ck)` (first GREEN attempt let `dep1` leak into a `["dep2","dep3"]` result; the SQL stage-3 join restricts naturally, the in-memory handler now mirrors it).
+2. **Bare `string[]` is not schema-expressible in `columns`** — it also matches the transformer union's array branch ⇒ `jzodTypeCheck` "found 2 matches" (caught by modelValidation). The Jzod parameter schema is now transformer-only (`schemaReference: transformer`, optional); literals use the repo idiom `returnValue` wrapping; the handler keeps a defensive `Array.isArray` normalization. Suite **248 passed / 1 skipped**, modelValidation 152/152, tsc ✓ (full regen cycle: definition JSON → deployment build → `devBuild`).
 
 ---
 
@@ -293,13 +295,13 @@ A query author gets deterministic duplicate handling: `first`/`last` by input or
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 ```
 
 ### Realization
 
-<Appended on completion.>
+Done 2026-09-09. RED: 5 of 7 leaves failed (`last`/`max` passed coincidentally under Slice 2's last-write-wins). GREEN: handler restructured into true D4 stages — cell reduction into a per-row `Map` (first/last/count/sum/min/max), then fill+emit. Refinement found by test: **row-key registration must precede the column-set/null guards** — a row whose cells are all out-of-set or null still emits a (filled) row (first attempt dropped `bob`, caught by the Slice 3 context leaf). Existence-mode aggregate ban throws `TransformerFailure{queryFailure:"FailedTransformer"}`; error leaf uses the conventions template. Suite **255 passed / 1 skipped**, modelValidation 152/152, tsc ✓.
 
 ---
 
@@ -338,7 +340,7 @@ RED state: unknown `transformerType`.
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 RUN_TEST=transformerResultSchema.inventory npm run testByFile -w miroir-core -- 'transformerResultSchema.inventory'
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
@@ -346,7 +348,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+Done 2026-09-09. RED: 3 leaves failed as unknown `transformerType` (3 failed / 255 passed). GREEN: `e096343e-….json` definition (per analysis interface contracts), deployment exports, `Transformers.ts` + `generate-ts-types.ts` unions (`CoreTransformerForBuildPlusRuntime_unpivot` auto-emitted), `handleTransformer_unpivot` (idColumns carry, whitelist via `transformer_extended_apply`, rename, D6 collision check + absent-key skip + explicit-null keep already fully implemented), both registries, inventory `CORE`+`HANDLED`, `index.ts` export. Suite **258 passed / 1 skipped**, inventory 5/5, modelValidation 152/152, tsc ✓.
 
 ---
 
@@ -362,7 +364,7 @@ The D6 edge rules hold in memory: explicit `null` cells survive, absent keys sta
 
 **Test:** same `unpivot` sub-suite:
 
-1. **null rules** — a row `{user:"bob",dep1:null}` (explicit `null`) emits `{user:"bob",column:"dep1",value:null}`; a missing key emits no row. Split expectations per the null rule (`unitTestExpectedValue` without the null entry / `integrationTestExpectedValue` with it — if the unit-mode normalization makes the kept-`null` row unassertable, the leaf documents SQL-only assertion in Realization).
+1. **null rules** — a row `{user:"bob",dep1:null}` (explicit `null`) emits `{user:"bob",column:"dep1",value:null}`; a missing key emits no row. Unit mode: `subExpectedValue` asserts the null-row's presence via its non-null fields (`["1.user","bob"]`, `["1.column","dep1"]` — `subExpectedValue` is unit-only); SQL mode: `integrationTestExpectedValue` with the full rows incl. `"value": null`.
 2. **collision error** — `valueInto: "user"` ∈ `idColumns` ⇒ failure leaf (`retainAttributes: ["queryFailure"]`, `unitTestExpectedValue: { queryFailure: "FailedTransformer" }`; integration expectation deferred to Slice 8).
 3. **per-row melt** — heterogeneous rows `[{user:"alice",dep1:true},{user:"bob",dep2:true}]` melt their own keys ⇒ 3 rows total, no `dep1` row for `bob`.
 
@@ -374,13 +376,13 @@ The D6 edge rules hold in memory: explicit `null` cells survive, absent keys sta
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir
-npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation
 RUN_TEST=transformers.unit.test npm run testByFile -w miroir-core -- 'transformers.unit'
 ```
 
 ### Realization
 
-<Appended on completion.>
+Done 2026-09-09. No RED: Slice 5's handler already implemented the full D6 semantics, so the three leaves passed on first run — this slice acted as characterization lock-in (unit mode). The null-keeping leaf works as designed: `subExpectedValue` asserts the null row's presence via non-null fields in unit mode; `integrationTestExpectedValue` (with `"value": null`) binds the SQL assertion in Slice 8. Suite **261 passed / 1 skipped**, modelValidation 152/152.
 
 ---
 
@@ -413,14 +415,15 @@ Run the `pivot` sub-suite via the SQL profile: leaves fail with `QueryNotExecuta
 
 ```bash
 npm run build -w miroir-store-postgres
-npm run build -w miroir-test-app_deployment-miroir && npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run build -w miroir-test-app_deployment-miroir && npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integration
 npx tsc --noEmit --skipLibCheck -p packages/miroir-store-postgres/tsconfig.json
 ```
 
 ### Realization
 
-<Appended on completion.>
+Done 2026-09-09. `sqlStringForPivotTransformer` in `SqlGenerator.ts` implements D4 as six `extraWith` CTEs: unnest `WITH ORDINALITY` → cells (sparse-null filter: `IS NOT NULL AND jsonb_typeof IS DISTINCT FROM 'null'`) → cols (data-derived from the unnest CTE, or explicit transformer resolved via `sqlStringForRuntimeTransformer` with params/context/CTEs forwarded) → reduced (`DISTINCT ON … ord ASC/DESC` for first/last, `GROUP BY` + `to_jsonb(count/sum/min/max)` for aggregates, `IN cols` restriction) → rows (`MIN(ord) AS min_ord`) → grouped (`CROSS JOIN` + `LEFT JOIN` + `COALESCE(f.cell_val, $N::jsonb)` fill as prepared-statement parameter, `jsonb_object_agg … FILTER` dropping JSON-null cells, `COALESCE(…, '{}')`) → final `COALESCE(jsonb_agg(pivot_row ORDER BY min_ord ASC), '[]')`. Registered in `sqlTransformerImplementations`; `CoreTransformerForBuildPlusRuntime_pivot` added to the `sqlStringForApplyTo` union.
+SQL integration run: **all 9 functional pivot leaves green** (row order, sparse nulls, explicit/context columns, duplicate policies all match in-memory). Error leaf surfaced `QueryNotExecutable` (Domain2ElementFailed at SQL-build time maps upstream to QueryNotExecutable — the R3-anticipated shape) ⇒ `integrationTestExpectedValue: { queryFailure: "QueryNotExecutable" }` set per plan step 7.2.4.
 
 ---
 
@@ -450,14 +453,14 @@ SQL-profile run: `unpivot` leaves fail with `QueryNotExecutable`.
 
 ```bash
 npm run build -w miroir-store-postgres
-npm run build -w miroir-test-app_deployment-miroir && npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
+npm run build -w miroir-test-app_deployment-miroir && npm run testByFile -w miroir-test-app_deployment-miroir -- modelValidation
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-sql --suites miroirCoreTransformers --mode integration
 npx tsc --noEmit --skipLibCheck -p packages/miroir-store-postgres/tsconfig.json
 ```
 
 ### Realization
 
-<Appended on completion.>
+Done 2026-09-09. `sqlStringForUnpivotTransformer`: unnest `WITH ORDINALITY` → key filter (`kv.key <> ALL (ARRAY[idColumns])`, plus `IN cols` when the whitelist transformer is given) → `LATERAL jsonb_each` melt into `jsonb_build_object(...idColumns, nameInto, key, valueInto, value)` (explicit JSON-null cells kept, absent keys never emitted) → `COALESCE(jsonb_agg(melted_row ORDER BY ord ASC, col_key ASC), '[]')`. Registry + `sqlStringForApplyTo` union updated. Full SQL integration: **261 passed (261)** — all pivot and unpivot leaves green in both modes, error leaves included (`QueryNotExecutable` integration expectations). Documented divergence (analysis D6 rule 5): within-row melt order is insertion order in memory vs jsonb key order in SQL; fixtures use identifier-like names where both coincide.
 
 ---
 
@@ -468,8 +471,8 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-store-postgres/tsconfig.json
 ### 9.1 Nonreg
 
 - Verified at plan time: `scripts/nonreg-manifest.json` already covers this work — `unit-miroir-core` (`:23-36`, all miroir-core unit suites) and `integ-transformer-miroirCoreTransformers` (`:354-371`, profile defaults to `emulatedServer-sql`). No manifest edit.
-- `npm run nonreg` green.
-- `graphify update .` (repo rule after code changes).
+- **`npm run nonreg` green: 50 passed / 0 failed / 0 skipped** (2026-09-09, ~25 min, incl. SQL-profile integration and all deployment modelValidations).
+- `graphify update .` run (exit 0).
 
 ### 9.2 Docs
 
@@ -478,7 +481,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-store-postgres/tsconfig.json
 
 ### 9.3 Issue-directory cleanup
 
-- No `tests/**/issues/265-*` vitest files were created (all coverage is MiroirTest) — confirm and state it.
+- Confirmed 2026-09-09: no `tests/**/issues/265-*` vitest files exist (all coverage is MiroirTest leaves in the `miroirCoreTransformers` suite). Nothing to remove.
 
 ### 9.4 Tracer bullet (narrative)
 
@@ -492,11 +495,11 @@ Automated equivalent: `miroirCoreTransformers` suite, `pivot` sub-suite, in both
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| TDD per skill (baseline, tests first) | Slice 0 baseline log; RED state recorded per slice | ⬜ |
-| `TransformerDefinition` instances + `index.ts` exports + deployment rebuild | Slices 1.2, 5.2 | ⬜ |
-| Schema registration + `devBuild` + `index.ts` type exports | Slices 1.2, 5.2 | ⬜ |
-| In-memory + SQL handler registration; `sqlStringForApplyTo` union | Slices 1.2, 5.2, 7.2, 8.2 | ⬜ |
-| Inventory `CORE`/`HANDLED` extended | Slices 1.2, 5.2 + inventory test green | ⬜ |
-| Suite leaves incl. rights-matrix scenario; unit + SQL integration green | Slices 1–8; commands in Test execution conventions | ⬜ |
-| `docs/reference/transformers.md` | Slice 9.2 | ⬜ |
-| `npm run nonreg` green | Slice 9.1 | ⬜ |
+| TDD per skill (baseline, tests first) | Slice 0 baseline log; RED state recorded per slice | ✅ |
+| `TransformerDefinition` instances + `index.ts` exports + deployment rebuild | Slices 1.2, 5.2 (`aa9897e5-…`, `e096343e-…`) | ✅ |
+| Schema registration + `devBuild` + `index.ts` type exports | Slices 1.2, 5.2 (`CoreTransformerForBuildPlusRuntime_pivot`/`_unpivot` generated + exported) | ✅ |
+| In-memory + SQL handler registration; `sqlStringForApplyTo` union | Slices 1.2, 5.2, 7.2, 8.2 | ✅ |
+| Inventory `CORE`/`HANDLED` extended | Slices 1.2, 5.2 + inventory test green (5/5) | ✅ |
+| Suite leaves incl. rights-matrix scenario; unit + SQL integration green | 15 new leaves; unit **261 passed / 1 skipped**; SQL `--profile emulatedServer-sql` **261 passed** | ✅ |
+| `docs/reference/transformers.md` | Slice 9.2 (section 8 entries + notes bullet) | ✅ |
+| `npm run nonreg` green | Slice 9.1 (50/50) | ✅ |

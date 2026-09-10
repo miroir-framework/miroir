@@ -35,6 +35,8 @@ import {
   type CoreTransformerForBuildPlusRuntime_filterList,
   type CoreTransformerForBuildPlusRuntime_find,
   type CoreTransformerForBuildPlusRuntime_sortList,
+  type CoreTransformerForBuildPlusRuntime_pivot,
+  type CoreTransformerForBuildPlusRuntime_unpivot,
   type CoreTransformerForBuildPlusRuntime_listLength,
   type CoreTransformerForBuildPlusRuntime_stringOp,
   type CoreTransformerForBuildPlusRuntime_currentTimestamp,
@@ -217,6 +219,8 @@ const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = 
   sqlStringForFilterListTransformer,
   sqlStringForFindTransformer,
   sqlStringForSortListTransformer,
+  sqlStringForPivotTransformer,
+  sqlStringForUnpivotTransformer,
   sqlStringForListLengthTransformer,
   sqlStringForStringOpTransformer,
   sqlStringForCurrentTimestampTransformer,
@@ -785,6 +789,8 @@ function sqlStringForApplyTo(
     | CoreTransformerForBuildPlusRuntime_filterList
     | CoreTransformerForBuildPlusRuntime_find
     | CoreTransformerForBuildPlusRuntime_sortList
+    | CoreTransformerForBuildPlusRuntime_pivot
+    | CoreTransformerForBuildPlusRuntime_unpivot
     | CoreTransformerForBuildPlusRuntime_listLength
     // | TransformerForBuildPlusRuntime_innerFullObjectTemplate
   ,
@@ -3877,6 +3883,373 @@ function sqlStringForSortListTransformer(
     resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
     columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
     usedContextEntries: applyTo.usedContextEntries ?? [],
+  };
+}
+
+// ################################################################################################
+// # pivot (issue #265) — conditional aggregation, no tablefunc (analysis D4):
+//   unnest WITH ORDINALITY → cell reduction → distinct cols/rows → CROSS JOIN + LEFT JOIN
+//   + COALESCE(fillValue) → jsonb_object_agg (sparse: JSON-null cells filtered out)
+//   → jsonb_agg(ORDER BY min(ord)) for deterministic first-appearance row order.
+// ################################################################################################
+function sqlStringForPivotTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_pivot,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+  const rowKeyAttribute = actionRuntimeTransformer.rowKeyAttribute;
+  const columnKeyAttribute = actionRuntimeTransformer.columnKeyAttribute;
+  if (!rowKeyAttribute || !columnKeyAttribute) {
+    return new Domain2ElementFailed({
+      queryFailure: "FailedTransformer",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForPivotTransformer: rowKeyAttribute and columnKeyAttribute are required",
+    });
+  }
+  const hasValueAttribute = actionRuntimeTransformer.valueAttribute != null;
+  const onDuplicates = (actionRuntimeTransformer as any).onDuplicates ?? "first";
+  // D5: aggregate policies require valueAttribute — existence mode allows only first/last
+  if (!hasValueAttribute && onDuplicates !== "first" && onDuplicates !== "last") {
+    return new Domain2ElementFailed({
+      queryFailure: "FailedTransformer",
+      query: actionRuntimeTransformer as any,
+      failureMessage:
+        "pivot: onDuplicates \"" + onDuplicates + "\" requires valueAttribute (existence mode allows only first/last)",
+    });
+  }
+
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel + 2,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    true,
+  );
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+  if (!(["json", "json_array"] as string[]).includes(applyTo.type)) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForPivotTransformer applyTo result is not json: " + applyTo.type,
+    });
+  }
+
+  const preparedStatementParameters: any[] = [...(applyTo.preparedStatementParameters ?? [])];
+  const usedContextEntries: string[] = [...(applyTo.usedContextEntries ?? [])];
+  const extraWith: { name: string; sql: string }[] = [...(applyTo.extraWith ?? [])];
+
+  // stage 1: unnest WITH ORDINALITY (input order preserved for first/last and row order)
+  const unnestLabel = transformerLabel + "_unnest";
+  const unnestSql = sqlQuery(indentLevel + 1, {
+    queryPart: "query",
+    select: [
+      { queryPart: "defineColumn", value: "t.element", as: "element" },
+      { queryPart: "defineColumn", value: "t.ord", as: "ord" },
+    ],
+    from: [
+      {
+        queryPart: "hereTable",
+        definition: `(${applyTo.sqlStringOrObject})`,
+        as: transformerLabel + "_applyTo",
+      },
+      {
+        queryPart: "bypass",
+        value: `jsonb_array_elements(${sqlNameQuote(transformerLabel + "_applyTo")}.${sqlNameQuote((applyTo as any).columnNameContainingJsonValue)}) WITH ORDINALITY AS t(element, ord)`,
+      } as any,
+    ],
+  });
+  extraWith.push({ name: unnestLabel, sql: unnestSql });
+
+  // stage 2: cells — sparse-null rule: absent keys (SQL NULL) and JSON-null cells are missing pairs
+  const cellExpr = hasValueAttribute
+    ? `element -> '${actionRuntimeTransformer.valueAttribute}'`
+    : `'true'::jsonb`;
+  const cellsLabel = transformerLabel + "_cells";
+  const cellsSql =
+    `SELECT row_key, col_key, cell_val, ord FROM (SELECT (element -> '${rowKeyAttribute}') AS row_key,` +
+    ` (element ->> '${columnKeyAttribute}') AS col_key, ${cellExpr} AS cell_val, ord FROM ${sqlNameQuote(unnestLabel)}) AS ${transformerLabel}_cellsrw` +
+    ` WHERE cell_val IS NOT NULL AND jsonb_typeof(cell_val) IS DISTINCT FROM 'null'`;
+  extraWith.push({ name: cellsLabel, sql: cellsSql });
+
+  // stage 3a: columns — explicit (transformer resolving to a JSON array of strings) or data-derived
+  const colsLabel = transformerLabel + "_cols";
+  if (actionRuntimeTransformer.columns != null) {
+    const columnsSql = sqlStringForRuntimeTransformer(
+      actionRuntimeTransformer.columns as any,
+      preparedStatementParametersCount + preparedStatementParameters.length,
+      indentLevel + 2,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      true,
+    );
+    if (columnsSql instanceof Domain2ElementFailed) {
+      return columnsSql;
+    }
+    if (columnsSql.type !== "json_array") {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForPivotTransformer columns must resolve to a JSON array of strings, got: " + columnsSql.type,
+      });
+    }
+    preparedStatementParameters.push(...(columnsSql.preparedStatementParameters ?? []));
+    usedContextEntries.push(...(columnsSql.usedContextEntries ?? []));
+    extraWith.push(...(columnsSql.extraWith ?? []));
+    extraWith.push({
+      name: colsLabel,
+      sql: `SELECT jsonb_array_elements_text(src.${sqlNameQuote((columnsSql as any).columnNameContainingJsonValue)}) AS col_key FROM (${columnsSql.sqlStringOrObject}) AS src`,
+    });
+  } else {
+    extraWith.push({
+      name: colsLabel,
+      sql: `SELECT DISTINCT (element ->> '${columnKeyAttribute}') AS col_key FROM ${sqlNameQuote(unnestLabel)}`,
+    });
+  }
+
+  // stage 3b: cell reduction per (row_key, col_key), restricted to the column set
+  const reducedLabel = transformerLabel + "_reduced";
+  const inCols = `WHERE col_key IN (SELECT col_key FROM ${sqlNameQuote(colsLabel)})`;
+  let reducedSql: string;
+  switch (onDuplicates) {
+    case "first":
+      reducedSql = `SELECT DISTINCT ON (row_key, col_key) row_key, col_key, cell_val FROM ${sqlNameQuote(cellsLabel)} ${inCols} ORDER BY row_key, col_key, ord ASC`;
+      break;
+    case "last":
+      reducedSql = `SELECT DISTINCT ON (row_key, col_key) row_key, col_key, cell_val FROM ${sqlNameQuote(cellsLabel)} ${inCols} ORDER BY row_key, col_key, ord DESC`;
+      break;
+    case "count":
+      reducedSql = `SELECT row_key, col_key, to_jsonb(count(*)) AS cell_val FROM ${sqlNameQuote(cellsLabel)} ${inCols} GROUP BY row_key, col_key`;
+      break;
+    case "sum":
+      reducedSql = `SELECT row_key, col_key, to_jsonb(sum((cell_val #>> '{}')::numeric)) AS cell_val FROM ${sqlNameQuote(cellsLabel)} ${inCols} GROUP BY row_key, col_key`;
+      break;
+    case "min":
+      reducedSql = `SELECT row_key, col_key, to_jsonb(min((cell_val #>> '{}')::numeric)) AS cell_val FROM ${sqlNameQuote(cellsLabel)} ${inCols} GROUP BY row_key, col_key`;
+      break;
+    case "max":
+      reducedSql = `SELECT row_key, col_key, to_jsonb(max((cell_val #>> '{}')::numeric)) AS cell_val FROM ${sqlNameQuote(cellsLabel)} ${inCols} GROUP BY row_key, col_key`;
+      break;
+    default:
+      return new Domain2ElementFailed({
+        queryFailure: "FailedTransformer",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForPivotTransformer: unknown onDuplicates: " + onDuplicates,
+      });
+  }
+  extraWith.push({ name: reducedLabel, sql: reducedSql });
+
+  // stage 4: distinct rows with first-appearance order
+  const rowsLabel = transformerLabel + "_rows";
+  extraWith.push({
+    name: rowsLabel,
+    sql: `SELECT (element -> '${rowKeyAttribute}') AS row_key, MIN(ord) AS min_ord FROM ${sqlNameQuote(unnestLabel)} GROUP BY row_key`,
+  });
+
+  // fillValue as prepared-statement parameter (sparse when JSON null)
+  const fillValue = "fillValue" in actionRuntimeTransformer ? (actionRuntimeTransformer as any).fillValue : hasValueAttribute ? null : false;
+  const fillParamIndex = preparedStatementParametersCount + preparedStatementParameters.length + 1;
+  preparedStatementParameters.push(JSON.stringify(fillValue === undefined ? null : fillValue));
+  const fillSql = `COALESCE(f.cell_val, $${fillParamIndex}::jsonb)`;
+
+  // stage 5: filled grid → per-row object (sparse: JSON-null cells dropped by the FILTER)
+  const groupedLabel = transformerLabel + "_grouped";
+  extraWith.push({
+    name: groupedLabel,
+    sql:
+      `SELECT r.row_key, r.min_ord, jsonb_build_object('${rowKeyAttribute}', r.row_key) || COALESCE(` +
+      `jsonb_object_agg(c.col_key, ${fillSql}) FILTER (WHERE jsonb_typeof(${fillSql}) IS DISTINCT FROM 'null'),` +
+      ` '{}'::jsonb) AS pivot_row` +
+      ` FROM ${sqlNameQuote(rowsLabel)} r CROSS JOIN ${sqlNameQuote(colsLabel)} c` +
+      ` LEFT JOIN ${sqlNameQuote(reducedLabel)} f ON f.row_key = r.row_key AND f.col_key = c.col_key` +
+      ` GROUP BY r.row_key, r.min_ord`,
+  });
+
+  // stage 6: final array in first-appearance row order
+  const outputColName = withClauseColumnName ?? transformerLabel;
+  const finalSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: [{
+      queryPart: "defineColumn",
+      value: `COALESCE(jsonb_agg(pivot_row ORDER BY min_ord ASC), '[]'::jsonb)`,
+      as: outputColName,
+    }],
+    from: [{ queryPart: "tableLiteral", name: groupedLabel }],
+  });
+
+  return {
+    type: "json_array",
+    sqlStringOrObject: finalSql,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+    usedContextEntries,
+  };
+}
+
+// ################################################################################################
+// # unpivot (issue #265) — LATERAL jsonb_each melt (analysis D4/D6):
+//   absent keys skipped (jsonb_each only emits existing keys), explicit JSON-null cells kept,
+//   columns omitted ⇒ per-row melt of own keys minus idColumns.
+//   Row order: (input ordinality, jsonb key order) — see analysis D6 ordering caveat.
+// ################################################################################################
+function sqlStringForUnpivotTransformer(
+  actionRuntimeTransformer: CoreTransformerForBuildPlusRuntime_unpivot,
+  preparedStatementParametersCount: number,
+  indentLevel: number,
+  queryParams: Record<string, any>,
+  definedContextEntries: Record<string, SqlContextEntry>,
+  useAccessPathForContextReference: boolean,
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
+  const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
+  const idColumns: string[] = (actionRuntimeTransformer.idColumns as any) ?? [];
+  const nameInto = actionRuntimeTransformer.nameInto ?? "column";
+  const valueInto = actionRuntimeTransformer.valueInto ?? "value";
+  if (idColumns.includes(nameInto) || idColumns.includes(valueInto)) {
+    return new Domain2ElementFailed({
+      queryFailure: "FailedTransformer",
+      query: actionRuntimeTransformer as any,
+      failureMessage:
+        "unpivot: nameInto/valueInto must not collide with idColumns (" + idColumns.join(", ") + ")",
+    });
+  }
+
+  const applyTo = sqlStringForApplyTo(
+    actionRuntimeTransformer,
+    preparedStatementParametersCount,
+    indentLevel + 2,
+    queryParams,
+    definedContextEntries,
+    useAccessPathForContextReference,
+    true,
+  );
+  if (applyTo instanceof Domain2ElementFailed) {
+    return applyTo;
+  }
+  if (!(["json", "json_array"] as string[]).includes(applyTo.type)) {
+    return new Domain2ElementFailed({
+      queryFailure: "QueryNotExecutable",
+      query: actionRuntimeTransformer as any,
+      failureMessage: "sqlStringForUnpivotTransformer applyTo result is not json: " + applyTo.type,
+    });
+  }
+
+  const preparedStatementParameters: any[] = [...(applyTo.preparedStatementParameters ?? [])];
+  const usedContextEntries: string[] = [...(applyTo.usedContextEntries ?? [])];
+  const extraWith: { name: string; sql: string }[] = [...(applyTo.extraWith ?? [])];
+
+  // stage 1: unnest WITH ORDINALITY (input row order)
+  const unnestLabel = transformerLabel + "_unnest";
+  extraWith.push({
+    name: unnestLabel,
+    sql: sqlQuery(indentLevel + 1, {
+      queryPart: "query",
+      select: [
+        { queryPart: "defineColumn", value: "t.element", as: "element" },
+        { queryPart: "defineColumn", value: "t.ord", as: "ord" },
+      ],
+      from: [
+        {
+          queryPart: "hereTable",
+          definition: `(${applyTo.sqlStringOrObject})`,
+          as: transformerLabel + "_applyTo",
+        },
+        {
+          queryPart: "bypass",
+          value: `jsonb_array_elements(${sqlNameQuote(transformerLabel + "_applyTo")}.${sqlNameQuote((applyTo as any).columnNameContainingJsonValue)}) WITH ORDINALITY AS t(element, ord)`,
+        } as any,
+      ],
+    }),
+  });
+
+  // stage 2: key filter — idColumns excluded; explicit columns whitelist when given
+  const keyFilters: string[] = [];
+  if (idColumns.length > 0) {
+    keyFilters.push(`kv.key <> ALL (ARRAY[${idColumns.map((c) => `'${c}'`).join(", ")}]::text[])`);
+  }
+  if (actionRuntimeTransformer.columns != null) {
+    const columnsSql = sqlStringForRuntimeTransformer(
+      actionRuntimeTransformer.columns as any,
+      preparedStatementParametersCount + preparedStatementParameters.length,
+      indentLevel + 2,
+      queryParams,
+      definedContextEntries,
+      useAccessPathForContextReference,
+      true,
+    );
+    if (columnsSql instanceof Domain2ElementFailed) {
+      return columnsSql;
+    }
+    if (columnsSql.type !== "json_array") {
+      return new Domain2ElementFailed({
+        queryFailure: "QueryNotExecutable",
+        query: actionRuntimeTransformer as any,
+        failureMessage: "sqlStringForUnpivotTransformer columns must resolve to a JSON array of strings, got: " + columnsSql.type,
+      });
+    }
+    preparedStatementParameters.push(...(columnsSql.preparedStatementParameters ?? []));
+    usedContextEntries.push(...(columnsSql.usedContextEntries ?? []));
+    extraWith.push(...(columnsSql.extraWith ?? []));
+    const colsLabel = transformerLabel + "_cols";
+    extraWith.push({
+      name: colsLabel,
+      sql: `SELECT jsonb_array_elements_text(src.${sqlNameQuote((columnsSql as any).columnNameContainingJsonValue)}) AS col_key FROM (${columnsSql.sqlStringOrObject}) AS src`,
+    });
+    keyFilters.push(`kv.key IN (SELECT col_key FROM ${sqlNameQuote(colsLabel)})`);
+  }
+
+  // stage 3: melt via LATERAL jsonb_each — explicit JSON-null cells kept (D6)
+  const buildObjectArgs = [
+    ...idColumns.flatMap((c) => [`'${c}'`, `element -> '${c}'`]),
+    `'${nameInto}'`,
+    "kv.key",
+    `'${valueInto}'`,
+    "kv.value",
+  ].join(", ");
+  const meltedLabel = transformerLabel + "_melted";
+  extraWith.push({
+    name: meltedLabel,
+    sql:
+      `SELECT jsonb_build_object(${buildObjectArgs}) AS melted_row, ord, kv.key AS col_key` +
+      ` FROM ${sqlNameQuote(unnestLabel)}, LATERAL jsonb_each(element) AS kv` +
+      (keyFilters.length > 0 ? ` WHERE ${keyFilters.join(" AND ")}` : ""),
+  });
+
+  // stage 4: final array, ordered by (input ordinality, key)
+  const outputColName = withClauseColumnName ?? transformerLabel;
+  const finalSql = sqlQuery(indentLevel, {
+    queryPart: "query",
+    select: [{
+      queryPart: "defineColumn",
+      value: `COALESCE(jsonb_agg(melted_row ORDER BY ord ASC, col_key ASC), '[]'::jsonb)`,
+      as: outputColName,
+    }],
+    from: [{ queryPart: "tableLiteral", name: meltedLabel }],
+  });
+
+  return {
+    type: "json_array",
+    sqlStringOrObject: finalSql,
+    preparedStatementParameters,
+    extraWith,
+    resultAccessPath: topLevelTransformer ? [0, outputColName] : undefined,
+    columnNameContainingJsonValue: topLevelTransformer ? outputColName : undefined,
+    usedContextEntries,
   };
 }
 

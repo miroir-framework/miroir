@@ -8,8 +8,8 @@ Related analyses: [`../219-FEATURE-preliminary User and Rights model in Admin ap
 Key sources: [`TransformersForRuntime.ts`](../../../packages/miroir-core/src/2_domain/TransformersForRuntime.ts) · [`SqlGenerator.ts`](../../../packages/miroir-store-postgres/src/1_core/SqlGenerator.ts) · [`SqlQueryBuilder.ts`](../../../packages/miroir-store-postgres/src/1_core/SqlQueryBuilder.ts) · [`SqlDbQueryRunner.ts`](../../../packages/miroir-store-postgres/src/4_services/SqlDbQueryRunner.ts)
 
 **Document role:** analysis **and** decision record.
-**Status:** decisions confirmed (grilling session with user, 2026-09-09); revised after adversarial review — implementation not started.
-**Document history:** v1 confirmed with user (grilling, 2026-09-09). v2 (2026-09-09): revised applying [`./review-analysis.md`](./review-analysis.md) (adversarial review, Grok High Fast) — R1–R16 applied, R17 acknowledged. v3 (2026-09-09): plan adversarial review ([`./review-plan.md`](./review-plan.md), Composer Fast) — its R1 applied here (deterministic SQL row order via `ORDER BY min(ord)` in D4 steps 5/7); all other plan-review items affect the plan only.
+**Status:** implemented (2026-09-09) — all 10 slices of [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) complete; unit suite 261 passed / 1 skipped; SQL integration (`emulatedServer-sql`) 261 passed; `npm run nonreg` 50/50 green.
+**Document history:** v1 confirmed with user (grilling, 2026-09-09). v2 (2026-09-09): revised applying [`./review-analysis.md`](./review-analysis.md) (adversarial review, Grok High Fast) — R1–R16 applied, R17 acknowledged. v3 (2026-09-09): plan adversarial review ([`./review-plan.md`](./review-plan.md), Composer Fast) — its R1 applied here (deterministic SQL row order via `ORDER BY min(ord)` in D4 steps 5/7); D2 amended with the sparse-null rule (its R2, resolved by design rather than split expectations); all other plan-review items affect the plan only.
 
 ---
 
@@ -47,11 +47,13 @@ Key sources: [`TransformersForRuntime.ts`](../../../packages/miroir-core/src/2_d
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D2-a. Generalized value, existence default** ★ | Cell = plucked `valueAttribute` (aggregated on duplicates per D5); absent `valueAttribute` ⇒ `true` iff at least one (row, col) input row exists; missing pairs ⇒ `fillValue` (default `false` in existence mode, else `null`) | Rights matrix needs zero extra config; general case stays expressible | Two modes to document |
+| **D2-a. Generalized value, existence default** ★ | Cell = plucked `valueAttribute` (aggregated on duplicates per D5); absent `valueAttribute` ⇒ `true` iff at least one (row, col) input row exists; missing pairs ⇒ `fillValue` (default `false` in existence mode, else `null`); `null` cell values ⇒ **absent keys** (sparse nulls, both implementations) | Rights matrix needs zero extra config; general case stays expressible | Two modes to document |
 | D2-b. One matrix per capability value | Pivot on `(user, deployment, capability)` | Matches a future capability taxonomy | `capability` is a free string until #71; multiplies matrices; not what a checkbox grid needs |
 | D2-c. Capability string as cell | Cell = the `capability` value | More informative | Not a checkbox; still free-string-typed until #71 |
 
 **Decision:** D2-a. Existence mode means "**at least one** right row for (user, target)" — several `MiroirRight` rows with different `capability` strings on the same pair collapse to one `true` cell (accepted until #71; D2-b remains the future per-capability route). Consequently D5's aggregate options (`count`/`sum`/`min`/`max`) are **forbidden in existence mode** — they would emit numbers, not booleans; both handlers must error on that combination.
+
+**Sparse nulls (added in v3).** A cell whose computed value is `null` — whether from the default `null` `fillValue` or from a plucked explicit `null` — yields an **absent key** in the output row object, in both implementations (SQL: the final `jsonb_object_agg` filters out JSON-null cell values). This keeps in-memory and SQL results identical and makes null-carrying leaves assertable in both test modes with a single `expectedValue`: the unit-mode harness recursively strips `null`s from *expected* values but not from actuals (`unNullify` / `removeUndefinedProperties`, [`otherTools.ts:50-85`](../../../packages/miroir-core/src/4_services/otherTools.ts)), so dense nulls would be unassertable in unit mode. Dense output remains available by choosing a non-null `fillValue` (e.g. `false`).
 
 ### D3 — Column set resolution
 
@@ -65,7 +67,7 @@ Key sources: [`TransformersForRuntime.ts`](../../../packages/miroir-core/src/2_d
 
 **Decision:** D3-a, with two binding constraints surfaced by adversarial review:
 
-1. **The contract is `string[]`, nothing else.** A Deployment extractor returns *rows* (objects with `uuid`, `name`, …), and `getUniqueValues` also returns objects (`[...values].map(e => ({[attribute]: e}))`, [`TransformersForRuntime.ts:2560-2566`](../../../packages/miroir-core/src/2_domain/TransformersForRuntime.ts)) — feeding either directly would stringify objects into `"[object Object]"` column keys. Queries must **pluck first** (`mapList` + `accessDynamicPath` on `"uuid"`). `getUniqueValues` is therefore **not** the `columns` mechanism.
+1. **The contract is a transformer resolving to `string[]`, nothing else.** A Deployment extractor returns *rows* (objects with `uuid`, `name`, …), and `getUniqueValues` also returns objects (`[...values].map(e => ({[attribute]: e}))`, [`TransformersForRuntime.ts:2560-2566`](../../../packages/miroir-core/src/2_domain/TransformersForRuntime.ts)) — feeding either directly would stringify objects into `"[object Object]"` column keys. Queries must **pluck first** (`mapList` + `accessDynamicPath` on `"uuid"`). `getUniqueValues` is therefore **not** the `columns` mechanism. A **literal** column list is expressed as `returnValue` wrapping the array — a bare `string[]` is not schema-expressible in the `columns` slot, because it also matches the transformer union's array branch and `jzodTypeCheck` rejects the value as ambiguous ("found 2 matches", found in Slice 3; the Jzod parameter schema is therefore `schemaReference: transformer`, optional). Handlers still normalize a bare array defensively (build-step constant folding can deliver one). Explicit columns also **restrict** the matrix: input rows whose `columnKeyAttribute` is outside the set are ignored.
 2. **SQL-mode `columns`** is resolved with `sqlStringForRuntimeTransformer` (which dispatches nested registered handlers, unlike `sqlStringForApplyTo`) and must compile to a JSON array of scalars: omitted (data-derived), literal `string[]` (e.g. wrapped in `returnValue`), or `getFromContext` / another SQL-registered transformer. `usedContextEntries` must be forwarded so the WITH-clause assembler keeps the referenced CTE; `useAccessPathForContextReference` passes through unchanged.
 
 ### D4 — Postgres strategy
@@ -114,6 +116,7 @@ Key sources: [`TransformersForRuntime.ts`](../../../packages/miroir-core/src/2_d
 2. **Collisions:** `nameInto`/`valueInto` ∈ `idColumns` ⇒ error in both handlers (object-spread last-wins would silently clobber the id).
 3. **Key melt:** with `columns` omitted, melt each row's **own** keys minus `idColumns` (per-row, not a global union) — heterogeneous row shapes melt per-row; SQL `jsonb_each` behaves the same way naturally.
 4. **SQL parity:** cell values must be JSON values — the SQL path is JSON-centric, so `Date`/`undefined` cells diverge (documented, not handled).
+5. **Melt order (added in v3):** within one input row, in-memory emits keys in insertion order (`Object.keys`), SQL emits them in `jsonb` key order (`jsonb_each` follows jsonb's internal length-then-bytewise ordering) — SQL output is `ORDER BY (ord, col_key)`. These coincide for typical identifier-like column names (the MiroirTest fixtures use such names); tests must not rely on insertion order that differs from jsonb key order.
 
 **Duality caveat:** fill-dense pivot ∘ unpivot is **not** a round-trip — after a filled pivot every column key is present (`false` is not absent), so unpivot emits rows for synthetic `fillValue` cells that were never input rows. The sparse dual is pivot with `columns` omitted and `fillValue` unset (missing keys stay missing). Rights write-back must therefore filter `value === true` after unpivot — that flow belongs to the rights-UI follow-up, not this issue. Both modes get tests.
 

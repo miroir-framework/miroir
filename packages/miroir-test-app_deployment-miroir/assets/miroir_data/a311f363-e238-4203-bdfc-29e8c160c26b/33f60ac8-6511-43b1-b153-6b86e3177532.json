@@ -9202,6 +9202,625 @@
                 "expectedValue": "found!"
               }
             ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "pivot",
+            "miroirTests": [
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot existence booleans with data-derived columns",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rights"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "rights": [
+                    {
+                      "user": "alice",
+                      "dep": "dep1"
+                    },
+                    {
+                      "user": "alice",
+                      "dep": "dep2"
+                    },
+                    {
+                      "user": "bob",
+                      "dep": "dep1"
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  {
+                    "user": "alice",
+                    "dep1": true,
+                    "dep2": true
+                  },
+                  {
+                    "user": "bob",
+                    "dep1": true,
+                    "dep2": false
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot valueAttribute plucks cell values, missing pairs are sparse",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rights"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "valueAttribute": "capability"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "rights": [
+                    {
+                      "user": "alice",
+                      "dep": "dep1",
+                      "capability": "read"
+                    },
+                    {
+                      "user": "alice",
+                      "dep": "dep2",
+                      "capability": "write"
+                    },
+                    {
+                      "user": "bob",
+                      "dep": "dep1",
+                      "capability": "read"
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  {
+                    "user": "alice",
+                    "dep1": "read",
+                    "dep2": "write"
+                  },
+                  {
+                    "user": "bob",
+                    "dep1": "read"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot fillValue null in existence mode yields sparse cells",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rights"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "fillValue": null
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "rights": [
+                    {
+                      "user": "alice",
+                      "dep": "dep1"
+                    },
+                    {
+                      "user": "alice",
+                      "dep": "dep2"
+                    },
+                    {
+                      "user": "bob",
+                      "dep": "dep1"
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  {
+                    "user": "alice",
+                    "dep1": true,
+                    "dep2": true
+                  },
+                  {
+                    "user": "bob",
+                    "dep1": true
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot explicit columns literal list",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rights"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "columns": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["dep1", "dep2", "dep3"]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "rights": [
+                    {
+                      "user": "alice",
+                      "dep": "dep1"
+                    },
+                    {
+                      "user": "alice",
+                      "dep": "dep2"
+                    },
+                    {
+                      "user": "bob",
+                      "dep": "dep1"
+                    }
+                  ]
+                },
+                "expectedValue": [
+                  {
+                    "user": "alice",
+                    "dep1": true,
+                    "dep2": true,
+                    "dep3": false
+                  },
+                  {
+                    "user": "bob",
+                    "dep1": true,
+                    "dep2": false,
+                    "dep3": false
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot columns from context reference",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rights"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "columns": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "depList"
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "rights": [
+                    {
+                      "user": "alice",
+                      "dep": "dep1"
+                    },
+                    {
+                      "user": "alice",
+                      "dep": "dep2"
+                    },
+                    {
+                      "user": "bob",
+                      "dep": "dep1"
+                    }
+                  ],
+                  "depList": ["dep2", "dep3"]
+                },
+                "expectedValue": [
+                  {
+                    "user": "alice",
+                    "dep2": true,
+                    "dep3": false
+                  },
+                  {
+                    "user": "bob",
+                    "dep2": false,
+                    "dep3": false
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot onDuplicates first keeps the first row value",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rightsDup"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "valueAttribute": "capability",
+                  "onDuplicates": "first"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "rightsDup": [
+                    { "user": "alice", "dep": "dep1", "capability": "read" },
+                    { "user": "alice", "dep": "dep1", "capability": "write" },
+                    { "user": "alice", "dep": "dep2", "capability": "admin" }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "dep1": "read", "dep2": "admin" }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot onDuplicates last keeps the last row value",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rightsDup"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "valueAttribute": "capability",
+                  "onDuplicates": "last"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "rightsDup": [
+                    { "user": "alice", "dep": "dep1", "capability": "read" },
+                    { "user": "alice", "dep": "dep1", "capability": "write" },
+                    { "user": "alice", "dep": "dep2", "capability": "admin" }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "dep1": "write", "dep2": "admin" }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot onDuplicates count counts duplicate rows",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "nums"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "valueAttribute": "n",
+                  "onDuplicates": "count"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "nums": [
+                    { "user": "alice", "dep": "dep1", "n": 1 },
+                    { "user": "alice", "dep": "dep1", "n": 2 },
+                    { "user": "alice", "dep": "dep2", "n": 4 }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "dep1": 2, "dep2": 1 }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot onDuplicates sum sums duplicate values",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "nums"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "valueAttribute": "n",
+                  "onDuplicates": "sum"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "nums": [
+                    { "user": "alice", "dep": "dep1", "n": 1 },
+                    { "user": "alice", "dep": "dep1", "n": 2 },
+                    { "user": "alice", "dep": "dep2", "n": 4 }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "dep1": 3, "dep2": 4 }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot onDuplicates min takes the smallest duplicate value",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "nums"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "valueAttribute": "n",
+                  "onDuplicates": "min"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "nums": [
+                    { "user": "alice", "dep": "dep1", "n": 1 },
+                    { "user": "alice", "dep": "dep1", "n": 2 },
+                    { "user": "alice", "dep": "dep2", "n": 4 }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "dep1": 1, "dep2": 4 }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot onDuplicates max takes the largest duplicate value",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "nums"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "valueAttribute": "n",
+                  "onDuplicates": "max"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "nums": [
+                    { "user": "alice", "dep": "dep1", "n": 1 },
+                    { "user": "alice", "dep": "dep1", "n": 2 },
+                    { "user": "alice", "dep": "dep2", "n": 4 }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "dep1": 2, "dep2": 4 }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "pivot existence mode rejects aggregate onDuplicates",
+                "transformerName": "pivot",
+                "transformer": {
+                  "transformerType": "pivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "rights"
+                  },
+                  "rowKeyAttribute": "user",
+                  "columnKeyAttribute": "dep",
+                  "onDuplicates": "count"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "rights": [
+                    { "user": "alice", "dep": "dep1" }
+                  ]
+                },
+                "retainAttributes": ["queryFailure"],
+                "expectedValue": { "queryFailure": "FailedTransformer" },
+                "unitTestExpectedValue": { "queryFailure": "FailedTransformer" },
+                "integrationTestExpectedValue": { "queryFailure": "QueryNotExecutable" }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "miroirTestSuite",
+            "miroirTestLabel": "unpivot",
+            "miroirTests": [
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "unpivot basic melt",
+                "transformerName": "unpivot",
+                "transformer": {
+                  "transformerType": "unpivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "grid"
+                  },
+                  "idColumns": ["user"]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "grid": [
+                    { "user": "alice", "dep1": true, "dep2": false }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "column": "dep1", "value": true },
+                  { "user": "alice", "column": "dep2", "value": false }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "unpivot columns whitelist melts only listed columns",
+                "transformerName": "unpivot",
+                "transformer": {
+                  "transformerType": "unpivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "grid"
+                  },
+                  "idColumns": ["user"],
+                  "columns": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": ["dep1"]
+                  }
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "grid": [
+                    { "user": "alice", "dep1": true, "dep2": false }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "column": "dep1", "value": true }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "unpivot nameInto valueInto rename output attributes",
+                "transformerName": "unpivot",
+                "transformer": {
+                  "transformerType": "unpivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "grid"
+                  },
+                  "idColumns": ["user"],
+                  "nameInto": "deployment",
+                  "valueInto": "granted"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "grid": [
+                    { "user": "alice", "dep1": true, "dep2": false }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "deployment": "dep1", "granted": true },
+                  { "user": "alice", "deployment": "dep2", "granted": false }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "unpivot keeps explicit nulls and skips absent keys",
+                "transformerName": "unpivot",
+                "transformer": {
+                  "transformerType": "unpivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "gridNulls"
+                  },
+                  "idColumns": ["user"]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "gridNulls": [
+                    { "user": "alice", "dep1": true },
+                    { "user": "bob", "dep1": null }
+                  ]
+                },
+                "subExpectedValue": [
+                  ["0", { "user": "alice", "column": "dep1", "value": true }],
+                  ["1.user", "bob"],
+                  ["1.column", "dep1"],
+                  ["length", 2]
+                ],
+                "integrationTestExpectedValue": [
+                  { "user": "alice", "column": "dep1", "value": true },
+                  { "user": "bob", "column": "dep1", "value": null }
+                ]
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "unpivot nameInto colliding with idColumns fails",
+                "transformerName": "unpivot",
+                "transformer": {
+                  "transformerType": "unpivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "grid"
+                  },
+                  "idColumns": ["user"],
+                  "valueInto": "user"
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "grid": [
+                    { "user": "alice", "dep1": true }
+                  ]
+                },
+                "retainAttributes": ["queryFailure"],
+                "expectedValue": { "queryFailure": "FailedTransformer" },
+                "unitTestExpectedValue": { "queryFailure": "FailedTransformer" },
+                "integrationTestExpectedValue": { "queryFailure": "QueryNotExecutable" }
+              },
+              {
+                "miroirTestType": "transformerTest",
+                "miroirTestLabel": "unpivot heterogeneous rows melt their own keys",
+                "transformerName": "unpivot",
+                "transformer": {
+                  "transformerType": "unpivot",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "gridSparse"
+                  },
+                  "idColumns": ["user"]
+                },
+                "transformerParams": {},
+                "transformerRuntimeContext": {
+                  "gridSparse": [
+                    { "user": "alice", "dep1": true },
+                    { "user": "bob", "dep2": true }
+                  ]
+                },
+                "expectedValue": [
+                  { "user": "alice", "column": "dep1", "value": true },
+                  { "user": "bob", "column": "dep2", "value": true }
+                ]
+              }
+            ]
           }
         ]
       }

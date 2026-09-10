@@ -4443,6 +4443,130 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "coreTransformerForBuildPlusRuntime_pivot": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
+            },
+            "context": {}
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "pivot"
+          },
+          "applyTo": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "rowKeyAttribute": {
+            "type": "string",
+            "description": "Attribute of input rows whose value identifies a pivot row (e.g. \"user\")."
+          },
+          "columnKeyAttribute": {
+            "type": "string",
+            "description": "Attribute of input rows whose value becomes a column name (e.g. \"dep\")."
+          },
+          "valueAttribute": {
+            "type": "string",
+            "optional": true,
+            "description": "Attribute of input rows to pluck as the cell value. When absent, cells are existence booleans (true iff at least one input row matches the (row, column) pair)."
+          },
+          "onDuplicates": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "first",
+              "last",
+              "count",
+              "sum",
+              "min",
+              "max"
+            ],
+            "description": "Policy when several input rows share the same (row, column) pair. first/last use input order; count/sum/min/max aggregate the plucked valueAttribute. Only first/last are allowed in existence mode (no valueAttribute); other values cause a handler error. Defaults to first."
+          },
+          "columns": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime"
+            },
+            "description": "Explicit column set: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list, or getFromContext). A bare string array is NOT schema-expressible here: it also matches the transformer array branch, making the union ambiguous for jzodTypeCheck. When omitted, columns are derived from the distinct columnKeyAttribute values of the input. Object lists (e.g. Deployment rows) must be plucked first (mapList + accessDynamicPath)."
+          },
+          "fillValue": {
+            "type": "any",
+            "optional": true,
+            "description": "Value written for (row, column) pairs with no input row. Defaults to false in existence mode, null when valueAttribute is set."
+          }
+        }
+      },
+      "coreTransformerForBuildPlusRuntime_unpivot": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformerForBuildPlusRuntime_optional_Abstract"
+            },
+            "context": {}
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "unpivot"
+          },
+          "applyTo": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "coreTransformerForBuildPlusRuntime",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            },
+            "context": {}
+          },
+          "idColumns": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            },
+            "description": "Attributes carried unchanged into every output row (e.g. [\"user\"])."
+          },
+          "columns": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime"
+            },
+            "description": "Explicit whitelist of columns to melt: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list). A bare string array is NOT schema-expressible here (ambiguous with the transformer array branch for jzodTypeCheck). When omitted, each row melts its own keys minus idColumns (per-row melt)."
+          },
+          "nameInto": {
+            "type": "string",
+            "optional": true,
+            "description": "Output attribute receiving the melted column name. Defaults to \"column\". Must not collide with idColumns."
+          },
+          "valueInto": {
+            "type": "string",
+            "optional": true,
+            "description": "Output attribute receiving the melted cell value. Defaults to \"value\". Must not collide with idColumns."
+          }
+        }
+      },
       "coreTransformerForBuildPlusRuntime_listLength": {
         "type": "object",
         "extend": [
@@ -5203,6 +5327,20 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_pivot"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_unpivot"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime_listLength"
             }
           },
@@ -5477,6 +5615,20 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "coreTransformerForBuildPlusRuntime_sortList"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_pivot"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "coreTransformerForBuildPlusRuntime_unpivot"
             }
           },
           {
@@ -18719,15 +18871,12 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "canBeTemplate": true,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "application",
                         "description": "Application UUID to query",
                         "foreignKeyParams": {
                           "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
                         }
                       }
                     }
@@ -18736,6 +18885,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "tag": {
                       "value": {
+                        "defaultLabel": "applicationSection",
                         "description": "Section to query (model or data)"
                       }
                     },
@@ -18748,12 +18898,8 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "Entity UUID to get all instances for",
-                        "display": {
-                          "editable": false
-                        }
+                        "defaultLabel": "parentUuid",
+                        "description": "Entity UUID to get all instances for"
                       }
                     }
                   },
@@ -31074,6 +31220,20 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_pivot"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_unpivot"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_listLength"
             }
           },
@@ -32452,6 +32612,126 @@ export const miroirFundamentalJzodSchema = {
             ],
             "optional": true,
             "description": "Sort direction. Defaults to asc."
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_pivot": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "pivot"
+          },
+          "applyTo": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
+          "rowKeyAttribute": {
+            "type": "string",
+            "description": "Attribute of input rows whose value identifies a pivot row (e.g. \"user\")."
+          },
+          "columnKeyAttribute": {
+            "type": "string",
+            "description": "Attribute of input rows whose value becomes a column name (e.g. \"dep\")."
+          },
+          "valueAttribute": {
+            "type": "string",
+            "optional": true,
+            "description": "Attribute of input rows to pluck as the cell value. When absent, cells are existence booleans (true iff at least one input row matches the (row, column) pair)."
+          },
+          "onDuplicates": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "first",
+              "last",
+              "count",
+              "sum",
+              "min",
+              "max"
+            ],
+            "description": "Policy when several input rows share the same (row, column) pair. first/last use input order; count/sum/min/max aggregate the plucked valueAttribute. Only first/last are allowed in existence mode (no valueAttribute); other values cause a handler error. Defaults to first."
+          },
+          "columns": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+            },
+            "description": "Explicit column set: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list, or getFromContext). A bare string array is NOT schema-expressible here: it also matches the transformer array branch, making the union ambiguous for jzodTypeCheck. When omitted, columns are derived from the distinct columnKeyAttribute values of the input. Object lists (e.g. Deployment rows) must be plucked first (mapList + accessDynamicPath)."
+          },
+          "fillValue": {
+            "type": "any",
+            "optional": true,
+            "description": "Value written for (row, column) pairs with no input row. Defaults to false in existence mode, null when valueAttribute is set."
+          }
+        }
+      },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_unpivot": {
+        "type": "object",
+        "extend": [
+          {
+            "type": "schemaReference",
+            "definition": {
+              "eager": true,
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_transformerForBuildPlusRuntime_optional_Abstract_extend"
+            }
+          }
+        ],
+        "definition": {
+          "transformerType": {
+            "type": "literal",
+            "definition": "unpivot"
+          },
+          "applyTo": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime",
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+            }
+          },
+          "idColumns": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            },
+            "description": "Attributes carried unchanged into every output row (e.g. [\"user\"])."
+          },
+          "columns": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+            },
+            "description": "Explicit whitelist of columns to melt: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list). A bare string array is NOT schema-expressible here (ambiguous with the transformer array branch for jzodTypeCheck). When omitted, each row melts its own keys minus idColumns (per-row melt)."
+          },
+          "nameInto": {
+            "type": "string",
+            "optional": true,
+            "description": "Output attribute receiving the melted column name. Defaults to \"column\". Must not collide with idColumns."
+          },
+          "valueInto": {
+            "type": "string",
+            "optional": true,
+            "description": "Output attribute receiving the melted cell value. Defaults to \"value\". Must not collide with idColumns."
           }
         }
       },
@@ -35459,15 +35739,12 @@ export const miroirFundamentalJzodSchema = {
                     "tag": {
                       "value": {
                         "canBeTemplate": true,
-                        "defaultLabel": "Application",
+                        "defaultLabel": "application",
                         "description": "Application UUID to query",
                         "foreignKeyParams": {
                           "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                           "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                           "targetEntityOrderInstancesBy": "name"
-                        },
-                        "display": {
-                          "editable": false
                         },
                         "isTemplate": true
                       }
@@ -35482,15 +35759,12 @@ export const miroirFundamentalJzodSchema = {
                         "tag": {
                           "value": {
                             "canBeTemplate": true,
-                            "defaultLabel": "Application",
+                            "defaultLabel": "application",
                             "description": "Application UUID to query",
                             "foreignKeyParams": {
                               "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                               "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                               "targetEntityOrderInstancesBy": "name"
-                            },
-                            "display": {
-                              "editable": false
                             }
                           }
                         }
@@ -35508,6 +35782,7 @@ export const miroirFundamentalJzodSchema = {
                     "type": "schemaReference",
                     "tag": {
                       "value": {
+                        "defaultLabel": "applicationSection",
                         "description": "Section to query (model or data)",
                         "isTemplate": true
                       }
@@ -35521,12 +35796,8 @@ export const miroirFundamentalJzodSchema = {
                     "type": "uuid",
                     "tag": {
                       "value": {
-                        "id": 1,
-                        "defaultLabel": "Uuid",
-                        "description": "Entity UUID to get all instances for",
-                        "display": {
-                          "editable": false
-                        }
+                        "defaultLabel": "parentUuid",
+                        "description": "Entity UUID to get all instances for"
                       }
                     }
                   },
@@ -40244,6 +40515,20 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_sortList"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_pivot"
+            }
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime_unpivot"
             }
           },
           {

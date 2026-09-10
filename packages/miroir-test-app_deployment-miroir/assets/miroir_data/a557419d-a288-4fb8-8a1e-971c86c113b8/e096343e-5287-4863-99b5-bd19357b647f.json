@@ -1,0 +1,75 @@
+{
+  "uuid": "e096343e-5287-4863-99b5-bd19357b647f",
+  "name": "unpivot",
+  "defaultLabel": "unpivot",
+  "description": "Melts row objects into long format: for each input row, one output row per melted column, carrying idColumns plus [nameInto] (column name, default \"column\") and [valueInto] (cell value, default \"value\"). Absent keys are skipped; explicit null values are kept. When columns is omitted, each row melts its own keys minus idColumns (per-row melt); when given (transformer resolving to a list of strings, e.g. returnValue wrapping a literal), only those columns are melted. nameInto/valueInto colliding with idColumns is a handler error. Issue #265.",
+  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+  "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+  "parentName": "TransformerDefinition",
+  "classification": "basic",
+  "transformerInterface": {
+    "inputOutput": {
+      "input": "array",
+      "output": "array"
+    },
+    "transformerParameterSchema": {
+      "transformerType": {
+        "type": "literal",
+        "definition": "unpivot"
+      },
+      "transformerDefinition": {
+        "type": "object",
+        "definition": {
+          "applyTo": {
+            "type": "any",
+            "optional": true,
+            "description": "The list of row objects to melt. The actual type is set by the platform depending on interpolation for the transformer. In SQL mode, must be a constant/returnValue/getFromContext/getFromParameters (the sqlStringForApplyTo allowlist)."
+          },
+          "idColumns": {
+            "type": "array",
+            "definition": {
+              "type": "string"
+            },
+            "description": "Attributes carried unchanged into every output row (e.g. [\"user\"])."
+          },
+          "columns": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "transformer"
+            },
+            "description": "Explicit whitelist of columns to melt: a transformer resolving to a list of strings (e.g. returnValue wrapping a literal list). A bare string array is NOT schema-expressible here (ambiguous with the transformer array branch for jzodTypeCheck). When omitted, each row melts its own keys minus idColumns (per-row melt)."
+          },
+          "nameInto": {
+            "type": "string",
+            "optional": true,
+            "description": "Output attribute receiving the melted column name. Defaults to \"column\". Must not collide with idColumns."
+          },
+          "valueInto": {
+            "type": "string",
+            "optional": true,
+            "description": "Output attribute receiving the melted cell value. Defaults to \"value\". Must not collide with idColumns."
+          }
+        }
+      }
+    },
+    "transformerResultSchema": {
+      "returns": "mlSchema",
+      "definition": {
+        "type": "array",
+        "definition": {
+          "type": "record",
+          "definition": {
+            "type": "any"
+          }
+        }
+      }
+    }
+  },
+  "transformerImplementation": {
+    "transformerImplementationType": "libraryImplementation",
+    "inMemoryImplementationFunctionName": "handleTransformer_unpivot",
+    "sqlImplementationFunctionName": "sqlStringForUnpivotTransformer"
+  }
+}
