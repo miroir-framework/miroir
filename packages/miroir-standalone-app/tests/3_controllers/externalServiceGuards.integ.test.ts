@@ -237,6 +237,14 @@ const CC_SCHEME = (tokenUrl: string) => ({
   clientSecretKey: "fakeClientSecret",
 });
 
+const AC_SCHEME = (tokenUrl: string) => ({
+  type: "oauth2AuthorizationCode",
+  tokenUrl,
+  clientIdKey: "fakeClientId",
+  clientSecretKey: "fakeClientSecret",
+  refreshTokenKey: "fakeRefreshToken",
+});
+
 function boxedGetPlaylistQuery(playlistId: string, actionType = "get-playlist") {
   return {
     actionType: "runBoxedQueryAction" as const,
@@ -603,5 +611,50 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards — oauth2ClientCr
     );
     expectActionError(result, "InvalidAction", /insecure|private|not allowed/i);
     expect(fakeServer.receivedRequests).toHaveLength(0);
+  });
+});
+
+describe.skipIf(!shouldRun).sequential("externalServiceGuards — oauth2AuthorizationCode failures", () => {
+  it("unknown refreshTokenKey fails closed before any fetch", async () => {
+    registerSecrets({ fakeClientId: "id-123", fakeClientSecret: "secret-abc" });
+    const result = await executeExternalServiceOperation(
+      syntheticEndpoint({
+        securityScheme: {
+          type: "oauth2AuthorizationCode",
+          tokenUrl: `${fakeServer.baseUrl}/api/token`,
+          clientIdKey: "fakeClientId",
+          clientSecretKey: "fakeClientSecret",
+          refreshTokenKey: "does-not-exist",
+        },
+      }),
+      "get-playlist",
+      { playlist_id: PLAYLIST_ID_OK },
+    );
+    expect(result instanceof Action2Error, JSON.stringify(result)).toBe(true);
+    expect((result as Action2Error).errorType).toBe("InvalidAction");
+    expect(((result as Action2Error).errorMessage ?? "").toLowerCase()).toMatch(/unknown|empty|secret/);
+    expect(fakeServer.receivedRequests).toHaveLength(0);
+  });
+
+  it("token endpoint non-2xx maps to an error mentioning the token endpoint", async () => {
+    registerSecrets({
+      fakeClientId: "id-123",
+      fakeClientSecret: "secret-abc",
+      fakeRefreshToken: "refresh-xyz",
+    });
+    fakeServer.setFixture("POST", "/api/token", {
+      status: 400,
+      body: { error: "invalid_grant" },
+    });
+
+    const result = await executeExternalServiceOperation(
+      syntheticEndpoint({ securityScheme: AC_SCHEME(`${fakeServer.baseUrl}/api/token`) }),
+      "get-playlist",
+      { playlist_id: PLAYLIST_ID_OK },
+    );
+    expectActionError(result, "ExternalServiceUpstreamFailure", /token endpoint/i);
+    expect(fakeServer.receivedRequests).toHaveLength(1);
+    expect(fakeServer.receivedRequests[0].method).toBe("POST");
+    expect(fakeServer.receivedRequests[0].path).toBe("/api/token");
   });
 });

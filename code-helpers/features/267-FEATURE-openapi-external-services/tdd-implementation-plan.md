@@ -820,3 +820,44 @@ npm run nonreg
 
 - Unresolved `getFromParameters` binding (missing `playlistId` page param) no longer lands as `[object Object]` in the URL: `executeExternalServiceOperation` rejects object-valued bindings with a clear `External service parameter "<name>" could not be resolved` error before any HTTP call (regression test in `externalServiceQuery`).
 - Report-level `playlistId` input: `inputReportSection` gained an optional `urlParamFields: string[]` (Report Entity + EntityVersion meta-model, types regenerated). `ReportInputSection` renders an **OK** button when declared; clicking it writes the named input values into the report URL search params (navigate) so the Slice 5 query-load seam re-runs the report query with the new pageParams. `ReportTools.reportSectionsFormValue` seeds those fields from the current pageParams. `ReportViewWithEditor` keeps rendering sections (plus an error banner) on query failure when the report declares such an input, so the field stays reachable. The Spotify playlist report declares `urlParamFields: ["playlistId"]` (`inputPrefix: "playlistInput"`). Tests: `spotifyApp` 4/4 (new OK-button navigation test + seeding assertion; `useNavigate` mocked, navigate URL asserted), `externalServiceReport` 5/5 (failure-dump behavior preserved for reports without the input), modelValidation miroir/admin/library/spotify all pass. Live: opening the playlist report without `playlistId` now shows the input instead of only the failure dump.
+- **Spotify February 2026 API change** (live-run: `FailedTransformer_dynamicObjectAccess, could not find key: "items"`): Spotify renamed playlist `tracks` → `items` (`tracks.items[].track` → `items.items[].item`) and, crucially, `GET /playlists/{id}` now returns **metadata only** (no contents) unless the authenticated user owns/collaborates on the playlist — with client-credentials there is no user, so contents are always absent. Fix: endpoint `responseSchema` declares optional `items` (new shape) alongside `tracks` (now optional); the report's `tracks` runtime transformer is a `case` fallback (`items.items` → legacy `tracks.items` → `[]`), so metadata-only responses render the playlist metadata with an empty tracks section instead of a transformer failure. `ExternalServiceClient` now warn-logs response validation failures (was silent). Tests: `spotifyApp` new-shape fixture renders tracks; metadata-only fixture renders without failure (6/6). NOTE: seeing real track listings live requires a user-context flow (Authorization Code), not client credentials.
+
+---
+
+## Authorization Code flow (refresh-token grant)
+
+**Status:** ✅ DONE (2026-09-10)
+
+**Why:** Spotify February 2026 rules return playlist contents only for playlists the authenticated user owns or collaborates on. Client credentials have no user, so live track listings need Authorization Code — implemented here as the refresh-token grant only (one-time consent is out-of-band).
+
+### Schema
+
+- Endpoint `securityScheme` union gains a third variant `oauth2AuthorizationCode` = `{ type, tokenUrl, clientIdKey, clientSecretKey, refreshTokenKey, scopes? }`. Hand-written `EndpointSecurityScheme` in `endpointDefinition.ts` mirrors it.
+
+### Client
+
+- `ExternalServiceClient` performs only the OAuth2 refresh-token grant (`POST grant_type=refresh_token` with HTTP Basic client auth). User consent is out-of-band.
+- Shared in-memory access-token cache with a 60s expiry margin; AC cache key `tokenUrl|clientIdKey|refreshTokenKey`.
+- In-memory refresh-token rotation (never persisted or logged).
+- API 401 → drop cached token → re-exchange → retry once.
+
+### Spotify asset + helper
+
+- Spotify endpoint `0e5cb172-…` switched to `oauth2AuthorizationCode` with scopes `playlist-read-private playlist-read-collaborative`; `refreshTokenKey: "spotifyRefreshToken"`.
+- One-time consent helper: `python packages/miroir-test-app_deployment-spotify/scripts/get_spotify_refresh_token.py --client-id <id> --client-secret <secret>` (or env `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET`).
+
+### Tests
+
+- `externalServiceQuery` AC describe (exchange, cache reuse, 401→re-exchange→retry, refresh-token rotation) — suite **13/13**.
+- `externalServiceGuards` AC describe (unknown `refreshTokenKey`, token endpoint non-2xx) — suite **23/23**.
+- `spotifyApp` **6/6** (asset uses the AC scheme; fake `tokenUrl` + `spotifyRefreshToken` secret).
+- `externalServiceSchema` **4/4**.
+- modelValidation: miroir **152**, admin **47**, library **181**, spotify **7**.
+- tsc clean (miroir-core, miroir-standalone-app) — already run; not re-run here.
+
+### Live usage
+
+1. Provision a refresh token once via the Python helper; register it as secret `spotifyRefreshToken`.
+2. Launch with three `--secret` flags: `node packages/miroir-server/release/index.js --secret spotifyClientId=<id> --secret spotifyClientSecret=<secret> --secret spotifyRefreshToken=<refresh>`.
+3. Reseed the Spotify deployment store after the endpoint asset change (a filesystem store still holds the previous scheme until reset).
+4. Playlist contents are returned only for playlists the authenticated user owns or collaborates on (Spotify Feb-2026 rules).

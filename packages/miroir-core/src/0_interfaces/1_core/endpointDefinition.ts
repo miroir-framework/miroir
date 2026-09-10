@@ -20,6 +20,20 @@ export type EndpointSecurityScheme =
       clientIdKey: string;
       clientSecretKey: string;
       scopes?: string;
+    }
+  | {
+      /**
+       * OAuth2 Authorization Code flow (user context). The framework only
+       * performs the refresh-token grant: the refresh token is provisioned
+       * once out-of-band (see packages/miroir-test-app_deployment-spotify/scripts/)
+       * and supplied as a secret like the client id/secret.
+       */
+      type: "oauth2AuthorizationCode";
+      tokenUrl: string;
+      clientIdKey: string;
+      clientSecretKey: string;
+      refreshTokenKey: string;
+      scopes?: string;
     };
 
 export type EndpointExternalService = {

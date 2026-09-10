@@ -97,6 +97,7 @@ const PLAYLIST_ID_OK = "test-playlist-001";
 const PLAYLIST_ID_WRONG_TYPE = "test-playlist-wrong-type";
 const TEST_ENDPOINT_UUID = "c8f2a1b4-6d3e-4a91-9b07-2e5c8d1f4a63";
 const TEST_ENDPOINT_CC_UUID = "b7e3d2c1-5a4f-4e82-8c19-3d7b6a5e4f21";
+const TEST_ENDPOINT_AC_UUID = "a6d4c3b2-4e3f-4d71-9b08-2c6a5d4e3f10";
 const ENDPOINT_ENTITY_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
@@ -250,6 +251,42 @@ function testClientCredentialsEndpointInstance(baseUrl: string): EndpointDefinit
   } as EndpointDefinition;
 }
 
+function testAuthorizationCodeEndpointInstance(baseUrl: string): EndpointDefinition {
+  return {
+    uuid: TEST_ENDPOINT_AC_UUID,
+    parentName: "Endpoint",
+    parentUuid: ENDPOINT_ENTITY_UUID,
+    application: selfApplicationLibrary.uuid,
+    name: "FakeSpotifyAuthorizationCode",
+    version: "1",
+    description: "OAuth2 authorization-code refresh-token tracer endpoint against the local fake server",
+    definition: {
+      externalService: {
+        openApiDocument:
+          '{"openapi":"3.0.0","info":{"title":"FakeSpotify","version":"1.0.0"},"paths":{}}',
+        baseUrl,
+        securityScheme: {
+          type: "oauth2AuthorizationCode",
+          tokenUrl: `${baseUrl}/api/token`,
+          clientIdKey: "fakeClientId",
+          clientSecretKey: "fakeClientSecret",
+          refreshTokenKey: "fakeRefreshToken",
+        },
+        enabledOperations: ["get-playlist"],
+        operations: [
+          {
+            operationId: "get-playlist",
+            method: "GET",
+            path: "/playlists/{playlist_id}",
+            parameterMappings: [{ name: "playlist_id", in: "path", required: true }],
+            responseSchema: PLAYLIST_RESPONSE_SCHEMA,
+          },
+        ],
+      },
+    },
+  } as EndpointDefinition;
+}
+
 function boxedGetPlaylistQuery(playlistId: string, endpointUuid: string = TEST_ENDPOINT_UUID) {
   return {
     actionType: "runBoxedQueryAction" as const,
@@ -325,6 +362,7 @@ beforeAll(async () => {
     fakeSpotify: "test-token",
     fakeClientId: "id-123",
     fakeClientSecret: "secret-abc",
+    fakeRefreshToken: "refresh-xyz",
   });
   allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
 
@@ -646,5 +684,143 @@ describe.skipIf(!shouldRun).sequential("externalServiceQuery — oauth2ClientCre
     ]);
     expect(fakeServer.receivedRequests[1].headers.authorization).toBe("Bearer stale-token");
     expect(fakeServer.receivedRequests[3].headers.authorization).toBe("Bearer fresh-token");
+  });
+});
+
+describe.skipIf(!shouldRun).sequential("externalServiceQuery — oauth2AuthorizationCode flow", () => {
+  const EXPECTED_BASIC_AUTH = `Basic ${Buffer.from("id-123:secret-abc", "utf8").toString("base64")}`;
+
+  it("exchanges refresh token for an access token, then calls the API with it", async () => {
+    await commitEndpointInstance(testAuthorizationCodeEndpointInstance(fakeServer.baseUrl));
+    fakeServer.setFixture("POST", "/api/token", {
+      body: { access_token: "fake-access-token-1", token_type: "Bearer", expires_in: 3600 },
+    });
+
+    const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+      boxedGetPlaylistQuery(PLAYLIST_ID_OK, TEST_ENDPOINT_AC_UUID) as any,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+    );
+
+    expect(queryResult instanceof Action2Error, JSON.stringify(queryResult)).toBe(false);
+    const playlist = (queryResult as { returnedDomainElement: { playlist: { name: string } } })
+      .returnedDomainElement.playlist;
+    expect(playlist.name).toBe(PLAYLIST_NAME_LITERAL);
+
+    expect(fakeServer.receivedRequests).toHaveLength(2);
+    const [tokenRequest, apiRequest] = fakeServer.receivedRequests;
+    expect(tokenRequest.method).toBe("POST");
+    expect(tokenRequest.path).toBe("/api/token");
+    expect(tokenRequest.headers.authorization).toBe(EXPECTED_BASIC_AUTH);
+    expect(tokenRequest.headers["content-type"]).toBe("application/x-www-form-urlencoded");
+    expect(tokenRequest.body).toContain("grant_type=refresh_token");
+    expect(tokenRequest.body).toContain("refresh_token=refresh-xyz");
+    expect(apiRequest.method).toBe("GET");
+    expect(apiRequest.path).toBe(`/playlists/${PLAYLIST_ID_OK}`);
+    expect(apiRequest.headers.authorization).toBe("Bearer fake-access-token-1");
+  });
+
+  it("caches the token across queries (no second exchange)", async () => {
+    await commitEndpointInstance(testAuthorizationCodeEndpointInstance(fakeServer.baseUrl));
+    fakeServer.setFixture("POST", "/api/token", {
+      body: { access_token: "fake-access-token-1", token_type: "Bearer", expires_in: 3600 },
+    });
+
+    for (let i = 0; i < 2; i++) {
+      const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+        boxedGetPlaylistQuery(PLAYLIST_ID_OK, TEST_ENDPOINT_AC_UUID) as any,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      );
+      expect(queryResult instanceof Action2Error, JSON.stringify(queryResult)).toBe(false);
+    }
+
+    const tokenRequests = fakeServer.receivedRequests.filter((r) => r.path === "/api/token");
+    const apiRequests = fakeServer.receivedRequests.filter((r) => r.path !== "/api/token");
+    expect(tokenRequests).toHaveLength(1);
+    expect(apiRequests).toHaveLength(2);
+    for (const request of apiRequests) {
+      expect(request.headers.authorization).toBe("Bearer fake-access-token-1");
+    }
+  });
+
+  it("401 drops the cached token, re-exchanges, and retries once", async () => {
+    await commitEndpointInstance(testAuthorizationCodeEndpointInstance(fakeServer.baseUrl));
+    fakeServer.setFixture("POST", "/api/token", {
+      sequence: [
+        { body: { access_token: "stale-token", token_type: "Bearer", expires_in: 3600 } },
+        { body: { access_token: "fresh-token", token_type: "Bearer", expires_in: 3600 } },
+      ],
+    });
+    fakeServer.setFixtureForAuth("GET", `/playlists/${PLAYLIST_ID_OK}`, "Bearer stale-token", {
+      status: 401,
+      body: { error: { status: 401, message: "The access token expired" } },
+    });
+    fakeServer.setFixtureForAuth("GET", `/playlists/${PLAYLIST_ID_OK}`, "Bearer fresh-token", {
+      body: PLAYLIST_OK,
+    });
+
+    const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+      boxedGetPlaylistQuery(PLAYLIST_ID_OK, TEST_ENDPOINT_AC_UUID) as any,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+    );
+
+    expect(queryResult instanceof Action2Error, JSON.stringify(queryResult)).toBe(false);
+    const playlist = (queryResult as { returnedDomainElement: { playlist: { name: string } } })
+      .returnedDomainElement.playlist;
+    expect(playlist.name).toBe(PLAYLIST_NAME_LITERAL);
+
+    const paths = fakeServer.receivedRequests.map((r) => `${r.method} ${r.path}`);
+    expect(paths).toEqual([
+      "POST /api/token",
+      `GET /playlists/${PLAYLIST_ID_OK}`,
+      "POST /api/token",
+      `GET /playlists/${PLAYLIST_ID_OK}`,
+    ]);
+    expect(fakeServer.receivedRequests[1].headers.authorization).toBe("Bearer stale-token");
+    expect(fakeServer.receivedRequests[3].headers.authorization).toBe("Bearer fresh-token");
+  });
+
+  it("rotated refresh_token from the token response is used on the next exchange", async () => {
+    await commitEndpointInstance(testAuthorizationCodeEndpointInstance(fakeServer.baseUrl));
+    fakeServer.setFixture("POST", "/api/token", {
+      sequence: [
+        {
+          body: {
+            access_token: "stale-token",
+            token_type: "Bearer",
+            expires_in: 3600,
+            refresh_token: "refresh-rotated",
+          },
+        },
+        { body: { access_token: "fresh-token", token_type: "Bearer", expires_in: 3600 } },
+      ],
+    });
+    fakeServer.setFixtureForAuth("GET", `/playlists/${PLAYLIST_ID_OK}`, "Bearer stale-token", {
+      status: 401,
+      body: { error: { status: 401, message: "The access token expired" } },
+    });
+    fakeServer.setFixtureForAuth("GET", `/playlists/${PLAYLIST_ID_OK}`, "Bearer fresh-token", {
+      body: PLAYLIST_OK,
+    });
+
+    const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+      boxedGetPlaylistQuery(PLAYLIST_ID_OK, TEST_ENDPOINT_AC_UUID) as any,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+    );
+
+    expect(queryResult instanceof Action2Error, JSON.stringify(queryResult)).toBe(false);
+    const playlist = (queryResult as { returnedDomainElement: { playlist: { name: string } } })
+      .returnedDomainElement.playlist;
+    expect(playlist.name).toBe(PLAYLIST_NAME_LITERAL);
+
+    const tokenRequests = fakeServer.receivedRequests.filter((r) => r.path === "/api/token");
+    expect(tokenRequests).toHaveLength(2);
+    expect(tokenRequests[0].body).toContain("grant_type=refresh_token");
+    expect(tokenRequests[0].body).toContain("refresh_token=refresh-xyz");
+    expect(tokenRequests[1].body).toContain("grant_type=refresh_token");
+    expect(tokenRequests[1].body).toContain("refresh_token=refresh-rotated");
   });
 });

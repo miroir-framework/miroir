@@ -20,21 +20,99 @@
         }
       }
     },
-    "runtimeTransformers": {
-      "tracks": {
+  "runtimeTransformers": {
+   "tracks": {
+    "transformerType": "case",
+    "interpolation": "runtime",
+    "discriminator": {
+     "transformerType": "boolExpr",
+     "interpolation": "runtime",
+     "operator": "isNotNull",
+     "left": {
+      "transformerType": "accessDynamicPath",
+      "interpolation": "runtime",
+      "objectAccessPath": [
+       {
+        "transformerType": "getFromContext",
+        "interpolation": "runtime",
+        "referenceName": "playlist"
+       },
+       "items"
+      ]
+     }
+    },
+    "whens": [
+     {
+      "when": {
+       "transformerType": "returnValue",
+       "interpolation": "runtime",
+       "value": true
+      },
+      "then": {
+       "transformerType": "accessDynamicPath",
+       "interpolation": "runtime",
+       "objectAccessPath": [
+        {
+         "transformerType": "getFromContext",
+         "interpolation": "runtime",
+         "referenceName": "playlist"
+        },
+        "items",
+        "items"
+       ]
+      }
+     }
+    ],
+    "else": {
+     "transformerType": "case",
+     "interpolation": "runtime",
+     "discriminator": {
+      "transformerType": "boolExpr",
+      "interpolation": "runtime",
+      "operator": "isNotNull",
+      "left": {
+       "transformerType": "accessDynamicPath",
+       "interpolation": "runtime",
+       "objectAccessPath": [
+        {
+         "transformerType": "getFromContext",
+         "interpolation": "runtime",
+         "referenceName": "playlist"
+        },
+        "tracks"
+       ]
+      }
+     },
+     "whens": [
+      {
+       "when": {
+        "transformerType": "returnValue",
+        "interpolation": "runtime",
+        "value": true
+       },
+       "then": {
         "transformerType": "accessDynamicPath",
         "interpolation": "runtime",
         "objectAccessPath": [
-          {
-            "transformerType": "getFromContext",
-            "interpolation": "runtime",
-            "referenceName": "playlist"
-          },
-          "tracks",
-          "items"
+         {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "playlist"
+         },
+         "tracks",
+         "items"
         ]
+       }
       }
-    },
+     ],
+     "else": {
+      "transformerType": "returnValue",
+      "interpolation": "runtime",
+      "value": []
+     }
+    }
+   }
+  },
     "section": {
       "type": "list",
       "definition": [
@@ -82,7 +160,7 @@
         {
           "type": "jsonReportSection",
           "definition": {
-            "label": "Tracks (first 100 of ${playlist.tracks.total})",
+            "label": "Tracks (first page; empty when Spotify returns metadata only)",
             "fetchedDataReference": "tracks"
           }
         }

@@ -41,12 +41,15 @@ export function clearAllowedInsecureBaseUrlsForTests(): void {
   allowedInsecureBaseUrls.clear();
 }
 
-type ClientCredentialsTokenCacheEntry = { accessToken: string; expiresAtMs: number };
-const clientCredentialsTokenCache = new Map<string, ClientCredentialsTokenCacheEntry>();
+type Oauth2TokenCacheEntry = { accessToken: string; expiresAtMs: number };
+const oauth2TokenCache = new Map<string, Oauth2TokenCacheEntry>();
+/** Latest refresh token per secret key (in-memory only; providers may rotate on refresh). */
+const rotatedRefreshTokens = new Map<string, string>();
 const TOKEN_EXPIRY_MARGIN_MS = 60_000;
 
 export function clearExternalServiceTokenCacheForTests(): void {
-  clientCredentialsTokenCache.clear();
+  oauth2TokenCache.clear();
+  rotatedRefreshTokens.clear();
 }
 
 function normalizeBaseUrl(baseUrl: string): string {
@@ -287,7 +290,7 @@ async function resolveClientCredentialsToken(
   forceRefresh: boolean,
 ): Promise<string | Action2Error> {
   const cacheKey = `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}`;
-  const cached = clientCredentialsTokenCache.get(cacheKey);
+  const cached = oauth2TokenCache.get(cacheKey);
   if (!forceRefresh && cached && cached.expiresAtMs - TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
     return cached.accessToken;
   }
@@ -363,12 +366,146 @@ async function resolveClientCredentialsToken(
   }
   const expiresInSec =
     typeof payload.expires_in === "number" && payload.expires_in > 0 ? payload.expires_in : 3600;
-  clientCredentialsTokenCache.set(cacheKey, {
+  oauth2TokenCache.set(cacheKey, {
     accessToken: payload.access_token,
     expiresAtMs: Date.now() + expiresInSec * 1000,
   });
   log.debug("external service client-credentials token acquired", { actionType, expiresInSec });
   return payload.access_token;
+}
+
+type OAuth2AuthorizationCodeScheme = {
+  type: "oauth2AuthorizationCode";
+  tokenUrl: string;
+  clientIdKey: string;
+  clientSecretKey: string;
+  refreshTokenKey: string;
+  scopes?: string;
+};
+
+function oauth2AuthorizationCodeCacheKey(scheme: OAuth2AuthorizationCodeScheme): string {
+  return `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}|${scheme.refreshTokenKey}`;
+}
+
+/**
+ * OAuth2 refresh-token grant (issue #267): POST grant_type=refresh_token to the scheme's
+ * tokenUrl with HTTP Basic client auth. Uses the named refresh-token secret (or a rotated
+ * in-memory value). Caches the access token until expiry (60s margin). Never logs secrets.
+ */
+async function resolveAuthorizationCodeToken(
+  scheme: OAuth2AuthorizationCodeScheme,
+  actionType: string,
+  forceRefresh: boolean,
+): Promise<string | Action2Error> {
+  const cacheKey = oauth2AuthorizationCodeCacheKey(scheme);
+  const cached = oauth2TokenCache.get(cacheKey);
+  if (!forceRefresh && cached && cached.expiresAtMs - TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
+    return cached.accessToken;
+  }
+
+  const tokenUrlError = assertBaseUrlAllowed(scheme.tokenUrl);
+  if (tokenUrlError) {
+    log.warn("external service call rejected: tokenUrl not allowed", { actionType });
+    return tokenUrlError;
+  }
+
+  let clientId: string;
+  let clientSecret: string;
+  try {
+    clientId = resolveSecret(scheme.clientIdKey);
+    clientSecret = resolveSecret(scheme.clientSecretKey);
+  } catch {
+    log.warn(
+      "external service call blocked: clientIdKey/clientSecretKey did not resolve to registered secrets (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
+      { actionType, clientIdKey: scheme.clientIdKey, clientSecretKey: scheme.clientSecretKey },
+    );
+    return externalServiceError("InvalidAction", "Unknown or empty secret");
+  }
+
+  let refreshToken = rotatedRefreshTokens.get(scheme.refreshTokenKey);
+  if (!refreshToken) {
+    try {
+      refreshToken = resolveSecret(scheme.refreshTokenKey);
+    } catch {
+      log.warn(
+        "external service call blocked: refreshTokenKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
+        { actionType, refreshTokenKey: scheme.refreshTokenKey },
+      );
+      return externalServiceError("InvalidAction", "Unknown or empty secret");
+    }
+  }
+
+  const body = new URLSearchParams({ grant_type: "refresh_token", refresh_token: refreshToken });
+  if (scheme.scopes) {
+    body.set("scope", scheme.scopes);
+  }
+  let response: Response;
+  try {
+    response = await fetch(scheme.tokenUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${toBase64(`${clientId}:${clientSecret}`)}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: body.toString(),
+    });
+  } catch {
+    log.warn("external service token request failed (network)", { actionType });
+    return externalServiceError(
+      "ExternalServiceUpstreamFailure",
+      "External service token request failed",
+    );
+  }
+  if (response.status < 200 || response.status >= 300) {
+    log.warn("external service token request failed", {
+      actionType,
+      httpStatus: response.status,
+      errorType: errorTypeForHttpStatus(response.status),
+    });
+    return externalServiceError(
+      errorTypeForHttpStatus(response.status),
+      `External service token endpoint returned HTTP ${response.status}: check the client id/secret`,
+      { httpStatus: response.status },
+    );
+  }
+
+  let payload: { access_token?: unknown; expires_in?: unknown; refresh_token?: unknown };
+  try {
+    payload = await response.json();
+  } catch {
+    return externalServiceError(
+      "ExternalServiceUpstreamFailure",
+      "External service token endpoint returned invalid JSON",
+      { httpStatus: response.status },
+    );
+  }
+  if (typeof payload.access_token !== "string" || payload.access_token.length === 0) {
+    return externalServiceError(
+      "ExternalServiceUpstreamFailure",
+      "External service token endpoint response has no access_token",
+    );
+  }
+  if (typeof payload.refresh_token === "string" && payload.refresh_token.length > 0) {
+    rotatedRefreshTokens.set(scheme.refreshTokenKey, payload.refresh_token);
+    log.info("external service received rotated refresh token", {
+      actionType,
+      refreshTokenKey: scheme.refreshTokenKey,
+    });
+  }
+  const expiresInSec =
+    typeof payload.expires_in === "number" && payload.expires_in > 0 ? payload.expires_in : 3600;
+  oauth2TokenCache.set(cacheKey, {
+    accessToken: payload.access_token,
+    expiresAtMs: Date.now() + expiresInSec * 1000,
+  });
+  log.debug("external service authorization-code token acquired", { actionType, expiresInSec });
+  return payload.access_token;
+}
+
+function isCachedOAuth2Scheme(
+  scheme: EndpointExternalService["securityScheme"] | undefined,
+): scheme is OAuth2ClientCredentialsScheme | OAuth2AuthorizationCodeScheme {
+  return scheme?.type === "oauth2ClientCredentials" || scheme?.type === "oauth2AuthorizationCode";
 }
 
 /**
@@ -383,6 +520,13 @@ async function resolveAuthorizationHeader(
   const scheme = externalService.securityScheme;
   if (scheme && scheme.type === "oauth2ClientCredentials") {
     const token = await resolveClientCredentialsToken(scheme, actionType, forceTokenRefresh);
+    if (token instanceof Action2Error) {
+      return token;
+    }
+    return `Bearer ${token}`;
+  }
+  if (scheme && scheme.type === "oauth2AuthorizationCode") {
+    const token = await resolveAuthorizationCodeToken(scheme, actionType, forceTokenRefresh);
     if (token instanceof Action2Error) {
       return token;
     }
@@ -511,13 +655,13 @@ async function fetchExternalServiceOperation(
   if (response instanceof Action2Error) {
     return response;
   }
-  if (
-    response.status === 401 &&
-    externalService.securityScheme?.type === "oauth2ClientCredentials"
-  ) {
-    log.info("external service call got 401; refreshing client-credentials token and retrying once", {
-      actionType,
-    });
+  if (response.status === 401 && isCachedOAuth2Scheme(externalService.securityScheme)) {
+    log.info(
+      externalService.securityScheme.type === "oauth2AuthorizationCode"
+        ? "external service call got 401; refreshing authorization-code token and retrying once"
+        : "external service call got 401; refreshing client-credentials token and retrying once",
+      { actionType },
+    );
     const refreshedAuthorization = await resolveAuthorizationHeader(externalService, actionType, true);
     if (refreshedAuthorization instanceof Action2Error) {
       return refreshedAuthorization;
@@ -559,6 +703,11 @@ async function fetchExternalServiceOperation(
 
   const validated = lenientValidateJzod(operation.responseSchema, body, "");
   if (validated.status === "error") {
+    log.warn("external service response validation failed", {
+      actionType,
+      url,
+      error: validated.error,
+    });
     return externalServiceError(
       "FailedToGetInstances",
       `Response validation failed: ${validated.error}`,

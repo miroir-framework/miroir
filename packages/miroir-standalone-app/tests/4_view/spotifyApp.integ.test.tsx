@@ -127,6 +127,47 @@ const FIRST_TRACK_NAME_LITERAL = "Born to Run";
 const OWNER_DISPLAY_NAME_LITERAL = "Fixture Owner";
 const TRACKS_TOTAL_LITERAL = 17;
 const PLAYLIST_ID_OK = "test-playlist-001";
+const PLAYLIST_ID_NEWSHAPE = "test-playlist-newshape";
+const PLAYLIST_ID_METADATA_ONLY = "test-playlist-metadata-only";
+
+/** Spotify Feb-2026 shape: `tracks` renamed to `items`, entries wrap `item` (not `track`). */
+const PLAYLIST_NEW_SHAPE = {
+  id: PLAYLIST_ID_NEWSHAPE,
+  name: "New Shape Mix",
+  owner: { id: "newshape-owner", display_name: "New Shape Owner" },
+  images: [],
+  items: {
+    total: 2,
+    items: [
+      {
+        item: {
+          id: "newtrack-1",
+          name: "Fresh Track One",
+          artists: [{ id: "artist-1", name: "Fresh Artist" }],
+          duration_ms: 123000,
+        },
+      },
+      {
+        item: {
+          id: "newtrack-2",
+          name: "Fresh Track Two",
+          artists: [],
+          duration_ms: 234000,
+        },
+      },
+    ],
+  },
+};
+const NEW_SHAPE_FIRST_TRACK_LITERAL = "Fresh Track One";
+
+/** Client-credentials / non-owned playlists: Spotify returns metadata only (no tracks/items). */
+const PLAYLIST_METADATA_ONLY = {
+  id: PLAYLIST_ID_METADATA_ONLY,
+  name: "Metadata Only Playlist",
+  owner: { id: "metadata-owner", display_name: "Metadata Owner" },
+  images: [],
+};
+const METADATA_ONLY_NAME_LITERAL = "Metadata Only Playlist";
 
 const SPOTIFY_DEPLOYMENT_UUID = "fd47d115-67e2-4870-8339-1c26665d1d15";
 const SPOTIFY_APPLICATION_UUID = "00514586-bf72-4de3-beea-0a627c821404";
@@ -245,7 +286,8 @@ async function overrideEndpointBaseUrl(baseUrl: string): Promise<void> {
         ...existing.externalService,
         baseUrl,
         // Point the OAuth2 token exchange at the fake server too (production: accounts.spotify.com).
-        ...(securityScheme?.type === "oauth2ClientCredentials"
+        ...(securityScheme?.type === "oauth2ClientCredentials" ||
+        securityScheme?.type === "oauth2AuthorizationCode"
           ? { securityScheme: { ...securityScheme, tokenUrl: `${baseUrl}/api/token` } }
           : {}),
       },
@@ -352,6 +394,7 @@ beforeAll(async () => {
   registerSecrets({
     spotifyClientId: "test-client-id",
     spotifyClientSecret: "test-client-secret",
+    spotifyRefreshToken: "test-refresh-token",
   });
   allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
 
@@ -422,7 +465,9 @@ beforeAll(async () => {
 beforeEach(async () => {
   fakeServer.receivedRequests.length = 0;
   clearExternalServiceTokenCacheForTests();
-  fakeServer.setFixture(`GET /playlists/${PLAYLIST_ID_OK}`, { body: PHASE7_PLAYLIST });
+  fakeServer.setFixture("GET", `/playlists/${PLAYLIST_ID_OK}`, { body: PHASE7_PLAYLIST });
+  fakeServer.setFixture("GET", `/playlists/${PLAYLIST_ID_NEWSHAPE}`, { body: PLAYLIST_NEW_SHAPE });
+  fakeServer.setFixture("GET", `/playlists/${PLAYLIST_ID_METADATA_ONLY}`, { body: PLAYLIST_METADATA_ONLY });
   fakeServer.setFixture("POST", "/api/token", {
     body: { access_token: "test-access-token", token_type: "Bearer", expires_in: 3600 },
   });
@@ -567,5 +612,41 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
     expect(params.get("applicationSection")).toBe("data");
     expect(params.get("reportUuid")).toBe(SPOTIFY_REPORT_UUID);
     expect(params.get("playlistId")).toBe(PLAYLIST_ID_OK);
+  });
+
+  it("playlist report renders tracks from the Feb-2026 `items.items[].item` response shape", async () => {
+    renderSpotifyReport(reportSpotifyPlaylist as Report, PLAYLIST_ID_NEWSHAPE);
+
+    await waitFor(
+      () => {
+        expect(
+          screen.getAllByText(PLAYLIST_NEW_SHAPE.name, { exact: false }).length,
+        ).toBeGreaterThan(0);
+        expect(
+          screen.getAllByText(NEW_SHAPE_FIRST_TRACK_LITERAL, { exact: false }).length,
+        ).toBeGreaterThan(0);
+      },
+      { timeout: 15000 },
+    );
+  });
+
+  it("playlist report tolerates a metadata-only response (no tracks/items) without a query failure", async () => {
+    renderSpotifyReport(reportSpotifyPlaylist as Report, PLAYLIST_ID_METADATA_ONLY);
+
+    await waitFor(
+      () => {
+        expect(
+          screen.getAllByText(METADATA_ONLY_NAME_LITERAL, { exact: false }).length,
+        ).toBeGreaterThan(0);
+      },
+      { timeout: 15000 },
+    );
+    // Tracks section falls back to an empty list — no failure dump, no error banner,
+    // and the jsonReportSection <pre> shows "[]" instead of a FailedTransformer payload.
+    expect(screen.queryByText(/found query failure/)).toBeNull();
+    expect(screen.queryByText(/Report query failed/)).toBeNull();
+    const preTexts = Array.from(document.querySelectorAll("pre")).map((e) => e.textContent);
+    expect(preTexts.join("\n")).not.toContain("FailedTransformer");
+    expect(preTexts).toContain("[]");
   });
 });

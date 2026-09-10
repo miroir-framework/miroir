@@ -473,6 +473,66 @@
                             }
                           }
                         }
+                      },
+                      {
+                        "type": "object",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "OAuth2 Authorization Code"
+                          }
+                        },
+                        "definition": {
+                          "type": {
+                            "type": "literal",
+                            "definition": "oauth2AuthorizationCode",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Type"
+                              }
+                            }
+                          },
+                          "tokenUrl": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Token URL"
+                              }
+                            }
+                          },
+                          "clientIdKey": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Client ID Secret Name"
+                              }
+                            }
+                          },
+                          "clientSecretKey": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Client Secret Secret Name"
+                              }
+                            }
+                          },
+                          "refreshTokenKey": {
+                            "type": "string",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Refresh Token Secret Name"
+                              }
+                            }
+                          },
+                          "scopes": {
+                            "type": "string",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Scopes"
+                              }
+                            }
+                          }
+                        }
                       }
                     ]
                   },
