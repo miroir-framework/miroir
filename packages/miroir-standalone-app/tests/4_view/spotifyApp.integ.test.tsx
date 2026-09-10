@@ -10,7 +10,7 @@
  * RUN_TEST=spotifyApp npm run testByFile -w miroir-standalone-app -- spotifyApp --profile emulatedServer-filesystem
  * ```
  */
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -31,6 +31,7 @@ import type {
 import {
   Action2Error,
   allowInsecureBaseUrlsForTests,
+  clearExternalServiceTokenCacheForTests,
   clearAllowedInsecureBaseUrlsForTests,
   clearSecrets,
   ConfigurationService,
@@ -236,12 +237,17 @@ async function overrideEndpointBaseUrl(baseUrl: string): Promise<void> {
   const existing = (endpoint as EndpointDefinition).definition as {
     externalService: Record<string, unknown>;
   };
+  const securityScheme = existing.externalService.securityScheme as Record<string, unknown> | undefined;
   const updated = {
     ...endpoint,
     definition: {
       externalService: {
         ...existing.externalService,
         baseUrl,
+        // Point the OAuth2 token exchange at the fake server too (production: accounts.spotify.com).
+        ...(securityScheme?.type === "oauth2ClientCredentials"
+          ? { securityScheme: { ...securityScheme, tokenUrl: `${baseUrl}/api/token` } }
+          : {}),
       },
     },
   } as EntityInstance;
@@ -277,17 +283,17 @@ async function overrideEndpointBaseUrl(baseUrl: string): Promise<void> {
   );
 }
 
-function playlistPageParams(reportUuid: string, playlistId: string) {
+function playlistPageParams(reportUuid: string, playlistId?: string) {
   return {
     application: selfApplicationSpotify.uuid,
     deploymentUuid: deployment_Spotify_DO_NO_USE.uuid,
     applicationSection: "data",
     reportUuid,
-    playlistId,
+    ...(playlistId !== undefined ? { playlistId } : {}),
   };
 }
 
-function renderSpotifyReport(reportDefinition: Report, playlistId: string) {
+function renderSpotifyReport(reportDefinition: Report, playlistId?: string) {
   const pageParams = playlistPageParams(reportDefinition.uuid, playlistId);
   vi.spyOn(RRDom, "useParams").mockReturnValue(pageParams);
   const search = new URLSearchParams({
@@ -296,7 +302,7 @@ function renderSpotifyReport(reportDefinition: Report, playlistId: string) {
     deploymentUuid: pageParams.deploymentUuid,
     applicationSection: pageParams.applicationSection,
     reportUuid: pageParams.reportUuid,
-    playlistId,
+    ...(playlistId !== undefined ? { playlistId } : {}),
   }).toString();
 
   return render(
@@ -343,7 +349,10 @@ beforeAll(async () => {
   fakeServer = await startFakeExternalServiceServer({
     [`GET /playlists/${PLAYLIST_ID_OK}`]: { body: PHASE7_PLAYLIST },
   });
-  registerSecrets({ spotifyUser: "test-token" });
+  registerSecrets({
+    spotifyClientId: "test-client-id",
+    spotifyClientSecret: "test-client-secret",
+  });
   allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
 
   miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, miroirConfig);
@@ -412,7 +421,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   fakeServer.receivedRequests.length = 0;
+  clearExternalServiceTokenCacheForTests();
   fakeServer.setFixture(`GET /playlists/${PLAYLIST_ID_OK}`, { body: PHASE7_PLAYLIST });
+  fakeServer.setFixture("POST", "/api/token", {
+    body: { access_token: "test-access-token", token_type: "Bearer", expires_in: 3600 },
+  });
 
   const initResult = await domainController.handleCompositeAction(
     resetAndinitializeDeploymentCompositeAction(
@@ -438,6 +451,7 @@ afterEach(() => {
 afterAll(async () => {
   clearSecrets();
   clearAllowedInsecureBaseUrlsForTests();
+  clearExternalServiceTokenCacheForTests();
   if (fakeServer) {
     await fakeServer.close();
   }
@@ -511,5 +525,47 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
       },
       { timeout: 15000 },
     );
+
+    // The playlistId input section seeds its field from the URL page params.
+    // (input id is the bare attribute name on the success path, the full
+    // "playlistInput.playlistId" path when the query failed — match by suffix.)
+    const playlistIdInput = document.querySelector<HTMLInputElement>(
+      'input[data-testid="miroirInput"][id$="playlistId"]',
+    );
+    expect(playlistIdInput, "playlistId input field must be rendered").not.toBeNull();
+    expect(playlistIdInput?.value).toBe(PLAYLIST_ID_OK);
+  });
+
+  it("playlist report without playlistId renders an input whose OK button writes playlistId into the report URL", async () => {
+    const mockNavigate = vi.fn();
+    vi.mocked(RRDom.useNavigate).mockReturnValue(mockNavigate as any);
+
+    renderSpotifyReport(reportSpotifyPlaylist as Report);
+
+    // The input section renders even though the query cannot resolve playlistId.
+    await waitFor(
+      () => {
+        expect(screen.getAllByText("Playlist ID", { exact: false }).length).toBeGreaterThan(0);
+      },
+      { timeout: 15000 },
+    );
+    const playlistIdInput = document.querySelector<HTMLInputElement>(
+      'input[data-testid="miroirInput"][id$="playlistId"]',
+    );
+    expect(playlistIdInput, "playlistId input field must be rendered").not.toBeNull();
+    expect(playlistIdInput?.value).toBe("");
+
+    fireEvent.change(playlistIdInput as HTMLInputElement, { target: { value: PLAYLIST_ID_OK } });
+    fireEvent.click(screen.getByRole("button", { name: "OK" }));
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    const url = mockNavigate.mock.calls[0]?.[0] as string;
+    const params = new URLSearchParams(url.slice(url.indexOf("?") + 1));
+    expect(params.get("page")).toBe("report");
+    expect(params.get("application")).toBe(selfApplicationSpotify.uuid);
+    expect(params.get("deploymentUuid")).toBe(deployment_Spotify_DO_NO_USE.uuid);
+    expect(params.get("applicationSection")).toBe("data");
+    expect(params.get("reportUuid")).toBe(SPOTIFY_REPORT_UUID);
+    expect(params.get("playlistId")).toBe(PLAYLIST_ID_OK);
   });
 });

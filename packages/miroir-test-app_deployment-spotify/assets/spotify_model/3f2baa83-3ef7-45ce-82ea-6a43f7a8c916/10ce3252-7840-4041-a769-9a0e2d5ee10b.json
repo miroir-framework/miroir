@@ -39,6 +39,39 @@
       "type": "list",
       "definition": [
         {
+          "type": "inputReportSection",
+          "definition": {
+            "label": "Playlist",
+            "inputPrefix": "playlistInput",
+            "urlParamFields": [
+              "playlistId"
+            ],
+            "inputMLSchema": {
+              "type": "object",
+              "tag": {
+                "value": {
+                  "defaultLabel": "Playlist",
+                  "display": {
+                    "objectWithoutHeader": true,
+                    "objectOrArrayWithoutFrame": true,
+                    "objectAttributesNoIndent": true
+                  }
+                }
+              },
+              "definition": {
+                "playlistId": {
+                  "type": "string",
+                  "tag": {
+                    "value": {
+                      "defaultLabel": "Playlist ID"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
           "type": "objectInstanceReportSection",
           "definition": {
             "label": "Playlist",

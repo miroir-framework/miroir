@@ -1,10 +1,14 @@
 /**
  * Opt-in live integration against the real Spotify Web API (D9).
- * Skipped unless LIVE_SPOTIFY_TOKEN is set. Never part of nonreg / CI.
+ * Uses the OAuth2 Client Credentials flow: the endpoint exchanges the client id/secret for an
+ * access token at accounts.spotify.com and caches it until expiry.
+ * Skipped unless LIVE_SPOTIFY_CLIENT_ID and LIVE_SPOTIFY_CLIENT_SECRET are set.
+ * Never part of nonreg / CI.
  *
  * Run:
  * ```bash
- * LIVE_SPOTIFY_TOKEN=<token> RUN_TEST=spotifyLive npm run testByFile -w miroir-standalone-app -- spotifyLive --profile emulatedServer-filesystem
+ * LIVE_SPOTIFY_CLIENT_ID=<id> LIVE_SPOTIFY_CLIENT_SECRET=<secret> \
+ *   RUN_TEST=spotifyLive npm run testByFile -w miroir-standalone-app -- spotifyLive --profile emulatedServer-filesystem
  * ```
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -53,10 +57,12 @@ import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 
-const LIVE_TOKEN = process.env.LIVE_SPOTIFY_TOKEN;
+const LIVE_CLIENT_ID = process.env.LIVE_SPOTIFY_CLIENT_ID;
+const LIVE_CLIENT_SECRET = process.env.LIVE_SPOTIFY_CLIENT_SECRET;
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
-  !!LIVE_TOKEN &&
+  !!LIVE_CLIENT_ID &&
+  !!LIVE_CLIENT_SECRET &&
   (!RUN_TEST || RUN_TEST === "spotifyLive" || RUN_TEST === "spotifyLive.integ.test");
 
 /** Spotify editorial playlist — public, stable id for live smoke. */
@@ -159,11 +165,14 @@ beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
     throw new Error("spotifyLive requires emulateServer: true (in-process server path).");
   }
-  if (!LIVE_TOKEN) {
+  if (!LIVE_CLIENT_ID || !LIVE_CLIENT_SECRET) {
     return;
   }
 
-  registerSecrets({ spotifyUser: LIVE_TOKEN });
+  registerSecrets({
+    spotifyClientId: LIVE_CLIENT_ID,
+    spotifyClientSecret: LIVE_CLIENT_SECRET,
+  });
 
   const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
     .emulateServer

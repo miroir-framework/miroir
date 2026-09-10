@@ -1327,6 +1327,7 @@ export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerA
 export {
   allowInsecureBaseUrlsForTests,
   clearAllowedInsecureBaseUrlsForTests,
+  clearExternalServiceTokenCacheForTests,
   executeExternalServiceOperation,
 } from "./4_services/ExternalServiceClient.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";

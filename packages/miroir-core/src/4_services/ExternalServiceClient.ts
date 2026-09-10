@@ -41,6 +41,14 @@ export function clearAllowedInsecureBaseUrlsForTests(): void {
   allowedInsecureBaseUrls.clear();
 }
 
+type ClientCredentialsTokenCacheEntry = { accessToken: string; expiresAtMs: number };
+const clientCredentialsTokenCache = new Map<string, ClientCredentialsTokenCacheEntry>();
+const TOKEN_EXPIRY_MARGIN_MS = 60_000;
+
+export function clearExternalServiceTokenCacheForTests(): void {
+  clientCredentialsTokenCache.clear();
+}
+
 function normalizeBaseUrl(baseUrl: string): string {
   return baseUrl.replace(/\/+$/, "");
 }
@@ -112,7 +120,10 @@ function assertBaseUrlAllowed(baseUrl: string): Action2Error | undefined {
   if (!insecure) {
     return undefined;
   }
-  if (allowedInsecureBaseUrls.has(normalizeBaseUrl(baseUrl))) {
+  if (
+    allowedInsecureBaseUrls.has(normalizeBaseUrl(baseUrl)) ||
+    allowedInsecureBaseUrls.has(parsed.origin)
+  ) {
     return undefined;
   }
   return externalServiceError(
@@ -250,6 +261,149 @@ function bindingStrings(bindings: Record<string, unknown>): Record<string, strin
   return next;
 }
 
+function toBase64(value: string): string {
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(value, "utf8").toString("base64");
+  }
+  return btoa(value);
+}
+
+type OAuth2ClientCredentialsScheme = {
+  type: "oauth2ClientCredentials";
+  tokenUrl: string;
+  clientIdKey: string;
+  clientSecretKey: string;
+  scopes?: string;
+};
+
+/**
+ * OAuth2 Client Credentials exchange (issue #267): POST grant_type=client_credentials to the
+ * scheme's tokenUrl with HTTP Basic client auth; cache the access token until expiry (60s margin).
+ * Never logs client id/secret or access tokens.
+ */
+async function resolveClientCredentialsToken(
+  scheme: OAuth2ClientCredentialsScheme,
+  actionType: string,
+  forceRefresh: boolean,
+): Promise<string | Action2Error> {
+  const cacheKey = `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}`;
+  const cached = clientCredentialsTokenCache.get(cacheKey);
+  if (!forceRefresh && cached && cached.expiresAtMs - TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
+    return cached.accessToken;
+  }
+
+  const tokenUrlError = assertBaseUrlAllowed(scheme.tokenUrl);
+  if (tokenUrlError) {
+    log.warn("external service call rejected: tokenUrl not allowed", { actionType });
+    return tokenUrlError;
+  }
+
+  let clientId: string;
+  let clientSecret: string;
+  try {
+    clientId = resolveSecret(scheme.clientIdKey);
+    clientSecret = resolveSecret(scheme.clientSecretKey);
+  } catch {
+    log.warn(
+      "external service call blocked: clientIdKey/clientSecretKey did not resolve to registered secrets (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
+      { actionType, clientIdKey: scheme.clientIdKey, clientSecretKey: scheme.clientSecretKey },
+    );
+    return externalServiceError("InvalidAction", "Unknown or empty secret");
+  }
+
+  const body = new URLSearchParams({ grant_type: "client_credentials" });
+  if (scheme.scopes) {
+    body.set("scope", scheme.scopes);
+  }
+  let response: Response;
+  try {
+    response = await fetch(scheme.tokenUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${toBase64(`${clientId}:${clientSecret}`)}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: body.toString(),
+    });
+  } catch {
+    log.warn("external service token request failed (network)", { actionType });
+    return externalServiceError(
+      "ExternalServiceUpstreamFailure",
+      "External service token request failed",
+    );
+  }
+  if (response.status < 200 || response.status >= 300) {
+    log.warn("external service token request failed", {
+      actionType,
+      httpStatus: response.status,
+      errorType: errorTypeForHttpStatus(response.status),
+    });
+    return externalServiceError(
+      errorTypeForHttpStatus(response.status),
+      `External service token endpoint returned HTTP ${response.status}: check the client id/secret`,
+      { httpStatus: response.status },
+    );
+  }
+
+  let payload: { access_token?: unknown; expires_in?: unknown };
+  try {
+    payload = await response.json();
+  } catch {
+    return externalServiceError(
+      "ExternalServiceUpstreamFailure",
+      "External service token endpoint returned invalid JSON",
+      { httpStatus: response.status },
+    );
+  }
+  if (typeof payload.access_token !== "string" || payload.access_token.length === 0) {
+    return externalServiceError(
+      "ExternalServiceUpstreamFailure",
+      "External service token endpoint response has no access_token",
+    );
+  }
+  const expiresInSec =
+    typeof payload.expires_in === "number" && payload.expires_in > 0 ? payload.expires_in : 3600;
+  clientCredentialsTokenCache.set(cacheKey, {
+    accessToken: payload.access_token,
+    expiresAtMs: Date.now() + expiresInSec * 1000,
+  });
+  log.debug("external service client-credentials token acquired", { actionType, expiresInSec });
+  return payload.access_token;
+}
+
+/**
+ * Builds the Authorization header value for the endpoint's security scheme.
+ * Returns undefined when the endpoint has no credentials configured.
+ */
+async function resolveAuthorizationHeader(
+  externalService: EndpointExternalService,
+  actionType: string,
+  forceTokenRefresh: boolean,
+): Promise<string | Action2Error | undefined> {
+  const scheme = externalService.securityScheme;
+  if (scheme && scheme.type === "oauth2ClientCredentials") {
+    const token = await resolveClientCredentialsToken(scheme, actionType, forceTokenRefresh);
+    if (token instanceof Action2Error) {
+      return token;
+    }
+    return `Bearer ${token}`;
+  }
+  if (externalService.credentialKey) {
+    let token: string;
+    try {
+      token = resolveSecret(externalService.credentialKey);
+    } catch {
+      log.warn(
+        "external service call blocked: credentialKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
+        { credentialKey: externalService.credentialKey, actionType },
+      );
+      return externalServiceError("InvalidAction", "Unknown or empty secret");
+    }
+    return `Bearer ${token}`;
+  }
+  return undefined;
+}
+
 export async function executeExternalServiceOperation(
   endpointInstance: EndpointDefinitionLike,
   actionType: string,
@@ -327,35 +481,54 @@ async function fetchExternalServiceOperation(
 
   const url = `${normalizeBaseUrl(externalService.baseUrl)}${pathOrError.startsWith("/") ? "" : "/"}${pathOrError}`;
   const headers: Record<string, string> = {};
-  if (externalService.credentialKey) {
-    let token: string;
-    try {
-      token = resolveSecret(externalService.credentialKey);
-    } catch {
-      log.warn(
-        "external service call blocked: credentialKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
-        { credentialKey: externalService.credentialKey, actionType },
-      );
-      return externalServiceError("InvalidAction", "Unknown or empty secret");
-    }
-    headers.Authorization = `Bearer ${token}`;
+  const authorization = await resolveAuthorizationHeader(externalService, actionType, false);
+  if (authorization instanceof Action2Error) {
+    return authorization;
+  }
+  if (authorization) {
+    headers.Authorization = authorization;
   }
 
   // Never log `headers` here: it contains the secret. The URL is built only from the materialized operation.
   log.info("external service call", { actionType, method: operation.method, url });
 
-  let response: Response;
-  try {
-    response = await fetch(url, {
-      method: operation.method,
-      headers,
+  const doFetch = async (): Promise<Response | Action2Error> => {
+    try {
+      return await fetch(url, {
+        method: operation.method,
+        headers,
+      });
+    } catch {
+      log.warn("external service request failed (network)", { actionType, url });
+      return externalServiceError(
+        "ExternalServiceUpstreamFailure",
+        "External service request failed",
+      );
+    }
+  };
+
+  let response = await doFetch();
+  if (response instanceof Action2Error) {
+    return response;
+  }
+  if (
+    response.status === 401 &&
+    externalService.securityScheme?.type === "oauth2ClientCredentials"
+  ) {
+    log.info("external service call got 401; refreshing client-credentials token and retrying once", {
+      actionType,
     });
-  } catch {
-    log.warn("external service request failed (network)", { actionType, url });
-    return externalServiceError(
-      "ExternalServiceUpstreamFailure",
-      "External service request failed",
-    );
+    const refreshedAuthorization = await resolveAuthorizationHeader(externalService, actionType, true);
+    if (refreshedAuthorization instanceof Action2Error) {
+      return refreshedAuthorization;
+    }
+    if (refreshedAuthorization) {
+      headers.Authorization = refreshedAuthorization;
+    }
+    response = await doFetch();
+    if (response instanceof Action2Error) {
+      return response;
+    }
   }
 
   if (response.status < 200 || response.status >= 300) {

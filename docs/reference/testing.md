@@ -150,7 +150,7 @@ PLATFORM files are the vitest tests that have **no MiroirTest equivalent**: CLI/
 
 `miroirCoreTransformers` is a **mixed** suite: many leaves are unit-safe; leaves with `integrationTestExpectedValue` need an integ session (runtime SQL / store). Other catalog suites are unit-safe unless they declare integ expectations.
 
-**External services (#267):** MiroirTest suite keys `externalServiceSync` (unit, `miroir-core` — `transformerTest` for `syncExternalServiceSchema`) and `externalServiceSyncExecute` (integration, `miroir-standalone-app` — lands synced operations + entity). End-to-end HTTP against a fake Spotify server is **PLATFORM** vitest (`externalServiceQuery`, `externalServiceGuards`, `externalServiceDispatch`, `externalServiceReport`, `spotifyApp` under `tests/3_controllers/` and `tests/4_view/`); nonreg step `externalServices-spotify`. Opt-in live Spotify: `tests/external-services/spotifyLive.integ.test.ts` (`LIVE_SPOTIFY_TOKEN`, not in nonreg).
+**External services (#267):** MiroirTest suite keys `externalServiceSync` (unit, `miroir-core` — `transformerTest` for `syncExternalServiceSchema`) and `externalServiceSyncExecute` (integration, `miroir-standalone-app` — lands synced operations + entity). End-to-end HTTP against a fake Spotify server is **PLATFORM** vitest (`externalServiceQuery`, `externalServiceGuards`, `externalServiceDispatch`, `externalServiceReport`, `spotifyApp` under `tests/3_controllers/` and `tests/4_view/`); nonreg step `externalServices-spotify`. Opt-in live Spotify: `tests/external-services/spotifyLive.integ.test.ts` (`LIVE_SPOTIFY_CLIENT_ID` + `LIVE_SPOTIFY_CLIENT_SECRET`, OAuth2 client-credentials exchange at accounts.spotify.com; not in nonreg).
 
 ---
 

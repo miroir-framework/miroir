@@ -8,14 +8,24 @@ import type { Action } from "./preprocessor-generated/miroirFundamentalType.js";
  * dependency on `1_core`.
  */
 
+export type EndpointSecurityScheme =
+  | {
+      type: "http";
+      scheme: string;
+      bearerFormat?: string;
+    }
+  | {
+      type: "oauth2ClientCredentials";
+      tokenUrl: string;
+      clientIdKey: string;
+      clientSecretKey: string;
+      scopes?: string;
+    };
+
 export type EndpointExternalService = {
   openApiDocument: string;
   baseUrl: string;
-  securityScheme: {
-    type: string;
-    scheme: string;
-    bearerFormat?: string;
-  };
+  securityScheme: EndpointSecurityScheme;
   credentialKey?: string;
   enabledOperations: string[];
   operations: Array<{

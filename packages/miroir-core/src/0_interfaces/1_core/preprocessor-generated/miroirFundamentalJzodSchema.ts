@@ -12313,6 +12313,19 @@ export const miroirFundamentalJzodSchema = {
                   "relativePath": "jzodElement"
                 },
                 "context": {}
+              },
+              "urlParamFields": {
+                "type": "array",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 4,
+                    "defaultLabel": "URL Param Fields"
+                  }
+                },
+                "definition": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -22212,39 +22225,103 @@ export const miroirFundamentalJzodSchema = {
                         }
                       },
                       "securityScheme": {
-                        "type": "object",
+                        "type": "union",
+                        "discriminator": "type",
                         "tag": {
                           "value": {
                             "defaultLabel": "Security Scheme"
                           }
                         },
-                        "definition": {
-                          "type": {
-                            "type": "string",
+                        "definition": [
+                          {
+                            "type": "object",
                             "tag": {
                               "value": {
-                                "defaultLabel": "Type"
+                                "defaultLabel": "HTTP Bearer"
+                              }
+                            },
+                            "definition": {
+                              "type": {
+                                "type": "literal",
+                                "definition": "http",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Type"
+                                  }
+                                }
+                              },
+                              "scheme": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Scheme"
+                                  }
+                                }
+                              },
+                              "bearerFormat": {
+                                "type": "string",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Bearer Format"
+                                  }
+                                }
                               }
                             }
                           },
-                          "scheme": {
-                            "type": "string",
+                          {
+                            "type": "object",
                             "tag": {
                               "value": {
-                                "defaultLabel": "Scheme"
+                                "defaultLabel": "OAuth2 Client Credentials"
                               }
-                            }
-                          },
-                          "bearerFormat": {
-                            "type": "string",
-                            "optional": true,
-                            "tag": {
-                              "value": {
-                                "defaultLabel": "Bearer Format"
+                            },
+                            "definition": {
+                              "type": {
+                                "type": "literal",
+                                "definition": "oauth2ClientCredentials",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Type"
+                                  }
+                                }
+                              },
+                              "tokenUrl": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Token URL"
+                                  }
+                                }
+                              },
+                              "clientIdKey": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Client ID Secret Name"
+                                  }
+                                }
+                              },
+                              "clientSecretKey": {
+                                "type": "string",
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Client Secret Secret Name"
+                                  }
+                                }
+                              },
+                              "scopes": {
+                                "type": "string",
+                                "optional": true,
+                                "tag": {
+                                  "value": {
+                                    "defaultLabel": "Scopes"
+                                  }
+                                }
                               }
                             }
                           }
-                        }
+                        ]
                       },
                       "credentialKey": {
                         "type": "string",

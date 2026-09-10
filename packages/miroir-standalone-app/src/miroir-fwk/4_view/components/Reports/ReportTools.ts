@@ -214,7 +214,7 @@ export const reportSectionsFormValue = (
       };
     }
     case "inputReportSection":  {
-      const queryParametersDefaultValue = reportSection.definition.inputMLSchema
+      let queryParametersDefaultValue = reportSection.definition.inputMLSchema
         ? getDefaultValueForJzodSchemaWithResolutionNonHook(
             "build",
             reportSection.definition.inputMLSchema,
@@ -233,6 +233,17 @@ export const reportSectionsFormValue = (
             // ReduxDeploymentsState,
           )
         : {};
+      // Seed URL-param-bound fields from the current page params so the input
+      // shows the value the query is running with (e.g. playlistId, #267).
+      const urlParamFields: string[] | undefined = reportSection.definition.urlParamFields;
+      if (urlParamFields && queryParametersDefaultValue && typeof queryParametersDefaultValue === "object") {
+        for (const field of urlParamFields) {
+          const pageValue = transformerParams?.[field];
+          if (pageValue !== undefined && pageValue !== null && pageValue !== "") {
+            queryParametersDefaultValue[field] = pageValue;
+          }
+        }
+      }
       return {
         [reportSection.definition.inputPrefix ?? reportSectionPath.join("_") + "_inputMLSchema"]: queryParametersDefaultValue,
       };

@@ -21,6 +21,7 @@ import {
   Action2Error,
   allowInsecureBaseUrlsForTests,
   clearAllowedInsecureBaseUrlsForTests,
+  clearExternalServiceTokenCacheForTests,
   clearSecrets,
   ConfigurationService,
   defaultMiroirModelEnvironment,
@@ -198,6 +199,7 @@ function testEndpointInstance(baseUrl: string): EndpointDefinition {
 function syntheticEndpoint(overrides: {
   baseUrl?: string;
   credentialKey?: string;
+  securityScheme?: Record<string, unknown>;
   enabledOperations?: string[];
   extraOperations?: Array<{ operationId: string; method: string; path: string }>;
 }): EndpointDefinition {
@@ -214,6 +216,10 @@ function syntheticEndpoint(overrides: {
   if (overrides.credentialKey !== undefined) {
     externalService.credentialKey = overrides.credentialKey;
   }
+  if (overrides.securityScheme !== undefined) {
+    externalService.securityScheme = overrides.securityScheme;
+    delete externalService.credentialKey;
+  }
   if (overrides.enabledOperations !== undefined) {
     externalService.enabledOperations = overrides.enabledOperations;
   }
@@ -223,6 +229,13 @@ function syntheticEndpoint(overrides: {
   ];
   return instance;
 }
+
+const CC_SCHEME = (tokenUrl: string) => ({
+  type: "oauth2ClientCredentials",
+  tokenUrl,
+  clientIdKey: "fakeClientId",
+  clientSecretKey: "fakeClientSecret",
+});
 
 function boxedGetPlaylistQuery(playlistId: string, actionType = "get-playlist") {
   return {
@@ -341,11 +354,13 @@ beforeAll(async () => {
 
 beforeEach(() => {
   fakeServer.receivedRequests.length = 0;
+  clearExternalServiceTokenCacheForTests();
 });
 
 afterAll(async () => {
   clearSecrets();
   clearAllowedInsecureBaseUrlsForTests();
+  clearExternalServiceTokenCacheForTests();
   if (fakeServer) {
     await fakeServer.close();
   }
@@ -519,6 +534,74 @@ describe.skipIf(!shouldRun).sequential("externalServiceGuards — operation allo
     );
     expect(result instanceof Action2Error, JSON.stringify(result)).toBe(true);
     expect(((result as Action2Error).errorMessage ?? "").toLowerCase()).toMatch(/unknown|not found|operation/);
+    expect(fakeServer.receivedRequests).toHaveLength(0);
+  });
+});
+
+describe.skipIf(!shouldRun).sequential("externalServiceGuards — oauth2ClientCredentials failures", () => {
+  it("unknown clientSecretKey fails closed before any fetch", async () => {
+    registerSecrets({ fakeClientId: "id-123" });
+    const result = await executeExternalServiceOperation(
+      syntheticEndpoint({
+        securityScheme: {
+          type: "oauth2ClientCredentials",
+          tokenUrl: `${fakeServer.baseUrl}/api/token`,
+          clientIdKey: "fakeClientId",
+          clientSecretKey: "does-not-exist",
+        },
+      }),
+      "get-playlist",
+      { playlist_id: PLAYLIST_ID_OK },
+    );
+    expect(result instanceof Action2Error, JSON.stringify(result)).toBe(true);
+    expect(((result as Action2Error).errorMessage ?? "").toLowerCase()).toMatch(/unknown|empty|secret/);
+    expect(fakeServer.receivedRequests).toHaveLength(0);
+  });
+
+  it("token endpoint non-2xx maps to an error mentioning the token endpoint", async () => {
+    registerSecrets({ fakeClientId: "id-123", fakeClientSecret: "secret-abc" });
+    fakeServer.setFixture("POST", "/api/token", {
+      status: 400,
+      body: { error: "invalid_client" },
+    });
+
+    const result = await executeExternalServiceOperation(
+      syntheticEndpoint({ securityScheme: CC_SCHEME(`${fakeServer.baseUrl}/api/token`) }),
+      "get-playlist",
+      { playlist_id: PLAYLIST_ID_OK },
+    );
+    expectActionError(result, "ExternalServiceUpstreamFailure", /token endpoint/i);
+    expect(fakeServer.receivedRequests).toHaveLength(1);
+    expect(fakeServer.receivedRequests[0].method).toBe("POST");
+    expect(fakeServer.receivedRequests[0].path).toBe("/api/token");
+  });
+
+  it("token endpoint response without access_token is an upstream failure", async () => {
+    registerSecrets({ fakeClientId: "id-123", fakeClientSecret: "secret-abc" });
+    fakeServer.setFixture("POST", "/api/token", {
+      status: 200,
+      body: { token_type: "Bearer" },
+    });
+
+    const result = await executeExternalServiceOperation(
+      syntheticEndpoint({ securityScheme: CC_SCHEME(`${fakeServer.baseUrl}/api/token`) }),
+      "get-playlist",
+      { playlist_id: PLAYLIST_ID_OK },
+    );
+    expectActionError(result, "ExternalServiceUpstreamFailure", /access_token/);
+    expect(fakeServer.receivedRequests).toHaveLength(1);
+  });
+
+  it("non-allowlisted loopback tokenUrl is rejected before any fetch (SSRF)", async () => {
+    registerSecrets({ fakeClientId: "id-123", fakeClientSecret: "secret-abc" });
+    const result = await executeExternalServiceOperation(
+      syntheticEndpoint({
+        securityScheme: CC_SCHEME("http://127.0.0.1:1/api/token"),
+      }),
+      "get-playlist",
+      { playlist_id: PLAYLIST_ID_OK },
+    );
+    expectActionError(result, "InvalidAction", /insecure|private|not allowed/i);
     expect(fakeServer.receivedRequests).toHaveLength(0);
   });
 });

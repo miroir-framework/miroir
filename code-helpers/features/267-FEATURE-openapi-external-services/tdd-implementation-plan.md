@@ -725,7 +725,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### 8.2 Opt-in live test (D9)
 
-- `packages/miroir-standalone-app/tests/external-services/spotifyLive.integ.test.ts`: `describe.skipIf(!process.env.LIVE_SPOTIFY_TOKEN)`; Slice 2-style boxed `extractorFromAction` against `https://api.spotify.com/v1` with `registerSecrets({ spotifyUser: LIVE_SPOTIFY_TOKEN })` and public playlist `37i9dQZF1DX0XUsuxWHRQd`; no env/header logging; not in nonreg.
+- `packages/miroir-standalone-app/tests/external-services/spotifyLive.integ.test.ts`: `describe.skipIf(!process.env.LIVE_SPOTIFY_TOKEN)`; Slice 2-style boxed `extractorFromAction` against `https://api.spotify.com/v1` with `registerSecrets({ spotifyUser: LIVE_SPOTIFY_TOKEN })` and public playlist `37i9dQZF1DX0XUsuxWHRQd`; no env/header logging; not in nonreg. **Superseded by Slice 9:** env vars are now `LIVE_SPOTIFY_CLIENT_ID` + `LIVE_SPOTIFY_CLIENT_SECRET` (client-credentials exchange).
 
 ### 8.3 Docs
 
@@ -736,6 +736,8 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 - Migrated all `#267` issue-dir vitest files to feature-named paths (layer dirs + `tests/external-services/` for live test); fixtures beside consumers (`3_controllers/fixtures/`, `4_view/fixtures/`); deleted `tests/**/issues/267-openapi-external-services/`. MiroirTest `externalServiceQuery` (uuid `008325cb-…`) not migrated — harness cannot start fake HTTP server; end-to-end query stays PLATFORM vitest (`externalServiceQuery.integ.test.ts`). Kept `tests/utils/fakeExternalServiceServer.ts`.
 
 ### 8.5 Tracer bullet (narrative)
+
+> **Superseded by Slice 9 "Live usage"** — the server now takes `--secret spotifyClientId=… --secret spotifyClientSecret=…` and performs the token exchange itself.
 
 1. Launch server: `node packages/miroir-server/release/index.js --secret spotifyUser=<token>`.
 2. Open the standalone app → Spotify deployment → playlist report URL with `&playlistId=<id>`.
@@ -748,7 +750,7 @@ Automated equivalent: `spotifyApp.integ.test.tsx` + `externalServiceQuery.integ.
 | Criterion | Proven by | Status |
 |---|---|---|
 | External service definable as Endpoint instance (raw doc + `credentialKey`), editable via generic editor | Slice 1 schema test + Slice 7 assets (`modelValidation`) | ✅ |
-| `--secret spotifyUser=<token>`; token never in repo/model/REST responses | Slice 2 secrets cycles + redaction tests; Slice 2 header assertion | ✅ |
+| `--secret spotifyUser=<token>`; token never in repo/model/REST responses | Slice 2 secrets cycles + redaction tests; Slice 2 header assertion; **Slice 9:** `--secret spotifyClientId/spotifyClientSecret` + client-credentials exchange | ✅ |
 | Sync transformer produces reviewable `compositeActionSequence`; executing it upserts operations + entity | `externalServiceSync` + `externalServiceSyncExecute` suites | ✅ |
 | Report at `?…&playlistId=<id>` displays playlist (name, owner, ≤100 tracks, total), server-fetched | Slice 5 + Slice 7 integ tests | ✅ |
 | External data read-only; non-GET not exposed | Slice 4 cycle 1; Slice 6 non-GET-skip assertion | ✅ |
@@ -775,3 +777,46 @@ npm run nonreg
 - Nonreg bundle is one `bash -c` step (id `externalServices-spotify`) rather than nine separate manifest rows — matches plan's single step id; differs from #246/#247 multi-step pattern.
 - `externalServiceHttpStoreSkip` lives in `miroir-core/tests/4_services/` (plan Slice 6 file was under standalone-app issue dir; nonreg task specified miroir-core).
 - **Nonreg (2026-09-10, snapshot 20260909T222025Z):** 52/54 passed. The 2 failures were mid-run artifacts of the live-run fixes landing while nonreg executed: `unit-264-deployment-access` (Dave's Spotify grant — removed; suite re-run green 99/99) and `unit-check-bare-console` (multi-line `console.log` in `server.ts` broke the allowlist line pattern — reformatted, guard green). `externalServices-spotify` step passed (269s). A final clean full run remains with the user.
+
+## Slice 9 — OAuth2 Client Credentials flow (live-run follow-up)
+
+**Status:** ✅ DONE
+
+**Why:** live-run debugging (2026-09-10) showed the static-bearer assumption broken in practice: the user passed their Spotify **client secret**, not a pre-minted access token (`Authorization: Bearer <client-secret>` → Spotify 401). Spotify access tokens also expire after 1h, making manual token minting untenable.
+
+### 9.1 Schema: `securityScheme` becomes a discriminated union
+
+- Endpoint mlSchema (Entity row `3d8da4d4-…` + EntityVersion mirror `e3c1cc69-…`): `securityScheme` is now a `union` with `discriminator: "type"`:
+  - `{ type: "http", scheme, bearerFormat? }` — unchanged static bearer
+  - `{ type: "oauth2ClientCredentials", tokenUrl, clientIdKey, clientSecretKey, scopes? }`
+- Rebuild: `npm run build -w miroir-test-app_deployment-miroir` then `npm run devBuild -w miroir-core`; hand-written `EndpointSecurityScheme` in `0_interfaces/1_core/endpointDefinition.ts` mirrors the union.
+
+### 9.2 Client: token exchange + cache + 401 retry
+
+- `ExternalServiceClient.resolveAuthorizationHeader` dispatches on scheme type. Client-credentials: POST `tokenUrl` with `Authorization: Basic base64(clientId:clientSecret)` and form body `grant_type=client_credentials` (+ optional `scope`); `clientIdKey`/`clientSecretKey` resolve named secrets from SecretStore exactly like `credentialKey`.
+- In-memory token cache keyed `tokenUrl|clientIdKey`, refreshed at `expires_in` minus a 60 s margin; `clearExternalServiceTokenCacheForTests()` exported for tests.
+- API 401 → drop cached token → re-exchange → retry once.
+- Fail-closed: unknown/empty secret names, tokenUrl SSRF (same `assertBaseUrlAllowed`; the test allowlist now also matches by origin so `tokenUrl` can sit on the fake server), token-endpoint non-2xx / invalid JSON / missing `access_token` — all clear `Action2Error`; secrets and tokens are never logged.
+
+### 9.3 Spotify app + tests
+
+- Spotify endpoint asset `0e5cb172-…`: scheme → `oauth2ClientCredentials` (`tokenUrl https://accounts.spotify.com/api/token`, keys `spotifyClientId`/`spotifyClientSecret`); `credentialKey` removed.
+- Live test env vars renamed: `LIVE_SPOTIFY_CLIENT_ID` + `LIVE_SPOTIFY_CLIENT_SECRET`.
+- Fake server (`tests/utils/fakeExternalServiceServer.ts`): records request bodies; fixtures support `sequence` (successive responses) and `setFixtureForAuth` (Authorization-header-specific matching).
+- New tests: `externalServiceQuery` CC describe (exchange→API call, cache reuse, 401→re-exchange→retry); `externalServiceGuards` CC describe (unknown `clientSecretKey`, token endpoint non-2xx, missing `access_token`, tokenUrl SSRF); `spotifyApp` overrides `tokenUrl` to the fake server alongside `baseUrl`.
+- **Infra fix:** `node_modules/miroir-test-app_deployment-spotify` was a stale directory copy (Sep 9) instead of the workspace symlink — tests imported yesterday's assets. Removed; `npm install` restored the symlink.
+
+### Live usage (replaces 8.5)
+
+1. Launch server: `node packages/miroir-server/release/index.js --secret spotifyClientId=<id> --secret spotifyClientSecret=<secret>`.
+2. Open the standalone app → Spotify deployment → playlist report URL with `&playlistId=<id>`.
+3. The server exchanges id/secret for an access token at accounts.spotify.com (cached ~1h), then calls `GET /v1/playlists/<id>`; on expiry a 401 triggers one re-exchange + retry.
+
+### Validation
+
+- `externalServiceQuery` 9/9, `externalServiceGuards` 21/21, `externalServiceReport` 5/5, `externalServiceDispatch` 13/13, `spotifyApp` 3/3; modelValidation: miroir 152, admin 47, library 181, spotify 7; tsc clean (miroir-core, miroir-standalone-app).
+
+### Post-slice live-run fixes folded in (2026-09-10, same branch)
+
+- Unresolved `getFromParameters` binding (missing `playlistId` page param) no longer lands as `[object Object]` in the URL: `executeExternalServiceOperation` rejects object-valued bindings with a clear `External service parameter "<name>" could not be resolved` error before any HTTP call (regression test in `externalServiceQuery`).
+- Report-level `playlistId` input: `inputReportSection` gained an optional `urlParamFields: string[]` (Report Entity + EntityVersion meta-model, types regenerated). `ReportInputSection` renders an **OK** button when declared; clicking it writes the named input values into the report URL search params (navigate) so the Slice 5 query-load seam re-runs the report query with the new pageParams. `ReportTools.reportSectionsFormValue` seeds those fields from the current pageParams. `ReportViewWithEditor` keeps rendering sections (plus an error banner) on query failure when the report declares such an input, so the field stays reachable. The Spotify playlist report declares `urlParamFields: ["playlistId"]` (`inputPrefix: "playlistInput"`). Tests: `spotifyApp` 4/4 (new OK-button navigation test + seeding assertion; `useNavigate` mocked, navigate URL asserted), `externalServiceReport` 5/5 (failure-dump behavior preserved for reports without the input), modelValidation miroir/admin/library/spotify all pass. Live: opening the playlist report without `playlistId` now shows the input instead of only the failure dump.

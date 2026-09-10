@@ -25,6 +25,7 @@ import {
   Action2Error,
   allowInsecureBaseUrlsForTests,
   clearAllowedInsecureBaseUrlsForTests,
+  clearExternalServiceTokenCacheForTests,
   clearSecrets,
   ConfigurationService,
   defaultMetaModelEnvironment,
@@ -95,6 +96,7 @@ const PLAYLIST_NAME_LITERAL = "Rock Classics";
 const PLAYLIST_ID_OK = "test-playlist-001";
 const PLAYLIST_ID_WRONG_TYPE = "test-playlist-wrong-type";
 const TEST_ENDPOINT_UUID = "c8f2a1b4-6d3e-4a91-9b07-2e5c8d1f4a63";
+const TEST_ENDPOINT_CC_UUID = "b7e3d2c1-5a4f-4e82-8c19-3d7b6a5e4f21";
 const ENDPOINT_ENTITY_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
@@ -213,7 +215,42 @@ function testEndpointInstance(baseUrl: string): EndpointDefinition {
   } as EndpointDefinition;
 }
 
-function boxedGetPlaylistQuery(playlistId: string) {
+function testClientCredentialsEndpointInstance(baseUrl: string): EndpointDefinition {
+  return {
+    uuid: TEST_ENDPOINT_CC_UUID,
+    parentName: "Endpoint",
+    parentUuid: ENDPOINT_ENTITY_UUID,
+    application: selfApplicationLibrary.uuid,
+    name: "FakeSpotifyClientCredentials",
+    version: "1",
+    description: "OAuth2 client-credentials tracer endpoint against the local fake server",
+    definition: {
+      externalService: {
+        openApiDocument:
+          '{"openapi":"3.0.0","info":{"title":"FakeSpotify","version":"1.0.0"},"paths":{}}',
+        baseUrl,
+        securityScheme: {
+          type: "oauth2ClientCredentials",
+          tokenUrl: `${baseUrl}/api/token`,
+          clientIdKey: "fakeClientId",
+          clientSecretKey: "fakeClientSecret",
+        },
+        enabledOperations: ["get-playlist"],
+        operations: [
+          {
+            operationId: "get-playlist",
+            method: "GET",
+            path: "/playlists/{playlist_id}",
+            parameterMappings: [{ name: "playlist_id", in: "path", required: true }],
+            responseSchema: PLAYLIST_RESPONSE_SCHEMA,
+          },
+        ],
+      },
+    },
+  } as EndpointDefinition;
+}
+
+function boxedGetPlaylistQuery(playlistId: string, endpointUuid: string = TEST_ENDPOINT_UUID) {
   return {
     actionType: "runBoxedQueryAction" as const,
     endpoint: QUERY_ENDPOINT,
@@ -227,7 +264,7 @@ function boxedGetPlaylistQuery(playlistId: string) {
         extractors: {
           playlist: {
             extractorOrCombinerType: "extractorFromAction",
-            endpointUuid: TEST_ENDPOINT_UUID,
+            endpointUuid,
             actionType: "get-playlist",
             parameterBindings: { playlist_id: playlistId },
           },
@@ -237,7 +274,7 @@ function boxedGetPlaylistQuery(playlistId: string) {
   };
 }
 
-async function commitTestEndpoint(): Promise<void> {
+async function commitEndpointInstance(endpointInstance: EndpointDefinition): Promise<void> {
   const createResult = await domainController.handleAction(
     {
       actionType: "createInstance",
@@ -245,7 +282,7 @@ async function commitTestEndpoint(): Promise<void> {
       payload: {
         application: selfApplicationLibrary.uuid,
         applicationSection: "model",
-        objects: [testEndpointInstance(fakeServer.baseUrl) as EntityInstance],
+        objects: [endpointInstance as EntityInstance],
       },
     },
     applicationDeploymentMap,
@@ -269,6 +306,10 @@ async function commitTestEndpoint(): Promise<void> {
   );
 }
 
+async function commitTestEndpoint(): Promise<void> {
+  await commitEndpointInstance(testEndpointInstance(fakeServer.baseUrl));
+}
+
 beforeAll(async () => {
   if (!miroirConfig.client.emulateServer) {
     throw new Error(
@@ -280,7 +321,11 @@ beforeAll(async () => {
     [`GET /playlists/${PLAYLIST_ID_OK}`]: { body: PLAYLIST_OK },
     [`GET /playlists/${PLAYLIST_ID_WRONG_TYPE}`]: { body: PLAYLIST_WRONG_TYPE },
   });
-  registerSecrets({ fakeSpotify: "test-token" });
+  registerSecrets({
+    fakeSpotify: "test-token",
+    fakeClientId: "id-123",
+    fakeClientSecret: "secret-abc",
+  });
   allowInsecureBaseUrlsForTests([fakeServer.baseUrl]);
 
   const session = new AppStackIntegrationTestSession(miroirConfig, {
@@ -300,6 +345,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   fakeServer.receivedRequests.length = 0;
+  clearExternalServiceTokenCacheForTests();
   await resetIntegTestbed({
     domainController,
     applicationDeploymentMap,
@@ -505,5 +551,100 @@ describe.skipIf(!shouldRun).sequential("externalServiceQuery — extractorFromAc
     expect(message).toContain("playlist_id");
     expect(message).toContain("playlistId");
     expect(fakeServer.receivedRequests).toHaveLength(0);
+  });
+});
+
+describe.skipIf(!shouldRun).sequential("externalServiceQuery — oauth2ClientCredentials flow", () => {
+  const EXPECTED_BASIC_AUTH = `Basic ${Buffer.from("id-123:secret-abc", "utf8").toString("base64")}`;
+
+  it("exchanges client id/secret for a token, then calls the API with it", async () => {
+    await commitEndpointInstance(testClientCredentialsEndpointInstance(fakeServer.baseUrl));
+    fakeServer.setFixture("POST", "/api/token", {
+      body: { access_token: "fake-access-token-1", token_type: "Bearer", expires_in: 3600 },
+    });
+
+    const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+      boxedGetPlaylistQuery(PLAYLIST_ID_OK, TEST_ENDPOINT_CC_UUID) as any,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+    );
+
+    expect(queryResult instanceof Action2Error, JSON.stringify(queryResult)).toBe(false);
+    const playlist = (queryResult as { returnedDomainElement: { playlist: { name: string } } })
+      .returnedDomainElement.playlist;
+    expect(playlist.name).toBe(PLAYLIST_NAME_LITERAL);
+
+    expect(fakeServer.receivedRequests).toHaveLength(2);
+    const [tokenRequest, apiRequest] = fakeServer.receivedRequests;
+    expect(tokenRequest.method).toBe("POST");
+    expect(tokenRequest.path).toBe("/api/token");
+    expect(tokenRequest.headers.authorization).toBe(EXPECTED_BASIC_AUTH);
+    expect(tokenRequest.headers["content-type"]).toBe("application/x-www-form-urlencoded");
+    expect(tokenRequest.body).toContain("grant_type=client_credentials");
+    expect(apiRequest.method).toBe("GET");
+    expect(apiRequest.path).toBe(`/playlists/${PLAYLIST_ID_OK}`);
+    expect(apiRequest.headers.authorization).toBe("Bearer fake-access-token-1");
+  });
+
+  it("caches the token across queries (no second exchange)", async () => {
+    await commitEndpointInstance(testClientCredentialsEndpointInstance(fakeServer.baseUrl));
+    fakeServer.setFixture("POST", "/api/token", {
+      body: { access_token: "fake-access-token-1", token_type: "Bearer", expires_in: 3600 },
+    });
+
+    for (let i = 0; i < 2; i++) {
+      const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+        boxedGetPlaylistQuery(PLAYLIST_ID_OK, TEST_ENDPOINT_CC_UUID) as any,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      );
+      expect(queryResult instanceof Action2Error, JSON.stringify(queryResult)).toBe(false);
+    }
+
+    const tokenRequests = fakeServer.receivedRequests.filter((r) => r.path === "/api/token");
+    const apiRequests = fakeServer.receivedRequests.filter((r) => r.path !== "/api/token");
+    expect(tokenRequests).toHaveLength(1);
+    expect(apiRequests).toHaveLength(2);
+    for (const request of apiRequests) {
+      expect(request.headers.authorization).toBe("Bearer fake-access-token-1");
+    }
+  });
+
+  it("401 drops the cached token, re-exchanges, and retries once", async () => {
+    await commitEndpointInstance(testClientCredentialsEndpointInstance(fakeServer.baseUrl));
+    fakeServer.setFixture("POST", "/api/token", {
+      sequence: [
+        { body: { access_token: "stale-token", token_type: "Bearer", expires_in: 3600 } },
+        { body: { access_token: "fresh-token", token_type: "Bearer", expires_in: 3600 } },
+      ],
+    });
+    fakeServer.setFixtureForAuth("GET", `/playlists/${PLAYLIST_ID_OK}`, "Bearer stale-token", {
+      status: 401,
+      body: { error: { status: 401, message: "The access token expired" } },
+    });
+    fakeServer.setFixtureForAuth("GET", `/playlists/${PLAYLIST_ID_OK}`, "Bearer fresh-token", {
+      body: PLAYLIST_OK,
+    });
+
+    const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
+      boxedGetPlaylistQuery(PLAYLIST_ID_OK, TEST_ENDPOINT_CC_UUID) as any,
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+    );
+
+    expect(queryResult instanceof Action2Error, JSON.stringify(queryResult)).toBe(false);
+    const playlist = (queryResult as { returnedDomainElement: { playlist: { name: string } } })
+      .returnedDomainElement.playlist;
+    expect(playlist.name).toBe(PLAYLIST_NAME_LITERAL);
+
+    const paths = fakeServer.receivedRequests.map((r) => `${r.method} ${r.path}`);
+    expect(paths).toEqual([
+      "POST /api/token",
+      `GET /playlists/${PLAYLIST_ID_OK}`,
+      "POST /api/token",
+      `GET /playlists/${PLAYLIST_ID_OK}`,
+    ]);
+    expect(fakeServer.receivedRequests[1].headers.authorization).toBe("Bearer stale-token");
+    expect(fakeServer.receivedRequests[3].headers.authorization).toBe("Bearer fresh-token");
   });
 });
