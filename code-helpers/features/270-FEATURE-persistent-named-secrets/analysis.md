@@ -11,7 +11,9 @@ Related: [#262 Application access](https://github.com/miroir-framework/miroir/is
 Key sources: [`SecretStore.ts`](../../../packages/miroir-core/src/4_services/SecretStore.ts) · [`parseServerArgs.ts`](../../../packages/miroir-core/src/4_services/parseServerArgs.ts) · [`ExternalServiceClient.ts`](../../../packages/miroir-core/src/4_services/ExternalServiceClient.ts) · [`AuthenticationPolicy.ts`](../../../packages/miroir-core/src/1_core/authentication/AuthenticationPolicy.ts) · [`redactCredentialSecrets.ts`](../../../packages/miroir-core/src/4_services/redactCredentialSecrets.ts) · [`server.ts`](../../../packages/miroir-server/src/server.ts) · [`RestServer.ts`](../../../packages/miroir-core/src/4_services/RestServer.ts) · [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts) · [`copilotRuntimeFactory.ts`](../../../packages/miroir-ai/src/runtime/copilotRuntimeFactory.ts) · [`MiroirUserCredential` entity](../../../packages/miroir-test-app_deployment-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/6c3ab489-1a36-4981-b5d0-bb3e02cfceed.json)
 
 **Document role:** analysis and architectural decision record.
-**Status:** analysis in progress — decisions confirmed with the user (2026-09-11). Implementation proceeds per `tdd-implementation-plan.md` (to be written).
+**Status:** decisions confirmed with the user (2026-09-11); revised after adversarial review ([`./adversarial-review.md`](./adversarial-review.md), R1–R11 applied). Implementation proceeds per `tdd-implementation-plan.md` (to be written).
+
+**Document history:** first draft committed on `270-FEATURE-persistent-named-secrets`. Adversarial review found two structural holes (name-keyed OAuth caches defeating D2-b; no D7 persistence channel) plus in-process `/secrets`, MCP response redaction, composite principal thread, testable startup home, migration/docs, and blast radius. Those are repaired below; product choices D1–D9 are unchanged.
 
 ---
 
@@ -44,7 +46,7 @@ Confirmed with the user (2026-09-11). ★ = accepted. Recommendations from the d
 | D5 | Who may set / rotate? | **D5-a. Dedicated action, not generic CRUD.** Process-scoped: any authenticated user until #219 C2 (D5-a2). User-scoped: **self only**. |
 | D6 | AI keys | **D6-a (tightened by D4-b).** Same named-secret store. `AI_*` **key** env vars are import aliases, not a standing launch channel. `AI_PROVIDER_TYPE` / `AI_MODEL` stay configuration. |
 | D7 | Rotated OAuth refresh tokens | **D7-a. Persist** back into the matching `MiroirSecret` row. |
-| D8 | Client cache / “server-only entity” | **No new platform flag.** Isolation = strip ciphertext + reject generic CRUD + dedicated write + decrypt only in the server process (same pattern as `passwordHash`). |
+| D8 | Client cache / “server-only entity” | **No new platform flag.** Isolation = strip ciphertext + reject generic CRUD + dedicated write + decrypt only in the server process (same pattern as `passwordHash`). **MCP tool responses** are redacted (R4) — today only MCP *logs* are. |
 | D9 | #267 D1 ExternalService split | **Do not split.** Endpoint still stores names only. |
 
 **Rationale:** login hashes are one-way and 1:1 with a user — useless for outbound API calls. The reusable #71 pattern is isolation (separate entity, dedicated write, strip on read, fail-closed CRUD). The reusable #267 pattern is named resolution (`resolveSecret`) and names-only on the endpoint. Persistence needs reversible crypto and a wrapping key that must not live in Admin. Per-user tokens fit the same entity via an optional owner; they do not belong on the Endpoint instance that replicates to every client cache.
@@ -101,6 +103,10 @@ No `MiroirUserCredential`-style EntityVersion row is required: Admin #71 entitie
 
 **Hatch on:** Alice with a user-scoped `spotifyRefreshToken` uses hers; Carol without a user row falls back to a process-scoped row if one exists (shared demo account) or fails closed.
 
+**OAuth caches must be principal-scoped (R1).** Today `oauth2AuthorizationCodeCacheKey` is `tokenUrl|clientIdKey|refreshTokenKey` — the **names** from the endpoint (`ExternalServiceClient.ts:387-389`). The access-token cache is probed **before** `resolveSecret` (`:400-404`). Spotify’s names are fixed, so Alice’s first call populates `oauth2TokenCache` (`:45`, write `:496-500`) and Carol’s call would return Alice’s access token for up to an hour. `rotatedRefreshTokens.get(scheme.refreshTokenKey)` (`:424`) has the same name-key defect. Target: every cache key includes `principal?.miroirUserUuid ?? "process"` (`oauth2TokenCache`, `rotatedRefreshTokens`, and the client-credentials cache at `:292`). The 401-retry path (`:659-675`) re-resolves with the **same** principal. Proof: two principals, same endpoint, distinct tokens, no cross-serving from a warm cache.
+
+`resolveSecret` must report which scope won (not a bare string — today’s `SecretStore.ts:14-23`) so D7 updates the correct row: e.g. `{ value, scope: "process" | "user", miroirUserUuid?: string }`. Value-based redaction (`redactRegisteredSecretValuesInString`, `SecretStore.ts:30-39`) must iterate **both** process and per-user maps.
+
 **#267 D1 revisit — closed without split.** The trigger was: endpoint instances replicate to every client cache, so they must not carry per-user credential *values*. This design keeps `clientIdKey` / `clientSecretKey` / `refreshTokenKey` as **names** on `externalService.securityScheme` (Spotify endpoint `0e5cb172-12ea-4467-8598-5889338ae454`). Values live on `MiroirSecret`. No `ExternalService` entity.
 
 Per-user **OAuth PKCE consent in the UI** is a non-goal: the user (or bootstrap import) supplies an already-issued refresh token.
@@ -136,6 +142,23 @@ Precedence: CLI > env. No ephemeral wrapping key: if any `MiroirSecret` row exis
 
 Wrapping-key rotation / re-encrypt of the table is a non-goal (re-import or dedicated later issue).
 
+### Migration / breaking changes (R7)
+
+D4 step 2 + D6 mean that **any** launch with `--secret`, `MIROIR_SECRET_*`, or `AI_OPENAI_KEY` / `AI_ANTHROPIC_KEY` / `AI_GOOGLE_KEY` / `AI_GITHUB_TOKEN` set — but no wrapping key — **fails startup**. Today those launches work (`getApiKey` reads `process.env` at request time).
+
+| First upgrade | Later launches |
+|---|---|
+| Set `MIROIR_SECRETS_MASTER_KEY` (or `--secrets-master-key`) **and** the existing `--secret` / `MIROIR_SECRET_*` / `AI_*` key env vars once | Drop named `--secret` / `MIROIR_SECRET_*` / `AI_*` **key** env vars; keep only the wrapping key (plus `AI_PROVIDER_TYPE` / `AI_MODEL` if used) |
+
+Docs / packaging that describe the old steady state and must change in the final slice:
+
+- `docs/reference/data-architecture-deployments.md` (~line 215: named launch-time `--secret` / `MIROIR_SECRET_*`)
+- `docs/reference/authentication.md` (~line 26: token-secret precedence now sits next to a second standing secret)
+- `docs/guides/build-it-yourself.md` (launch instructions)
+- `Dockerfile` / `docker-compose.yml` (server currently launched with no secret args; document `MIROIR_SECRETS_MASTER_KEY` as the one standing env knob)
+
+Live Spotify test (`spotifyLive.integ.test.ts`) uses `LIVE_SPOTIFY_CLIENT_ID` / `LIVE_SPOTIFY_CLIENT_SECRET` / `LIVE_SPOTIFY_REFRESH_TOKEN` via `registerSecrets` — **test hatch only**, not a D6 import alias; it may keep `registerSecrets` (R8).
+
 ### D4 — Launch surface after persistence
 
 **Status:** Accepted — D4-b. One standing launch secret: the wrapping key.
@@ -159,7 +182,11 @@ MIROIR_SECRETS_MASTER_KEY=<W> node packages/miroir-server/release/index.js
 MIROIR_SECRETS_MASTER_KEY=<W> node … --secret spotifyClientId=<id> --secret spotifyClientSecret=<s> --secret spotifyRefreshToken=<r>
 ```
 
-Startup sequence (server process, after Admin store is open — same moment as `loadAdminIdentityDirectory` in `server.ts:428-489`):
+**Testable home (R6).** The seven-step sequence is a `SecretsService` (or `secretsStartup.ts`) in `miroir-core` `4_services`: pure functions for import-set assembly (including D6 AI aliases), encrypt/decrypt, and a hydrate/import orchestrator that takes a minimal persistence interface. `server.ts` shrinks to wiring — the same reason #267 extracted `parseServerArgs` into `miroir-core` (`miroir-server` has no vitest suite). `--secrets-master-key` is parsed in `parseServerArgs` (unknown options currently throw, `parseServerArgs.ts:110-112`) and listed in `printUsageAndExit` (`server.ts:134-152`). The wrapping key is held on that service (module-level, never serialized).
+
+**When it runs.** `loadAdminIdentityDirectory` (`server.ts:428-489`, boxed query `:438-471`) is **per-request** (called at `:521`, `:631`, `:666`, and via `resolveGatedPrincipal` at `:500`), not a startup step. Hydrate runs **once** after the open-store loops (`server.ts:346-363` for Admin/Miroir, `:410-425` for discovered deployments).
+
+Startup sequence:
 
 1. Parse wrapping key and the **import set** (`--secret` / `MIROIR_SECRET_*`, plus AI key-env aliases — D6).
 2. If the import set is non-empty and the wrapping key is missing → fail startup.
@@ -192,9 +219,13 @@ Generic `createInstance` / `updateInstance` / `deleteInstance` / `deleteInstance
 | POST | `/secrets` | Bearer when hatch on | `{ name, value, scope: "process"\|"user" }` → `{ set: true }`. `scope: "user"` ignores any attempted owner other than the principal |
 | DELETE | `/secrets` | Bearer when hatch on | `{ name, scope: "process"\|"user" }` → `{ deleted: true }` |
 
-Hatch off: these routes follow the same “literal today” idea as #71 D4 for *new* routes — they still exist for tests/bootstrap, but production-with-hatch-off is not the product path. Prefer: hatch off → 404 or disabled `{ enabled: false }` on a `GET /secrets/status` is **not** required; keep the routes callable in tests (in-process) without a principal for **process** scope only; user scope requires a principal.
+Hatch off: keep the routes callable in tests without a principal for **process** scope only; user scope requires a principal.
 
-Dedicated UI: `?page=secrets` (same dispatcher pattern as `?page=login`, #71 D12). Generic Admin editor is not the secret UX. No menu item listing secret rows.
+**In-process test path (R3).** Most tests never start `miroir-server`. `RestClientStub` dispatches `handleAuthHttpRoute` for `/auth/*` (`RestClientStub.ts:74-91`, policy in `AuthenticationHttp.ts:30-91`) and `restServerDefaultHandlers` by method+url (`RestClientStub.ts:165-175`). An Express-only `app.post("/secrets")` in `server.ts` is invisible to emulated tests. The `/auth/change-password` precedent is **not** a persistence precedent in-process: `handleAuthHttpRoute` returns `{ changed: true, directory }` and the stub only swaps an in-memory directory (`RestClientStub.ts:81-88`); only the Express route persists via `domainController.handleAction(updateInstance)` (`server.ts:696-717`).
+
+Target: a process-agnostic `handleSecretsHttpRoute` in `miroir-core` (sibling of `handleAuthHttpRoute`), wired into **both** `server.ts` and `RestClientStub.call`. The write path **must persist** through the stub’s `serverDomainController` (`RestClientStub.ts:140-142`) with a dedicated `actionLabel` (e.g. `secrets.set`) that the extended mutation guard permits — departing from the change-password stub’s in-memory-only behavior. `AuthenticationHttp.ts` is a key source for the routing shape, not for the persist semantics.
+
+Dedicated UI: `?page=secrets` (same dispatcher pattern as `?page=login`, #71 D12). The form sends plaintext **once** over the same transport as `/auth/login` (HTTPS when certs exist; HTTP when they do not — `server.ts:834-849`; tests are HTTP). Generic Admin editor is not the secret UX. No menu item listing secret rows.
 
 ### D6 — AI keys
 
@@ -207,21 +238,34 @@ Dedicated UI: `?page=secrets` (same dispatcher pattern as `?page=login`, #71 D12
 | `AI_GOOGLE_KEY` | `aiGoogleKey` |
 | `AI_GITHUB_TOKEN` | `aiGithubToken` |
 
-`getApiKey` reads `resolveSecret(mappedName)` only (process-scoped). If an `AI_*` **key** env var is set at startup, it is part of the D4 import set (mapped name), then discarded. `AI_PROVIDER_TYPE`, `AI_MODEL`, `AI_BASE_URL` are **not** secrets — they stay env and/or `AiConfiguration` `8a36e922-c131-444a-8709-9c92e772b1ff` (entity description already says keys are env vars; this issue updates that sentence).
+`getApiKey` reads `resolveSecret(mappedName)` only (process-scoped). If an `AI_*` **key** env var is set at startup, it is part of the D4 import set (mapped name), then discarded. Error text today (`copilotRuntimeFactory.ts:38-42`, “Missing environment variable `AI_…`”) must say “missing secret `aiOpenaiKey`” (etc.), matching the ExternalServiceClient message rewrite. `AI_PROVIDER_TYPE`, `AI_MODEL`, `AI_BASE_URL` are **not** secrets — they stay env and/or `AiConfiguration` `8a36e922-c131-444a-8709-9c92e772b1ff` (entity description already says keys are env vars; this issue updates that sentence).
 
 `AiConfiguration.providerType` enum in the entity asset is `openai \| anthropic \| google` (no `github`); `copilotRuntimeFactory` already accepts `"github"`. Aligning that enum is in scope only if a slice touches the entity; otherwise leave it (runtime already works from env).
 
 ### D7 — Refresh-token rotation
 
-**Status:** Accepted — persist.
+**Status:** Accepted — persist. Mechanism named (R2).
 
-Today `rotatedRefreshTokens` (`ExternalServiceClient.ts:47`, write at `:488-489`) is memory-only; a restart after rotation requires a new `--secret`. After this issue: when the token endpoint returns a new `refresh_token`, encrypt and update the **same** `MiroirSecret` row that supplied the refresh token (user-scoped if resolved via principal, else process-scoped), then update `SecretStore`. Never log the value.
+Today `rotatedRefreshTokens` (`ExternalServiceClient.ts:47`, write at `:488`, log `:490-493`) is memory-only; a restart after rotation requires a new `--secret`. Rotation is detected inside `resolveAuthorizationCodeToken` (layer 4_services). That module has no store handle and must not import `DomainController` (layer 3 already imports it at `DomainController.ts:165` — a reverse import is a cycle).
+
+**Channel:** inject a `persistRotatedSecret` callback into `ExternalServiceClient` at startup (server wiring / test harness). The callback lives on a `SecretsService` in `miroir-core` `4_services` (R6) that already holds the wrapping key (module-level, set once, never serialized — same discipline as `processTokenSecret` in `AuthenticationPolicy.ts:157-170`). On rotation:
+
+1. `resolveSecret` has returned `{ value, scope, miroirUserUuid? }` for the refresh-token key.
+2. Provider returns a new `refresh_token`.
+3. `persistRotatedSecret({ name: refreshTokenKey, newValue, scope, miroirUserUuid })` encrypts with the held wrapping key, upserts **that** row (the one that supplied the token — process fallback updates the process row, not a user row), updates `SecretStore`, updates the principal-scoped `rotatedRefreshTokens` entry.
+4. `executeExternalServiceOperation` does not need to surface rotation on `Action2ReturnType`.
+
+Never log the value. If the wrapping key is unset at persist time, fail closed (do not keep the rotated token only in RAM as the durable source).
 
 ### D8 — No server-only entity flag
 
 **Status:** Accepted — reuse the credential isolation pattern, do not add a platform `server-only` flag (#193).
 
-Ciphertext may sit on the server filesystem store as Admin JSON (encrypted). REST / MCP / query results strip `ciphertext` the same way `passwordHash` is stripped (`redactCredentialSecretsFromValue` in `redactCredentialSecrets.ts:26-30`, keyed on `parentUuid === ENTITY_MIROIR_USER_CREDENTIAL_UUID`). Extend that strip to `MiroirSecret.ciphertext`. Client local cache filled via REST therefore never holds the blob. Server hydrate reads the persistence store directly (`queryExecutionStrategy: "storage"`, same as `loadAdminIdentityDirectory`).
+Ciphertext may sit on the server filesystem store as Admin JSON (encrypted). REST / query results strip `ciphertext` the same way `passwordHash` is stripped (`redactCredentialSecretsFromValue` in `redactCredentialSecrets.ts:26-30`, keyed on `parentUuid === ENTITY_MIROIR_USER_CREDENTIAL_UUID`). Extend that strip to `MiroirSecret.ciphertext`. Client local cache filled via REST therefore never holds the blob. Server hydrate reads the persistence store directly (`queryExecutionStrategy: "storage"`).
+
+**MCP tool responses (R4).** The live redactor is applied to MCP **logs** (`mcpHandlersForEndpoint.ts:215`, `:250`, `:279`) but **not** to MCP tool **responses**: success serializes raw `returnedDomainElement` (`:286-295`) and errors serialize raw `errorContext` (`:299-317`). Today an MCP `getInstances` on Admin returns `passwordHash`; after #270 the same call would return `ciphertext`. This issue **adds the redactor on both MCP response branches** and thereby also closes the pre-existing `passwordHash`-via-MCP exposure. MCP wrapping-key hydrate / identity remains #263 (non-goal).
+
+**CRUD guard reach (R11).** `assertCredentialInstanceMutationAllowed` fires in `handleInstanceAction` (`DomainController.ts:1065`) and the CRUD REST handler (`RestServer.ts:276-287`). Two paths bypass it today: `transactionalInstanceAction` (`:3484-3506`) and commit replay (`:2049-2088`). Those are not remotely reachable (`restActionHandler` default-throws, `RestServer.ts:469-473`; InstanceEndpoint exposes only plain actions). Extending the guard is sufficient for now; record the transactional/commit-replay bypass as known defense-in-depth debt so a future remote transactional path does not silently skip the secret guard.
 
 ### D9 — Do not split ExternalService
 
@@ -255,7 +299,7 @@ Ciphertext may sit on the server filesystem store as Admin JSON (encrypted). RES
 
 ## 3. Current state
 
-Facts below were enumerated from Admin JSON assets (Python listing) and read from the cited functions. `graphify-out/graph.json` is absent in this workspace.
+Facts below were enumerated from Admin JSON assets (Python listing) and read from the cited functions. `graphify-out/graph.json` **exists** in this workspace (AGENTS.md prefers `graphify query`; this analysis still enumerated Admin JSON programmatically because the secret/password inventory is asset-level).
 
 ### 3.1 Three secret channels + login (misaligned with a single store)
 
@@ -265,7 +309,7 @@ Facts below were enumerated from Admin JSON assets (Python listing) and read fro
 | External APIs (#267 D4) | `--secret name=value` / `MIROIR_SECRET_<NAME>` → module-level `SecretStore` | Yes | Process memory only. Endpoints store **names** |
 | AI (#193) | `AI_GITHUB_TOKEN` / `AI_OPENAI_KEY` / `AI_ANTHROPIC_KEY` / `AI_GOOGLE_KEY` via `process.env` in `getApiKey` (`copilotRuntimeFactory.ts:29-45`) | Yes | Env only. `AiConfiguration` has **no** key field |
 
-`SecretStore` (`SecretStore.ts:6-27`) is a `Map<string, string>` with `registerSecrets` / `resolveSecret` / `clearSecrets`. No persistence, no owner, no iteration API. `resolveSecret` fails closed on unknown/empty without listing keys.
+`SecretStore` (`SecretStore.ts:6-27`) is a `Map<string, string>` with `registerSecrets` / `resolveSecret` / `clearSecrets`. No persistence, no owner. A fourth export, `redactRegisteredSecretValuesInString` (`:30-39`), iterates **values** for redaction — the per-user map must join that walk. `resolveSecret` fails closed on unknown/empty without listing keys.
 
 `parseServerArgs` (`parseServerArgs.ts:73-116`): env `MIROIR_SECRET_*` first, then repeatable `--secret name=value` (CLI wins). `server.ts:169` calls `registerSecrets(parsed.secrets)` and logs **names only** (`server.ts:184-187`).
 
@@ -318,9 +362,9 @@ Admin menu `dd168e5a-2a21-4d2d-a443-032c6d15eb22` (complexMenu section `admin`) 
 
 No Credentials item, no Secrets item. Users + Rights carry `menuItemScope: "data"`; the other six items have **no** `menuItemScope`.
 
-`ALWAYS_ALLOW_APPLICATION_TARGETS` (`AccessPolicy.ts:36-38`): Admin `55af124e-…` and Miroir `360fcf1f-…` for every authenticated user. Carol can `getInstances` Admin data. Isolation of secrets cannot rely on “only some users can open Admin.”
+`ALWAYS_ALLOW_APPLICATION_TARGETS` (`AccessPolicy.ts:36-39`): Admin `55af124e-…` and Miroir `360fcf1f-…` for every authenticated user. Carol can `getInstances` Admin data. Isolation of secrets cannot rely on “only some users can open Admin.”
 
-Server reads the identity directory with a boxed query, `queryExecutionStrategy: "storage"` (`server.ts:438-468`) — the hydrate path for `MiroirSecret` must be the same class of read (persistence store, not client cache).
+Server reads the identity directory with a boxed query, `queryExecutionStrategy: "storage"` (`server.ts:438-471`) — the hydrate path for `MiroirSecret` must be the same **class** of read (persistence store, not client cache), but it runs once at startup after open-store, not inside this per-request helper.
 
 ### 3.4 External-service consumers (aligned for names; misaligned for persistence and principal)
 
@@ -336,7 +380,9 @@ Spotify endpoint `0e5cb172-12ea-4467-8598-5889338ae454`, `securityScheme.type: "
 
 Error text still says “restart the server with `--secret`” (`:311`, `:419`, `:431`, `:541`).
 
-`rotatedRefreshTokens` (`:47`) is in-memory; rotation write (`:488-489`) is not persisted.
+`rotatedRefreshTokens` (`:47`) is in-memory; rotation write is `:488` (log `:490-493`), not persisted.
+
+`oauth2TokenCache` / `oauth2AuthorizationCodeCacheKey` (`:45`, `:387-389`) are keyed by secret **names**, not principal — D2-b is defeated on a warm cache until R1.
 
 `executeExternalServiceOperation(endpointInstance, actionType, bindings)` — **no principal argument**.
 
@@ -352,17 +398,22 @@ The Spotify report path is **`POST /query`**, not `POST /action`:
 - `handleBoxedExtractorOrQueryAction` / `executeBoxedExtractorOrQueryAction` (`DomainController.ts:823-849`) take **no** principal.
 - `resolveExtractorFromActionInBoxedQuery` (`DomainController.ts:3221-3264`) calls `executeExternalServiceOperation` **without** a principal.
 
-`handleApplicationAction` (local branch, `DomainController.ts:3037-3044`) likewise calls `executeExternalServiceOperation` without a principal, even though `handleAction` received one.
+`handleAction` does **not** forward `principal` to `handleApplicationAction` (`DomainController.ts:2970-2976`). `handleApplicationAction`’s signature has no principal (`:2989-2995`); it only **logs** that `handleAction` received one (`:2918-2923`). The local-branch `executeExternalServiceOperation` call (`:3037-3044`) is therefore principal-less.
+
+`handleQueryTemplateActionForServerONLY` (`DomainController.ts:996-1025`) goes straight to the persistence store and **cannot** host `extractorFromAction` (store runners hard-error). Only `POST /query` needs the principal on the REST query path. `/queryTemplate` also drops `params.authPrincipal` (`RestServer.ts:563-567`) — harmless today.
+
+**Composite path (R5).** `executeCompositeRunBoxedQueryAction` calls `handleBoxedExtractorOrQueryAction` with no principal (`DomainController.ts:4499-4513`), reachable from `handleActionInternal` (`:3521`), composite templates (`:3654`, `:3959`, `:4752`), and in-process MCP composite tools (`mcpHandlersForEndpoint.ts:273` → `handleAction`). A composite boxed query with `extractorFromAction` would silently resolve process-scope only unless this hop is threaded.
 
 **Truth table (today):**
 
 | Path | Principal extracted? | Reaches `executeExternalServiceOperation`? |
 |---|---|---|
-| `POST /action` (hatch on) | Yes (`authPrincipal` on params) | **No** — dropped at the `executeExternalServiceOperation` call |
+| `POST /action` (hatch on) | Yes (`authPrincipal` on params → `handleAction`) | **No** — `handleAction` does not pass it into `handleApplicationAction` |
 | `POST /query` (hatch on) | Yes (on params) | **No** — `queryActionHandler` never forwards it |
+| Composite boxed query (hatch on) | Yes (if the outer `handleAction` got it) | **No** — `executeCompositeRunBoxedQueryAction` drops it |
 | Hatch off | No | N/A — process-scoped `registerSecrets` only |
 
-D2-b cannot work until principal is threaded: `queryActionHandler` → `handleBoxedExtractorOrQueryAction` → `resolveExtractorFromActionInBoxedQuery` → `executeExternalServiceOperation` → `resolveAuthorizationHeader` → `resolveSecret(name, principal)`. Same for the `handleApplicationAction` local branch.
+D2-b cannot work until principal is threaded through the inventory in §5.
 
 ### 3.6 Redaction (aligned for hashes + registered values; must learn ciphertext)
 
@@ -372,7 +423,7 @@ A **second** `redactCredentialSecretsFromValue` in `AuthenticationPolicy.ts:445-
 
 ### 3.7 AI runtime (misaligned with SecretStore)
 
-`getApiKey` reads `process.env` only (`copilotRuntimeFactory.ts:29-45`). `getDefaultRuntimeConfig` reads `AI_PROVIDER_TYPE` + `AI_MODEL` (`:153-165`). CopilotKit is gated by the same Bearer as REST when auth is on (`docs/reference/authentication.md`). Keys never reach the browser today — keep that.
+`getApiKey` reads `process.env` only (`copilotRuntimeFactory.ts:29-45`; env map `:30-35`). `getDefaultRuntimeConfig` reads `AI_PROVIDER_TYPE` + `AI_MODEL` (`:153-165`). CopilotKit is gated by the same Bearer as REST when auth is on (`docs/reference/authentication.md`). Keys never reach the browser today — keep that.
 
 ### 3.8 Token wrapping-key pitfall (aligned as a negative example)
 
@@ -385,35 +436,54 @@ A **second** `redactCredentialSecretsFromValue` in `AuthenticationPolicy.ts:445-
 | Piece | Location |
 |-------|----------|
 | Isolation pattern (separate entity, dedicated write, strip, fail-closed CRUD) | `MiroirUserCredential` `6c3ab489-…`; `assertCredentialInstanceMutationAllowed`; `POST /auth/change-password` |
-| Named resolution | `SecretStore.resolveSecret` / `registerSecrets` / `clearSecrets` |
+| HTTP route shape (not persist semantics) | `handleAuthHttpRoute` / `AuthenticationHttp.ts` → sibling `handleSecretsHttpRoute` |
+| Named resolution | `SecretStore.resolveSecret` / `registerSecrets` / `clearSecrets` / `redactRegisteredSecretValuesInString` |
 | CLI parse to extend | `parseServerArgs` (`--secret` becomes import set; add `--secrets-master-key`) |
-| Redaction | `redactCredentialSecrets.ts` (extend for `ciphertext` + `MiroirSecret` parentUuid) |
-| Admin persistence read | `loadAdminIdentityDirectory` boxed query (`server.ts:428-489`) |
+| Redaction | `redactCredentialSecrets.ts` (extend for `ciphertext` + `MiroirSecret` parentUuid); **also** MCP tool response branches (`mcpHandlersForEndpoint.ts:286-317`) |
+| Admin persistence read | boxed query `queryExecutionStrategy: "storage"`; hydrate after open-store (`server.ts:346-363`) |
 | Principal type | `AuthPrincipal`; `handleAction` last arg; `authPrincipal` on handler params |
 | Endpoint names-only scheme | Spotify `0e5cb172-…` `oauth2AuthorizationCode` keys |
-| External call | `executeExternalServiceOperation` / `resolveAuthorizationHeader` |
+| External call | `executeExternalServiceOperation` / `resolveAuthorizationHeader` / `oauth2TokenCache` (must become principal-scoped) |
 | Login UI dispatcher pattern | `?page=login` → same for `?page=secrets` |
 | AES / scrypt via Node `crypto` | `AuthenticationPolicy.ts` (no new deps) |
+| Wrapping-key hold pattern | `processTokenSecret` / `setProcessTokenSecret` (`AuthenticationPolicy.ts:157-170`) — do **not** reuse that secret |
 | Admin always-allow (constraint) | `ALWAYS_ALLOW_APPLICATION_TARGETS` |
 | AI key map | `copilotRuntimeFactory.ts:30-35` |
+| Uuid constant home | `ENTITY_MIROIR_USER_CREDENTIAL_UUID` in `AuthenticationPolicy.ts:352` → sibling `ENTITY_MIROIR_SECRET_UUID` |
 
 ## 5. Target design (summary)
 
 **Model.** Admin Entity `MiroirSecret` `a96856df-…` as in D1. No reports, no menu. Seed: **no** production secret rows in git. Tests use wrapping key `test-secrets-master` (documented, like `alice-dev`) and either in-process `registerSecrets` or ciphertext produced in the test.
 
-**Launch.** Wrapping key required iff import set non-empty **or** any `MiroirSecret` row exists. Import set (optional) upserts process-scoped rows then is discarded. Hydrate `SecretStore` from decrypted rows: process map + `userUuid:name` map. `resolveSecret(name, principal?)` as D2.
+**Launch.** Wrapping key required iff import set non-empty **or** any `MiroirSecret` row exists. Import set (optional) upserts process-scoped rows then is discarded. `SecretsService` hydrates `SecretStore` from decrypted rows after open-store: process map + `userUuid:name` map. `resolveSecret(name, principal?)` returns `{ value, scope, miroirUserUuid? }` (D2).
 
-**Write.** `POST /secrets` / `DELETE /secrets` / `GET /secrets` (D5). Generic CRUD rejected. `?page=secrets` form sends plaintext **once** over HTTPS; server encrypts; response is `{ set: true }` only.
+**Write.** `POST /secrets` / `DELETE /secrets` / `GET /secrets` via `handleSecretsHttpRoute` (D5, R3). Generic CRUD rejected (`assertSecretInstanceMutationAllowed`, dedicated `actionLabel` `secrets.set` / `secrets.delete`). `?page=secrets` form sends plaintext once over the same transport as `/auth/login`; response is `{ set: true }` only.
 
-**Read (server).** Boxed query `extractorInstancesByEntity` on `MiroirSecret` with `queryExecutionStrategy: "storage"`, then decrypt. Never return `ciphertext` on REST.
+**Read (server).** Boxed query `extractorInstancesByEntity` on `MiroirSecret` with `queryExecutionStrategy: "storage"`, then decrypt. Never return `ciphertext` on REST or MCP tool responses.
 
-**Consume.** `ExternalServiceClient` takes optional `AuthPrincipal`. Process names (`spotifyClientId`, `spotifyClientSecret`, AI keys) resolve process-scoped. `refreshTokenKey` prefers user-scoped then process-scoped. Rotation persists (D7). Fail-closed messages stop saying “restart with `--secret`”; they say “missing secret `name` (process or user scope).”
+**Consume.** `ExternalServiceClient` takes optional `AuthPrincipal`. OAuth caches are principal-scoped (R1). Process names (`spotifyClientId`, `spotifyClientSecret`, AI keys) resolve process-scoped. `refreshTokenKey` prefers user-scoped then process-scoped. Rotation persists via injected `persistRotatedSecret` (D7, R2). Fail-closed messages say “missing secret `name` (process or user scope).”
 
 **AI.** Startup import aliases (D6) + `getApiKey` → `resolveSecret`. Provider/model stay env / `AiConfiguration`.
 
-**Principal thread (required for D2-b).** Add optional `principal` to `handleBoxedExtractorOrQueryAction` / `executeBoxedExtractorOrQueryAction` / `resolveExtractorFromActionInBoxedQuery` / `executeExternalServiceOperation`. `queryActionHandler` (and the query-template server path if it can host `extractorFromAction`) forwards `params.authPrincipal`. `handleApplicationAction` forwards the `handleAction` principal it already received.
+**Principal thread (required for D2-b).** Add optional `principal` end-to-end:
 
-**MCP.** Out of scope: the MCP process does not gain wrapping-key hydrate here. Same documented hole as #267 R11 / #263.
+`handleAction` → `handleApplicationAction` → `handleCompositeActionTemplate` / `handleCompositeAction` → `executeCompositeRunBoxedQueryAction` → `handleBoxedExtractorOrQueryAction` / `executeBoxedExtractorOrQueryAction` / `resolveExtractorFromActionInBoxedQuery` → `executeExternalServiceOperation` → `resolveAuthorizationHeader` / `resolveAuthorizationCodeToken` → `resolveSecret(name, principal)`.
+
+`queryActionHandler` forwards `params.authPrincipal` into `handleBoxedExtractorOrQueryAction`. `/queryTemplate` does **not** host `extractorFromAction` (fails closed in store runners); do not thread principal there.
+
+**MCP.** Out of scope for wrapping-key hydrate / identity (#263). **In** scope: redact MCP tool **responses** (R4).
+
+### 5.1 Blast radius (R8)
+
+Adding the 10th Admin entity is more than “new JSON + no menu item”:
+
+1. **Test-asset copies.** Three packages carry partial `admin_model` copies with only **5 of 9** entities (AdminApplication, Deployment, bundle, ViewParams, ApplicationVersion — no MiroirUser / Credential / Right / AiConfiguration): `packages/miroir-core/tests/test_assets/admin_model/16dbfe28-…/`, `packages/miroir-mcp/tests/assets/admin_model/16dbfe28-…/`, `packages/miroir-standalone-app/tests/assets/admin_model/16dbfe28-…/`. Any emulated-filesystem test that needs `MiroirSecret` rows must add the entity (and seed data) to the copies its config actually reads. Tests that only `registerSecrets` do not need the entity in those copies.
+
+2. **Filesystem-driven model validation.** `packages/miroir-test-app_deployment-admin/tests/modelValidation.unit.test.ts` builds its suite from `buildModelValidationGroupsFromFilesystem` over `admin_model` + `admin_data` — the new entity JSON is **auto-included**. A malformed `mlSchema` fails that suite immediately.
+
+3. **Export convention.** `entityMiroirUserCredential` is exported from `packages/miroir-test-app_deployment-admin/index.ts:9`; `AiConfiguration` is not. Export `entityMiroirSecret` for symmetry with credentials. The uuid constant `ENTITY_MIROIR_SECRET_UUID` lives next to `ENTITY_MIROIR_USER_CREDENTIAL_UUID` in `AuthenticationPolicy.ts` (or on `SecretsService` if that deepens the module — one home, not two).
+
+4. **Live-test env channel.** `spotifyLive.integ.test.ts` registers `LIVE_SPOTIFY_*` via `registerSecrets`. Test hatch only; not a D6 import alias; may keep `registerSecrets`.
 
 ---
 
