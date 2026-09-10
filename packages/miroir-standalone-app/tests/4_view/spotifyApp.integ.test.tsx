@@ -16,7 +16,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import React, { useEffect } from "react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, type Params } from "react-router-dom";
 import * as RRDom from "react-router-dom";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -44,6 +44,7 @@ import {
   jzodTypeCheck,
   LoggerInterface,
   LoggerOptions,
+  type MiroirConfigForClientStub,
   MiroirActivityTracker,
   MiroirContext,
   miroirCoreStartup,
@@ -58,7 +59,7 @@ import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
-import { deployment_Admin, deployment_Miroir, deployment_Spotify } from "miroir-test-app_deployment-admin";
+import { deployment_Admin, deployment_Miroir } from "miroir-test-app_deployment-admin";
 import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
@@ -81,6 +82,7 @@ import { ReportViewWithEditor } from "../../src/miroir-fwk/4_view/components/Rep
 import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
 import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
 import { miroirAppStartup } from "../../src/startup.js";
+import { ReportUrlParamKeys } from "../../src/constants.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
@@ -203,6 +205,10 @@ if (!miroirConfig) {
 if (!importedLoggerOptions) {
   throw new Error("importedLoggerOptions is undefined");
 }
+if (!miroirConfig.client.emulateServer) {
+  throw new Error("spotifyApp requires emulateServer: true (in-process server path).");
+}
+const emulatedClient: MiroirConfigForClientStub = miroirConfig.client;
 const loggerOptions: LoggerOptions = importedLoggerOptions;
 const fileName = "spotifyApp.integ.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
@@ -230,15 +236,11 @@ MiroirLoggerFactory.startRegisteredLoggers(
   loggerOptions,
 );
 
-const spotifyDeploymentStorageConfiguration: StoreUnitConfiguration | undefined = miroirConfig
-  .client.emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[SPOTIFY_DEPLOYMENT_UUID]
-  : miroirConfig.client.serverConfig?.storeSectionConfiguration?.[SPOTIFY_DEPLOYMENT_UUID];
+const spotifyDeploymentStorageConfiguration: StoreUnitConfiguration | undefined =
+  emulatedClient.deploymentStorageConfig[SPOTIFY_DEPLOYMENT_UUID];
 
-const adminDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
-  .emulateServer
-  ? miroirConfig.client.deploymentStorageConfig[deployment_Admin.uuid]
-  : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Admin.uuid];
+const adminDeploymentStorageConfiguration: StoreUnitConfiguration =
+  emulatedClient.deploymentStorageConfig[deployment_Admin.uuid];
 
 const adminDeployment: Deployment = {
   ...deployment_Admin,
@@ -278,11 +280,7 @@ let miroirContext: MiroirContext;
 let fakeServer: FakeExternalServiceServer;
 
 function resolveFilesystemDirectory(relativeDirectory: string): string {
-  const root = miroirConfig.client.filesystemDeploymentRootDirectory;
-  if (!root) {
-    throw new Error("filesystemDeploymentRootDirectory is required for the filesystem profile");
-  }
-  return join(root, relativeDirectory);
+  return join(emulatedClient.filesystemDeploymentRootDirectory, relativeDirectory);
 }
 
 async function overrideEndpointBaseUrl(baseUrl: string): Promise<void> {
@@ -354,12 +352,13 @@ function SeedSpotifyDeploymentMapping({ children }: { children: React.ReactNode 
   return <>{children}</>;
 }
 
-function playlistPageParams(reportUuid: string, playlistId?: string) {
+function playlistPageParams(reportUuid: string, playlistId?: string): Params<ReportUrlParamKeys> {
   return {
     application: selfApplicationSpotify.uuid,
     deploymentUuid: deployment_Spotify_DO_NO_USE.uuid,
     applicationSection: "data",
     reportUuid,
+    instanceUuid: "",
     ...(playlistId !== undefined ? { playlistId } : {}),
   };
 }
@@ -425,10 +424,6 @@ function renderSpotifyReport(
 }
 
 beforeAll(async () => {
-  if (!miroirConfig.client.emulateServer) {
-    throw new Error("spotifyApp requires emulateServer: true (in-process server path).");
-  }
-
   fakeServer = await startFakeExternalServiceServer({
     [`GET /playlists/${PLAYLIST_ID_OK}`]: { body: PHASE7_PLAYLIST },
   });
@@ -441,10 +436,8 @@ beforeAll(async () => {
 
   miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, miroirConfig);
 
-  const libraryDeploymentStorageConfiguration: StoreUnitConfiguration = miroirConfig.client
-    .emulateServer
-    ? miroirConfig.client.deploymentStorageConfig[deployment_Library_DO_NO_USE.uuid]
-    : miroirConfig.client.serverConfig.storeSectionConfiguration[deployment_Library_DO_NO_USE.uuid];
+  const libraryDeploymentStorageConfiguration: StoreUnitConfiguration =
+    emulatedClient.deploymentStorageConfig[deployment_Library_DO_NO_USE.uuid];
 
   const session = new AppStackIntegrationTestSession(miroirConfig, {
     applicationDeploymentMap,
@@ -545,24 +538,19 @@ afterAll(async () => {
 
 describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot + report", () => {
   it("registers the Spotify deployment in admin assets, test config, and the testbed map", () => {
-    expect(deployment_Spotify.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
+    expect(deployment_Spotify_DO_NO_USE.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
     expect(deployment_Spotify_DO_NO_USE.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
     expect(selfApplicationSpotify.uuid).toBe(SPOTIFY_APPLICATION_UUID);
     expect(applicationDeploymentMap[SPOTIFY_APPLICATION_UUID]).toBe(SPOTIFY_DEPLOYMENT_UUID);
-    expect(miroirConfig.client.deploymentStorageConfig?.[SPOTIFY_DEPLOYMENT_UUID]).toBeDefined();
+    expect(emulatedClient.deploymentStorageConfig[SPOTIFY_DEPLOYMENT_UUID]).toBeDefined();
 
-    const adminDataRoot = miroirConfig.client.emulateServer
-      ? resolveFilesystemDirectory("miroir-standalone-app/tests/assets/admin_data")
-      : "";
-    if (adminDataRoot) {
-      const adminDeploymentPath = join(
-        adminDataRoot,
-        "7959d814-400c-4e80-988f-a00fe582ab98",
-        `${SPOTIFY_DEPLOYMENT_UUID}.json`,
-      );
-      expect(existsSync(adminDeploymentPath), adminDeploymentPath).toBe(true);
-      expect(JSON.parse(readFileSync(adminDeploymentPath, "utf8")).uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
-    }
+    const adminDeploymentPath = join(
+      resolveFilesystemDirectory("miroir-standalone-app/tests/assets/admin_data"),
+      "7959d814-400c-4e80-988f-a00fe582ab98",
+      `${SPOTIFY_DEPLOYMENT_UUID}.json`,
+    );
+    expect(existsSync(adminDeploymentPath), adminDeploymentPath).toBe(true);
+    expect(JSON.parse(readFileSync(adminDeploymentPath, "utf8")).uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
   });
 
   it("boots with SpotifyPlaylist in the model and creates no storage space for the HTTP entity", () => {

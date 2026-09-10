@@ -13,13 +13,16 @@ import { createRoot, Root } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import {
+  accessGrantsFromInstances,
   Action2Error,
   circularReplacer,
   ConfigurationService,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
+  deploymentsFromInstances,
   expect,
   getMiroirEnvironmentMode,
+  identityDirectoryFromInstances,
   LoggerInterface,
   MiroirActivityTracker,
   MiroirConfigClient,
@@ -30,9 +33,6 @@ import {
   PersistenceStoreControllerManager,
   RestClient,
   RestClientStub,
-  accessGrantsFromInstances,
-  deploymentsFromInstances,
-  identityDirectoryFromInstances,
   setRestClientAuthorizationInvalidationHandler,
   setRestClientAuthorizationTokenGetter,
   SpecificLoggerOptionsMap,
@@ -45,36 +45,33 @@ import {
   type StoreOrBundleAction,
   type StoreUnitConfiguration,
 } from "miroir-core";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import {
   LocalCacheProvider,
+  MiroirContextReactProvider,
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController,
 } from "miroir-react";
-import { MiroirContextReactProvider } from "miroir-react";
+import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { loglevelnext } from "./loglevelnextImporter.js";
-import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
+import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "./miroir-fwk/4_view/auth/authSession.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
+import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
 import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
 import {
   ElectronRestClient,
   ElectronServerDomainControllerProxy,
 } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
-import { getAuthToken, setAuthToken, setAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authSession.js";
 import { miroirAppStartup } from "./startup.js";
 
+import { resolveWebLogConfigWithMeta, VITE_MIROIR_LOG_CONFIG_VALUES } from "./config/logConfigPresets.js";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./miroir-fwk/4_view/constants.js";
-import { resolveWebLogConfigWithMeta, VITE_MIROIR_LOG_CONFIG_VALUES } from "./config/logConfigPresets.js";
 
 import {
   adminSelfApplication,
   deployment_Admin,
-  deployment_Designer,
-  deployment_Library,
-  deployment_Spotify,
   deployment_Miroir,
   entityDeployment,
   miroirRight_AliceLibraryAppAdmin,
@@ -86,7 +83,7 @@ import {
   miroirUser_Dave,
   miroirUserCredential_AliceDev,
   miroirUserCredential_CarolDev,
-  miroirUserCredential_DaveDev,
+  miroirUserCredential_DaveDev
 } from "miroir-test-app_deployment-admin";
 import miroirConfigEmulatedServerIndexedDb from "./assets/miroirConfig-emulatedServer-IndexedDb.json";
 import miroirConfigRealServerFilesystemGit from "./assets/miroirConfig-realServer-filesystem-git.json";
@@ -325,9 +322,9 @@ export async function setupMiroirPlatform(
       deployments: deploymentsFromInstances([
         deployment_Admin,
         deployment_Miroir,
-        deployment_Library,
-        deployment_Spotify,
-        deployment_Designer,
+        // deployment_Library,
+        // deployment_Spotify,
+        // deployment_Designer,
       ]),
     });
   }
