@@ -11,6 +11,12 @@ export type ResolveSecretResult = {
 };
 
 const processSecrets = new Map<string, ResolveSecretResult>();
+/** Keyed `userUuid:name`. */
+const userSecrets = new Map<string, ResolveSecretResult>();
+
+function userSecretKey(miroirUserUuid: string, name: string): string {
+  return `${miroirUserUuid}:${name}`;
+}
 
 export function registerSecrets(values: Record<string, string>): void {
   for (const [name, value] of Object.entries(values)) {
@@ -22,12 +28,31 @@ export function registerHydratedProcessSecret(name: string, value: string): void
   processSecrets.set(name, { value, scope: "process", source: "row" });
 }
 
+export function registerHydratedUserSecret(
+  miroirUserUuid: string,
+  name: string,
+  value: string,
+): void {
+  userSecrets.set(userSecretKey(miroirUserUuid, name), {
+    value,
+    scope: "user",
+    miroirUserUuid,
+    source: "row",
+  });
+}
+
 export function resolveSecret(
   name: string,
-  _principal?: { miroirUserUuid?: string },
+  principal?: { miroirUserUuid?: string },
 ): ResolveSecretResult {
   if (!name) {
     throw new Error("Unknown or empty secret");
+  }
+  if (principal?.miroirUserUuid) {
+    const userEntry = userSecrets.get(userSecretKey(principal.miroirUserUuid, name));
+    if (userEntry !== undefined && userEntry.value !== "") {
+      return userEntry;
+    }
   }
   const entry = processSecrets.get(name);
   if (entry === undefined || entry.value === "") {
@@ -38,12 +63,19 @@ export function resolveSecret(
 
 export function clearSecrets(): void {
   processSecrets.clear();
+  userSecrets.clear();
 }
 
 /** Replace registered secret VALUES inside a string. Does not expose map keys. */
 export function redactRegisteredSecretValuesInString(text: string): string {
   let next = text;
   for (const entry of processSecrets.values()) {
+    if (!entry.value) {
+      continue;
+    }
+    next = next.split(entry.value).join("[REDACTED]");
+  }
+  for (const entry of userSecrets.values()) {
     if (!entry.value) {
       continue;
     }

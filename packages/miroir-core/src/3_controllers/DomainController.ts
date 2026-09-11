@@ -114,6 +114,7 @@ import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partia
 import {
   assertCredentialInstanceMutationAllowed,
   assertSecretInstanceMutationAllowed,
+  type AuthPrincipal,
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { findPresentModelEntityFromDomainState } from "../2_domain/ExtractorVirtualAttributes.js";
 import { stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes.js";
@@ -827,6 +828,7 @@ export class DomainController implements DomainControllerInterface {
     runBoxedExtractorOrQueryAction: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment,
+    principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
     const strategy =
       runBoxedExtractorOrQueryAction.payload.queryExecutionStrategy ?? "localCacheOrFail";
@@ -838,6 +840,7 @@ export class DomainController implements DomainControllerInterface {
           runBoxedExtractorOrQueryAction,
           applicationDeploymentMap,
           currentModel,
+          principal,
         ),
       {
         phase: "query",
@@ -850,6 +853,7 @@ export class DomainController implements DomainControllerInterface {
     runBoxedExtractorOrQueryAction: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel?: MiroirModelEnvironment,
+    principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     try {
@@ -883,6 +887,7 @@ export class DomainController implements DomainControllerInterface {
         const resolvedQueryOrError = await this.resolveExtractorFromActionInBoxedQuery(
           runBoxedExtractorOrQueryAction,
           applicationDeploymentMap,
+          principal,
         );
         if (resolvedQueryOrError.kind === "error") {
           return resolvedQueryOrError.error;
@@ -2983,12 +2988,14 @@ export class DomainController implements DomainControllerInterface {
             currentModelEnvironment,
             actionParamValues,
             applicationUuid,
+            principal,
           );
         } else {
           return this.handleActionInternal(
             domainAction,
             applicationDeploymentMap,
             currentModelEnvironment,
+            principal,
           );
         }
       }).bind(this),
@@ -3002,6 +3009,7 @@ export class DomainController implements DomainControllerInterface {
     currentModelEnvironment?: MiroirModelEnvironment,
     actionParamValues?: Record<string, unknown>,
     resolvedApplicationUuid?: string,
+    principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
     log.info(
       "DomainController handleApplicationAction",
@@ -3051,6 +3059,7 @@ export class DomainController implements DomainControllerInterface {
               ...(actionParamValues ?? {}),
               ...((domainAction as any).payload ?? {}),
             },
+            principal,
           );
         }
       }
@@ -3146,6 +3155,8 @@ export class DomainController implements DomainControllerInterface {
         ...domainAction,
         deploymentUuid: applicationDeploymentMap[currentEndpointDefinition.application],
       },
+      {},
+      principal,
     );
     return result as Action2ReturnType;
   }
@@ -3231,6 +3242,7 @@ export class DomainController implements DomainControllerInterface {
   private async resolveExtractorFromActionInBoxedQuery(
     action: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
   ): Promise<
     | { kind: "error"; error: Action2Error }
     | { kind: "done"; result: Action2ReturnType }
@@ -3271,6 +3283,7 @@ export class DomainController implements DomainControllerInterface {
         endpointInstance,
         extractor.actionType,
         extractor.parameterBindings ?? {},
+        principal,
       );
       if (executed instanceof Action2Error) {
         return { kind: "error", error: executed };
@@ -3314,6 +3327,7 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     // localContext: Record<string, any> = {},
     currentModel?: MiroirModelEnvironment,
+    principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType> {
     log.debug("handleActionInternal START for action", domainAction);
     const application = (domainAction.payload as any).application ?? "APPLICATION_UUID_NOT_FOUND";
@@ -3522,13 +3536,19 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             {},
             {},
+            principal,
           );
           throw new Error(
             "DomainController handleAction compositeRunBoxedQueryTemplateAction is not implemented yet",
           );
         }
         case 'compositeRunBoxedQueryAction':{
-          return this.handleCompositeRunBoxedQueryAction(domainAction, applicationDeploymentMap, {});
+          return this.handleCompositeRunBoxedQueryAction(
+            domainAction,
+            applicationDeploymentMap,
+            {},
+            principal,
+          );
           // throw new Error(
           //   "DomainController handleAction compositeRunBoxedQueryAction is not implemented yet",
           // );
@@ -3540,6 +3560,7 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             currentModel ?? ({} as MiroirModelEnvironment),
             {}, // actionParamValues, not used in the old compositeActionSequence, should be removed from the signature
+            principal,
           );
           // throw new Error(
           //   "DomainController handleAction compositeActionSequence should not be used anymore",
@@ -3579,6 +3600,7 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
+    principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
     return this.miroirContext.miroirActivityTracker.trackAction(
       "compositeActionSequence",
@@ -3589,6 +3611,8 @@ export class DomainController implements DomainControllerInterface {
           modelEnvironment,
           applicationDeploymentMap,
           actionParamValues,
+          {},
+          principal,
         )).bind(this),
     );
   }
@@ -3600,6 +3624,7 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     actionParamValues: Record<string, any>,
     actionContext: Record<string, any> = {},
+    principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
     const localActionParams = { ...actionParamValues };
     let localContext: Record<string, any> = { ...actionParamValues };
@@ -3654,6 +3679,7 @@ export class DomainController implements DomainControllerInterface {
               modelEnvironment,
               localActionParams,
               actionContext,
+              principal,
             );
             break;
           }
@@ -3665,6 +3691,7 @@ export class DomainController implements DomainControllerInterface {
               currentAction,
               applicationDeploymentMap,
               localContext,
+              principal,
             );
             if (actionResult instanceof Action2Error) {
               return actionResult;
@@ -3739,6 +3766,7 @@ export class DomainController implements DomainControllerInterface {
               modelEnvironment,
               undefined,
               localActionParams,
+              principal,
             );
             if (actionResult instanceof Action2Error) {
               log.error(
@@ -4482,6 +4510,7 @@ export class DomainController implements DomainControllerInterface {
     // },
     applicationDeploymentMap: ApplicationDeploymentMap,
     localContext: Record<string, any>,
+    principal?: AuthPrincipal,
   ) {
     return this.miroirContext.miroirActivityTracker.trackAction(
       "compositeRunBoxedQueryAction",
@@ -4491,6 +4520,7 @@ export class DomainController implements DomainControllerInterface {
           currentAction,
           applicationDeploymentMap,
           localContext,
+          principal,
         ),
       { phase: "query" },
     );
@@ -4500,6 +4530,7 @@ export class DomainController implements DomainControllerInterface {
     currentAction: CompositeRunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     localContext: Record<string, any>,
+    principal?: AuthPrincipal,
   ) {
     if (currentAction.payload == undefined) {
       throw new Error("handleCompositeAction currentAction.payload is undefined");
@@ -4521,6 +4552,8 @@ export class DomainController implements DomainControllerInterface {
         },
       },
       applicationDeploymentMap,
+      undefined,
+      principal,
     );
     if (actionResult instanceof Action2Error) {
       log.error(
@@ -4617,7 +4650,8 @@ export class DomainController implements DomainControllerInterface {
     applicationDeploymentMap: ApplicationDeploymentMap,
     actionParamValues: Record<string, any>,
     // actionResult: Action2ReturnType | undefined,
-    localContext: Record<string, any>
+    localContext: Record<string, any>,
+    _principal?: AuthPrincipal,
   ) {
     log.info(
       "handleCompositeRunBoxedQueryTemplateAction to handle",
@@ -4665,6 +4699,7 @@ export class DomainController implements DomainControllerInterface {
     modelEnvironment: MiroirModelEnvironment,
     actionParamValues: Record<string, any>,
     actionContext: Record<string, any> = {},
+    principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType> {
     const localActionParams = { ...templateEvaluationParams, ...actionParamValues };
     const actionLabel = (compositeActionSequence as any).actionLabel ?? "no action label";
@@ -4763,6 +4798,7 @@ export class DomainController implements DomainControllerInterface {
             resolvedActionTemplate,
             applicationDeploymentMap,
             localContext,
+            principal,
           );
           log.info(
             "handleCompositeActionTemplate",
@@ -4788,6 +4824,7 @@ export class DomainController implements DomainControllerInterface {
             applicationDeploymentMap,
             actionParamValues,
             localContext,
+            principal,
           );
           if (actionResult instanceof Action2Error) {
             return actionResult;
@@ -4861,6 +4898,7 @@ export class DomainController implements DomainControllerInterface {
             modelEnvironment,
             undefined,
             localActionParams,
+            principal,
           );
           log.info(
             "handleCompositeActionTemplate",

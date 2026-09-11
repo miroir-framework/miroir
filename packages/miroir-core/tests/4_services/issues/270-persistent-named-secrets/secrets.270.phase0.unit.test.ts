@@ -165,47 +165,49 @@ if (runThis) {
   });
 
   describe("secrets.270.phase0 consumed-by Slice 4", () => {
-    it("oauth2AuthorizationCodeCacheKey uses tokenUrl, clientIdKey, refreshTokenKey only", () => {
+    it("oauth2AuthorizationCodeCacheKey includes principal or process scope", () => {
       const src = readFileSync(join(CORE_SRC, "4_services/ExternalServiceClient.ts"), "utf8");
       const fnStart = src.indexOf("function oauth2AuthorizationCodeCacheKey");
-      const fnBlock = src.slice(fnStart, fnStart + 250);
+      const fnBlock = src.slice(fnStart, fnStart + 450);
       expect(fnBlock).toContain("tokenUrl");
       expect(fnBlock).toContain("clientIdKey");
       expect(fnBlock).toContain("refreshTokenKey");
-      expect(fnBlock).not.toContain("miroirUser");
+      expect(fnBlock).toContain("oauth2PrincipalCacheScope");
+      const helperStart = src.indexOf("export function oauth2PrincipalCacheScope");
+      const helperBlock = src.slice(helperStart, helperStart + 220);
+      expect(helperBlock).toMatch(/miroirUserUuid\s*\?\?\s*"process"/);
     });
 
-    it("queryActionHandler does not pass authPrincipal into handleBoxedExtractorOrQueryAction", () => {
+    it("queryActionHandler passes authPrincipal into handleBoxedExtractorOrQueryAction", () => {
       const src = readFileSync(join(CORE_SRC, "4_services/RestServer.ts"), "utf8");
       const fnStart = src.indexOf("export async function queryActionHandler");
-      const fnBlock = src.slice(fnStart, fnStart + 1200);
+      const fnEnd = src.indexOf("export async function queryTemplateActionHandler", fnStart);
+      const fnBlock = src.slice(fnStart, fnEnd);
       expect(fnBlock).toContain("handleBoxedExtractorOrQueryAction(");
-      expect(fnBlock).not.toContain("authPrincipal");
+      expect(fnBlock).toContain("params.authPrincipal");
     });
 
-    it("handleApplicationAction has no principal parameter", () => {
+    it("handleApplicationAction has a principal parameter", () => {
       const src = readFileSync(join(CORE_SRC, "3_controllers/DomainController.ts"), "utf8");
       const fnStart = src.indexOf("private async handleApplicationAction(");
-      const fnBlock = src.slice(fnStart, fnStart + 350);
-      expect(fnBlock).not.toMatch(/principal\s*[?:]/);
+      const fnBlock = src.slice(fnStart, fnStart + 450);
+      expect(fnBlock).toMatch(/principal\s*\?:/);
     });
 
-    it("handleAction logs principal but does not forward it downstream", () => {
+    it("handleAction forwards principal to handleApplicationAction and handleActionInternal", () => {
       const src = readFileSync(join(CORE_SRC, "3_controllers/DomainController.ts"), "utf8");
       const fnStart = src.indexOf("async handleAction(");
       const fnEnd = src.indexOf("private async handleApplicationAction(", fnStart);
       const fnBlock = src.slice(fnStart, fnEnd);
       expect(fnBlock).toContain("handleAction principal");
-      expect(fnBlock).toContain("return this.handleApplicationAction(");
-      expect(fnBlock).toContain("return this.handleActionInternal(");
       const applicationCall = fnBlock.match(
         /return this\.handleApplicationAction\([\s\S]*?\);/,
       )?.[0];
       const internalCall = fnBlock.match(/return this\.handleActionInternal\([\s\S]*?\);/)?.[0];
       expect(applicationCall).toBeDefined();
       expect(internalCall).toBeDefined();
-      expect(applicationCall!).not.toContain("principal");
-      expect(internalCall!).not.toContain("principal");
+      expect(applicationCall!).toContain("principal");
+      expect(internalCall!).toContain("principal");
     });
   });
 

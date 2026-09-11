@@ -1338,6 +1338,7 @@ export {
   clearAllowedInsecureBaseUrlsForTests,
   clearExternalServiceTokenCacheForTests,
   executeExternalServiceOperation,
+  oauth2PrincipalCacheScope,
 } from "./4_services/ExternalServiceClient.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";
 export {

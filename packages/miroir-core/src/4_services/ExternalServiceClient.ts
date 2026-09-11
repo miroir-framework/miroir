@@ -52,6 +52,10 @@ export function clearExternalServiceTokenCacheForTests(): void {
   rotatedRefreshTokens.clear();
 }
 
+export function oauth2PrincipalCacheScope(principal?: { miroirUserUuid?: string }): string {
+  return principal?.miroirUserUuid ?? "process";
+}
+
 function normalizeBaseUrl(baseUrl: string): string {
   return baseUrl.replace(/\/+$/, "");
 }
@@ -288,8 +292,9 @@ async function resolveClientCredentialsToken(
   scheme: OAuth2ClientCredentialsScheme,
   actionType: string,
   forceRefresh: boolean,
+  principal?: { miroirUserUuid?: string },
 ): Promise<string | Action2Error> {
-  const cacheKey = `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}`;
+  const cacheKey = `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}|${oauth2PrincipalCacheScope(principal)}`;
   const cached = oauth2TokenCache.get(cacheKey);
   if (!forceRefresh && cached && cached.expiresAtMs - TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
     return cached.accessToken;
@@ -304,8 +309,8 @@ async function resolveClientCredentialsToken(
   let clientId: string;
   let clientSecret: string;
   try {
-    clientId = resolveSecret(scheme.clientIdKey).value;
-    clientSecret = resolveSecret(scheme.clientSecretKey).value;
+    clientId = resolveSecret(scheme.clientIdKey, principal).value;
+    clientSecret = resolveSecret(scheme.clientSecretKey, principal).value;
   } catch {
     log.warn(
       "external service call blocked: clientIdKey/clientSecretKey did not resolve to registered secrets (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -383,8 +388,11 @@ type OAuth2AuthorizationCodeScheme = {
   scopes?: string;
 };
 
-function oauth2AuthorizationCodeCacheKey(scheme: OAuth2AuthorizationCodeScheme): string {
-  return `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}|${scheme.refreshTokenKey}`;
+function oauth2AuthorizationCodeCacheKey(
+  scheme: OAuth2AuthorizationCodeScheme,
+  principal?: { miroirUserUuid?: string },
+): string {
+  return `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}|${scheme.refreshTokenKey}|${oauth2PrincipalCacheScope(principal)}`;
 }
 
 /**
@@ -396,8 +404,9 @@ async function resolveAuthorizationCodeToken(
   scheme: OAuth2AuthorizationCodeScheme,
   actionType: string,
   forceRefresh: boolean,
+  principal?: { miroirUserUuid?: string },
 ): Promise<string | Action2Error> {
-  const cacheKey = oauth2AuthorizationCodeCacheKey(scheme);
+  const cacheKey = oauth2AuthorizationCodeCacheKey(scheme, principal);
   const cached = oauth2TokenCache.get(cacheKey);
   if (!forceRefresh && cached && cached.expiresAtMs - TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
     return cached.accessToken;
@@ -412,8 +421,8 @@ async function resolveAuthorizationCodeToken(
   let clientId: string;
   let clientSecret: string;
   try {
-    clientId = resolveSecret(scheme.clientIdKey).value;
-    clientSecret = resolveSecret(scheme.clientSecretKey).value;
+    clientId = resolveSecret(scheme.clientIdKey, principal).value;
+    clientSecret = resolveSecret(scheme.clientSecretKey, principal).value;
   } catch {
     log.warn(
       "external service call blocked: clientIdKey/clientSecretKey did not resolve to registered secrets (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -422,10 +431,11 @@ async function resolveAuthorizationCodeToken(
     return externalServiceError("InvalidAction", "Unknown or empty secret");
   }
 
-  let refreshToken = rotatedRefreshTokens.get(scheme.refreshTokenKey);
+  const rotatedKey = `${scheme.refreshTokenKey}|${oauth2PrincipalCacheScope(principal)}`;
+  let refreshToken = rotatedRefreshTokens.get(rotatedKey);
   if (!refreshToken) {
     try {
-      refreshToken = resolveSecret(scheme.refreshTokenKey).value;
+      refreshToken = resolveSecret(scheme.refreshTokenKey, principal).value;
     } catch {
       log.warn(
         "external service call blocked: refreshTokenKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -486,7 +496,7 @@ async function resolveAuthorizationCodeToken(
     );
   }
   if (typeof payload.refresh_token === "string" && payload.refresh_token.length > 0) {
-    rotatedRefreshTokens.set(scheme.refreshTokenKey, payload.refresh_token);
+    rotatedRefreshTokens.set(rotatedKey, payload.refresh_token);
     log.info("external service received rotated refresh token", {
       actionType,
       refreshTokenKey: scheme.refreshTokenKey,
@@ -516,17 +526,28 @@ async function resolveAuthorizationHeader(
   externalService: EndpointExternalService,
   actionType: string,
   forceTokenRefresh: boolean,
+  principal?: { miroirUserUuid?: string },
 ): Promise<string | Action2Error | undefined> {
   const scheme = externalService.securityScheme;
   if (scheme && scheme.type === "oauth2ClientCredentials") {
-    const token = await resolveClientCredentialsToken(scheme, actionType, forceTokenRefresh);
+    const token = await resolveClientCredentialsToken(
+      scheme,
+      actionType,
+      forceTokenRefresh,
+      principal,
+    );
     if (token instanceof Action2Error) {
       return token;
     }
     return `Bearer ${token}`;
   }
   if (scheme && scheme.type === "oauth2AuthorizationCode") {
-    const token = await resolveAuthorizationCodeToken(scheme, actionType, forceTokenRefresh);
+    const token = await resolveAuthorizationCodeToken(
+      scheme,
+      actionType,
+      forceTokenRefresh,
+      principal,
+    );
     if (token instanceof Action2Error) {
       return token;
     }
@@ -535,7 +556,7 @@ async function resolveAuthorizationHeader(
   if (externalService.credentialKey) {
     let token: string;
     try {
-      token = resolveSecret(externalService.credentialKey).value;
+      token = resolveSecret(externalService.credentialKey, principal).value;
     } catch {
       log.warn(
         "external service call blocked: credentialKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
@@ -552,6 +573,7 @@ export async function executeExternalServiceOperation(
   endpointInstance: EndpointDefinitionLike,
   actionType: string,
   bindings: Record<string, unknown>,
+  principal?: { miroirUserUuid?: string },
 ): Promise<Action2ReturnType> {
   const externalService = getExternalService(endpointInstance);
   if (!externalService) {
@@ -578,13 +600,19 @@ export async function executeExternalServiceOperation(
       return externalServiceError("InvalidAction", message, { parameter: name });
     }
   }
-  return fetchExternalServiceOperation(externalService, actionType, bindingStrings(bindings));
+  return fetchExternalServiceOperation(
+    externalService,
+    actionType,
+    bindingStrings(bindings),
+    principal,
+  );
 }
 
 async function fetchExternalServiceOperation(
   externalService: EndpointExternalService,
   actionType: string,
   bindings: Record<string, string>,
+  principal?: { miroirUserUuid?: string },
 ): Promise<Action2ReturnType> {
   const operation = externalService.operations.find((op) => op.operationId === actionType);
   if (!operation) {
@@ -625,7 +653,12 @@ async function fetchExternalServiceOperation(
 
   const url = `${normalizeBaseUrl(externalService.baseUrl)}${pathOrError.startsWith("/") ? "" : "/"}${pathOrError}`;
   const headers: Record<string, string> = {};
-  const authorization = await resolveAuthorizationHeader(externalService, actionType, false);
+  const authorization = await resolveAuthorizationHeader(
+    externalService,
+    actionType,
+    false,
+    principal,
+  );
   if (authorization instanceof Action2Error) {
     return authorization;
   }
@@ -662,7 +695,12 @@ async function fetchExternalServiceOperation(
         : "external service call got 401; refreshing client-credentials token and retrying once",
       { actionType },
     );
-    const refreshedAuthorization = await resolveAuthorizationHeader(externalService, actionType, true);
+    const refreshedAuthorization = await resolveAuthorizationHeader(
+      externalService,
+      actionType,
+      true,
+      principal,
+    );
     if (refreshedAuthorization instanceof Action2Error) {
       return refreshedAuthorization;
     }

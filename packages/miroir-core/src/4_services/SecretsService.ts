@@ -4,7 +4,7 @@
  */
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
 
-import { registerHydratedProcessSecret } from "./SecretStore.js";
+import { registerHydratedProcessSecret, registerHydratedUserSecret } from "./SecretStore.js";
 
 const AES_256_GCM = "aes-256-gcm";
 const GCM_IV_LENGTH = 12;
@@ -95,12 +95,13 @@ export function hydrateSecrets(params: { wrappingKey?: string; rows: unknown }):
     if (!name || !ciphertext) {
       throw new Error("Invalid MiroirSecret row");
     }
-    if (typeof row.miroirUser === "string" && row.miroirUser) {
-      continue;
-    }
     const algorithm =
       typeof row.algorithm === "string" && row.algorithm ? row.algorithm : AES_256_GCM;
     const value = decryptSecret(algorithm, params.wrappingKey, ciphertext);
+    if (typeof row.miroirUser === "string" && row.miroirUser) {
+      registerHydratedUserSecret(row.miroirUser, name, value);
+      continue;
+    }
     registerHydratedProcessSecret(name, value);
   }
 }

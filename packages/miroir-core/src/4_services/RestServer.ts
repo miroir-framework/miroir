@@ -513,6 +513,7 @@ export async function queryActionHandler(
         runBoxedExtractorOrQueryAction,
         applicationDeploymentMap,
         defaultMiroirModelEnvironment,
+        params.authPrincipal,
       );
       return continuationFunction(response)(redactCredentialSecretsFromValue(result));
     },

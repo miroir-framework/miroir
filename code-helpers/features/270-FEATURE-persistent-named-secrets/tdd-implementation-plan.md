@@ -73,7 +73,7 @@ This plan does **not** cover: OAuth PKCE in the UI; `MiroirRight.capability` as 
 | 1 | **Tracer:** process-scoped persist + hydrate + fake Spotify query | ✅ DONE | `secretsHydrate.270.phase1.integ.test.ts` + `secretsService.270.phase1.unit.test.ts` |
 | 2 | Dedicated `/secrets` HTTP + CRUD guard (in-process persist) | ✅ DONE | `secretsHttp.270.phase2.integ.test.ts` |
 | 3 | MCP tool **response** redaction (`passwordHash` + `ciphertext`) | ✅ DONE | `secretsRedact.270.phase3.unit.test.ts` (miroir-mcp) |
-| 4 | Per-user secrets + principal thread + principal-scoped OAuth cache | ⬜ | `secretsPrincipal.270.phase4.integ.test.ts` |
+| 4 | Per-user secrets + principal thread + principal-scoped OAuth cache | ✅ DONE | `secretsPrincipal.270.phase4.integ.test.ts` |
 | 5 | Persist rotated refresh token (D7) | ⬜ | `secretsRotation.270.phase5.integ.test.ts` |
 | 6 | Import-then-discard + AI `getApiKey` via `resolveSecret` | ⬜ | `secretsImport.270.phase6.unit.test.ts` + `secretsImport.270.phase6.integ.test.ts` + `copilotRuntimeFactory` |
 | 7 | `?page=secrets` UI | ⬜ | `secretsPage.270.phase7.integ.test.tsx` |
@@ -453,7 +453,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-mcp/tsconfig.json
 
 ## Slice 4 — Per-user secrets + principal thread + principal-scoped OAuth cache
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -508,7 +508,20 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Test:** `packages/miroir-standalone-app/tests/3_controllers/issues/270-persistent-named-secrets/secretsPrincipal.270.phase4.integ.test.ts` (5 tests). Slice 1 session (`openAdminAndMiroirStoresOnServer: true`, wrapping key `test-secrets-master`, fake Spotify server) + Slice 2 auth fixture (`RestClientStub` + real Admin identity directory + `issueBearerToken` for Alice `1c39328c-…` / Carol `30634877-…`). oauth2AuthorizationCode endpoint pattern from `externalServiceQuery.integ.test.ts`. Teardown via `secrets.delete`; no leftover `admin_data/a96856df-…/*.json`.
+- **Hops threaded (P5):** `handleAction` → `handleApplicationAction` **and** `handleActionInternal` → `handleCompositeAction` / `handleCompositeActionInternal` / `handleCompositeActionTemplate` / `handleCompositeRunBoxedQueryAction` / `executeCompositeRunBoxedQueryAction` / `handleCompositeRunBoxedQueryTemplateAction` (receives principal, does **not** pass it into `handleQueryTemplateActionForServerONLY`) → `handleBoxedExtractorOrQueryAction` / `executeBoxedExtractorOrQueryAction` / `resolveExtractorFromActionInBoxedQuery` → `executeExternalServiceOperation`. `queryActionHandler` passes `params.authPrincipal`. `/queryTemplate` unchanged (R9). Nested `handleAction` calls inside composite handlers also forward principal.
+- **SecretStore / hydrate:** user map keyed `userUuid:name`. `resolveSecret(name, principal?)` prefers a user row when `principal.miroirUserUuid` matches, else process. `hydrateSecrets` decrypts user rows into that map. `redactRegisteredSecretValuesInString` walks both maps.
+- **Cache-key helper:** `oauth2PrincipalCacheScope(principal)` → `principal?.miroirUserUuid ?? "process"`. Appended to `oauth2AuthorizationCodeCacheKey`, client-credentials cache key, and `rotatedRefreshTokens` keys. 401 retry uses the same principal.
+- **MiroirUser emulated asset:** **not copied**. User-scoped `createInstance` of `MiroirSecret` succeeded against the existing 6-entity emulated `admin_model` (FK target entity was not required).
+- **Phase0 Consumed-by Slice 4** flipped in place (P1): cache key includes principal/process; `queryActionHandler` passes `authPrincipal`; `handleApplicationAction` has `principal?`; `handleAction` forwards principal to both downstream calls.
+- **Validation:**
+  - `RUN_TEST=secretsPrincipal.270 … --profile emulatedServer-filesystem secretsPrincipal.270` — 5/5 passed
+  - `RUN_TEST=externalServiceQuery … --profile emulatedServer-filesystem externalServiceQuery` — 13/13 passed
+  - `RUN_TEST=externalServiceDispatch … --profile emulatedServer-filesystem externalServiceDispatch` — 13/13 passed
+  - `RUN_TEST=secrets.270.phase0 … secrets.270.phase0` — 16/16 passed
+  - `RUN_TEST=secretsHttp.270 … -w miroir-core -- secretsHttp.270` — 5/5 passed
+  - `tsc --noEmit --skipLibCheck` for miroir-core and miroir-standalone-app — passed
+- **Deviations:** (1) Token mint is `issueBearerToken` (Vite polyfill has no `scrypt`). (2) `DomainControllerInterface.handleCompositeAction` / `handleCompositeActionTemplate` also gained optional last `principal?` (and `actionContext?` documented on the template method). (3) Phase0 `queryActionHandler` source window is sliced to the next exported function because the existing 1200-char window stopped before `params.authPrincipal`. No MiroirUser / Credential / Right / AiConfiguration copies.
 
 ---
 
