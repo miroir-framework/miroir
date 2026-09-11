@@ -4,11 +4,11 @@
   "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
   "name": "spotifyGetPlaylist",
   "defaultLabel": "Get a Spotify playlist by playlistId",
-  "description": "extractorTemplateFromAction get-playlist; playlist_id is bound from the playlistId page parameter.",
+  "description": "extractorTemplateForExternalService get-playlist; playlist_id is bound from the playlistId page parameter.",
   "definition": {
     "extractorTemplates": {
       "playlist": {
-        "extractorOrCombinerType": "extractorTemplateFromAction",
+        "extractorOrCombinerType": "extractorTemplateForExternalService",
         "endpointUuid": "0e5cb172-12ea-4467-8598-5889338ae454",
         "actionType": "get-playlist",
         "parameterBindings": {

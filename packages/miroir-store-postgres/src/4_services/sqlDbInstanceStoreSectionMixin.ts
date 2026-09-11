@@ -194,8 +194,8 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
                 (query.select as { extractorOrCombinerType?: string })?.extractorOrCombinerType ??
                 "unknown";
               throw new Error(
-                extractorType === "extractorFromAction"
-                  ? "sqlForQuery does not support extractorFromAction (runAsSql is unsupported for external-service extractors)"
+                extractorType === "extractorForExternalService"
+                  ? "sqlForQuery does not support extractorForExternalService (runAsSql is unsupported for external-service extractors)"
                   : "sqlForQuery boxedExtractorOrCombinerReturningObject not implemented for extractorOrCombinerType of select: " +
                     extractorType,
               );

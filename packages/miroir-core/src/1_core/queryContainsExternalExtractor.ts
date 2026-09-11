@@ -5,8 +5,8 @@
  */
 
 const EXTERNAL_EXTRACTOR_TYPES = new Set([
-  "extractorFromAction",
-  "extractorTemplateFromAction",
+  "extractorForExternalService",
+  "extractorTemplateForExternalService",
 ]);
 
 function extractorsFromQuery(query: unknown): Record<string, unknown> | undefined {

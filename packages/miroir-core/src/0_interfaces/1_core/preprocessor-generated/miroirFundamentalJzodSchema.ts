@@ -14217,7 +14217,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "extractorTemplateFromAction"
+              "relativePath": "extractorTemplateForExternalService"
             }
           }
         ]
@@ -14586,7 +14586,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "extractorFromAction": {
+      "extractorForExternalService": {
         "type": "object",
         "definition": {
           "extractorOrCombinerType": {
@@ -14600,7 +14600,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Extractor Or Combiner Type"
               }
             },
-            "definition": "extractorFromAction"
+            "definition": "extractorForExternalService"
           },
           "endpointUuid": {
             "type": "uuid"
@@ -14624,7 +14624,7 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
-      "extractorTemplateFromAction": {
+      "extractorTemplateForExternalService": {
         "type": "object",
         "definition": {
           "extractorOrCombinerType": {
@@ -14638,7 +14638,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Extractor Or Combiner Type"
               }
             },
-            "definition": "extractorTemplateFromAction"
+            "definition": "extractorTemplateForExternalService"
           },
           "endpointUuid": {
             "type": "uuid"
@@ -14800,7 +14800,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "extractorFromAction",
+              "relativePath": "extractorForExternalService",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -15176,7 +15176,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "extractorFromAction",
+              "relativePath": "extractorForExternalService",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             },
             "context": {}
@@ -30605,7 +30605,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorFromAction",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForExternalService",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -30667,11 +30667,11 @@ export const miroirFundamentalJzodSchema = {
           }
         ]
       },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorFromAction": {
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForExternalService": {
         "type": "schemaReference",
         "definition": {
           "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-          "relativePath": "extractorFromAction"
+          "relativePath": "extractorForExternalService"
         }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerReturningObject": {
@@ -35176,7 +35176,7 @@ export const miroirFundamentalJzodSchema = {
           {
             "type": "schemaReference",
             "definition": {
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorFromAction",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorForExternalService",
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
             }
           },
@@ -40909,7 +40909,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateFromAction"
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForExternalService"
             }
           }
         ]
@@ -40949,7 +40949,7 @@ export const miroirFundamentalJzodSchema = {
           "relativePath": "bundledStoreSectionConfiguration"
         }
       },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateFromAction": {
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorTemplateForExternalService": {
         "type": "object",
         "definition": {
           "extractorOrCombinerType": {
@@ -40963,7 +40963,7 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Extractor Or Combiner Type"
               }
             },
-            "definition": "extractorTemplateFromAction"
+            "definition": "extractorTemplateForExternalService"
           },
           "endpointUuid": {
             "type": "uuid"
@@ -42317,7 +42317,7 @@ export const miroirFundamentalJzodSchema = {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "extractorTemplateFromAction"
+              "relativePath": "extractorTemplateForExternalService"
             }
           }
         ]

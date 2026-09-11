@@ -234,7 +234,7 @@ function boxedFromActionQuery(
         ...(extras?.runAsSql ? { runAsSql: true } : {}),
         extractors: {
           playlist: {
-            extractorOrCombinerType: "extractorFromAction",
+            extractorOrCombinerType: "extractorForExternalService",
             endpointUuid,
             actionType,
             parameterBindings,
@@ -352,7 +352,7 @@ afterAll(async () => {
 });
 
 describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 1 extractor restriction (D6)", () => {
-  it("extractorFromAction targeting Library lendDocument (actions-branch) is a hard Action2Error", async () => {
+  it("extractorForExternalService targeting Library lendDocument (actions-branch) is a hard Action2Error", async () => {
     const result = await domainController.handleBoxedExtractorOrQueryAction(
       boxedFromActionQuery(LENDING_ENDPOINT_UUID, "lendDocument", {
         user: "31f3a03a-f150-416d-9315-d3a752cb4eb4",
@@ -365,7 +365,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 1 extr
     expect(fakeServer.receivedRequests).toHaveLength(0);
   });
 
-  it("extractorFromAction targeting a non-GET (POST) operation is a hard Action2Error", async () => {
+  it("extractorForExternalService targeting a non-GET (POST) operation is a hard Action2Error", async () => {
     const result = await domainController.handleBoxedExtractorOrQueryAction(
       boxedFromActionQuery(TEST_ENDPOINT_UUID, "create-playlist", {}) as any,
       applicationDeploymentMap,
@@ -376,43 +376,43 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 1 extr
   });
 });
 
-function extractorFromActionLiteral() {
+function extractorForExternalServiceLiteral() {
   return {
-    extractorOrCombinerType: "extractorFromAction" as const,
+    extractorOrCombinerType: "extractorForExternalService" as const,
     endpointUuid: TEST_ENDPOINT_UUID,
     actionType: "get-playlist",
     parameterBindings: { playlist_id: PLAYLIST_ID_OK },
   };
 }
 
-function namesExtractorFromAction(text: string): void {
-  expect(text).toMatch(/extractorFromAction/);
+function namesExtractorForExternalService(text: string): void {
+  expect(text).toMatch(/extractorForExternalService/);
 }
 
-async function expectNamedExtractorFromActionFailure(
+async function expectNamedExtractorForExternalServiceFailure(
   run: () => unknown | Promise<unknown>,
 ): Promise<void> {
   try {
     const result = await run();
     if (result instanceof Domain2ElementFailed) {
-      namesExtractorFromAction(
+      namesExtractorForExternalService(
         `${result.failureMessage ?? ""} ${result.query ?? ""} ${JSON.stringify(result)}`,
       );
       return;
     }
     if (result instanceof Action2Error) {
-      namesExtractorFromAction(result.errorMessage ?? JSON.stringify(result));
+      namesExtractorForExternalService(result.errorMessage ?? JSON.stringify(result));
       return;
     }
-    expect.fail(`expected a failure naming extractorFromAction, got ${JSON.stringify(result)}`);
+    expect.fail(`expected a failure naming extractorForExternalService, got ${JSON.stringify(result)}`);
   } catch (error) {
-    namesExtractorFromAction(error instanceof Error ? error.message : String(error));
+    namesExtractorForExternalService(error instanceof Error ? error.message : String(error));
   }
 }
 
-describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 closed switches name extractorFromAction", () => {
-  it("QuerySelectors.runQuery names extractorFromAction", async () => {
-    await expectNamedExtractorFromActionFailure(() =>
+describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 closed switches name extractorForExternalService", () => {
+  it("QuerySelectors.runQuery names extractorForExternalService", async () => {
+    await expectNamedExtractorForExternalServiceFailure(() =>
       runQuery(
         {},
         applicationDeploymentMap,
@@ -420,7 +420,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 clos
           extractor: {
             queryType: "boxedQueryWithExtractorCombinerTransformer",
             application: selfApplicationLibrary.uuid,
-            extractors: { playlist: extractorFromActionLiteral() },
+            extractors: { playlist: extractorForExternalServiceLiteral() },
           },
         } as any,
         defaultMiroirModelEnvironment,
@@ -428,8 +428,8 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 clos
     );
   });
 
-  it("AsyncQuerySelectors.asyncInnerSelectElementFromQuery names extractorFromAction", async () => {
-    await expectNamedExtractorFromActionFailure(() =>
+  it("AsyncQuerySelectors.asyncInnerSelectElementFromQuery names extractorForExternalService", async () => {
+    await expectNamedExtractorForExternalServiceFailure(() =>
       asyncInnerSelectElementFromQuery(
         {},
         {},
@@ -439,20 +439,20 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 clos
         selfApplicationLibrary.uuid,
         applicationDeploymentMap,
         {},
-        extractorFromActionLiteral() as any,
+        extractorForExternalServiceLiteral() as any,
       ),
     );
   });
 
-  it("ExtractorRunnerInMemory.extractEntityInstance names extractorFromAction", async () => {
+  it("ExtractorRunnerInMemory.extractEntityInstance names extractorForExternalService", async () => {
     const runner = new ExtractorRunnerInMemory({ getStoreName: () => "phase4-inmemory" } as any);
-    await expectNamedExtractorFromActionFailure(() =>
+    await expectNamedExtractorForExternalServiceFailure(() =>
       runner.extractEntityInstance(
         {
           extractor: {
             queryType: "boxedExtractorOrCombinerReturningObject",
             application: selfApplicationLibrary.uuid,
-            select: extractorFromActionLiteral() as any,
+            select: extractorForExternalServiceLiteral() as any,
           },
         } as any,
         applicationDeploymentMap,
@@ -461,30 +461,30 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 clos
     );
   });
 
-  it("FileSystemExtractorRunner.extractEntityInstance names extractorFromAction", async () => {
+  it("FileSystemExtractorRunner.extractEntityInstance names extractorForExternalService", async () => {
     const runner = new FileSystemExtractorRunner({ getStoreName: () => "phase4-fs" } as any);
-    await expectNamedExtractorFromActionFailure(() =>
+    await expectNamedExtractorForExternalServiceFailure(() =>
       runner.extractEntityInstance({
         extractor: {
           queryType: "boxedExtractorOrCombinerReturningObject",
           application: selfApplicationLibrary.uuid,
-          select: extractorFromActionLiteral() as any,
+          select: extractorForExternalServiceLiteral() as any,
         },
       } as any),
     );
   });
 
-  it("SqlGenerator.sqlStringForExtractor names extractorFromAction", async () => {
-    await expectNamedExtractorFromActionFailure(() =>
+  it("SqlGenerator.sqlStringForExtractor names extractorForExternalService", async () => {
+    await expectNamedExtractorForExternalServiceFailure(() =>
       sqlStringForExtractor(
-        extractorFromActionLiteral() as any,
+        extractorForExternalServiceLiteral() as any,
         "public",
         defaultMiroirModelEnvironment,
       ),
     );
   });
 
-  it("sqlDbInstanceStoreSectionMixin.sqlForQuery names extractorFromAction", async () => {
+  it("sqlDbInstanceStoreSectionMixin.sqlForQuery names extractorForExternalService", async () => {
     const section = new MixedSqlDbInstanceStoreSection(
       "data",
       "phase4-sql",
@@ -493,12 +493,12 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 clos
       "phase4-sqlForQuery",
     );
     try {
-      await expectNamedExtractorFromActionFailure(() =>
+      await expectNamedExtractorForExternalServiceFailure(() =>
         section.sqlForQuery(
           {
             queryType: "boxedExtractorOrCombinerReturningObject",
             application: selfApplicationLibrary.uuid,
-            select: extractorFromActionLiteral() as any,
+            select: extractorForExternalServiceLiteral() as any,
           } as any,
           defaultMiroirModelEnvironment,
         ),
@@ -508,10 +508,10 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 2 clos
     }
   });
 
-  it("Templates.resolveExtractorTemplate names extractorFromAction", async () => {
-    await expectNamedExtractorFromActionFailure(() =>
+  it("Templates.resolveExtractorTemplate names extractorForExternalService", async () => {
+    await expectNamedExtractorForExternalServiceFailure(() =>
       resolveExtractorTemplate(
-        extractorFromActionLiteral() as any,
+        extractorForExternalServiceLiteral() as any,
         defaultMiroirModelEnvironment,
         {},
         {},
@@ -601,7 +601,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 3 comp
 });
 
 describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 4 client-side hard errors (D5)", () => {
-  it("sync QuerySelectors.runQuery on extractorFromAction names the extractor", async () => {
+  it("sync QuerySelectors.runQuery on extractorForExternalService names the extractor", async () => {
     const result = runQuery(
       {},
       applicationDeploymentMap,
@@ -609,16 +609,16 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 4 clie
         extractor: {
           queryType: "boxedQueryWithExtractorCombinerTransformer",
           application: selfApplicationLibrary.uuid,
-          extractors: { playlist: extractorFromActionLiteral() },
+          extractors: { playlist: extractorForExternalServiceLiteral() },
         },
       } as any,
       defaultMiroirModelEnvironment,
     );
     expect(result instanceof Domain2ElementFailed, JSON.stringify(result)).toBe(true);
-    namesExtractorFromAction((result as Domain2ElementFailed).failureMessage ?? "");
+    namesExtractorForExternalService((result as Domain2ElementFailed).failureMessage ?? "");
   });
 
-  it("runAsSql: true on a query containing extractorFromAction is a hard error", async () => {
+  it("runAsSql: true on a query containing extractorForExternalService is a hard error", async () => {
     const result = await domainController.handleBoxedExtractorOrQueryAction(
       boxedFromActionQuery(TEST_ENDPOINT_UUID, "get-playlist", { playlist_id: PLAYLIST_ID_OK }, {
         runAsSql: true,
@@ -626,7 +626,7 @@ describe.skipIf(!shouldRun).sequential("externalServiceDispatch — Cycle 4 clie
       applicationDeploymentMap,
       defaultMiroirModelEnvironment,
     );
-    expectActionError(result, /extractorFromAction|runAsSql|SQL/i);
+    expectActionError(result, /extractorForExternalService|runAsSql|SQL/i);
     expect(fakeServer.receivedRequests).toHaveLength(0);
   });
 });

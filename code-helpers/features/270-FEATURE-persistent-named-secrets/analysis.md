@@ -396,13 +396,13 @@ The Spotify report path is **`POST /query`**, not `POST /action`:
 
 - `queryActionHandler` (`RestServer.ts:503-507`) calls `handleBoxedExtractorOrQueryAction` with **three** arguments (action, deployment map, `defaultMiroirModelEnvironment`). It does **not** pass `params.authPrincipal`.
 - `handleBoxedExtractorOrQueryAction` / `executeBoxedExtractorOrQueryAction` (`DomainController.ts:823-849`) take **no** principal.
-- `resolveExtractorFromActionInBoxedQuery` (`DomainController.ts:3221-3264`) calls `executeExternalServiceOperation` **without** a principal.
+- `resolveExtractorForExternalServiceInBoxedQuery` (`DomainController.ts:3221-3264`) calls `executeExternalServiceOperation` **without** a principal.
 
 `handleAction` does **not** forward `principal` to `handleApplicationAction` (`DomainController.ts:2970-2976`). `handleApplicationAction`’s signature has no principal (`:2989-2995`); it only **logs** that `handleAction` received one (`:2918-2923`). The local-branch `executeExternalServiceOperation` call (`:3037-3044`) is therefore principal-less.
 
-`handleQueryTemplateActionForServerONLY` (`DomainController.ts:996-1025`) goes straight to the persistence store and **cannot** host `extractorFromAction` (store runners hard-error). Only `POST /query` needs the principal on the REST query path. `/queryTemplate` also drops `params.authPrincipal` (`RestServer.ts:563-567`) — harmless today.
+`handleQueryTemplateActionForServerONLY` (`DomainController.ts:996-1025`) goes straight to the persistence store and **cannot** host `extractorForExternalService` (store runners hard-error). Only `POST /query` needs the principal on the REST query path. `/queryTemplate` also drops `params.authPrincipal` (`RestServer.ts:563-567`) — harmless today.
 
-**Composite path (R5).** `executeCompositeRunBoxedQueryAction` calls `handleBoxedExtractorOrQueryAction` with no principal (`DomainController.ts:4499-4513`), reachable from `handleActionInternal` (`:3521`), composite templates (`:3654`, `:3959`, `:4752`), and in-process MCP composite tools (`mcpHandlersForEndpoint.ts:273` → `handleAction`). A composite boxed query with `extractorFromAction` would silently resolve process-scope only unless this hop is threaded.
+**Composite path (R5).** `executeCompositeRunBoxedQueryAction` calls `handleBoxedExtractorOrQueryAction` with no principal (`DomainController.ts:4499-4513`), reachable from `handleActionInternal` (`:3521`), composite templates (`:3654`, `:3959`, `:4752`), and in-process MCP composite tools (`mcpHandlersForEndpoint.ts:273` → `handleAction`). A composite boxed query with `extractorForExternalService` would silently resolve process-scope only unless this hop is threaded.
 
 **Truth table (today):**
 
@@ -467,9 +467,9 @@ A **second** `redactCredentialSecretsFromValue` in `AuthenticationPolicy.ts:445-
 
 **Principal thread (required for D2-b).** Add optional `principal` end-to-end:
 
-`handleAction` → `handleApplicationAction` → `handleCompositeActionTemplate` / `handleCompositeAction` → `executeCompositeRunBoxedQueryAction` → `handleBoxedExtractorOrQueryAction` / `executeBoxedExtractorOrQueryAction` / `resolveExtractorFromActionInBoxedQuery` → `executeExternalServiceOperation` → `resolveAuthorizationHeader` / `resolveAuthorizationCodeToken` → `resolveSecret(name, principal)`.
+`handleAction` → `handleApplicationAction` → `handleCompositeActionTemplate` / `handleCompositeAction` → `executeCompositeRunBoxedQueryAction` → `handleBoxedExtractorOrQueryAction` / `executeBoxedExtractorOrQueryAction` / `resolveExtractorForExternalServiceInBoxedQuery` → `executeExternalServiceOperation` → `resolveAuthorizationHeader` / `resolveAuthorizationCodeToken` → `resolveSecret(name, principal)`.
 
-`queryActionHandler` forwards `params.authPrincipal` into `handleBoxedExtractorOrQueryAction`. `/queryTemplate` does **not** host `extractorFromAction` (fails closed in store runners); do not thread principal there.
+`queryActionHandler` forwards `params.authPrincipal` into `handleBoxedExtractorOrQueryAction`. `/queryTemplate` does **not** host `extractorForExternalService` (fails closed in store runners); do not thread principal there.
 
 **MCP.** Out of scope for wrapping-key hydrate / identity (#263). **In** scope: redact MCP tool **responses** (R4).
 

@@ -46,7 +46,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 });
 
 
-const EXTRACTOR_FROM_ACTION_SCHEMA = {
+const EXTRACTOR_FOR_EXTERNAL_SERVICE_SCHEMA = {
   type: "object",
   definition: {
     extractorOrCombinerType: {
@@ -58,7 +58,7 @@ const EXTRACTOR_FROM_ACTION_SCHEMA = {
           defaultLabel: "Extractor Or Combiner Type",
         },
       },
-      definition: "extractorFromAction",
+      definition: "extractorForExternalService",
     },
     endpointUuid: { type: "uuid" },
     actionType: { type: "string" },
@@ -73,7 +73,7 @@ const EXTRACTOR_FROM_ACTION_SCHEMA = {
 } as const;
 
 /** Template twin: bindings are transformer templates (getFromParameters / getFromContext / constant). */
-const EXTRACTOR_TEMPLATE_FROM_ACTION_SCHEMA = {
+const EXTRACTOR_TEMPLATE_FOR_EXTERNAL_SERVICE_SCHEMA = {
   type: "object",
   definition: {
     extractorOrCombinerType: {
@@ -85,7 +85,7 @@ const EXTRACTOR_TEMPLATE_FROM_ACTION_SCHEMA = {
           defaultLabel: "Extractor Or Combiner Type",
         },
       },
-      definition: "extractorTemplateFromAction",
+      definition: "extractorTemplateForExternalService",
     },
     endpointUuid: { type: "uuid" },
     actionType: { type: "string" },
@@ -111,18 +111,18 @@ function schemaReferencePath(entry: unknown): string | undefined {
 }
 
 /**
- * #267 Slice 2 — resolved `extractorFromAction` on Query extractor unions.
- * #267 Slice 5 — template twin `extractorTemplateFromAction` on extractorTemplate* unions.
+ * #267 Slice 2 — resolved `extractorForExternalService` on Query extractor unions.
+ * #267 Slice 5 — template twin `extractorTemplateForExternalService` on extractorTemplate* unions.
  */
-function ensureExtractorFromActionInQueryContext(context: Record<string, any> | undefined): void {
+function ensureExtractorForExternalServiceInQueryContext(context: Record<string, any> | undefined): void {
   if (!context) {
     return;
   }
-  context.extractorFromAction = EXTRACTOR_FROM_ACTION_SCHEMA;
-  context.extractorTemplateFromAction = EXTRACTOR_TEMPLATE_FROM_ACTION_SCHEMA;
-  const extractorFromActionRef = {
+  context.extractorForExternalService = EXTRACTOR_FOR_EXTERNAL_SERVICE_SCHEMA;
+  context.extractorTemplateForExternalService = EXTRACTOR_TEMPLATE_FOR_EXTERNAL_SERVICE_SCHEMA;
+  const extractorForExternalServiceRef = {
     type: "schemaReference",
-    definition: { relativePath: "extractorFromAction" },
+    definition: { relativePath: "extractorForExternalService" },
   };
   for (const unionName of ["extractorReturningObject", "extractorOrCombiner"] as const) {
     const union = context[unionName];
@@ -130,10 +130,10 @@ function ensureExtractorFromActionInQueryContext(context: Record<string, any> | 
       continue;
     }
     const already = union.definition.some(
-      (entry: unknown) => schemaReferencePath(entry) === "extractorFromAction",
+      (entry: unknown) => schemaReferencePath(entry) === "extractorForExternalService",
     );
     if (!already) {
-      union.definition.push(extractorFromActionRef);
+      union.definition.push(extractorForExternalServiceRef);
     }
   }
 }
@@ -325,7 +325,7 @@ export function getMiroirFundamentalJzodSchema(
     entityDefinitionQueryVersionV1.mlSchema.definition.definition,
     miroirFundamentalJzodSchemaUuid
   ) as any;
-  ensureExtractorFromActionInQueryContext(
+  ensureExtractorForExternalServiceInQueryContext(
     entityDefinitionQueryVersionV1WithAbsoluteReferences.context,
   );
 
@@ -2043,9 +2043,9 @@ export function getMiroirFundamentalJzodSchema(
                 // absolutePath required: Report (and other) typechecks resolve this
                 // union from the fundamental schema, then look up the member in
                 // the *current* relative context — Report's context does not
-                // define extractorTemplateFromAction.
+                // define extractorTemplateForExternalService.
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorTemplateFromAction",
+                relativePath: "extractorTemplateForExternalService",
               },
             },
           ],
@@ -4222,7 +4222,7 @@ export function getMiroirFundamentalJzodSchema(
         //     },
         //   },
         // },
-        extractorTemplateFromAction: EXTRACTOR_TEMPLATE_FROM_ACTION_SCHEMA,
+        extractorTemplateForExternalService: EXTRACTOR_TEMPLATE_FOR_EXTERNAL_SERVICE_SCHEMA,
         extractorTemplateCombinerOneToOne: {
           type: "schemaReference",
           definition: {
@@ -4258,7 +4258,7 @@ export function getMiroirFundamentalJzodSchema(
               type: "schemaReference",
               definition: {
                 absolutePath: miroirFundamentalJzodSchemaUuid,
-                relativePath: "extractorTemplateFromAction",
+                relativePath: "extractorTemplateForExternalService",
               },
             },
           ],

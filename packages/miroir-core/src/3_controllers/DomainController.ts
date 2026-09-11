@@ -169,18 +169,18 @@ import { ConfigurationService } from './ConfigurationService.js';
 import { executeExternalServiceOperation } from "../4_services/ExternalServiceClient.js";
 import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
 
-type ExtractorFromActionResolved = {
-  extractorOrCombinerType: "extractorFromAction";
+type ExtractorForExternalServiceResolved = {
+  extractorOrCombinerType: "extractorForExternalService";
   endpointUuid: string;
   actionType: string;
   parameterBindings?: Record<string, unknown>;
 };
 
-function isExtractorFromActionResolved(value: unknown): value is ExtractorFromActionResolved {
+function isExtractorForExternalServiceResolved(value: unknown): value is ExtractorForExternalServiceResolved {
   return (
     !!value &&
     typeof value === "object" &&
-    (value as { extractorOrCombinerType?: unknown }).extractorOrCombinerType === "extractorFromAction"
+    (value as { extractorOrCombinerType?: unknown }).extractorOrCombinerType === "extractorForExternalService"
   );
 }
 
@@ -884,7 +884,7 @@ export class DomainController implements DomainControllerInterface {
          * we're on the server side. Shall we execute the query on the localCache or on the persistentStore?
          */
 
-        const resolvedQueryOrError = await this.resolveExtractorFromActionInBoxedQuery(
+        const resolvedQueryOrError = await this.resolveExtractorForExternalServiceInBoxedQuery(
           runBoxedExtractorOrQueryAction,
           applicationDeploymentMap,
           principal,
@@ -3235,11 +3235,11 @@ export class DomainController implements DomainControllerInterface {
   }
 
   /**
-   * #267 D5 — run extractorFromAction on the server before the persistence-store handoff.
+   * #267 D5 — run extractorForExternalService on the server before the persistence-store handoff.
    * Store-backed extractors stay in the query; external results are seeded into contextResults
    * so combiners/transformers see the merged context in the existing runQuery pass.
    */
-  private async resolveExtractorFromActionInBoxedQuery(
+  private async resolveExtractorForExternalServiceInBoxedQuery(
     action: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     principal?: AuthPrincipal,
@@ -3251,7 +3251,7 @@ export class DomainController implements DomainControllerInterface {
     const query = action.payload.query;
     const extractors = (query.extractors ?? {}) as Record<string, unknown>;
     const externalEntries = Object.entries(extractors).filter(([, extractor]) =>
-      isExtractorFromActionResolved(extractor),
+      isExtractorForExternalServiceResolved(extractor),
     );
     if (externalEntries.length === 0) {
       return { kind: "continue", action };
@@ -3261,14 +3261,14 @@ export class DomainController implements DomainControllerInterface {
         kind: "error",
         error: new Action2Error(
           "InvalidAction",
-          "extractorFromAction cannot be executed with runAsSql (SQL generation is unsupported)",
+          "extractorForExternalService cannot be executed with runAsSql (SQL generation is unsupported)",
         ),
       };
     }
 
     const contextResults: Record<string, unknown> = { ...(query.contextResults ?? {}) };
     for (const [name, extractor] of externalEntries) {
-      if (!isExtractorFromActionResolved(extractor)) {
+      if (!isExtractorForExternalServiceResolved(extractor)) {
         continue;
       }
       const endpointInstance = await this.loadEndpointInstanceFromLocalPersistenceStore(
@@ -3292,7 +3292,7 @@ export class DomainController implements DomainControllerInterface {
     }
 
     const remainingExtractors = Object.fromEntries(
-      Object.entries(extractors).filter(([, extractor]) => !isExtractorFromActionResolved(extractor)),
+      Object.entries(extractors).filter(([, extractor]) => !isExtractorForExternalServiceResolved(extractor)),
     );
     const hasRemainingWork =
       Object.keys(remainingExtractors).length > 0 ||

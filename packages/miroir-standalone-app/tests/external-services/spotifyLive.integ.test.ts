@@ -154,7 +154,7 @@ function boxedGetPlaylistQuery(playlistId: string) {
         application: SPOTIFY_APPLICATION_UUID,
         extractors: {
           playlist: {
-            extractorOrCombinerType: "extractorFromAction",
+            extractorOrCombinerType: "extractorForExternalService",
             endpointUuid: SPOTIFY_ENDPOINT_UUID,
             actionType: "get-playlist",
             parameterBindings: { playlist_id: playlistId },
@@ -257,7 +257,7 @@ afterAll(() => {
 });
 
 describe.skipIf(!shouldRun)("spotifyLive — real Spotify API (opt-in)", () => {
-  it("extractorFromAction fetches a public playlist from api.spotify.com", async () => {
+  it("extractorForExternalService fetches a public playlist from api.spotify.com", async () => {
     const queryResult = await domainController.handleBoxedExtractorOrQueryAction(
       boxedGetPlaylistQuery(PUBLIC_PLAYLIST_ID) as any,
       applicationDeploymentMap,

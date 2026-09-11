@@ -629,7 +629,7 @@ export async function executeExternalServiceOperation(
     });
     return externalServiceError(
       "InvalidAction",
-      "extractorFromAction is restricted to external-service GET operations (target is not an externalService endpoint)",
+      "extractorForExternalService is restricted to external-service GET operations (target is not an externalService endpoint)",
     );
   }
   for (const [name, value] of Object.entries(bindings)) {
@@ -689,7 +689,7 @@ async function fetchExternalServiceOperation(
     log.warn("external service call rejected: non-GET operation", { actionType, method: operation.method });
     return externalServiceError(
       "InvalidAction",
-      `extractorFromAction is restricted to GET operations; ${actionType} has method ${operation.method}`,
+      `extractorForExternalService is restricted to GET operations; ${actionType} has method ${operation.method}`,
       { actionType, method: operation.method },
     );
   }

@@ -9,7 +9,7 @@
   "definition": {
     "extractorTemplates": {
       "playlist": {
-        "extractorOrCombinerType": "extractorTemplateFromAction",
+        "extractorOrCombinerType": "extractorTemplateForExternalService",
         "endpointUuid": "0e5cb172-12ea-4467-8598-5889338ae454",
         "actionType": "get-playlist",
         "parameterBindings": {

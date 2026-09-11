@@ -410,7 +410,7 @@ export class ExtractorRunnerInMemory implements ExtractorOrQueryPersistenceStore
         throw new Error(
           "ExtractorRunnerInMemory extractEntityInstance cannot handle extractorOrCombinerType=" +
             extractorType +
-            (extractorType === "extractorFromAction" ? " (extractorFromAction is server-only)" : ""),
+            (extractorType === "extractorForExternalService" ? " (extractorForExternalService is server-only)" : ""),
         );
       }
     }

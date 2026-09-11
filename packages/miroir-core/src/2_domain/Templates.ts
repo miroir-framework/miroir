@@ -315,8 +315,8 @@ export function resolveExtractorTemplate(
         (extractorOrCombinerTemplate as { extractorOrCombinerType?: string })
           ?.extractorOrCombinerType ?? "unknown";
       if (
-        extractorType === "extractorTemplateFromAction" ||
-        extractorType === "extractorFromAction"
+        extractorType === "extractorTemplateForExternalService" ||
+        extractorType === "extractorForExternalService"
       ) {
         const template = extractorOrCombinerTemplate as {
           endpointUuid?: unknown;
@@ -343,7 +343,7 @@ export function resolveExtractorTemplate(
               : bindingValue;
         }
         return {
-          extractorOrCombinerType: "extractorFromAction",
+          extractorOrCombinerType: "extractorForExternalService",
           endpointUuid: template.endpointUuid,
           actionType: template.actionType,
           parameterBindings: resolvedBindings,

@@ -1008,7 +1008,7 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
           };
       break;
     }
-    case "extractorFromAction":
+    case "extractorForExternalService":
     default: {
       const extractorType =
         (extractorOrCombiner as { extractorOrCombinerType?: string })?.extractorOrCombinerType ??
@@ -1017,8 +1017,8 @@ export function innerSelectDomainElementFromExtractorOrCombiner/*BoxedExtractorT
         queryFailure: "QueryNotExecutable",
         failureOrigin: ["QuerySelector", "innerSelectDomainElementFromExtractorOrCombiner"],
         failureMessage:
-          extractorType === "extractorFromAction"
-            ? "extractorFromAction cannot be executed on the sync QuerySelectors path"
+          extractorType === "extractorForExternalService"
+            ? "extractorForExternalService cannot be executed on the sync QuerySelectors path"
             : "unsupported extractorOrCombinerType for query: " + extractorType,
         query: JSON.stringify(extractorOrCombiner),
       });

@@ -320,7 +320,7 @@ export const selectEntityInstanceFromReduxDeploymentsState: SyncBoxedExtractorRu
       throw new Error(
         "selectEntityInstanceFromReduxDeploymentsState cannot handle extractorOrCombinerType=" +
           extractorType +
-          (extractorType === "extractorFromAction" ? " (extractorFromAction is server-only)" : ""),
+          (extractorType === "extractorForExternalService" ? " (extractorForExternalService is server-only)" : ""),
       );
     }
   }

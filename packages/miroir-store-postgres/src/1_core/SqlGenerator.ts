@@ -762,13 +762,13 @@ export function  sqlStringForExtractor(
       );
       break;
     }
-    case "extractorFromAction":
+    case "extractorForExternalService":
     default: {
       const extractorType =
         (extractor as { extractorOrCombinerType?: string })?.extractorOrCombinerType ?? "unknown";
       throw new Error(
-        extractorType === "extractorFromAction"
-          ? "sqlForExtractor does not support extractorFromAction (runAsSql is unsupported for external-service extractors)"
+        extractorType === "extractorForExternalService"
+          ? "sqlForExtractor does not support extractorForExternalService (runAsSql is unsupported for external-service extractors)"
           : "sqlForExtractor not implemented for extractorOrCombinerType: " + extractorType,
       );
     }
