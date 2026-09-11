@@ -74,7 +74,7 @@ This plan does **not** cover: OAuth PKCE in the UI; `MiroirRight.capability` as 
 | 2 | Dedicated `/secrets` HTTP + CRUD guard (in-process persist) | ✅ DONE | `secretsHttp.270.phase2.integ.test.ts` |
 | 3 | MCP tool **response** redaction (`passwordHash` + `ciphertext`) | ✅ DONE | `secretsRedact.270.phase3.unit.test.ts` (miroir-mcp) |
 | 4 | Per-user secrets + principal thread + principal-scoped OAuth cache | ✅ DONE | `secretsPrincipal.270.phase4.integ.test.ts` |
-| 5 | Persist rotated refresh token (D7) | ⬜ | `secretsRotation.270.phase5.integ.test.ts` |
+| 5 | Persist rotated refresh token (D7) | ✅ DONE | `secretsRotation.270.phase5.integ.test.ts` |
 | 6 | Import-then-discard + AI `getApiKey` via `resolveSecret` | ⬜ | `secretsImport.270.phase6.unit.test.ts` + `secretsImport.270.phase6.integ.test.ts` + `copilotRuntimeFactory` |
 | 7 | `?page=secrets` UI | ⬜ | `secretsPage.270.phase7.integ.test.tsx` |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | `unit-270-persistent-secrets` + `appstack-270-persistent-secrets` + docs |
@@ -527,7 +527,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ## Slice 5 — Persist rotated refresh token
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -573,7 +573,16 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Test:** `packages/miroir-standalone-app/tests/3_controllers/issues/270-persistent-named-secrets/secretsRotation.270.phase5.integ.test.ts` (4 tests). Slice 4 session (`openAdminAndMiroirStoresOnServer: true`, wrapping key `test-secrets-master`, fake Spotify authorization-code endpoint) + Slice 2 auth fixture (`issueBearerToken` Alice). Persist callback wired in the test the same way as `server.ts`. Teardown via `secrets.delete`; no leftover `admin_data/a96856df-…/*.json`.
+- **Wiring (P6):** optional module-level `setPersistRotatedSecret` / `clearPersistRotatedSecret` on `ExternalServiceClient` (not a SecretsService constructor). Persist fires only when `resolveSecret` returns `source: "row"` **and** a callback is set. Hatch rotation still updates RAM + principal-scoped `rotatedRefreshTokens` only. Existing `externalServiceQuery` hatch tests never register the callback.
+- **Persist helper:** `persistRotatedSecretRow(domainController, args, applicationDeploymentMap?)` in `SecretsService` takes `DomainControllerInterface` (no `3_controllers` / `DomainController` import). Encrypts with `getSecretsMasterKey()`; missing key throws (fail-closed). Re-encrypts the **matching** row only (process vs Alice from `resolveSecret` — P17) via `updateInstance` + `actionLabel: "secrets.set"`, then updates the hydrated SecretStore map.
+- **server.ts:** after hydrate + `applicationDeploymentMap` is built, `setPersistRotatedSecret(async (args) => persistRotatedSecretRow(domainController, args, applicationDeploymentMap))`.
+- **Rotation order:** persist first for row+callback; only then write `rotatedRefreshTokens`. Persist throw → `Action2Error` (`FailedToHandleAction`); RAM is not treated as durable. Existing `log.info` still logs only `refreshTokenKey` (never the new token).
+- **Validation:**
+  - `RUN_TEST=secretsRotation.270 … --profile emulatedServer-filesystem secretsRotation.270` — 4/4 passed
+  - `RUN_TEST=externalServiceQuery … --profile emulatedServer-filesystem externalServiceQuery` — 13/13 passed
+  - `tsc --noEmit --skipLibCheck` for miroir-core and miroir-server — passed
+- **Deviations:** (1) Fail-closed asserts the query fails **and** `clearSecrets` + hydrate still resolves the **old** process value (store unchanged). (2) Token mint is `issueBearerToken` (same Vite `scrypt` limit as Slices 2/4). No layering contradiction: SecretsService/ExternalServiceClient import only `DomainControllerInterface`.
 
 ---
 

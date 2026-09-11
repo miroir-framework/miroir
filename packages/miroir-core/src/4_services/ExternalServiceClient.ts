@@ -15,7 +15,7 @@ import {
   type ActionErrorType,
 } from "../0_interfaces/2_domain/DomainElement.js";
 import { packageName } from "../constants.js";
-import { resolveSecret } from "./SecretStore.js";
+import { resolveSecret, type ResolveSecretResult } from "./SecretStore.js";
 import { cleanLevel } from "./constants.js";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory.js";
 
@@ -50,6 +50,23 @@ const TOKEN_EXPIRY_MARGIN_MS = 60_000;
 export function clearExternalServiceTokenCacheForTests(): void {
   oauth2TokenCache.clear();
   rotatedRefreshTokens.clear();
+}
+
+export type PersistRotatedSecret = (args: {
+  name: string;
+  value: string;
+  scope: "process" | "user";
+  miroirUserUuid?: string;
+}) => Promise<void>;
+
+let persistRotatedSecret: PersistRotatedSecret | undefined;
+
+export function setPersistRotatedSecret(callback: PersistRotatedSecret | undefined): void {
+  persistRotatedSecret = callback;
+}
+
+export function clearPersistRotatedSecret(): void {
+  persistRotatedSecret = undefined;
 }
 
 export function oauth2PrincipalCacheScope(principal?: { miroirUserUuid?: string }): string {
@@ -431,19 +448,19 @@ async function resolveAuthorizationCodeToken(
     return externalServiceError("InvalidAction", "Unknown or empty secret");
   }
 
-  const rotatedKey = `${scheme.refreshTokenKey}|${oauth2PrincipalCacheScope(principal)}`;
-  let refreshToken = rotatedRefreshTokens.get(rotatedKey);
-  if (!refreshToken) {
-    try {
-      refreshToken = resolveSecret(scheme.refreshTokenKey, principal).value;
-    } catch {
-      log.warn(
-        "external service call blocked: refreshTokenKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
-        { actionType, refreshTokenKey: scheme.refreshTokenKey },
-      );
-      return externalServiceError("InvalidAction", "Unknown or empty secret");
-    }
+  let resolvedRefresh: ResolveSecretResult;
+  try {
+    resolvedRefresh = resolveSecret(scheme.refreshTokenKey, principal);
+  } catch {
+    log.warn(
+      "external service call blocked: refreshTokenKey did not resolve to a registered secret (restart the server with --secret <name>=<value> or MIROIR_SECRET_<NAME>)",
+      { actionType, refreshTokenKey: scheme.refreshTokenKey },
+    );
+    return externalServiceError("InvalidAction", "Unknown or empty secret");
   }
+
+  const rotatedKey = `${scheme.refreshTokenKey}|${oauth2PrincipalCacheScope(principal)}`;
+  const refreshToken = rotatedRefreshTokens.get(rotatedKey) ?? resolvedRefresh.value;
 
   const body = new URLSearchParams({ grant_type: "refresh_token", refresh_token: refreshToken });
   if (scheme.scopes) {
@@ -496,11 +513,26 @@ async function resolveAuthorizationCodeToken(
     );
   }
   if (typeof payload.refresh_token === "string" && payload.refresh_token.length > 0) {
-    rotatedRefreshTokens.set(rotatedKey, payload.refresh_token);
     log.info("external service received rotated refresh token", {
       actionType,
       refreshTokenKey: scheme.refreshTokenKey,
     });
+    if (resolvedRefresh.source === "row" && persistRotatedSecret) {
+      try {
+        await persistRotatedSecret({
+          name: scheme.refreshTokenKey,
+          value: payload.refresh_token,
+          scope: resolvedRefresh.scope,
+          miroirUserUuid: resolvedRefresh.miroirUserUuid,
+        });
+      } catch (error) {
+        return externalServiceError(
+          "FailedToHandleAction",
+          error instanceof Error ? error.message : "Failed to persist rotated refresh token",
+        );
+      }
+    }
+    rotatedRefreshTokens.set(rotatedKey, payload.refresh_token);
   }
   const expiresInSec =
     typeof payload.expires_in === "number" && payload.expires_in > 0 ? payload.expires_in : 3600;

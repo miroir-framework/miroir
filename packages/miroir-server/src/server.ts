@@ -53,7 +53,9 @@ import {
   handleSecretsHttpRoute,
   hydrateSecrets,
   parseServerArgs,
+  persistRotatedSecretRow,
   registerSecrets,
+  setPersistRotatedSecret,
   resolveAuthenticationEnabled,
   restServerDefaultHandlers,
   setProcessTokenSecret,
@@ -454,6 +456,10 @@ const applicationDeploymentMap: ApplicationDeploymentMap = deployments.reduce(
 );
 
 myLogger.info(`ApplicationDeploymentMap for new deployments: ${JSON.stringify(applicationDeploymentMap, circularReplacer(), 2)}`);
+
+setPersistRotatedSecret(async (args) => {
+  await persistRotatedSecretRow(domainController, args, applicationDeploymentMap);
+});
 
 // open all newly found stores
 for (const c of deploymentsToOpen) {

@@ -1330,15 +1330,20 @@ export {
   encryptSecret,
   getSecretsMasterKey,
   hydrateSecrets,
+  persistRotatedSecretRow,
   setSecretsMasterKey,
+  type PersistRotatedSecretRowArgs,
 } from "./4_services/SecretsService.js";
 export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";
 export {
   allowInsecureBaseUrlsForTests,
   clearAllowedInsecureBaseUrlsForTests,
   clearExternalServiceTokenCacheForTests,
+  clearPersistRotatedSecret,
   executeExternalServiceOperation,
   oauth2PrincipalCacheScope,
+  setPersistRotatedSecret,
+  type PersistRotatedSecret,
 } from "./4_services/ExternalServiceClient.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";
 export {
