@@ -79,6 +79,11 @@ describe.skipIf(!shouldRun)("serverSecrets — SecretStore + parseServerArgs + r
     });
   });
 
+  it("parseServerArgs does not register secrets into the runtime store", () => {
+    parseServerArgs(["--secret", "a=b"]);
+    expect(() => resolveSecret("a")).toThrow(/Unknown or empty secret/);
+  });
+
   it("resolveSecret unknown or empty fails closed without leaking the map", () => {
     registerSecrets({ fakeSpotify: "test-token", other: "keep-secret" });
     expect(() => resolveSecret("nope")).toThrow();

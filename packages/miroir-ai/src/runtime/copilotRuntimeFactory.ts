@@ -1,5 +1,5 @@
 // CopilotRuntime factory — builds the runtime and service adapter from environment config.
-// API keys are read from server-side environment variables; they never reach the browser.
+// API keys come from the named-secret store (D6); they never reach the browser.
 
 import {
   CopilotRuntime,
@@ -11,6 +11,7 @@ import {
 import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
 import type { Action, Parameter } from "@copilotkit/shared";
+import { AI_SECRET_IMPORT_ALIASES, resolveSecret } from "miroir-core";
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 
@@ -23,25 +24,19 @@ export interface AiRuntimeConfig {
 }
 
 /**
- * Returns the API key for the given provider from environment variables.
+ * Returns the API key for the given provider from the named-secret store (D6).
  * Keys are never exposed to the browser.
  */
-function getApiKey(providerType: AiProviderType): string {
-  const envVarMap: Record<AiProviderType, string> = {
-    openai: "AI_OPENAI_KEY",
-    anthropic: "AI_ANTHROPIC_KEY",
-    google: "AI_GOOGLE_KEY",
-    github: "AI_GITHUB_TOKEN",
-  };
-  const envVar = envVarMap[providerType];
-  const key = process.env[envVar];
-  if (!key) {
-    throw new Error(
-      `Missing environment variable ${envVar}. ` +
-        `Set it on the server to enable AI features with provider '${providerType}'.`
-    );
+export function getApiKey(providerType: AiProviderType): string {
+  const alias = AI_SECRET_IMPORT_ALIASES[providerType];
+  if (!alias) {
+    throw new Error(`Unsupported AI provider type: ${providerType}`);
   }
-  return key;
+  try {
+    return resolveSecret(alias.name).value;
+  } catch {
+    throw new Error(`missing secret \`${alias.name}\``);
+  }
 }
 
 /**

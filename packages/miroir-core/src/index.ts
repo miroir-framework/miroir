@@ -1325,13 +1325,19 @@ export {
   type ResolveSecretResult,
 } from "./4_services/SecretStore.js";
 export {
+  AI_SECRET_IMPORT_ALIASES,
+  assembleSecretImportSet,
   clearSecretsMasterKey,
   decryptSecret,
   encryptSecret,
   getSecretsMasterKey,
   hydrateSecrets,
+  importProcessSecrets,
+  persistImportedProcessSecrets,
   persistRotatedSecretRow,
+  requireWrappingKeyForSecretImport,
   setSecretsMasterKey,
+  type AiSecretProvider,
   type PersistRotatedSecretRowArgs,
 } from "./4_services/SecretsService.js";
 export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";

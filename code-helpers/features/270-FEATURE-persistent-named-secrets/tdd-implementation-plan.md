@@ -75,7 +75,7 @@ This plan does **not** cover: OAuth PKCE in the UI; `MiroirRight.capability` as 
 | 3 | MCP tool **response** redaction (`passwordHash` + `ciphertext`) | ✅ DONE | `secretsRedact.270.phase3.unit.test.ts` (miroir-mcp) |
 | 4 | Per-user secrets + principal thread + principal-scoped OAuth cache | ✅ DONE | `secretsPrincipal.270.phase4.integ.test.ts` |
 | 5 | Persist rotated refresh token (D7) | ✅ DONE | `secretsRotation.270.phase5.integ.test.ts` |
-| 6 | Import-then-discard + AI `getApiKey` via `resolveSecret` | ⬜ | `secretsImport.270.phase6.unit.test.ts` + `secretsImport.270.phase6.integ.test.ts` + `copilotRuntimeFactory` |
+| 6 | Import-then-discard + AI `getApiKey` via `resolveSecret` | ✅ DONE | `secretsImport.270.phase6.unit.test.ts` + `secretsImport.270.phase6.integ.test.ts` + `copilotRuntimeFactory` |
 | 7 | `?page=secrets` UI | ⬜ | `secretsPage.270.phase7.integ.test.tsx` |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | `unit-270-persistent-secrets` + `appstack-270-persistent-secrets` + docs |
 
@@ -588,7 +588,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ## Slice 6 — Import-then-discard + AI keys via `resolveSecret`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -643,7 +643,20 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-server/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Assembler:** `assembleSecretImportSet(parsed.secrets, env)` in `SecretsService` — one D6 table `AI_SECRET_IMPORT_ALIASES` (`AI_OPENAI_KEY`→`aiOpenaiKey`, `AI_ANTHROPIC_KEY`→`aiAnthropicKey`, `AI_GOOGLE_KEY`→`aiGoogleKey`, `AI_GITHUB_TOKEN`→`aiGithubToken`). `--secret` / `MIROIR_SECRET_*` stay in `parseServerArgs` (P3); aliases are added on top; parsed names win. `AI_PROVIDER_TYPE` / `AI_MODEL` / `LIVE_SPOTIFY_*` are not aliases.
+- **server.ts flip (R7):** `registerSecrets(parsed.secrets)` removed. Parse-time: assemble import set + `requireWrappingKeyForSecretImport` (non-empty import + no wrapping key → throw mentioning wrapping key; usage printed). After Admin store open: `importProcessSecrets` → `persistImportedProcessSecrets` (`actionLabel: "secrets.set"`, P7) → existing storage query → hydrate. Empty import + no rows + no key still starts. `registerSecrets` remains exported as the test hatch.
+- **P18 persist path:** integ drives the same orchestrator against `domainControllerForServer` + `secrets.set`, then `clearSecrets` + hydrate-from-store + `resolveSecret`. Teardown `secrets.delete`; no leftover `admin_data/a96856df-…/*.json`.
+- **AI:** `getApiKey` uses `resolveSecret` + the D6 table; error is `missing secret \`aiGithubToken\`` (etc.). Adapter tests `registerSecrets({ aiOpenaiKey, … })` instead of `vi.stubEnv("AI_OPENAI_KEY")`.
+- **Tests:** `secretsImport.270.phase6.unit.test.ts` (7); `secretsImport.270.phase6.integ.test.ts` (1); `copilotRuntimeFactory.unit.test.ts` (11); `serverSecrets.unit.test.ts` parse-shape kept + “parse does not register”.
+- **Validation:**
+  - `RUN_TEST=secretsImport.270 … -w miroir-core -- secretsImport.270` — 7/7 passed
+  - `RUN_TEST=secretsImport.270 … -w miroir-standalone-app -- --profile emulatedServer-filesystem secretsImport.270` — 1/1 passed
+  - `RUN_TEST=serverSecrets … serverSecrets` — 9/9 passed
+  - `npm run testByFile -w miroir-ai -- copilotRuntimeFactory` — 11/11 passed
+  - `RUN_TEST=externalServiceQuery … --profile emulatedServer-filesystem externalServiceQuery` — 13/13 passed
+  - `RUN_TEST=secretsHydrate.270 … --profile emulatedServer-filesystem secretsHydrate.270` — 2/2 passed
+  - `tsc --noEmit --skipLibCheck` for miroir-core, miroir-ai, miroir-server — passed
+- **Deviations:** (1) Instance uuids use `uuid` `v4` (not `node:crypto.randomUUID`) because standalone-app vitest’s crypto polyfill has no `randomUUID` (same class of limit as Slice 2 `scrypt`). (2) `getApiKey` is exported so the factory unit file can assert the github missing-secret text directly. Help text: `--secret` is bootstrap import only; steady-state is wrapping key.
 
 ---
 

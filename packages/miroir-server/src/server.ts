@@ -50,11 +50,14 @@ import {
   loginWithPassword,
   persistChangedPasswordHash,
   ParseServerArgsError,
+  assembleSecretImportSet,
   handleSecretsHttpRoute,
   hydrateSecrets,
+  importProcessSecrets,
   parseServerArgs,
+  persistImportedProcessSecrets,
   persistRotatedSecretRow,
-  registerSecrets,
+  requireWrappingKeyForSecretImport,
   setPersistRotatedSecret,
   resolveAuthenticationEnabled,
   restServerDefaultHandlers,
@@ -150,7 +153,9 @@ function printUsageAndExit(exitCode = 1): never {
   console.error(`  --key      <path>   Path to the TLS private key file (.pem)`);
   console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_KEY`);
   myLogger.error(`                      (default: <certsdir>/localhost-key.pem)`);
-  console.error(`  --secret   <name>=<value>  Named secret (repeatable). Env fallback: MIROIR_SECRET_<NAME>`);
+  console.error(`  --secret   <name>=<value>  Bootstrap import only (repeatable). Env: MIROIR_SECRET_<NAME>`);
+  console.error(`                      plus AI_OPENAI_KEY / AI_ANTHROPIC_KEY / AI_GOOGLE_KEY / AI_GITHUB_TOKEN.`);
+  console.error(`                      Requires a wrapping key. Steady-state is --secrets-master-key only.`);
   console.error(`  --secrets-master-key <value>  Wrapping key for persisted secrets. Env: MIROIR_SECRETS_MASTER_KEY`);
   console.error(`  --disable-auth      Disable user authentication (today's open API)`);
   console.error(`  --enable-auth       Enable user authentication (overrides config/env)`);
@@ -164,6 +169,7 @@ let argCertFile: string | undefined;
 let argKeyFile: string | undefined;
 let registeredSecretNames: string[] = [];
 let secretsMasterKey: string | undefined;
+let secretImportSet: Record<string, string> = {};
 
 try {
   const parsed = parseServerArgs(process.argv.slice(2), process.env);
@@ -174,14 +180,19 @@ try {
   argCertsDir = parsed.certsDir;
   argCertFile = parsed.certFile;
   argKeyFile = parsed.keyFile;
-  registerSecrets(parsed.secrets);
-  registeredSecretNames = Object.keys(parsed.secrets);
+  secretImportSet = assembleSecretImportSet(parsed.secrets, process.env);
+  requireWrappingKeyForSecretImport(secretImportSet, parsed.secretsMasterKey);
+  registeredSecretNames = Object.keys(secretImportSet);
   secretsMasterKey = parsed.secretsMasterKey;
   if (secretsMasterKey) {
     setSecretsMasterKey(secretsMasterKey);
   }
 } catch (error) {
   if (error instanceof ParseServerArgsError) {
+    console.error(`Error: ${error.message}`);
+    printUsageAndExit();
+  }
+  if (error instanceof Error && /wrapping key/i.test(error.message)) {
     console.error(`Error: ${error.message}`);
     printUsageAndExit();
   }
@@ -194,8 +205,8 @@ console.log(`  --certsdir : ${argCertsDir ?? '(default: <repo-root>/certs/)'}`);
 console.log(`  --cert     : ${argCertFile ?? process.env.MIROIR_TLS_CERT ?? '(default: <certsdir>/localhost.pem)'}`);
 console.log(`  --key      : ${argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? '(default: <certsdir>/localhost-key.pem)'}`);
 const secretsSummary = registeredSecretNames.length > 0
-  ? `${registeredSecretNames.length} named secret(s) registered: ${registeredSecretNames.join(", ")}`
-  : "(none registered — external-service endpoints with a credentialKey will fail at call time)";
+  ? `${registeredSecretNames.length} named secret(s) queued for bootstrap import: ${registeredSecretNames.join(", ")}`
+  : "(none — steady-state uses wrapping key + persisted MiroirSecret rows)";
 console.log(`  --secret   : ${secretsSummary}`);
 console.log(`  --secrets-master-key : ${secretsMasterKey ? "(set)" : "(not set)"}`);
 
@@ -373,6 +384,14 @@ for (const c of Object.entries(configurations)) {
     defaultSelfApplicationDeploymentMap,
     defaultMetaModelEnvironment
   );
+}
+
+if (Object.keys(secretImportSet).length > 0 && secretsMasterKey) {
+  const importedInstances = importProcessSecrets({
+    wrappingKey: secretsMasterKey,
+    secrets: secretImportSet,
+  });
+  await persistImportedProcessSecrets(domainController, importedInstances);
 }
 
 const secretRowsQuery = await domainController.handleBoxedExtractorOrQueryAction(

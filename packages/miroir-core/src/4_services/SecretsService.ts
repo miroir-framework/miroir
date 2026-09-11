@@ -1,9 +1,10 @@
 /**
- * Wrapping-key hold, AES-256-GCM encrypt/decrypt, and hydrate of Admin MiroirSecret rows.
- * Issue #270 Slice 1 — no import upsert (that is Slice 6).
- * Slice 5 adds persistRotatedSecretRow (DC passed in; this module does not import DomainController).
+ * Wrapping-key hold, AES-256-GCM encrypt/decrypt, hydrate, and process-scoped import.
+ * Persist of imported rows is the caller's job (`secrets.set`); this module does not
+ * import DomainController.
  */
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
+import { v4 as uuidv4 } from "uuid";
 
 import type { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -23,6 +24,80 @@ const QUERY_ENDPOINT = "9e404b3c-368c-40cb-be8b-e3c28550c25e";
 
 const AES_256_GCM = "aes-256-gcm";
 const GCM_IV_LENGTH = 12;
+
+/** D6 — one table: AI key env aliases → process-scoped secret names. Provider/model stay env. */
+export const AI_SECRET_IMPORT_ALIASES = {
+  openai: { env: "AI_OPENAI_KEY", name: "aiOpenaiKey" },
+  anthropic: { env: "AI_ANTHROPIC_KEY", name: "aiAnthropicKey" },
+  google: { env: "AI_GOOGLE_KEY", name: "aiGoogleKey" },
+  github: { env: "AI_GITHUB_TOKEN", name: "aiGithubToken" },
+} as const;
+
+export type AiSecretProvider = keyof typeof AI_SECRET_IMPORT_ALIASES;
+
+/**
+ * Import set = `--secret` / `MIROIR_SECRET_*` (already in `parsed.secrets`) plus the four
+ * D6 AI key env aliases. `AI_PROVIDER_TYPE` / `AI_MODEL` / `LIVE_SPOTIFY_*` are not aliases.
+ * Existing parsed names win over an AI env alias for the same secret name.
+ */
+export function assembleSecretImportSet(
+  parsedSecrets: Record<string, string>,
+  env?: NodeJS.ProcessEnv,
+): Record<string, string> {
+  const importSet: Record<string, string> = { ...parsedSecrets };
+  if (!env) {
+    return importSet;
+  }
+  for (const alias of Object.values(AI_SECRET_IMPORT_ALIASES)) {
+    const value = env[alias.env];
+    if (!value || importSet[alias.name]) {
+      continue;
+    }
+    importSet[alias.name] = value;
+  }
+  return importSet;
+}
+
+function importSetHasValues(secrets: Record<string, string>): boolean {
+  return Object.values(secrets).some((value) => value !== "");
+}
+
+/** R7: a non-empty import set requires a wrapping key. */
+export function requireWrappingKeyForSecretImport(
+  importSet: Record<string, string>,
+  wrappingKey?: string,
+): void {
+  if (importSetHasValues(importSet) && !wrappingKey) {
+    throw new Error(
+      "Secret import requires a wrapping key (--secrets-master-key or MIROIR_SECRETS_MASTER_KEY)",
+    );
+  }
+}
+
+/**
+ * Encrypt process-scoped MiroirSecret instances. Persist is the caller's job
+ * (`actionLabel: "secrets.set"`). Does not register hatch secrets.
+ */
+export function importProcessSecrets(params: {
+  wrappingKey?: string;
+  secrets: Record<string, string>;
+}): EntityInstance[] {
+  const entries = Object.entries(params.secrets).filter(([, value]) => value !== "");
+  requireWrappingKeyForSecretImport(
+    Object.fromEntries(entries),
+    params.wrappingKey,
+  );
+  return entries.map(([name, value]) => {
+    return {
+      uuid: uuidv4(),
+      parentName: "MiroirSecret",
+      parentUuid: ENTITY_MIROIR_SECRET_UUID,
+      name,
+      ciphertext: encryptSecret("aes-256-gcm", params.wrappingKey as string, value),
+      algorithm: "aes-256-gcm",
+    } as EntityInstance;
+  });
+}
 
 let secretsMasterKey: string | undefined;
 
@@ -244,4 +319,66 @@ export async function persistRotatedSecretRow(
     return;
   }
   registerHydratedProcessSecret(args.name, args.value);
+}
+
+/**
+ * Upsert imported process-scoped instances via `secrets.set`.
+ * Matching is by process-scoped name; existing row uuid is kept.
+ */
+export async function persistImportedProcessSecrets(
+  domainController: DomainControllerInterface,
+  instances: EntityInstance[],
+  applicationDeploymentMap: ApplicationDeploymentMap = defaultSelfApplicationDeploymentMap,
+): Promise<void> {
+  if (instances.length === 0) {
+    return;
+  }
+  const rows = await querySecretRowsForPersist(domainController, applicationDeploymentMap);
+  const toCreate: EntityInstance[] = [];
+  const toUpdate: EntityInstance[] = [];
+  for (const instance of instances) {
+    const name = String((instance as { name?: string }).name ?? "");
+    const existing = rows.find((row) => rowMatches(row, name, "process"));
+    if (existing?.uuid) {
+      const updated = {
+        ...existing,
+        ...instance,
+        uuid: String(existing.uuid),
+        parentName: "MiroirSecret",
+        parentUuid: ENTITY_MIROIR_SECRET_UUID,
+      } as EntityInstance;
+      delete (updated as { miroirUser?: string }).miroirUser;
+      toUpdate.push(updated);
+    } else {
+      toCreate.push(instance);
+    }
+  }
+  const persist = async (
+    actionType: "createInstance" | "updateInstance",
+    objects: EntityInstance[],
+  ): Promise<void> => {
+    if (objects.length === 0) {
+      return;
+    }
+    const persistResult = await domainController.handleAction(
+      {
+        actionType,
+        actionLabel: SECRETS_SET_ACTION_LABEL,
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: ADMIN_APPLICATION_UUID,
+          applicationSection: "data",
+          parentUuid: ENTITY_MIROIR_SECRET_UUID,
+          objects,
+        },
+      },
+      applicationDeploymentMap,
+      defaultMetaModelEnvironment,
+    );
+    if (persistResult instanceof Action2Error) {
+      throw new Error(persistResult.errorMessage ?? "Failed to persist imported secrets");
+    }
+  };
+  await persist("createInstance", toCreate);
+  await persist("updateInstance", toUpdate);
 }
