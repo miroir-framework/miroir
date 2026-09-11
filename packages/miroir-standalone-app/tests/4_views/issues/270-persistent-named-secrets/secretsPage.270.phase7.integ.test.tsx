@@ -448,15 +448,29 @@ describe.skipIf(!shouldRun).sequential("secretsPage.270.phase7 — ?page=secrets
     });
   });
 
-  it("Admin menu still has 8 items and no Secrets label; path-segment has no secrets case", () => {
+  it("Admin menu has a Secrets list report; query-param page still serves SecretsPage", () => {
     const menu = JSON.parse(readFileSync(ADMIN_MENU, "utf8")) as {
-      definition?: { definition?: Array<{ title?: string; items?: Array<{ label?: string }> }> };
+      definition?: {
+        definition?: Array<{
+          title?: string;
+          items?: Array<{
+            label?: string;
+            miroirMenuItemType?: string;
+            reportUuid?: string;
+            targetRoot?: string;
+          }>;
+        }>;
+      };
     };
     const adminSection = menu.definition?.definition?.find((section) => section.title === "Admin");
     const items = adminSection?.items ?? [];
-    expect(items).toHaveLength(8);
-    const labels = items.map((item) => item.label ?? "");
-    expect(labels.some((label) => /secrets/i.test(label))).toBe(false);
+    expect(items).toHaveLength(9);
+    const secretsItem = items.find((item) => item.label === "Secrets");
+    expect(secretsItem).toMatchObject({
+      miroirMenuItemType: "miroirMenuReportLink",
+      reportUuid: "288c9faf-c92e-49a4-b535-99ed7bb01793",
+    });
+    expect(secretsItem?.targetRoot).toBeUndefined();
 
     const dispatcherSrc = readFileSync(PAGE_DISPATCHER, "utf8");
     const queryParamStart = dispatcherSrc.indexOf("Primary: query-param mode");

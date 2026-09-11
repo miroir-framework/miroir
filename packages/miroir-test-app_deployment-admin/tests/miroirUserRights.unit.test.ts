@@ -28,6 +28,8 @@ const EXPECTED_REPORT_NAMES = [
   "MiroirUserDetails",
   "MiroirRightList",
   "MiroirRightDetails",
+  "MiroirSecretList",
+  "MiroirSecretDetails",
 ] as const;
 
 type MlField = {
@@ -355,11 +357,35 @@ describe("Admin reports and menu for MiroirUser / MiroirRight", () => {
     expect(instanceSection?.definition?.parentUuid).toBe(rightEntity!.uuid);
   });
 
-  it("AdminMenu references MiroirUserList and MiroirRightList reports", () => {
+  it("MiroirSecret list/detail target MiroirSecret and entity points at the details report", () => {
+    const secretEntity = findAdminEntityByName("MiroirSecret", modelDir) as Record<string, any>;
+    expect(secretEntity?.uuid).toBe("a96856df-2b38-494a-8027-82617e2d64ad");
+
+    const list = findReportByName("MiroirSecretList", modelDir) as Record<string, any>;
+    const details = findReportByName("MiroirSecretDetails", modelDir) as Record<string, any>;
+    expect(list).toBeDefined();
+    expect(details).toBeDefined();
+    expect(secretEntity.defaultInstanceDetailsReportUuid).toBe(details.uuid);
+
+    const listSection = list.definition?.section;
+    expect(listSection?.type).toBe("objectListReportSection");
+    expect(listSection?.definition?.parentUuid).toBe(secretEntity.uuid);
+
+    const detailSections = details.definition?.section?.definition;
+    expect(Array.isArray(detailSections)).toBe(true);
+    const instanceSection = detailSections.find(
+      (s: any) => s.type === "objectInstanceReportSection"
+    );
+    expect(instanceSection?.definition?.parentUuid).toBe(secretEntity.uuid);
+  });
+
+  it("AdminMenu references MiroirUserList, MiroirRightList, and MiroirSecretList reports", () => {
     const userList = findReportByName("MiroirUserList", modelDir);
     const rightList = findReportByName("MiroirRightList", modelDir);
+    const secretList = findReportByName("MiroirSecretList", modelDir);
     expect(userList?.uuid).toBeTruthy();
     expect(rightList?.uuid).toBeTruthy();
+    expect(secretList?.uuid).toBeTruthy();
 
     const menu = readJsonInstance(join(modelDir, MENU_PATH)) as Record<string, any>;
     const items: any[] = menu.definition?.definition?.[0]?.items ?? [];
@@ -368,9 +394,13 @@ describe("Admin reports and menu for MiroirUser / MiroirRight", () => {
       .map((i) => i.reportUuid);
     expect(reportUuids).toContain(userList!.uuid);
     expect(reportUuids).toContain(rightList!.uuid);
-    const rightsItem = items.find((i) => i.reportUuid === rightList!.uuid);
-    expect(rightsItem?.menuItemScope).toBe("data");
-    expect(rightsItem?.section).toBe("data");
+    expect(reportUuids).toContain(secretList!.uuid);
+    for (const label of ["Users", "Rights", "Secrets"]) {
+      const item = items.find((i) => i.label === label);
+      expect(item?.miroirMenuItemType).toBe("miroirMenuReportLink");
+      expect(item?.section).toBe("data");
+      expect(item?.menuItemScope).toBeUndefined();
+    }
   });
 
   it("package index.ts exports the new reports", () => {
@@ -379,6 +409,8 @@ describe("Admin reports and menu for MiroirUser / MiroirRight", () => {
     expect(indexSource).toMatch(/export \{ default as reportMiroirUserDetails \}/);
     expect(indexSource).toMatch(/export \{ default as reportMiroirRightList \}/);
     expect(indexSource).toMatch(/export \{ default as reportMiroirRightDetails \}/);
+    expect(indexSource).toMatch(/export \{ default as reportMiroirSecretList \}/);
+    expect(indexSource).toMatch(/export \{ default as reportMiroirSecretDetails \}/);
   });
 
   it("does not add dedicated MiroirUser/MiroirRight React CRUD form components", () => {

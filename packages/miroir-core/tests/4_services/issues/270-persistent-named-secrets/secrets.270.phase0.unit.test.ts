@@ -73,6 +73,10 @@ if (runThis) {
       expect(readJson(join(ADMIN_MODEL_ENTITIES, `${MIROIR_SECRET_ENTITY_UUID}.json`)).name).toBe(
         "MiroirSecret",
       );
+      expect(
+        readJson(join(ADMIN_MODEL_ENTITIES, `${MIROIR_SECRET_ENTITY_UUID}.json`))
+          .defaultInstanceDetailsReportUuid,
+      ).toBe("e8a4612f-74bd-456b-83dc-f10a11f6d1b3");
     });
 
     it("emulated test-asset Admin entity folder has exactly 6 entities including MiroirSecret", () => {
@@ -212,17 +216,33 @@ if (runThis) {
   });
 
   describe("secrets.270.phase0 survives", () => {
-    it("Admin menu has 8 items with no Credentials or Secrets labels", () => {
+    it("Admin menu has Users, Rights, and Secrets list reports and no Credentials label", () => {
       const menu = readJson(ADMIN_MENU);
       const definition = menu.definition as {
-        definition?: Array<{ title?: string; items?: Array<{ label?: string }> }>;
+        definition?: Array<{
+          title?: string;
+          items?: Array<{
+            label?: string;
+            menuItemScope?: string;
+            miroirMenuItemType?: string;
+            reportUuid?: string;
+            targetRoot?: string;
+          }>;
+        }>;
       };
       const adminSection = definition.definition?.find((section) => section.title === "Admin");
       const items = adminSection?.items ?? [];
-      expect(items).toHaveLength(8);
+      expect(items).toHaveLength(9);
       const labels = items.map((item) => item.label ?? "");
+      expect(labels).toEqual(expect.arrayContaining(["Users", "Rights", "Secrets"]));
       expect(labels.some((label) => /credentials/i.test(label))).toBe(false);
-      expect(labels.some((label) => /secrets/i.test(label))).toBe(false);
+      const secretsItem = items.find((item) => item.label === "Secrets");
+      expect(secretsItem).toMatchObject({
+        miroirMenuItemType: "miroirMenuReportLink",
+        reportUuid: "288c9faf-c92e-49a4-b535-99ed7bb01793",
+      });
+      expect(secretsItem?.menuItemScope).toBeUndefined();
+      expect(secretsItem?.targetRoot).toBeUndefined();
     });
 
     it("parseServerArgs([--secret, a=b]).secrets equals { a: b }", () => {

@@ -1,0 +1,35 @@
+{
+  "uuid": "e8a4612f-74bd-456b-83dc-f10a11f6d1b3",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "MiroirSecretDetails",
+  "defaultLabel": "Secret details",
+  "definition": {
+    "extractorTemplates": {
+      "miroirSecret": {
+        "extractorOrCombinerType": "extractorByPrimaryKey",
+        "parentName": "MiroirSecret",
+        "parentUuid": "a96856df-2b38-494a-8027-82617e2d64ad",
+        "instanceUuid": {
+          "transformerType": "getFromParameters",
+          "interpolation": "build",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "a96856df-2b38-494a-8027-82617e2d64ad",
+            "fetchedDataReference": "miroirSecret"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -43,6 +43,8 @@ export declare const reportMiroirUserList: any;
 export declare const reportMiroirUserDetails: any;
 export declare const reportMiroirRightList: any;
 export declare const reportMiroirRightDetails: any;
+export declare const reportMiroirSecretList: any;
+export declare const reportMiroirSecretDetails: any;
 export declare const menuDefaultAdmin: any;
 export declare const adminSelfApplication: any;
 export declare const selfApplicationStoreBasedConfigurationAdmin: any;

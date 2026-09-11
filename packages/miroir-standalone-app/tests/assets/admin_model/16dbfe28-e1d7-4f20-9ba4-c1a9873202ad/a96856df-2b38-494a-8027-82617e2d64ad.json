@@ -7,6 +7,7 @@
   "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
   "conceptLevel": "Model",
   "description": "Named process- or user-scoped secret stored as ciphertext. Values are never shown in reports or generic editors; set only via dedicated secrets APIs.",
+  "defaultInstanceDetailsReportUuid": "e8a4612f-74bd-456b-83dc-f10a11f6d1b3",
   "viewAttributes": [
     "name",
     "miroirUser",
