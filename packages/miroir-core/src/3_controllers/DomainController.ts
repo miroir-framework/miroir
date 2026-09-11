@@ -111,7 +111,10 @@ import {
   miroirModelEntities,
 } from "../1_core/Model";
 import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partialMutationGuard.js";
-import { assertCredentialInstanceMutationAllowed } from "../1_core/authentication/AuthenticationPolicy.js";
+import {
+  assertCredentialInstanceMutationAllowed,
+  assertSecretInstanceMutationAllowed,
+} from "../1_core/authentication/AuthenticationPolicy.js";
 import { findPresentModelEntityFromDomainState } from "../2_domain/ExtractorVirtualAttributes.js";
 import { stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes.js";
 import {
@@ -1066,6 +1069,13 @@ export class DomainController implements DomainControllerInterface {
     if (!rejectedCredential.allowed) {
       return Promise.resolve(
         new Action2Error("FailedToHandleAction", rejectedCredential.errorMessage),
+      );
+    }
+    // Transactional/commit-replay paths bypass this secret/credential guard (analysis R11).
+    const rejectedSecret = assertSecretInstanceMutationAllowed(instanceAction);
+    if (!rejectedSecret.allowed) {
+      return Promise.resolve(
+        new Action2Error("FailedToHandleAction", rejectedSecret.errorMessage),
       );
     }
 

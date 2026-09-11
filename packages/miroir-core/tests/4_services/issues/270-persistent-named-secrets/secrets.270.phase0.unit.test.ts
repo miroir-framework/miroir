@@ -107,7 +107,7 @@ if (runThis) {
   });
 
   describe("secrets.270.phase0 consumed-by Slice 2", () => {
-    it("restServerDefaultHandlers has no /secrets url", () => {
+    it("restServerDefaultHandlers still has the 7 CRUD urls and no /secrets", () => {
       const restServerSrc = readFileSync(join(CORE_SRC, "4_services/RestServer.ts"), "utf8");
       const handlerBlock = restServerSrc.slice(
         restServerSrc.indexOf("export const restServerDefaultHandlers"),
@@ -123,6 +123,21 @@ if (runThis) {
         "/query",
       ]);
       expect(urls.some((url) => url.includes("/secrets"))).toBe(false);
+    });
+
+    it("dedicated /secrets handler exists outside restServerDefaultHandlers", () => {
+      const secretsHttp = readFileSync(join(CORE_SRC, "4_services/SecretsHttp.ts"), "utf8");
+      const stubSrc = readFileSync(join(CORE_SRC, "4_services/RestClientStub.ts"), "utf8");
+      const serverSrc = readFileSync(
+        join(REPO_ROOT, "packages/miroir-server/src/server.ts"),
+        "utf8",
+      );
+      expect(secretsHttp).toContain("export async function handleSecretsHttpRoute");
+      expect(secretsHttp).toContain("/secrets");
+      expect(stubSrc).toContain("handleSecretsHttpRoute");
+      expect(serverSrc).toContain('app.get("/secrets"');
+      expect(serverSrc).toContain('app.post("/secrets"');
+      expect(serverSrc).toContain('app.delete("/secrets"');
     });
   });
 

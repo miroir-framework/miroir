@@ -71,7 +71,7 @@ This plan does **not** cover: OAuth PKCE in the UI; `MiroirRight.capability` as 
 |---|---|---|---|
 | 0 | Characterize SecretStore / CLI / principal-drop / caches / Admin inventory | ✅ DONE | `secrets.270.phase0.unit.test.ts` |
 | 1 | **Tracer:** process-scoped persist + hydrate + fake Spotify query | ✅ DONE | `secretsHydrate.270.phase1.integ.test.ts` + `secretsService.270.phase1.unit.test.ts` |
-| 2 | Dedicated `/secrets` HTTP + CRUD guard (in-process persist) | ⬜ | `secretsHttp.270.phase2.integ.test.ts` |
+| 2 | Dedicated `/secrets` HTTP + CRUD guard (in-process persist) | ✅ DONE | `secretsHttp.270.phase2.integ.test.ts` |
 | 3 | MCP tool **response** redaction (`passwordHash` + `ciphertext`) | ⬜ | `secretsRedact.270.phase3.unit.test.ts` (miroir-mcp) |
 | 4 | Per-user secrets + principal thread + principal-scoped OAuth cache | ⬜ | `secretsPrincipal.270.phase4.integ.test.ts` |
 | 5 | Persist rotated refresh token (D7) | ⬜ | `secretsRotation.270.phase5.integ.test.ts` |
@@ -163,7 +163,7 @@ Do **not** rely on `setupMiroirTest` returning the in-stack stub (it does not to
 2. `setServerDomainController(executionEnvironment.domainControllerForServer)`
 3. `setPersistenceStoreControllerManager(executionEnvironment.persistenceStoreControllerManager)`
 4. Load users + credentials from real `packages/miroir-test-app_deployment-admin/assets/admin_data` (same dirs as `access.262.phase3.unit.test.ts:28-54`); `setIdentityDirectory(identityDirectoryFromInstances(...))`
-5. Mint tokens with `setProcessTokenSecret(TEST_SECRET)` + `loginWithPassword` (alice-dev / carol’s seeded password)
+5. Mint tokens with `setProcessTokenSecret(TEST_SECRET)` + `issueBearerToken` for the real Alice/Carol principals (standalone-app vitest cannot `scrypt` / `loginWithPassword`)
 6. Call `stub.call("/secrets", "post", "/secrets", { body, headers: { Authorization: `Bearer ${token}` } })`
 
 Pure principal-thread assertions (no HTTP) may call `queryActionHandler` / `serverDomainController.handleBoxedExtractorOrQueryAction` / `handleAction` directly with `params.authPrincipal` / the `principal` argument — real handler, real DC, no mock.
@@ -322,7 +322,7 @@ Phase0 is re-run **after** its Consumed-by-Slice-1 assertions have been updated 
 
 ## Slice 2 — Dedicated `/secrets` HTTP + CRUD guard
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -332,7 +332,7 @@ As a signed-in platform user, I can set a process-scoped secret via `POST /secre
 
 ### Test fixture contract (P4; reused by Slices 4 and 7)
 
-See **Authenticated HTTP** above. Hatch off. Tokens minted per `access.262.phase3`. Test-local stub, not an extension of `setupMiroirTest` unless a later Realization records that as a deepening.
+See **Authenticated HTTP** above. Hatch off. Test-local stub, not an extension of `setupMiroirTest`. Standalone-app vitest cannot call `loginWithPassword` (Vite `node:crypto` polyfill has no `scrypt`) — mint with `setProcessTokenSecret` + `issueBearerToken` for the real Alice/Carol principals loaded from deployment-admin assets. `verifyBearerToken` has a byte-compare fallback when `timingSafeEqual` is missing.
 
 ### 2.1 RED
 
@@ -381,7 +381,18 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Tests:** `packages/miroir-core/tests/4_services/issues/270-persistent-named-secrets/secretsHttp.270.phase2.unit.test.ts` (5 tests: unlabeled create/update/delete/cascade rejected; labeled set/delete allowed; unauthenticated POST 401; Alice→Carol user-scope 403). `packages/miroir-standalone-app/tests/3_controllers/issues/270-persistent-named-secrets/secretsHttp.270.phase2.integ.test.ts` (5 tests: process POST persist+hydrate `source: "row"`; GET names only; unlabeled CRUD rejected on server DC; DELETE removes row; user-scope mismatch 403). Phase0 Consumed-by Slice 2 updated in place (P1): default handlers still the 7 CRUD urls with no `/secrets`; dedicated handler exists in `SecretsHttp.ts`, `RestClientStub`, and Express `server.ts`.
+- **Auth fixture that worked (P4):** test-local `RestClientStub` wired to `domainControllerForServer` + `persistenceStoreControllerManager`; identity directory from real `packages/miroir-test-app_deployment-admin/assets/admin_data` (`d20d09e5-…` / `6c3ab489-…`) via `identityDirectoryFromInstances`. Hatch stays off. Token mint is `setProcessTokenSecret` + `issueBearerToken` for the real Alice principal — `loginWithPassword(alice-dev)` is not callable in standalone-app vitest because the Vite `node:crypto` polyfill’s `scrypt` is not a function. Bearer bind on the stub required a `timingSafeEqual` fallback in `verifyBearerToken` (same polyfill). Persist still goes through `stub.call` → `handleSecretsHttpRoute` → `serverDomainController.handleAction`.
+- **Slice 1 migration (P7):** `secretsHydrate.270.phase1.integ.test.ts` `persistSecretRow` / `deleteCreatedSecretRows` now pass `actionLabel: "secrets.set"` / `"secrets.delete"`. Tracer re-run green.
+- **GREEN files:** `4_services/SecretsHttp.ts` (`handleSecretsHttpRoute`, encrypt via `SecretsService` + `getSecretsMasterKey()`, persist `createInstance`/`updateInstance`/`deleteInstance` with labels). Guard `assertSecretInstanceMutationAllowed` + `SECRETS_SET_ACTION_LABEL` / `SECRETS_DELETE_ACTION_LABEL` in `AuthenticationPolicy.ts` (1_core). Wired in `DomainController.handleInstanceAction` and `RestServer` CRUD handler with R11 one-line comments. `RestClientStub.call` after manager checks, before `restServerDefaultHandlers.find`. Express GET/POST/DELETE `/secrets` after `resolveGatedPrincipal`.
+- **Validation:**
+  - `RUN_TEST=secretsHttp.270 … -w miroir-core -- secretsHttp.270` — 5/5 passed
+  - `RUN_TEST=secretsHttp.270 … -w miroir-standalone-app -- --profile emulatedServer-filesystem secretsHttp.270` — 5/5 passed
+  - `RUN_TEST=secretsHydrate.270 … --profile emulatedServer-filesystem secretsHydrate.270` — 2/2 passed
+  - `RUN_TEST=authentication.71 … authentication.71` — 43/43 passed
+  - `RUN_TEST=secrets.270.phase0 … secrets.270.phase0` — 16/16 passed
+  - `tsc --noEmit --skipLibCheck` for miroir-core, miroir-standalone-app, miroir-server — passed
+- **Deviations:** (1) Integ token mint uses `issueBearerToken` rather than `loginWithPassword` because Vite polyfills `scrypt`. (2) `verifyBearerToken` falls back to a byte-compare when `timingSafeEqual` is missing/non-callable (standalone-app vitest). (3) Integ file uses `// @vitest-environment node`. Persist is not in-memory: logs show `secrets.set` / `secrets.delete` on the server DC. No leftover `admin_data/a96856df-…/*.json`.
 
 ---
 

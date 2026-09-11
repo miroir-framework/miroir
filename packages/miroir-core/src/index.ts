@@ -1349,7 +1349,10 @@ export {
   ENTITY_MIROIR_SECRET_UUID,
   ENTITY_MIROIR_USER_CREDENTIAL_UUID,
   ENTITY_MIROIR_USER_UUID,
+  SECRETS_DELETE_ACTION_LABEL,
+  SECRETS_SET_ACTION_LABEL,
   assertCredentialInstanceMutationAllowed,
+  assertSecretInstanceMutationAllowed,
   assertRequestAllowed,
   bindPrincipalToDirectory,
   bearerTokenFromAuthorizationHeader,
@@ -1410,6 +1413,10 @@ export {
   handleAuthHttpRoute,
   type AuthHttpResult,
 } from "./1_core/authentication/AuthenticationHttp.js";
+export {
+  handleSecretsHttpRoute,
+  type SecretsHttpResult,
+} from "./4_services/SecretsHttp.js";
 export {
   applicationIsReachable,
   authorizationHeaders,

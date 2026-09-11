@@ -257,6 +257,7 @@ async function persistSecretRow(): Promise<void> {
   const createResult = await domainControllerForServer.handleAction(
     {
       actionType: "createInstance",
+      actionLabel: "secrets.set",
       endpoint: INSTANCE_ENDPOINT,
       payload: {
         application: ADMIN_APPLICATION_UUID,
@@ -320,6 +321,7 @@ async function deleteCreatedSecretRows(): Promise<void> {
     await domainControllerForServer.handleAction(
       {
         actionType: "deleteInstance",
+        actionLabel: "secrets.delete",
         endpoint: INSTANCE_ENDPOINT,
         payload: {
           application: ADMIN_APPLICATION_UUID,

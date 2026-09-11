@@ -286,10 +286,26 @@ export async function verifyBearerToken(
   }
   const [payloadPart, signature] = parts;
   const expected = await hmacSha256Base64Url(secret, payloadPart);
-  const { timingSafeEqual } = await import("node:crypto");
   const left = Buffer.from(signature);
   const right = Buffer.from(expected);
-  if (left.length !== right.length || !timingSafeEqual(left, right)) {
+  if (left.length !== right.length) {
+    return undefined;
+  }
+  let signaturesMatch = false;
+  try {
+    const { timingSafeEqual } = await import("node:crypto");
+    signaturesMatch = typeof timingSafeEqual === "function" && timingSafeEqual(left, right);
+  } catch {
+    signaturesMatch = false;
+  }
+  if (!signaturesMatch) {
+    let diff = 0;
+    for (let i = 0; i < left.length; i++) {
+      diff |= left[i] ^ right[i];
+    }
+    signaturesMatch = diff === 0;
+  }
+  if (!signaturesMatch) {
     return undefined;
   }
   let payload: TokenPayload;
@@ -442,6 +458,8 @@ export function readUsableBearerPrincipal(
 }
 
 export const AUTH_CHANGE_PASSWORD_ACTION_LABEL = "auth.change-password";
+export const SECRETS_SET_ACTION_LABEL = "secrets.set";
+export const SECRETS_DELETE_ACTION_LABEL = "secrets.delete";
 
 export function redactCredentialSecretsFromValue(value: unknown): unknown {
   if (Array.isArray(value)) {
@@ -495,6 +513,49 @@ export function assertCredentialInstanceMutationAllowed(action: {
   return {
     allowed: false,
     errorMessage: "MiroirUserCredential can only be updated via POST /auth/change-password",
+  };
+}
+
+export function assertSecretInstanceMutationAllowed(action: {
+  actionType: string;
+  actionLabel?: string;
+  payload?: { parentUuid?: string; objects?: unknown };
+}): { allowed: true } | { allowed: false; errorMessage: string } {
+  if (
+    action.actionType !== "createInstance" &&
+    action.actionType !== "updateInstance" &&
+    action.actionType !== "deleteInstance" &&
+    action.actionType !== "deleteInstanceWithCascade"
+  ) {
+    return { allowed: true };
+  }
+  const objects = Array.isArray(action.payload?.objects) ? action.payload.objects : [];
+  const touchesSecret =
+    action.payload?.parentUuid === ENTITY_MIROIR_SECRET_UUID ||
+    objects.some(
+      (row) =>
+        !!row &&
+        typeof row === "object" &&
+        String((row as { parentUuid?: unknown }).parentUuid ?? "") === ENTITY_MIROIR_SECRET_UUID,
+    );
+  if (!touchesSecret) {
+    return { allowed: true };
+  }
+  if (
+    (action.actionType === "createInstance" || action.actionType === "updateInstance") &&
+    action.actionLabel === SECRETS_SET_ACTION_LABEL
+  ) {
+    return { allowed: true };
+  }
+  if (
+    (action.actionType === "deleteInstance" || action.actionType === "deleteInstanceWithCascade") &&
+    action.actionLabel === SECRETS_DELETE_ACTION_LABEL
+  ) {
+    return { allowed: true };
+  }
+  return {
+    allowed: false,
+    errorMessage: "MiroirSecret can only be mutated via POST /secrets or DELETE /secrets",
   };
 }
 

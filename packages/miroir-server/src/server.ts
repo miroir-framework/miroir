@@ -50,6 +50,7 @@ import {
   loginWithPassword,
   persistChangedPasswordHash,
   ParseServerArgsError,
+  handleSecretsHttpRoute,
   hydrateSecrets,
   parseServerArgs,
   registerSecrets,
@@ -775,6 +776,28 @@ app.post("/auth/change-password", async (request: CustomRequest, response: any) 
   }
   response.json({ changed: true });
 });
+
+const secretsExpressHandler = async (request: CustomRequest, response: any) => {
+  const principal = await resolveGatedPrincipal(
+    typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
+  );
+  const result = await handleSecretsHttpRoute({
+    url: "/secrets",
+    method: request.method,
+    body: request.body,
+    principal: principal ?? undefined,
+    serverDomainController: domainController,
+    applicationDeploymentMap,
+  });
+  if (!result) {
+    response.status(404).json({ status: "error", errorType: "NotFound" });
+    return;
+  }
+  response.status(result.status).json(result.data);
+};
+app.get("/secrets", secretsExpressHandler);
+app.post("/secrets", secretsExpressHandler);
+app.delete("/secrets", secretsExpressHandler);
 
 const endpointToolRegistry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
 myLogger.info("Setting up MCP server with dynamic EndpointToolRegistry");
