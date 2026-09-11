@@ -142,27 +142,25 @@ if (runThis) {
   });
 
   describe("secrets.270.phase0 consumed-by Slice 3", () => {
-    it("MCP success tool response JSON.stringify(subObject) is not redacted", () => {
+    it("MCP success tool response wraps subObject with redactCredentialSecretsFromValue", () => {
       const src = readFileSync(MCP_HANDLERS, "utf8");
       const successBlock = src.slice(
         src.indexOf('if (result.status === "ok")'),
         src.indexOf("} else {", src.indexOf('if (result.status === "ok")')),
       );
-      expect(successBlock).toContain("JSON.stringify(subObject, null, 2)");
-      expect(successBlock).not.toMatch(
-        /JSON\.stringify\(\s*redactCredentialSecretsFromValue\(\s*subObject\s*\)/,
-      );
+      expect(successBlock).toMatch(/redactCredentialSecretsFromValue\(\s*subObject\s*\)/);
+      expect(successBlock).toMatch(/parsed:\s*redactedSubObject/);
+      expect(successBlock).toMatch(/JSON\.stringify\(\s*redactedSubObject,\s*null,\s*2\s*\)/);
     });
 
-    it("MCP error context JSON.stringify(subObject) is not redacted", () => {
+    it("MCP error context wraps subObject with redactCredentialSecretsFromValue", () => {
       const src = readFileSync(MCP_HANDLERS, "utf8");
       const errorStart = src.indexOf("// Error response");
       const errorBlock = src.slice(errorStart, src.indexOf("} catch (error)", errorStart));
       expect(errorBlock).toContain("context:");
-      expect(errorBlock).toContain("JSON.stringify(subObject, null, 2)");
-      expect(errorBlock).not.toMatch(
-        /JSON\.stringify\(\s*redactCredentialSecretsFromValue\(\s*subObject\s*\)/,
-      );
+      expect(errorBlock).toMatch(/redactCredentialSecretsFromValue\(\s*subObject\s*\)/);
+      expect(errorBlock).toMatch(/parsed:\s*redactedSubObject/);
+      expect(errorBlock).toMatch(/JSON\.stringify\(\s*redactedSubObject,\s*null,\s*2\s*\)/);
     });
   });
 

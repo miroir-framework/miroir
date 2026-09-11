@@ -72,7 +72,7 @@ This plan does **not** cover: OAuth PKCE in the UI; `MiroirRight.capability` as 
 | 0 | Characterize SecretStore / CLI / principal-drop / caches / Admin inventory | ✅ DONE | `secrets.270.phase0.unit.test.ts` |
 | 1 | **Tracer:** process-scoped persist + hydrate + fake Spotify query | ✅ DONE | `secretsHydrate.270.phase1.integ.test.ts` + `secretsService.270.phase1.unit.test.ts` |
 | 2 | Dedicated `/secrets` HTTP + CRUD guard (in-process persist) | ✅ DONE | `secretsHttp.270.phase2.integ.test.ts` |
-| 3 | MCP tool **response** redaction (`passwordHash` + `ciphertext`) | ⬜ | `secretsRedact.270.phase3.unit.test.ts` (miroir-mcp) |
+| 3 | MCP tool **response** redaction (`passwordHash` + `ciphertext`) | ✅ DONE | `secretsRedact.270.phase3.unit.test.ts` (miroir-mcp) |
 | 4 | Per-user secrets + principal thread + principal-scoped OAuth cache | ⬜ | `secretsPrincipal.270.phase4.integ.test.ts` |
 | 5 | Persist rotated refresh token (D7) | ⬜ | `secretsRotation.270.phase5.integ.test.ts` |
 | 6 | Import-then-discard + AI `getApiKey` via `resolveSecret` | ⬜ | `secretsImport.270.phase6.unit.test.ts` + `secretsImport.270.phase6.integ.test.ts` + `copilotRuntimeFactory` |
@@ -398,7 +398,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 3 — MCP tool response redaction
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -440,7 +440,14 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-mcp/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Test:** `packages/miroir-mcp/tests/unit/issues/270-persistent-named-secrets/secretsRedact.270.phase3.unit.test.ts` (2 tests). Drives `handleMcpAction` with stubbed `domainController.handleAction` (no store). Success: credential `passwordHash` + `MiroirSecret` `ciphertext` omitted from `parsed` and `text`. Error: same fields omitted from `error.context` in both channels.
+- **GREEN:** `mcpHandlersForEndpoint.ts` — success, error, and catch branches assign `redactedSubObject = redactCredentialSecretsFromValue(subObject)` before `parsed` and `JSON.stringify` (existing `miroir-core` helper; no second redactor).
+- **Phase0:** Consumed-by Slice 3 assertions flipped in place (P1): success/error blocks now wrap `subObject` with `redactCredentialSecretsFromValue` and stringify `redactedSubObject`.
+- **Validation:**
+  - `RUN_TEST=secretsRedact.270 npm run testByFile -w miroir-mcp -- secretsRedact.270` — 2/2 passed
+  - `RUN_TEST=secrets.270.phase0 npm run testByFile -w miroir-core -- secrets.270.phase0` — 16/16 passed
+  - `npx tsc --noEmit --skipLibCheck -p packages/miroir-mcp/tsconfig.json` — passed
+- **Deviations:** Error-path test uses `errorContext.instances` rows with `parentUuid` (same shape as success) because `redactCredentialSecretsFromValue` strips `passwordHash` / `ciphertext` only on credential/secret instance records, not on bare top-level keys.
 
 ---
 
