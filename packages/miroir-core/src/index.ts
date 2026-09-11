@@ -1333,6 +1333,7 @@ export {
   getSecretsMasterKey,
   hydrateSecrets,
   importProcessSecrets,
+  miroirSecretInstanceUuid,
   persistImportedProcessSecrets,
   persistRotatedSecretRow,
   requireWrappingKeyForSecretImport,
@@ -1348,6 +1349,7 @@ export {
   clearPersistRotatedSecret,
   executeExternalServiceOperation,
   oauth2PrincipalCacheScope,
+  oauth2ResolvedCacheScope,
   setPersistRotatedSecret,
   type PersistRotatedSecret,
 } from "./4_services/ExternalServiceClient.js";

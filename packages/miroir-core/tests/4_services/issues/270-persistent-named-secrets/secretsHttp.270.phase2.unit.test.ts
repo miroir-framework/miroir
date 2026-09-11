@@ -4,7 +4,7 @@
  */
 import { afterEach, describe, expect, it } from "vitest";
 
-import type { DomainControllerInterface } from "miroir-core";
+import type { DomainControllerInterface, EntityInstance } from "miroir-core";
 import {
   ENTITY_MIROIR_SECRET_UUID,
   SECRETS_DELETE_ACTION_LABEL,
@@ -12,6 +12,8 @@ import {
   assertSecretInstanceMutationAllowed,
   clearSecretsMasterKey,
   handleSecretsHttpRoute,
+  miroirSecretInstanceUuid,
+  setSecretsMasterKey,
 } from "miroir-core";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -119,6 +121,54 @@ if (runThis) {
           data: expect.objectContaining({ errorType: "AuthenticationRequired" }),
         }),
       );
+    });
+
+    it("concurrent process POSTs for the same name share one uuid", async () => {
+      setSecretsMasterKey("test-secrets-master");
+      const rows: Record<string, unknown>[] = [];
+      const writes: { actionType: string; uuid: string }[] = [];
+      const serverDomainController = {
+        handleBoxedExtractorOrQueryAction: async () => {
+          const snapshot = [...rows];
+          await new Promise((resolve) => setTimeout(resolve, 20));
+          return { returnedDomainElement: { secrets: snapshot } };
+        },
+        handleAction: async (action: {
+          actionType: string;
+          payload?: { objects?: EntityInstance[] };
+        }) => {
+          const instance = action.payload?.objects?.[0] as Record<string, unknown> | undefined;
+          const uuid = String(instance?.uuid ?? "");
+          writes.push({ actionType: action.actionType, uuid });
+          if (action.actionType === "createInstance" && instance) {
+            rows.push(instance);
+          }
+          if (action.actionType === "updateInstance" && instance) {
+            const index = rows.findIndex((row) => String(row.uuid ?? "") === uuid);
+            if (index >= 0) {
+              rows[index] = instance;
+            } else {
+              rows.push(instance);
+            }
+          }
+          return { status: "ok" };
+        },
+      } as unknown as DomainControllerInterface;
+
+      const post = () =>
+        handleSecretsHttpRoute({
+          url: "/secrets",
+          method: "post",
+          body: { name: "sharedName", value: "v", scope: "process" },
+          principal: { miroirUserUuid: ALICE, username: "alice" },
+          serverDomainController,
+        });
+      const [first, second] = await Promise.all([post(), post()]);
+      expect(first?.status).toBe(200);
+      expect(second?.status).toBe(200);
+      const uuids = [...new Set(writes.map((write) => write.uuid))];
+      expect(uuids).toEqual([miroirSecretInstanceUuid("sharedName", "process")]);
+      expect(rows).toHaveLength(1);
     });
 
     it("user-scope POST as Alice targeting Carol returns 403", async () => {

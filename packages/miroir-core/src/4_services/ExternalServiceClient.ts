@@ -73,6 +73,15 @@ export function oauth2PrincipalCacheScope(principal?: { miroirUserUuid?: string 
   return principal?.miroirUserUuid ?? "process";
 }
 
+export function oauth2ResolvedCacheScope(
+  resolved: Pick<ResolveSecretResult, "scope" | "miroirUserUuid">,
+): string {
+  if (resolved.scope === "user" && resolved.miroirUserUuid) {
+    return resolved.miroirUserUuid;
+  }
+  return "process";
+}
+
 function normalizeBaseUrl(baseUrl: string): string {
   return baseUrl.replace(/\/+$/, "");
 }
@@ -407,9 +416,9 @@ type OAuth2AuthorizationCodeScheme = {
 
 function oauth2AuthorizationCodeCacheKey(
   scheme: OAuth2AuthorizationCodeScheme,
-  principal?: { miroirUserUuid?: string },
+  resolvedRefresh: ResolveSecretResult,
 ): string {
-  return `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}|${scheme.refreshTokenKey}|${oauth2PrincipalCacheScope(principal)}`;
+  return `${normalizeBaseUrl(scheme.tokenUrl)}|${scheme.clientIdKey}|${scheme.refreshTokenKey}|${oauth2ResolvedCacheScope(resolvedRefresh)}`;
 }
 
 /**
@@ -423,12 +432,6 @@ async function resolveAuthorizationCodeToken(
   forceRefresh: boolean,
   principal?: { miroirUserUuid?: string },
 ): Promise<string | Action2Error> {
-  const cacheKey = oauth2AuthorizationCodeCacheKey(scheme, principal);
-  const cached = oauth2TokenCache.get(cacheKey);
-  if (!forceRefresh && cached && cached.expiresAtMs - TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
-    return cached.accessToken;
-  }
-
   const tokenUrlError = assertBaseUrlAllowed(scheme.tokenUrl);
   if (tokenUrlError) {
     log.warn("external service call rejected: tokenUrl not allowed", { actionType });
@@ -459,7 +462,13 @@ async function resolveAuthorizationCodeToken(
     return externalServiceError("InvalidAction", "Unknown or empty secret");
   }
 
-  const rotatedKey = `${scheme.refreshTokenKey}|${oauth2PrincipalCacheScope(principal)}`;
+  const cacheKey = oauth2AuthorizationCodeCacheKey(scheme, resolvedRefresh);
+  const cached = oauth2TokenCache.get(cacheKey);
+  if (!forceRefresh && cached && cached.expiresAtMs - TOKEN_EXPIRY_MARGIN_MS > Date.now()) {
+    return cached.accessToken;
+  }
+
+  const rotatedKey = `${scheme.refreshTokenKey}|${oauth2ResolvedCacheScope(resolvedRefresh)}`;
   const refreshToken = rotatedRefreshTokens.get(rotatedKey) ?? resolvedRefresh.value;
 
   const body = new URLSearchParams({ grant_type: "refresh_token", refresh_token: refreshToken });

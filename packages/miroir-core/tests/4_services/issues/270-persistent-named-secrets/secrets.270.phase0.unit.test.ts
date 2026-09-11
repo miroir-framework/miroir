@@ -169,17 +169,19 @@ if (runThis) {
   });
 
   describe("secrets.270.phase0 consumed-by Slice 4", () => {
-    it("oauth2AuthorizationCodeCacheKey includes principal or process scope", () => {
+    it("oauth2AuthorizationCodeCacheKey includes the resolved secret scope, not the request principal", () => {
       const src = readFileSync(join(CORE_SRC, "4_services/ExternalServiceClient.ts"), "utf8");
       const fnStart = src.indexOf("function oauth2AuthorizationCodeCacheKey");
       const fnBlock = src.slice(fnStart, fnStart + 450);
       expect(fnBlock).toContain("tokenUrl");
       expect(fnBlock).toContain("clientIdKey");
       expect(fnBlock).toContain("refreshTokenKey");
-      expect(fnBlock).toContain("oauth2PrincipalCacheScope");
-      const helperStart = src.indexOf("export function oauth2PrincipalCacheScope");
-      const helperBlock = src.slice(helperStart, helperStart + 220);
-      expect(helperBlock).toMatch(/miroirUserUuid\s*\?\?\s*"process"/);
+      expect(fnBlock).toContain("oauth2ResolvedCacheScope");
+      const helperStart = src.indexOf("export function oauth2ResolvedCacheScope");
+      const helperBlock = src.slice(helperStart, helperStart + 280);
+      expect(helperBlock).toMatch(/scope\s*===\s*"user"/);
+      expect(helperBlock).toContain("miroirUserUuid");
+      expect(helperBlock).toContain('"process"');
     });
 
     it("queryActionHandler passes authPrincipal into handleBoxedExtractorOrQueryAction", () => {
@@ -247,6 +249,21 @@ if (runThis) {
 
     it("parseServerArgs([--secret, a=b]).secrets equals { a: b }", () => {
       expect(parseServerArgs(["--secret", "a=b"]).secrets).toEqual({ a: "b" });
+    });
+
+    it("default Admin seed has no MiroirSecret instance JSON", () => {
+      const realSecretData = join(
+        REPO_ROOT,
+        "packages/miroir-test-app_deployment-admin/assets/admin_data",
+        MIROIR_SECRET_ENTITY_UUID,
+      );
+      const emulatedSecretData = join(
+        REPO_ROOT,
+        "packages/miroir-standalone-app/tests/assets/admin_data",
+        MIROIR_SECRET_ENTITY_UUID,
+      );
+      expect(readdirSync(realSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
+      expect(readdirSync(emulatedSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
     });
 
     it("standalone app has no ?page=secrets dispatcher or SecretsPage", () => {

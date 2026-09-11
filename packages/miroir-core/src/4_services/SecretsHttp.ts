@@ -3,8 +3,6 @@
  * Persist goes through serverDomainController + secrets.set / secrets.delete.
  */
 
-import { v4 as uuidv4 } from "uuid";
-
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement.js";
 import type { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -17,7 +15,12 @@ import {
   SECRETS_SET_ACTION_LABEL,
   type AuthPrincipal,
 } from "../1_core/authentication/AuthenticationPolicy.js";
-import { encryptSecret, getSecretsMasterKey } from "./SecretsService.js";
+import {
+  encryptSecret,
+  getSecretsMasterKey,
+  miroirSecretInstanceUuid,
+  withSecretRowWriteLock,
+} from "./SecretsService.js";
 
 const ADMIN_APPLICATION_UUID = "55af124e-8c05-4bae-a3ef-0933d41daa92";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
@@ -188,54 +191,58 @@ export async function handleSecretsHttpRoute(args: {
       return { status: 500, data: { status: "error", errorType: "SecretsMasterKeyMissing" } };
     }
     const miroirUser = scope === "user" ? args.principal.miroirUserUuid : undefined;
-    const rows = await querySecretRows(args.serverDomainController, applicationDeploymentMap);
-    if (!Array.isArray(rows)) {
-      return rows;
-    }
-    const existing = rows.find((row) => rowMatches(row, name, scope, miroirUser));
-    const ciphertext = encryptSecret("aes-256-gcm", wrappingKey, value);
-    const instance = {
-      ...(existing ?? {}),
-      uuid: existing?.uuid ? String(existing.uuid) : uuidv4(),
-      parentName: "MiroirSecret",
-      parentUuid: ENTITY_MIROIR_SECRET_UUID,
-      name,
-      ciphertext,
-      algorithm: "aes-256-gcm",
-      ...(miroirUser ? { miroirUser } : {}),
-    } as unknown as EntityInstance;
-    if (!miroirUser) {
-      delete (instance as { miroirUser?: string }).miroirUser;
-    }
-    const persistResult = await args.serverDomainController.handleAction(
-      {
-        actionType: existing ? "updateInstance" : "createInstance",
-        actionLabel: SECRETS_SET_ACTION_LABEL,
-        endpoint: INSTANCE_ENDPOINT,
-        payload: {
-          application: ADMIN_APPLICATION_UUID,
-          applicationSection: "data",
-          parentUuid: ENTITY_MIROIR_SECRET_UUID,
-          objects: [instance],
+    return withSecretRowWriteLock(async () => {
+      const rows = await querySecretRows(args.serverDomainController, applicationDeploymentMap);
+      if (!Array.isArray(rows)) {
+        return rows;
+      }
+      const existing = rows.find((row) => rowMatches(row, name, scope, miroirUser));
+      const ciphertext = encryptSecret("aes-256-gcm", wrappingKey, value);
+      const instance = {
+        ...(existing ?? {}),
+        uuid: existing?.uuid
+          ? String(existing.uuid)
+          : miroirSecretInstanceUuid(name, scope, miroirUser),
+        parentName: "MiroirSecret",
+        parentUuid: ENTITY_MIROIR_SECRET_UUID,
+        name,
+        ciphertext,
+        algorithm: "aes-256-gcm",
+        ...(miroirUser ? { miroirUser } : {}),
+      } as unknown as EntityInstance;
+      if (!miroirUser) {
+        delete (instance as { miroirUser?: string }).miroirUser;
+      }
+      const persistResult = await args.serverDomainController.handleAction(
+        {
+          actionType: existing ? "updateInstance" : "createInstance",
+          actionLabel: SECRETS_SET_ACTION_LABEL,
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: ADMIN_APPLICATION_UUID,
+            applicationSection: "data",
+            parentUuid: ENTITY_MIROIR_SECRET_UUID,
+            objects: [instance],
+          },
         },
-      },
-      applicationDeploymentMap,
-      defaultMetaModelEnvironment,
-      undefined,
-      undefined,
-      args.principal,
-    );
-    if (persistResult instanceof Action2Error) {
-      return {
-        status: 500,
-        data: {
-          status: "error",
-          errorType: "FailedToHandleAction",
-          errorMessage: persistResult.errorMessage,
-        },
-      };
-    }
-    return { status: 200, data: { set: true } };
+        applicationDeploymentMap,
+        defaultMetaModelEnvironment,
+        undefined,
+        undefined,
+        args.principal,
+      );
+      if (persistResult instanceof Action2Error) {
+        return {
+          status: 500,
+          data: {
+            status: "error",
+            errorType: "FailedToHandleAction",
+            errorMessage: persistResult.errorMessage,
+          },
+        };
+      }
+      return { status: 200, data: { set: true } };
+    });
   }
 
   const name = String(body.name ?? "");

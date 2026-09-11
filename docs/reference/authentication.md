@@ -61,6 +61,8 @@ Admin entity `MiroirSecret` (uuid `a96856df-2b38-494a-8027-82617e2d64ad`) stores
 
 `--secret` / `MIROIR_SECRET_*` / `AI_OPENAI_KEY` / `AI_ANTHROPIC_KEY` / `AI_GOOGLE_KEY` / `AI_GITHUB_TOKEN` import **process-scoped** rows once, then are discarded. Steady-state launch is the wrapping key alone. `registerSecrets` remains an in-process **test hatch** (used by Spotify integ and `LIVE_SPOTIFY_*`). The Admin lightbulb menu lists existing secrets (same list/detail reports as Users and Rights). Writes go through `POST`/`DELETE` `/secrets` (CLI `--secret` import, or HTTP). Vite-dev proxies `/secrets` like `/auth`.
 
+The default Admin seed (and Docker first-run copy of it) has **no** `MiroirSecret` instance rows. `docker compose up` does not need a wrapping key until you import or persist a secret.
+
 ### Generate the wrapping key
 
 Miroir does not generate `MIROIR_SECRETS_MASTER_KEY`. It is any UTF-8 string you choose; the process SHA-256-hashes it and uses that digest as the AES-256-GCM key. Pick a **high-entropy** value once, store it outside the repo (env, secret store, Compose override — not committed JSON), and pass the **same** string on every later launch. A lost or changed key makes every `MiroirSecret` row unreadable. There is no ephemeral wrapping key.

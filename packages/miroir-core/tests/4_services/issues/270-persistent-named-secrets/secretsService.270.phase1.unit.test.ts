@@ -11,6 +11,8 @@ import {
   decryptSecret,
   encryptSecret,
   hydrateSecrets,
+  importProcessSecrets,
+  miroirSecretInstanceUuid,
   parseServerArgs,
   redactCredentialSecretsFromValue,
   registerSecrets,
@@ -102,6 +104,32 @@ if (runThis) {
       expect(redacted).not.toHaveProperty("ciphertext");
       expect(redacted.name).toBe("spotifyClientId");
       expect(redacted.parentUuid).toBe(ENTITY_MIROIR_SECRET_UUID);
+    });
+
+    it("miroirSecretInstanceUuid is stable per name+scope+owner and differs across owners", () => {
+      const processA = miroirSecretInstanceUuid("spotifyRefreshToken", "process");
+      const processB = miroirSecretInstanceUuid("spotifyRefreshToken", "process");
+      const alice = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";
+      const carol = "30634877-08ae-44f3-a230-d899e22333d5";
+      expect(processA).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      );
+      expect(processB).toBe(processA);
+      expect(miroirSecretInstanceUuid("spotifyRefreshToken", "user", alice)).not.toBe(processA);
+      expect(miroirSecretInstanceUuid("spotifyRefreshToken", "user", alice)).not.toBe(
+        miroirSecretInstanceUuid("spotifyRefreshToken", "user", carol),
+      );
+    });
+
+    it("importProcessSecrets assigns the deterministic process uuid", () => {
+      const instances = importProcessSecrets({
+        wrappingKey: WRAPPING_KEY,
+        secrets: { aiGithubToken: "gh-plain" },
+      });
+      expect(instances).toHaveLength(1);
+      expect((instances[0] as { uuid: string }).uuid).toBe(
+        miroirSecretInstanceUuid("aiGithubToken", "process"),
+      );
     });
 
     it("hydrateSecrets with rows and missing wrapping key throws without listing values", () => {

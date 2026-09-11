@@ -4,7 +4,7 @@
  * import DomainController.
  */
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
-import { v4 as uuidv4 } from "uuid";
+import { v5 as uuidv5 } from "uuid";
 
 import type { EntityInstance } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface.js";
@@ -21,6 +21,28 @@ import { registerHydratedProcessSecret, registerHydratedUserSecret } from "./Sec
 const ADMIN_APPLICATION_UUID = "55af124e-8c05-4bae-a3ef-0933d41daa92";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const QUERY_ENDPOINT = "9e404b3c-368c-40cb-be8b-e3c28550c25e";
+
+/** Stable instance identity for name + scope + owner (process owner is empty). */
+export function miroirSecretInstanceUuid(
+  name: string,
+  scope: "process" | "user",
+  miroirUserUuid?: string,
+): string {
+  const owner = scope === "user" ? (miroirUserUuid ?? "") : "";
+  return uuidv5(`${name}\n${scope}\n${owner}`, ENTITY_MIROIR_SECRET_UUID);
+}
+
+let secretRowWriteChain: Promise<unknown> = Promise.resolve();
+
+/** Serialize query-then-write secret upserts in this process. */
+export function withSecretRowWriteLock<T>(work: () => Promise<T>): Promise<T> {
+  const run = secretRowWriteChain.then(work, work);
+  secretRowWriteChain = run.then(
+    () => undefined,
+    () => undefined,
+  );
+  return run;
+}
 
 const AES_256_GCM = "aes-256-gcm";
 const GCM_IV_LENGTH = 12;
@@ -89,7 +111,7 @@ export function importProcessSecrets(params: {
   );
   return entries.map(([name, value]) => {
     return {
-      uuid: uuidv4(),
+      uuid: miroirSecretInstanceUuid(name, "process"),
       parentName: "MiroirSecret",
       parentUuid: ENTITY_MIROIR_SECRET_UUID,
       name,
@@ -333,52 +355,54 @@ export async function persistImportedProcessSecrets(
   if (instances.length === 0) {
     return;
   }
-  const rows = await querySecretRowsForPersist(domainController, applicationDeploymentMap);
-  const toCreate: EntityInstance[] = [];
-  const toUpdate: EntityInstance[] = [];
-  for (const instance of instances) {
-    const name = String((instance as { name?: string }).name ?? "");
-    const existing = rows.find((row) => rowMatches(row, name, "process"));
-    if (existing?.uuid) {
-      const updated = {
-        ...existing,
-        ...instance,
-        uuid: String(existing.uuid),
-        parentName: "MiroirSecret",
-        parentUuid: ENTITY_MIROIR_SECRET_UUID,
-      } as EntityInstance;
-      delete (updated as { miroirUser?: string }).miroirUser;
-      toUpdate.push(updated);
-    } else {
-      toCreate.push(instance);
-    }
-  }
-  const persist = async (
-    actionType: "createInstance" | "updateInstance",
-    objects: EntityInstance[],
-  ): Promise<void> => {
-    if (objects.length === 0) {
-      return;
-    }
-    const persistResult = await domainController.handleAction(
-      {
-        actionType,
-        actionLabel: SECRETS_SET_ACTION_LABEL,
-        endpoint: INSTANCE_ENDPOINT,
-        payload: {
-          application: ADMIN_APPLICATION_UUID,
-          applicationSection: "data",
+  return withSecretRowWriteLock(async () => {
+    const rows = await querySecretRowsForPersist(domainController, applicationDeploymentMap);
+    const toCreate: EntityInstance[] = [];
+    const toUpdate: EntityInstance[] = [];
+    for (const instance of instances) {
+      const name = String((instance as { name?: string }).name ?? "");
+      const existing = rows.find((row) => rowMatches(row, name, "process"));
+      if (existing?.uuid) {
+        const updated = {
+          ...existing,
+          ...instance,
+          uuid: String(existing.uuid),
+          parentName: "MiroirSecret",
           parentUuid: ENTITY_MIROIR_SECRET_UUID,
-          objects,
-        },
-      },
-      applicationDeploymentMap,
-      defaultMetaModelEnvironment,
-    );
-    if (persistResult instanceof Action2Error) {
-      throw new Error(persistResult.errorMessage ?? "Failed to persist imported secrets");
+        } as EntityInstance;
+        delete (updated as { miroirUser?: string }).miroirUser;
+        toUpdate.push(updated);
+      } else {
+        toCreate.push(instance);
+      }
     }
-  };
-  await persist("createInstance", toCreate);
-  await persist("updateInstance", toUpdate);
+    const persist = async (
+      actionType: "createInstance" | "updateInstance",
+      objects: EntityInstance[],
+    ): Promise<void> => {
+      if (objects.length === 0) {
+        return;
+      }
+      const persistResult = await domainController.handleAction(
+        {
+          actionType,
+          actionLabel: SECRETS_SET_ACTION_LABEL,
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: ADMIN_APPLICATION_UUID,
+            applicationSection: "data",
+            parentUuid: ENTITY_MIROIR_SECRET_UUID,
+            objects,
+          },
+        },
+        applicationDeploymentMap,
+        defaultMetaModelEnvironment,
+      );
+      if (persistResult instanceof Action2Error) {
+        throw new Error(persistResult.errorMessage ?? "Failed to persist imported secrets");
+      }
+    };
+    await persist("createInstance", toCreate);
+    await persist("updateInstance", toUpdate);
+  });
 }
