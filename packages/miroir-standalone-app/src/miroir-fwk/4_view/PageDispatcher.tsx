@@ -42,7 +42,6 @@ const RunnersPage          = React.lazy(() => import("./routes/Runners.js").then
 const SearchPage           = React.lazy(() => import("./routes/SearchPage.js").then(m => ({ default: m.SearchPage })));
 const SettingsPage         = React.lazy(() => import("./routes/SettingsPage.js").then(m => ({ default: m.SettingsPage })));
 const LoginPage            = React.lazy(() => import("./routes/LoginPage.js").then(m => ({ default: m.LoginPage })));
-const SecretsPage          = React.lazy(() => import("./routes/SecretsPage.js").then(m => ({ default: m.SecretsPage })));
 const TransformerBuilderPage = React.lazy(() => import("./routes/TransformerBuilderPage.js").then(m => ({ default: m.TransformerBuilderPage })));
 const MiroirEventsPage     = React.lazy(() => import("./pages/MiroirEventsPage.js").then(m => ({ default: m.MiroirEventsPage })));
 const ErrorLogsPageDEFUNCT = React.lazy(() => import("./ErrorLogsPageDEFUNCT.js").then(m => ({ default: m.ErrorLogsPageDEFUNCT })));
@@ -169,9 +168,6 @@ function PageContent(): React.JSX.Element {
     switch (page) {
       case "login":
         return <LoginPage />;
-
-      case "secrets":
-        return <SecretsPage />;
 
       case "home":
         return <HomePage />;

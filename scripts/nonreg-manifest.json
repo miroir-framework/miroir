@@ -919,7 +919,7 @@
     {
       "id": "appstack-270-persistent-secrets",
       "tier": "default",
-      "title": "#270 — persist named secrets (hydrate, HTTP, principal, rotation, import, UI)",
+      "title": "#270 — persist named secrets (hydrate, HTTP, principal, rotation, import)",
       "requires": "none",
       "argv": [
         "npm",

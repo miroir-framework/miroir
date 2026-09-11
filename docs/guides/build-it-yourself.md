@@ -249,7 +249,7 @@ node packages/miroir-server/release/index.js \
   --secret spotifyRefreshToken=<refresh>
 ```
 
-Later launches need only `MIROIR_SECRETS_MASTER_KEY` (or `--secrets-master-key`). Signed-in operators can also set secrets at `/?page=secrets`.
+Later launches need only `MIROIR_SECRETS_MASTER_KEY` (or `--secrets-master-key`).
 
 ---
 

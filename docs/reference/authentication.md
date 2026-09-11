@@ -59,7 +59,7 @@ Generic CRUD/query responses strip `passwordHash` and `ciphertext`. Generic crea
 
 Admin entity `MiroirSecret` (uuid `a96856df-2b38-494a-8027-82617e2d64ad`) stores process-scoped rows (`miroirUser` absent) and per-user rows (`miroirUser` set). Ciphertext is AES-256-GCM (`aes-256-gcm$<iv>$<ciphertext>$<tag>`, base64url). `resolveSecret(name, principal?)` prefers a user-scoped row when a principal is present, otherwise the process row.
 
-`--secret` / `MIROIR_SECRET_*` / `AI_OPENAI_KEY` / `AI_ANTHROPIC_KEY` / `AI_GOOGLE_KEY` / `AI_GITHUB_TOKEN` import **process-scoped** rows once, then are discarded. Steady-state launch is the wrapping key alone. `registerSecrets` remains an in-process **test hatch** (used by Spotify integ and `LIVE_SPOTIFY_*`). The Admin lightbulb menu lists existing secrets (same list/detail reports as Users and Rights). The dedicated write form remains at `/?page=secrets`. Vite-dev proxies `/secrets` like `/auth`.
+`--secret` / `MIROIR_SECRET_*` / `AI_OPENAI_KEY` / `AI_ANTHROPIC_KEY` / `AI_GOOGLE_KEY` / `AI_GITHUB_TOKEN` import **process-scoped** rows once, then are discarded. Steady-state launch is the wrapping key alone. `registerSecrets` remains an in-process **test hatch** (used by Spotify integ and `LIVE_SPOTIFY_*`). The Admin lightbulb menu lists existing secrets (same list/detail reports as Users and Rights). Writes go through `POST`/`DELETE` `/secrets` (CLI `--secret` import, or HTTP). Vite-dev proxies `/secrets` like `/auth`.
 
 ### Generate the wrapping key
 

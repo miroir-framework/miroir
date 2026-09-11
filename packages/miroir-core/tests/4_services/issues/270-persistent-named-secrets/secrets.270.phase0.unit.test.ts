@@ -249,6 +249,20 @@ if (runThis) {
       expect(parseServerArgs(["--secret", "a=b"]).secrets).toEqual({ a: "b" });
     });
 
+    it("standalone app has no ?page=secrets dispatcher or SecretsPage", () => {
+      const secretsPage = join(
+        REPO_ROOT,
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/SecretsPage.tsx",
+      );
+      expect(existsSync(secretsPage)).toBe(false);
+      const dispatcherSrc = readFileSync(
+        join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4_view/PageDispatcher.tsx"),
+        "utf8",
+      );
+      expect(dispatcherSrc).not.toMatch(/SecretsPage/);
+      expect(dispatcherSrc).not.toMatch(/case\s+"secrets"/);
+    });
+
     it("/queryTemplate remains in restServerDefaultHandlers", () => {
       const restServerSrc = readFileSync(join(CORE_SRC, "4_services/RestServer.ts"), "utf8");
       const handlerBlock = restServerSrc.slice(
