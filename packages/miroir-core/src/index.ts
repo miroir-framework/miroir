@@ -1411,6 +1411,8 @@ export {
   assertAccessForDeployment,
   deploymentsFromInstances,
   hasAccess,
+  isAccessDeniedActionResult,
+  partitionOpenStoreResults,
   type AccessDecision,
   type AccessDeniedBody,
   type AccessDeployment,

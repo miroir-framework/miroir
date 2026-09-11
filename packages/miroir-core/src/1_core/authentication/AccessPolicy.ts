@@ -133,6 +133,83 @@ export function applicationTargetForDeployment(
   return { targetType: "application", targetUuid: found.selfApplication };
 }
 
+export function isAccessDeniedActionResult(result: unknown): boolean {
+  const seen = new Set<unknown>();
+  const walk = (value: unknown): boolean => {
+    if (!value || typeof value !== "object" || seen.has(value)) {
+      return false;
+    }
+    seen.add(value);
+    const rec = value as {
+      errorType?: unknown;
+      errorMessage?: unknown;
+      errorStack?: unknown;
+      innerError?: unknown;
+      data?: unknown;
+    };
+    if (rec.errorType === "AccessDenied") {
+      return true;
+    }
+    if (typeof rec.errorMessage === "string") {
+      if (/\b403\b/.test(rec.errorMessage) || /Forbidden/i.test(rec.errorMessage)) {
+        return true;
+      }
+    }
+    if (Array.isArray(rec.errorStack)) {
+      if (
+        rec.errorStack.some(
+          (entry) => String(entry).includes("Forbidden") || String(entry).includes("403"),
+        )
+      ) {
+        return true;
+      }
+    }
+    if (walk(rec.innerError)) {
+      return true;
+    }
+    if (Array.isArray(rec.innerError) && rec.innerError.some((inner) => walk(inner))) {
+      return true;
+    }
+    if (walk(rec.data)) {
+      return true;
+    }
+    return false;
+  };
+  return walk(result);
+}
+
+export function partitionOpenStoreResults<T extends { uuid: string; selfApplication: string }>(
+  deployments: T[],
+  openResults: unknown[],
+): {
+  allowed: T[];
+  accessDenied: T[];
+  hardFailures: { deployment: T; result: unknown }[];
+} {
+  const allowed: T[] = [];
+  const accessDenied: T[] = [];
+  const hardFailures: { deployment: T; result: unknown }[] = [];
+  const count = Math.min(deployments.length, openResults.length);
+  for (let i = 0; i < count; i++) {
+    const deployment = deployments[i] as T;
+    const result = openResults[i];
+    const failed =
+      !!result &&
+      typeof result === "object" &&
+      (result as { status?: unknown }).status === "error";
+    if (!failed) {
+      allowed.push(deployment);
+      continue;
+    }
+    if (isAccessDeniedActionResult(result)) {
+      accessDenied.push(deployment);
+      continue;
+    }
+    hardFailures.push({ deployment, result });
+  }
+  return { allowed, accessDenied, hardFailures };
+}
+
 export function assertAccessForDeployment(args: {
   enabled: boolean;
   principal: { miroirUserUuid: string } | undefined;
