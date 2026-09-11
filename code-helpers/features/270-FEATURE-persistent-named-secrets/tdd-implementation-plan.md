@@ -719,7 +719,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 8 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 8.1 Nonreg (P12)
 
@@ -756,15 +756,15 @@ Automated equivalent: Slice 1 hydrate integ + Slice 4 principal integ + Slice 6 
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Persist process-scoped secret; later launch needs only wrapping key | Slice 1 + Slice 6 | ⬜ |
-| Persist user-scoped secret; extractor/OAuth uses that principal | Slice 4 | ⬜ |
-| Values never in REST/MCP/generic editor; generic CRUD rejected | Slice 2 + Slice 3 | ⬜ |
-| `--secret` / `MIROIR_SECRET_*` bootstrap only | Slice 6 | ⬜ |
-| Rotated refresh token persisted | Slice 5 | ⬜ |
-| AI keys from named-secret store | Slice 6 | ⬜ |
-| Login passwords unchanged | `authentication.71` in Slice 2 validation | ⬜ |
-| Existing Spotify tests keep working | `externalServiceQuery` in Slices 1, 4, 5, 6 | ⬜ |
-| Secrets form at `?page=secrets` | Slice 7 | ⬜ |
+| Persist process-scoped secret; later launch needs only wrapping key | Slice 1 + Slice 6 | ✅ |
+| Persist user-scoped secret; extractor/OAuth uses that principal | Slice 4 | ✅ |
+| Values never in REST/MCP/generic editor; generic CRUD rejected | Slice 2 + Slice 3 | ✅ |
+| `--secret` / `MIROIR_SECRET_*` bootstrap only | Slice 6 | ✅ |
+| Rotated refresh token persisted | Slice 5 | ✅ |
+| AI keys from named-secret store | Slice 6 | ✅ |
+| Login passwords unchanged | `authentication.71` in Slice 2 validation | ✅ |
+| Existing Spotify tests keep working | `externalServiceQuery` in Slices 1, 4, 5, 6 | ✅ |
+| Secrets form at `?page=secrets` | Slice 7 | ✅ |
 
 ### Validation
 
@@ -776,4 +776,15 @@ Plus per-package `tsc --noEmit --skipLibCheck` for every package this branch tou
 
 ### Realization
 
-<Appended on completion.>
+- **Nonreg (P12):** `scripts/nonreg-manifest.json` gained `unit-270-persistent-secrets` (`testByFile -w miroir-core -- 270.phase` plus MCP `secretsRedact.270`) and `appstack-270-persistent-secrets`. The unit filter is `270.phase`, not `secrets.270`, so `secretsService` / `secretsHttp` / `secretsImport` unit files are included. The appstack step is **pinned to `emulatedServer-filesystem`** (same as `externalServices-spotify` / freeze runner): leftover-path assertions and Admin asset layout were written for filesystem. `{profile}` would have run the default SQL profile against those filesystem-only teardowns.
+- **Docs:** `analysis.md` status → implemented. `docs/reference/data-architecture-deployments.md` — wrapping key, import-once, names-only endpoints, rotated refresh write-back. `docs/reference/authentication.md` — second standing secret, `/secrets` routes, ciphertext strip, `/?page=secrets`. `docs/guides/build-it-yourself.md` — `--secrets-master-key` / `--secret` and a first-import example. `docs/reference/testing.md` — issue-suite keys; `LIVE_SPOTIFY_*` stays a `registerSecrets` hatch. Dockerfiles and both compose files document `MIROIR_SECRETS_MASTER_KEY`.
+- **Bare console (#237):** Slice 6 usage continuations used `console.error` and failed `unit-check-bare-console`. Moved those two lines to `myLogger.error`, matching the other help-text continuations.
+- **Issue-directory cleanup:** **deferred.** Valuable assertions still live under `tests/**/issues/270-persistent-named-secrets/` in miroir-core, miroir-mcp, and miroir-standalone-app (`3_controllers` + `4_views`). Migrate to feature-named suites and delete those directories when the issue closes (#238 / `docs/contributing/testing.md`).
+- **P14 leftover rows:** `admin_data/a96856df-…/` still has only `.gitkeep` in both the Admin package and standalone-app test assets. No ciphertext JSON in git.
+- **Validation:**
+  - `npx tsc --noEmit --skipLibCheck` for miroir-core, miroir-server, miroir-standalone-app, miroir-mcp, miroir-ai, miroir-test-app_deployment-admin — passed
+  - `npm run testByFile -w miroir-core -- 270.phase` — 35/35
+  - `npm run testByFile -w miroir-mcp -- secretsRedact.270` — 2/2
+  - `npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem 270.phase` — 20/20 (6 files)
+  - First `npm run nonreg` (default / `emulatedServer-sql`, 1834s-class run) — 54 passed, 2 failed: `unit-check-bare-console` (usage `console.error`, fixed above) and `unit-262-application-access` (local dirty Admin tree had deleted Designer application `880831db-…` and Designer deployment `f0359240-…`; restored those two committed fixtures, not committed). Re-run `20260911T014019Z`: **56 passed, 0 failed, 0 skipped** in 1834.259s. `unit-270-persistent-secrets` and `appstack-270-persistent-secrets` both green. `externalServices-spotify` stayed green.
+- **Deviations:** (1) Appstack nonreg pinned to filesystem, not `{profile}`. (2) Issue-directory migration deferred to issue close. (3) Unrelated dirty Spotify Admin copies and designer `modelValidation.unit.test.ts` were left uncommitted.

@@ -42,6 +42,8 @@ services:
     # Optional: set log level via environment (requires server to read it; see README)
     # environment:
     #   - NODE_ENV=production
+    #   # Wrapping key for Admin MiroirSecret rows (the only standing launch secret).
+    #   - MIROIR_SECRETS_MASTER_KEY=
 
 volumes:
   miroir-data:

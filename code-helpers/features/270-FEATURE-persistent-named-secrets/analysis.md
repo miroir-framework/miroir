@@ -11,7 +11,7 @@ Related: [#262 Application access](https://github.com/miroir-framework/miroir/is
 Key sources: [`SecretStore.ts`](../../../packages/miroir-core/src/4_services/SecretStore.ts) · [`parseServerArgs.ts`](../../../packages/miroir-core/src/4_services/parseServerArgs.ts) · [`ExternalServiceClient.ts`](../../../packages/miroir-core/src/4_services/ExternalServiceClient.ts) · [`AuthenticationPolicy.ts`](../../../packages/miroir-core/src/1_core/authentication/AuthenticationPolicy.ts) · [`redactCredentialSecrets.ts`](../../../packages/miroir-core/src/4_services/redactCredentialSecrets.ts) · [`server.ts`](../../../packages/miroir-server/src/server.ts) · [`RestServer.ts`](../../../packages/miroir-core/src/4_services/RestServer.ts) · [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts) · [`copilotRuntimeFactory.ts`](../../../packages/miroir-ai/src/runtime/copilotRuntimeFactory.ts) · [`MiroirUserCredential` entity](../../../packages/miroir-test-app_deployment-admin/assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/6c3ab489-1a36-4981-b5d0-bb3e02cfceed.json)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed with the user (2026-09-11); revised after adversarial review ([`./adversarial-review.md`](./adversarial-review.md), R1–R11 applied). TDD plan revised after plan review ([`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1–P18 applied). Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** implemented (2026-09-11). Decisions confirmed with the user; revised after adversarial review ([`./adversarial-review.md`](./adversarial-review.md), R1–R11 applied). TDD plan revised after plan review ([`./plan-adversarial-review.md`](./plan-adversarial-review.md), P1–P18 applied). Slices 0–8 landed on `270-FEATURE-persistent-named-secrets` per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 **Document history:** first draft committed on `270-FEATURE-persistent-named-secrets`. Adversarial review found two structural holes (name-keyed OAuth caches defeating D2-b; no D7 persistence channel) plus in-process `/secrets`, MCP response redaction, composite principal thread, testable startup home, migration/docs, and blast radius. Those are repaired below; product choices D1–D9 are unchanged.
 
@@ -23,7 +23,7 @@ Key sources: [`SecretStore.ts`](../../../packages/miroir-core/src/4_services/Sec
 |---|---|---|
 | Identity + hashed `MiroirUserCredential` | [#71](https://github.com/miroir-framework/miroir/issues/71) | ✅ |
 | Named launch-time secrets + `SecretStore` | [#267](https://github.com/miroir-framework/miroir/issues/267) D4 | ✅ (superseded for production launch by **this**) |
-| Persist named secrets; wrapping key only at launch | **#270 (this document)** | **this** |
+| Persist named secrets; wrapping key only at launch | **#270 (this document)** | ✅ implemented |
 | Per-user OAuth PKCE consent in the UI | later, unscheduled | later |
 | `MiroirRight.capability` as the writer gate | #219 C2 | later |
 | MCP / CLI / Electron identity + secret hydrate | [#263](https://github.com/miroir-framework/miroir/issues/263) | later |

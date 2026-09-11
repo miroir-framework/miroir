@@ -154,8 +154,8 @@ function printUsageAndExit(exitCode = 1): never {
   console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_KEY`);
   myLogger.error(`                      (default: <certsdir>/localhost-key.pem)`);
   console.error(`  --secret   <name>=<value>  Bootstrap import only (repeatable). Env: MIROIR_SECRET_<NAME>`);
-  console.error(`                      plus AI_OPENAI_KEY / AI_ANTHROPIC_KEY / AI_GOOGLE_KEY / AI_GITHUB_TOKEN.`);
-  console.error(`                      Requires a wrapping key. Steady-state is --secrets-master-key only.`);
+  myLogger.error(`                      plus AI_OPENAI_KEY / AI_ANTHROPIC_KEY / AI_GOOGLE_KEY / AI_GITHUB_TOKEN.`);
+  myLogger.error(`                      Requires a wrapping key. Steady-state is --secrets-master-key only.`);
   console.error(`  --secrets-master-key <value>  Wrapping key for persisted secrets. Env: MIROIR_SECRETS_MASTER_KEY`);
   console.error(`  --disable-auth      Disable user authentication (today's open API)`);
   console.error(`  --enable-auth       Enable user authentication (overrides config/env)`);

@@ -906,6 +906,34 @@
       ]
     },
     {
+      "id": "unit-270-persistent-secrets",
+      "tier": "unit",
+      "title": "#270 — persist named secrets (core + MCP unit)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- 270.phase && npm run testByFile -w miroir-mcp -- secretsRedact.270"
+      ]
+    },
+    {
+      "id": "appstack-270-persistent-secrets",
+      "tier": "default",
+      "title": "#270 — persist named secrets (hydrate, HTTP, principal, rotation, import, UI)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "emulatedServer-filesystem",
+        "270.phase"
+      ]
+    },
+    {
       "id": "full-postgres-modelValidation",
       "tier": "full",
       "title": "Deployment modelValidation \u2014 postgres",
