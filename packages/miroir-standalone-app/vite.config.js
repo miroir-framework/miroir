@@ -115,6 +115,7 @@ export default defineConfig({
       '/api/copilotkit': { target: apiBase, secure: false },
       '/mcp':            { target: apiBase, secure: false },
       '/auth':           { target: apiBase, secure: false },
+      '/secrets':        { target: apiBase, secure: false },
     }
   },
   test: {

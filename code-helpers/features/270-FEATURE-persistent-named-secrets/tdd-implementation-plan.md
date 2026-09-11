@@ -76,7 +76,7 @@ This plan does **not** cover: OAuth PKCE in the UI; `MiroirRight.capability` as 
 | 4 | Per-user secrets + principal thread + principal-scoped OAuth cache | ✅ DONE | `secretsPrincipal.270.phase4.integ.test.ts` |
 | 5 | Persist rotated refresh token (D7) | ✅ DONE | `secretsRotation.270.phase5.integ.test.ts` |
 | 6 | Import-then-discard + AI `getApiKey` via `resolveSecret` | ✅ DONE | `secretsImport.270.phase6.unit.test.ts` + `secretsImport.270.phase6.integ.test.ts` + `copilotRuntimeFactory` |
-| 7 | `?page=secrets` UI | ⬜ | `secretsPage.270.phase7.integ.test.tsx` |
+| 7 | `?page=secrets` UI | ✅ DONE | `secretsPage.270.phase7.integ.test.tsx` |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | `unit-270-persistent-secrets` + `appstack-270-persistent-secrets` + docs |
 
 ---
@@ -662,7 +662,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-server/tsconfig.json
 
 ## Slice 7 — `?page=secrets` UI
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -704,7 +704,16 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+- **Test:** `packages/miroir-standalone-app/tests/4_views/issues/270-persistent-named-secrets/secretsPage.270.phase7.integ.test.tsx` (3 tests). Slice 2 session (`openAdminAndMiroirStoresOnServer: true`, wrapping key `test-secrets-master`) + P4 auth fixture (`RestClientStub` + real Admin identity directory + `issueBearerToken` Alice). Hatch stays off; `setAuthToken(aliceToken)` so the form sends `Authorization: Bearer …`. Teardown via `DELETE /secrets` (`secrets.delete`); no leftover `admin_data/a96856df-…/*.json`.
+- **Fetch forward (not an in-memory map):** `globalThis.fetch` is wrapped only for `/secrets`. Relative or absolute URLs whose pathname is `/secrets` are parsed (`JSON` body + headers) and passed to `stub.call("/secrets", method, "/secrets", { body, headers })`. The wrapper returns a real `Response` from the stub status/data (`200 { set: true }`). All other URLs go to the original `fetch`. Restored in `afterEach`/`afterAll`.
+- **GREEN files:** `SecretsPage.tsx` sibling of `LoginPage.tsx` — name / value / scope (`process` \| `user`); `POST /secrets` with `Content-Type: application/json` and `Authorization: Bearer ${getAuthToken()}`. Success clears the value field and shows a names-only `{name} set` status; plaintext is not rendered. `PageDispatcher` query-param switch gains `case "secrets": return <SecretsPage />` (lazy, same pattern as login). Legacy path-segment switch is unchanged (no `case "secrets"`). No Admin menu item. No route constant.
+- **UI vehicle:** `PageDispatcher` needs `useApplicationAccess` → MiroirContext + Redux. Per the slice note, the form is rendered as `SecretsPage` inside `MemoryRouter` at `/?page=secrets` (enough for `LoginPage`). Query-param wiring and the closed path-segment switch are source-read on `PageDispatcher.tsx`.
+- **Validation:**
+  - `RUN_TEST=secretsPage.270 … --profile emulatedServer-filesystem secretsPage.270` — 3/3 passed (logs show `secrets.set` / `secrets.delete` on the server DC)
+  - `RUN_TEST=authentication.71 … authentication.71` — 43/43 passed
+  - `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — passed
+- **Vite proxy:** `vite.config.js` now proxies `/secrets` to the API server (same as `/auth`). Packaged Express already served the route from Slice 2; without the proxy, Vite-dev `POST /secrets` would 404.
+- **Deviations:** (1) Form is rendered as `SecretsPage` + `MemoryRouter`, not the full `PageDispatcher` tree (context/Redux). Dispatcher `case "secrets"` is still asserted by source-read. (2) Success confirmation uses `role="status"` (`{name} set`) so the assertion does not collide with the “Set secret” button. (3) Token mint is `issueBearerToken` (same Vite `scrypt` limit as Slices 2/4). Happy-dom AES-256-GCM via the stub path worked; no `@vitest-environment node` needed.
 
 ---
 
