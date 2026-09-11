@@ -9,6 +9,7 @@ export declare const entityImport: any;
 export declare const entityMiroirUser: any;
 export declare const entityMiroirRight: any;
 export declare const entityMiroirUserCredential: any;
+export declare const entityMiroirSecret: any;
 export declare const entityVersionAdminApplication: any;
 /** @deprecated Use entityVersionAdminApplication */
 export declare const entityDefinitionAdminApplication: any;
@@ -42,6 +43,8 @@ export declare const reportMiroirUserList: any;
 export declare const reportMiroirUserDetails: any;
 export declare const reportMiroirRightList: any;
 export declare const reportMiroirRightDetails: any;
+export declare const reportMiroirSecretList: any;
+export declare const reportMiroirSecretDetails: any;
 export declare const menuDefaultAdmin: any;
 export declare const adminSelfApplication: any;
 export declare const selfApplicationStoreBasedConfigurationAdmin: any;

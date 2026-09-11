@@ -172,5 +172,9 @@ VOLUME /certs
 VOLUME /data
 EXPOSE 3080
 
+# Named API secrets persist as Admin MiroirSecret rows. Pass the wrapping key at
+# runtime (the only standing launch secret): -e MIROIR_SECRETS_MASTER_KEY=...
+# Generate: docs/reference/authentication.md#generate-the-wrapping-key
+# --secret / MIROIR_SECRET_* / AI_* key env vars are bootstrap import only.
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
 CMD ["node", "/miroir/packages/miroir-server/dist/server.js"]

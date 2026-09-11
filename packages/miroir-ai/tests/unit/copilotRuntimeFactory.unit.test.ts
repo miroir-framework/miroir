@@ -5,7 +5,12 @@
 // 3. getDefaultRuntimeConfig reads from environment variables
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { buildCopilotRuntime, getDefaultRuntimeConfig } from "../../src/runtime/copilotRuntimeFactory.js";
+import { clearSecrets, registerSecrets } from "miroir-core";
+import {
+  buildCopilotRuntime,
+  getApiKey,
+  getDefaultRuntimeConfig,
+} from "../../src/runtime/copilotRuntimeFactory.js";
 import type { AiRuntimeConfig } from "../../src/runtime/copilotRuntimeFactory.js";
 
 const openaiConfig: AiRuntimeConfig = {
@@ -25,13 +30,16 @@ const googleConfig: AiRuntimeConfig = {
 
 describe("buildCopilotRuntime", () => {
   beforeEach(() => {
-    // Provide all keys so key-resolution succeeds
-    vi.stubEnv("AI_OPENAI_KEY", "sk-test-openai");
-    vi.stubEnv("AI_ANTHROPIC_KEY", "sk-ant-test");
-    vi.stubEnv("AI_GOOGLE_KEY", "aig-test");
+    registerSecrets({
+      aiOpenaiKey: "sk-test-openai",
+      aiAnthropicKey: "sk-ant-test",
+      aiGoogleKey: "aig-test",
+      aiGithubToken: "gh-test-token",
+    });
   });
 
   afterEach(() => {
+    clearSecrets();
     vi.unstubAllEnvs();
   });
 
@@ -55,11 +63,20 @@ describe("buildCopilotRuntime", () => {
     expect(serviceAdapter).toBeDefined();
   });
 
-  it("throws with a descriptive message when the API key env var is missing", () => {
-    vi.stubEnv("AI_OPENAI_KEY", "");
-    // Setting to empty string: override the stubbed value
-    process.env["AI_OPENAI_KEY"] = "";
-    expect(() => buildCopilotRuntime(openaiConfig)).toThrowError(/AI_OPENAI_KEY/);
+  it("throws with a descriptive message when the named API key secret is missing", () => {
+    clearSecrets();
+    expect(() => buildCopilotRuntime(openaiConfig)).toThrowError(/missing secret `aiOpenaiKey`/);
+    expect(() => getApiKey("github")).toThrowError(/missing secret `aiGithubToken`/);
+    expect(() => getApiKey("github")).not.toThrowError(/AI_GITHUB_TOKEN/);
+    expect(() => getApiKey("github")).not.toThrowError(/Missing environment variable/);
+  });
+
+  it("getApiKey reads resolveSecret, not AI_* env vars", () => {
+    clearSecrets();
+    vi.stubEnv("AI_GITHUB_TOKEN", "from-env-only");
+    expect(() => getApiKey("github")).toThrowError(/missing secret `aiGithubToken`/);
+    registerSecrets({ aiGithubToken: "from-store" });
+    expect(getApiKey("github")).toBe("from-store");
   });
 
   it("throws for unsupported providerType", () => {

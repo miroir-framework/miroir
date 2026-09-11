@@ -285,12 +285,13 @@ export async function handleMcpAction(
         action: toolName,
         result: "returnedDomainElement" in result ? result.returnedDomainElement : undefined,
       };
+      const redactedSubObject = redactCredentialSecretsFromValue(subObject) as Record<string, any>;
       return {
         content: [
           {
             type: "text",
-            parsed: subObject,
-            text: JSON.stringify(subObject, null, 2),
+            parsed: redactedSubObject,
+            text: JSON.stringify(redactedSubObject, null, 2),
           },
         ],
       };
@@ -306,12 +307,13 @@ export async function handleMcpAction(
           context: "errorContext" in result ? result.errorContext : undefined,
         },
       };
+      const redactedSubObject = redactCredentialSecretsFromValue(subObject) as Record<string, any>;
       return {
         content: [
           {
             type: "text",
-            parsed: subObject,
-            text: JSON.stringify(subObject, null, 2),
+            parsed: redactedSubObject,
+            text: JSON.stringify(redactedSubObject, null, 2),
           },
         ],
       };
@@ -326,12 +328,13 @@ export async function handleMcpAction(
         message: error instanceof Error ? error.message : String(error),
       },
     };
+    const redactedSubObject = redactCredentialSecretsFromValue(subObject) as Record<string, any>;
     return {
       content: [
         {
           type: "text",
-          parsed: subObject,
-          text: JSON.stringify(subObject, null, 2),
+          parsed: redactedSubObject,
+          text: JSON.stringify(redactedSubObject, null, 2),
         },
       ],
     };

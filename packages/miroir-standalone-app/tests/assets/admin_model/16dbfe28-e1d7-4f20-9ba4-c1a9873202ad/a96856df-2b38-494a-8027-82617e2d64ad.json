@@ -1,0 +1,100 @@
+{
+  "uuid": "a96856df-2b38-494a-8027-82617e2d64ad",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "MiroirSecret",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "conceptLevel": "Model",
+  "description": "Named process- or user-scoped secret stored as ciphertext. Values are never shown in reports or generic editors; set only via dedicated secrets APIs.",
+  "defaultInstanceDetailsReportUuid": "e8a4612f-74bd-456b-83dc-f10a11f6d1b3",
+  "viewAttributes": [
+    "name",
+    "miroirUser",
+    "uuid"
+  ],
+  "icon": "Lock",
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "description": "SecretStore key (e.g. spotifyClientId, aiGithubToken).",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "ciphertext": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Ciphertext",
+            "description": "AES-256-GCM blob; never display or return to clients.",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "algorithm": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Algorithm",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "miroirUser": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "User",
+            "description": "Optional owner. Absent = process-scoped.",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "d20d09e5-0685-4fc7-b9bd-fcfa3845127a",
+              "targetEntityOrderInstancesBy": "username"
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

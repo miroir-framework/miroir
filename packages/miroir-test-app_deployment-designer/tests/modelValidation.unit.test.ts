@@ -8,7 +8,6 @@ import type {
   JzodElement,
   MetaModel,
   MiroirModelEnvironment,
-  MlSchema,
 } from "miroir-core";
 import {
   defaultMiroirModelEnvironment,

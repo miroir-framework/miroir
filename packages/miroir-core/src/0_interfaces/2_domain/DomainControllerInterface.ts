@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { ApplicationDeploymentMap, EndpointApplicationMap } from "../../1_core/Deployment";
+import type { AuthPrincipal } from "../../1_core/authentication/AuthenticationPolicy";
 import type { Uuid } from "../1_core/EntityVersion";
 import {
   CompositeActionSequence,
@@ -86,7 +87,8 @@ export interface DomainControllerInterface {
   handleBoxedExtractorOrQueryAction(
     action: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel: MiroirModelEnvironment
+    currentModel: MiroirModelEnvironment,
+    principal?: AuthPrincipal,
   ): Promise<Action2ReturnType>;
   handleQueryTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateAction,
@@ -98,13 +100,16 @@ export interface DomainControllerInterface {
     action: CompositeActionTemplate,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment,
-    actionParamValues: any
+    actionParamValues: any,
+    actionContext?: Record<string, any>,
+    principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType>;
   handleCompositeAction(
     action: CompositeActionSequence,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModel: MiroirModelEnvironment,
-    actionParamValues: Record<string, any>
+    actionParamValues: Record<string, any>,
+    principal?: AuthPrincipal,
   ): Promise<Action2ReturnType>;
   // ##############################################################################################
   handleTestCompositeAction(

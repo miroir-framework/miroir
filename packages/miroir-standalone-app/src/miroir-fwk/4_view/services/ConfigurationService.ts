@@ -18,6 +18,7 @@ import {
   MiroirConfigForRestClient,
   MiroirLoggerFactory,
   noValue,
+  partitionOpenStoreResults,
   StoreUnitConfiguration,
   type Action2VoidReturnType,
   type ApplicationDeploymentMap
@@ -250,14 +251,33 @@ export function fetchMiroirAndAppConfigurations(
       return Promise.all(openStoreActions)
     })
     .then((openResults) => {
-      // Check for any failures in store opening
-      const failedStores = openResults.filter((result) => result && result.status === "error");
-      if (failedStores.length > 0) {
-        const failureMessages = failedStores
-          .map((result) => result.errorMessage || "Unknown error")
-          .join("; ");
-        throw new Error(`Failed to open ${failedStores.length} store(s): ${failureMessages}`);
+      const partitioned = partitionOpenStoreResults(deploymentsToLoad, openResults);
+      for (const deployment of partitioned.accessDenied) {
+        log.warn(
+          "Skipping unauthorized deployment during configuration refresh",
+          deployment.uuid,
+          (deployment as Deployment).name,
+          deployment.selfApplication,
+        );
       }
+      if (partitioned.hardFailures.length > 0) {
+        const failureMessages = partitioned.hardFailures
+          .map((failure) =>
+            failure.result && typeof failure.result === "object" && "errorMessage" in failure.result
+              ? String((failure.result as { errorMessage?: unknown }).errorMessage ?? "Unknown error")
+              : "Unknown error",
+          )
+          .join("; ");
+        throw new Error(
+          `Failed to open ${partitioned.hardFailures.length} store(s): ${failureMessages}`,
+        );
+      }
+      deploymentsToLoad = partitioned.allowed;
+      applicationDeploymentMapForLoading = Object.fromEntries(
+        deploymentsToLoad.map((deployment: Deployment) => {
+          return [deployment.selfApplication, deployment.uuid];
+        }),
+      );
 
       // STEP 2: Build and execute rollback actions after stores are opened
       const rollbackActions: Promise<Action2ReturnType>[] = [];

@@ -1324,13 +1324,36 @@ export {
   clearSecrets,
   registerSecrets,
   resolveSecret,
+  type ResolveSecretResult,
 } from "./4_services/SecretStore.js";
+export {
+  AI_SECRET_IMPORT_ALIASES,
+  assembleSecretImportSet,
+  clearSecretsMasterKey,
+  decryptSecret,
+  encryptSecret,
+  getSecretsMasterKey,
+  hydrateSecrets,
+  importProcessSecrets,
+  miroirSecretInstanceUuid,
+  persistImportedProcessSecrets,
+  persistRotatedSecretRow,
+  requireWrappingKeyForSecretImport,
+  setSecretsMasterKey,
+  type AiSecretProvider,
+  type PersistRotatedSecretRowArgs,
+} from "./4_services/SecretsService.js";
 export { ParseServerArgsError, parseServerArgs } from "./4_services/parseServerArgs.js";
 export {
   allowInsecureBaseUrlsForTests,
   clearAllowedInsecureBaseUrlsForTests,
   clearExternalServiceTokenCacheForTests,
+  clearPersistRotatedSecret,
   executeExternalServiceOperation,
+  oauth2PrincipalCacheScope,
+  oauth2ResolvedCacheScope,
+  setPersistRotatedSecret,
+  type PersistRotatedSecret,
 } from "./4_services/ExternalServiceClient.js";
 export { redactCredentialSecretsFromValue } from "./4_services/redactCredentialSecrets.js";
 export {
@@ -1339,9 +1362,13 @@ export {
 export {
   AUTHENTICATION_FAILED,
   AUTH_CHANGE_PASSWORD_ACTION_LABEL,
+  ENTITY_MIROIR_SECRET_UUID,
   ENTITY_MIROIR_USER_CREDENTIAL_UUID,
   ENTITY_MIROIR_USER_UUID,
+  SECRETS_DELETE_ACTION_LABEL,
+  SECRETS_SET_ACTION_LABEL,
   assertCredentialInstanceMutationAllowed,
+  assertSecretInstanceMutationAllowed,
   assertRequestAllowed,
   bindPrincipalToDirectory,
   bearerTokenFromAuthorizationHeader,
@@ -1388,6 +1415,8 @@ export {
   assertAccessForDeployment,
   deploymentsFromInstances,
   hasAccess,
+  isAccessDeniedActionResult,
+  partitionOpenStoreResults,
   type AccessDecision,
   type AccessDeniedBody,
   type AccessDeployment,
@@ -1402,6 +1431,10 @@ export {
   handleAuthHttpRoute,
   type AuthHttpResult,
 } from "./1_core/authentication/AuthenticationHttp.js";
+export {
+  handleSecretsHttpRoute,
+  type SecretsHttpResult,
+} from "./4_services/SecretsHttp.js";
 export {
   applicationIsReachable,
   authorizationHeaders,

@@ -125,6 +125,12 @@ export type AppStackIntegrationSessionOptions = IntegTestHostOptions & {
   adminDeployment: Deployment;
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration;
   libraryPlayfieldEnsureMode?: LibraryPlayfieldEnsureMode;
+  /**
+   * When true, bootstrap opens Admin + Miroir on the server DC.
+   * Requires `miroirDeploymentStorageConfiguration`. Default remains false.
+   */
+  openAdminAndMiroirStoresOnServer?: boolean;
+  miroirDeploymentStorageConfiguration?: StoreUnitConfiguration;
   /** Passed through to app-stack bootstrap wiring (setupMiroirTest). */
   miroirActivityTracker?: MiroirActivityTracker;
   miroirEventService?: MiroirEventService;

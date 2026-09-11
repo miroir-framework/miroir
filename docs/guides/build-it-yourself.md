@@ -210,6 +210,8 @@ The server now accepts parameters via explicit CLI flags:
 - `--cert <file>`: Path to the TLS certificate file (default: `<certsdir>/localhost.pem`)
 - `--key <file>`: Path to the TLS key file (default: `<certsdir>/localhost-key.pem`)
 - `--disable-auth` / `--enable-auth`: Startup hatch for user authentication (default **on**; last flag wins). See [Authentication](../reference/authentication.md).
+- `--secrets-master-key <key>`: Wrapping key for Admin `MiroirSecret` rows (env `MIROIR_SECRETS_MASTER_KEY`). This is the **only standing launch secret** after named secrets have been imported. There is no ephemeral fallback. Generate it once: [Generate the wrapping key](../reference/authentication.md#generate-the-wrapping-key).
+- `--secret <name>=<value>`: Repeatable **bootstrap import** of a process-scoped named secret (env `MIROIR_SECRET_<NAME>`). Also accepts AI key env aliases (`AI_OPENAI_KEY` → `aiOpenaiKey`, and the Anthropic / Google / GitHub equivalents). A non-empty import without a wrapping key **fails startup**. Later launches drop these flags and keep only the wrapping key. See [Authentication — named secrets](../reference/authentication.md#named-secrets-270).
 - `-h`, `--help`: Show usage information
 
 All parameters are optional; defaults are chosen to work out of the box for local development. You can override any of them as needed.
@@ -236,6 +238,18 @@ node packages\miroir-server\release\index.js [--config <config>] [--certsdir <di
 ```
 
 The server is accessible at **https://localhost:3080** (or http://localhost:3080 if you skipped certificate generation).
+
+To persist named API secrets (Spotify, AI keys, per-user OAuth refresh tokens), [generate a wrapping key](../reference/authentication.md#generate-the-wrapping-key) and import once:
+
+```sh
+MIROIR_SECRETS_MASTER_KEY=<wrapping-key> \
+node packages/miroir-server/release/index.js \
+  --secret spotifyClientId=<id> \
+  --secret spotifyClientSecret=<secret> \
+  --secret spotifyRefreshToken=<refresh>
+```
+
+Later launches need only `MIROIR_SECRETS_MASTER_KEY` (or `--secrets-master-key`).
 
 ---
 
@@ -278,6 +292,8 @@ docker compose up
 ```
 
 Access the app at **http://localhost:3080** (or https if certs are present).
+
+To decrypt persisted named secrets inside the container, pass `MIROIR_SECRETS_MASTER_KEY` (see `docker-compose.yml`). Generate that value with [Generate the wrapping key](../reference/authentication.md#generate-the-wrapping-key). Do not put named `--secret` values in the Compose file for steady-state runs.
 
 > **First run**: on an empty `/data` volume the container automatically seeds it with the Miroir framework model, the admin application, and the library demo application.
 

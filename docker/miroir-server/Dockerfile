@@ -75,4 +75,7 @@ VOLUME /data
 EXPOSE 3080
 
 ENTRYPOINT ["/sbin/tini", "--", "/docker-entrypoint.sh"]
+# Named API secrets persist as Admin MiroirSecret rows. Pass the wrapping key at
+# runtime (the only standing launch secret): -e MIROIR_SECRETS_MASTER_KEY=...
+# Generate: docs/reference/authentication.md#generate-the-wrapping-key
 CMD ["node", "/miroir/release/index.js"]

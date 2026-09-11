@@ -35,9 +35,11 @@ export default defineConfig({
     // Node builtins — only used by Node-only subpath entries
     'node:fs',
     'node:path',
+    'node:crypto',
     'node:fs/promises',
     'fs/promises',
     'path',
+    'crypto',
   ],
   onSuccess: async () => {
     execSync(

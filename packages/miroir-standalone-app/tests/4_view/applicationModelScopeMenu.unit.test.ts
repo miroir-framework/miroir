@@ -146,15 +146,25 @@ describe("shouldShowAppMenuItem", () => {
       expectShow: true,
     },
     {
-      case: "Admin data item (Rights) is visible without showModelTools",
+      case: "Admin Users/Rights/Secrets stay behind showModelTools",
       item: reportLink({
         selfApplication: adminSelfApplication.uuid,
-        menuItemScope: "data",
         section: "data",
         label: "Rights",
         reportUuid: "42994013-4494-4510-8531-7c811a9aa0d0",
       }),
       ctx: baseCtx({ showModelTools: false }),
+      expectShow: false,
+    },
+    {
+      case: "Admin Users/Rights/Secrets appear with other Admin items when lightbulb is on",
+      item: reportLink({
+        selfApplication: adminSelfApplication.uuid,
+        section: "data",
+        label: "Secrets",
+        reportUuid: "288c9faf-c92e-49a4-b535-99ed7bb01793",
+      }),
+      ctx: baseCtx({ showModelTools: true }),
       expectShow: true,
     },
     {

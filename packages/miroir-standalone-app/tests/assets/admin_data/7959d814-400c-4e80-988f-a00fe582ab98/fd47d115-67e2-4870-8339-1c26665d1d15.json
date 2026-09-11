@@ -1,0 +1,27 @@
+{
+  "uuid": "fd47d115-67e2-4870-8339-1c26665d1d15",
+  "parentName": "Deployment",
+  "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+  "name": "Deployment of application Spotify",
+  "defaultLabel": "The deployment of application Spotify",
+  "description": "The description of deployment of application Spotify",
+  "selfApplication": "00514586-bf72-4de3-beea-0a627c821404",
+  "configuration": {
+    "admin": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-standalone-app/tests/tmp/miroir_admin"
+    },
+    "model": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-standalone-app/tests/tmp/spotify_model"
+    },
+    "data": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-standalone-app/tests/tmp/spotify_data"
+    },
+    "modelVersion": {
+      "emulatedServerType": "filesystem",
+      "directory": "miroir-standalone-app/tests/tmp/spotify_modelVersion"
+    }
+  }
+}

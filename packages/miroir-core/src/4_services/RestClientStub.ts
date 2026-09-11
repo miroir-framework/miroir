@@ -19,6 +19,7 @@ import {
   resolveAuthenticationEnabled,
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { handleAuthHttpRoute } from "../1_core/authentication/AuthenticationHttp.js";
+import { handleSecretsHttpRoute } from "./SecretsHttp.js";
 import { packageName } from "../constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { restServerDefaultHandlers } from "./RestServer";
@@ -139,6 +140,23 @@ export class RestClientStub implements RestClientInterface {
     }
     if (this.serverDomainController === undefined) {
       throw new Error("RestClientStub: serverDomainController is not set");
+    }
+
+    const secretsHttp = await handleSecretsHttpRoute({
+      url: rawUrl,
+      endpoint,
+      method,
+      body,
+      principal,
+      serverDomainController: this.serverDomainController,
+    });
+    if (secretsHttp) {
+      return {
+        status: secretsHttp.status,
+        data: secretsHttp.data,
+        headers: new Headers(),
+        url: this.rootApiUrl + endpoint,
+      };
     }
 
     const deploymentUuid = args["deploymentUuid"] ?? (body ?? {})["deploymentUuid"];

@@ -1,39 +1,85 @@
 /**
- * In-process named secrets (issue #267 D4).
- * Module-level map only — no serialization or iteration API.
+ * In-process named secrets (issue #267 D4 / #270 D2).
+ * Module-level maps only — no serialization or iteration API.
  */
 
-const secrets = new Map<string, string>();
+export type ResolveSecretResult = {
+  value: string;
+  scope: "process" | "user";
+  miroirUserUuid?: string;
+  source: "row" | "hatch";
+};
+
+const processSecrets = new Map<string, ResolveSecretResult>();
+/** Keyed `userUuid:name`. */
+const userSecrets = new Map<string, ResolveSecretResult>();
+
+function userSecretKey(miroirUserUuid: string, name: string): string {
+  return `${miroirUserUuid}:${name}`;
+}
 
 export function registerSecrets(values: Record<string, string>): void {
   for (const [name, value] of Object.entries(values)) {
-    secrets.set(name, value);
+    processSecrets.set(name, { value, scope: "process", source: "hatch" });
   }
 }
 
-export function resolveSecret(name: string): string {
+export function registerHydratedProcessSecret(name: string, value: string): void {
+  processSecrets.set(name, { value, scope: "process", source: "row" });
+}
+
+export function registerHydratedUserSecret(
+  miroirUserUuid: string,
+  name: string,
+  value: string,
+): void {
+  userSecrets.set(userSecretKey(miroirUserUuid, name), {
+    value,
+    scope: "user",
+    miroirUserUuid,
+    source: "row",
+  });
+}
+
+export function resolveSecret(
+  name: string,
+  principal?: { miroirUserUuid?: string },
+): ResolveSecretResult {
   if (!name) {
     throw new Error("Unknown or empty secret");
   }
-  const value = secrets.get(name);
-  if (value === undefined || value === "") {
+  if (principal?.miroirUserUuid) {
+    const userEntry = userSecrets.get(userSecretKey(principal.miroirUserUuid, name));
+    if (userEntry !== undefined && userEntry.value !== "") {
+      return userEntry;
+    }
+  }
+  const entry = processSecrets.get(name);
+  if (entry === undefined || entry.value === "") {
     throw new Error("Unknown or empty secret");
   }
-  return value;
+  return entry;
 }
 
 export function clearSecrets(): void {
-  secrets.clear();
+  processSecrets.clear();
+  userSecrets.clear();
 }
 
 /** Replace registered secret VALUES inside a string. Does not expose map keys. */
 export function redactRegisteredSecretValuesInString(text: string): string {
   let next = text;
-  for (const value of secrets.values()) {
-    if (!value) {
+  for (const entry of processSecrets.values()) {
+    if (!entry.value) {
       continue;
     }
-    next = next.split(value).join("[REDACTED]");
+    next = next.split(entry.value).join("[REDACTED]");
+  }
+  for (const entry of userSecrets.values()) {
+    if (!entry.value) {
+      continue;
+    }
+    next = next.split(entry.value).join("[REDACTED]");
   }
   return next;
 }

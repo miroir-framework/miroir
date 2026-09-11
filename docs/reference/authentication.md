@@ -23,7 +23,9 @@ Precedence: CLI > env > config > default on.
 
 Test launchers set `MIROIR_AUTH_ENABLED=0` when unset so non-regression stays on the open path.
 
-Token secret (optional): `server.authentication.tokenSecret` or `MIROIR_AUTH_TOKEN_SECRET`. If both are missing and auth is on, the process generates an ephemeral secret (tokens die on restart).
+Token secret (optional): `server.authentication.tokenSecret` or `MIROIR_AUTH_TOKEN_SECRET`. If both are missing and auth is on, the process generates an ephemeral secret (tokens die on restart). **Do not reuse that value as the secrets wrapping key** — an ephemeral token secret would make every `MiroirSecret` row unreadable after restart.
+
+Wrapping key (optional until the first persisted or imported secret exists): `--secrets-master-key` or `MIROIR_SECRETS_MASTER_KEY`. This is the **only standing launch secret** after named secrets have been imported. There is no ephemeral wrapping key: a launch that must decrypt existing rows, or that passes `--secret` / `MIROIR_SECRET_*` / AI key env vars, fails if the wrapping key is missing. Generate it once — [Generate the wrapping key](#generate-the-wrapping-key). See also [named secrets](#named-secrets-270).
 
 ## HTTP
 
@@ -32,6 +34,9 @@ Token secret (optional): `server.authentication.tokenSecret` or `MIROIR_AUTH_TOK
 | GET | `/auth/status` | Public. `{ "enabled": boolean }` only |
 | POST | `/auth/login` | Public. Body `{ "username", "password" }` → `{ token, principal }` |
 | POST | `/auth/change-password` | Requires Bearer. Body `{ "currentPassword", "newPassword" }` → `{ changed: true }`. Updates only the principal’s `MiroirUserCredential`. |
+| GET | `/secrets` | Requires Bearer. `{ "secrets": [ { "name", "scope": "process" \| "user", "miroirUser"? } ] }` — names and scopes only. Process rows plus the caller’s own user-scoped rows. Never `ciphertext` or plaintext. |
+| POST | `/secrets` | Requires Bearer. Body `{ "name", "value", "scope": "process" \| "user" }` → `{ "set": true }`. Process write: any authenticated user (until #219 C2). User write: **self only**. |
+| DELETE | `/secrets` | Requires Bearer. Body `{ "name", "scope": "process" \| "user" }` → `{ "deleted": true }`. Same writer rules as POST. |
 | CRUD / action / query | existing REST | Requires `Authorization: Bearer <token>`, then application **or** deployment access |
 | `/api/copilotkit` | same Express app | Same Bearer gate |
 
@@ -46,9 +51,35 @@ Seed logins (dev only):
 
 Change seed passwords after first use.
 
-Denied REST returns **403** `{ "status": "error", "errorType": "AccessDenied" }`. Missing or unusable identity still returns **401** `AuthenticationRequired`. Unknown `deploymentUuid` is 403. The UI shows an application if the user has an application grant **or** any granted deployment of that application, and sends a denied report URL to `/?page=home`. CopilotKit stays identity-only (no `deploymentUuid` on the request). A second Library deployment (same-app narrowing) is not in this increment.
+Denied REST returns **403** `{ "status": "error", "errorType": "AccessDenied" }`. Missing or unusable identity still returns **401** `AuthenticationRequired`. Unknown `deploymentUuid` is 403. The UI shows an application if the user has an application grant **or** any granted deployment of that application, and sends a denied report URL to `/?page=home`. A configuration refresh (`storeManagementAction_openStore` for every non-Admin deployment) **warns and skips** an AccessDenied store; it still loads Admin, Miroir, and any other deployment the principal may open. CopilotKit stays identity-only (no `deploymentUuid` on the request). A second Library deployment (same-app narrowing) is not in this increment.
 
-Generic CRUD/query responses strip `passwordHash`. Generic create/update/delete of `MiroirUserCredential` is rejected; only `POST /auth/change-password` may update the principal’s hash. Duplicate `username` or credential FK values fail closed at login (same `AuthenticationFailed` body). After login, REST/CopilotKit re-bind the token to the current Admin directory so a deactivated user cannot keep using an unexpired token. The browser treats an expired or malformed stored token as logged out, and `RestClient` clears the session on `AuthenticationRequired`.
+Generic CRUD/query responses strip `passwordHash` and `ciphertext`. Generic create/update/delete of `MiroirUserCredential` or `MiroirSecret` is rejected; only `POST /auth/change-password` may update the principal’s hash, and only `POST`/`DELETE` `/secrets` may set or delete a named secret. MCP tool **responses** are redacted the same way (not only logs). Duplicate `username` or credential FK values fail closed at login (same `AuthenticationFailed` body). After login, REST/CopilotKit re-bind the token to the current Admin directory so a deactivated user cannot keep using an unexpired token. The browser treats an expired or malformed stored token as logged out, and `RestClient` clears the session on `AuthenticationRequired`.
+
+## Named secrets (#270)
+
+Admin entity `MiroirSecret` (uuid `a96856df-2b38-494a-8027-82617e2d64ad`) stores process-scoped rows (`miroirUser` absent) and per-user rows (`miroirUser` set). Ciphertext is AES-256-GCM (`aes-256-gcm$<iv>$<ciphertext>$<tag>`, base64url). `resolveSecret(name, principal?)` prefers a user-scoped row when a principal is present, otherwise the process row.
+
+`--secret` / `MIROIR_SECRET_*` / `AI_OPENAI_KEY` / `AI_ANTHROPIC_KEY` / `AI_GOOGLE_KEY` / `AI_GITHUB_TOKEN` import **process-scoped** rows once, then are discarded. Steady-state launch is the wrapping key alone. `registerSecrets` remains an in-process **test hatch** (used by Spotify integ and `LIVE_SPOTIFY_*`). The Admin lightbulb menu lists existing secrets (same list/detail reports as Users and Rights). Writes go through `POST`/`DELETE` `/secrets` (CLI `--secret` import, or HTTP). Vite-dev proxies `/secrets` like `/auth`.
+
+The default Admin seed (and Docker first-run copy of it) has **no** `MiroirSecret` instance rows. `docker compose up` does not need a wrapping key until you import or persist a secret.
+
+### Generate the wrapping key
+
+Miroir does not generate `MIROIR_SECRETS_MASTER_KEY`. It is any UTF-8 string you choose; the process SHA-256-hashes it and uses that digest as the AES-256-GCM key. Pick a **high-entropy** value once, store it outside the repo (env, secret store, Compose override — not committed JSON), and pass the **same** string on every later launch. A lost or changed key makes every `MiroirSecret` row unreadable. There is no ephemeral wrapping key.
+
+```sh
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+# or: openssl rand -base64 32
+```
+
+Then:
+
+```sh
+export MIROIR_SECRETS_MASTER_KEY='<that-value>'
+# or: --secrets-master-key '<that-value>'
+```
+
+Do **not** reuse `MIROIR_AUTH_TOKEN_SECRET` (that one can be ephemeral). Tests use the dummy `test-secrets-master`; do not use that in a real deployment. Launch examples: [Build it yourself §7](../guides/build-it-yourself.md#7-start-the-server).
 
 ## Not gated yet
 

@@ -47,6 +47,10 @@ services:
       # Explicit paths inside the container (match the volume mount above)
       - MIROIR_TLS_CERT=/certs/localhost.pem
       - MIROIR_TLS_KEY=/certs/localhost-key.pem
+      # Wrapping key for Admin MiroirSecret rows (the only standing launch secret).
+      # Generate: docs/reference/authentication.md#generate-the-wrapping-key
+      # Required to decrypt persisted named secrets / to bootstrap-import --secret values.
+      # - MIROIR_SECRETS_MASTER_KEY=
     restart: unless-stopped
 
 volumes:

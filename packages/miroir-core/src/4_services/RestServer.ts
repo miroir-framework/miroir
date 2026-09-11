@@ -40,7 +40,10 @@ import {
 
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { actionsWithDeploymentInPayload } from "../1_core/Instance";
-import { assertCredentialInstanceMutationAllowed } from "../1_core/authentication/AuthenticationPolicy.js";
+import {
+  assertCredentialInstanceMutationAllowed,
+  assertSecretInstanceMutationAllowed,
+} from "../1_core/authentication/AuthenticationPolicy.js";
 import { redactCredentialSecretsFromValue } from "./redactCredentialSecrets.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestServer");
@@ -272,17 +275,23 @@ export async function restMethodsPostPutDeleteHandler(
   const targetDataStore = localPersistenceStoreController
 
   const crudInstances = body?.crudInstances ?? [];
+  // Transactional/commit-replay paths bypass this secret/credential guard (analysis R11).
   for (const instance of crudInstances) {
-    const guard = assertCredentialInstanceMutationAllowed({
-      actionType: method === "delete" ? "deleteInstance" : method === "post" ? "createInstance" : "updateInstance",
-      payload: {
-        parentUuid: (instance as { parentUuid?: string } | undefined)?.parentUuid,
-        objects: [instance],
-      },
-    });
-    if (!guard.allowed) {
+    const actionType = method === "delete" ? "deleteInstance" : method === "post" ? "createInstance" : "updateInstance";
+    const payload = {
+      parentUuid: (instance as { parentUuid?: string } | undefined)?.parentUuid,
+      objects: [instance],
+    };
+    const credentialGuard = assertCredentialInstanceMutationAllowed({ actionType, payload });
+    if (!credentialGuard.allowed) {
       return continuationFunction(response)(
-        new Action2Error("FailedToHandleAction", guard.errorMessage),
+        new Action2Error("FailedToHandleAction", credentialGuard.errorMessage),
+      );
+    }
+    const secretGuard = assertSecretInstanceMutationAllowed({ actionType, payload });
+    if (!secretGuard.allowed) {
+      return continuationFunction(response)(
+        new Action2Error("FailedToHandleAction", secretGuard.errorMessage),
       );
     }
   }
@@ -504,6 +513,7 @@ export async function queryActionHandler(
         runBoxedExtractorOrQueryAction,
         applicationDeploymentMap,
         defaultMiroirModelEnvironment,
+        params.authPrincipal,
       );
       return continuationFunction(response)(redactCredentialSecretsFromValue(result));
     },
