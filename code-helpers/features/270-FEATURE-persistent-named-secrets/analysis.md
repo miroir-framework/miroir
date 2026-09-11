@@ -128,7 +128,7 @@ Ciphertext format (mirrors `scrypt$…` on credentials):
 aes-256-gcm$<iv_base64url>$<ciphertext_base64url>$<tag_base64url>
 ```
 
-AES-256 key = SHA-256(UTF-8 wrapping key) (32 bytes). The wrapping key must be high-entropy (operator secret, not a user password). Node `crypto` only — no new dependency (same constraint as #71).
+AES-256 key = SHA-256(UTF-8 wrapping key) (32 bytes). The wrapping key must be high-entropy (operator secret, not a user password). Operator procedure: [`docs/reference/authentication.md` — Generate the wrapping key](../../../docs/reference/authentication.md#generate-the-wrapping-key). Node `crypto` only — no new dependency (same constraint as #71).
 
 Wrapping-key knobs (not `MIROIR_AUTH_TOKEN_SECRET` — that secret may be **ephemeral** when unset: `getProcessTokenSecret` in `AuthenticationPolicy.ts:161-170`):
 

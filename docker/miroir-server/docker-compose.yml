@@ -43,6 +43,7 @@ services:
     # environment:
     #   - NODE_ENV=production
     #   # Wrapping key for Admin MiroirSecret rows (the only standing launch secret).
+    #   # Generate: docs/reference/authentication.md#generate-the-wrapping-key
     #   - MIROIR_SECRETS_MASTER_KEY=
 
 volumes:

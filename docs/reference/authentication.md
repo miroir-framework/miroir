@@ -25,7 +25,7 @@ Test launchers set `MIROIR_AUTH_ENABLED=0` when unset so non-regression stays on
 
 Token secret (optional): `server.authentication.tokenSecret` or `MIROIR_AUTH_TOKEN_SECRET`. If both are missing and auth is on, the process generates an ephemeral secret (tokens die on restart). **Do not reuse that value as the secrets wrapping key** — an ephemeral token secret would make every `MiroirSecret` row unreadable after restart.
 
-Wrapping key (optional until the first persisted or imported secret exists): `--secrets-master-key` or `MIROIR_SECRETS_MASTER_KEY`. This is the **only standing launch secret** after named secrets have been imported. There is no ephemeral wrapping key: a launch that must decrypt existing rows, or that passes `--secret` / `MIROIR_SECRET_*` / AI key env vars, fails if the wrapping key is missing. See [named secrets](#named-secrets-270).
+Wrapping key (optional until the first persisted or imported secret exists): `--secrets-master-key` or `MIROIR_SECRETS_MASTER_KEY`. This is the **only standing launch secret** after named secrets have been imported. There is no ephemeral wrapping key: a launch that must decrypt existing rows, or that passes `--secret` / `MIROIR_SECRET_*` / AI key env vars, fails if the wrapping key is missing. Generate it once — [Generate the wrapping key](#generate-the-wrapping-key). See also [named secrets](#named-secrets-270).
 
 ## HTTP
 
@@ -60,6 +60,24 @@ Generic CRUD/query responses strip `passwordHash` and `ciphertext`. Generic crea
 Admin entity `MiroirSecret` (uuid `a96856df-2b38-494a-8027-82617e2d64ad`) stores process-scoped rows (`miroirUser` absent) and per-user rows (`miroirUser` set). Ciphertext is AES-256-GCM (`aes-256-gcm$<iv>$<ciphertext>$<tag>`, base64url). `resolveSecret(name, principal?)` prefers a user-scoped row when a principal is present, otherwise the process row.
 
 `--secret` / `MIROIR_SECRET_*` / `AI_OPENAI_KEY` / `AI_ANTHROPIC_KEY` / `AI_GOOGLE_KEY` / `AI_GITHUB_TOKEN` import **process-scoped** rows once, then are discarded. Steady-state launch is the wrapping key alone. `registerSecrets` remains an in-process **test hatch** (used by Spotify integ and `LIVE_SPOTIFY_*`). The UI form is `/?page=secrets` (no Admin menu item). Vite-dev proxies `/secrets` like `/auth`.
+
+### Generate the wrapping key
+
+Miroir does not generate `MIROIR_SECRETS_MASTER_KEY`. It is any UTF-8 string you choose; the process SHA-256-hashes it and uses that digest as the AES-256-GCM key. Pick a **high-entropy** value once, store it outside the repo (env, secret store, Compose override — not committed JSON), and pass the **same** string on every later launch. A lost or changed key makes every `MiroirSecret` row unreadable. There is no ephemeral wrapping key.
+
+```sh
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+# or: openssl rand -base64 32
+```
+
+Then:
+
+```sh
+export MIROIR_SECRETS_MASTER_KEY='<that-value>'
+# or: --secrets-master-key '<that-value>'
+```
+
+Do **not** reuse `MIROIR_AUTH_TOKEN_SECRET` (that one can be ephemeral). Tests use the dummy `test-secrets-master`; do not use that in a real deployment. Launch examples: [Build it yourself §7](../guides/build-it-yourself.md#7-start-the-server).
 
 ## Not gated yet
 
