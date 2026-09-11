@@ -422,9 +422,14 @@ function oauth2AuthorizationCodeCacheKey(
 }
 
 /**
- * OAuth2 refresh-token grant (issue #267): POST grant_type=refresh_token to the scheme's
- * tokenUrl with HTTP Basic client auth. Uses the named refresh-token secret (or a rotated
+ * OAuth2 Authorization Code refresh-token grant (issue #267): POST grant_type=refresh_token to the
+ * scheme's tokenUrl with HTTP Basic client auth. Uses the named refresh-token secret (or a rotated
  * in-memory value). Caches the access token until expiry (60s margin). Never logs secrets.
+ * @param scheme - The OAuth2 Authorization Code scheme to use.
+ * @param actionType - The action type to call.
+ * @param forceRefresh - Whether to force a refresh of the token.
+ * @param principal - The principal to use for the call.
+ * @returns The access token.
  */
 async function resolveAuthorizationCodeToken(
   scheme: OAuth2AuthorizationCodeScheme,
@@ -649,6 +654,14 @@ export async function executeExternalServiceOperation(
   );
 }
 
+/**
+ * Actually calls (fetch) the external service REST operation.
+ * @param externalService - The external service to call.
+ * @param actionType - The action type to call.
+ * @param bindings - The bindings to use for the call.
+ * @param principal - The principal to use for the call.
+ * @returns The result of the call.
+ */
 async function fetchExternalServiceOperation(
   externalService: EndpointExternalService,
   actionType: string,

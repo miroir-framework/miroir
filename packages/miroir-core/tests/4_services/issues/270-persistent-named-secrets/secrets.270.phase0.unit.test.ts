@@ -129,19 +129,18 @@ if (runThis) {
       expect(urls.some((url) => url.includes("/secrets"))).toBe(false);
     });
 
-    it("dedicated /secrets handler exists outside restServerDefaultHandlers", () => {
-      const secretsHttp = readFileSync(join(CORE_SRC, "4_services/SecretsHttp.ts"), "utf8");
+    it("dedicated /secrets handler is gone from SecretsHttp, stub, and Express", () => {
+      expect(existsSync(join(CORE_SRC, "4_services/SecretsHttp.ts"))).toBe(false);
       const stubSrc = readFileSync(join(CORE_SRC, "4_services/RestClientStub.ts"), "utf8");
       const serverSrc = readFileSync(
         join(REPO_ROOT, "packages/miroir-server/src/server.ts"),
         "utf8",
       );
-      expect(secretsHttp).toContain("export async function handleSecretsHttpRoute");
-      expect(secretsHttp).toContain("/secrets");
-      expect(stubSrc).toContain("handleSecretsHttpRoute");
-      expect(serverSrc).toContain('app.get("/secrets"');
-      expect(serverSrc).toContain('app.post("/secrets"');
-      expect(serverSrc).toContain('app.delete("/secrets"');
+      expect(stubSrc).not.toContain("handleSecretsHttpRoute");
+      expect(serverSrc).not.toContain("handleSecretsHttpRoute");
+      expect(serverSrc).not.toContain('app.get("/secrets"');
+      expect(serverSrc).not.toContain('app.post("/secrets"');
+      expect(serverSrc).not.toContain('app.delete("/secrets"');
     });
   });
 

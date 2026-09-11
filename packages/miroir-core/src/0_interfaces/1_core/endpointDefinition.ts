@@ -109,6 +109,7 @@ export function getEndpointActions(
  * Returns undefined for the actions branch, missing definition, or both-keys
  * objects (XOR fail-closed).
  */
+// TODO: defensive code
 export function getExternalService(
   endpoint: EndpointDefinitionLike | undefined | null,
 ): EndpointExternalService | undefined {

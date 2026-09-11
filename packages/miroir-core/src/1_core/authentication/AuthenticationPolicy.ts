@@ -555,7 +555,7 @@ export function assertSecretInstanceMutationAllowed(action: {
   }
   return {
     allowed: false,
-    errorMessage: "MiroirSecret can only be mutated via POST /secrets or DELETE /secrets",
+    errorMessage: "MiroirSecret can only be mutated via secrets.set or secrets.delete",
   };
 }
 

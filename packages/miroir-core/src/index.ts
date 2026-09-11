@@ -1432,10 +1432,6 @@ export {
   type AuthHttpResult,
 } from "./1_core/authentication/AuthenticationHttp.js";
 export {
-  handleSecretsHttpRoute,
-  type SecretsHttpResult,
-} from "./4_services/SecretsHttp.js";
-export {
   applicationIsReachable,
   authorizationHeaders,
   nextPageWhenAccessDenied,
