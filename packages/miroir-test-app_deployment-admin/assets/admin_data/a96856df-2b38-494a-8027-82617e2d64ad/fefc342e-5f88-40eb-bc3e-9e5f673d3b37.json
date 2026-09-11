@@ -1,0 +1,8 @@
+{
+  "uuid": "fefc342e-5f88-40eb-bc3e-9e5f673d3b37",
+  "parentName": "MiroirSecret",
+  "parentUuid": "a96856df-2b38-494a-8027-82617e2d64ad",
+  "name": "spotifyRefreshToken",
+  "ciphertext": "aes-256-gcm$XBdFDFHneRwQNgbw$noiCS6JTEv7F5Fmp67VKz0DuIJA5D1AV91q-yD9lS3tjWgdrfZ1BTiiHs_G5vbimMBExVoRGc9Mu2Pp6iWlESmds-rp88WCrkWc1mq5KzzSFlTXxRKy19sP_7bt78Kb2_YSCz0SgS5jKT0j2NMdyizIKJaOdlLug0kXi45fqHbQY2pw$cjyR_rE5cGhAs8oX-LQvLQ",
+  "algorithm": "aes-256-gcm"
+}
