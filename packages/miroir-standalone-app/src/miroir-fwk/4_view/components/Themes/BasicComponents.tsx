@@ -198,6 +198,7 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
   variant?: 'primary' | 'secondary';
   loading?: boolean;
   disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
 }> = ({ 
   children, 
   className, 
@@ -205,7 +206,8 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
   onClick,
   variant = 'primary',
   loading = false,
-  disabled = false
+  disabled = false,
+  type = 'button',
 }) => {
   const { currentTheme } = useMiroirTheme();
   const isDisabled = disabled || loading;
@@ -239,7 +241,14 @@ export const ThemedButton: React.FC<ThemedComponentProps & {
   });
 
   return (
-    <button css={buttonStyles} className={className} style={style} onClick={isDisabled ? undefined : onClick} disabled={isDisabled}>
+    <button
+      type={type}
+      css={buttonStyles}
+      className={className}
+      style={style}
+      onClick={isDisabled ? undefined : onClick}
+      disabled={isDisabled}
+    >
       {loading && <span css={spinnerStyles} />}
       {children}
     </button>
