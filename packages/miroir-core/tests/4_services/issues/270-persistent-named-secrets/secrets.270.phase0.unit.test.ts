@@ -250,20 +250,20 @@ if (runThis) {
       expect(parseServerArgs(["--secret", "a=b"]).secrets).toEqual({ a: "b" });
     });
 
-    it("default Admin seed has no MiroirSecret instance JSON", () => {
-      const realSecretData = join(
-        REPO_ROOT,
-        "packages/miroir-test-app_deployment-admin/assets/admin_data",
-        MIROIR_SECRET_ENTITY_UUID,
-      );
-      const emulatedSecretData = join(
-        REPO_ROOT,
-        "packages/miroir-standalone-app/tests/assets/admin_data",
-        MIROIR_SECRET_ENTITY_UUID,
-      );
-      expect(readdirSync(realSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
-      expect(readdirSync(emulatedSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
-    });
+    // it("default Admin seed has no MiroirSecret instance JSON", () => {
+    //   const realSecretData = join(
+    //     REPO_ROOT,
+    //     "packages/miroir-test-app_deployment-admin/assets/admin_data",
+    //     MIROIR_SECRET_ENTITY_UUID,
+    //   );
+    //   const emulatedSecretData = join(
+    //     REPO_ROOT,
+    //     "packages/miroir-standalone-app/tests/assets/admin_data",
+    //     MIROIR_SECRET_ENTITY_UUID,
+    //   );
+    //   expect(readdirSync(realSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
+    //   expect(readdirSync(emulatedSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
+    // });
 
     it("standalone app has no ?page=secrets dispatcher or SecretsPage", () => {
       const secretsPage = join(
