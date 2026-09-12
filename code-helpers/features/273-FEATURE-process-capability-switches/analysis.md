@@ -12,7 +12,9 @@ Related analyses: [`../234-FEATURE-versioning-modes-and-asset-migration/analysis
 Key sources: [`tools.ts`](../../../packages/miroir-core/src/tools.ts) · [`ViewParams.ts`](../../../packages/miroir-core/src/0_interfaces/4-views/ViewParams.ts) · [`ConfigurationService.ts`](../../../packages/miroir-core/src/3_controllers/ConfigurationService.ts) · [`DomainElement.ts`](../../../packages/miroir-core/src/0_interfaces/2_domain/DomainElement.ts) · [`versioningMode.ts`](../../../packages/miroir-core/src/1_core/versioning/versioningMode.ts) · [`AccessPolicy.ts`](../../../packages/miroir-core/src/1_core/authentication/AccessPolicy.ts) · [`RestClientStub.ts`](../../../packages/miroir-core/src/4_services/RestClientStub.ts) · [`getMiroirFundamentalJzodSchema.ts`](../../../packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts) · [`AppBar.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx) · [`RootComponent.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx) · [`SettingsPage.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/SettingsPage.tsx) · [`AgentsCopilotKit.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx) · [`index.tsx`](../../../packages/miroir-standalone-app/src/index.tsx) · [`ipcServerSetup.ts`](../../../packages/miroir-standalone-app-electron/src/ipcServerSetup.ts) · [`server.ts`](../../../packages/miroir-server/src/server.ts) · [`MiroirConfig.ts`](../../../packages/miroir-core/src/0_interfaces/1_core/MiroirConfig.ts)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed with the user (2026-09-12). First draft on `273-FEATURE-process-capability-switches`.
+**Status:** decisions confirmed with the user (2026-09-12). Revised after adversarial review ([`./adversarial-review.md`](./adversarial-review.md), R1–R12 applied). Product choices D1–D15 unchanged.
+
+**Document history:** first draft committed on `273-FEATURE-process-capability-switches`. Adversarial review found two structural holes (D13 `hasAccess` short-circuits on always-allow Admin; Electron `ai`/`mcp` presets with no HTTP transport) plus RestClientStub auth-gate placement, MCP refuse call site, `bundled` on creation pickers, store-admin action scope, dual-config drift, and citation repairs. Those are repaired below.
 
 ---
 
@@ -40,15 +42,15 @@ Confirmed with the user (2026-09-12), grilling rounds 1–4. ★ = accepted.
 | D2 | Hide vs refuse | **Same check for both.** |
 | D3 | What is `emulatedServer`? | **Transport only.** Inherit capabilities from environment + factories + config. |
 | D4 | Process vs application | **Two scopes.** Process snapshot vs per-application versioning. |
-| D5 | Electron capacity | **Same as client plus server.** AI/MCP allowed when flags are on. Main process owns the snapshot. |
+| D5 | Electron capacity | **Same as client plus server.** AI/MCP allowed when flags are on. Main owns the snapshot **and** must expose a loopback HTTP runtime for CopilotKit/MCP (R2). Renderer `features` is not read (R7). |
 | D6 | AI availability | **`miroirConfig.features.ai` only.** Delete `ViewParams.agents` as a gate (#244 stand-in). |
 | D7 | Where flags live | **Root `features` on client and server `miroirConfig`.** Restart to change. |
-| D8 | Missing flags | **`ai` / `mcp` absent → false. `designerTools` absent → true.** Patch every repo config. |
+| D8 | Missing flags | **`ai` / `mcp` absent → false. `designerTools` absent → true.** Patch only persistence-side configs that need non-default values (R7). |
 | D9 | Sandbox vs file | **`getClientEnvironment() === "sandbox"` forces `ai` false.** File cannot override. |
 | D10 | MCP | **Same declared flag as AI:** `features.mcp`. |
-| D11 | Store types / store admin | **Derived** from factories registered on the persistence side. No per-backend force-off in v1. |
-| D12 | How the UI learns the snapshot | **`getProcessCapabilities()` on the persistence side.** GET, once, HTTP or IPC. `RestClientStub` + express + Electron main. |
-| D13 | Designer tools | **Keep the bulb.** Config can hide it. Auth on: also require Admin application access. Hidden ⇒ `showModelTools` forced off. No new role. |
+| D11 | Store types / store admin | **Derived** from factories. `bundled` is openable, not creatable (R5). `storeAdministration` refuses create/delete/reset only, never open/close (R6). |
+| D12 | How the UI learns the snapshot | **`getProcessCapabilities()` on the persistence side.** GET before the auth gate. UI fetch via the environment rest client, never plain `window.fetch` (R3). |
+| D13 | Designer tools | **Keep the bulb.** Config can hide it. Auth on: require an **explicit** Admin `MiroirRight` grant (`alwaysAllow: []`). Hidden ⇒ `showModelTools` forced off. No new role. |
 | D14 | Refused action | **`Action2Error` `errorType: "FeatureUnavailable"`** + `errorContext.capability`. |
 | D15 | Transformer Builder | **Follows designer tools, not `ai`.** |
 
@@ -86,13 +88,19 @@ Confirmed with the user (2026-09-12), grilling rounds 1–4. ★ = accepted.
 
 **Status:** Accepted — process snapshot + application versioning.
 
-`assertApplicationVersioningEnabled` (`versioningMode.ts:53-66`) already throws when freeze is illegal. A flat `can("versioning")` would mix Admin with Library.
+`assertApplicationVersioningEnabled` (`versioningMode.ts:53-65`) already throws when freeze is illegal. A flat `can("versioning")` would mix Admin with Library.
 
 ### D5 — Electron
 
 **Status:** Accepted — full server in one binary.
 
-`ipcServerSetup.ts:163-167` registers filesystem, IndexedDB, Mongo, Postgres. It does **not** mount CopilotKit or MCP. `electronServerConfig` (`:172-177`) has no `features`, no `mcpUrl`. The renderer’s `electronMiroirConfig` (`index.tsx:409-432`) is a client stub with `emulateServer: true` and no `features`. Adding the flags to **both** objects is required. Snapshot is computed in **main** and sent to the renderer. Do not derive it from `getClientEnvironment() === "electron"`: main hits `process.versions.node` first (`tools.ts:38-39`) and returns `"node"`.
+`ipcServerSetup.ts:163-167` registers filesystem, IndexedDB, Mongo, Postgres. It does **not** mount CopilotKit or MCP and starts **no HTTP listener** (`ipcServerSetup.ts:205-248` is IPC only). `electronServerConfig` (`:172-177`) has no `features`, no `mcpUrl`. The renderer’s `electronMiroirConfig` (`index.tsx:409-432`) is a client stub with `emulateServer: true`.
+
+`features` is read **only on the persistence side** (R7): main’s `electronServerConfig`. The renderer object is not a source of truth and does not need `features`.
+
+Snapshot is computed in **main** and fetched through `ElectronRestClient` → IPC `rest-call` → main `RestClientStub.call` (`ElectronIpcProxy.ts:81-93`, `ipcServerSetup.ts:210-214`). Do not derive it from `getClientEnvironment() === "electron"`: main hits `process.versions.node` first (`tools.ts:38-39`) and returns `"node"`. The renderer’s `ConfigurationService` is a **different singleton** that registers IndexedDB only (`index.tsx:391`, `ipcServerSetup.ts:160-162`); a renderer-side `getProcessCapabilities()` against that map would lie (R11).
+
+**Transport when `ai` / `mcp` is true (R2).** Relative `/api/copilotkit` (`AgentsCopilotKit.tsx:28`) and `window.location.origin` MCP (`runMcpToolRunner.ts:41-46`) resolve to `app://` in prod (`main.ts:60-75`, `:171`) and to Vite without a running `miroir-server` in dev. Enabling the flags without a runtime recreates the dead-control bug. This issue includes the channel: main listens on loopback HTTP (reuse `electronServerConfig.server.rootApiUrl`) and mounts CopilotKit + MCP there when the flags are true; the renderer uses that **absolute** loopback URL for CopilotKit `runtimeUrl` and MCP, not `window.location.origin`. Snapshot GET still uses IPC. Presets stay `ai: true`, `mcp: true`.
 
 ### D6 — AI flag vs `ViewParams.agents`
 
@@ -118,15 +126,15 @@ features?: {
 }
 ```
 
-Sibling of `client` / `server`, not nested inside the emulateServer union, so Electron’s hardcoded client object and the server object share one path: `config.features`.
+Sibling of `client` / `server`, not nested inside the emulateServer union. Persistence-side configs read `config.features` (server JSON, Electron **main** object, emulateServer client configs). Remote web client files and the Electron renderer object are not sources (R7).
 
-Schema change in `getMiroirFundamentalJzodSchema.ts` (`miroirConfigClient` `:1856-1883`, `miroirConfigServer` `:1885-1921`) then `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`.
+Schema change in `getMiroirFundamentalJzodSchema.ts` (`miroirConfigClient` `:1857-1884`, `miroirConfigServer` `:1885-1922`) then `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`.
 
 ### D8 — Missing-field defaults
 
 **Status:** Accepted — fail closed for `ai` / `mcp`, fail open for `designerTools`.
 
-Fail closed on AI/MCP means every shipped config that should keep today’s AI/MCP must set the flags explicitly. Fail open on designer tools avoids locking every existing designer out of the bulb.
+Fail closed on AI/MCP means every **persistence-side** config that should keep today’s AI/MCP must set the flags explicitly (server JSON, Electron main hardcoded object, sandbox/emulated client configs that should enable them). Test profiles that never touch AI/MCP omit the flags and stay false (reconciles D8 with §5.5). Fail open on designer tools avoids locking every existing designer out of the bulb. Do not patch the Electron renderer object or remote-only web client files that are not read for `features` (R7).
 
 ### D9 — Sandbox veto
 
@@ -138,29 +146,55 @@ Fail closed on AI/MCP means every shipped config that should keep today’s AI/M
 
 **Status:** Accepted — `features.mcp`, same object as `ai`.
 
-Off: do not start the MCP HTTP server, do not show MCP runners / tool UI. `mcpUrl` remains the listen URL when `mcp` is true; it is not a second on/off.
+Off: do not mount MCP on the **main app** (`mcpServer.mountHttpRoutes(app)` at `server.ts:823`) and do not start the dedicated listener (`mcpServer.run` at `server.ts:925-926`). Do not show MCP runners / tool UI. UI runners fetch HTTP directly (`RunnerView.tsx:465-469` → `runMcpToolRunner.ts:23-29`); the D14 refuse check lives in `runMcpToolRunner` **before** fetch, otherwise the user sees `FailedToHandleAction` (`runMcpToolRunner.ts:30-37`) (R4). `mcpUrl` remains the listen URL when `mcp` is true; it is not a second on/off. Electron uses the loopback URL from D5, not `window.location.origin`.
 
 ### D11 — Store types
 
 **Status:** Accepted — derive from `ConfigurationService` maps.
 
-`registerStoreSectionFactory` keys are `JSON.stringify({ storageType, section })` (`ConfigurationService.ts:51-60`). `StorageType` is `"sql" \| "filesystem" \| "indexedDb" \| "mongodb" \| "bundled"` (`StorageConfiguration.ts:7-13`). `availableStoreTypes` = unique `storageType` values present in `StoreSectionFactoryRegister`. `storeAdministration` is true when `adminStoreFactoryRegister` has at least one type other than `"bundled"`.
+`registerStoreSectionFactory` keys are `JSON.stringify({ storageType, section })` (`ConfigurationService.ts:51-60`). `StorageType` is `"sql" \| "filesystem" \| "indexedDb" \| "mongodb" \| "bundled"` (`StorageConfiguration.ts:7-13`).
 
-Web renderer today registers IndexedDB only (`index.tsx:391`). Electron main and `miroir-server` register all four writable backends. Create Application’s form union (`Runner_CreateApplication.tsx:73-108`) lists indexedDb / filesystem / sql / mongodb with no filter.
+- `availableStoreTypes` = unique `storageType` values in `StoreSectionFactoryRegister`.
+- Creation pickers **exclude `bundled`** (openable, not creatable — bundled is read-only, `miroir-store-bundled/src/startup.ts:142-157`) (R5).
+- `storeAdministration` is true when `adminStoreFactoryRegister` has at least one type other than `"bundled"`.
+- Refuse only `storeManagementAction_createStore` / `deleteStore` / `resetAndInitApplicationDeployment`. **Never** refuse `openStore` / `closeStore` (startup opens stores in every shape, e.g. sandbox `index.tsx:200-215`) (R6).
+- The refuse check lives in `DomainController.handleActionInternal`’s store-management case so REST, composite re-entry (`DomainController.ts:3745-3749`), and in-process MCP tools share it.
+
+Web renderer today registers IndexedDB only (`index.tsx:391`). That map is **not** the snapshot source for real-server web (`persistenceStoreAccessMode: "remote"`, `index.tsx:284-289`); the server registers all four writable backends (`server.ts:322-326`). The dead-backend picker case is sandbox (and any in-browser emulate that did not register the type). Emulated integ tests currently register all four factories at module scope (`miroir-runner-tests.integ.test.ts:70-73`) — `availableStoreTypes` there is all-four regardless of profile (R10). Create Application’s form union (`Runner_CreateApplication.tsx:73-108`) lists indexedDb / filesystem / sql / mongodb with no filter.
 
 ### D12 — Snapshot transport
 
 **Status:** Accepted — process-agnostic GET, same lesson as #270 `/secrets` and #71 `/auth`.
 
-Precedent: `handleAuthHttpRoute` is checked first in `RestClientStub.call` (`RestClientStub.ts:74-91`) and also mounted on express. An express-only `/capabilities` in `server.ts` is invisible to emulated-server tests.
+Precedent: `handleAuthHttpRoute` is the **in-process** early return in `RestClientStub.call` (`RestClientStub.ts:74-91`). Express `server.ts` re-implements `/auth/login` and `/auth/change-password` (not the shared handler) — same divergence #270 R3 recorded. A shared **read-only** capabilities handler is still the right shape.
 
-Target: `handleProcessCapabilitiesHttpRoute` in `miroir-core`, wired into `RestClientStub.call`, `server.ts`, and Electron IPC (renderer already uses `ElectronRestClient` → `RestClientStub`-shaped calls in main). No auth required: the snapshot is not secret, and `/auth/status` is already skipped on Electron/sandbox (`index.tsx:382-384` sets auth off on fetch failure).
+Target:
+
+- `handleProcessCapabilitiesHttpRoute` in `miroir-core`, sibling of the auth early-return, **before** `assertRequestAllowed` (`RestClientStub.ts:102-113`). After the gate, a pre-login GET returns 401 and the UI never learns the snapshot (R3).
+- `setProcessCapabilities` on the stub (mirror `setIdentityDirectory`, `RestClientStub.ts:43-51`), called **after** factory registration in each startup (`server.ts:322-326`, `ipcServerSetup.ts:163-167`, sandbox `index.tsx:119-125`). The handler may also call `getProcessCapabilities` lazily per request so late registration is visible (R11).
+- Express mount **ungated**, next to `/auth/status` (`server.ts:263-265`).
+- UI fetch through the environment `RestClientInterface` **after** `index.tsx:396` constructs `ElectronRestClient`. Do **not** copy the `/auth/status` `window.fetch` (`index.tsx:377-384`): that call is attempted on Electron/sandbox and fails (404 / `app://`), then auth is set off. A capabilities `window.fetch` would miss IPC.
+
+No auth required. Ungated GET leaks store-backend names and whether AI/MCP are on — the same exposure class as `/auth/status`. Accepted for this app (R12).
 
 ### D13 — Designer tools
 
 **Status:** Accepted — bulb stays; visibility = config AND (auth off OR Admin access).
 
-`ADMIN_APPLICATION_UUID` is `55af124e-8c05-4bae-a3ef-0933d41daa92` (`AccessPolicy.ts:31`). `ALWAYS_ALLOW_APPLICATION_TARGETS` includes Admin (`:36-38`). `hasAccess` (`:71-88`) is the check. No designer role exists; Designer is an application uuid (`:34`).
+`ADMIN_APPLICATION_UUID` is `55af124e-8c05-4bae-a3ef-0933d41daa92` (`AccessPolicy.ts:31`). `ALWAYS_ALLOW_APPLICATION_TARGETS` includes Admin (`AccessPolicy.ts:36-39`). `hasAccess` short-circuits on that list (`:80-82`) after the principal check (`:77-79`), so `hasAccess({ target: Admin, alwaysAllow: ALWAYS_ALLOW_APPLICATION_TARGETS })` is **true for every authenticated user**. That cannot implement Goal 4 (R1).
+
+Exact call:
+
+```text
+hasAccess({
+  principal,  // useAuthSession() — authSession.ts:89-91, miroirUserUuid at :12-16
+  target: { targetType: "application", targetUuid: ADMIN_APPLICATION_UUID },
+  grants,     // MiroirRight rows from the Admin deployment local cache
+  alwaysAllow: [],
+})
+```
+
+Only an **explicit** Admin grant counts. Proof: auth on, Carol with no Admin grant → no bulb; Alice with an Admin grant → bulb. No designer role exists; Designer is an application uuid (`AccessPolicy.ts:34`). #219 C2 may later replace this grant scan.
 
 `showModelTools` is sessionStorage (`MiroirContextReactProvider`). AppBar always renders the bulb when `setShowModelTools` exists (`AppBar.tsx:211-241`). Sidebar keeps the Admin section always; other applications including Miroir require `showModelTools` (`Sidebar.tsx:105-108`).
 
@@ -168,7 +202,7 @@ When the user must not see the bulb: force `showModelTools` false and ignore a l
 
 ### D14 — Refuse shape
 
-**Status:** Accepted — extend `ActionErrorType` in `DomainElement.ts:172-205` with `"FeatureUnavailable"`. Put the name in `errorContext.capability`.
+**Status:** Accepted — extend `ActionErrorType` in `DomainElement.ts:171-205` with `"FeatureUnavailable"`. Put the name in `errorContext.capability`.
 
 The generated Jzod `actionError` (`miroirFundamentalType.ts:10247`) is a **narrower** CRUD enum. Do **not** add `FeatureUnavailable` there unless a later slice stores these errors as instances. DomainController / runners already use `Action2Error`.
 
@@ -207,7 +241,7 @@ Today it is appended only when `showAgentUi` (`AppBar.tsx:346`). That hitchhikes
 
 ### 3.1 No capability API (aligned: nothing to reuse as a flag module)
 
-Repo grep finds no `featureFlag` / `featureSwitch` runtime API. `DeploymentMode` in `MiroirConfig.ts:4-11` is unused. `getClientEnvironment()` (`tools.ts:33-51`) has three callers in the graph sense: export, `DomainController` template params, Home report. It is not the AI gate.
+Repo grep finds no `featureFlag` / `featureSwitch` runtime API. `DeploymentMode` in `MiroirConfig.ts:4-11` is unused. `getClientEnvironment()` (`tools.ts:33-51`) callers: export (`miroir-core/src/index.ts:1716`), `templateEvaluationParams` (`DomainController.ts:191`), `MiroirContextReactProvider.tsx:623`. Home report reads `context.clientEnvironment` (`HomePage.tsx:161-163`), it does not call the function. It is not the AI gate.
 
 ### 3.2 `ClientEnvironment` (aligned as a detector; misaligned as a switch)
 
@@ -242,10 +276,10 @@ Home report branches on sandbox vs web/desktop (`HomePage.tsx:161-184`). AI does
 | `AppBar.tsx:142-143` | `agentsEnabled && !import.meta.env.MIROIR_IS_SANDBOX` | Icons + Transformer Builder |
 | `SettingsPage.tsx:105, 258-272` | none | Agents switch **always shown** |
 | `AgentsCopilotKit.tsx:19-22` | `MIROIR_IS_SANDBOX === "true"` | Returns null |
-| `server.ts:826-842` | auth only | `/api/copilotkit` always mounted on `miroir-server` |
+| `server.ts:826-841` | auth only | `/api/copilotkit` always mounted on `miroir-server` |
 | Electron main | none | No CopilotKit route |
 
-`ViewParams` Entity uuid `b9765b7c-b614-4126-a0e2-634463f99937`. Seed `441cb6fd-2728-4a16-b170-ebceec1ce6c2` has `agents: false`, `mlSchemaTransformerCompatibility: true`. TS comment at `ViewParams.ts:28` still documents `agents` as the AI AppBar switch.
+`ViewParams` Entity uuid `b9765b7c-b614-4126-a0e2-634463f99937`. Seed `441cb6fd-2728-4a16-b170-ebceec1ce6c2` has `agents: false`, `mlSchemaTransformerCompatibility: true`. TS comments at `ViewParams.ts:27-28` and `ViewParamsData` `:66-67` still document `agents` as the AI AppBar switch.
 
 #244 already defers `vendor-copilotkit` until first open (`docs/internals/code-splitting.md`, `RootComponent.tsx:631-633`). That is a load-timing latch, not a process kill switch.
 
@@ -264,14 +298,14 @@ Target: Settings switch gone. Sandbox row: `ai` false, no Settings row, no icons
 
 | Process | Factories registered |
 |---|---|
-| Web renderer `index.tsx:391` | IndexedDB only |
-| Sandbox | bundled + IndexedDB (sandbox startup) |
+| Web renderer `index.tsx:391` | IndexedDB only — **not** the real-server snapshot source (D12) |
+| Sandbox `index.tsx:119-125` | bundled + IndexedDB |
 | Electron main `ipcServerSetup.ts:164-167` | filesystem, IndexedDB, Mongo, Postgres |
-| `miroir-server` | filesystem, IndexedDB, Mongo, Postgres |
+| `miroir-server` `server.ts:322-326` | filesystem, IndexedDB, Mongo, Postgres |
 
 There is no `listRegisteredStorageTypes`. Maps are public on `ConfigurationService.configurationService` (`:85-87`).
 
-Create Application still offers four backends (`Runner_CreateApplication.tsx:73-108`). Web will fail at factory lookup for sql/filesystem/mongodb.
+Create Application still offers four backends (`Runner_CreateApplication.tsx:73-108`). Real-server web executes store management on the server (all four factories). The dead-backend picker is sandbox (bundled would appear once we derive from factories unless excluded — R5).
 
 ### 3.5 Designer bulb (misaligned with “don’t confuse the user”)
 
@@ -279,11 +313,11 @@ AppBar `key="model-tools"` (`AppBar.tsx:211-241`) is unconditional if the setter
 
 ### 3.6 Versioning (enforced on write; UI ungated)
 
-`assertApplicationVersioningEnabled` (`versioningMode.ts:53-66`) throws for `unversioned` and `versioned-external`. AppBar Versioning always links to `reportVersioning` uuid `c2b89408-bed7-473d-ab0a-2f4adc6a85e1` (`AppBar.tsx:373-386`). Bundled sandbox has no writable `modelVersion` section.
+`assertApplicationVersioningEnabled` (`versioningMode.ts:53-65`) throws for `unversioned` and `versioned-external`. AppBar Versioning always links to `reportVersioning` uuid `c2b89408-bed7-473d-ab0a-2f4adc6a85e1` (`AppBar.tsx:373-386`). Bundled sandbox has no writable `modelVersion` section (`miroir-store-bundled/src/startup.ts:142-157`).
 
 ### 3.7 Auth reuse (aligned)
 
-`hasAccess` + `ADMIN_APPLICATION_UUID` (`AccessPolicy.ts:31, 71-88`). Client session defaults **false** until `/auth/status` (`index.tsx:376-384`). Electron/sandbox typically stay auth-off. D13 then reduces to the config flag only.
+`hasAccess` + `ADMIN_APPLICATION_UUID` (`AccessPolicy.ts:31, 71-88`) — but the default always-allow list makes Admin access vacuous; D13 uses `alwaysAllow: []`. Client session defaults **false** until `/auth/status` is attempted (`index.tsx:377-384`); Electron/sandbox typically fail that fetch and stay auth-off. D13 then reduces to the config flag only.
 
 ### 3.8 Action errors (aligned enough to extend)
 
@@ -295,7 +329,7 @@ AppBar `key="model-tools"` (`AppBar.tsx:211-241`) is unconditional if the setter
 
 ### 3.10 Config inventory (programmatic)
 
-37 `miroirConfig*.json` files under the repo (excluding `node_modules` / `dist` / `graphify-out`). **0** have a `features` object. 30 have `deploymentMode`. Server files: `packages/miroir-server/config/miroirConfig.server.json`, `miroirConfig.server.docker.json`. Electron does not use a file; both hardcoded objects must gain `features`.
+A naive glob over `miroirConfig*.json` excluding `node_modules` / `dist` / `graphify-out` yields 37 paths, of which 3 are untracked `packages/miroir-server/release/` build artifacts. **Source patch surface: 34 files.** **0** have a `features` object. 30 have `deploymentMode` on the client object. Server source files: `packages/miroir-server/config/miroirConfig.server.json`, `miroirConfig.server.docker.json`. Electron does not use a file; **main** `electronServerConfig` must gain `features` when non-default. Renderer `electronMiroirConfig` is not read for flags (R7). Most test configs can omit `ai`/`mcp` and stay false.
 
 ### 3.11 MCP UI (ungated)
 
@@ -311,12 +345,15 @@ AppBar runners report `reportMiroirRunners` uuid `ac75382d-00fc-4f93-a169-3f76ef
 | `ClientEnvironment` | `miroirFundamentalType.ts:1838` |
 | Factory maps | `ConfigurationService.ts:37-38, 51-72` |
 | `StorageType` | `StorageConfiguration.ts:7-13` |
-| `handleAuthHttpRoute` pattern | `RestClientStub.ts:74-91` + `AuthenticationHttp.ts` |
+| `handleAuthHttpRoute` (in-process only) | `RestClientStub.ts:74-91` |
 | `Action2Error` / `errorContext` | `DomainElement.ts:208-217` |
-| `assertApplicationVersioningEnabled` | `versioningMode.ts:53-66` |
-| `hasAccess` / Admin uuid | `AccessPolicy.ts:31, 71-88` |
+| `assertApplicationVersioningEnabled` | `versioningMode.ts:53-65` |
+| `hasAccess` / Admin uuid | `AccessPolicy.ts:31, 71-88` — D13 passes `alwaysAllow: []` |
+| `useAuthSession` | `packages/miroir-standalone-app/src/miroir-fwk/4_view/auth/authSession.ts` |
+| `ElectronRestClient.get` / IPC `rest-call` | `ElectronIpcProxy.ts:81-93`, `ipcServerSetup.ts:210-214` |
+| `runMcpToolRunner` | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/runMcpToolRunner.ts` |
 | CopilotKit lazy latch | `RootComponent.tsx:631-642`, #244 |
-| `MiroirConfigClient` / `MiroirConfigServer` Jzod | `getMiroirFundamentalJzodSchema.ts:1856-1921` |
+| `MiroirConfigClient` / `MiroirConfigServer` Jzod | `getMiroirFundamentalJzodSchema.ts:1857-1884`, `:1885-1922` |
 | ViewParams Entity / seed | uuid `b9765b7c-…` / `441cb6fd-…` |
 | Runners report | uuid `ac75382d-00fc-4f93-a169-3f76ef85834e` |
 | Versioning report | uuid `c2b89408-bed7-473d-ab0a-2f4adc6a85e1` |
@@ -333,12 +370,13 @@ type ProcessCapabilities = {
   ai: boolean;
   mcp: boolean;
   availableStoreTypes: StorageType[];
+  creatableStoreTypes: StorageType[]; // availableStoreTypes minus "bundled"
   storeAdministration: boolean;
   designerTools: boolean;
 };
 ```
 
-Computed only on the persistence side. Client holds one copy after startup. Application versioning is **not** on this object.
+Computed only on the persistence side. Client holds one copy after startup. Application versioning is **not** on this object. Never call this against the Electron renderer `ConfigurationService` (R11).
 
 ### 5.2 Computation
 
@@ -347,10 +385,11 @@ ai = (features.ai === true) AND (getClientEnvironment() !== "sandbox")
 mcp = (features.mcp === true)
 designerTools = (features.designerTools !== false)
 availableStoreTypes = unique storageType from StoreSectionFactoryRegister
+creatableStoreTypes = availableStoreTypes minus "bundled"
 storeAdministration = adminStoreFactoryRegister has any type other than "bundled"
 ```
 
-`getProcessCapabilities({ config, environment, storeSectionFactoryRegister, adminStoreFactoryRegister })` is a pure function in `miroir-core` (testable with `functionCallTest` / vitest because it is not an ML transformer). Startup wiring passes the live maps and `getClientEnvironment()`.
+`getProcessCapabilities({ config, environment, storeSectionFactoryRegister, adminStoreFactoryRegister })` is a pure function in `miroir-core` (testable with `functionCallTest` / vitest because it is not an ML transformer). It takes maps as arguments and does not import `ConfigurationService`. Read the maps **per request** (or per `getProcessCapabilities` call), after factory registration (`server.ts:322-326`, `ipcServerSetup.ts:163-167`, sandbox `index.tsx:119-125`).
 
 ### 5.3 Transport
 
@@ -358,21 +397,21 @@ storeAdministration = adminStoreFactoryRegister has any type other than "bundled
 
 Same handler in:
 
-- `RestClientStub.call` (before `restServerDefaultHandlers`, same early-return style as auth)
-- `server.ts` express
-- Electron main (renderer `GET /capabilities` via existing IPC rest-call)
+- `RestClientStub.call` **before** `assertRequestAllowed` (`:102-113`), sibling of `handleAuthHttpRoute` (`:74-91`)
+- `server.ts` express, ungated next to `/auth/status` (`:263-265`)
+- Electron renderer `GET /capabilities` via `ElectronRestClient` / IPC `rest-call` (no extra IPC opcode)
 
-UI: one fetch in `startWebApp` / sandbox `index`, store on React context next to `clientEnvironment`.
+UI: one fetch in `startWebApp` / sandbox `index` **through the rest client**, after it exists (`index.tsx:396+`), store on React context next to `clientEnvironment`.
 
 ### 5.4 Hide + refuse map
 
 | Capability | Hide | Refuse |
 |---|---|---|
-| `ai` | AppBar assistant + dev console; Settings Agents row; do not `import()` CopilotKit; do not `app.use('/api/copilotkit')` | Domain/AI routes already unmounted; leftover fetch 404 |
-| `mcp` | MCP runners / tool UI; do not listen on `mcpUrl` | MCP-dispatch actions → `FeatureUnavailable` / `capability: "mcp"` |
-| `availableStoreTypes` | Create Application backend union filtered to the list | `createStore` / open with a missing type → `FeatureUnavailable` / `capability: "availableStoreTypes"` |
-| `storeAdministration` | Store-admin runners that create/delete/reset | those actions → `FeatureUnavailable` / `capability: "storeAdministration"` |
-| `designerTools` | Bulb; force `showModelTools` off; Transformer Builder | model-scope injection already follows `showModelTools` |
+| `ai` | AppBar assistant + dev console; Settings Agents row; do not `import()` CopilotKit; do not `app.use('/api/copilotkit')` (`server.ts:826-841`). Electron: no loopback CopilotKit mount | leftover fetch 404 |
+| `mcp` | MCP runners / tool UI; skip `server.ts:823` and `:925-926`. Electron: no loopback MCP | `runMcpToolRunner` returns D14 before fetch |
+| `creatableStoreTypes` | Create Application backend union filtered to this list (never `bundled`) | `createStore` with a missing type → `FeatureUnavailable` / `capability: "availableStoreTypes"` |
+| `storeAdministration` | Store-admin runners that create/delete/reset | those three actionTypes in `handleActionInternal` → `FeatureUnavailable` / `capability: "storeAdministration"`. Never `openStore`/`closeStore` |
+| `designerTools` | Bulb (config + explicit Admin grant when auth on); force `showModelTools` off; Transformer Builder | model-scope injection already follows `showModelTools` |
 | versioning (application) | Versioning AppBar icon when `resolveVersioningMode` is not `versioned-internal` | existing `assertApplicationVersioningEnabled` |
 
 ### 5.5 Presets (what we write into repo configs)
@@ -388,31 +427,33 @@ Test profiles that never touch AI/MCP can omit the flags and stay false.
 
 ### 5.6 Remove `ViewParams.agents`
 
-- Delete `agents` from `ViewParams.ts` schema + `ViewParamsData`
-- Delete `agents` from Admin Entity `mlSchema`
+- Delete `agents` from `ViewParams.ts` schema + `ViewParamsData` (`:27-28`, `:66-67`)
+- Delete `agents` from Admin Entity `mlSchema` (`b9765b7c-….json:132`) **in the same commit** as the seed edit (`441cb6fd-….json:13`) — Jzod objects are `.strict()` by default; `miroir-test-app_deployment-admin` `modelValidation` will fail if they drift (R9)
 - Drop Settings Agents block (`SettingsPage.tsx:258-272`)
 - Drop `RootComponent` / `AppBar` reads of `viewParams.agents`
-- Seed `441cb6fd-…` loses the field (harmless extra JSON until then)
+- Runtime write path does not validate instances, so stale `agents` in a user’s IndexedDB (sandbox `adminMigration.ts`) is tolerated
+- Verified: `miroir-core/tests/test_assets`, `miroir-mcp/tests/assets`, `miroir-standalone-app/tests/assets` ViewParams seeds have **no** `agents` field; no ViewParams EntityVersion under `admin_model/54b9c72f-…`
 - Keep #244 dynamic `import()` of `AgentsCopilotKit` gated on snapshot `ai` **and** first open
 
 ### 5.7 Blast radius
 
 - Jzod `miroirConfigClient` + `miroirConfigServer` + `devBuild`
-- 37 `miroirConfig*.json` files: add `features` where AI/MCP/designer should stay on
-- 2 Electron hardcoded configs (`index.tsx:409-432`, `ipcServerSetup.ts:172-177`)
+- Persistence-side `miroirConfig` files that need `ai`/`mcp` true (34 source files exist; most tests omit and stay false). Not the 3 `release/` artifacts
+- Electron **main** `electronServerConfig` (`ipcServerSetup.ts:172-177`) plus loopback HTTP when flags are true. Not the renderer object
 - `ActionErrorType` union
-- AppBar, Settings, RootComponent, Runner_CreateApplication, RunnerView MCP branch, server CopilotKit/MCP mount
+- AppBar, Settings, RootComponent, Runner_CreateApplication, `runMcpToolRunner`, server CopilotKit + both MCP mounts
 - `docs/internals/code-splitting.md` (#244 wording)
 - `docs/reference/data-architecture-deployments.md` (client/server vs emulate vs sandbox)
-- Tests that enable Agents or call `/api/copilotkit` / MCP runners must set `features.ai` / `features.mcp`
+- Source-text tests: `authentication.71.phase6.unit.test.ts:19-25` (CopilotKit mount string) and `mcpToolRunner.253.phase0.unit.test.ts:311-331` (vite proxy keys). No test currently sets `ViewParams.agents: true` or HTTP-calls `/api/copilotkit` (R10)
 
 ### 5.8 Implementation home (not a phase list)
 
 | Symbol | Package / layer |
 |---|---|
 | `ProcessCapabilities`, `getProcessCapabilities` | `miroir-core` `1_core` (pure) |
-| `handleProcessCapabilitiesHttpRoute` | `miroir-core` `4_services` or `1_core` sibling of `AuthenticationHttp.ts` |
+| `handleProcessCapabilitiesHttpRoute` + `setProcessCapabilities` | `miroir-core` sibling of `AuthenticationHttp.ts`; stub setter like `setIdentityDirectory` |
 | `assertProcessCapability(name)` → `Action2Error \| void` | `miroir-core` `1_core` |
+| Electron loopback HTTP when `ai`/`mcp` | `ipcServerSetup.ts` / `main.ts`; renderer absolute URLs |
 | React context field | `miroir-react` / standalone `MiroirContextReactProvider` |
 | Schema `features` | `getMiroirFundamentalJzodSchema.ts` |
 
