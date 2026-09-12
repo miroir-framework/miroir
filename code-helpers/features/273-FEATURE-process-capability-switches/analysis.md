@@ -194,7 +194,7 @@ hasAccess({
 })
 ```
 
-Only an **explicit** Admin grant counts. Proof: auth on, Carol with no Admin grant → no bulb; Alice with an Admin grant → bulb. No designer role exists; Designer is an application uuid (`AccessPolicy.ts:34`). #219 C2 may later replace this grant scan.
+Only an **explicit** Admin grant counts. Proof: auth on, Carol with no Admin grant → no bulb; Alice with an Admin-application grant → bulb. Carol (`30634877-…`) is already seeded with zero `MiroirRight` rows. Alice (`1c39328c-…`) has Library and Spotify grants only. None target `ADMIN_APPLICATION_UUID`. The TDD plan allocates seed row `86a73f7e-17f8-462d-8203-af1f323a7cdc` (Alice → Admin application, `capability: "admin"`). AppBar reads grants from `useApplicationAccess()` (`useApplicationAccess.ts:58-88`), the same Admin-cache `MiroirRight` selector used for application reachability. No designer role exists; Designer is an application uuid (`AccessPolicy.ts:34`). #219 C2 may later replace this grant scan.
 
 `showModelTools` is sessionStorage (`MiroirContextReactProvider`). AppBar always renders the bulb when `setShowModelTools` exists (`AppBar.tsx:211-241`). Sidebar keeps the Admin section always; other applications including Miroir require `showModelTools` (`Sidebar.tsx:105-108`).
 
@@ -412,7 +412,7 @@ UI: one fetch in `startWebApp` / sandbox `index` **through the rest client**, af
 | `creatableStoreTypes` | Create Application backend union filtered to this list (never `bundled`) | `createStore` with a missing type → `FeatureUnavailable` / `capability: "availableStoreTypes"` |
 | `storeAdministration` | Store-admin runners that create/delete/reset | those three actionTypes in `handleActionInternal` → `FeatureUnavailable` / `capability: "storeAdministration"`. Never `openStore`/`closeStore` |
 | `designerTools` | Bulb (config + explicit Admin grant when auth on); force `showModelTools` off; Transformer Builder | model-scope injection already follows `showModelTools` |
-| versioning (application) | Versioning AppBar icon when `resolveVersioningMode` is not `versioned-internal` | existing `assertApplicationVersioningEnabled` |
+| versioning (application) | Versioning AppBar icon when the **browsed** SelfApplication (`context.toolsPageState?.applicationSelector`, `AppBar.tsx:534`) is not `versioned-internal`. No selector (Home) → hide. Click navigation stays Miroir (`resolveAppBarReportLinkApplication`, #225). | existing `assertApplicationVersioningEnabled` |
 
 ### 5.5 Presets (what we write into repo configs)
 
@@ -474,4 +474,4 @@ Layering: `1_core` must not import `3_controllers`. `getProcessCapabilities` tak
 
 ## Next step
 
-Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (written after R1–R12), following the `miroir-analysis-to-tdd-plan` skill.
+Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (revised after plan review P1–P13), following the `miroir-analysis-to-tdd-plan` skill.

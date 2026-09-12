@@ -1,32 +1,58 @@
-# Issue #273 — TDD Implementation Plan
+# Issue #273. TDD implementation plan
 
-> Vertical TDD slices (RED → GREEN each), integration-first per `docs/contributing/testing.md`:
-> tests exercise the real DomainController / local cache / emulated server (`RestClientStub`)
-> and the public TS helpers `getProcessCapabilities` / `assertProcessCapability`.
-> No mocks. `miroir-server` and Electron main have no test suite — CopilotKit/MCP **mount
-> gating** and Electron loopback URL construction are vitest against extracted functions
-> (same exception as #267 `parseServerArgs` / #270 `SecretsService`).
+> Vertical TDD slices (RED → GREEN each), integration-first per `docs/contributing/testing.md`.
+> Tests exercise the real DomainController, local cache, and emulated server (`RestClientStub`)
+> plus the public helpers `getProcessCapabilities` / `assertProcessCapability` /
+> `fetchProcessCapabilities`. No mocks. `miroir-server` and Electron main have no test suite.
+> CopilotKit/MCP mount gating, Electron URL builders, and the loopback-listen *decision*
+> are vitest against extracted functions in `miroir-core` `4_services` (same exception as
+> #267 `parseServerArgs` / #270 `SecretsService`). The listen call itself stays in
+> `ipcServerSetup.ts` / `main.ts` and is pinned by source-text.
 > Tracer (Slice 1→2): a persistence-side snapshot computed from config + factories is
-> returned by `GET /capabilities` through `RestClientStub` before login.
+> returned by `GET /capabilities` through `RestClientStub` before login, then stored on
+> React context for later hide/refuse slices.
 >
 > **Execution model:** human-in-the-loop. No slice contains a commit step. Each slice ends
 > with Validation commands; on success Realization is appended and Status flips to ✅ DONE.
 
-Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/273
+Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/273
 Working branch: `273-FEATURE-process-capability-switches`
 
-**Resume note:** slices pending. Plan written after analysis R1–R12.
+**Resume note:** Plan revised after adversarial review (P1 to P13 applied). Slices pending.
+
+---
+
+## Plan-review repairs (binding)
+
+From [`./plan-adversarial-review.md`](./plan-adversarial-review.md). Product decisions D1 to D15 are unchanged.
+
+| ID | Repair |
+|---|---|
+| P1 | Slice 2 delivers the snapshot to the UI. `setupMiroirPlatform` / sandbox index call `fetchProcessCapabilities(restClient)` after the client exists and return the snapshot. `startWebApp` passes it to `MiroirContextReactProvider` next to `clientEnvironment`. RED reads it from context. Source-text: no `4_view` / Electron renderer module imports `getProcessCapabilities`. AC row added. |
+| P2 | Named seam: `DomainControllerInterface.setProcessCapabilities(snapshot)`. Production startup sets it after factory registration (may recompute lazily if unset). Tests call it on `domainControllerForServer` from `setupMiroirTest`. The store-management check at `DomainController.ts:3396-3400` reads the injected field. Store-refuse test lives in standalone-app so that DC exists. |
+| P3 | Create Application picker is its own slice (Slice 4) with a standalone-app test and Validation command. Slice 3 is refuse only. |
+| P4 | Allocate Alice→Admin `MiroirRight` `86a73f7e-17f8-462d-8203-af1f323a7cdc`. Slice 0 locks its absence. Slice 7 GREEN adds the seed + admin `index.ts` / `index.d.ts`. Helper RED uses Carol (seeded, zero grants) and an Alice grant object matching that uuid. Production grants come from `useApplicationAccess()`. |
+| P5 | Versioning icon visibility uses the **browsed** SelfApplication (`context.toolsPageState?.applicationSelector`). No selector → hide. `AppBarVersioning.unit.test.ts` navigation (always Miroir) is kept, not flipped. |
+| P6 | URL / mount helpers live in `miroir-core` `4_services`. Slice 9 RED consumes the Slice 0 "no `listen(`" assertion into the gated-listen form. |
+| P7 | Patch `miroirConfig.server.json` and `miroirConfig.server.docker.json` in Slice 2 GREEN (`ai`/`mcp` true). Slice 9 keeps Electron main + remaining profiles. |
+| P8 | Slice 1 is vitest only. Drop `FunctionCallTestRegistry`. Justification below. |
+| P9 | MCP RED injects a throwing `fetchImpl`. Assert `FeatureUnavailable`, not `FailedToHandleAction`. New `capabilities` argument. `RunnerView.tsx:465-469` updated. Re-run `mcpToolRunner.253.phase0`. |
+| P10 | Slice 9 consumes Slice 0 `ipcServerSetup.ts` assertions. Allocated dirs include `1_core`, `4_services`, `3_controllers`, and standalone `4_view`. |
+| P11 | Two nonreg steps: `unit-273-process-capabilities` (core + standalone unit) and `appstack-273-process-capabilities` (store-refuse integ, `{profile}`). |
+| P12 | Stub call is `stub.get("/capabilities", "/capabilities")` or `stub.call("/capabilities", "get", "/capabilities")`. Handler matches `rawUrl`. |
+| P13 | Say "same slice", not "same commit". R9 is tree-level at `modelValidation` time. |
 
 ---
 
 ## Scope
 
 - Root `features` on persistence-side `miroirConfig` (`ai`, `mcp`, `designerTools`).
-- `ProcessCapabilities` + `getProcessCapabilities` + `assertProcessCapability` in `miroir-core`.
+- `ProcessCapabilities` + `getProcessCapabilities` + `assertProcessCapability` in `miroir-core` `1_core`.
 - `GET /capabilities` via `handleProcessCapabilitiesHttpRoute` in `RestClientStub` (before auth gate), express (ungated), Electron IPC `rest-call`.
-- Hide + refuse for `ai`, `mcp`, `creatableStoreTypes`, `storeAdministration`, `designerTools`; Versioning icon uses existing `resolveVersioningMode`.
-- Remove `ViewParams.agents` (schema + seed same commit).
-- Electron loopback HTTP when `ai`/`mcp` true; renderer uses absolute loopback URLs.
+- UI copy: one `fetchProcessCapabilities` through the environment `RestClientInterface`, stored on React context.
+- Hide + refuse for `ai`, `mcp`, `creatableStoreTypes`, `storeAdministration`, `designerTools`. Versioning icon uses `resolveVersioningMode` on the browsed application.
+- Remove `ViewParams.agents` (schema + seed in the same slice).
+- Electron loopback HTTP when `ai`/`mcp` true. Renderer uses absolute loopback URLs.
 
 This plan does **not** add undo/redo/commit capabilities, debug overlays as flags, a new designer role (#219 C2), `#193` LLM product work, or revive `deploymentMode`.
 
@@ -37,21 +63,22 @@ This plan does **not** add undo/redo/commit capabilities, debug overlays as flag
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize current gates / inventories | ⬜ | `processCapabilities.273.phase0.unit.test.ts` |
-| 1 | **Tracer:** `getProcessCapabilities` + `FeatureUnavailable` | ⬜ | `processCapabilities.273.phase1.unit.test.ts` + functionCallTest |
-| 2 | `GET /capabilities` through `RestClientStub` | ⬜ | `processCapabilitiesHttp.273.phase2.integ.test.ts` |
+| 1 | **Tracer:** `getProcessCapabilities` + `FeatureUnavailable` | ⬜ | `processCapabilities.273.phase1.unit.test.ts` |
+| 2 | `GET /capabilities` + UI context + shipped server flags | ⬜ | `processCapabilitiesHttp.273.phase2.integ.test.ts` + context unit |
 | 3 | Store create/admin refuse in `handleActionInternal` | ⬜ | `processCapabilitiesStore.273.phase3.integ.test.ts` |
-| 4 | AI hide + no CopilotKit mount + drop `ViewParams.agents` | ⬜ | `processCapabilitiesAi.273.phase4.unit.test.ts` + Admin `modelValidation` |
-| 5 | MCP refuse in `runMcpToolRunner` + both server mounts | ⬜ | `processCapabilitiesMcp.273.phase5.unit.test.ts` |
-| 6 | Designer bulb + explicit Admin grant + Transformer Builder | ⬜ | `processCapabilitiesDesigner.273.phase6.unit.test.ts` |
-| 7 | Versioning AppBar follows `resolveVersioningMode` | ⬜ | `processCapabilitiesVersioning.273.phase7.unit.test.ts` |
-| 8 | Electron loopback URL + persistence-side config patches | ⬜ | `processCapabilitiesElectron.273.phase8.unit.test.ts` |
-| 9 | Nonreg, docs, cleanup, AC | ⬜ | `unit-273-process-capabilities` + docs |
+| 4 | Create Application picker follows `creatableStoreTypes` | ⬜ | `processCapabilitiesPicker.273.phase4.unit.test.ts` |
+| 5 | AI hide + no CopilotKit mount + drop `ViewParams.agents` | ⬜ | `processCapabilitiesAi.273.phase5.unit.test.ts` + Admin `modelValidation` |
+| 6 | MCP refuse in `runMcpToolRunner` + both server mounts | ⬜ | `processCapabilitiesMcp.273.phase6.unit.test.ts` |
+| 7 | Designer bulb + Alice Admin grant + Transformer Builder | ⬜ | `processCapabilitiesDesigner.273.phase7.unit.test.ts` |
+| 8 | Versioning AppBar follows browsed-app `resolveVersioningMode` | ⬜ | `processCapabilitiesVersioning.273.phase8.unit.test.ts` |
+| 9 | Electron loopback listen + remaining config patches | ⬜ | `processCapabilitiesElectron.273.phase9.unit.test.ts` |
+| 10 | Nonreg, docs, cleanup, AC | ⬜ | `unit-273-process-capabilities` + `appstack-273-process-capabilities` |
 
 ---
 
 ## Locked implementation defaults
 
-From [`./analysis.md`](./analysis.md) D1–D15 + R1–R12. Binding. Deviations go in Realization.
+From [`./analysis.md`](./analysis.md) D1 to D15 + R1 to R12. Binding. Deviations go in Realization.
 
 | Decision | Choice |
 |---|---|
@@ -79,13 +106,26 @@ From [`./analysis.md`](./analysis.md) D1–D15 + R1–R12. Binding. Deviations g
 
 ## Allocated UUIDs / keys
 
-No new Entity / Report / Runner. Function-call registry key only.
+No new Entity / Report / Runner / MiroirTest suite.
 
 | Artefact | Value |
 |---|---|
-| Vitest issue dir | `packages/miroir-core/tests/1_core/issues/273-process-capability-switches/` and `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/` |
-| functionCallTest export | `getProcessCapabilities` in `FunctionCallTestRegistry` |
-| Nonreg step | `unit-273-process-capabilities` |
+| Alice→Admin `MiroirRight` | `86a73f7e-17f8-462d-8203-af1f323a7cdc` in `admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/` (`miroirUser` Alice `1c39328c-…`, `targetUuid` Admin `55af124e-…`, `capability: "admin"`) |
+| Core unit dir | `packages/miroir-core/tests/1_core/issues/273-process-capability-switches/` |
+| Core HTTP dir | `packages/miroir-core/tests/4_services/issues/273-process-capability-switches/` |
+| Standalone integ dir | `packages/miroir-standalone-app/tests/3_controllers/issues/273-process-capability-switches/` |
+| Standalone view dir | `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/` |
+| Nonreg steps | `unit-273-process-capabilities` (tier `unit`), `appstack-273-process-capabilities` (tier `default`) |
+
+Helper homes (all importable from electron main and from tests):
+
+| Symbol | Home |
+|---|---|
+| `ProcessCapabilities`, `getProcessCapabilities`, `assertProcessCapability` | `packages/miroir-core/src/1_core/processCapabilities.ts` |
+| `handleProcessCapabilitiesHttpRoute`, `fetchProcessCapabilities` | `packages/miroir-core/src/4_services/ProcessCapabilitiesHttp.ts` |
+| `shouldMountCopilotKitRoute`, `shouldMountMcpHttp`, `shouldListenLoopbackHttp`, `electronRuntimeBaseUrl`, `copilotRuntimeUrl`, `browserMcpServerUrl` | `packages/miroir-core/src/4_services/processCapabilityRoutes.ts` |
+| `isDesignerToolsVisible` | next to `AccessPolicy.ts` or `processCapabilities.ts` |
+| `isVersioningAppBarItemVisible` | next to `versioningMode.ts` |
 
 ---
 
@@ -100,11 +140,11 @@ No new Entity / Report / Runner. Function-call registry key only.
 | Type check | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json` (repeat for standalone-app / server / electron if touched) |
 | Nonreg | `npm run nonreg` |
 
-Vitest exceptions (one sentence each): Slice 0 locks source contracts; Slice 2 is HTTP-handler wiring not expressible as ML; Slice 3 is `handleAction` store-management (no existing MiroirTest `actionTest` for these actionTypes); Slices 4–8 pin UI helpers, source-text mounts, and URL builders that are not Jzod transformers.
+Vitest exceptions (one sentence each). Slice 0 locks source contracts that are not ML. Slice 1 is a pure TS helper whose factory-map arguments are not a Jzod transformer (same exception as #267 `parseServerArgs` / #270 `SecretsService`; no new MiroirTest asset). Slice 2 is HTTP-handler and React-context wiring. Slice 3 is `handleAction` store-management (no existing MiroirTest `actionTest` for these actionTypes). Slice 4 is a TSX runner schema helper. Slices 5 to 9 pin UI helpers, source-text mounts, URL builders, and the Electron listen string.
 
 ---
 
-## Slice 0 — Characterize current gates
+## Slice 0. Characterize current gates
 
 **Status:** ⬜ pending
 
@@ -112,7 +152,7 @@ Vitest exceptions (one sentence each): Slice 0 locks source contracts; Slice 2 i
 
 Lock today’s contracts so later slices flip them in place (same rule as #270 P1).
 
-### 0.1 RED → GREEN — characterization
+### 0.1 RED → GREEN. characterization
 
 **Test:** `packages/miroir-core/tests/1_core/issues/273-process-capability-switches/processCapabilities.273.phase0.unit.test.ts`
 
@@ -120,9 +160,11 @@ Behavior asserted (current world):
 
 - `ActionErrorType` source text does **not** contain `FeatureUnavailable`
 - `getMiroirFundamentalJzodSchema` `miroirConfigClient` / `miroirConfigServer` have no `features` key
+- `packages/miroir-server/config/miroirConfig.server.json` and `miroirConfig.server.docker.json` have no `features` key
 - `ViewParams.ts` still documents `agents`; Admin Entity `b9765b7c-…` mlSchema has `agents`; seed `441cb6fd-…` has `agents: false`
 - `tools.ts` `getClientEnvironment` checks sandbox, then `process.versions.node`, then `electronAPI`
 - `ALWAYS_ALLOW_APPLICATION_TARGETS` contains `ADMIN_APPLICATION_UUID`
+- Admin data has **no** `MiroirRight` with `miroirUser` Alice (`1c39328c-…`) and `targetUuid` `ADMIN_APPLICATION_UUID`. Uuid `86a73f7e-…` is unused.
 - `authentication.71.phase0` still pins `monoUserAutentification` unread (do not break that test)
 - `server.ts` contains `app.use("/api/copilotkit"` and both MCP mounts (`mountHttpRoutes`, `mcpServer.run`)
 - `ipcServerSetup.ts` has no `listen(` / CopilotKit / `mcpServer`
@@ -143,7 +185,7 @@ RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- pro
 
 ---
 
-## Slice 1 — Tracer: snapshot function + FeatureUnavailable
+## Slice 1. Tracer: snapshot function + FeatureUnavailable
 
 **Status:** ⬜ pending
 
@@ -151,11 +193,13 @@ RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- pro
 
 A caller of `getProcessCapabilities` gets the D11/D8/D9 snapshot. `assertProcessCapability` returns `Action2Error` with `FeatureUnavailable`.
 
-**Layers cut:** `ActionErrorType` → `1_core` helpers → functionCallTest / vitest.
+**Layers cut:** `ActionErrorType` → `1_core` helpers.
 
 ### 1.1 RED
 
-**Test:** `processCapabilities.273.phase1.unit.test.ts` (vitest) **and** register `getProcessCapabilities` in `FunctionCallTestRegistry`.
+**Test:** `packages/miroir-core/tests/1_core/issues/273-process-capability-switches/processCapabilities.273.phase1.unit.test.ts`
+
+Do **not** register `getProcessCapabilities` in `FunctionCallTestRegistry`.
 
 Behavior asserted:
 
@@ -169,7 +213,7 @@ Behavior asserted:
 
 ### 1.2 GREEN
 
-Add `"FeatureUnavailable"` to `ActionErrorType` (`DomainElement.ts:171-205`). Add `getProcessCapabilities` / `assertProcessCapability` / `ProcessCapabilities` in `miroir-core` `1_core` (maps as arguments, no `ConfigurationService` import). Export from `index.ts`.
+Add `"FeatureUnavailable"` to `ActionErrorType` (`DomainElement.ts:171-205`). Add `getProcessCapabilities` / `assertProcessCapability` / `ProcessCapabilities` in `packages/miroir-core/src/1_core/processCapabilities.ts` (maps as arguments, no `ConfigurationService` import). Export from `index.ts`.
 
 ### 1.3 Refactor checkpoint
 
@@ -178,6 +222,7 @@ Consume Slice 0 assertions that `FeatureUnavailable` is absent (update phase0 in
 ### Validation
 
 ```bash
+RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- processCapabilities.273.phase0
 RUN_TEST=processCapabilities.273.phase1 npm run testByFile -w miroir-core -- processCapabilities.273.phase1
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 ```
@@ -188,41 +233,66 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ---
 
-## Slice 2 — GET /capabilities through RestClientStub
+## Slice 2. GET /capabilities, UI copy, shipped server flags
 
 **Status:** ⬜ pending
 
 ### Goal
 
-An emulated-server client fetches the snapshot **before login** (auth enabled, no token).
+An emulated-server client fetches the snapshot **before login** (auth enabled, no token). The UI holds that copy on React context. The shipped `miroir-server` configs keep AI/MCP on so later mount gates do not silently disable the documented dev server.
 
-**Layers cut:** Jzod `features` → generated types → HTTP handler → `RestClientStub`.
+**Layers cut:** Jzod `features` → generated types → HTTP handler → `RestClientStub` → `fetchProcessCapabilities` → `MiroirContextReactProvider` → shipped server JSON.
+
+This is one transport story (D12). Two RED files.
 
 ### 2.1 RED
 
-**Test:** `packages/miroir-core/tests/4_services/issues/273-process-capability-switches/processCapabilitiesHttp.273.phase2.integ.test.ts`
+**Test A:** `packages/miroir-core/tests/4_services/issues/273-process-capability-switches/processCapabilitiesHttp.273.phase2.integ.test.ts`
 
 Behavior asserted:
 
-- After `setProcessCapabilities(snapshot)`, `stub.call(..., "GET", "/capabilities")` returns `{ status: "ok", capabilities: snapshot }` with HTTP 200
+- After `setProcessCapabilities(snapshot)` on the stub, `stub.get("/capabilities", "/capabilities")` (or `stub.call("/capabilities", "get", "/capabilities")`) returns `{ status: "ok", capabilities: snapshot }` with HTTP 200. Handler matching is `h.url == rawUrl`.
 - The call succeeds when `MIROIR_AUTH_ENABLED=1` and no Authorization header (handler is before `assertRequestAllowed`)
 - Unknown path still 401 when auth is on (gate unchanged)
+
+**Test B:** `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/processCapabilitiesContext.273.phase2.unit.test.ts`
+
+Behavior asserted:
+
+- `fetchProcessCapabilities(stub)` returns the snapshot Test A stored
+- A `MiroirContextReactProvider` given that snapshot exposes `useMiroirContextService().processCapabilities` equal to it (RTL render, same pattern as other `4_view` tests)
+- Source text: no file under `packages/miroir-standalone-app/src/miroir-fwk/4_view` imports `getProcessCapabilities`. No Electron renderer module does either (R11). Startup files may call `fetchProcessCapabilities` only.
 
 Schema rebuild in GREEN before typecheck.
 
 ### 2.2 GREEN
 
-Add optional `features` to `miroirConfigClient` and `miroirConfigServer` (`getMiroirFundamentalJzodSchema.ts:1857-1922`). Rebuild. `handleProcessCapabilitiesHttpRoute` + `setProcessCapabilities` on the stub. Wire the early return **immediately after** the `handleAuthHttpRoute` block (`RestClientStub.ts:74-91`), **before** `:102`. Express ungated mount next to `/auth/status` (`server.ts:263-265`). Startup after factory registration: compute snapshot (or lazy) and `setProcessCapabilities`.
+Add optional `features` to `miroirConfigClient` and `miroirConfigServer` (`getMiroirFundamentalJzodSchema.ts:1857-1922`). Rebuild.
+
+`handleProcessCapabilitiesHttpRoute` + stub `setProcessCapabilities` in `ProcessCapabilitiesHttp.ts`. Wire the early return **immediately after** the `handleAuthHttpRoute` block (`RestClientStub.ts:74-91`), **before** `:102`. Express ungated mount next to `/auth/status` (`server.ts:263-265`).
+
+`fetchProcessCapabilities(client: RestClientInterface)` calls `client.get("/capabilities", "/capabilities")`.
+
+Startup after factory registration:
+
+1. Compute snapshot with `getProcessCapabilities` (or lazy in the handler, R11).
+2. `setProcessCapabilities` on the stub **and** on the persistence-side DC (Slice 3 reads the DC field; set it here so production is not unset).
+3. UI: `setupMiroirPlatform` / `setupClient` / sandbox index call `fetchProcessCapabilities(restClient)` **after** the client exists (`index.tsx:396` for Electron’s `ElectronRestClient`; emulateServer uses the in-process stub). Return the snapshot. `startWebApp` passes it into `MiroirContextReactProvider`. Return `restClient` from `setupMiroirPlatform` if that is the least change that makes the fetch reachable.
+
+Patch `packages/miroir-server/config/miroirConfig.server.json` and `miroirConfig.server.docker.json` with `features: { ai: true, mcp: true }` (designerTools omitted, default true). Do **not** patch Electron main or test profiles here.
 
 ### 2.3 Refactor checkpoint
 
-Consume Slice 0 “no `features` key” assertion. Persistence-side shipped configs that must keep AI/MCP get `features: { ai: true, mcp: true }` here or in Slice 8 — prefer Slice 8 so Slice 2 stays the handler.
+Consume Slice 0 “no `features` key” on the Jzod schemas **and** on the two shipped server JSON files. Export new symbols from miroir-core `index.ts`.
 
 ### Validation
 
 ```bash
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
+RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- processCapabilities.273.phase0
 RUN_TEST=processCapabilitiesHttp.273.phase2 npm run testByFile -w miroir-core -- processCapabilitiesHttp.273.phase2
+RUN_TEST=processCapabilitiesContext.273.phase2 npm run testByFile -w miroir-standalone-app -- processCapabilitiesContext.273.phase2
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 ```
 
 ### Realization
@@ -231,41 +301,46 @@ RUN_TEST=processCapabilitiesHttp.273.phase2 npm run testByFile -w miroir-core --
 
 ---
 
-## Slice 3 — Store create / admin refuse
+## Slice 3. Store create / admin refuse
 
 **Status:** ⬜ pending
 
 ### Goal
 
-`handleAction` refuses illegal create/delete/reset and illegal create types. `openStore` still succeeds when `storeAdministration` is false.
+`handleAction` refuses illegal create/delete/reset and illegal create types. `openStore` still runs when `storeAdministration` is false.
 
 **Layers cut:** `assertProcessCapability` → `DomainController.handleActionInternal` store-management case.
 
 ### 3.1 RED
 
-**Test:** `processCapabilitiesStore.273.phase3.integ.test.ts` (emulated IndexedDB or filesystem Admin; real DC).
+**Test:** `packages/miroir-standalone-app/tests/3_controllers/issues/273-process-capability-switches/processCapabilitiesStore.273.phase3.integ.test.ts`
+
+Use `setupMiroirTest` (emulated filesystem or IndexedDB Admin). Call `domainControllerForServer.setProcessCapabilities(...)` **before** `handleAction`. Do not rely on live factory maps. `ConfigurationService` has register but no unregister (`ConfigurationService.ts:51-72`); the integ stack registers all four factories, so a lazily computed snapshot can never yield `storeAdministration: false`.
 
 Behavior asserted:
 
 - Snapshot with `storeAdministration: false`: `storeManagementAction_createStore` / `deleteStore` / `resetAndInitApplicationDeployment` → `FeatureUnavailable` / `storeAdministration`
-- Same snapshot: `openStore` / `closeStore` still run (do not assert full success if fixtures are thin — assert they do **not** return `FeatureUnavailable`)
+- Same snapshot: `openStore` / `closeStore` do **not** return `FeatureUnavailable` (do not assert full success if the store data is thin)
 - Snapshot with `creatableStoreTypes: ["indexedDb"]`: `createStore` with `emulatedServerType: "sql"` → `FeatureUnavailable` / `availableStoreTypes`
 - `createStore` with `emulatedServerType: "bundled"` always `FeatureUnavailable` / `availableStoreTypes`
 
 ### 3.2 GREEN
 
-Inject or read the process snapshot on the persistence-side DC (set at startup next to Slice 2). Check in the store-management branch (`DomainController.ts:3396-3400` area). Composite and MCP paths re-enter `handleAction` — one check covers them.
+Add `setProcessCapabilities(snapshot: ProcessCapabilities): void` to `DomainControllerInterface` and `DomainController`. The store-management branch (`DomainController.ts:3396-3400`) reads that field. If unset, compute once from `miroirContext` config + `ConfigurationService` maps (production safety net). Tests always inject.
+
+Composite and MCP paths re-enter `handleAction` (`:3745-3749`, `:4882-4886`). One check covers REST, composite, and in-process MCP.
+
+Startup already sets the field in Slice 2. No second compute API.
 
 ### 3.3 Refactor checkpoint
 
-Create Application form filter can wait until a later UI slice if this slice only refuses. Prefer also filtering the Jzod union in Slice 3 GREEN if the runner is already in the test stack — otherwise Slice 3 refuse + Slice 8/docs mention the picker. **Do the picker filter in this slice** (`Runner_CreateApplication.tsx` union from `creatableStoreTypes`) so Goal 1 is visible.
-
-Picker test (standalone, same slice if small): form schema enum equals snapshot `creatableStoreTypes`.
+Picker filter is Slice 4, not this slice.
 
 ### Validation
 
 ```bash
-RUN_TEST=processCapabilitiesStore.273.phase3 npm run testByFile -w miroir-core -- processCapabilitiesStore.273.phase3
+RUN_TEST=processCapabilitiesStore.273.phase3 npm run testByFile -w miroir-standalone-app -- processCapabilitiesStore.273.phase3
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 ```
 
 ### Realization
@@ -274,7 +349,47 @@ RUN_TEST=processCapabilitiesStore.273.phase3 npm run testByFile -w miroir-core -
 
 ---
 
-## Slice 4 — AI hide, no bundle, drop ViewParams.agents
+## Slice 4. Create Application picker
+
+**Status:** ⬜ pending
+
+### Goal
+
+The Create Application storage-type union lists only `creatableStoreTypes`. `bundled` never appears.
+
+**Layers cut:** context snapshot → `Runner_CreateApplication.tsx` schema.
+
+### 4.1 RED
+
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/processCapabilitiesPicker.273.phase4.unit.test.ts`
+
+Behavior asserted:
+
+- `buildCreateApplicationStorageSchema(["indexedDb"])` context has only the IndexedDB variant. No `sql`, `filesystem`, `mongodb`, `bundled`.
+- `buildCreateApplicationStorageSchema(["indexedDb", "sql"])` includes those two only.
+- `bundled` is dropped even if passed in.
+
+### 4.2 GREEN
+
+Extract `buildCreateApplicationStorageSchema(creatableStoreTypes: StorageType[])` from `Runner_CreateApplication.tsx:70-108`. The runner reads `creatableStoreTypes` from `useMiroirContextService().processCapabilities` (Slice 2 field).
+
+### 4.3 Refactor checkpoint
+
+None beyond the extraction.
+
+### Validation
+
+```bash
+RUN_TEST=processCapabilitiesPicker.273.phase4 npm run testByFile -w miroir-standalone-app -- processCapabilitiesPicker.273.phase4
+```
+
+### Realization
+
+<Appended on completion.>
+
+---
+
+## Slice 5. AI hide, no bundle, drop ViewParams.agents
 
 **Status:** ⬜ pending
 
@@ -282,26 +397,26 @@ RUN_TEST=processCapabilitiesStore.273.phase3 npm run testByFile -w miroir-core -
 
 When `ai` is false the process does not mount CopilotKit and the UI has no Agents switch / AI icons. `ViewParams.agents` is gone.
 
-**Layers cut:** snapshot → `server.ts` mount → AppBar / Settings / RootComponent → Admin Entity + seed.
+**Layers cut:** snapshot → `shouldMountCopilotKitRoute` → `server.ts` mount → AppBar / Settings / RootComponent → Admin Entity + seed.
 
-### 4.1 RED
+### 5.1 RED
 
-**Test:** `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/processCapabilitiesAi.273.phase4.unit.test.ts` plus Admin `modelValidation`.
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/processCapabilitiesAi.273.phase5.unit.test.ts` plus Admin `modelValidation`.
 
 Behavior asserted:
 
-- Extracted `shouldMountCopilotKitRoute(ai: boolean)` is false when `ai` is false (used by `server.ts`)
-- `authentication.71.phase6` still finds the `app.use("/api/copilotkit"` **string** but the mount is inside `if (capabilities.ai)` — update that test to assert the gate
+- `shouldMountCopilotKitRoute(false)` is false (used by `server.ts`)
+- `authentication.71.phase6` still finds the `app.use("/api/copilotkit"` **string** but the mount is inside `if (shouldMountCopilotKitRoute(capabilities.ai))`. Update that test to assert the gate.
 - Settings page source no longer contains the Agents switch label
 - AppBar `showAgentUi` is snapshot `ai`, not `viewParams.agents && !MIROIR_IS_SANDBOX`
-- Admin Entity mlSchema and seed `441cb6fd-…` have **no** `agents` field (same commit, R9)
+- Admin Entity mlSchema and seed `441cb6fd-…` have **no** `agents` field (same slice, R9)
 - `ViewParams.ts` has no `agents`
 
-### 4.2 GREEN
+### 5.2 GREEN
 
-Gate `server.ts:826-841`. RootComponent / AppBar / Settings read snapshot. Delete `agents` from `ViewParams.ts`, Entity mlSchema, seed. Keep #244 lazy `import()` of `AgentsCopilotKit` when `ai` and first open.
+Home `shouldMountCopilotKitRoute` in `processCapabilityRoutes.ts`. Gate `server.ts:826-841`. RootComponent / AppBar / Settings read `processCapabilities` from context. Delete `agents` from `ViewParams.ts`, Entity mlSchema, and seed in this slice. Keep #244 lazy `import()` of `AgentsCopilotKit` when `ai` and first open.
 
-### 4.3 Refactor checkpoint
+### 5.3 Refactor checkpoint
 
 Consume Slice 0 agents / CopilotKit-unconditional assertions. Rebuild admin package if Entity JSON changed.
 
@@ -309,8 +424,9 @@ Consume Slice 0 agents / CopilotKit-unconditional assertions. Rebuild admin pack
 
 ```bash
 npm run testByFile -w miroir-test-app_deployment-admin -- tests/modelValidation.unit.test.ts
-RUN_TEST=processCapabilitiesAi.273.phase4 npm run testByFile -w miroir-standalone-app -- processCapabilitiesAi.273.phase4
+RUN_TEST=processCapabilitiesAi.273.phase5 npm run testByFile -w miroir-standalone-app -- processCapabilitiesAi.273.phase5
 RUN_TEST=authentication.71.phase6 npm run testByFile -w miroir-core -- authentication.71.phase6
+RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- processCapabilities.273.phase0
 ```
 
 ### Realization
@@ -319,7 +435,7 @@ RUN_TEST=authentication.71.phase6 npm run testByFile -w miroir-core -- authentic
 
 ---
 
-## Slice 5 — MCP refuse and mounts
+## Slice 6. MCP refuse and mounts
 
 **Status:** ⬜ pending
 
@@ -327,30 +443,36 @@ RUN_TEST=authentication.71.phase6 npm run testByFile -w miroir-core -- authentic
 
 `mcp` false: no HTTP MCP on the main app or the dedicated port; `runMcpToolRunner` returns `FeatureUnavailable` without fetching.
 
-**Layers cut:** snapshot → `server.ts:823` + `:925-926` → `runMcpToolRunner.ts`.
+**Layers cut:** snapshot → `shouldMountMcpHttp` → `server.ts:823` + `:925-926` → `runMcpToolRunner.ts` → `RunnerView.tsx:465-469`.
 
-### 5.1 RED
+### 6.1 RED
 
-**Test:** `processCapabilitiesMcp.273.phase5.unit.test.ts` (standalone + core source-text).
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/processCapabilitiesMcp.273.phase6.unit.test.ts`
 
 Behavior asserted:
 
-- `runMcpToolRunner` with `mcp: false` returns `errorType: "FeatureUnavailable"`, `errorContext.capability === "mcp"`, and does not call `fetch` (inject fetch or spy the helper’s first line)
-- Extracted `shouldMountMcpHttp(mcp)` false skips both mounts
-- `mcpToolRunner.253.phase0` vite-proxy test still lists `/mcp`; add that mount is gated
+- `runMcpToolRunner(..., serverUrl, { mcp: false }, throwingFetch)` returns `status: "error"`, `error.type === "FeatureUnavailable"`, capability `"mcp"`. The error is **not** `FailedToHandleAction`. `throwingFetch` must not run.
+- `shouldMountMcpHttp(false)` is false (both mounts)
+- `mcpToolRunner.253.phase0` still lists `/mcp` in the vite proxy; update it to assert the mount is gated
 
-### 5.2 GREEN
+`runMcpToolRunner` already takes `fetchImpl?: McpHttpFetch` (`runMcpToolRunner.ts:14`). Use it. Do not spy.
 
-Check at the top of `runMcpToolRunner`. Gate both `server.ts` mounts. Electron MCP URL is Slice 8; this slice uses the snapshot only.
+### 6.2 GREEN
 
-### 5.3 Refactor checkpoint
+Add argument `capabilities: Pick<ProcessCapabilities, "mcp">` (before `fetchImpl`). Check at the top of `runMcpToolRunner`. `RunnerView.tsx:465-469` passes `context.processCapabilities`. If the envelope is `FeatureUnavailable`, wrap as `Action2Error` with `errorContext.capability: "mcp"`, not `FailedToHandleAction`.
+
+Home `shouldMountMcpHttp` in `processCapabilityRoutes.ts`. Gate both `server.ts` mounts. Electron MCP URL is Slice 9.
+
+### 6.3 Refactor checkpoint
 
 Consume Slice 0 “unconditional MCP mounts”.
 
 ### Validation
 
 ```bash
-RUN_TEST=processCapabilitiesMcp.273.phase5 npm run testByFile -w miroir-standalone-app -- processCapabilitiesMcp.273.phase5
+RUN_TEST=processCapabilitiesMcp.273.phase6 npm run testByFile -w miroir-standalone-app -- processCapabilitiesMcp.273.phase6
+RUN_TEST=mcpToolRunner.253.phase0 npm run testByFile -w miroir-standalone-app -- mcpToolRunner.253.phase0
+RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- processCapabilities.273.phase0
 ```
 
 ### Realization
@@ -359,7 +481,7 @@ RUN_TEST=processCapabilitiesMcp.273.phase5 npm run testByFile -w miroir-standalo
 
 ---
 
-## Slice 6 — Designer tools
+## Slice 7. Designer tools
 
 **Status:** ⬜ pending
 
@@ -367,35 +489,43 @@ RUN_TEST=processCapabilitiesMcp.273.phase5 npm run testByFile -w miroir-standalo
 
 Bulb hidden when config is off, or when auth is on and the user has no explicit Admin grant. Leftover `sessionStorage.showModelTools` does not win. Transformer Builder follows designer tools.
 
-**Layers cut:** `hasAccess(..., alwaysAllow: [])` → AppBar / context → Builder menu item.
+**Layers cut:** `hasAccess(..., alwaysAllow: [])` → `useApplicationAccess` + `useAuthSession` → AppBar / context → Builder menu item → Alice Admin seed.
 
-### 6.1 RED
+### 7.1 RED
 
-**Test:** `processCapabilitiesDesigner.273.phase6.unit.test.ts`
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/processCapabilitiesDesigner.273.phase7.unit.test.ts`
+
+The emulated standalone `tests/assets` Admin copy has no `MiroirRight` entity. Do not load Alice from that tree. Pass grant objects into the helper.
 
 Behavior asserted:
 
 - Helper `isDesignerToolsVisible({ designerTools, authEnabled, principal, grants })`:
   - `designerTools: false` → false regardless of grants
   - `designerTools: true`, auth off → true
-  - `designerTools: true`, auth on, Carol no Admin grant → false
-  - `designerTools: true`, auth on, Alice Admin grant, `alwaysAllow: []` → true
+  - `designerTools: true`, auth on, Carol (`30634877-…`) empty grants → false
+  - `designerTools: true`, auth on, Alice (`1c39328c-…`) with grant `{ targetType: "application", targetUuid: ADMIN_APPLICATION_UUID, capability: "admin" }` and `alwaysAllow: []` → true
   - `designerTools: true`, auth on, principal with **only** always-allow semantics (no grant row) → false
 - When not visible, `showModelTools` is forced false (helper or provider test)
 - Transformer Builder item is included iff designer tools visible, not iff `ai`
 
-### 6.2 GREEN
+### 7.2 GREEN
 
-`useAuthSession` + Admin `MiroirRight` rows. AppBar bulb render + `setShowModelTools` forced off. Move Builder off `showAgentUi` (`AppBar.tsx:346`).
+Add seed `86a73f7e-17f8-462d-8203-af1f323a7cdc.json` under `packages/miroir-test-app_deployment-admin/assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/`. Shape matches Alice’s Library grant (`48b2048f-…`) with `targetUuid` `55af124e-…` and `capability: "admin"`. Export `miroirRight_AliceAdminApplication` from admin `index.ts` **and** `index.d.ts`.
 
-### 6.3 Refactor checkpoint
+AppBar / provider: `useAuthSession` + `useApplicationAccess().grants` (already selects Admin `MiroirRight` rows at `useApplicationAccess.ts:49-88`). Call `hasAccess` with `alwaysAllow: []`. Force `setShowModelTools(false)` when not visible. Move Builder off `showAgentUi` (`AppBar.tsx:346`).
 
-Sidebar already follows `showModelTools` (`Sidebar.tsx:105-108`). Do not change Admin always-listed except via forced-off flag.
+Do not copy the seed into `packages/miroir-standalone-app/tests/assets` (that Admin model copy has no `MiroirRight` entity).
+
+### 7.3 Refactor checkpoint
+
+Consume Slice 0 “no Alice Admin grant / uuid unused”. Sidebar already follows `showModelTools` (`Sidebar.tsx:105-108`). Do not change Admin always-listed except via the forced-off flag.
 
 ### Validation
 
 ```bash
-RUN_TEST=processCapabilitiesDesigner.273.phase6 npm run testByFile -w miroir-standalone-app -- processCapabilitiesDesigner.273.phase6
+npm run testByFile -w miroir-test-app_deployment-admin -- tests/modelValidation.unit.test.ts
+RUN_TEST=processCapabilitiesDesigner.273.phase7 npm run testByFile -w miroir-standalone-app -- processCapabilitiesDesigner.273.phase7
+RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- processCapabilities.273.phase0
 ```
 
 ### Realization
@@ -404,38 +534,44 @@ RUN_TEST=processCapabilitiesDesigner.273.phase6 npm run testByFile -w miroir-sta
 
 ---
 
-## Slice 7 — Versioning icon
+## Slice 8. Versioning icon
 
 **Status:** ⬜ pending
 
 ### Goal
 
-Versioning AppBar item is shown only when the **current** application’s `resolveVersioningMode` is `versioned-internal`.
+The Versioning AppBar item is shown only when the **browsed** application’s `resolveVersioningMode` is `versioned-internal`. Click still opens the report under Miroir (#225).
 
-**Layers cut:** `versioningMode.ts` → AppBar.
+**Layers cut:** `versioningMode.ts` → AppBar visibility. Navigation helper unchanged.
 
-### 7.1 RED
+### 8.1 RED
 
-**Test:** `processCapabilitiesVersioning.273.phase7.unit.test.ts` (extend patterns from `AppBarVersioning.unit.test.ts` if present).
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/processCapabilitiesVersioning.273.phase8.unit.test.ts`
+
+Input source: `context.toolsPageState?.applicationSelector` (`AppBar.tsx:534`). That uuid names the browsed SelfApplication. Home has none.
 
 Behavior asserted:
 
-- `unversioned` / `versioned-external` → item absent
-- `versioned-internal` / legacy `versioningEnabled: true` → item present
-- Freeze still throws via `assertApplicationVersioningEnabled` (existing tests remain)
+- `isVersioningAppBarItemVisible({ browsedSelfApplication: undefined })` → false
+- browsed app `unversioned` / `versioned-external` → false
+- browsed app `versioned-internal` / legacy `versioningEnabled: true` → true
+- `resolveAppBarReportLinkApplication` still returns Miroir for the Versioning report when `applicationSelector` is Library (`AppBarVersioning.unit.test.ts:11-20` stays green, do not rewrite that test)
 
-### 7.2 GREEN
+Freeze still throws via `assertApplicationVersioningEnabled` (existing tests remain).
 
-Filter the Versioning `miroirMenuReportLink` (`AppBar.tsx:373-386`) from the current app’s self-application row.
+### 8.2 GREEN
 
-### 7.3 Refactor checkpoint
+Filter the Versioning `miroirMenuReportLink` (`AppBar.tsx:373-386`) with `isVersioningAppBarItemVisible`. Resolve the browsed SelfApplication row from the selector. Do not change `resolveAppBarReportLinkApplication`.
+
+### 8.3 Refactor checkpoint
 
 Do not put versioning on the process snapshot.
 
 ### Validation
 
 ```bash
-RUN_TEST=processCapabilitiesVersioning.273.phase7 npm run testByFile -w miroir-standalone-app -- processCapabilitiesVersioning.273.phase7
+RUN_TEST=processCapabilitiesVersioning.273.phase8 npm run testByFile -w miroir-standalone-app -- processCapabilitiesVersioning.273.phase8
+RUN_TEST=AppBarVersioning npm run testByFile -w miroir-standalone-app -- AppBarVersioning
 ```
 
 ### Realization
@@ -444,42 +580,47 @@ RUN_TEST=processCapabilitiesVersioning.273.phase7 npm run testByFile -w miroir-s
 
 ---
 
-## Slice 8 — Electron loopback + persistence-side config patches
+## Slice 9. Electron loopback listen + remaining config patches
 
 **Status:** ⬜ pending
 
 ### Goal
 
-When Electron `features.ai` / `mcp` is true, the renderer talks to a loopback HTTP base, not `app://` / `window.location.origin`. Shipped persistence-side configs that should keep AI/MCP set the flags.
+When Electron `features.ai` / `mcp` is true, main listens on loopback HTTP and the renderer talks to that base, not `app://` / `window.location.origin`. Remaining persistence-side product configs that should keep AI/MCP set the flags.
 
-**Layers cut:** `electronServerConfig` → loopback listen helper → renderer URL helper → config JSON.
+**Layers cut:** `electronServerConfig` → `shouldListenLoopbackHttp` → listen in main → renderer URL helpers → config JSON.
 
-### 8.1 RED
+`miroir-standalone-app-electron` is not importable from standalone-app tests (private, depends **on** standalone-app, `ipcMain` is main-only). Prove helpers by importing them from `miroir-core`. Prove the listen by source-text on `ipcServerSetup.ts` / `main.ts`, same pattern as `authentication.71.phase6` reading `server.ts`.
 
-**Test:** `processCapabilitiesElectron.273.phase8.unit.test.ts`
+### 9.1 RED
+
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/273-process-capability-switches/processCapabilitiesElectron.273.phase9.unit.test.ts`
 
 Behavior asserted:
 
 - `electronRuntimeBaseUrl(serverConfig)` is an `http(s)://127.0.0.1|localhost:...` URL derived from `rootApiUrl`, never `app://`
 - `copilotRuntimeUrl(env, base)` is `${base}/api/copilotkit` when `env === "electron"`, else `"/api/copilotkit"`
 - `browserMcpServerUrl` uses the same base on Electron
+- `shouldListenLoopbackHttp({ ai, mcp })` is true if either flag is true
+- Source text: `ipcServerSetup.ts` and/or `main.ts` calls `listen` (or equivalent) when `shouldListenLoopbackHttp` / `features.ai` / `features.mcp` is true. This **consumes** Slice 0’s “no `listen(`” assertion (flip to the gated-listen form).
 - `electronServerConfig` in source has `features: { ai: true, mcp: true, designerTools: true }`
 - Renderer `electronMiroirConfig` still has **no** `features` (R7)
-- Persistence-side server JSON (`miroirConfig.server.json`, docker variant) has `features.ai/mcp` true for the shipped product
+- Shipped server JSON still has `features.ai`/`mcp` true (already patched in Slice 2; re-assert)
 - Sandbox client config / sandbox define still forces `ai` false
 
-### 8.2 GREEN
+### 9.2 GREEN
 
-Loopback listen in main when flags are true (extracted function so `miroir-server` test gap does not block). Point `AgentsCopilotKit` and `runMcpToolRunner` at the helper. Patch persistence-side product configs only.
+Home the four URL/mount helpers plus `shouldListenLoopbackHttp` in `processCapabilityRoutes.ts`. Main listens on loopback when that helper is true (reuse `electronServerConfig.server.rootApiUrl`). Point `AgentsCopilotKit` and `runMcpToolRunner` at `copilotRuntimeUrl` / `browserMcpServerUrl`. Patch Electron **main** `electronServerConfig` and any remaining persistence-side product configs that need non-defaults. Do not add `features` to the renderer object.
 
-### 8.3 Refactor checkpoint
+### 9.3 Refactor checkpoint
 
-`mcpToolRunner.253.phase0` proxy list may stay; Electron no longer depends on Vite proxy for CopilotKit.
+Consume Slice 0 `ipcServerSetup.ts` assertions. `mcpToolRunner.253.phase0` proxy list may stay; Electron no longer depends on Vite proxy for CopilotKit.
 
 ### Validation
 
 ```bash
-RUN_TEST=processCapabilitiesElectron.273.phase8 npm run testByFile -w miroir-standalone-app -- processCapabilitiesElectron.273.phase8
+RUN_TEST=processCapabilitiesElectron.273.phase9 npm run testByFile -w miroir-standalone-app -- processCapabilitiesElectron.273.phase9
+RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- processCapabilities.273.phase0
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app-electron/tsconfig.json
 ```
 
@@ -489,33 +630,38 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app-electron/tscon
 
 ---
 
-## Slice 9 — Nonreg, docs, cleanup, AC
+## Slice 10. Nonreg, docs, cleanup, AC
 
 **Status:** ⬜ pending
 
-### 9.1 Nonreg
+### 10.1 Nonreg
 
-- Add `unit-273-process-capabilities` to `scripts/nonreg-manifest.json` (tier `unit`) running the phase0–8 file glob.
+Two steps in `scripts/nonreg-manifest.json`:
 
-### 9.2 Docs
+- `unit-273-process-capabilities` (tier `unit`): `bash -c` running the miroir-core `273` files and the standalone-app unit `273` files.
+- `appstack-273-process-capabilities` (tier `default`): `testByFile -w miroir-standalone-app -- --profile {profile} processCapabilitiesStore.273.phase3`.
 
-- `analysis.md` status → implemented when slices 1–8 are DONE (not before).
+Do not put both packages in one argv array.
+
+### 10.2 Docs
+
+- `analysis.md` status → implemented when slices 1 to 9 are DONE (not before).
 - `docs/internals/code-splitting.md`: AI chunk gated by snapshot `ai`, not `ViewParams.agents`.
 - `docs/reference/data-architecture-deployments.md`: `features` on persistence-side config; sandbox veto; Electron loopback.
 
-### 9.3 Issue-directory cleanup
+### 10.3 Issue-directory cleanup
 
-- After the suite is stable, migrate still-valuable assertions into feature-named files and delete `issues/273-process-capability-switches/` per `docs/contributing/testing.md` (#238). May stay until the first green nonreg if cleanup would hide history — then do it in this slice.
+- After the suite is stable, migrate still-valuable assertions into feature-named files and delete `issues/273-process-capability-switches/` per `docs/contributing/testing.md` (#238). May stay until the first green nonreg if cleanup would hide history. Then do it in this slice.
 
-### 9.4 Tracer bullet (narrative)
+### 10.4 Tracer bullet (narrative)
 
 1. Start emulated IndexedDB (or sandbox).
-2. `GET /capabilities` before login → `ai: false` in sandbox, store types bundled+indexedDb, `creatableStoreTypes` without bundled.
+2. `GET /capabilities` before login → `ai: false` in sandbox, store types bundled+indexedDb, `creatableStoreTypes` without bundled. Context holds that copy.
 3. Create Application does not offer bundled or sql.
-4. Flip a persistence-side file to `features.ai: true`, restart a real-server web process, Settings has no Agents row, AppBar shows AI only if snapshot `ai` is true.
+4. Shipped `miroir-server` already has `features.ai/mcp` true. Settings has no Agents row. AppBar shows AI only if snapshot `ai` is true.
 5. Auth on, user without Admin grant: no bulb. Leftover session cannot open model tools.
 
-Automated equivalent: Slices 1–7 tests.
+Automated equivalent: Slices 1 to 8 tests.
 
 ### AC checklist (#273)
 
@@ -524,18 +670,20 @@ Automated equivalent: Slices 1–7 tests.
 | `features` on client and server schemas | Slice 2 rebuild + types | ⬜ |
 | Missing `ai`/`mcp` false; missing `designerTools` true | Slice 1 | ⬜ |
 | Sandbox forces `ai` false | Slice 1 | ⬜ |
-| `getProcessCapabilities` + GET once, HTTP/IPC | Slices 1–2 | ⬜ |
+| `getProcessCapabilities` + GET once, HTTP/IPC | Slices 1 to 2 | ⬜ |
+| UI learns the snapshot via the rest client, never `window.fetch`, never renderer-side computation (R3/R11) | Slice 2 context + source-text | ⬜ |
 | Snapshot fields including derived store types | Slice 1 | ⬜ |
-| Hide and refuse same check; `FeatureUnavailable` | Slices 1, 3, 5 | ⬜ |
-| `ViewParams.agents` removed | Slice 4 + modelValidation | ⬜ |
-| `ai` false: no chunk, no mount, no Settings row, no icons | Slice 4 | ⬜ |
-| `mcp` false: no mounts, no runner fetch | Slice 5 | ⬜ |
-| Create Application / store-admin follow snapshot | Slice 3 | ⬜ |
-| Versioning icon follows application mode | Slice 7 | ⬜ |
-| Bulb + explicit Admin grant + force off + Builder | Slice 6 | ⬜ |
-| Electron same capacity + loopback transport | Slice 8 | ⬜ |
-| `emulatedServer` is transport only | Slices 1–2 (stub) | ⬜ |
-| `deploymentMode` not revived | Slice 0 + 9 docs | ⬜ |
+| Hide and refuse same check; `FeatureUnavailable` | Slices 1, 3, 6 | ⬜ |
+| `ViewParams.agents` removed | Slice 5 + modelValidation | ⬜ |
+| `ai` false: no chunk, no mount, no Settings row, no icons | Slice 5 | ⬜ |
+| `mcp` false: no mounts, no runner fetch | Slice 6 | ⬜ |
+| Create Application picker follows snapshot | Slice 4 | ⬜ |
+| Store-admin refuse follows snapshot | Slice 3 | ⬜ |
+| Versioning icon follows browsed-application mode | Slice 8 | ⬜ |
+| Bulb + explicit Admin grant + force off + Builder | Slice 7 | ⬜ |
+| Electron same capacity + loopback listen + URLs | Slice 9 | ⬜ |
+| `emulatedServer` is transport only | Slices 1 to 2 (stub) | ⬜ |
+| `deploymentMode` not revived | Slice 0 + 10 docs | ⬜ |
 
 ### Validation
 
