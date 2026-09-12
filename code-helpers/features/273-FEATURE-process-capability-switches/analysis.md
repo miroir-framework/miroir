@@ -474,4 +474,4 @@ Layering: `1_core` must not import `3_controllers`. `getProcessCapabilities` tak
 
 ## Next step
 
-Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) after this analysis is reviewed, following the `miroir-analysis-to-tdd-plan` skill.
+Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (written after R1–R12), following the `miroir-analysis-to-tdd-plan` skill.
