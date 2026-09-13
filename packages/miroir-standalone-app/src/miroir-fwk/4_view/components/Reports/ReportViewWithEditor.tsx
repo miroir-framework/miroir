@@ -28,6 +28,7 @@ import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
 import { ThemedSpan } from '../Themes/index.js';
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor.js';
+import { useOptionalMultistepReportHost } from './MultistepReportHost.js';
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
@@ -88,6 +89,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   );
 
   const generalEditMode = context.viewParams.generalEditMode;
+  const multistepHost = useOptionalMultistepReportHost();
   
   // ##############################################################################################
   // ##############################################################################################
@@ -266,11 +268,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
       pageParams: props.pageParams,
       [reportReportDetailsKey]: reportReportDetails,
       [reportName]: props.reportDefinition,
+      ...(multistepHost?.stepBag ?? {}),
     };
     log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
-  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportData, reportInterpreterPageParams]);
+  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportData, reportInterpreterPageParams, reportName, multistepHost?.stepBag]);
 
   // ###############################################################################################
   // ###############################################################################################
@@ -434,6 +437,16 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
               <Formik
                 enableReinitialize={true}
                 initialValues={initialReportSectionsFormValue}
+                validateOnChange={!!multistepHost}
+                validateOnBlur={false}
+                validate={
+                  multistepHost
+                    ? (values) => {
+                        queueMicrotask(() => multistepHost.mergeStepBagFromFormikValues(values));
+                        return {};
+                      }
+                    : undefined
+                }
                 onSubmit={(values, { setSubmitting, setErrors }) => {
                   try {
                     log.info("ReportViewWithEditor onSubmit formik values", values);
@@ -453,10 +466,12 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     setSubmitting(false);
                   }
                 }}
-                validateOnChange={false}
-                validateOnBlur={false}
               >
-                {(formik) => (
+                {(formik) => {
+                  if (multistepHost) {
+                    multistepHost.captureStepBagFromFormikValues(formik.values);
+                  }
+                  return (
                   <>
                     <JsonDisplayHelper
                       debug={true}
@@ -506,7 +521,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                     <>
                       <ReportSectionViewWithEditor
                         formikReportDefinitionPathString={reportName}
-                        reportSectionPath={["definition", "section"]}
+                        reportSectionPath={
+                          multistepHost?.reportSectionPath ?? ["definition", "section"]
+                        }
                         //
                         valueObjectEditMode="update"
                         generalEditMode={generalEditMode}
@@ -522,7 +539,8 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                       />
                     </>
                   </>
-                )}
+                  );
+                }}
               </Formik>
             </>
           ) : (

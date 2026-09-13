@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/274
 Working branch: `274-FEATURE-multistep-reports`
 
-**Resume note:** Slices 0–1 ✅. Implementing remaining slices in order.
+**Resume note:** Slices 0–2 ✅. Implementing remaining slices in order.
 
 ---
 
@@ -67,7 +67,7 @@ This plan does **not** add a Form / FormRun Entity, persist drafts, wrap the wal
 |---|---|---|---|
 | 0 | Characterize Report.type, Formik dump, schema switch, nested Formik | ✅ | `multistep.274.phase0.unit.test.ts` |
 | 1 | **Tracer:** schema + Finish template + step bag creates Country | ✅ | MiroirTest `multistepFinish.274` (integ) + modelValidation |
-| 2 | Pager host + UI process walk (completeness suite) | ⬜ | `multistepProcess.274.integ.test.tsx` (`prepareAndRunTestSuites`) |
+| 2 | Pager host + UI process walk (completeness suite) | ✅ | `multistepProcess.274.integ.test.tsx` (`prepareAndRunTestSuites`) |
 | 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ⬜ | `multistepProcess.274` (added cases) |
 | 4 | Object-instance hoist; query-failure keeps the bag | ⬜ | `multistepProcess.274` (added cases) |
 | 5 | `openReportSection` + list `openReport` + pageParams | ⬜ | `multistepLaunch.274.phase5.integ.test.tsx` |
@@ -278,7 +278,7 @@ Validation: library `modelValidation.unit` 182 passed; `multistep.274.phase0` 7/
 
 ## Slice 2 — Pager host + UI process walk (completeness suite)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -339,7 +339,17 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+Pager + bag live in `MultistepReportHost`. Viewer mode passes `reportSectionPath` `["definition","section","definition", stepIndex]`; `generalEditMode` keeps the root list path and hides the pager. Buttons (Back / Next or Finish / Cancel) sit outside the section. Cancel uses `ThemedDialog` with accessible names **Keep editing** / **Confirm cancel**. The step bag is host state (`inputPrefix` buckets only). Formik `validate` + render-time `captureStepBagFromFormikValues` sync the bag as the user types (no product `useEffect`). Bag keys win on `enableReinitialize`. Next gates `inputReportSection` with required-empty (including `""`) then `jzodTypeCheck`; other step types always Next. Finish calls `runMultistepFinish` → `handleCompositeActionTemplate` only, `actionParamValues` = live bag. Success dismisses the host; error stays on the last step.
+
+`ReportDisplay` wraps `ReportViewWithEditor` when `report.type === "multistep"` (host above Formik / query-failure unmount). Report lookup: mapping `availableReports`, then `currentModel.reports`, then `defaultReport`. The page application is paired into `applicationDeploymentMap` so Library resolves to `f714bb2f-…` without `RootComponent`.
+
+Harness (`JzodElementEditorTestTools`): always seeds `reportMultistepCountryCreate` into the Library reports load. Opt-in `wireLocalCacheCompositeAction` (this suite only) extends the map with Library, runs `persistenceSaga`, constructs a real `DomainController` bound to the wrapper `localCache`, no-ops remote persist, and collision-checks `createInstance` so Finish can persist Country `63c96487-…` into that same cache. Skips the second Library data load+rollback on this path — that rollback wipes Library model (reports) when a real deployment uuid is mapped. Test-only cache read/upsert/delete helpers + `afterEach` cleanup. Completeness suite `multistepProcess.274.integ.test.tsx` mounts `ReportPage`, types real `stepOne.*` inputs, mocks `useParams` / `useNavigate` / `useSearchParams`, and stubs `ModelDiagramReportSectionView` (`svg-toolbelt` CJS). Did not spy on `runMultistepFinish`. Did not edit the frozen tracer JSON. Did not implement Slice 3 query-merge / URL-write-off / skip `runStoredQueries`.
+
+**Validation:** `multistepProcess.274` — pass, 1 file / 7 tests. `tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — pass. `multistep.274.phase0` — pass, 1 file / 7 tests.
+
+**Deviations:** Suite still passes `defaultSelfApplicationDeploymentMap` into `prepareAndRunTestSuites`; the opt-in internally extends it with Library. `reinit-keeps-bag` does not inject a bag or force `reportData` — typed values + bag-wins reinit. `finish-action-error` stays on the last (json) step, then Back×2 to assert `stepOne` still in the editors. Next treats empty required `name` as invalid even if `jzodTypeCheck` accepts `""`.
+
+No stop-the-world product contradiction. Harness stub-DC and missing-tracer-in-wrapper-cache were expected and solved as above.
 
 ---
 

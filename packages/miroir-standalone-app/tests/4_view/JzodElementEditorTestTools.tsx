@@ -7,8 +7,10 @@ import { Profiler, useCallback, useMemo } from "react";
 import { expect, ExpectStatic, vi } from "vitest";
 
 import {
+  Action2Error,
   Action2ReturnType,
   ConfigurationService,
+  DomainController,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   JzodElement,
@@ -45,10 +47,12 @@ import {
   reportBookDetails,
   reportBookList,
   reportCountryList,
+  reportMultistepCountryCreate,
   reportPublisherList,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import { deployment_Library_DO_NO_USE } from "miroir-test-app_deployment-library";
+import { MemoryRouter } from "react-router-dom";
 import { Container } from "react-dom";
 import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
 import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext";
@@ -243,9 +247,94 @@ export interface JzodElementEditorProps_Test {
 export interface ReactComponentTestSuitePrep<PropType extends Record<string, any>> {
   editor: React.FC<any>;
   performanceTests?: boolean;
+  /** Opt-in: real handleCompositeActionTemplate writes the wrapper localCache (issue #274). */
+  wireLocalCacheCompositeAction?: boolean;
   getJzodEditorTests: (
     jzodElementEditor: React.FC<PropType>
   ) => ReactComponentTestSuites<PropType>;
+}
+
+export const LIBRARY_TEST_COUNTRY_ENTITY_UUID = "d3139a6d-0486-4ec8-bded-2a83a3c3cee4";
+export const LIBRARY_TEST_TRACER_COUNTRY_UUID = "63c96487-713f-4d5b-a424-bf7e8f70e147";
+
+const libraryApplicationDeploymentMapForTests: ApplicationDeploymentMap = {
+  ...defaultSelfApplicationDeploymentMap,
+  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+};
+
+let jzodEditorTestLocalCache: LocalCacheInterface | undefined;
+let jzodEditorTestApplicationDeploymentMap: ApplicationDeploymentMap =
+  libraryApplicationDeploymentMapForTests;
+
+function libraryCountryFromDomainState(uuid: string): EntityInstance | undefined {
+  if (!jzodEditorTestLocalCache) {
+    return undefined;
+  }
+  const domainState = jzodEditorTestLocalCache.getDomainState();
+  const deploymentUuid =
+    jzodEditorTestApplicationDeploymentMap[selfApplicationLibrary.uuid];
+  return domainState?.[deploymentUuid]?.data?.[LIBRARY_TEST_COUNTRY_ENTITY_UUID]?.[uuid] as
+    | EntityInstance
+    | undefined;
+}
+
+export function getJzodEditorTestLocalCache(): LocalCacheInterface | undefined {
+  return jzodEditorTestLocalCache;
+}
+
+export function getLibraryCountryFromJzodEditorTestCache(
+  uuid: string = LIBRARY_TEST_TRACER_COUNTRY_UUID,
+): EntityInstance | undefined {
+  return libraryCountryFromDomainState(uuid);
+}
+
+export function upsertLibraryCountryInJzodEditorTestCache(instance: EntityInstance): void {
+  if (!jzodEditorTestLocalCache) {
+    throw new Error("upsertLibraryCountryInJzodEditorTestCache: localCache is not initialized");
+  }
+  const result = jzodEditorTestLocalCache.handleLocalCacheAction(
+    {
+      actionType: "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        applicationSection: "data",
+        parentUuid: LIBRARY_TEST_COUNTRY_ENTITY_UUID,
+        objects: [instance],
+      },
+    } as any,
+    jzodEditorTestApplicationDeploymentMap,
+  );
+  if (result.status !== "ok") {
+    throw new Error(
+      `upsertLibraryCountryInJzodEditorTestCache failed: ${JSON.stringify(result)}`,
+    );
+  }
+}
+
+export function deleteLibraryCountryFromJzodEditorTestCache(
+  uuid: string = LIBRARY_TEST_TRACER_COUNTRY_UUID,
+): void {
+  if (!jzodEditorTestLocalCache) {
+    return;
+  }
+  const existing = libraryCountryFromDomainState(uuid);
+  if (!existing) {
+    return;
+  }
+  jzodEditorTestLocalCache.handleLocalCacheAction(
+    {
+      actionType: "deleteInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        applicationSection: "data",
+        parentUuid: LIBRARY_TEST_COUNTRY_ENTITY_UUID,
+        objects: [existing],
+      },
+    } as any,
+    jzodEditorTestApplicationDeploymentMap,
+  );
 }
 
 export interface ReactComponentTestCase<PropType extends Record<string, any>> {
@@ -579,8 +668,15 @@ export const getJzodElementEditorForTest: (pageLabel: string) => React.FC<JzodEl
   // ################################################################################################
 export function getWrapperLoadingLocalCache(
   isPerformanceTest: boolean = false,
-  applicationDeploymentMap: ApplicationDeploymentMap
+  applicationDeploymentMapParam: ApplicationDeploymentMap,
+  options?: { wireLocalCacheCompositeAction?: boolean },
 ): React.FC<any> {
+  const applicationDeploymentMap: ApplicationDeploymentMap = options?.wireLocalCacheCompositeAction
+    ? {
+        ...applicationDeploymentMapParam,
+        [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+      }
+    : applicationDeploymentMapParam;
   const miroirActivityTracker = new MiroirActivityTracker();
   const miroirEventService = new MiroirEventService(miroirActivityTracker);
   const miroirContext: MiroirContext = new MiroirContext(
@@ -724,6 +820,7 @@ export function getWrapperLoadingLocalCache(
               reportBookDetails as EntityInstance,
               reportCountryList as EntityInstance,
               reportPublisherList as EntityInstance,
+              reportMultistepCountryCreate as EntityInstance,
           ],
         },
         // {
@@ -752,30 +849,39 @@ export function getWrapperLoadingLocalCache(
     }, applicationDeploymentMap
   );
 
-  const resultForLoadingLibraryApplicationInstances: Action2ReturnType = localCache.handleLocalCacheAction({
-    actionType: "loadNewInstancesInLocalCache",
-    endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-    payload: {
-      application: selfApplicationLibrary.uuid,
-      objects: libraryApplicationInstances,
-    }
-  }, applicationDeploymentMap);
-
-  if (resultForLoadingLibraryApplicationInstances.status !== "ok") {
-    throw new Error(
-      `Error loading Library Application Instances: ${JSON.stringify(resultForLoadingLibraryApplicationInstances, null, 2)}`
-    );
-  }
-  localCache.handleLocalCacheAction(
-    // needed so that "loading" instances become "current"
-    {
-      actionType: "rollback",
-      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+  // Library model load already includes `libraryApplicationInstances`. A second
+  // data-only load + rollback would drop Library *model* (reports/entities) from
+  // `current` when a real Library deployment uuid is in the map (rollback replaces
+  // that deployment's current with whatever is in `loading`).
+  let resultForLoadingLibraryApplicationInstances: Action2ReturnType = {
+    status: "ok",
+  } as Action2ReturnType;
+  if (!options?.wireLocalCacheCompositeAction) {
+    resultForLoadingLibraryApplicationInstances = localCache.handleLocalCacheAction({
+      actionType: "loadNewInstancesInLocalCache",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
       payload: {
         application: selfApplicationLibrary.uuid,
-      },
-    }, applicationDeploymentMap
-  );
+        objects: libraryApplicationInstances,
+      }
+    }, applicationDeploymentMap);
+
+    if (resultForLoadingLibraryApplicationInstances.status !== "ok") {
+      throw new Error(
+        `Error loading Library Application Instances: ${JSON.stringify(resultForLoadingLibraryApplicationInstances, null, 2)}`
+      );
+    }
+    localCache.handleLocalCacheAction(
+      // needed so that "loading" instances become "current"
+      {
+        actionType: "rollback",
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        payload: {
+          application: selfApplicationLibrary.uuid,
+        },
+      }, applicationDeploymentMap
+    );
+  }
 
   if (process.env.VITE_TEST_MODE !== "true") {
     console.log(
@@ -802,14 +908,73 @@ export function getWrapperLoadingLocalCache(
   // const handleNavigateToPath = useCallback((path: string[]) => {}, []);
   const handleToggleOutline = () => {};
   const handleNavigateToPath = (path: string[]) => {};
+
+  if (options?.wireLocalCacheCompositeAction) {
+    persistenceSaga.run(localCache as any);
+    jzodEditorTestLocalCache = localCache;
+    jzodEditorTestApplicationDeploymentMap = applicationDeploymentMap;
+  }
+
+  const wiredDomainController: DomainControllerInterface | undefined =
+    options?.wireLocalCacheCompositeAction
+      ? (() => {
+          const realDc = new DomainController(
+            "local",
+            miroirContext,
+            localCache,
+            persistenceSaga,
+          );
+          (realDc as any).callUtil.callPersistenceAction = async (callContext: any) =>
+            callContext ?? {};
+          const originalHandleAction = realDc.handleAction.bind(realDc);
+          realDc.handleAction = (async (
+            domainAction: any,
+            map: ApplicationDeploymentMap,
+            currentModelEnvironment?: any,
+            endpointApplicationMap?: any,
+            actionParamValues?: any,
+            principal?: any,
+          ) => {
+            if (domainAction?.actionType === "createInstance") {
+              const objects = domainAction.payload?.objects ?? [];
+              const domainState = localCache.getDomainState();
+              const deploymentUuid = map[domainAction.payload?.application];
+              const section = domainAction.payload?.applicationSection;
+              const parentUuid = domainAction.payload?.parentUuid;
+              for (const instance of objects) {
+                const entityUuid = instance?.parentUuid ?? parentUuid;
+                const existing =
+                  domainState?.[deploymentUuid]?.[section]?.[entityUuid]?.[instance?.uuid];
+                if (existing) {
+                  return new Action2Error(
+                    "FailedToHandleAction",
+                    "createInstance colliding uuid already present",
+                    [instance.uuid],
+                  );
+                }
+              }
+            }
+            return originalHandleAction(
+              domainAction,
+              map,
+              currentModelEnvironment,
+              endpointApplicationMap,
+              actionParamValues,
+              principal,
+            );
+          }) as typeof realDc.handleAction;
+          return realDc;
+        })()
+      : undefined;
+
   // ###############################################
   return (props: { children?: React.ReactNode }) => {
     // console.log("############################################## getWrapperForLocalJzodElementEditor returned", "props", props);
     // console.log
-    const domainController: DomainControllerInterface = {
+    const domainController: DomainControllerInterface = wiredDomainController ?? ({
       handleAction,
       // add other methods if needed
-    } as any;
+    } as any);
 
     const renderCount = { current: 0 };
     const totalRenderTime = { current: 0 };
@@ -838,6 +1003,11 @@ export function getWrapperLoadingLocalCache(
               <MiroirContextReactProvider
                 miroirContext={miroirContext}
                 domainController={domainController}
+                testingApplication={
+                  options?.wireLocalCacheCompositeAction
+                    ? selfApplicationLibrary.uuid
+                    : undefined
+                }
                 testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
               >
                 <DocumentOutlineContextProvider
@@ -845,7 +1015,13 @@ export function getWrapperLoadingLocalCache(
                   onToggleOutline={handleToggleOutline}
                   onNavigateToPath={handleNavigateToPath}
                 >
-                  <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
+                  <ReportPageContextProvider>
+                    {options?.wireLocalCacheCompositeAction ? (
+                      <MemoryRouter>{props.children}</MemoryRouter>
+                    ) : (
+                      props.children
+                    )}
+                  </ReportPageContextProvider>
                 </DocumentOutlineContextProvider>
               </MiroirContextReactProvider>
             </LocalCacheProvider>
@@ -859,6 +1035,11 @@ export function getWrapperLoadingLocalCache(
             <MiroirContextReactProvider
               miroirContext={miroirContext}
               domainController={domainController}
+              testingApplication={
+                options?.wireLocalCacheCompositeAction
+                  ? selfApplicationLibrary.uuid
+                  : undefined
+              }
               testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
             >
               <DocumentOutlineContextProvider
@@ -866,7 +1047,13 @@ export function getWrapperLoadingLocalCache(
                 onToggleOutline={handleToggleOutline}
                 onNavigateToPath={handleNavigateToPath}
               >
-                <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
+                <ReportPageContextProvider>
+                  {options?.wireLocalCacheCompositeAction ? (
+                    <MemoryRouter>{props.children}</MemoryRouter>
+                  ) : (
+                    props.children
+                  )}
+                </ReportPageContextProvider>
               </DocumentOutlineContextProvider>
             </MiroirContextReactProvider>
           </LocalCacheProvider>
@@ -970,8 +1157,13 @@ export function getJzodEditorTestSuites<
   ) => ReactComponentTestSuites<JzodEditorProps>,
   performanceTests: boolean = false,
   applicationDeploymentMap: ApplicationDeploymentMap,
+  options?: { wireLocalCacheCompositeAction?: boolean },
 ): ReactComponentTestSuites<JzodEditorProps> {
-  const WrapperForJzodElementEditor: React.FC<any> = getWrapperLoadingLocalCache(performanceTests, applicationDeploymentMap);
+  const WrapperForJzodElementEditor: React.FC<any> = getWrapperLoadingLocalCache(
+    performanceTests,
+    applicationDeploymentMap,
+    options,
+  );
 
   const JzodElementEditorForTest: React.FC<JzodEditorProps> = reactComponentUnderTest;
     // getJzodElementEditorForTest(pageLabel);
@@ -1005,6 +1197,7 @@ export function prepareAndRunTestSuites(
         testSuite.getJzodEditorTests,
         testSuite.performanceTests,
         applicationDeploymentMap,
+        { wireLocalCacheCompositeAction: testSuite.wireLocalCacheCompositeAction },
       );
       let modes: TestMode[] = ['jzodElementEditor'];
       // if (testSuite.modes === undefined) {
