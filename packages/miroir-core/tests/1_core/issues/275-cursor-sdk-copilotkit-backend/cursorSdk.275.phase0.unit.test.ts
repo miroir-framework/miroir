@@ -30,6 +30,7 @@ const emptyMap = new Map<string, unknown>();
 const disabledSnapshot = {
   ai: false,
   mcp: false,
+  cursor: false,
   designerTools: true,
   availableStoreTypes: [] as string[],
   creatableStoreTypes: [] as string[],
@@ -66,33 +67,35 @@ function featureDefinitionKeys(block: string): string[] {
 }
 
 if (runThis) {
-  describe("cursorSdk.275.phase0 — FAIL_CLOSED_PROCESS_CAPABILITIES has no cursor", () => {
-    it("exported fail-closed keys are ai, mcp, designerTools, store lists, storeAdministration only", () => {
+  describe("cursorSdk.275.phase0 — FAIL_CLOSED_PROCESS_CAPABILITIES includes cursor", () => {
+    it("exported fail-closed keys include cursor as false", () => {
       expect(Object.keys(FAIL_CLOSED_PROCESS_CAPABILITIES).sort()).toEqual([
         "ai",
         "availableStoreTypes",
         "creatableStoreTypes",
+        "cursor",
         "designerTools",
         "mcp",
         "storeAdministration",
       ]);
-      expect(FAIL_CLOSED_PROCESS_CAPABILITIES).not.toHaveProperty("cursor");
+      expect(FAIL_CLOSED_PROCESS_CAPABILITIES.cursor).toBe(false);
     });
   });
 
-  describe("cursorSdk.275.phase0 — getProcessCapabilities has no cursor property", () => {
-    it("empty config on node yields snapshot without cursor", () => {
+  describe("cursorSdk.275.phase0 — getProcessCapabilities includes cursor", () => {
+    it("empty config on node yields snapshot with cursor false", () => {
       const snapshot = getProcessCapabilities({
         config: {},
         environment: "node",
         storeSectionFactoryRegister: emptyMap,
         adminStoreFactoryRegister: emptyMap,
       });
-      expect(snapshot).not.toHaveProperty("cursor");
+      expect(snapshot.cursor).toBe(false);
       expect(Object.keys(snapshot).sort()).toEqual([
         "ai",
         "availableStoreTypes",
         "creatableStoreTypes",
+        "cursor",
         "designerTools",
         "mcp",
         "storeAdministration",
@@ -100,32 +103,40 @@ if (runThis) {
     });
   });
 
-  describe("cursorSdk.275.phase0 — ProcessCapabilityName union has no cursor", () => {
-    it("processCapabilities.ts ProcessCapabilityName lists ai, mcp, storeAdministration, availableStoreTypes, designerTools", () => {
+  describe("cursorSdk.275.phase0 — ProcessCapabilityName union contains cursor", () => {
+    it("processCapabilities.ts ProcessCapabilityName lists ai, mcp, cursor, storeAdministration, availableStoreTypes, designerTools", () => {
       const src = readSource("1_core/processCapabilities.ts");
       const unionStart = src.indexOf("export type ProcessCapabilityName");
       expect(unionStart).toBeGreaterThanOrEqual(0);
       const unionBlock = src.slice(unionStart, src.indexOf("type ProcessCapabilitiesConfig", unionStart));
       expect(unionBlock).toContain('"ai"');
       expect(unionBlock).toContain('"mcp"');
+      expect(unionBlock).toContain('"cursor"');
       expect(unionBlock).toContain('"storeAdministration"');
       expect(unionBlock).toContain('"availableStoreTypes"');
       expect(unionBlock).toContain('"designerTools"');
-      expect(unionBlock).not.toContain('"cursor"');
     });
   });
 
-  describe("cursorSdk.275.phase0 — Jzod features blocks have ai, mcp, designerTools only", () => {
+  describe("cursorSdk.275.phase0 — Jzod features blocks include cursor", () => {
     it("miroirConfigClient and miroirConfigServer features.definition keys", () => {
       const src = readSource(
         "0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts",
       );
       const clientBlock = schemaBlock(src, "miroirConfigClient", "miroirConfigServer");
       const serverBlock = schemaBlock(src, "miroirConfigServer", "miroirConfig");
-      expect(featureDefinitionKeys(clientBlock).sort()).toEqual(["ai", "designerTools", "mcp"]);
-      expect(featureDefinitionKeys(serverBlock).sort()).toEqual(["ai", "designerTools", "mcp"]);
-      expect(clientBlock).not.toContain("cursor");
-      expect(serverBlock).not.toContain("cursor");
+      expect(featureDefinitionKeys(clientBlock).sort()).toEqual([
+        "ai",
+        "cursor",
+        "designerTools",
+        "mcp",
+      ]);
+      expect(featureDefinitionKeys(serverBlock).sort()).toEqual([
+        "ai",
+        "cursor",
+        "designerTools",
+        "mcp",
+      ]);
     });
   });
 

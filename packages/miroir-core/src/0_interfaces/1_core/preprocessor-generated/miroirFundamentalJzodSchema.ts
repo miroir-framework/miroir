@@ -13739,6 +13739,10 @@ export const miroirFundamentalJzodSchema = {
                 "type": "boolean",
                 "optional": true
               },
+              "cursor": {
+                "type": "boolean",
+                "optional": true
+              },
               "designerTools": {
                 "type": "boolean",
                 "optional": true
@@ -13792,6 +13796,10 @@ export const miroirFundamentalJzodSchema = {
                 "optional": true
               },
               "mcp": {
+                "type": "boolean",
+                "optional": true
+              },
+              "cursor": {
                 "type": "boolean",
                 "optional": true
               },

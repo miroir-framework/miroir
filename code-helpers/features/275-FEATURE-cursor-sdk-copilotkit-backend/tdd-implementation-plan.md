@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Slice 0 done. Next: Slice 1 (`features.cursor` + snapshot).
+**Resume note:** Slices 0–1 done. Next: Slice 2 (CopilotKit `agents` branch + refuse).
 
 ---
 
@@ -70,7 +70,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize current AI / snapshot / MCP contracts | ✅ | `cursorSdk.275.phase0.unit.test.ts` |
-| 1 | **Tracer:** `features.cursor` + snapshot field | ⬜ | `cursorSdk.275.phase1.unit.test.ts` + `devBuild` |
+| 1 | **Tracer:** `features.cursor` + snapshot field | ✅ | `cursorSdk.275.phase1.unit.test.ts` + `devBuild` |
 | 2 | CopilotKit `agents` branch + refuse + filtered actions | ⬜ | `cursorSdk.275.phase2.unit.test.ts` |
 | 3 | `aiCursorKey` alias + health text | ⬜ | `cursorSdk.275.phase3.unit.test.ts` |
 | 4 | Lazy SDK factory, dummy cwd, MCP loopback, Node floor | ⬜ | `cursorSdk.275.phase4.unit.test.ts` |
@@ -210,7 +210,7 @@ Slice 1 must consume the "no `cursor` field" pins in place (expect `cursor: fals
 
 ## Slice 1 — Tracer: snapshot `cursor`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -247,12 +247,18 @@ Behavior asserted:
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
 RUN_TEST=cursorSdk.275.phase1 npm run testByFile -w miroir-core -- cursorSdk.275.phase1
 npm run testByFile -w miroir-core -- 273-process-capability-switches
-npm run testByFile -w miroir-standalone-app -- 273-process-capability-switches
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem 273-process-capability-switches
 ```
 
 ### Realization
 
-<Appended on completion.>
+`features.cursor` is optional on client and server Jzod. `getProcessCapabilities` sets `cursor: features?.cursor === true` (missing = false). Sandbox does not force `cursor` off. `FAIL_CLOSED_PROCESS_CAPABILITIES.cursor` is false. `assertProcessCapability("cursor", …)` returns FeatureUnavailable. `ProcessCapabilityName` is exported.
+
+HTTP case lives in the same `1_core` phase1 file. Slice 0 pins now expect `cursor: false`. All listed #273 `ProcessCapabilities` literals have `cursor: false`. Generated `MiroirConfigClient` / `MiroirConfigServer` features include `cursor?: boolean`.
+
+Did not patch Electron `electronServerConfig` or renderer config. Callers already use `getProcessCapabilities`, so they pick up the field.
+
+Validation re-run: phase1 8, phase0 7, core #273 23, standalone #273 with `--profile emulatedServer-filesystem` 45, `tsc` miroir-core. The standalone glob without `--profile` fails because `processCapabilitiesStore.273.phase3` always loads a test config (pre-existing). Plan Validation now includes `--profile`.
 
 ---
 

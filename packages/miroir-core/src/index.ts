@@ -741,7 +741,7 @@ export {
   assertProcessCapability,
   getProcessCapabilities,
 } from "./1_core/processCapabilities";
-export type { ProcessCapabilities } from "./1_core/processCapabilities";
+export type { ProcessCapabilities, ProcessCapabilityName } from "./1_core/processCapabilities";
 export {
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   fetchProcessCapabilities,
