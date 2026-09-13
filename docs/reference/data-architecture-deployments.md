@@ -51,7 +51,11 @@ Only **`miroir-test-app_deployment-miroir`** currently ships a `{prefix}_modelVe
 
 ## MiroirConfig Structure
 
-Every application instance reads a `MiroirConfigClient` at startup. There are two variants:
+Every application instance reads a `MiroirConfigClient` at startup. There are two variants.
+
+Root-level `features` (`ai`, `mcp`, `designerTools`) live on persistence-side configs (`miroirConfigServer`, emulateServer client objects, Electron **main** `electronServerConfig`). Missing `ai` / `mcp` are false; missing `designerTools` is true. Sandbox (`getClientEnvironment() === "sandbox"`) forces `ai` false even when the flag is true. Remote-only web client files and the Electron renderer `electronMiroirConfig` are not read for `features`. `emulateServer` is transport only (in-process stub vs HTTP), not a capability mode. There is no `deploymentMode` enum.
+
+The UI learns the snapshot through `GET /capabilities` on the environment rest client (`fetchProcessCapabilities`), never `window.fetch` and never a renderer-side `getProcessCapabilities()` against the IndexedDB-only factory map.
 
 ### 1. Remote Server (`emulateServer: false`)
 
@@ -357,7 +361,7 @@ Electron renderer (CLIENT)
                                                   (paths resolved relative to app bundle)
 ```
 
-Config: `emulateServer: true`, `emulatedServerType: "filesystem"`. Store configurations are stored as JSON assets (`assets/<deploymentUuid>.json`) inside the electron app bundle.
+Config: `emulateServer: true`, `emulatedServerType: "filesystem"`. Store configurations are stored as JSON assets (`assets/<deploymentUuid>.json`) inside the electron app bundle. Persistence-side `features` are on Electron **main** (`ai` / `mcp` / `designerTools` true). When `ai` or `mcp` is true, main also listens on loopback HTTP (`http://127.0.0.1:3080`) for CopilotKit and MCP; the renderer uses that absolute base, not `app://` or `window.location.origin`. Snapshot GET still uses IPC.
 
 ---
 

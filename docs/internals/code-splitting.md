@@ -98,10 +98,10 @@ The app entry (`src/index.tsx`) is **eager**: core startup, `RootComponent`, `Pa
 | | |
 |---|---|
 | **Vendor chunk** | `vendor-copilotkit` |
-| **react-core** | Lazy import in `AgentsCopilotKit.tsx` — mounted when ViewParams **`agents`** is loaded and true **and** an AI AppBar control is active |
+| **react-core** | Lazy import in `AgentsCopilotKit.tsx` — mounted when process snapshot **`ai`** is true **and** an AI AppBar control is active (#273, #244) |
 | **react-ui** | Static import in lazy `AiActionsProvider.tsx` (`CopilotSidebar`, hooks, styles) |
-| **Mount behaviour** | `RootComponent` lazy-loads `<AgentsCopilotKit />` when persisted ViewParams have **`agents: true`** and the user toggles the AI assistant sidebar or dev console. AI AppBar icons stay hidden until ViewParams are loaded with `agents: true`. The bundled default ViewParams use `agents: false`. |
-| **Initial load?** | **No** — waits for loaded ViewParams + user AI AppBar action |
+| **Mount behaviour** | `RootComponent` lazy-loads `<AgentsCopilotKit />` when `processCapabilities.ai` is true and the user toggles the AI assistant sidebar or dev console. AI AppBar icons stay hidden when snapshot `ai` is false. `ViewParams.agents` is gone. |
+| **Initial load?** | **No** — waits for snapshot `ai` + user AI AppBar action |
 
 Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) is unrelated to client bundle splitting.
 
@@ -115,7 +115,7 @@ Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) 
 | glide-data-grid | — (route chunk) | Yes (report routes) | No |
 | CodeMirror | — (route chunk) | Yes (report / transformer builder) | No |
 | Mermaid | `vendor-d3` | Yes (model page / diagram section) | No |
-| CopilotKit core | `vendor-copilotkit` | Yes | Yes (ViewParams `agents` + AI AppBar action) |
+| CopilotKit core | `vendor-copilotkit` | Yes | Yes (snapshot `ai` + AI AppBar action) |
 | CopilotKit UI | `vendor-copilotkit` | Yes | Yes (same gate + sidebar or dev console) |
 | MUI | `vendor-mui` | Partially (large shell dependency) | N/A |
 | React | `vendor-react` | **No** | N/A |
@@ -156,5 +156,5 @@ Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) 
 - Add `manualChunks` entries for CodeMirror and/or glide-data-grid if cache isolation is desired.
 - Dynamic-import CodeMirror inside the JSON/code editor branch only.
 - ~~Mount `AiActionsProvider` only when `showAiSidebar` is true to defer CopilotKit UI.~~ Done in #244.
-- ~~Lazy-load `@copilotkit/react-core` only when ViewParams `agents` is enabled.~~ Done in #244.
+- ~~Lazy-load `@copilotkit/react-core` only when ViewParams `agents` is enabled.~~ Done in #244; #273 replaced that gate with snapshot `ai`.
 - Dynamic-import `GlideDataGridComponent` vs `AgGridReact` based on `gridType` to avoid shipping both grid stacks on every report load.

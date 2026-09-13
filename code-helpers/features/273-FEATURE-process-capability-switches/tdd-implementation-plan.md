@@ -20,7 +20,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/273
 Working branch: `273-FEATURE-process-capability-switches`
 
-**Resume note:** Slices 0 to 9 DONE. Implementing Slice 10.
+**Resume note:** Slices 0 to 10 DONE. Compilation and `npm run nonreg` passed.
 
 ---
 
@@ -74,7 +74,7 @@ This plan does **not** add undo/redo/commit capabilities, debug overlays as flag
 | 7 | Designer bulb + Alice Admin grant + Transformer Builder | ✅ | `processCapabilitiesDesigner.273.phase7.unit.test.ts` |
 | 8 | Versioning AppBar follows browsed-app `resolveVersioningMode` | ✅ | `processCapabilitiesVersioning.273.phase8.unit.test.ts` |
 | 9 | Electron loopback listen + remaining config patches | ✅ | `processCapabilitiesElectron.273.phase9.unit.test.ts` |
-| 10 | Nonreg, docs, cleanup, AC | ⬜ | `unit-273-process-capabilities` + `appstack-273-process-capabilities` |
+| 10 | Nonreg, docs, cleanup, AC | ✅ | `unit-273-process-capabilities` + `appstack-273-process-capabilities` |
 
 ---
 
@@ -634,7 +634,7 @@ Helpers in `processCapabilityRoutes.ts`: `shouldListenLoopbackHttp`, `electronRu
 
 ## Slice 10. Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 10.1 Nonreg
 
@@ -669,23 +669,23 @@ Automated equivalent: Slices 1 to 8 tests.
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| `features` on client and server schemas | Slice 2 rebuild + types | ⬜ |
-| Missing `ai`/`mcp` false; missing `designerTools` true | Slice 1 | ⬜ |
-| Sandbox forces `ai` false | Slice 1 | ⬜ |
-| `getProcessCapabilities` + GET once, HTTP/IPC | Slices 1 to 2 | ⬜ |
-| UI learns the snapshot via the rest client, never `window.fetch`, never renderer-side computation (R3/R11) | Slice 2 context + source-text | ⬜ |
-| Snapshot fields including derived store types | Slice 1 | ⬜ |
-| Hide and refuse same check; `FeatureUnavailable` | Slices 1, 3, 6 | ⬜ |
-| `ViewParams.agents` removed | Slice 5 + modelValidation | ⬜ |
-| `ai` false: no chunk, no mount, no Settings row, no icons | Slice 5 | ⬜ |
-| `mcp` false: no mounts, no runner fetch | Slice 6 | ⬜ |
-| Create Application picker follows snapshot | Slice 4 | ⬜ |
-| Store-admin refuse follows snapshot | Slice 3 | ⬜ |
-| Versioning icon follows browsed-application mode | Slice 8 | ⬜ |
-| Bulb + explicit Admin grant + force off + Builder | Slice 7 | ⬜ |
-| Electron same capacity + loopback listen + URLs | Slice 9 | ⬜ |
-| `emulatedServer` is transport only | Slices 1 to 2 (stub) | ⬜ |
-| `deploymentMode` not revived | Slice 0 + 10 docs | ⬜ |
+| `features` on client and server schemas | Slice 2 rebuild + types | ✅ |
+| Missing `ai`/`mcp` false; missing `designerTools` true | Slice 1 | ✅ |
+| Sandbox forces `ai` false | Slice 1 | ✅ |
+| `getProcessCapabilities` + GET once, HTTP/IPC | Slices 1 to 2 | ✅ |
+| UI learns the snapshot via the rest client, never `window.fetch`, never renderer-side computation (R3/R11) | Slice 2 context + source-text | ✅ |
+| Snapshot fields including derived store types | Slice 1 | ✅ |
+| Hide and refuse same check; `FeatureUnavailable` | Slices 1, 3, 6 | ✅ |
+| `ViewParams.agents` removed | Slice 5 + modelValidation | ✅ |
+| `ai` false: no chunk, no mount, no Settings row, no icons | Slice 5 | ✅ |
+| `mcp` false: no mounts, no runner fetch | Slice 6 | ✅ |
+| Create Application picker follows snapshot | Slice 4 | ✅ |
+| Store-admin refuse follows snapshot | Slice 3 | ✅ |
+| Versioning icon follows browsed-application mode | Slice 8 | ✅ |
+| Bulb + explicit Admin grant + force off + Builder | Slice 7 | ✅ |
+| Electron same capacity + loopback listen + URLs | Slice 9 | ✅ |
+| `emulatedServer` is transport only | Slices 1 to 2 (stub) | ✅ |
+| `deploymentMode` not revived | Slice 0 + 10 docs | ✅ |
 
 ### Validation
 
@@ -695,4 +695,4 @@ npm run nonreg
 
 ### Realization
 
-<Appended on completion.>
+Nonreg steps `unit-273-process-capabilities` (core + standalone `4_view` issue-dir unit) and `appstack-273-process-capabilities` (`processCapabilitiesStore.273.phase3` with `{profile}`). Docs: `code-splitting.md` gates CopilotKit on snapshot `ai`; `data-architecture-deployments.md` documents persistence-side `features`, sandbox veto, and Electron loopback. Analysis status is implemented. AC rows ticked. Issue-directory tests kept as the nonreg pin (#238 migrate later). Typecheck clean on core, react, standalone-app, server, electron, deployment-admin. `npm run nonreg` default tier: 58 passed, 0 failed (includes both 273 steps).
