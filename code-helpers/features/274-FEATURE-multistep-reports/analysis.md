@@ -9,9 +9,9 @@ Related: [#169](https://github.com/miroir-framework/miroir/issues/169) MLS form 
 Key sources: [`Report.ts` types](../../../packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts), [`ReportViewWithEditor.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx), [`ReportSectionViewWithEditor.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx), [`ReportTools.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportTools.ts), [`RunnerView.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/RunnerView.tsx), [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed with the user (design grilling, 2026-09-12/13). Revised after [adversarial review](./adversarial-review.md) (R1–R12 applied). TDD plan revised after [plan adversarial review](./plan-adversarial-review.md) (P1–P16 applied). Implementation starts after the user confirms slice order.
+**Status:** decisions confirmed with the user (design grilling, 2026-09-12/13). Revised after [adversarial review](./adversarial-review.md) (R1–R12 applied). TDD plan revised after [plan adversarial review](./plan-adversarial-review.md) (P1–P16 applied) and after the UI-suite completeness gate (this revision). Implementation starts after the user confirms slice order.
 
-**Document history:** first commit stated Finish uses “the whole Report Formik tree” and Next merges `{ ...launchPageParams, ...formikValues }`. Review R1 showed that tree includes `reportData`, `pageParams`, and the Report definition under the report `name`, so the merge is circular. D5/D8 below now name an extracted **step bag**. Other review repairs: section-type switches (R2), disable URL writes in multistep (R3), per-row list launcher (R4), bag above query-failure unmount (R5), `runStoredQueries` unsupported (R6), seed `type` counts (R7), dual-write paths (R8), `CompositeActionSequenceTemplate` (R9), citation fixes (R10), Finish `modelEnvironment` (R11), launcher `pageParams` (R12).
+**Document history:** first commit stated Finish uses “the whole Report Formik tree” and Next merges `{ ...launchPageParams, ...formikValues }`. Review R1 showed that tree includes `reportData`, `pageParams`, and the Report definition under the report `name`, so the merge is circular. D5/D8 below now name an extracted **step bag**. Other review repairs: section-type switches (R2), disable URL writes in multistep (R3), per-row list launcher (R4), bag above query-failure unmount (R5), `runStoredQueries` unsupported (R6), seed `type` counts (R7), dual-write paths (R8), `CompositeActionSequenceTemplate` (R9), citation fixes (R10), Finish `modelEnvironment` (R11), launcher `pageParams` (R12). 2026-09-13: §8 / Goal 7 — validation is incomplete without a `prepareAndRunTestSuites` UI walk of a 2–3 step process (same harness as `JzodElementEditor.test.tsx`) plus the main error cases.
 
 ---
 
@@ -166,6 +166,7 @@ Accepted as in the summary table. Host buttons: Back, Next or Finish, Cancel, la
 4. **Launch from a button or a menu** — In order to start the process from the screen I am on, as a report viewer, I can click an `openReportSection` button (modal or route) or a `miroirMenuReportLink`.
 5. **Pass the current row** — In order to act on the instance I selected, as a report viewer, I can open a multistep Report from a list row and have that instance’s uuid in `pageParams`.
 6. **Author a process as a Report** — In order to add a process to my application without a new meta-model Entity, as a report designer, I can set `type: "multistep"`, list the step sections, and write the Finish sequence.
+7. **UI walk is the completeness proof** — In order to trust that a viewer can actually run the process, as an application maintainer, I can run a `prepareAndRunTestSuites` UI suite (same harness as `JzodElementEditor.test.tsx`) that fills real input fields on a 2–3 step Report, Finishes, and covers the main error cases. MiroirTest / modelValidation / non-editor RTL alone do **not** close this issue.
 
 ## 2. Non-goals
 
@@ -256,6 +257,8 @@ Next/Finish Jzod uses the same resolution path the editors already use (`jzodTyp
 | `storedReportDisplay` (embed, not button) | `ReportSectionViewWithEditor.tsx` L282–289, L455–470 |
 | Freeze copies `report.type` | `applicationVersionFreeze.ts` L226 |
 | Seed Reports | 84 instances; 71 omit `type`; 2 `"type": null`; 11 `type: "list"`; 0 `type: "grid"` |
+| UI suite harness | `prepareAndRunTestSuites` in `JzodElementEditorTestTools.tsx` L991; used by `JzodElementEditor.test.tsx` L3562–3564 and `ReportPage.integ.test.tsx` L198–199 |
+| Input fields on a step | `ReportInputSection` → `TypedValueObjectEditor` (`ReportInputSection.tsx` L97–111), same `JzodElementEditor` path the harness already drives |
 
 ---
 
@@ -318,6 +321,32 @@ Dual-write Entity + EntityVersion (paths in D2): `type` enum += `"multistep"`; `
 | D9 writes before Finish | List Add / Runner | Document on the Report; tests must not assume Finish is the only write |
 | `embeddedRunner` unsupported | L541–546 | A step that needs a Runner uses `storedRunner` |
 | Per-row launch is not a section | `EntityInstanceGrid` | `openReport` on the list section |
+
+---
+
+## 8. Validation completeness (binding)
+
+MiroirTest `actionTest` (Finish with an injected bag), `modelValidation`, and host RTL that does not type into the real editors **do not** complete validation of this feature.
+
+The issue is complete only when a UI suite using **`prepareAndRunTestSuites`** / `ReactComponentTestSuites` (same harness as [`JzodElementEditor.test.tsx`](../../../packages/miroir-standalone-app/tests/4_view/JzodElementEditor.test.tsx) and [`ReportPage.integ.test.tsx`](../../../packages/miroir-standalone-app/tests/4_view/ReportPage.integ.test.tsx)) proves a **simple 2- or 3-step process** through the viewer:
+
+- Mount `ReportPage` (or `ReportDisplay` + the multistep host) with Library Report `MultistepCountryCreate` (`d2b2fbbd-…`).
+- Drive `inputReportSection` fields the way `JzodElementEditor` tests do: `screen` roles / `fireEvent.change` / `waitAfterUserInteraction` / `extractValuesFromRenderedElements` (`JzodElementEditorTestTools.tsx`).
+- Happy path: fill `stepOne` (`name`, `iso3166-1Alpha-2`), Next through the remaining step(s), Finish on the last step → Country `63c96487-…` exists with those values.
+
+**Main error cases** the same suite must include (not optional, not “if cheap”):
+
+| Case | Observable |
+|---|---|
+| Next with empty required `stepOne.name` | Stay on step 0; no later step in the document |
+| Finish control | Absent (or not activable) before the last step; present on the last step |
+| Cancel, then confirm | Host unmounts / bag gone; no Country created |
+| Finish action error | Stay on the last step; bag still has `stepOne`; no successful Country (or the failed uuid is absent) |
+| Later-step query failure | Host stays mounted; bag still has `stepOne`; Back returns to step 0 (`ReportViewWithEditor.tsx` L428–435 must not unmount the walk) |
+
+#169 MLS field-message wording is still out of scope; this suite only needs Jzod gating (stay / proceed), not MLS copy.
+
+The TDD plan’s Slice 2 owns the suite file; later slices add cases to that same `ReactComponentTestSuites` object. Slice 6 must not mark AC done unless this suite is in the nonreg appstack step and passing.
 
 ---
 

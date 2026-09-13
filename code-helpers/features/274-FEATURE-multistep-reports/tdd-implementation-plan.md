@@ -7,6 +7,9 @@
 > Tracer (Slice 1): a `type: "multistep"` Library Report’s Finish path
 > `handleCompositeActionTemplate` + **step bag** creates a Country whose `name` comes from
 > `getFromParameters`.
+> Completeness gate (analysis §8): a `prepareAndRunTestSuites` UI suite (same harness as
+> `JzodElementEditor.test.tsx`) walks the 3-step tracer through real input editors and the
+> main error cases. MiroirTest / modelValidation alone do not close the issue.
 >
 > **Execution model:** human-in-the-loop. No slice contains a commit step — commits happen
 > only when the user explicitly asks. Each slice ends with its Validation commands; on
@@ -15,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/274
 Working branch: `274-FEATURE-multistep-reports`
 
-**Resume note:** Plan revised after adversarial review (P1–P16 applied). Slices pending. Confirm slice order with the user before writing code.
+**Resume note:** Plan revised after adversarial review (P1–P16 applied) and the UI-suite completeness gate (analysis §8). Slices pending. Confirm slice order with the user before writing code.
 
 ---
 
@@ -41,6 +44,7 @@ From [`./plan-adversarial-review.md`](./plan-adversarial-review.md). Product dec
 | P14 | Slice 4 failure = step-2 extractor whose `parentUuid` is `getFromParameters` on `absentParam`. |
 | P15 | Slice 1 Validation typechecks miroir-core **and** miroir-standalone-app. |
 | P16 | Menu AC remaps to `applicationModelScopeMenu.unit.test.ts` plus a Slice 5 `reportUrl` assertion (no `step` key). |
+| U1 | Analysis §8 completeness gate: Slice 2 is a `prepareAndRunTestSuites` / `ReactComponentTestSuites` file (not ad-hoc RTL). Later slices **add named cases to that same suite**. Slice 6 cannot mark AC done unless `multistepProcess.274` is in the appstack step and passing. |
 
 ---
 
@@ -63,9 +67,9 @@ This plan does **not** add a Form / FormRun Entity, persist drafts, wrap the wal
 |---|---|---|---|
 | 0 | Characterize Report.type, Formik dump, schema switch, nested Formik | ⬜ | `multistep.274.phase0.unit.test.ts` |
 | 1 | **Tracer:** schema + Finish template + step bag creates Country | ⬜ | MiroirTest `multistepFinish.274` (integ) + modelValidation |
-| 2 | Pager host: one step, Next/Back, bag survives query refresh, Finish last, Cancel confirm | ⬜ | `multistepHost.274.phase2.integ.test.tsx` |
-| 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ⬜ | `multistepQuery.274.phase3.integ.test.tsx` |
-| 4 | Object-instance hoist; query-failure keeps the bag | ⬜ | `multistepInstance.274.phase4.integ.test.tsx` |
+| 2 | Pager host + UI process walk (completeness suite) | ⬜ | `multistepProcess.274.integ.test.tsx` (`prepareAndRunTestSuites`) |
+| 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ⬜ | `multistepProcess.274` (added cases) |
+| 4 | Object-instance hoist; query-failure keeps the bag | ⬜ | `multistepProcess.274` (added cases) |
 | 5 | `openReportSection` + list `openReport` + pageParams | ⬜ | `multistepLaunch.274.phase5.integ.test.tsx` |
 | 6 | Nonreg, docs, cleanup, AC | ⬜ | `unit-274-` + `integ-action-274-` + `appstack-274-multistep-reports` |
 
@@ -95,6 +99,7 @@ Copied from [`analysis.md`](./analysis.md) D1–D17 after review repairs. Deviat
 | D16 | No `step` search param |
 | D17 | Row PK → `instanceUuid` + caller launch `pageParams` |
 | Review | Bag lives above `ReportViewWithEditor` failure unmount; `runStoredQueries` unsupported; disable `ReportInputSection` URL navigate in multistep; `reportSectionsFormSchema` `openReportSection` → `{}` |
+| Validation | Feature is not complete without the §8 `prepareAndRunTestSuites` suite (happy 3-step walk + main error cases) |
 
 ---
 
@@ -127,13 +132,13 @@ Copied from [`analysis.md`](./analysis.md) D1–D17 after review repairs. Deviat
 |---|---|
 | Phase 0 / helper vitest | `RUN_TEST=multistep.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistep.274` |
 | Finish tracer (MiroirTest integ) | `npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites multistepReports.274 --mode integ` |
-| Host RTL integ | `RUN_TEST=multistepHost.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepHost.274` |
+| UI process walk (`prepareAndRunTestSuites`) | `RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274` |
 | Schema rebuild | `npm run build -w miroir-test-app_deployment-miroir && npm run build -w miroir-test-app_deployment-library && npm run devBuild -w miroir-core` |
 | Library modelValidation | `npm run testByFile -w miroir-test-app_deployment-library -- tests/modelValidation.unit.test.ts` |
 | Miroir modelValidation | `npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts` |
 | Type check | `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json` and `-p packages/miroir-standalone-app/tsconfig.json` |
 
-Vitest is used for React host / Formik / grid tools (not reachable as MiroirTest). Finish semantics use MiroirTest `actionTest` (integration) because the sequence is the interface.
+The viewer process walk is **not** MiroirTest: it uses `prepareAndRunTestSuites` / `ReactComponentTestSuites` from `JzodElementEditorTestTools.tsx` (same harness as `JzodElementEditor.test.tsx` L3562–3564 and `ReportPage.integ.test.tsx` L198–199). Finish-without-UI stays MiroirTest `actionTest` (integration). Grid-tools launch (Slice 5) may stay a thin sibling RTL file; it does not replace the process-walk suite.
 
 `actionTest` leaves throw in unit mode (`MiroirTestTools.ts` L161–165). Do not run this suite from `miroir-core`.
 
@@ -267,32 +272,45 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ---
 
-## Slice 2 — Pager host
+## Slice 2 — Pager host + UI process walk (completeness suite)
 
 **Status:** ⬜ pending
 
 ### Goal
 
-A report viewer opening `MultistepCountryCreate` sees one step, can Next/Back, cannot Finish until the last step, and Cancel asks before dropping the bag.
+A report viewer opening `MultistepCountryCreate` types into the real `inputReportSection` editors, pages through three steps, Finishes, and sees Country `63c96487-…`. The same suite covers the main error cases (analysis §8). Until this suite exists and passes, the feature is **not** validated.
 
-**Layers cut:** host component → `ReportSectionViewWithEditor` one path → Formik/step bag.
+**Layers cut:** `ReportPage` / `ReportDisplay` → multistep host → `ReportInputSection` → `TypedValueObjectEditor` / `JzodElementEditor` → step bag → `handleCompositeActionTemplate`.
+
+### Vehicle
+
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/274-multistep-reports/multistepProcess.274.integ.test.tsx`
+
+Same harness as `JzodElementEditor.test.tsx`:
+
+- `ReactComponentTestSuitePrep` + `getJzodEditorTests` returning `ReactComponentTestSuites`
+- `describe` + `prepareAndRunTestSuites(pageLabel, suites, defaultSelfApplicationDeploymentMap)` (`JzodElementEditorTestTools.tsx` L991; `JzodElementEditor.test.tsx` L3562–3564)
+- Mount `ReportPage` (precedent: `ReportPage.integ.test.tsx` L118–199) with Library `pageParams` pointing at `d2b2fbbd-…`
+- Drive fields with `screen` / `fireEvent.change` / `waitAfterUserInteraction` / `extractValuesFromRenderedElements` — **type into the rendered inputs**, do not inject the bag
+- Session cache already contains the tracer via Slice 1 `Library.ts` registration
+
+Do **not** replace this with a one-off `render(<Host bag={…} />)` that skips `JzodElementEditor`. Do not treat MiroirTest `multistepFinish.274` as a substitute.
+
+Later slices **append named `tests:` entries** to this same suite object. Do not start a second process-walk file.
 
 ### 2.1 RED
 
-**Test:** `packages/miroir-standalone-app/tests/4_view/issues/274-multistep-reports/multistepHost.274.phase2.integ.test.tsx`
+Named cases (Slice 2 owns these; §8 rows that need Slice 4 assets wait until Slice 4):
 
-Not MiroirTest because this is React paging. Drive the real host with the Library Report asset (`import` the JSON as the assertion-side reference; the session cache must already contain it via Slice 1 `Library.ts` registration).
-
-Behavior asserted:
-
-- Only step 0 section is in the document; steps 1 and 2 are not.
-- Next on valid `stepOne` shows step 1 (markdown); Back returns to step 0 with `stepOne` values still in the bag.
-- Next on the markdown step shows step 2 (always allowed; no Jzod on markdown).
-- Finish is absent on steps 0 and 1; present on step 2 (last).
-- Next on invalid `stepOne` (empty required `name`) stays on step 0.
-- Cancel shows a confirm; confirm unmounts and the bag is gone.
-- Simulated `reportData` change / reinit does **not** clear `stepOne`.
-- Finish on the last step creates Country `63c96487-…` in the local cache with `name` / `iso3166-1Alpha-2` from `stepOne` (same bag as Slice 1). The sequence requires `stepOne.name`, so a polluted bag (raw Formik dump) fails loudly. Delete the Country in `afterEach`.
+| Case id | Behavior |
+|---|---|
+| `happy-path-three-steps` | Only step 0 visible at start. Type `stepOne.name` = `Testland` and `stepOne.iso3166-1Alpha-2` = `TL` into the editors. Next → markdown step. Next → echo step. Finish present only here. Finish creates Country `63c96487-…` with those fields. Delete in `afterEach`. |
+| `next-invalid-required` | Leave `name` empty; Next; stay on step 0; steps 1–2 absent. |
+| `finish-only-on-last` | Finish absent (or not activable) on steps 0 and 1; present on step 2. |
+| `back-keeps-bag` | After a valid Next to step 1, Back; step 0 inputs still show `Testland` / `TL`. |
+| `cancel-confirm` | Cancel → confirm; host unmounts; bag gone; no Country. |
+| `reinit-keeps-bag` | After filling `stepOne`, a `reportData` / reinit must not clear the typed values. |
+| `finish-action-error` | Finish sequence fails (e.g. `createInstance` with a colliding uuid already present, or a template that `getFromParameters` a missing key). Stay on last step; `stepOne` still in the editors; Country `63c96487-…` absent unless the collision row was the setup fixture — assert the Finish did not succeed. |
 
 ### 2.2 GREEN
 
@@ -306,11 +324,12 @@ Behavior asserted:
 
 - Do not fork `ReportSectionViewWithEditor` for paging; pass one `reportSectionPath`.
 - Parent Formik `onSubmit` stays authoring.
+- Keep the suite’s `getJzodEditorTests` factory next to the `describe` (same shape as `JzodElementEditor.test.tsx`), not a one-off helper module.
 
 ### Validation
 
 ```bash
-RUN_TEST=multistepHost.274.phase2 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepHost.274.phase2
+RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274
 npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 ```
 
@@ -332,14 +351,14 @@ After Next, step 2’s `stepOneEcho` query shows `stepOne.name`. Apply/OK in `Re
 
 ### 3.1 RED
 
-**Test:** `multistepQuery.274.phase3.integ.test.tsx`
+**Test:** add named cases to `multistepProcess.274.integ.test.tsx` (same `prepareAndRunTestSuites` object). Optional thin sibling `multistepQuery.274.phase3.integ.test.tsx` only if a case cannot share the `ReportPage` mount.
 
 Uses the **frozen** tracer (no asset edit). For stored queries, mount an **in-test clone** of `d2b2fbbd-…` that adds `runStoredQueries: [{ storedQuery: "6176dcdf-39a6-4805-8dc5-3c2366a31a11", label: "BookCountByPublisher" }]` (existing Library query used by PublisherList). Do not add a new StoredQuery entity and do not write `runStoredQueries` onto the seed tracer.
 
 Behavior asserted:
 
+- After typing `stepOne.name` = `Testland` and Next to step 2, the `jsonReportSection` document includes `Testland` (`stepOneEcho`).
 - Query `pageParams` after Next equals `{ ...launchPageParams, ...stepBag }` with no nested `pageParams` key.
-- Step 2 `jsonReportSection` text includes the step-1 name (`Testland`).
 - Clicking Apply/OK on an `inputReportSection` with `urlParamFields` does not change `window.location.search` and does not call `navigate` (router harness mock).
 - `application` field change does not navigate.
 - On the clone with `runStoredQueries`, publisher book-count result rows / `00_BookCountByPublisher` never appear. Do not key the assertion off the `runStoredQueries` JSON text if debug dumps the report definition.
@@ -357,7 +376,7 @@ Behavior asserted:
 ### Validation
 
 ```bash
-RUN_TEST=multistepQuery.274.phase3 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepQuery.274.phase3
+RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274
 ```
 
 ### Realization
@@ -378,7 +397,7 @@ An `objectInstanceReportSection` step writes into the step bag. A failed step qu
 
 ### 4.1 RED
 
-**Test:** `multistepInstance.274.phase4.integ.test.tsx`
+**Test:** add named cases to `multistepProcess.274.integ.test.tsx` (second `ReactComponentTestSuite` mount for `8f3c1a6e-…`, same `prepareAndRunTestSuites` call). This is the §8 “later-step query failure” row.
 
 Drive `MultistepCountryInstance` (`8f3c1a6e-…`), **not** the tracer:
 
@@ -410,7 +429,7 @@ Behavior asserted:
 ```bash
 npm run build -w miroir-test-app_deployment-library
 npm run testByFile -w miroir-test-app_deployment-library -- tests/modelValidation.unit.test.ts
-RUN_TEST=multistepInstance.274.phase4 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepInstance.274.phase4
+RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274
 RUN_TEST=multistep.274.phase0 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistep.274.phase0
 ```
 
@@ -469,6 +488,7 @@ Behavior asserted:
 npm run build -w miroir-test-app_deployment-library
 npm run testByFile -w miroir-test-app_deployment-library -- tests/modelValidation.unit.test.ts
 RUN_TEST=multistepLaunch.274.phase5 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepLaunch.274.phase5
+RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274
 RUN_TEST=multistep.274.phase0 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistep.274.phase0
 npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation.unit.test.ts
 ```
@@ -491,13 +511,15 @@ Add three steps to `scripts/nonreg-manifest.json`:
 |---|---|---|
 | `unit-274-multistep-reports` | unit | `npm run testByFile -w miroir-standalone-app -- multistep.274.phase0` |
 | `integ-action-274-multistep-reports` | default | `npm run testMiroir -w miroir-standalone-app -- --profile {profile} --suites multistepReports.274 --mode integ` |
-| `appstack-274-multistep-reports` | default | `npm run testByFile -w miroir-standalone-app -- --profile {profile}` plus the four RTL files (`multistepHost.274`, `multistepQuery.274`, `multistepInstance.274`, `multistepLaunch.274`), or a `bash -c` composite per `externalServices-spotify` |
+| `appstack-274-multistep-reports` | default | `npm run testByFile -w miroir-standalone-app -- --profile {profile}` plus **`multistepProcess.274`** (required) and `multistepLaunch.274` (if still a sibling), or a `bash -c` composite per `externalServices-spotify` |
 
 `requires`: `none`. Do not put the MiroirTest suite in the unit tier.
 
+**Completeness gate:** Slice 6 must not flip analysis status to implemented, and must not tick the AC rows below, unless `multistepProcess.274` is in this appstack step and passing. MiroirTest + phase0 alone are not enough.
+
 ### 6.2 Docs
 
-- `analysis.md` status → implemented when slices 1–5 are DONE.
+- `analysis.md` status → implemented when slices 1–5 are DONE **and** `multistepProcess.274` is green (analysis §8).
 - `docs/reference/api/reports.md`: replace “Form Section — Coming Soon” with `type: "multistep"` + `compositeActionSequence` + `openReportSection`.
 - `docs/guides/core-concepts.md` if it still shows a fictional `"type": "form"` section.
 
@@ -513,23 +535,24 @@ Add three steps to `scripts/nonreg-manifest.json`:
 4. Country list shows Testland (`63c96487-…`).
 5. Cancel on a half-filled walk: confirm, bag gone, no Country.
 
-Automated equivalent: `multistepFinish.274` + `multistepHost.274` + `multistepLaunch.274`.
+Automated equivalent: `multistepProcess.274` (required) + `multistepFinish.274` + `multistepLaunch.274`.
 
 ### AC checklist (#274)
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| `type: "multistep"`; list children are steps; existing list Reports unchanged | Slice 0 inventory (consumed) + Slice 2 host; 11 `type: "list"` still show-all | ⬜ |
-| One step at a time; Back / Next / Finish / Cancel; `section.label` | `multistepHost.274` | ⬜ |
-| Next Jzod on input / object-instance | `multistepHost.274` + `multistepInstance.274` | ⬜ |
-| Finish last step; sequence + step bag; `getFromParameters` | `multistepFinish.274` | ⬜ |
-| Next merges bag into in-memory query `pageParams` | `multistepQuery.274` | ⬜ |
-| Cancel confirm; no undo of D9 writes | `multistepHost.274` | ⬜ |
+| `type: "multistep"`; list children are steps; existing list Reports unchanged | Slice 0 inventory (consumed) + `multistepProcess.274`; 11 `type: "list"` still show-all | ⬜ |
+| One step at a time; Back / Next / Finish / Cancel; `section.label` | `multistepProcess.274` (`happy-path-three-steps`, `back-keeps-bag`, `cancel-confirm`) | ⬜ |
+| Next Jzod on input / object-instance | `multistepProcess.274` (`next-invalid-required` + Slice 4 cases) | ⬜ |
+| Finish last step; sequence + step bag; `getFromParameters` | `multistepProcess.274` (`happy-path-three-steps`) + `multistepFinish.274` | ⬜ |
+| Next merges bag into in-memory query `pageParams` | `multistepProcess.274` (Slice 3 cases) | ⬜ |
+| Cancel confirm; no undo of D9 writes | `multistepProcess.274` (`cancel-confirm`) | ⬜ |
+| UI suite walks 2–3 steps through real editors + main error cases (analysis §8) | `multistepProcess.274` — **required; issue not complete without it** | ⬜ |
 | Memory only; no `step` URL | `multistepLaunch.274` (`reportUrl` has no `step`) | ⬜ |
 | Success closes modal / leaves route | `multistepLaunch.274` | ⬜ |
 | Menu report link still routes | `applicationModelScopeMenu.unit.test.ts` (existing) | ⬜ |
 | `openReportSection` + list `openReport` + row `instanceUuid` | `multistepLaunch.274` | ⬜ |
-| Object-instance edits visible to Finish | `multistepInstance.274` | ⬜ |
+| Object-instance edits visible to Finish | `multistepProcess.274` (Slice 4 cases) | ⬜ |
 | Runner / list Add unchanged | Slice 0 + no product change in those files except list `openReport` | ⬜ |
 
 ### Validation
@@ -537,6 +560,7 @@ Automated equivalent: `multistepFinish.274` + `multistepHost.274` + `multistepLa
 ```bash
 RUN_TEST=multistep.274.phase0 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistep.274.phase0
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites multistepReports.274 --mode integ
+RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274
 RUN_TEST=multistep npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem 274
 ```
 
