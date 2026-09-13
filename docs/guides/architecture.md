@@ -28,5 +28,7 @@ Later notes will cover other actions (`rollback`, `commit`, instance CRUD), othe
 
 - [Core Concepts](core-concepts.md) — Entity, Query, Transformer, Action, Report
 - [Data architecture and deployments](../reference/data-architecture-deployments.md) — model vs data, store layout
+- [Process capabilities](../reference/process-capabilities.md): `ai`, `mcp`, designer tools, store types
+- [Application startup](../internals/application-startup.md): how the client cache is filled
 - [Testing reference](../reference/testing.md) — `emulatedServer-*` vs `realServer-*` profiles
 - [Query API](../reference/api/query.md) — query shapes (sketch)

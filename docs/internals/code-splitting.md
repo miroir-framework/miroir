@@ -156,5 +156,5 @@ Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) 
 - Add `manualChunks` entries for CodeMirror and/or glide-data-grid if cache isolation is desired.
 - Dynamic-import CodeMirror inside the JSON/code editor branch only.
 - ~~Mount `AiActionsProvider` only when `showAiSidebar` is true to defer CopilotKit UI.~~ Done in #244.
-- ~~Lazy-load `@copilotkit/react-core` only when ViewParams `agents` is enabled.~~ Done in #244; #273 replaced that gate with snapshot `ai`.
+- ~~Lazy-load `@copilotkit/react-core` only when ViewParams `agents` is enabled.~~ Done in #244; #273 replaced that gate with snapshot `ai`. Operator flags: [Process capabilities](../reference/process-capabilities.md).
 - Dynamic-import `GlideDataGridComponent` vs `AgGridReact` based on `gridType` to avoid shipping both grid stacks on every report load.

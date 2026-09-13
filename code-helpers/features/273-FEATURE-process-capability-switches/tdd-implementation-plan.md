@@ -649,7 +649,9 @@ Do not put both packages in one argv array.
 
 - `analysis.md` status → implemented when slices 1 to 9 are DONE (not before).
 - `docs/internals/code-splitting.md`: AI chunk gated by snapshot `ai`, not `ViewParams.agents`.
-- `docs/reference/data-architecture-deployments.md`: `features` on persistence-side config; sandbox veto; Electron loopback.
+- `docs/reference/process-capabilities.md`: operator synoptic for flags.
+- `docs/reference/data-architecture-deployments.md`: startup remote vs local; product scenarios.
+- `docs/internals/application-startup.md`: cache-load implementation.
 
 ### 10.3 Issue-directory cleanup
 

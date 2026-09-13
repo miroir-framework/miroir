@@ -443,7 +443,9 @@ Test profiles that never touch AI/MCP can omit the flags and stay false.
 - `ActionErrorType` union
 - AppBar, Settings, RootComponent, Runner_CreateApplication, `runMcpToolRunner`, server CopilotKit + both MCP mounts
 - `docs/internals/code-splitting.md` (#244 wording)
-- `docs/reference/data-architecture-deployments.md` (client/server vs emulate vs sandbox)
+- `docs/reference/process-capabilities.md` (operator synoptic: what each flag enables, where to set it)
+- `docs/reference/data-architecture-deployments.md` (startup remote vs local, product scenarios)
+- `docs/internals/application-startup.md` (cache-load implementation)
 - Source-text tests: `authentication.71.phase6.unit.test.ts:19-25` (CopilotKit mount string) and `mcpToolRunner.253.phase0.unit.test.ts:311-331` (vite proxy keys). No test currently sets `ViewParams.agents: true` or HTTP-calls `/api/copilotkit` (R10)
 
 ### 5.8 Implementation home (not a phase list)
