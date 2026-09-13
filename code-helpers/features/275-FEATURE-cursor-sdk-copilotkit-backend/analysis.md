@@ -11,9 +11,9 @@ Related analyses: [`../273-FEATURE-process-capability-switches/analysis.md`](../
 Key sources: [`processCapabilities.ts`](../../../packages/miroir-core/src/1_core/processCapabilities.ts) · [`processCapabilityRoutes.ts`](../../../packages/miroir-core/src/4_services/processCapabilityRoutes.ts) · [`SecretsService.ts`](../../../packages/miroir-core/src/4_services/SecretsService.ts) · [`getMiroirFundamentalJzodSchema.ts`](../../../packages/miroir-core/src/0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts) · [`copilotRuntimeFactory.ts`](../../../packages/miroir-ai/src/runtime/copilotRuntimeFactory.ts) · [`copilotKitRoute.ts`](../../../packages/miroir-ai/src/routes/copilotKitRoute.ts) · [`miroirCopilotKitActions.ts`](../../../packages/miroir-ai/src/tools/miroirCopilotKitActions.ts) · [`AgentsCopilotKit.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx) · [`AiActionsProvider.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AiActionsProvider.tsx) · [`RootComponent.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx) · [`runMcpToolRunner.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/runMcpToolRunner.ts) · [`toolNameFor.ts`](../../../packages/miroir-mcp/src/tools/toolNameFor.ts) · [`server.ts`](../../../packages/miroir-server/src/server.ts) · [`ipcServerSetup.ts`](../../../packages/miroir-standalone-app-electron/src/ipcServerSetup.ts) · [`docs/reference/process-capabilities.md`](../../../docs/reference/process-capabilities.md)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed with the user (2026-09-13 grilling). Not implemented.
+**Status:** decisions confirmed with the user (2026-09-13 grilling). Revised after adversarial review ([`./adversarial-review.md`](./adversarial-review.md), R1–R11 applied). Not implemented.
 
-**Document history:** first draft on `275-FEATURE-cursor-sdk-copilotkit-backend` after issue #275.
+**Document history:** first draft committed on `275-FEATURE-cursor-sdk-copilotkit-backend`. Adversarial review found missing pick→router transport (R1), Bearer language against an ungated `/mcp` (R2), unspecified 1.59 `agents` wiring (R3), no `"cursor"` refuse name (R4), Cursor still seeing runtime execute tools (R5), unpinned `propose_*` protocol (R6), server Node floor (R7), Electron native packaging (R8), plus snapshot blast radius and citation nits. Product choices D1–D14 unchanged.
 
 ---
 
@@ -39,13 +39,13 @@ Confirmed with the user (2026-09-13). ★ = accepted. Product choices are not re
 | D1 | What job is Cursor? | **Same in-app assistant.** CopilotKit stays the sidebar and `/api/copilotkit`. Cursor is a backend, not a second AppBar product. |
 | D2 | How is Cursor wired? | **`AbstractAgent` on `CopilotRuntime` wrapping `@cursor/sdk`.** Not a fifth `AiProviderType` / `OpenAIAdapter`. |
 | D3 | Process opt-in | **`features.cursor`**, missing = false. Token default stays `AI_PROVIDER_TYPE`. `features.ai` stays the master off switch. |
-| D4 | Who picks, where it lives | **Process allow-list + `sessionStorage`.** Not `ViewParams`. Fallback is `AI_PROVIDER_TYPE`. |
+| D4 | Who picks, where it lives | **Process allow-list + `sessionStorage`.** The sidebar sends the pick on each CopilotKit POST as `aiConfig.backend`: `"cursor"` \| omitted. Router reads that before the token/`AI_PROVIDER_TYPE` branch (R1). Not `ViewParams`. |
 | D5 | Agent loop | **Local only.** `tools: ["mcp"]`. `local.cwd` is a dedicated empty directory. No cloud in this issue. |
-| D6 | Which MCP URL | **Loopback API app** `http://127.0.0.1:<apiPort>/mcp` with the same Bearer hatch. `:4080` stays for an IDE on another machine. |
+| D6 | Which MCP URL | **Loopback API app** `http://127.0.0.1:<apiPort>/mcp`. `/mcp` is ungated today (`mcpServer.ts:165-199`). In-process Cursor uses the same unauthenticated POST as browser runners. No new Bearer hatch in this issue (R2). `:4080` stays for an IDE on another machine. |
 | D7 | Cursor key | **`CURSOR_API_KEY` → named secret `aiCursorKey`.** Same store as `aiGithubToken`. Never the browser. |
 | D8 | Two catalogs | **MCP names execute. CopilotKit form tools use `propose_`.** Both visible on a Cursor run. `propose_*` are CopilotKit frontend actions, not `local.customTools`. |
 | D9 | MCP writes | **Execute on `tools/call`.** No intercept queue in this issue. |
-| D10 | `ai` vs `mcp` | **No OR.** Cursor requires `mcp` true. Token-only chat may keep `mcp` false. |
+| D10 | `ai` vs `mcp` | **No OR.** Cursor requires `mcp` true. Token-only chat may keep `mcp` false. Refuse on `/api/copilotkit`: `capability: "cursor"` if snapshot `cursor` is false; `capability: "mcp"` if pick is Cursor and `mcp` is false (R4). |
 | D11 | Hand-written CopilotKit execute list | **Keep until #193.** Do not add `generateMiroirReport` / `getMiroirContext` to MCP unless they become Endpoints. |
 | D12 | Electron | **This issue.** Same local loop on main. Renderer still has no `features` and no `getProcessCapabilities()`. |
 | D13 | Bundle | **Browser never imports `@cursor/sdk`.** Persistence process `import()` on first Cursor use. CopilotKit UI chunk still lazy (#244). |
@@ -73,7 +73,9 @@ Confirmed with the user (2026-09-13). ★ = accepted. Product choices are not re
 | **D2-b. Register an AG-UI agent on `CopilotRuntime`** ★ | Accepted. No first-party `@ag-ui/cursor`; we write the wrapper |
 | D2-c. Separate panel that never hits CopilotRuntime | Rejected |
 
-`buildCopilotRuntime` today only constructs a service adapter (`copilotRuntimeFactory.ts:18`, `:72-110`) and `new CopilotRuntime({ actions })` (`:112-116`). The route always takes that adapter path when `resolveConfig` returns a token config (`copilotKitRoute.ts:232-259`). Cursor needs a second branch that does not call `getApiKey("cursor")` as if it were GitHub.
+`buildCopilotRuntime` today only constructs a service adapter (`copilotRuntimeFactory.ts:18`, `:72-110`) and `new CopilotRuntime({ actions })` (`:112-116`). The route always takes that adapter path when `resolveConfig` returns a token config (`copilotKitRoute.ts:216-268`). Cursor needs a second branch that does not call `getApiKey("cursor")` as if it were GitHub.
+
+**1.59.2 API (R3):** `@copilotkit/runtime` already has `agents?: AgentsConfig` and `AbstractAgent` from `@ag-ui/client`. `serviceAdapter` is optional on the HTTP endpoint. Token branch unchanged: `buildCopilotRuntime` + adapter. Cursor branch: `new CopilotRuntime({ actions: cursorRuntimeActions, agents: { cursor: wrapper } })` and **omit** `serviceAdapter`. The wrapper implements `AbstractAgent` and maps `run.stream()` to AG-UI events. First implementation slice proves this branch before renaming tools.
 
 ### D3 — `features.cursor`
 
@@ -85,17 +87,21 @@ Confirmed with the user (2026-09-13). ★ = accepted. Product choices are not re
 | **D3-b. Boolean `features.cursor` plus env token default** ★ | Accepted |
 | D3-c. Replace `features.ai` with an array | Rejected — reopens #273 |
 
-Missing `features.cursor` is false, same fail-closed rule as `ai` / `mcp` (`processCapabilities.ts:87-88`).
+Missing `features.cursor` is false, same fail-closed rule as `ai` / `mcp` (`features?.cursor === true`, next to `processCapabilities.ts:87-88`). Do not copy `designerTools` (`:89`, default true).
 
 ### D4 — Pick storage
 
-**Status:** Accepted — `sessionStorage`.
+**Status:** Accepted — `sessionStorage`, sent on the CopilotKit POST (R1).
 
 | Option | Verdict |
 |---|---|
-| **D4-a. `sessionStorage`** ★ | Accepted. Same class as `showAiSidebar` |
+| **D4-a. `sessionStorage`** ★ | Accepted. Same class as `showAiSidebar` (`MiroirContextReactProvider.tsx:399-401`) |
 | D4-b. `ViewParams` | Rejected — #273 deleted `agents` from that object |
 | D4-c. User row | Later |
+
+`resolveConfig` today reads `body.aiConfig` then `AI_PROVIDER_TYPE` (`copilotKitRoute.ts:28-41`). The sidebar never sends `aiConfig`. Comment at `:23` claiming `useCopilotReadable` sets it is stale (`AiActionsProvider.tsx:193-197` is deployment UUID only).
+
+**Transport (R1):** persist pick in `sessionStorage`. Each CopilotKit request includes `aiConfig.backend: "cursor"` when the pick is Cursor, omitted otherwise. `createCopilotKitRouter` reads that field first. If `"cursor"` and snapshot allows Cursor, take the `agents` branch. Else token `resolveConfig` as today. Picker UI is visible only when snapshot `cursor` is true (R11).
 
 ### D5 — Local loop, MCP-only built-ins
 
@@ -111,6 +117,8 @@ A Cursor cloud agent cannot call MCP on this laptop. Cursor cloud MCP is a URL t
 
 **Status:** Accepted — API app mount from #253, not `:4080`, not stdio.
 
+`/mcp` is not behind `assertRequestAllowed`. CopilotKit on the same app is (`server.ts:851-868`). Browser `callMcpToolViaHttp` sends no Bearer. **R2:** do not invent a hatch for this issue. In-process Cursor POSTs loopback `/mcp` the same way. If a later issue gates MCP, both callers change together.
+
 ### D7 — Secret
 
 **Status:** Accepted — fifth row on `AI_SECRET_IMPORT_ALIASES` (`SecretsService.ts:51-56`). Today four aliases. Comment on `:61-63` says "the four D6 AI key env aliases"; that sentence must be updated.
@@ -124,7 +132,7 @@ Enumerated 2026-09-13 from `AiActionsProvider.tsx` and `miroirCopilotKitActions.
 | Catalog | Names | What they do today |
 |---|---|---|
 | CopilotKit frontend `useCopilotAction` | `generateMiroirEntity`, `getMiroirContext`, `lookupApplicationByName`, `lookupDeploymentByApplicationUuid`, `lookupEntityByName`, `findInstanceByName`, `lendDocument`, `getCurrentDate`, `getCurrentTimestamp` | Only `generateMiroirEntity` uses `renderAndWaitForResponse` (`AiActionsProvider.tsx:201-305`). `lendDocument` POSTs `/lendDocument` in a `handler` (`:522-562`). Lookups and dates are handlers. |
-| CopilotKit runtime `createMiroirCopilotKitActions` | live: `lendDocument`, `generateMiroirReport`, `getMiroirContext`. Commented: `generateMiroirEntity`, `generateMiroirQuery`, `generateMiroirTransformer` (`miroirCopilotKitActions.ts:550-561`) | Server-side handlers. Lending is hardcoded to Library endpoint `212f2784-5b68-43b2-8ee0-89b1c6fdd0de` (`:45`). |
+| CopilotKit runtime `createMiroirCopilotKitActions` | live: `lendDocument`, `generateMiroirReport`, `getMiroirContext` (`:550-562`). Commented definitions: `generateMiroirEntity`, `generateMiroirQuery`, `generateMiroirTransformer` (`:153-421`) | Server-side handlers. Lending is hardcoded to Library endpoint `212f2784-5b68-43b2-8ee0-89b1c6fdd0de` (`:45`). |
 | MCP `#229` | `<Application>_<actionType>`, e.g. `Library_lendDocument`, `Miroir_getInstances` (`toolNameFor.ts:27-35`) | `tools/call` executes. |
 
 The strings `lendDocument` and `Library_lendDocument` already differ. `propose_` is for the model and the person, not because MCP collides today.
@@ -138,7 +146,9 @@ The strings `lendDocument` and `Library_lendDocument` already differ. `propose_`
 
 `propose_*` stay CopilotKit frontend actions. Cursor `local.customTools` skip interactive approval in the SDK. Do not put review tools there.
 
-On a Cursor run the model sees MCP tools plus the CopilotKit `propose_*` / lookup / date actions the runtime still advertises.
+**Cursor runtime `actions` (R5):** pass a filtered list. Keep the lend *executor* used by `propose_lendDocument` POST. Do not register `generateMiroirReport` or `getMiroirContext` on the Cursor branch (duplicate of lookups / MCP). Token branch keeps today's array until #193.
+
+**`propose_*` protocol (R6):** CopilotKit 1.59 can hold `agents` and frontend-forwarded `actions` at once. Token adapters already forward tool calls to `useCopilotAction` / `renderAndWaitForResponse` (`copilotKitRoute.ts:54-55`). The first Cursor slice must prove the same forwarding when the runtime uses the `agents` map. If a Cursor `AbstractAgent` run does not deliver `propose_*` to the sidebar, that slice stops and we do not rename tools until the protocol works. Do not silently move `propose_*` into `local.customTools`.
 
 ### D9 — MCP writes run
 
@@ -146,7 +156,9 @@ On a Cursor run the model sees MCP tools plus the CopilotKit `propose_*` / looku
 
 ### D10 — Flags
 
-**Status:** Accepted. `getProcessCapabilities` does not set `mcp` from `ai`. Picking Cursor when `mcp` is false is `FeatureUnavailable` with `errorContext.capability` `mcp` or `cursor` (name in the TDD plan, one name only).
+**Status:** Accepted. `getProcessCapabilities` does not set `mcp` from `ai`.
+
+**Refuse (R4):** add `"cursor"` to `ProcessCapabilityName` (`processCapabilities.ts:18-23`). Add `cursor: false` to `FAIL_CLOSED_PROCESS_CAPABILITIES` (`ProcessCapabilitiesHttp.ts:8-15`). `createCopilotKitRouter` refuses a Cursor pick when snapshot `cursor` is false (`capability: "cursor"`) or `mcp` is false (`capability: "mcp"`). Same `FeatureUnavailable` shape as store-admin.
 
 ### D11 — #193 still owns retiring execute tools
 
@@ -154,17 +166,23 @@ On a Cursor run the model sees MCP tools plus the CopilotKit `propose_*` / looku
 
 ### D12 — Electron now
 
-**Status:** Accepted. Electron `40.6.1` embeds Node 24.x, which meets `@cursor/sdk` ≥ 22.13. Main already listens on loopback when `ai` or `mcp` is true (`ipcServerSetup.ts:189`, `:223-259`, `shouldListenLoopbackHttp` in `processCapabilityRoutes.ts:11-13`). Dummy `cwd` lives next to that process, not in the renderer.
+**Status:** Accepted. Electron `40.6.1` (`miroir-standalone-app-electron/package.json:46`) embeds Node 24.13.1, which meets `@cursor/sdk` ≥ 22.13. Main already listens on loopback when `ai` or `mcp` is true (`ipcServerSetup.ts:189`, `:223-267`, `shouldListenLoopbackHttp` in `processCapabilityRoutes.ts:11-13`). Dummy `cwd` lives next to that process, not in the renderer.
 
 `createCopilotKitRouter` is a **static** import on both `server.ts:10` and `ipcServerSetup.ts:42`. The Node process already loads `miroir-ai` / `@copilotkit/runtime` at startup. This issue does not have to un-static CopilotKit on the server. It must not add a static `import "@cursor/sdk"` next to that.
+
+**Packaging (R8):** electron-builder `files` is `dist/**/*` + `package.json`. Lazy `import("@cursor/sdk")` still needs native addons in the packaged app. This issue includes a work item: ship `miroir-ai` + `@cursor/sdk` native artifacts with the desktop build, or fail Cursor startup with a clear log in a packaged app that omitted them. Dev / unpacked Electron is not enough to tick D12.
 
 ### D13 — Lazy SDK
 
 **Status:** Accepted. `miroir-ai` `package.json` has no `@cursor/sdk` today. Add it there. Server release marks `miroir-ai` external (`miroir-server/package.json` `build:server` `-e miroir-ai`), so native binaries load from `node_modules` at runtime, not through ncc. `miroir-ai` tsup `--target=node20` (`package.json:14`) is a compile target; the SDK still needs a Node 22.13+ **runtime** on `miroir-server`.
 
+**Server Node (R7):** `miroir-server` has no `engines` field. When `features.cursor` is true, refuse Cursor startup (log + `/api/copilotkit` 503) if `process.versions.node` is below 22.13.0. Document the floor next to process-capabilities. Token adapters keep working on older Node.
+
 ### D14 — Snapshot field
 
-**Status:** Accepted. `ProcessCapabilities` today is `ai`, `mcp`, store fields, `designerTools` (`processCapabilities.ts:9-16`). Add `cursor`. Schema `features.cursor` optional boolean on both `miroirConfigClient` and `miroirConfigServer` (`getMiroirFundamentalJzodSchema.ts:1883-1890`, `:1930-1937`). `devBuild` after the schema edit.
+**Status:** Accepted. `ProcessCapabilities` today is `ai`, `mcp`, store fields, `designerTools` (`processCapabilities.ts:9-16`). Add `cursor`. Schema `features.cursor` optional boolean on both `miroirConfigClient` and `miroirConfigServer` (`getMiroirFundamentalJzodSchema.ts:1883-1890`, `:1930-1937`). Client schema is for emulateServer / test shapes only. Persistence-side read rule from #273 still applies. Renderer still must not call `getProcessCapabilities()`. `devBuild` after the schema edit.
+
+**Blast radius (R9):** `FAIL_CLOSED_PROCESS_CAPABILITIES`, Electron `getProcessCapabilities` at `ipcServerSetup.ts:213-220`, #273 tests that pin the snapshot object (`processCapabilitiesHttp.273.phase2.integ.test.ts:16-23` and siblings), `docs/reference/process-capabilities.md`. `/health` text (`copilotKitRoute.ts:201-213`) must mention `CURSOR_API_KEY` / `aiCursorKey` (R11). `AgentsCopilotKit.tsx:6-8` still says `ViewParams.agents`; gate is `processCapabilities.ai` (`RootComponent.tsx:624`).
 
 Truth table:
 
@@ -223,7 +241,7 @@ Shipped server JSON already has `features.ai` and `features.mcp` true (`packages
 
 ### 3.5 MCP (aligned as the execute catalog)
 
-`shouldMountMcpHttp` gates both the API-app `/mcp` mount and `:4080` (`processCapabilityRoutes.ts:7-8`; `server.ts` ~846 and ~953). `runMcpToolRunner` refuses when snapshot `mcp` is false (`runMcpToolRunner.ts:25-34`). Cursor’s in-process agent must call the same `/mcp` with a Bearer the hatch accepts. It must not use `window.fetch` and must not go through the Vite origin in Electron (`browserMcpServerUrl` already special-cases electron, `processCapabilityRoutes.ts:46-49`).
+`shouldMountMcpHttp` gates both the API-app `/mcp` mount and `:4080` (`processCapabilityRoutes.ts:7-8`; `server.ts:846-847` and `:952-955`). `runMcpToolRunner` refuses when snapshot `mcp` is false (`runMcpToolRunner.ts:25-34`). Cursor’s in-process agent POSTs the same `/mcp` with no Bearer (R2). It must not use `window.fetch` and must not go through the Vite origin in Electron (`browserMcpServerUrl` already special-cases electron, `processCapabilityRoutes.ts:46-54`).
 
 ### 3.6 No Cursor SDK (aligned absence)
 
@@ -264,24 +282,25 @@ Repo grep: no `@cursor/sdk`, no `aiCursorKey`, no `features.cursor`. `AiProvider
 | `features.cursor` Jzod | `getMiroirFundamentalJzodSchema.ts` then `devBuild` |
 | `ProcessCapabilities.cursor`, `getProcessCapabilities` | `processCapabilities.ts` |
 | `aiCursorKey` alias | `SecretsService.ts` |
-| Cursor `AbstractAgent` + lazy `import("@cursor/sdk")` + dummy cwd | `miroir-ai` (new module). `createCopilotKitRouter` branches when the pick is Cursor |
-| `sessionStorage` key + picker | standalone-app AI routes / AppBar, read snapshot `cursor` |
+| Cursor `AbstractAgent` + lazy `import("@cursor/sdk")` + dummy cwd + Node 22.13 check | `miroir-ai` (new module). `createCopilotKitRouter` branches on `aiConfig.backend === "cursor"` |
+| `sessionStorage` key + picker + POST `aiConfig.backend` | standalone-app AI routes / AppBar, visible only if snapshot `cursor` |
 | `propose_` rename + `propose_lendDocument` form | `AiActionsProvider.tsx` + tests next to `AiProposalForms.unit.test.tsx` |
 | Electron dummy cwd + same lazy path | `ipcServerSetup.ts` calls into `miroir-ai`, no renderer import |
 
-The AG-UI wrapper turns Cursor `run.stream()` events into the event types `CopilotRuntime` already consumes. CopilotKit’s rule: pass an `AbstractAgent`, not the raw `Agent` handle.
+The AG-UI wrapper turns Cursor `run.stream()` events into the event types `CopilotRuntime` already consumes. Pass an `AbstractAgent`, not the raw `Agent` handle.
 
-In-process Cursor → MCP uses a server-side `fetch` to loopback `/mcp` with a Bearer the hatch issued for that process, not the renderer `runMcpToolRunner`.
+In-process Cursor → MCP uses a server-side `fetch` to loopback `/mcp`, same ungated contract as `callMcpToolViaHttp`, not the renderer `runMcpToolRunner`.
 
 ---
 
 ## 6. Risks the plan must pin
 
-- **CopilotRuntime 1.59 `agents` map.** Current constructor only passes `actions`. Confirm the 1.59.2 API for registering an `AbstractAgent` before coding the wrapper. If 1.59 cannot host a custom agent, that is a blocker, not a silent adapter hack.
-- **`miroir-server` Node version.** SDK needs 22.13+ at runtime. Electron 40 is fine. Document the server runtime.
-- **Auth on loopback MCP.** The in-process agent is not the browser. Hatch / service Bearer must be explicit or MCP calls 401.
-- **`tools: ["mcp"]` plus CopilotKit actions.** The model’s CopilotKit tool list is the runtime `actions` plus frontend `useCopilotAction`. The SDK allowlist only strips Cursor *built-in* tools. Both catalogs still have to be advertised on the CopilotKit side.
+- **`propose_*` forwarding on the `agents` branch (R6).** First Cursor slice proves `renderAndWaitForResponse` still reaches the sidebar. Stop before the rename if it does not.
+- **`miroir-server` Node 22.13+** when `features.cursor` is true (R7). Token path stays on older Node.
+- **Electron native SDK artifacts** in the packaged app (R8).
+- **`tools: ["mcp"]` only strips Cursor built-ins.** CopilotKit still advertises filtered `actions` plus frontend `useCopilotAction`.
 - **ncc + native SDK.** Keep `@cursor/sdk` behind `miroir-ai` (already external). Do not add a static import in `server.ts`.
+- **Snapshot blast radius (R9).** Every `ProcessCapabilities` literal and #273 pin that lists fields must grow `cursor`.
 
 ---
 
