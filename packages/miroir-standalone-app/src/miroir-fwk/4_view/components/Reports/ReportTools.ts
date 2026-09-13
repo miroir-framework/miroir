@@ -177,7 +177,16 @@ export const reportSectionsFormValue = (
       );
     case "objectListReportSection":
     case "objectInstanceReportSection": {
-      const targetData = reportData[reportSection.definition.fetchedDataReference ?? ""];
+      const fetchedDataReference = reportSection.definition.fetchedDataReference;
+      const targetData = fetchedDataReference
+        ? reportData?.[fetchedDataReference]
+        : reportSection.type === "objectInstanceReportSection"
+          ? {
+              uuid: "c9e2a4b1-7d5f-4e8c-a1b3-6f0d8e4c2a91",
+              parentUuid: reportSection.definition.parentUuid,
+              name: "",
+            }
+          : reportData?.[""];
       const queryParametersSchema: JzodObject =
         typeof targetData === "object" &&
         targetData !== null &&

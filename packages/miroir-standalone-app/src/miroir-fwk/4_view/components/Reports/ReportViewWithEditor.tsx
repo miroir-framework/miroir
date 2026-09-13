@@ -235,6 +235,13 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     return visit(props.reportDefinition?.definition?.section);
   }, [props.reportDefinition]);
 
+  const reportDataIsFailure = !!(
+    reportData &&
+    typeof reportData === "object" &&
+    ((reportData as any).elementType === "failure" || "queryFailure" in reportData)
+  );
+  const reportDataForForm = reportDataIsFailure ? {} : reportData;
+
   const reportName = props.reportDefinition?.name??"reportEntityDefinition_name";
   const reportNamePath = [reportName];
 
@@ -262,7 +269,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     //   reportViewData,
     // );
     const reportSectionsData = reportSectionsFormValue(
-      reportData,
+      reportDataForForm,
       props.reportDefinition?.definition.section,
       ["definition", "section"],
       props.application,
@@ -274,7 +281,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     const result = {
       ...reportSectionsData,
       ...props.storedQueryData,
-      ...reportData, // TODO: choose between spreading reportData or including as reportData attribute
+      ...reportDataForForm, // TODO: choose between spreading reportData or including as reportData attribute
       pageParams: props.pageParams,
       [reportReportDetailsKey]: reportReportDetails,
       [reportName]: props.reportDefinition,
@@ -283,7 +290,7 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     log.info("reportSectionsFormValue initialReportSectionsFormValue", result);
     return result;
 
-  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportData, reportInterpreterPageParams, reportName, multistepHost?.stepBag]);
+  }, [props.reportDefinition, props.pageParams, props.storedQueryData, reportDataForForm, reportInterpreterPageParams, reportName, multistepHost?.stepBag]);
 
   // ###############################################################################################
   // ###############################################################################################
@@ -437,12 +444,11 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
         ) : null}
         {/* While async report load is in flight, skip EntityNotFound failure dump — expected for lazy-on-refresh entities. */}
         {reportQueryLoadStatus === "loading" &&
-        reportData &&
-        typeof reportData === "object" &&
+        reportDataIsFailure &&
         ((reportData as any).queryFailure === "ReferenceNotFound" ||
           (reportData as any).queryFailure === "EntityNotFound" ||
           (reportData as any).elementType === "failure") ? null : props.applicationSection ? (
-          reportData.elementType == "failure" && !reportHasUrlParamInputSection ? (
+          reportDataIsFailure && !reportHasUrlParamInputSection && !multistepHost ? (
             <div>found query failure! {JSON.stringify(reportData, null, 2)}</div>
           ) : // (<>failure</>)
           props.deploymentUuid ? (
@@ -532,6 +538,11 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                       </>
                     )}
                     <>
+                      {multistepHost && reportDataIsFailure ? (
+                        <div data-testid="multistep-step-query-failure">
+                          found query failure! {JSON.stringify(reportData, null, 2)}
+                        </div>
+                      ) : null}
                       <ReportSectionViewWithEditor
                         formikReportDefinitionPathString={reportName}
                         reportSectionPath={

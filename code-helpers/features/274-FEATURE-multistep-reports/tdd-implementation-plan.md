@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/274
 Working branch: `274-FEATURE-multistep-reports`
 
-**Resume note:** Slices 0–3 ✅. Implementing remaining slices in order.
+**Resume note:** Slices 0–4 ✅. Implementing remaining slices in order.
 
 ---
 
@@ -69,7 +69,7 @@ This plan does **not** add a Form / FormRun Entity, persist drafts, wrap the wal
 | 1 | **Tracer:** schema + Finish template + step bag creates Country | ✅ | MiroirTest `multistepFinish.274` (integ) + modelValidation |
 | 2 | Pager host + UI process walk (completeness suite) | ✅ | `multistepProcess.274.integ.test.tsx` (`prepareAndRunTestSuites`) |
 | 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ✅ | `multistepProcess.274` (added cases) |
-| 4 | Object-instance hoist; query-failure keeps the bag | ⬜ | `multistepProcess.274` (added cases) |
+| 4 | Object-instance hoist; query-failure keeps the bag | ✅ | `multistepProcess.274` (added cases) |
 | 5 | `openReportSection` + list `openReport` + pageParams | ⬜ | `multistepLaunch.274.phase5.integ.test.tsx` |
 | 6 | Nonreg, docs, cleanup, AC | ⬜ | `unit-274-` + `integ-action-274-` + `appstack-274-multistep-reports` |
 
@@ -113,6 +113,7 @@ Copied from [`analysis.md`](./analysis.md) D1–D17 after review repairs. Deviat
 | Step-1 `inputPrefix` | `stepOne` |
 | Step-2 `inputPrefix` | `stepTwo` |
 | Tracer Country uuid (created by Finish) | `63c96487-713f-4d5b-a424-bf7e8f70e147` |
+| Slice 4 Finish Country uuid (`MultistepCountryInstance`) | `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` |
 | MiroirTest suite `multistepReports.274` | `9931f827-a3ce-435f-bf07-4dac430d81d1` |
 | MiroirTest `multistepFinish.274` | `42751630-3516-45e4-85ff-6838576a4a04` |
 | Library application | `5af03c98-fe5e-490b-b08f-e1230971c57f` |
@@ -415,7 +416,7 @@ No stop-the-world product contradiction. Missing `urlParamFields` on the frozen 
 
 ## Slice 4 — Object-instance hoist + query-failure keeps the bag
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -463,7 +464,25 @@ RUN_TEST=multistep.274.phase0 npm run testByFile -w miroir-standalone-app -- --p
 
 ### Realization
 
-<Appended on completion.>
+Object-instance hoist + failure-keeps-bag. Completeness suite (`multistepProcess.274.integ.test.tsx`) gained four cases on the same suite: `instance-no-child-formik`, `instance-edit-updates-bag`, `instance-finish-sees-hoisted-key`, `query-failure-keeps-bag`. Frozen tracer JSON was not edited. Phase0 inventory 85 → 86 (`8f3c1a6e-…` MultistepCountryInstance).
+
+**Report:** Library `MultistepCountryInstance` (`8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61`). Step 0 `inputPrefix: stepOne`. Step 1 Country `objectInstanceReportSection` (create-mode, no `fetchedDataReference`). Step 2 `jsonReportSection` `failingCountries` extractor with `getFromParameters` `safe: true` `referencePath: ["absentParam"]`. Finish `createInstance` Country `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` from the hoisted bag key. Draft editor seed uuid `c9e2a4b1-7d5f-4e8c-a1b3-6f0d8e4c2a91` (not Finish).
+
+**Bag key:** `definition_section_definition_1` (`["definition","section","definition", 1].join("_")`). Host `collectStepBagKeys` walks list/grid and collects each `inputPrefix` plus each object-instance path key. Next Jzod-gates input **and** instance (D7) via Country’s resolved `mlSchema`.
+
+**Hoist:** When the viewed Report is `type === "multistep"`, `ReportSectionEntityInstance` skips the nested Formik; `TypedValueObjectEditor` writes the parent Formik at `formikValuePathAsString`. One write path. Non-multistep keeps child Formik + empty `onSubmit` (phase0 still green). Nested Formik wrapped with `data-testid="report-section-entity-instance-nested-formik"`.
+
+**Failure (R5):** When `multistepHost` is present, `ReportViewWithEditor` does not take the L445 unmount. Formik/host stay mounted; the step body shows `data-testid="multistep-step-query-failure"`. `reportDataForForm` is `{}` so the failure object is not spread into Formik values. Back still works; bag still has `stepOne`.
+
+**Entity lookup:** `ReportSectionEntityInstance` falls back to `useCurrentModel` entities when `deploymentUuidToReportsEntitiesMapping` is absent (this harness).
+
+**Files:** `packages/miroir-test-app_deployment-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61.json`, `Library.ts`, `index.ts`, `index.d.ts`, `MultistepReportHost.tsx`, `ReportSectionEntityInstance.tsx`, `ReportTools.ts`, `ReportViewWithEditor.tsx`, `JzodElementEditorTestTools.tsx`, `multistepProcess.274.integ.test.tsx`, `multistep.274.phase0.unit.test.ts`.
+
+**Deviations:** Named cases on the existing suite (not a second `ReactComponentTestSuite` mount) so `jzodEditorTestLocalCache` stays shared. `useParams` is per-case via mutable `currentUseParams` set in the instance `props` factory before render (`ReportPage` reads `useParams` at mount). Failure extractor uses `safe: true` + `referencePath: ["absentParam"]` so template resolve does not throw. Step 1 is create-mode because a successful Country fetch cannot coexist with a failing extractor on the same report query (fail-fast). Hidden `multistep-step-bag` testid. Library `testByFile` filter is `modelValidation.unit` (vitest root is `./tests`). No product `useEffect`. Did not spy on `runMultistepFinish`.
+
+**Validation:** `npm run build -w miroir-test-app_deployment-library` — pass. `npm run testByFile -w miroir-test-app_deployment-library -- modelValidation.unit` — 183/183 (includes MultistepCountryInstance). `RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274` — 16/16 (12 existing + 4 Slice 4). `RUN_TEST=multistep.274.phase0 … --profile emulatedServer-filesystem` — 7/7. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — pass.
+
+No stop-the-world product contradiction. Nested-Formik hoist and L445 unmount were expected and handled as above.
 
 ---
 

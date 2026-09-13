@@ -44,6 +44,8 @@ export declare const reportUserDetails: any;
 export declare const reportLibraryHome: any;
 export declare const reportLendingHistoryItemDetails: any;
 export declare const reportLendingHistoryItemList: any;
+export declare const reportMultistepCountryCreate: any;
+export declare const reportMultistepCountryInstance: any;
 export declare const lendingEndpoint: any;
 export declare const bookEndpoint: any;
 export declare const returnDocument: any;

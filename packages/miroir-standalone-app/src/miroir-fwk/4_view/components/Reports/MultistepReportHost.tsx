@@ -5,10 +5,12 @@ import {
   Action2Error,
   LoggerInterface,
   MiroirLoggerFactory,
+  entityWithResolvedMLSchema,
   jzodTypeCheck,
   type ApplicationDeploymentMap,
   type CompositeActionSequenceTemplate,
   type DomainControllerInterface,
+  type Entity,
   type JzodObject,
   type MiroirModelEnvironment,
   type Report,
@@ -102,23 +104,39 @@ export function getMultistepChildSections(report: Report | undefined): ReportSec
   return [section];
 }
 
-export function collectInputPrefixes(section: ReportSection | undefined): string[] {
+export function collectStepBagKeys(
+  section: ReportSection | undefined,
+  path: (string | number)[] = ["definition", "section"],
+): string[] {
   if (!section) {
     return [];
   }
   if (section.type === "list" && Array.isArray(section.definition)) {
-    return section.definition.flatMap(collectInputPrefixes);
+    return section.definition.flatMap((child, index) =>
+      collectStepBagKeys(child, path.concat("definition", index)),
+    );
   }
   if (section.type === "grid" && Array.isArray(section.definition)) {
-    return section.definition.flatMap((row) =>
-      Array.isArray(row) ? row.flatMap(collectInputPrefixes) : [],
+    return section.definition.flatMap((row, rowIndex) =>
+      Array.isArray(row)
+        ? row.flatMap((cell, colIndex) =>
+            collectStepBagKeys(cell, path.concat("definition", rowIndex, colIndex)),
+          )
+        : [],
     );
   }
   if (section.type === "inputReportSection") {
     const prefix = section.definition?.inputPrefix;
     return typeof prefix === "string" && prefix.length > 0 ? [prefix] : [];
   }
+  if (section.type === "objectInstanceReportSection") {
+    return [path.join("_")];
+  }
   return [];
+}
+
+export function collectInputPrefixes(section: ReportSection | undefined): string[] {
+  return collectStepBagKeys(section);
 }
 
 export function extractStepBagFromFormikValues(
@@ -145,10 +163,38 @@ function requiredFieldIsEmpty(value: unknown): boolean {
   return value === undefined || value === null || value === "";
 }
 
+function objectSchemaAllowsNext(
+  schema: JzodObject | undefined,
+  value: Record<string, unknown>,
+  modelEnvironment: MiroirModelEnvironment,
+): boolean {
+  if (!schema || schema.type !== "object" || !schema.definition) {
+    return true;
+  }
+  for (const [fieldName, fieldSchema] of Object.entries(schema.definition)) {
+    if ((fieldSchema as { optional?: boolean })?.optional === true) {
+      continue;
+    }
+    if (requiredFieldIsEmpty(value[fieldName])) {
+      return false;
+    }
+  }
+  const checked = jzodTypeCheck(
+    schema,
+    value,
+    [],
+    [],
+    modelEnvironment,
+    {},
+  );
+  return checked.status === "ok";
+}
+
 export function currentStepAllowsNext(
   section: ReportSection | undefined,
   stepBag: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
+  instanceBagKey?: string,
 ): boolean {
   if (!section) {
     return false;
@@ -158,30 +204,19 @@ export function currentStepAllowsNext(
     const schema = section.definition?.inputMLSchema as JzodObject | undefined;
     const value =
       (typeof prefix === "string" ? stepBag[prefix] : undefined) ?? {};
-    if (!schema || schema.type !== "object" || !schema.definition) {
-      return true;
-    }
-    for (const [fieldName, fieldSchema] of Object.entries(schema.definition)) {
-      if ((fieldSchema as { optional?: boolean })?.optional === true) {
-        continue;
-      }
-      if (requiredFieldIsEmpty((value as Record<string, unknown>)[fieldName])) {
-        return false;
-      }
-    }
-    const checked = jzodTypeCheck(
-      schema,
-      value,
-      [],
-      [],
-      modelEnvironment,
-      {},
-    );
-    return checked.status === "ok";
+    return objectSchemaAllowsNext(schema, value as Record<string, unknown>, modelEnvironment);
   }
   if (section.type === "objectInstanceReportSection") {
-    // Slice 4 hoists instance editors; until then treat as gated only when a bag key exists.
-    return true;
+    const value =
+      (typeof instanceBagKey === "string" ? stepBag[instanceBagKey] : undefined) ?? {};
+    const entity = (modelEnvironment.currentModel?.entities ?? []).find(
+      (candidate: Entity) => candidate.uuid === section.definition?.parentUuid,
+    );
+    if (!entity) {
+      return true;
+    }
+    const schema = entityWithResolvedMLSchema(entity).mlSchema as JzodObject | undefined;
+    return objectSchemaAllowsNext(schema, value as Record<string, unknown>, modelEnvironment);
   }
   return true;
 }
@@ -203,8 +238,8 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
   );
   const generalEditMode = context.viewParams.generalEditMode;
   const steps = useMemo(() => getMultistepChildSections(props.report), [props.report]);
-  const inputPrefixes = useMemo(
-    () => collectInputPrefixes(props.report.definition?.section),
+  const stepBagKeys = useMemo(
+    () => collectStepBagKeys(props.report.definition?.section),
     [props.report],
   );
 
@@ -217,9 +252,9 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
 
   const captureStepBagFromFormikValues = useCallback(
     (values: Record<string, any>) => {
-      stepBagRef.current = extractStepBagFromFormikValues(values, inputPrefixes);
+      stepBagRef.current = extractStepBagFromFormikValues(values, stepBagKeys);
     },
-    [inputPrefixes],
+    [stepBagKeys],
   );
 
   const isViewerPaging = !generalEditMode;
@@ -240,11 +275,11 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
 
   const mergeStepBagFromFormikValues = useCallback(
     (values: Record<string, any>) => {
-      const nextBag = extractStepBagFromFormikValues(values, inputPrefixes);
+      const nextBag = extractStepBagFromFormikValues(values, stepBagKeys);
       stepBagRef.current = nextBag;
       setStepBag((previous) => (bagsEqual(previous, nextBag) ? previous : nextBag));
     },
-    [inputPrefixes],
+    [stepBagKeys],
   );
 
   const hostValue = useMemo<MultistepReportHostContextValue>(
@@ -273,13 +308,13 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
 
   const handleNext = useCallback(() => {
     const liveBag = stepBagRef.current;
-    if (!currentStepAllowsNext(currentStep, liveBag, modelEnvironment)) {
+    if (!currentStepAllowsNext(currentStep, liveBag, modelEnvironment, reportSectionPath.join("_"))) {
       return;
     }
     setStepBag(liveBag);
     setFinishError(undefined);
     setStepIndex((current) => Math.min(lastIndex, current + 1));
-  }, [currentStep, lastIndex, modelEnvironment]);
+  }, [currentStep, lastIndex, modelEnvironment, reportSectionPath]);
 
   const handleFinish = useCallback(async () => {
     const sequence = props.report.definition?.compositeActionSequence;
@@ -323,6 +358,9 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
   return (
     <MultistepReportHostContext.Provider value={hostValue}>
       <div data-testid="multistep-report-host">
+        <pre data-testid="multistep-step-bag" hidden>
+          {JSON.stringify(stepBag)}
+        </pre>
         {isViewerPaging ? (
           <ThemedBox data-testid="multistep-step-label">
             <ThemedSpan>{currentLabel}</ThemedSpan>

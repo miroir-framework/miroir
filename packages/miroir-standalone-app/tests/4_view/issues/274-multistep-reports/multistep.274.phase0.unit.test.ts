@@ -27,6 +27,7 @@ const REPORT_ENTITY_UUID = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
 const TABLE_DETAILS_UUID = "7c80d9ec-35b2-4cb8-8164-c5fe4e20687f";
 const SCHEMA_DETAILS_UUID = "a72bb361-3126-4aa1-85cc-0be4d6838c84";
 const MULTISTEP_COUNTRY_CREATE_UUID = "d2b2fbbd-6844-4422-8412-4e3c303296bc";
+const MULTISTEP_COUNTRY_INSTANCE_UUID = "8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61";
 
 const REPO_ROOT = resolveRepoRoot();
 
@@ -125,7 +126,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     expect(report.safeParse(multistepReport).success).toBe(true);
   });
 
-  it("seed inventory: 85 Reports including MultistepCountryCreate", () => {
+  it("seed inventory: 86 Reports including MultistepCountryCreate and MultistepCountryInstance", () => {
     const reports = ASSET_TREES.flatMap((tree) =>
       collectReportInstances(join(REPO_ROOT, tree)),
     );
@@ -136,19 +137,22 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     const omittedTypeReports = reports.filter((entry) => entry.type === undefined);
     const nullTypeReports = reports.filter((entry) => entry.type === null);
 
-    expect(reports).toHaveLength(85);
+    expect(reports).toHaveLength(86);
     expect(listReports).toHaveLength(11);
     expect(gridReports).toHaveLength(0);
-    expect(multistepReports).toHaveLength(1);
+    expect(multistepReports).toHaveLength(2);
     expect(omittedTypeReports).toHaveLength(71);
     expect(nullTypeReports).toHaveLength(2);
     expect(nullTypeReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual([
       { name: "TableDetails", uuid: TABLE_DETAILS_UUID },
       { name: "SchemaDetails", uuid: SCHEMA_DETAILS_UUID },
     ]);
-    expect(multistepReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual([
-      { name: "MultistepCountryCreate", uuid: MULTISTEP_COUNTRY_CREATE_UUID },
-    ]);
+    expect(multistepReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual(
+      expect.arrayContaining([
+        { name: "MultistepCountryCreate", uuid: MULTISTEP_COUNTRY_CREATE_UUID },
+        { name: "MultistepCountryInstance", uuid: MULTISTEP_COUNTRY_INSTANCE_UUID },
+      ]),
+    );
   });
 
   it("RootReport has optional compositeActionSequence in generated types and zod schema", () => {

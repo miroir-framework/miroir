@@ -34,6 +34,7 @@ export { default as reportLibraryHome } from "./assets/library_model/3f2baa83-3e
 export { default as reportLendingHistoryItemDetails } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c.json" with { type: "json" };
 export { default as reportLendingHistoryItemList } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/cee26a1e-be58-497c-9d15-fa6832787907.json" with { type: "json" };
 export { default as reportMultistepCountryCreate } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d2b2fbbd-6844-4422-8412-4e3c303296bc.json" with { type: "json" };
+export { default as reportMultistepCountryInstance } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61.json" with { type: "json" };
 
 // Library Model - Endpoints
 export { default as lendingEndpoint } from "./assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/212f2784-5b68-43b2-8ee0-89b1c6fdd0de.json" with { type: "json" };
