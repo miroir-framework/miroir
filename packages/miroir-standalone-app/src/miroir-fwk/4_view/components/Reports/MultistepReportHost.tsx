@@ -227,6 +227,7 @@ export type MultistepReportHostProps = {
   application: Uuid;
   applicationDeploymentMap: ApplicationDeploymentMap;
   children: ReactNode;
+  onDismissed?: () => void;
 };
 
 export function MultistepReportHost(props: MultistepReportHostProps) {
@@ -337,11 +338,13 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
       return;
     }
     setDismissed(true);
+    props.onDismissed?.();
   }, [
     domainController,
     modelEnvironment,
     props.application,
     props.applicationDeploymentMap,
+    props.onDismissed,
     props.report.definition?.compositeActionSequence,
   ]);
 
@@ -349,7 +352,8 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     setCancelConfirmOpen(false);
     setStepBag({});
     setDismissed(true);
-  }, []);
+    props.onDismissed?.();
+  }, [props.onDismissed]);
 
   if (dismissed) {
     return null;

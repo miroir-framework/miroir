@@ -28,6 +28,7 @@ const TABLE_DETAILS_UUID = "7c80d9ec-35b2-4cb8-8164-c5fe4e20687f";
 const SCHEMA_DETAILS_UUID = "a72bb361-3126-4aa1-85cc-0be4d6838c84";
 const MULTISTEP_COUNTRY_CREATE_UUID = "d2b2fbbd-6844-4422-8412-4e3c303296bc";
 const MULTISTEP_COUNTRY_INSTANCE_UUID = "8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61";
+const MULTISTEP_LAUNCH_PAD_UUID = "b6d9e2a1-4c58-4f70-8a13-9e2f0c5d7b44";
 
 const REPO_ROOT = resolveRepoRoot();
 
@@ -126,7 +127,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     expect(report.safeParse(multistepReport).success).toBe(true);
   });
 
-  it("seed inventory: 86 Reports including MultistepCountryCreate and MultistepCountryInstance", () => {
+  it("seed inventory: 87 Reports including MultistepCountryCreate, MultistepCountryInstance, and MultistepLaunchPad", () => {
     const reports = ASSET_TREES.flatMap((tree) =>
       collectReportInstances(join(REPO_ROOT, tree)),
     );
@@ -137,8 +138,8 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     const omittedTypeReports = reports.filter((entry) => entry.type === undefined);
     const nullTypeReports = reports.filter((entry) => entry.type === null);
 
-    expect(reports).toHaveLength(86);
-    expect(listReports).toHaveLength(11);
+    expect(reports).toHaveLength(87);
+    expect(listReports).toHaveLength(12);
     expect(gridReports).toHaveLength(0);
     expect(multistepReports).toHaveLength(2);
     expect(omittedTypeReports).toHaveLength(71);
@@ -151,6 +152,11 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
       expect.arrayContaining([
         { name: "MultistepCountryCreate", uuid: MULTISTEP_COUNTRY_CREATE_UUID },
         { name: "MultistepCountryInstance", uuid: MULTISTEP_COUNTRY_INSTANCE_UUID },
+      ]),
+    );
+    expect(listReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual(
+      expect.arrayContaining([
+        { name: "MultistepLaunchPad", uuid: MULTISTEP_LAUNCH_PAD_UUID },
       ]),
     );
   });

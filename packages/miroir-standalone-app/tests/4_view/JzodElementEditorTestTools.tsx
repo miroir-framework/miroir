@@ -49,6 +49,7 @@ import {
   reportCountryList,
   reportMultistepCountryCreate,
   reportMultistepCountryInstance,
+  reportMultistepLaunchPad,
   reportPublisherList,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
@@ -400,6 +401,7 @@ export function restoreLibraryMultistepTracerReportInJzodEditorTestCache(): void
   }
   upsertLibraryReportInJzodEditorTestCache(reportMultistepCountryCreate as EntityInstance);
   upsertLibraryReportInJzodEditorTestCache(reportMultistepCountryInstance as EntityInstance);
+  upsertLibraryReportInJzodEditorTestCache(reportMultistepLaunchPad as EntityInstance);
 }
 
 export interface ReactComponentTestCase<PropType extends Record<string, any>> {
@@ -887,6 +889,7 @@ export function getWrapperLoadingLocalCache(
               reportPublisherList as EntityInstance,
               reportMultistepCountryCreate as EntityInstance,
               reportMultistepCountryInstance as EntityInstance,
+              reportMultistepLaunchPad as EntityInstance,
           ],
         },
         // {

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
@@ -24,14 +24,20 @@ import type { Params } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
+import { useCurrentModel } from '../../ReduxHooks.js';
 import { reportUrl } from '../../navigation.js';
 import { ReportDisplay } from '../../routes/ReportDisplay';
+import {
+  OpenReportModal,
+  openReportHref,
+  resolveOpenReportPageParams,
+} from './OpenReportLaunch.js';
 import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 import { StoredRunnerView } from '../Runners/RunnerView';
 import { ThemedProgressiveAccordion } from '../Themes/BasicComponents';
-import { ThemedBox, ThemedText } from '../Themes/index.js';
+import { ThemedBox, ThemedStyledButton, ThemedText } from '../Themes/index.js';
 import { ModelDiagramReportSectionView } from './ModelDiagramReportSectionView.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
@@ -81,6 +87,57 @@ export interface ReportSectionViewWithEditorProps extends ReportSectionViewProps
   // isSectionModified?: boolean,
 }
 
+function OpenReportSectionView(props: {
+  spec: {
+    label: string;
+    reportUuid: string;
+    openAs: "modal" | "route";
+    application?: string;
+    applicationSection?: "data" | "model" | "modelVersion";
+    deploymentUuid?: string;
+  };
+  application: Uuid;
+  applicationSection: ApplicationSection;
+  deploymentUuid: Uuid;
+}) {
+  const navigate = useNavigate();
+  const [modalOpen, setModalOpen] = useState(false);
+  const pageContext = {
+    application: props.application,
+    applicationSection: props.applicationSection,
+    deploymentUuid: props.deploymentUuid,
+  };
+  const pageParams = resolveOpenReportPageParams(props.spec, pageContext);
+
+  return (
+    <>
+      <ThemedStyledButton
+        type="button"
+        variant="contained"
+        data-testid={`open-report-section-${props.spec.openAs}`}
+        onClick={() => {
+          if (props.spec.openAs === "route") {
+            navigate(openReportHref(props.spec, pageContext));
+            return;
+          }
+          setModalOpen(true);
+        }}
+      >
+        {props.spec.label}
+      </ThemedStyledButton>
+      {props.spec.openAs === "modal" ? (
+        <OpenReportModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          title={props.spec.label}
+        >
+          <ReportDisplay pageParams={pageParams} onDismissed={() => setModalOpen(false)} />
+        </OpenReportModal>
+      ) : null}
+    </>
+  );
+}
+
 // ################################################################################################
 /**
  * 
@@ -119,6 +176,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const currentNavigationKey = `${props.deploymentUuid}-${props.applicationSection}-${props.reportSectionPath ?? 'root'}`;
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
+  const currentModel = useCurrentModel(props.application, props.applicationDeploymentMap);
+
   const entities = useMemo(() => {
     const result = props.deploymentUuid &&
       context.deploymentUuidToReportsEntitiesMapping &&
@@ -132,7 +191,8 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
 
   const currentListReportTargetEntity: Entity | undefined =
     reportSectionDefinitionFromFormik?.type === "objectListReportSection"
-      ? entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"]) 
+      ? entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"])
+        ?? currentModel.entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"])
       : undefined;
 
   /**
@@ -599,7 +659,12 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           // />
         )}
         {reportSectionDefinitionFromFormik?.type == "openReportSection" && (
-          <></>
+          <OpenReportSectionView
+            spec={reportSectionDefinitionFromFormik.definition}
+            application={props.application}
+            applicationSection={props.applicationSection}
+            deploymentUuid={props.deploymentUuid}
+          />
         )}
         {reportSectionDefinitionFromFormik?.type == "inputReportSection" && (
           <ReportInputSection

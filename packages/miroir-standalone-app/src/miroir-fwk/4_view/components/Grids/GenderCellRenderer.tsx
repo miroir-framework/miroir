@@ -31,6 +31,7 @@ export const ToolsCellRenderer: React.MemoExoticComponent<(props: ICellRendererP
     const onEdit = (props as any)["onClickEdit"];
     const onDuplicate = (props as any)["onClickDuplicate"];  
     const onDelete = (props as any)["onClickDelete"];
+    const onOpen = (props as any)["onClickOpen"];
 
     return (
       <TableActionButtons
@@ -38,6 +39,8 @@ export const ToolsCellRenderer: React.MemoExoticComponent<(props: ICellRendererP
         onEdit={onEdit}
         onDuplicate={onDuplicate}
         onDelete={onDelete}
+        onOpen={onOpen}
+        instanceUuid={(row?.rawValue as any)?.uuid}
         variant="ag-grid"
         size="small"
       />

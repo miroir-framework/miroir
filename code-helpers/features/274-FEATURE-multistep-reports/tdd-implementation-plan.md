@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/274
 Working branch: `274-FEATURE-multistep-reports`
 
-**Resume note:** Slices 0–4 ✅. Implementing remaining slices in order.
+**Resume note:** Slices 0–5 ✅. Implementing remaining slices in order.
 
 ---
 
@@ -70,7 +70,7 @@ This plan does **not** add a Form / FormRun Entity, persist drafts, wrap the wal
 | 2 | Pager host + UI process walk (completeness suite) | ✅ | `multistepProcess.274.integ.test.tsx` (`prepareAndRunTestSuites`) |
 | 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ✅ | `multistepProcess.274` (added cases) |
 | 4 | Object-instance hoist; query-failure keeps the bag | ✅ | `multistepProcess.274` (added cases) |
-| 5 | `openReportSection` + list `openReport` + pageParams | ⬜ | `multistepLaunch.274.phase5.integ.test.tsx` |
+| 5 | `openReportSection` + list `openReport` + pageParams | ✅ | `multistepLaunch.274.phase5.integ.test.tsx` |
 | 6 | Nonreg, docs, cleanup, AC | ⬜ | `unit-274-` + `integ-action-274-` + `appstack-274-multistep-reports` |
 
 ---
@@ -488,7 +488,7 @@ No stop-the-world product contradiction. Nested-Formik hoist and L445 unmount we
 
 ## Slice 5 — Launchers
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -542,7 +542,25 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation
 
 ### Realization
 
-<Appended on completion.>
+Launchers (P9, P16). New suite `multistepLaunch.274.phase5.integ.test.tsx` (`prepareAndRunTestSuites`, `wireLocalCacheCompositeAction: true`, same router / `ModelDiagramReportSectionView` mocks as the process suite). Frozen tracer `d2b2fbbd-…` and Slice 4 report `8f3c1a6e-…` were not edited. Completeness suite was not given Slice 5 cases. Phase0 inventory 86 → 87 (`b6d9e2a1-…` MultistepLaunchPad); list Reports 11 → 12 (`type: "list"` so all children show).
+
+**Report:** Library `MultistepLaunchPad` (`b6d9e2a1-4c58-4f70-8a13-9e2f0c5d7b44`). Two `openReportSection`s (modal / route) targeting the tracer; one Country `objectListReportSection` with `definition.openReport` (`openAs: "modal"`). Application / section / deployment come from page context.
+
+**Launch:** `OpenReportLaunch.tsx` holds `OpenReportSpec`, `resolveOpenReportPageParams`, `openReportHref` (`reportUrl`, no `step` key), and `OpenReportModal` (ThemedDialog shell only — children, not `storedReportDisplay`). `openReportSection` renders `ThemedStyledButton` (`data-testid="open-report-section-{openAs}"`): route → `navigate(openReportHref)`; modal → dialog + `ReportDisplay` with page `applicationDeploymentMap` (no RunnerView Miroir fallback).
+
+**List Open (P9):** `ReportSectionListDisplay` threads `rowOpenReport` into `EntityInstanceGrid`. Grid computes PK with `getInstancePrimaryKeyValue` (uuid-PK Country = `instance.uuid`) and calls `onRowOpenReport`. AG Grid `ToolsCellRenderer` / `TableActionButtons` grow optional Open (`data-testid="row-open-report"`). Glide gets `onRowOpenReport` + `OpenInNew`. ListDisplay owns the modal so the grid does not import `ReportDisplay` (avoids Grid→ReportDisplay→Grid).
+
+**Finish closes modal (D15):** `MultistepReportHost` optional `onDismissed` after successful Finish (and confirm-cancel). `ReportDisplay` forwards it. Modal wrappers set open state false. No product `useEffect`. Did not spy on `runMultistepFinish`.
+
+**Harness:** LaunchPad seeded in `getWrapperLoadingLocalCache` + `restoreLibraryMultistepTracerReportInJzodEditorTestCache`. List target entity falls back to `useCurrentModel` when `deploymentUuidToReportsEntitiesMapping` is empty (same idea as Slice 4). Force AG Grid (`viewParams.gridType` default). France row `b62fc20b-…` for list-open. `afterEach` deletes Country `63c96487-…`.
+
+**Files:** `packages/miroir-test-app_deployment-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/b6d9e2a1-4c58-4f70-8a13-9e2f0c5d7b44.json`, `Library.ts`, `index.ts`, `index.d.ts`, `OpenReportLaunch.tsx`, `ReportSectionViewWithEditor.tsx`, `ReportSectionListDisplay.tsx`, `ReportDisplay.tsx`, `MultistepReportHost.tsx`, `EntityInstanceGrid.tsx`, `EntityInstanceGridInterface.ts`, `GenderCellRenderer.tsx`, `TableActionButtons.tsx`, `GlideDataGridComponent.tsx`, `GlideToolsCellRenderer.tsx`, `MaterialIconCanvasRenderer.ts`, `MaterialSymbolWrappers.tsx`, `JzodElementEditorTestTools.tsx`, `multistepLaunch.274.phase5.integ.test.tsx`, `multistep.274.phase0.unit.test.ts`.
+
+**Deviations:** Confirm-cancel also calls `onDismissed` (D15 only requires Finish). `reportSectionsFormSchema` still throws for `objectListReportSection`; generated Jzod already has list `openReport` — did not change miroir schemas. Unused `TableActionButtons_new.tsx` not updated. Library `testByFile` filter is `modelValidation.unit` (vitest root is `./tests`). Menu AC stays `applicationModelScopeMenu.unit.test.ts` (no AppBar click); `reportUrl-has-no-step` in the launch suite (P16).
+
+**Validation:** `npm run build -w miroir-test-app_deployment-library` — pass. `npm run testByFile -w miroir-test-app_deployment-library -- modelValidation.unit` — 184/184 (includes MultistepLaunchPad). `RUN_TEST=multistepLaunch.274.phase5 … --profile emulatedServer-filesystem` — 5/5. `RUN_TEST=multistepProcess.274 …` — 16/16. `RUN_TEST=multistep.274.phase0 …` — 7/7. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — pass. `applicationModelScopeMenu.unit.test.ts` — 18/18.
+
+No stop-the-world product contradiction. AG Grid mounted in the harness; Open tools click found. `rowOpenReport` plumbing was expected work.
 
 ---
 

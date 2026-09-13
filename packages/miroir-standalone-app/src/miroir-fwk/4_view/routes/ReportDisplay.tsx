@@ -51,7 +51,8 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 // ################################################################################################
 export const ReportDisplay: React.FC<{
   pageParams: Params<ReportUrlParamKeys>;
-}> = ({ pageParams }) => {
+  onDismissed?: () => void;
+}> = ({ pageParams, onDismissed }) => {
   const context = useMiroirContextService();
   const theme = useMiroirTheme();
 
@@ -204,6 +205,7 @@ export const ReportDisplay: React.FC<{
                     pageParams={pageParams}
                     application={application}
                     applicationDeploymentMap={currentApplicationDeploymentMap}
+                    onDismissed={onDismissed}
                   >
                     {reportView}
                   </MultistepReportHost>
