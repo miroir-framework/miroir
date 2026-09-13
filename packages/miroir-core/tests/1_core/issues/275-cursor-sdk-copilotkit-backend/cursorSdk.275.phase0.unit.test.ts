@@ -140,10 +140,11 @@ if (runThis) {
     });
   });
 
-  describe("cursorSdk.275.phase0 — AI_SECRET_IMPORT_ALIASES is four token providers", () => {
-    it("exactly openai, anthropic, google, github", () => {
+  describe("cursorSdk.275.phase0 — AI_SECRET_IMPORT_ALIASES includes cursor import alias", () => {
+    it("openai, anthropic, google, github, and cursor (import-only)", () => {
       expect(Object.keys(AI_SECRET_IMPORT_ALIASES).sort()).toEqual([
         "anthropic",
+        "cursor",
         "github",
         "google",
         "openai",

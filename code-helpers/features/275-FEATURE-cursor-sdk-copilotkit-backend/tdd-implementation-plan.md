@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Slices 0–2 done. R6 construction gate: YES. Next: Slice 3 (`aiCursorKey` + health).
+**Resume note:** Slices 0–3 done. Next: Slice 4 (lazy SDK factory, dummy cwd, Node floor).
 
 ---
 
@@ -72,7 +72,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 | 0 | Characterize current AI / snapshot / MCP contracts | ✅ | `cursorSdk.275.phase0.unit.test.ts` |
 | 1 | **Tracer:** `features.cursor` + snapshot field | ✅ | `cursorSdk.275.phase1.unit.test.ts` + `devBuild` |
 | 2 | CopilotKit `agents` branch + refuse + filtered actions | ✅ | `cursorSdk.275.phase2.unit.test.ts` |
-| 3 | `aiCursorKey` alias + health text | ⬜ | `cursorSdk.275.phase3.unit.test.ts` |
+| 3 | `aiCursorKey` alias + health text | ✅ | `cursorSdk.275.phase3.unit.test.ts` |
 | 4 | Lazy SDK factory, dummy cwd, MCP loopback, Node floor | ⬜ | `cursorSdk.275.phase4.unit.test.ts` |
 | 5 | `propose_*` rename + lend form | ⬜ | `cursorSdk.275.phase5.unit.test.ts` |
 | 6 | sessionStorage picker sets CopilotKit `properties` | ⬜ | `cursorSdk.275.phase6.unit.test.ts` |
@@ -324,7 +324,7 @@ Validation re-run: miroir-ai phase2 9, standalone phase2 3, miroir-ai phase0 9, 
 
 ## Slice 3 — `aiCursorKey` + health
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -358,7 +358,9 @@ RUN_TEST=cursorSdk.275.phase3 npm run testByFile -w miroir-ai -- cursorSdk.275.p
 
 ### Realization
 
-<Appended on completion.>
+Fifth `AI_SECRET_IMPORT_ALIASES` row: `cursor` → `CURSOR_API_KEY` / `aiCursorKey`. `assembleSecretImportSet` maps the env unless the name already exists. `getApiKey` uses `TOKEN_PROVIDER_SECRET_ALIASES` so `"cursor"` still throws Unsupported (not a fifth token adapter). Health 503 lists `CURSOR_API_KEY`. Slice 0 alias pin now expects five keys. `#270` secretsImport.270 still passes (it never sets `CURSOR_API_KEY`).
+
+Validation re-run: core phase3 3, miroir-ai phase3 3.
 
 ---
 

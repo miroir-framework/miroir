@@ -17,6 +17,16 @@ import Anthropic from "@anthropic-ai/sdk";
 
 export type AiProviderType = "openai" | "anthropic" | "google" | "github";
 
+const TOKEN_PROVIDER_SECRET_ALIASES: Record<
+  AiProviderType,
+  (typeof AI_SECRET_IMPORT_ALIASES)[AiProviderType]
+> = {
+  openai: AI_SECRET_IMPORT_ALIASES.openai,
+  anthropic: AI_SECRET_IMPORT_ALIASES.anthropic,
+  google: AI_SECRET_IMPORT_ALIASES.google,
+  github: AI_SECRET_IMPORT_ALIASES.github,
+};
+
 export interface AiRuntimeConfig {
   providerType: AiProviderType;
   model: string;
@@ -28,7 +38,7 @@ export interface AiRuntimeConfig {
  * Keys are never exposed to the browser.
  */
 export function getApiKey(providerType: AiProviderType): string {
-  const alias = AI_SECRET_IMPORT_ALIASES[providerType];
+  const alias = TOKEN_PROVIDER_SECRET_ALIASES[providerType];
   if (!alias) {
     throw new Error(`Unsupported AI provider type: ${providerType}`);
   }

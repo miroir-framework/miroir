@@ -284,7 +284,7 @@ export function createCopilotKitRouter(
         message:
           "AI provider not configured. " +
           "Set AI_PROVIDER_TYPE, AI_MODEL, and the corresponding API key " +
-          "environment variable on the server (AI_OPENAI_KEY / AI_ANTHROPIC_KEY / AI_GOOGLE_KEY / AI_GITHUB_TOKEN).",
+          "environment variable on the server (AI_OPENAI_KEY / AI_ANTHROPIC_KEY / AI_GOOGLE_KEY / AI_GITHUB_TOKEN / CURSOR_API_KEY).",
       });
     }
   });
