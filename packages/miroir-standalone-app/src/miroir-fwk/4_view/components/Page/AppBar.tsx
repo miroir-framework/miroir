@@ -96,7 +96,7 @@ export interface AppBarProps extends MuiAppBarProps {
   // Grid type display and toggle
   gridType?: string,
   onGridTypeToggle?: () => void,
-  /** ViewParams.agents — AI AppBar icons and CopilotKit sidebar (#244). */
+  /** Snapshot processCapabilities.ai — AI AppBar icons and CopilotKit sidebar (#244). */
   agentsEnabled?: boolean,
   // Edit mode display and toggle
   generalEditMode?: boolean,
@@ -140,7 +140,7 @@ export function AppBar(props:AppBarProps) {
   const context = useMiroirContextService();
   const { fetchConfigurations } = usePageConfiguration();
   const agentsEnabled = props.agentsEnabled === true;
-  const showAgentUi = agentsEnabled && !(import.meta as any).env?.MIROIR_IS_SANDBOX;
+  const showAgentUi = agentsEnabled;
 
 
   const goToLabelPage = (event: any, l: string) => {

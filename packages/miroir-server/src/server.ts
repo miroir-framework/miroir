@@ -20,6 +20,7 @@ import {
   getClientEnvironment,
   getMiroirEnvironmentMode,
   getProcessCapabilities,
+  shouldMountCopilotKitRoute,
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
@@ -836,23 +837,32 @@ const mcpServer = await setupMcpServer(
 mcpServer.mountHttpRoutes(app);
 
 // AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
-app.use("/api/copilotkit", async (request: any, response: any, next: any) => {
-  const principal = authenticationEnabled
-    ? await resolveGatedPrincipal(
-        typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-      )
-    : undefined;
-  const gate = assertRequestAllowed({
-    enabled: authenticationEnabled,
-    principal,
-  });
-  if (!gate.allowed) {
-    response.status(gate.status).json(gate.body);
-    return;
-  }
-  next();
+const capabilities = getProcessCapabilities({
+  config: miroirConfig,
+  environment: getClientEnvironment(),
+  storeSectionFactoryRegister:
+    ConfigurationService.configurationService.StoreSectionFactoryRegister,
+  adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
 });
-app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap));
+if (shouldMountCopilotKitRoute(capabilities.ai)) {
+  app.use("/api/copilotkit", async (request: any, response: any, next: any) => {
+    const principal = authenticationEnabled
+      ? await resolveGatedPrincipal(
+          typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
+        )
+      : undefined;
+    const gate = assertRequestAllowed({
+      enabled: authenticationEnabled,
+      principal,
+    });
+    if (!gate.allowed) {
+      response.status(gate.status).json(gate.body);
+      return;
+    }
+    next();
+  });
+  app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap));
+}
 
 // ##############################################################################################
 // ##############################################################################################

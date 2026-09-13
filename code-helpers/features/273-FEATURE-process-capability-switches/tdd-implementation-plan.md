@@ -393,7 +393,7 @@ RUN_TEST=processCapabilitiesPicker.273.phase4 npm run testByFile -w miroir-stand
 
 ## Slice 5. AI hide, no bundle, drop ViewParams.agents
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -433,7 +433,7 @@ RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- pro
 
 ### Realization
 
-<Appended on completion.>
+`shouldMountCopilotKitRoute(ai)` in `processCapabilityRoutes.ts` is `ai === true`. `server.ts` computes the snapshot at the CopilotKit mount and wraps both `/api/copilotkit` uses. RootComponent latch and AppBar `agentsEnabled` prop now take `context.processCapabilities.ai`; Settings Agents switch is gone. `agents` removed from `ViewParams.ts`, Admin Entity mlSchema, and seed `441cb6fd-…` in this slice. Slice 0 agents assertions flipped to absent; CopilotKit string remains but is gated. #244 lazy `import()` of AgentsCopilotKit kept. 6/6 phase5, 3/3 auth phase6, 11/11 phase0, 52/52 modelValidation.
 
 ---
 

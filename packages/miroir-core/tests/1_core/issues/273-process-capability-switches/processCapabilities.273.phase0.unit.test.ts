@@ -83,25 +83,25 @@ if (runThis) {
     });
   });
 
-  describe("processCapabilities.273.phase0 — ViewParams still documents agents", () => {
-    it("ViewParams.ts source still contains agents", () => {
+  describe("processCapabilities.273.phase0 — ViewParams no longer documents agents", () => {
+    it("ViewParams.ts source has no agents field", () => {
       const src = readSource("0_interfaces/4-views/ViewParams.ts");
-      expect(src).toContain("agents");
+      expect(src).not.toMatch(/\bagents\b/);
     });
 
-    it("Admin ViewParams entity mlSchema has agents", () => {
+    it("Admin ViewParams entity mlSchema has no agents", () => {
       const entity = readJson(
         join(ADMIN_MODEL_ENTITIES, `${VIEW_PARAMS_ENTITY_UUID}.json`),
       );
       const mlSchema = entity.mlSchema as { definition?: Record<string, unknown> };
-      expect(mlSchema.definition).toHaveProperty("agents");
+      expect(mlSchema.definition).not.toHaveProperty("agents");
     });
 
-    it("Default ViewParams seed has agents: false", () => {
+    it("Default ViewParams seed has no agents key", () => {
       const seed = readJson(
         join(ADMIN_DATA, VIEW_PARAMS_ENTITY_UUID, `${VIEW_PARAMS_SEED_UUID}.json`),
       );
-      expect(seed.agents).toBe(false);
+      expect(seed).not.toHaveProperty("agents");
     });
   });
 
@@ -154,6 +154,7 @@ if (runThis) {
         "utf8",
       );
       expect(src).toContain('app.use("/api/copilotkit"');
+      expect(src).toContain("shouldMountCopilotKitRoute");
       expect(src).toContain("mountHttpRoutes");
       expect(src).toContain("mcpServer.run");
     });

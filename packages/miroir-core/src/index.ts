@@ -747,6 +747,7 @@ export {
   fetchProcessCapabilities,
   handleProcessCapabilitiesHttpRoute,
 } from "./4_services/ProcessCapabilitiesHttp";
+export { shouldMountCopilotKitRoute } from "./4_services/processCapabilityRoutes";
 export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,

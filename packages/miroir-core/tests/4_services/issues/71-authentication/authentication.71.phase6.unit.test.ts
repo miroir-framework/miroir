@@ -20,7 +20,11 @@ if (runThis) {
       const server = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/server.ts"), "utf8");
       expect(server).toContain('app.use("/api/copilotkit"');
       expect(server).toContain("assertRequestAllowed({");
-      const copilotBlock = server.slice(server.indexOf('app.use("/api/copilotkit"'));
+      const mountIdx = server.indexOf('app.use("/api/copilotkit"');
+      const gateIdx = server.indexOf("shouldMountCopilotKitRoute");
+      expect(gateIdx).toBeGreaterThanOrEqual(0);
+      expect(gateIdx).toBeLessThan(mountIdx);
+      const copilotBlock = server.slice(mountIdx);
       expect(copilotBlock).toContain("assertRequestAllowed");
     });
 
