@@ -24,6 +24,9 @@ import {
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
+  ELECTRON_LOOPBACK_ROOT_API_URL,
+  electronRuntimeBaseUrl,
+  getClientEnvironment,
   Domain2ElementFailed,
   getEndpointActions,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
@@ -465,7 +468,12 @@ export function StoredRunnerView(props: {
                             const envelope = await runMcpToolRunner(
                               runnerDefinitionFromLocalCache,
                               args,
-                              browserMcpServerUrl(),
+                              browserMcpServerUrl(
+                                getClientEnvironment(),
+                                electronRuntimeBaseUrl({
+                                  rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL,
+                                }),
+                              ),
                               context.processCapabilities,
                             );
                             if (envelope.status === "error") {

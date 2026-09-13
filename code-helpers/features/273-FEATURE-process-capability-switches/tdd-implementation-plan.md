@@ -20,7 +20,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/273
 Working branch: `273-FEATURE-process-capability-switches`
 
-**Resume note:** Slices 0 to 8 DONE. Implementing remaining slices.
+**Resume note:** Slices 0 to 9 DONE. Implementing Slice 10.
 
 ---
 
@@ -73,7 +73,7 @@ This plan does **not** add undo/redo/commit capabilities, debug overlays as flag
 | 6 | MCP refuse in `runMcpToolRunner` + both server mounts | ✅ | `processCapabilitiesMcp.273.phase6.unit.test.ts` |
 | 7 | Designer bulb + Alice Admin grant + Transformer Builder | ✅ | `processCapabilitiesDesigner.273.phase7.unit.test.ts` |
 | 8 | Versioning AppBar follows browsed-app `resolveVersioningMode` | ✅ | `processCapabilitiesVersioning.273.phase8.unit.test.ts` |
-| 9 | Electron loopback listen + remaining config patches | ⬜ | `processCapabilitiesElectron.273.phase9.unit.test.ts` |
+| 9 | Electron loopback listen + remaining config patches | ✅ | `processCapabilitiesElectron.273.phase9.unit.test.ts` |
 | 10 | Nonreg, docs, cleanup, AC | ⬜ | `unit-273-process-capabilities` + `appstack-273-process-capabilities` |
 
 ---
@@ -584,7 +584,7 @@ RUN_TEST=AppBarVersioning npm run testByFile -w miroir-standalone-app -- AppBarV
 
 ## Slice 9. Electron loopback listen + remaining config patches
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -628,7 +628,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app-electron/tscon
 
 ### Realization
 
-<Appended on completion.>
+Helpers in `processCapabilityRoutes.ts`: `shouldListenLoopbackHttp`, `electronRuntimeBaseUrl`, `copilotRuntimeUrl`, `browserMcpServerUrl`, shared `ELECTRON_LOOPBACK_ROOT_API_URL` (`http://127.0.0.1:3080`). Electron main `electronServerConfig` has `features: { ai, mcp, designerTools: true }` and listens on that loopback when either flag is true; CopilotKit and MCP `mountHttpRoutes` share that app (no second `mcpServer.run` port). Renderer `electronMiroirConfig` has no `features`; `AgentsCopilotKit`, MCP runner, and `AiActionsProvider` custom fetches use the helpers. Slice 0 now requires the gated listen. If 3080 is taken, listen logs and IPC still works. 9/9 phase9, 11/11 phase0, electron `tsc` clean.
 
 ---
 

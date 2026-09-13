@@ -20,6 +20,7 @@ import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   deploymentsFromInstances,
+  ELECTRON_LOOPBACK_ROOT_API_URL,
   expect,
   fetchProcessCapabilities,
   getClientEnvironment,
@@ -429,7 +430,7 @@ async function startWebApp(root: Root) {
     miroirConfigType: "client",
     client: {
       emulateServer: true,
-      rootApiUrl: "http://localhost:3080",
+      rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL,
       filesystemDeploymentRootDirectory,
       deploymentStorageConfig: {
         "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {

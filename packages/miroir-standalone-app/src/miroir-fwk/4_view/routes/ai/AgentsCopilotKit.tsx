@@ -10,6 +10,12 @@
  */
 import React from "react";
 import { CopilotKit } from "@copilotkit/react-core";
+import {
+  copilotRuntimeUrl,
+  ELECTRON_LOOPBACK_ROOT_API_URL,
+  electronRuntimeBaseUrl,
+  getClientEnvironment,
+} from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
 
 import { AiActionsProvider } from "./AiActionsProvider.js";
@@ -25,7 +31,10 @@ export function AgentsCopilotKit(): React.JSX.Element | null {
 
   return (
     <CopilotKit
-      runtimeUrl="/api/copilotkit"
+      runtimeUrl={copilotRuntimeUrl(
+        getClientEnvironment(),
+        electronRuntimeBaseUrl({ rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL }),
+      )}
       showDevConsole={false}
       enableInspector={showCopilotDevConsole}
     >

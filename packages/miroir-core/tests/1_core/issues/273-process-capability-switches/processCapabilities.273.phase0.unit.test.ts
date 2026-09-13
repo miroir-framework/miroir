@@ -162,15 +162,14 @@ if (runThis) {
     });
   });
 
-  describe("processCapabilities.273.phase0 — Electron IPC has no agent servers", () => {
-    it("ipcServerSetup.ts has no listen(, CopilotKit, or mcpServer", () => {
+  describe("processCapabilities.273.phase0 — Electron IPC has gated loopback listen", () => {
+    it("ipcServerSetup.ts uses shouldListenLoopbackHttp and listen", () => {
       const src = readFileSync(
         join(REPO_ROOT, "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts"),
         "utf8",
       );
-      expect(src).not.toMatch(/\blisten\s*\(/);
-      expect(src).not.toContain("CopilotKit");
-      expect(src).not.toContain("mcpServer");
+      expect(src).toContain("shouldListenLoopbackHttp");
+      expect(src).toMatch(/\blisten\s*\(/);
     });
   });
 }

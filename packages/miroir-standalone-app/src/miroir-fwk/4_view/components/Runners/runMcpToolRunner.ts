@@ -1,5 +1,7 @@
-import type { ProcessCapabilities, Runner } from "miroir-core";
+import { browserMcpServerUrl, type ProcessCapabilities, type Runner } from "miroir-core";
 import { callMcpToolViaHttp, type McpHttpFetch } from "miroir-mcp/client";
+
+export { browserMcpServerUrl };
 
 export type McpToolRunnerEnvelope = {
   status?: string;
@@ -49,9 +51,3 @@ export async function runMcpToolRunner(
   }
 }
 
-export function browserMcpServerUrl(): string {
-  if (typeof window !== "undefined" && window.location?.origin) {
-    return window.location.origin;
-  }
-  return "http://127.0.0.1";
-}

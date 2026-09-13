@@ -19,7 +19,11 @@ import "@copilotkit/react-ui/styles.css";
 import "./aiSidebar.css";
 
 import {
+  copilotRuntimeUrl,
   defaultSelfApplicationDeploymentMap,
+  ELECTRON_LOOPBACK_ROOT_API_URL,
+  electronRuntimeBaseUrl,
+  getClientEnvironment,
   LoggerInterface,
   MiroirLoggerFactory,
 } from "miroir-core";
@@ -59,6 +63,14 @@ const DEPLOYMENTS_SELECTOR_PARAMS = {
 };
 
 const ENTITY_ENTITY_UUID = entityEntity.uuid;
+
+function copilotKitHttpUrl(path: string): string {
+  const runtime = copilotRuntimeUrl(
+    getClientEnvironment(),
+    electronRuntimeBaseUrl({ rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL }),
+  );
+  return `${runtime}${path.startsWith("/") ? path : `/${path}`}`;
+}
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AiActionsProvider");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -435,7 +447,7 @@ function AiActionsProviderInner(): React.JSX.Element {
       },
     ],
     handler: async ({ applicationUuid, deploymentUuid, entityName }: Record<string, any>) => {
-      const response = await fetch("/api/copilotkit/findInstanceByName", {
+      const response = await fetch(copilotKitHttpUrl("/findInstanceByName"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -487,7 +499,7 @@ function AiActionsProviderInner(): React.JSX.Element {
       entityUuid,
       namePattern,
     }: Record<string, any>) => {
-      const response = await fetch("/api/copilotkit/findInstanceByName", {
+      const response = await fetch(copilotKitHttpUrl("/findInstanceByName"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -537,7 +549,7 @@ function AiActionsProviderInner(): React.JSX.Element {
       },
     ],
     handler: async ({ user, book, startDate, note }: Record<string, any>) => {
-      const response = await fetch("/api/copilotkit/lendDocument", {
+      const response = await fetch(copilotKitHttpUrl("/lendDocument"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user, book, startDate, note }),

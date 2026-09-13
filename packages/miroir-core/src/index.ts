@@ -747,7 +747,15 @@ export {
   fetchProcessCapabilities,
   handleProcessCapabilitiesHttpRoute,
 } from "./4_services/ProcessCapabilitiesHttp";
-export { shouldMountCopilotKitRoute, shouldMountMcpHttp } from "./4_services/processCapabilityRoutes";
+export {
+  ELECTRON_LOOPBACK_ROOT_API_URL,
+  browserMcpServerUrl,
+  copilotRuntimeUrl,
+  electronRuntimeBaseUrl,
+  shouldListenLoopbackHttp,
+  shouldMountCopilotKitRoute,
+  shouldMountMcpHttp,
+} from "./4_services/processCapabilityRoutes";
 export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
