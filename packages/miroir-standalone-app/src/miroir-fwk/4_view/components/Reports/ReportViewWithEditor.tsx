@@ -69,17 +69,27 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
     props.pageParams,
   );
   const context = useMiroirContextService();
-  /** Sidebar application + URL page params — exposed to report transformers (#225). */
-  const reportInterpreterPageParams = useMemo(
-    () => ({
-      ...props.pageParams,
-      applicationSelector: context.toolsPageState?.applicationSelector,
-    }),
-    [props.pageParams, context.toolsPageState?.applicationSelector],
-  );
   const outlineContext = useDocumentOutlineContext();
   const { showSnackbar, handleAsyncAction } = useSnackbar();
   const domainController: DomainControllerInterface = useDomainControllerService();
+  const multistepHost = useOptionalMultistepReportHost();
+  /** Sidebar application + URL page params — exposed to report transformers (#225). */
+  const reportInterpreterPageParams = useMemo(
+    () => {
+      const launchPageParams = {
+        ...props.pageParams,
+        applicationSelector: context.toolsPageState?.applicationSelector,
+      };
+      if (!multistepHost) {
+        return launchPageParams;
+      }
+      return {
+        ...launchPageParams,
+        ...multistepHost.stepBag,
+      };
+    },
+    [props.pageParams, context.toolsPageState?.applicationSelector, multistepHost?.stepBag],
+  );
 
   // Keep service identity stable across applicationDeploymentMap object churn
   // (see useReportQueryLoadService) so load status does not reset to "loading".
@@ -89,7 +99,6 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   );
 
   const generalEditMode = context.viewParams.generalEditMode;
-  const multistepHost = useOptionalMultistepReportHost();
   
   // ##############################################################################################
   // ##############################################################################################
@@ -128,9 +137,10 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
                 }
               : {
                   queryType: "boxedQueryWithExtractorCombinerTransformer",
-                  application: "",
+                  application: reportInterpreterPageParams.application ?? "NO_APPLICATION",
                   pageParams: reportInterpreterPageParams,
                   extractors: {},
+                  runtimeTransformers: props.reportDefinition.definition.runtimeTransformers,
                 }
           : undefined;
       log.info("ReportViewWithEditor reportDataQueryBase", result);
@@ -406,6 +416,9 @@ export const ReportViewWithEditor = (props: ReportViewWithEditorProps) => {
   // ##############################################################################################
   return (
     <>
+      <pre data-testid="report-query-pageparams" hidden>
+        {JSON.stringify(reportInterpreterPageParams)}
+      </pre>
       {/* <span>ReportViewWithEditor generalEditMode: {generalEditMode ? "true" : "false"}</span> */}
       <Box sx={{ position: "relative" }}>
         {reportQueryLoadStatus === "loading" ? (

@@ -94,11 +94,21 @@ export const ReportDisplay: React.FC<{
     currentModel.reports?.find((r: Report) => r.uuid == pageParams.reportUuid) ??
     defaultReport;
 
-  
+  const isMultistepReport = currentMiroirReport.type === "multistep";
+  if (
+    isMultistepReport &&
+    (currentMiroirReport.definition.runStoredQueries?.length ?? 0) > 0
+  ) {
+    log.warn(
+      "runStoredQueries is unsupported on multistep reports; skipping",
+      currentMiroirReport.uuid,
+    );
+  }
+
   const currentStoredQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
   > = useStoredQueriesResults(
-    currentMiroirReport.definition.runStoredQueries,
+    isMultistepReport ? undefined : currentMiroirReport.definition.runStoredQueries,
     currentModel,
     pageParams,
     application,
@@ -117,6 +127,9 @@ export const ReportDisplay: React.FC<{
 
   return (
     <>
+      <pre data-testid="report-stored-query-data" hidden>
+        {JSON.stringify(currentStoredQueryData ?? {})}
+      </pre>
       <JsonDisplayHelper debug={true}
         componentName="ReportDisplay"
         elements={[

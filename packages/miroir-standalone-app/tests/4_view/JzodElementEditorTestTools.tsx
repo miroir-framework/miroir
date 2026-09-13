@@ -68,6 +68,7 @@ import {
   entityEntityVersion,
   entityJzodSchema,
   entityMenu,
+  entityQueryVersion,
   entityReport,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
@@ -335,6 +336,67 @@ export function deleteLibraryCountryFromJzodEditorTestCache(
     } as any,
     jzodEditorTestApplicationDeploymentMap,
   );
+}
+
+function upsertInstanceInJzodEditorTestCache(
+  application: string,
+  applicationSection: ApplicationSection,
+  instance: EntityInstance,
+): void {
+  if (!jzodEditorTestLocalCache) {
+    throw new Error("upsertInstanceInJzodEditorTestCache: localCache is not initialized");
+  }
+  const deploymentUuid = jzodEditorTestApplicationDeploymentMap[application];
+  const domainState = jzodEditorTestLocalCache.getDomainState();
+  const existing =
+    domainState?.[deploymentUuid]?.[applicationSection]?.[instance.parentUuid]?.[instance.uuid];
+  const result = jzodEditorTestLocalCache.handleLocalCacheAction(
+    {
+      actionType: existing ? "updateInstance" : "createInstance",
+      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+      payload: {
+        application,
+        applicationSection,
+        parentUuid: instance.parentUuid,
+        objects: [instance],
+      },
+    } as any,
+    jzodEditorTestApplicationDeploymentMap,
+  );
+  if (result.status !== "ok") {
+    throw new Error(
+      `upsertInstanceInJzodEditorTestCache failed: ${JSON.stringify(result)}`,
+    );
+  }
+}
+
+export function upsertLibraryReportInJzodEditorTestCache(report: EntityInstance): void {
+  upsertInstanceInJzodEditorTestCache(
+    selfApplicationLibrary.uuid,
+    "model",
+    {
+      ...report,
+      parentUuid: report.parentUuid ?? entityReport.uuid,
+    } as EntityInstance,
+  );
+}
+
+export function upsertLibraryStoredQueryInJzodEditorTestCache(query: EntityInstance): void {
+  upsertInstanceInJzodEditorTestCache(
+    selfApplicationLibrary.uuid,
+    "model",
+    {
+      ...query,
+      parentUuid: query.parentUuid ?? entityQueryVersion.uuid,
+    } as EntityInstance,
+  );
+}
+
+export function restoreLibraryMultistepTracerReportInJzodEditorTestCache(): void {
+  if (!jzodEditorTestLocalCache) {
+    return;
+  }
+  upsertLibraryReportInJzodEditorTestCache(reportMultistepCountryCreate as EntityInstance);
 }
 
 export interface ReactComponentTestCase<PropType extends Record<string, any>> {

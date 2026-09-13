@@ -12,6 +12,9 @@ import {
   reportMultistepCountryCreate,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
+import {
+  selfApplicationMiroir,
+} from "miroir-test-app_deployment-miroir";
 
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
 import type { ReportViewProps } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
@@ -21,11 +24,15 @@ import {
   getLibraryCountryFromJzodEditorTestCache,
   LIBRARY_TEST_TRACER_COUNTRY_UUID,
   prepareAndRunTestSuites,
+  restoreLibraryMultistepTracerReportInJzodEditorTestCache,
   upsertLibraryCountryInJzodEditorTestCache,
+  upsertLibraryReportInJzodEditorTestCache,
+  upsertLibraryStoredQueryInJzodEditorTestCache,
   waitAfterUserInteraction,
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
 } from "../../JzodElementEditorTestTools";
+import bookCountByPublisherQuery from "../../../../../miroir-test-app_deployment-library/assets/library_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/6176dcdf-39a6-4805-8dc5-3c2366a31a11.json" with { type: "json" };
 
 const LIBRARY_APPLICATION_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
@@ -64,12 +71,18 @@ const tracerPageParams = {
   reportUuid: MULTISTEP_REPORT_UUID,
 };
 
+const BOOK_COUNT_BY_PUBLISHER_QUERY_UUID = "6176dcdf-39a6-4805-8dc5-3c2366a31a11";
+
+const { navigateMock } = vi.hoisted(() => ({
+  navigateMock: vi.fn(),
+}));
+
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
     ...actual,
     useParams: vi.fn(),
-    useNavigate: vi.fn(),
+    useNavigate: () => navigateMock,
     useSearchParams: () => [new URLSearchParams(), vi.fn()],
   };
 });
@@ -144,6 +157,34 @@ function expectMarkdownConfirm(present: boolean) {
   } else {
     expect(text).toBeNull();
   }
+}
+
+function cloneFrozenTracer(): any {
+  return structuredClone(reportMultistepCountryCreate);
+}
+
+function readJsonTestId(testId: string): any {
+  const node = screen.getByTestId(testId);
+  const raw = node.textContent ?? "";
+  return raw.length > 0 ? JSON.parse(raw) : {};
+}
+
+async function waitForTracerCloneOnScreen() {
+  await waitFor(() => {
+    expect(screen.getByTestId("multistep-report-host")).toBeTruthy();
+  });
+}
+
+async function changeApplicationFieldToMiroir(container: Container) {
+  const applicationInput = await waitFor(() => {
+    const input = inputByName(container, "stepOne.application");
+    expect(input).toBeTruthy();
+    return input as HTMLInputElement;
+  });
+  await act(async () => {
+    fireEvent.change(applicationInput, { target: { value: selfApplicationMiroir.uuid } });
+  });
+  await waitAfterUserInteraction();
 }
 
 const pageLabel = "multistepProcess.274";
@@ -379,6 +420,154 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 ).toEqual("TL");
               },
             },
+            "later-step-query-sees-bag": {
+              props: {
+                application: selfApplicationLibrary.uuid,
+                applicationSection: "data",
+                deploymentUuid: deployment_Library.uuid,
+                pageParams: tracerPageParams,
+                reportDefinition: reportMultistepCountryCreate as any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              },
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                await typeStepOne(container, "Testland", "TL");
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                expect(screen.getByRole("button", { name: "Finish" })).toBeTruthy();
+                await waitFor(() => {
+                  const echoDocument = Array.from(container.querySelectorAll("pre")).find((node) => {
+                    if (node.getAttribute("data-testid")) {
+                      return false;
+                    }
+                    return (node.textContent ?? "").includes("Testland");
+                  });
+                  expect(echoDocument).toBeTruthy();
+                });
+              },
+            },
+            "query-pageparams-is-launch-plus-bag": {
+              props: {
+                application: selfApplicationLibrary.uuid,
+                applicationSection: "data",
+                deploymentUuid: deployment_Library.uuid,
+                pageParams: tracerPageParams,
+                reportDefinition: reportMultistepCountryCreate as any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              },
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                await typeStepOne(container, "Testland", "TL");
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                const pageParams = await waitFor(() => {
+                  const parsed = readJsonTestId("report-query-pageparams");
+                  expect(parsed.stepOne?.name).toEqual("Testland");
+                  return parsed;
+                });
+                expect(pageParams).not.toHaveProperty("pageParams");
+                expect(pageParams.stepOne).toEqual({
+                  name: "Testland",
+                  "iso3166-1Alpha-2": "TL",
+                });
+                expect(pageParams.application).toEqual(LIBRARY_APPLICATION_UUID);
+                expect(pageParams.reportUuid).toEqual(MULTISTEP_REPORT_UUID);
+                expect(pageParams.applicationSection).toEqual("data");
+                expect(pageParams.deploymentUuid).toEqual(deployment_Library.uuid);
+                expect(pageParams.reportData).toBeUndefined();
+                expect(pageParams[reportMultistepCountryCreate.name]).toBeUndefined();
+                expect(container).toBeTruthy();
+              },
+            },
+            "input-apply-does-not-navigate": {
+              props: {
+                application: selfApplicationLibrary.uuid,
+                applicationSection: "data",
+                deploymentUuid: deployment_Library.uuid,
+                pageParams: tracerPageParams,
+                reportDefinition: reportMultistepCountryCreate as any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              },
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                const clone = cloneFrozenTracer();
+                clone.definition.section.definition[0].definition.urlParamFields = ["name"];
+                upsertLibraryReportInJzodEditorTestCache(clone);
+                await waitFor(() => {
+                  expect(screen.getByRole("button", { name: "OK" })).toBeTruthy();
+                });
+                await typeStepOne(container, "Testland", "TL");
+                const searchBefore = window.location.search;
+                navigateMock.mockClear();
+                fireEvent.click(screen.getByRole("button", { name: "OK" }));
+                await waitAfterUserInteraction();
+                expect(window.location.search).toEqual(searchBefore);
+                expect(navigateMock).not.toHaveBeenCalled();
+              },
+            },
+            "application-field-does-not-navigate": {
+              props: {
+                application: selfApplicationLibrary.uuid,
+                applicationSection: "data",
+                deploymentUuid: deployment_Library.uuid,
+                pageParams: tracerPageParams,
+                reportDefinition: reportMultistepCountryCreate as any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              },
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                const clone = cloneFrozenTracer();
+                clone.definition.section.definition[0].definition.inputMLSchema.definition.application =
+                  {
+                    type: "uuid",
+                    optional: true,
+                    tag: {
+                      value: {
+                        defaultLabel: "Application",
+                      },
+                    },
+                  };
+                upsertLibraryReportInJzodEditorTestCache(clone);
+                navigateMock.mockClear();
+                await changeApplicationFieldToMiroir(container);
+                const navigateCalls = navigateMock.mock.calls.map((call) => String(call[0] ?? ""));
+                expect(
+                  navigateCalls.some((url) => url.includes("page=report") || url.startsWith("/?")),
+                ).toBe(false);
+              },
+            },
+            "runStoredQueries-skipped": {
+              props: {
+                application: selfApplicationLibrary.uuid,
+                applicationSection: "data",
+                deploymentUuid: deployment_Library.uuid,
+                pageParams: tracerPageParams,
+                reportDefinition: reportMultistepCountryCreate as any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              },
+              tests: async (expect: ExpectStatic, _container: Container) => {
+                await waitForHost();
+                upsertLibraryStoredQueryInJzodEditorTestCache(bookCountByPublisherQuery as any);
+                const clone = cloneFrozenTracer();
+                clone.definition.runStoredQueries = [
+                  {
+                    storedQuery: BOOK_COUNT_BY_PUBLISHER_QUERY_UUID,
+                    label: "BookCountByPublisher",
+                  },
+                ];
+                upsertLibraryReportInJzodEditorTestCache(clone);
+                await waitForTracerCloneOnScreen();
+                await waitAfterUserInteraction();
+                await waitAfterUserInteraction();
+                const stored = await waitFor(() => readJsonTestId("report-stored-query-data"));
+                expect(stored?.["00_BookCountByPublisher"]).toBeFalsy();
+                const storedJson = JSON.stringify(stored ?? {});
+                expect(storedJson).not.toContain("00_BookCountByPublisher");
+                expect(storedJson).not.toMatch(/publisherName/);
+              },
+            },
           },
         },
       };
@@ -389,6 +578,8 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
 describe("multistepProcess.274", () => {
   afterEach(() => {
     deleteLibraryCountryFromJzodEditorTestCache();
+    restoreLibraryMultistepTracerReportInJzodEditorTestCache();
+    navigateMock.mockClear();
   });
   prepareAndRunTestSuites(
     pageLabel,

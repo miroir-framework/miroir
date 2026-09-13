@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/274
 Working branch: `274-FEATURE-multistep-reports`
 
-**Resume note:** Slices 0–2 ✅. Implementing remaining slices in order.
+**Resume note:** Slices 0–3 ✅. Implementing remaining slices in order.
 
 ---
 
@@ -68,7 +68,7 @@ This plan does **not** add a Form / FormRun Entity, persist drafts, wrap the wal
 | 0 | Characterize Report.type, Formik dump, schema switch, nested Formik | ✅ | `multistep.274.phase0.unit.test.ts` |
 | 1 | **Tracer:** schema + Finish template + step bag creates Country | ✅ | MiroirTest `multistepFinish.274` (integ) + modelValidation |
 | 2 | Pager host + UI process walk (completeness suite) | ✅ | `multistepProcess.274.integ.test.tsx` (`prepareAndRunTestSuites`) |
-| 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ⬜ | `multistepProcess.274` (added cases) |
+| 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ✅ | `multistepProcess.274` (added cases) |
 | 4 | Object-instance hoist; query-failure keeps the bag | ⬜ | `multistepProcess.274` (added cases) |
 | 5 | `openReportSection` + list `openReport` + pageParams | ⬜ | `multistepLaunch.274.phase5.integ.test.tsx` |
 | 6 | Nonreg, docs, cleanup, AC | ⬜ | `unit-274-` + `integ-action-274-` + `appstack-274-multistep-reports` |
@@ -355,7 +355,7 @@ No stop-the-world product contradiction. Harness stub-DC and missing-tracer-in-w
 
 ## Slice 3 — Later-step query + no URL writes + skip `runStoredQueries`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -395,7 +395,21 @@ RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --p
 
 ### Realization
 
-<Appended on completion.>
+D8 query merge + URL skip + stored-query skip. Same completeness suite (`multistepProcess.274.integ.test.tsx`) gained five cases: `later-step-query-sees-bag`, `query-pageparams-is-launch-plus-bag`, `input-apply-does-not-navigate`, `application-field-does-not-navigate`, `runStoredQueries-skipped`. Frozen tracer JSON was not edited. In-test clones overwrite the tracer uuid in the wrapper cache and `afterEach` restores it.
+
+**Merge:** `ReportViewWithEditor` builds query `pageParams` (`reportInterpreterPageParams`) as `{ ...launchPageParams, applicationSelector, ...stepBag }` when a multistep host is present. Formik’s `pageParams` key stays launch-only. Bag keys stay top-level via the existing host merge. Observation: hidden `data-testid="report-query-pageparams"`. The tracer’s `stepOneEcho` is `runtimeTransformers` only (no extractors); the boxed-query fallback now keeps those transformers so step 2 can echo `stepOne.name`.
+
+**URL skip:** `ReportInputSection` reads `useOptionalMultistepReportHost()`. Apply/OK and the `application` onChangeVector do not `navigate`. Values stay in Formik / the host bag. Apply/OK and application cases use in-test clones (`urlParamFields: ["name"]`; plain optional `application` uuid field).
+
+**Stored-query skip:** `ReportDisplay` always calls `useStoredQueriesResults` (rules of hooks). On `type === "multistep"` it passes `undefined` and logs a warning if `runStoredQueries` is present. Observation: hidden `data-testid="report-stored-query-data"`. The skip case seeds Library `BookCountByPublisher` (`6176dcdf-…`) into the wrapper cache so a forgotten skip would produce `00_BookCountByPublisher` rows.
+
+**Files:** `ReportViewWithEditor.tsx`, `ReportInputSection.tsx`, `ReportDisplay.tsx`, `JzodElementEditor.tsx` (uuid text path now fires `onChangeVector` so a plain `application` uuid change hits the skip), `JzodElementEditorTestTools.tsx` (report / stored-query upsert + tracer restore), `multistepProcess.274.integ.test.tsx`.
+
+**Deviations:** No sibling `multistepQuery.274.phase3.integ.test.tsx`. Query pageParams observed via a small testid (JsonDisplayHelper dumps stay behind `showDebugInfo`). Application clone is a plain uuid field, not Versioning’s admin FK selector — that path throws `getDefaultValueForJzodSchemaWithResolution … no reduxDeploymentsState` in this harness. No product `useEffect`. Did not spy on `runMultistepFinish`.
+
+**Validation:** `RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274` — 12/12 (7 Slice 2 + 5 Slice 3). `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — pass.
+
+No stop-the-world product contradiction. Missing `urlParamFields` on the frozen tracer and the conditional-hook temptation were expected and handled as above.
 
 ---
 
