@@ -27,6 +27,10 @@ import {
   type AiRuntimeConfig,
 } from "../runtime/copilotRuntimeFactory.js";
 import { createMiroirCopilotKitActions, createLendDocumentExecutor } from "../tools/miroirCopilotKitActions.js";
+import {
+  createCursorAbstractAgent as createDefaultCursorAbstractAgent,
+  type ImportCursorSdk,
+} from "../runtime/cursorAgent.js";
 
 const CURSOR_RUNTIME_EXCLUDED_ACTION_NAMES = new Set([
   "generateMiroirReport",
@@ -36,7 +40,11 @@ const CURSOR_RUNTIME_EXCLUDED_ACTION_NAMES = new Set([
 export type CreateCopilotKitRouterOptions = {
   capabilities?: ProcessCapabilities;
   getCapabilities?: () => ProcessCapabilities;
-  createCursorAbstractAgent?: () => AbstractAgent;
+  createCursorAbstractAgent?: () => AbstractAgent | Promise<AbstractAgent>;
+  mcpHttpUrl?: string;
+  apiPort?: number;
+  nodeVersion?: string;
+  importSdk?: ImportCursorSdk;
   createCopilotRuntime?: (options: {
     agents: { cursor: AbstractAgent };
     actions: Action<Parameter[]>[];
@@ -315,16 +323,20 @@ export function createCopilotKitRouter(
         }
       }
 
-      const createCursorAbstractAgent = options?.createCursorAbstractAgent;
-      if (!createCursorAbstractAgent) {
-        res.status(503).json({ error: "Cursor agent is not configured" });
-        return;
-      }
+      const createCursorAbstractAgent =
+        options?.createCursorAbstractAgent ??
+        (() =>
+          createDefaultCursorAbstractAgent({
+            mcpHttpUrl: options?.mcpHttpUrl,
+            apiPort: options?.apiPort,
+            nodeVersion: options?.nodeVersion,
+            importSdk: options?.importSdk,
+          }));
 
       let runtime: ReturnType<typeof createRuntime>;
       try {
         runtime = createRuntime({
-          agents: { cursor: createCursorAbstractAgent() },
+          agents: { cursor: await createCursorAbstractAgent() },
           actions: filterCursorRuntimeActions(actions),
         });
       } catch (err) {

@@ -865,7 +865,8 @@ if (shouldMountCopilotKitRoute(capabilities.ai)) {
     }
     next();
   });
-  app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap, { capabilities }));
+  const mcpHttpUrl = `http://127.0.0.1:${restPortFromConfig}/mcp`;
+  app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap, { capabilities, mcpHttpUrl }));
 }
 
 // ##############################################################################################

@@ -109,16 +109,18 @@ if (runThis) {
     });
   });
 
-  describe("cursorSdk.275.phase0 — no @cursor/sdk in package.json files", () => {
-    it("root and AI/server packages have no @cursor/sdk dependency", () => {
-      const packagePaths = [
+  describe("cursorSdk.275.phase0 — @cursor/sdk lives on miroir-ai only", () => {
+    it("miroir-ai lists @cursor/sdk; root / server / app / electron do not", () => {
+      expect(packageHasCursorSdkDependency(readPackageJson("packages/miroir-ai/package.json"))).toBe(
+        true,
+      );
+      const otherPackagePaths = [
         "package.json",
-        "packages/miroir-ai/package.json",
         "packages/miroir-server/package.json",
         "packages/miroir-standalone-app/package.json",
         "packages/miroir-standalone-app-electron/package.json",
       ];
-      for (const path of packagePaths) {
+      for (const path of otherPackagePaths) {
         expect(packageHasCursorSdkDependency(readPackageJson(path))).toBe(false);
       }
     });

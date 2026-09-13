@@ -43,7 +43,7 @@ if (runThis) {
     it("server.ts passes capabilities into createCopilotKitRouter", () => {
       const src = readRepoFile("packages/miroir-server/src/server.ts");
       expect(src).toContain(
-        "createCopilotKitRouter(domainController, applicationDeploymentMap, { capabilities })",
+        "createCopilotKitRouter(domainController, applicationDeploymentMap, { capabilities, mcpHttpUrl })",
       );
     });
 
@@ -52,7 +52,7 @@ if (runThis) {
         "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts",
       );
       expect(src).toContain(
-        "createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities })",
+        "createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities, mcpHttpUrl })",
       );
     });
   });

@@ -239,9 +239,11 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
     });
 
     if (shouldMountCopilotKitRoute(capabilities.ai)) {
+      const listenUrl = new URL(ELECTRON_LOOPBACK_ROOT_API_URL);
+      const mcpHttpUrl = `http://127.0.0.1:${Number(listenUrl.port) || 3080}/mcp`;
       loopbackApp.use(
         "/api/copilotkit",
-        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities }),
+        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities, mcpHttpUrl }),
       );
     }
 

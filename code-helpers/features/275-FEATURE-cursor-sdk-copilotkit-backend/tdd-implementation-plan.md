@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Slices 0–3 done. Next: Slice 4 (lazy SDK factory, dummy cwd, Node floor).
+**Resume note:** Slices 0–4 done. R6 construction gate still YES. Next: Slice 5 (`propose_*`).
 
 ---
 
@@ -73,7 +73,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 | 1 | **Tracer:** `features.cursor` + snapshot field | ✅ | `cursorSdk.275.phase1.unit.test.ts` + `devBuild` |
 | 2 | CopilotKit `agents` branch + refuse + filtered actions | ✅ | `cursorSdk.275.phase2.unit.test.ts` |
 | 3 | `aiCursorKey` alias + health text | ✅ | `cursorSdk.275.phase3.unit.test.ts` |
-| 4 | Lazy SDK factory, dummy cwd, MCP loopback, Node floor | ⬜ | `cursorSdk.275.phase4.unit.test.ts` |
+| 4 | Lazy SDK factory, dummy cwd, MCP loopback, Node floor | ✅ | `cursorSdk.275.phase4.unit.test.ts` |
 | 5 | `propose_*` rename + lend form | ⬜ | `cursorSdk.275.phase5.unit.test.ts` |
 | 6 | sessionStorage picker sets CopilotKit `properties` | ⬜ | `cursorSdk.275.phase6.unit.test.ts` |
 | 7 | Electron dummy cwd + packaging pin | ⬜ | `cursorSdk.275.phase7.unit.test.ts` |
@@ -366,7 +366,7 @@ Validation re-run: core phase3 3, miroir-ai phase3 3.
 
 ## Slice 4 — Lazy SDK, dummy cwd, MCP loopback, Node floor
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -407,7 +407,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-ai/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+`cursorAgent.ts` lazy-loads `@cursor/sdk` (`^1.0.31` on `miroir-ai` only). Default `createCopilotKitRouter` factory is this module. `Agent.create` (installed types) uses `apiKey` from `aiCursorKey`, `model: { id: "auto" }`, `tools: ["mcp"]`, `local.cwd` under `os.tmpdir()/.miroir-cursor-cwd`, and `mcpServers.miroir` HTTP `http://127.0.0.1:<port>/mcp` with no Authorization. Node below 22.13.0 throws; the Cursor route maps that to 503. Token path still works. `server.ts` / `ipcServerSetup.ts` pass `mcpHttpUrl`. No static SDK import on those entrypoints.
+
+Wrapper `run()` maps SDK assistant text chunks to AG-UI `RUN_STARTED` / `TEXT_MESSAGE_*` / `RUN_FINISHED`. Not mapped yet: SDK `tool_call` / thinking / status → AG-UI `TOOL_CALL_*`. CopilotKit `propose_*` stay frontend actions (D8), not `local.customTools`. That leftover is not a Slice 5 gate.
+
+Workspace `npm install -w miroir-ai` hit an npm 11 arborist crash; isolated install of `@cursor/sdk@1.0.31` plus lockfile merge was used. `npm ci` should still resolve from the lockfile.
+
+Validation re-run: phase4 7, phase2 9, phase0 9, standalone phase2 3, `tsc` miroir-ai.
 
 ---
 
