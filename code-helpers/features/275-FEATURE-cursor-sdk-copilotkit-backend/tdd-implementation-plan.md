@@ -7,7 +7,8 @@
 > at a factory seam in tests (same exception as #267 `parseServerArgs` / #270
 > `SecretsService`) so CI does not need `CURSOR_API_KEY` or native binaries for
 > the tracer. Tracer (Slice 1→2): snapshot grows `cursor`, then `/api/copilotkit`
-> takes the `agents` branch when `aiConfig.backend === "cursor"`.
+> takes the `agents` branch when `resolveBackendPick` reads
+> `forwardedProps.aiConfig.backend === "cursor"`. Picker UI is Slice 6.
 >
 > **Execution model:** human-in-the-loop. No slice contains a commit step. Each
 > slice ends with Validation commands; on success append Realization and flip Status.
@@ -20,13 +21,43 @@ Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
 ---
 
+## Plan-review repairs (binding)
+
+From [`./plan-adversarial-review.md`](./plan-adversarial-review.md). Product decisions D1–D14 unchanged.
+
+| ID | Repair |
+|---|---|
+| P1 | `createCopilotKitRouter` takes a snapshot or `getProcessCapabilities` getter. Production `server.ts` / `ipcServerSetup.ts` pass it. Slice 2 RED injects that snapshot. |
+| P2 | Client: `<CopilotKit properties={{ aiConfig: { backend: "cursor" } }}>` when pick is Cursor. Server: `resolveBackendPick(req)` reads `req.body.body?.forwardedProps?.aiConfig?.backend` (and top-level `body.aiConfig.backend` if present). |
+| P3 | Slice 2 RED includes one HTTP POST fixture with the 1.59 envelope `{ method, body: { forwardedProps: { aiConfig: { backend: "cursor" } } } }`. Picker UI stays Slice 6. |
+| P4 | Slice 2 RED asserts Cursor `CopilotRuntime` is constructed with a non-empty forwarded `actions` array plus `agents`. Slice 5 Validation re-runs phase2. Realization records whether `renderAndWaitForResponse` is believed to work; if phase2 construction cannot pass `actions` with `agents`, stop. |
+| P5 | Slice 4 GREEN sets the default `createCursorAbstractAgent` to `cursorAgent.ts`. Validation re-runs phase2. |
+| P6 | Slice 1 updates every #273 `ProcessCapabilities` literal listed below. |
+| P7 | Slice 0 locks the extra §3 pins and the nine action names. |
+| P8 | AC rows for Node floor, `ai` master switch, packaging outcome. Slice 3 stays a secret/health slice; Slice 4 is the SDK vertical (wired). |
+| P9 | Slice 0 Refactor + Slice 8 RED/GREEN/Refactor. |
+| P10 | Electron proofs are standalone-app source-text of `ipcServerSetup.ts` and electron `package.json` only. |
+| P11 | Slice 5 test is `cursorSdk.275.phase5` source-text + `AiEntityProposalForm`. No `AiProposalForms`. |
+| P12 | Slices 4, 7, 8 consume Slice 0 pins that they flip. |
+
+#273 snapshot literals that must gain `cursor: false` in Slice 1:
+
+- `FAIL_CLOSED_PROCESS_CAPABILITIES` (`ProcessCapabilitiesHttp.ts:8-15`)
+- `processCapabilities.273.phase1.unit.test.ts` `.toEqual` blocks and `disabledSnapshot`
+- `processCapabilitiesHttp.273.phase2.integ.test.ts`
+- `processCapabilitiesContext.273.phase2.unit.test.ts` (standalone-app)
+- `processCapabilitiesStore.273.phase3.integ.test.ts` (both literals + spreads)
+- `processCapabilitiesElectron.273.phase9` only if its objects become `ProcessCapabilities` (today they are `{ ai, mcp }` for `shouldListenLoopbackHttp`)
+
+---
+
 ## Scope
 
 - `features.cursor` on persistence-side `miroirConfig` (missing = false).
 - `ProcessCapabilities.cursor` + refuse on `/api/copilotkit` (`cursor` / `mcp`).
 - `aiCursorKey` secret alias. Lazy `@cursor/sdk` on the persistence process only.
 - Local Cursor agent, `tools: ["mcp"]`, dummy empty `cwd`, loopback `/mcp` (ungated).
-- POST `aiConfig.backend: "cursor"` from `sessionStorage` pick.
+- `sessionStorage` pick → `<CopilotKit properties={{ aiConfig: { backend: "cursor" } }}>` → `resolveBackendPick`.
 - `propose_generateMiroirEntity` + `propose_lendDocument` form. Filtered Cursor runtime `actions`.
 - Electron main: same loop, dummy `cwd`, native SDK packaged or explicit fail.
 
@@ -44,7 +75,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 | 3 | `aiCursorKey` alias + health text | ⬜ | `cursorSdk.275.phase3.unit.test.ts` |
 | 4 | Lazy SDK factory, dummy cwd, MCP loopback, Node floor | ⬜ | `cursorSdk.275.phase4.unit.test.ts` |
 | 5 | `propose_*` rename + lend form | ⬜ | `cursorSdk.275.phase5.unit.test.ts` |
-| 6 | sessionStorage picker sends `aiConfig.backend` | ⬜ | `cursorSdk.275.phase6.unit.test.ts` |
+| 6 | sessionStorage picker sets CopilotKit `properties` | ⬜ | `cursorSdk.275.phase6.unit.test.ts` |
 | 7 | Electron dummy cwd + packaging pin | ⬜ | `cursorSdk.275.phase7.unit.test.ts` |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | `unit-275-cursor-sdk` |
 
@@ -59,7 +90,7 @@ From [`./analysis.md`](./analysis.md) D1–D14 + R1–R11. Binding. Deviations g
 | D1 | CopilotKit stays the shell. |
 | D2 / R3 | Cursor branch: `CopilotRuntime({ agents, actions })`, omit `serviceAdapter`. Token branch unchanged. |
 | D3 | `features.cursor`, missing = false. Not `designerTools` default-true. |
-| D4 / R1 | `sessionStorage` + POST `aiConfig.backend: "cursor"`. |
+| D4 / R1 / P2 | `sessionStorage` + `<CopilotKit properties={{ aiConfig: { backend: "cursor" } }}>`. Server reads `forwardedProps`. |
 | D5 | Local only. `tools: ["mcp"]`. Dedicated empty `cwd`. |
 | D6 / R2 | Loopback `/mcp`, ungated, no new Bearer. |
 | D7 | `CURSOR_API_KEY` → `aiCursorKey`. |
@@ -95,6 +126,8 @@ Helper homes:
 | `aiCursorKey` | `AI_SECRET_IMPORT_ALIASES` |
 | `isCursorBackendAllowed(snapshot)` | `processCapabilities.ts` (`ai && cursor && mcp && !sandbox`) |
 | `createCursorDummyCwd`, `isNodeVersionAtLeast(22,13,0)` | `miroir-ai` next to the adapter |
+| `createCopilotKitRouter(..., { capabilities \| getCapabilities })` | `copilotKitRoute.ts`; callers in `server.ts` and `ipcServerSetup.ts` |
+| `resolveBackendPick(req)` | `copilotKitRoute.ts` |
 | Cursor `AbstractAgent` wrapper + lazy `import("@cursor/sdk")` | `packages/miroir-ai/src/runtime/cursorAgent.ts` (name may move in refactor) |
 | `sessionStorage` helpers | standalone AI routes, not `4_view` importing `getProcessCapabilities` |
 
@@ -139,6 +172,23 @@ Behavior asserted:
 - `server.ts` and `ipcServerSetup.ts` statically import `createCopilotKitRouter`. No `@cursor/sdk` in repo `package.json` files.
 - `mcpServer.mountHttpRoutes` has no `Authorization` / `assertRequestAllowed`.
 - Lending uuid `212f2784-5b68-43b2-8ee0-89b1c6fdd0de` present in `miroirCopilotKitActions.ts`.
+- Frontend names locked explicitly: `generateMiroirEntity`, `getMiroirContext`, `lookupApplicationByName`, `lookupDeploymentByApplicationUuid`, `lookupEntityByName`, `findInstanceByName`, `lendDocument`, `getCurrentDate`, `getCurrentTimestamp`.
+- Commented runtime tools `generateMiroirEntity`, `generateMiroirQuery`, `generateMiroirTransformer` exist as comments in `miroirCopilotKitActions.ts:153-421`.
+- `AiProviderType` is exactly `openai \| anthropic \| google \| github`.
+- `shouldMountCopilotKitRoute` / CopilotKit auth gate string present in `server.ts`.
+- `runMcpToolRunner` refuses `mcp` false.
+- `RootComponent` latch uses `processCapabilities.ai`.
+- Electron `electronServerConfig.features` has `ai`, `mcp`, `designerTools` and no `cursor`.
+- `FAIL_CLOSED_PROCESS_CAPABILITIES` field list has no `cursor`.
+- Shipped `miroirConfig.server.json` has `features.ai` and `features.mcp`, no `cursor`.
+
+### 0.2 GREEN
+
+Characterization tests only. No production edits.
+
+### 0.3 Refactor checkpoint
+
+- Later slices consume these pins in place (P12): Slice 1 flips FAIL_CLOSED / snapshot literals; Slice 4/7 flip "no `@cursor/sdk`"; Slice 5 flips the nine action names; Slice 6 flips `AgentsCopilotKit` props / ViewParams comment; Slice 8 consumes leftover docs.
 
 ### Validation
 
@@ -174,7 +224,7 @@ Behavior asserted:
 - Sandbox does not force `cursor` false by itself (sandbox already forces `ai` false; `isCursorBackendAllowed` is a later helper).
 - `FAIL_CLOSED_PROCESS_CAPABILITIES.cursor === false`.
 - `assertProcessCapability("cursor", snapshot)` returns `FeatureUnavailable` when `cursor` is false.
-- #273 HTTP integ fixture that lists snapshot fields still passes after the field is added (update the pin in this slice).
+- Every #273 snapshot literal in the plan-review P6 list includes `cursor: false` after GREEN. `FAIL_CLOSED_PROCESS_CAPABILITIES.cursor === false`.
 
 ### 1.2 GREEN
 
@@ -185,6 +235,7 @@ Behavior asserted:
 ### 1.3 Refactor checkpoint
 
 - One line next to `features?.ai === true`. Do not copy `designerTools` default.
+- Electron `ipcServerSetup.ts` computed snapshot will grow `cursor` when main config is patched (Slice 7). Do not patch renderer config.
 
 ### Validation
 
@@ -192,6 +243,7 @@ Behavior asserted:
 npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core
 RUN_TEST=cursorSdk.275.phase1 npm run testByFile -w miroir-core -- cursorSdk.275.phase1
 npm run testByFile -w miroir-core -- 273-process-capability-switches
+npm run testByFile -w miroir-standalone-app -- 273-process-capability-switches
 ```
 
 ### Realization
@@ -206,27 +258,30 @@ npm run testByFile -w miroir-core -- 273-process-capability-switches
 
 ### Goal
 
-A CopilotKit POST with `aiConfig.backend: "cursor"` uses the `agents` map and omits `serviceAdapter` when the snapshot allows Cursor. Otherwise the route returns `FeatureUnavailable`.
+A CopilotKit POST whose 1.59 envelope carries `forwardedProps.aiConfig.backend: "cursor"` uses the `agents` map and omits `serviceAdapter` when the injected snapshot allows Cursor. Otherwise the route returns `FeatureUnavailable`.
 
 **Layers cut:** `copilotKitRoute` → `CopilotRuntime` options → refuse helper
 
-This slice uses a **test `AbstractAgent`**, not `@cursor/sdk`. R6: assert that frontend-forwarded `actions` are still passed into `CopilotRuntime` on this branch (filtered list from R5). If CopilotKit 1.59 cannot hold `agents` + forwarded actions together, **stop** and record in Realization. Do not start Slice 5.
+This slice uses a **test `AbstractAgent`**, not `@cursor/sdk`. Production callers pass the process snapshot into `createCopilotKitRouter` (P1). Backend pick is read via `resolveBackendPick` from the 1.59 envelope (P2). If `CopilotRuntime` cannot be constructed with both `agents` and a non-empty `actions` array, **stop** and record in Realization. Do not start Slice 5.
 
 ### 2.1 RED
 
-**Test:** `packages/miroir-ai/tests/unit/issues/275-cursor-sdk-copilotkit-backend/cursorSdk.275.phase2.unit.test.ts`
+**Test:** `packages/miroir-ai/tests/unit/issues/275-cursor-sdk-copilotkit-backend/cursorSdk.275.phase2.unit.test.ts` plus standalone `cursorSdk.275.phase2.unit.test.ts` (source-text pin for `renderAndWaitForResponse`).
 
 Behavior asserted:
-- `backend: "cursor"` + snapshot `{ ai, cursor, mcp }` all true → runtime constructed with `agents.cursor` set and `serviceAdapter` omitted.
-- `backend: "cursor"` + `cursor: false` → `FeatureUnavailable` `capability: "cursor"`.
-- `backend: "cursor"` + `mcp: false` → `FeatureUnavailable` `capability: "mcp"`.
-- Token path (no `backend`) still uses `buildCopilotRuntime` + adapter when `AI_PROVIDER_TYPE` is set.
+- HTTP POST to the router with envelope `{ method: "agent/run", body: { forwardedProps: { aiConfig: { backend: "cursor" } } } }` + snapshot `{ ai, cursor, mcp }` all true → runtime constructed with `agents.cursor` set, `serviceAdapter` omitted, and a **non-empty** `actions` array (R6 construction proof).
+- Same POST + `cursor: false` on the **injected snapshot** → `FeatureUnavailable` `capability: "cursor"`.
+- Same POST + `mcp: false` → `FeatureUnavailable` `capability: "mcp"`.
+- Token path (no backend pick) still uses `buildCopilotRuntime` + adapter when `AI_PROVIDER_TYPE` is set.
 - Cursor branch `actions` names do not include `generateMiroirReport` or `getMiroirContext`. Lend executor / POST helper may remain.
 - Injected test agent’s `run` is what the runtime holds (no `Agent.create`).
+- `createCopilotKitRouter` signature / options include capabilities (source-text on `server.ts` and `ipcServerSetup.ts` after GREEN).
+- Standalone source-text: `generateMiroirEntity` still contains `renderAndWaitForResponse` (R6 pin before the Slice 5 rename). If the Cursor `CopilotRuntime` constructor rejects `actions` plus `agents`, leave this slice pending and do not start Slice 5.
 
 ### 2.2 GREEN
 
-- Branch in `createCopilotKitRouter` on `body.aiConfig.backend`.
+- `resolveBackendPick(req)` as in P2.
+- `createCopilotKitRouter(dc, map, { capabilities } | { getCapabilities })`.
 - `isCursorBackendAllowed`.
 - Factory seam `createCursorAbstractAgent` injectable for tests.
 
@@ -234,11 +289,13 @@ Behavior asserted:
 
 - Do not call `getApiKey` for Cursor.
 - Keep token `/health` working.
+- Realization must record: did `CopilotRuntime({ agents, actions })` construct with a non-empty `actions` array? If no, Status stays pending.
 
 ### Validation
 
 ```bash
 RUN_TEST=cursorSdk.275.phase2 npm run testByFile -w miroir-ai -- cursorSdk.275.phase2
+RUN_TEST=cursorSdk.275.phase2 npm run testByFile -w miroir-standalone-app -- cursorSdk.275.phase2
 ```
 
 ### Realization
@@ -253,7 +310,7 @@ RUN_TEST=cursorSdk.275.phase2 npm run testByFile -w miroir-ai -- cursorSdk.275.p
 
 ### Goal
 
-An operator can import `CURSOR_API_KEY` as `aiCursorKey`. `/health` mentions it.
+An operator can import `CURSOR_API_KEY` as `aiCursorKey`. `GET /api/copilotkit/health` text names that key (person-visible command for this helper slice).
 
 **Layers cut:** `SecretsService` → health JSON
 
@@ -313,15 +370,18 @@ Behavior asserted:
 
 - `cursorAgent.ts` + dummy-cwd helper.
 - Add `@cursor/sdk` dependency on `miroir-ai` only.
+- Default `createCursorAbstractAgent` used by `createCopilotKitRouter` is this module (P5).
 
 ### 4.3 Refactor checkpoint
 
 - Dispose agent (`await using` / `asyncDispose`) so tests do not leak.
+- Consume Slice 0 “no `@cursor/sdk` in package.json” pin: `miroir-ai/package.json` now lists it. Keep `server.ts` / `ipcServerSetup.ts` static-import pin.
 
 ### Validation
 
 ```bash
 RUN_TEST=cursorSdk.275.phase4 npm run testByFile -w miroir-ai -- cursorSdk.275.phase4
+RUN_TEST=cursorSdk.275.phase2 npm run testByFile -w miroir-ai -- cursorSdk.275.phase2
 npx tsc --noEmit --skipLibCheck -p packages/miroir-ai/tsconfig.json
 ```
 
@@ -345,7 +405,7 @@ A person sees `propose_generateMiroirEntity` and `propose_lendDocument` as revie
 
 ### 5.1 RED
 
-**Test:** `packages/miroir-standalone-app/tests/4_view/issues/275-cursor-sdk-copilotkit-backend/cursorSdk.275.phase5.unit.test.ts` (source-text + existing `AiProposalForms` if it pins names).
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/275-cursor-sdk-copilotkit-backend/cursorSdk.275.phase5.unit.test.ts` (source-text of `AiActionsProvider.tsx` and `AiEntityProposalForm.tsx`). No `AiProposalForms` file exists.
 
 Behavior asserted:
 - Source contains `propose_generateMiroirEntity` and `propose_lendDocument` with `renderAndWaitForResponse`.
@@ -367,6 +427,7 @@ Behavior asserted:
 ```bash
 RUN_TEST=cursorSdk.275.phase5 npm run testByFile -w miroir-standalone-app -- cursorSdk.275.phase5
 RUN_TEST=cursorSdk.275.phase0 npm run testByFile -w miroir-standalone-app -- cursorSdk.275.phase0
+RUN_TEST=cursorSdk.275.phase2 npm run testByFile -w miroir-ai -- cursorSdk.275.phase2
 ```
 
 ### Realization
@@ -375,15 +436,15 @@ RUN_TEST=cursorSdk.275.phase0 npm run testByFile -w miroir-standalone-app -- cur
 
 ---
 
-## Slice 6 — Picker sends `aiConfig.backend`
+## Slice 6 — Picker sets CopilotKit `properties`
 
 **Status:** ⬜ pending
 
 ### Goal
 
-A person with snapshot `cursor` true can pick Cursor. The CopilotKit client includes `aiConfig.backend: "cursor"` on POSTs. Snapshot `cursor` false hides the pick.
+A person with snapshot `ai` and `cursor` true can pick Cursor. `AgentsCopilotKit` then sets `<CopilotKit properties={{ aiConfig: { backend: "cursor" } }}>`. Snapshot `cursor` false or `ai` false hides the pick.
 
-**Layers cut:** AppBar / AI shell → sessionStorage → CopilotKit request properties
+**Layers cut:** AppBar / AI shell → sessionStorage → CopilotKit `properties`
 
 ### 6.1 RED
 
@@ -391,16 +452,18 @@ A person with snapshot `cursor` true can pick Cursor. The CopilotKit client incl
 
 Behavior asserted:
 - Helper `readMiroirAiBackend()` / `writeMiroirAiBackend("cursor")` uses key `miroirAiBackend`.
-- Component or hook that builds CopilotKit extra body includes `aiConfig.backend: "cursor"` only when pick is cursor **and** `processCapabilities.cursor === true`.
+- `AgentsCopilotKit` source contains `properties={{ aiConfig: { backend: "cursor" } }}` (or an equivalent expression) only when pick is cursor **and** `processCapabilities.cursor === true`.
+- Picker is absent when `processCapabilities.ai === false`, even if `cursor` is true.
 - No `4_view` file imports `getProcessCapabilities` from miroir-core (source-text, same pin as #273).
 
 ### 6.2 GREEN
 
 - Picker next to the AI AppBar controls. Default omitted pick = token `AI_PROVIDER_TYPE`.
+- Pass `properties` into `<CopilotKit>` (P2). Do not invent a second POST helper.
 
 ### 6.3 Refactor checkpoint
 
-- Stale `ViewParams.agents` comment on `AgentsCopilotKit.tsx:6-8`.
+- Consume Slice 0 `AgentsCopilotKit` pin: replace the stale `ViewParams.agents` comment (`AgentsCopilotKit.tsx:6-8`) with the `properties` / sessionStorage story.
 
 ### Validation
 
@@ -426,22 +489,23 @@ Electron main uses the same factory, a dummy cwd outside the renderer, and eithe
 
 ### 7.1 RED
 
-**Test:** `cursorSdk.275.phase7.unit.test.ts` (source-text in standalone-app or electron package).
+**Test:** `packages/miroir-standalone-app/tests/4_view/issues/275-cursor-sdk-copilotkit-backend/cursorSdk.275.phase7.unit.test.ts`. Electron package has no vitest. Read `ipcServerSetup.ts` and `packages/miroir-standalone-app-electron/package.json` from standalone-app tests (same pattern as `processCapabilitiesElectron.273.phase9`).
 
 Behavior asserted:
 - `ipcServerSetup.ts` has no static `import "@cursor/sdk"`.
 - Dummy cwd path is not `getDefaultFilesystemFolder()` itself.
-- `package.json` electron-builder `files` (or an extraResources rule) includes the native SDK pattern **or** a named startup function `assertCursorSdkPackaged` is called and tested.
+- One explicit packaging path: either electron-builder `files` / extraResources includes the native SDK pattern, **or** named `assertCursorSdkPackaged` is called from main startup and the test asserts the fail-loud throw. Realization records which path landed.
 - `features.cursor` is still only on `electronServerConfig`, not the renderer object.
 
 ### 7.2 GREEN
 
-- Wire factory from main. Add builder files / fail-loud helper.
-- Optional: set `features.cursor: true` on main only when you intend to ship the natives in this issue’s GREEN. If packaging is not ready, keep main `cursor` false and still land the fail-loud helper (Realization must say which).
+- Wire factory from main. Add builder files **or** fail-loud helper (one of the two, not a silent miss).
+- Set `features.cursor: true` on main only when natives ship in this issue’s GREEN. If packaging is not ready, keep main `cursor` false and land the fail-loud helper. Realization must say which.
 
 ### 7.3 Refactor checkpoint
 
 - Re-read #273 “no features on renderer”.
+- Consume Slice 0 “no `@cursor/sdk` in electron `package.json`” if GREEN adds a dependency or `files` glob. Keep the no-static-import pin.
 
 ### Validation
 
@@ -460,19 +524,29 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app-electron/tscon
 
 **Status:** ⬜ pending
 
-### 8.1 Nonreg
+### Goal
+
+Nonreg runs the 275 vitest glob. Operator docs name `features.cursor`, the Node floor, and the refuse names. Leftover Slice 0 pins that later slices did not flip are consumed or restated.
+
+### 8.1 RED
+
+**Test:** source-text / manifest assertions in `cursorSdk.275.phase8.unit.test.ts` (core or standalone, one file).
+
+Behavior asserted:
+- `scripts/nonreg-manifest.json` has no `unit-275-cursor-sdk` step (fails until GREEN).
+- `docs/reference/process-capabilities.md` does not mention `features.cursor` or Node 22.13 (fails until GREEN).
+
+### 8.2 GREEN
 
 - Add `unit-275-cursor-sdk` to `scripts/nonreg-manifest.json` (tier `unit`, bash `-c` like `unit-273-process-capabilities`).
-
-### 8.2 Docs
-
 - `docs/reference/process-capabilities.md`: `ai` is the CopilotKit shell; `features.cursor` is the optional SDK; Node 22.13+; no `ai`⇒`mcp` OR.
 - `analysis.md` status → implemented when slices are done.
 - `AgentsCopilotKit` / `/health` comments match reality.
 
-### 8.3 Issue-directory cleanup
+### 8.3 Refactor checkpoint
 
-- Keep issue-dir tests as the nonreg pin for this issue (#238 migrate later), same as #273 Slice 10, **or** move to feature-named files if a review requires it. Default: keep `issues/275-*` until a later cleanup issue.
+- Keep issue-dir tests as the nonreg pin for this issue (#238 migrate later), same as #273 Slice 10. Default: keep `issues/275-*` until a later cleanup issue.
+- Consume leftover Slice 0 pins: `shouldMountCopilotKitRoute` / CopilotKit auth gate still present; shipped `miroirConfig.server.json` may gain optional `features.cursor` comment; MCP ungated pin still true.
 
 ### 8.4 Tracer bullet (narrative)
 
@@ -483,7 +557,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app-electron/tscon
 5. Ask to propose a lend. Sidebar shows `propose_lendDocument`. Accept posts `/lendDocument`.
 6. Electron unpacked/packaged: same pick, no renderer `getProcessCapabilities`, no `app://` CopilotKit URL.
 
-Automated equivalent: phase1 snapshot + phase2 router + phase5 names + phase6 body.
+Automated equivalent: phase1 snapshot + phase2 router envelope + phase5 names + phase6 `properties`.
 
 ### AC checklist (#275)
 
@@ -499,9 +573,11 @@ Automated equivalent: phase1 snapshot + phase2 router + phase5 names + phase6 bo
 | No cloud | out of scope / no cloud API in factory | ⬜ |
 | MCP names execute | phase4 mcpServers url | ⬜ |
 | `propose_*` forms; no CopilotKit `lendDocument` name | phase5 | ⬜ |
-| Pick in sessionStorage + POST | phase6 | ⬜ |
-| Refuse cursor/mcp | phase2 | ⬜ |
-| Electron + packaging or fail-loud | phase7 | ⬜ |
+| Pick in sessionStorage + CopilotKit `properties` | phase6 | ⬜ |
+| Picker hidden when `ai` is false, even if `cursor` is true | phase6 | ⬜ |
+| Refuse uses `capability: "cursor"` or `"mcp"` on `/api/copilotkit` | phase2 | ⬜ |
+| Node ≥ 22.13.0 when Cursor path is used | phase4 | ⬜ |
+| Electron ships natives **or** fail-loud (Realization names which) | phase7 | ⬜ |
 | Do not delete runtime execute list | phase0/2 filtered Cursor actions only | ⬜ |
 
 ### Validation
