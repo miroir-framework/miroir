@@ -105,7 +105,7 @@ if (runThis) {
       const src = readRepoFile(
         "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts",
       );
-      expect(src).toContain('import { createCopilotKitRouter } from "miroir-ai"');
+      expect(src).toMatch(/import\s*\{[^}]*\bcreateCopilotKitRouter\b[^}]*\}\s*from\s*"miroir-ai"/);
     });
   });
 

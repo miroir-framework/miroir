@@ -39,7 +39,7 @@ import { app, ipcMain } from "electron";
 import express from "express";
 import * as os from "os";
 import * as path from "path";
-import { createCopilotKitRouter } from "miroir-ai";
+import { assertCursorSdkPackaged, createCopilotKitRouter } from "miroir-ai";
 import {
   ConfigurationService,
   defaultSelfApplicationDeploymentMap,
@@ -219,6 +219,10 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
       ConfigurationService.configurationService.adminStoreFactoryRegister,
   });
   restClientStub.setProcessCapabilities(capabilities);
+
+  if (app.isPackaged && capabilities.cursor) {
+    assertCursorSdkPackaged();
+  }
 
   if (shouldListenLoopbackHttp({ ai: capabilities.ai, mcp: capabilities.mcp })) {
     const loopbackApp = express();

@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Slices 0–6 done. Next: Slice 7 (Electron dummy cwd + packaging).
+**Resume note:** Slices 0–7 done. Next: Slice 8 (nonreg, docs, AC).
 
 ---
 
@@ -76,7 +76,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 | 4 | Lazy SDK factory, dummy cwd, MCP loopback, Node floor | ✅ | `cursorSdk.275.phase4.unit.test.ts` |
 | 5 | `propose_*` rename + lend form | ✅ | `cursorSdk.275.phase5.unit.test.ts` |
 | 6 | sessionStorage picker sets CopilotKit `properties` | ✅ | `cursorSdk.275.phase6.unit.test.ts` |
-| 7 | Electron dummy cwd + packaging pin | ⬜ | `cursorSdk.275.phase7.unit.test.ts` |
+| 7 | Electron dummy cwd + packaging pin | ✅ | `cursorSdk.275.phase7.unit.test.ts` |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | `unit-275-cursor-sdk` |
 
 ---
@@ -515,7 +515,7 @@ Validation: phase6 6, phase0 5, `processCapabilitiesContext.273.phase2` 3.
 
 ## Slice 7 — Electron dummy cwd + packaging
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -552,7 +552,15 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app-electron/tscon
 
 ### Realization
 
-<Appended on completion.>
+**Packaging path: fail-loud `assertCursorSdkPackaged`.** No electron-builder `files` / `asarUnpack` / `extraResources` glob for `@cursor/sdk`. Electron `package.json` still does not list the SDK.
+
+`assertCursorSdkPackaged` lives in `packages/miroir-ai/src/runtime/assertCursorSdkPackaged.ts` and is re-exported from `miroir-ai`. `setupIpcServer` calls it when `app.isPackaged && capabilities.cursor`. `electronServerConfig.features` still has no `cursor` key, so packaged startup skips the check today. A unit call with an injectable missing path still throws.
+
+Dummy cwd is unchanged: `createCursorDummyCwd()` → `os.tmpdir()/.miroir-cursor-cwd`. `getDefaultFilesystemFolder()` stays the deployment filesystem root only. Renderer `electronMiroirConfig` still has no `features` key. No static `@cursor/sdk` import on `main.ts` / `ipcServerSetup.ts`.
+
+Slice 0 electron import pin now allows other names next to `createCopilotKitRouter`.
+
+Validation: phase7 standalone 9, phase7 miroir-ai 3, phase0 standalone 5, phase0 miroir-ai 9, phase4 7, `processCapabilitiesElectron.273.phase9` 9, Electron `tsc --noEmit` pass.
 
 ---
 
