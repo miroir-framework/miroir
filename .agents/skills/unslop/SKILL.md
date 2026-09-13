@@ -39,8 +39,8 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 
 ### Language
 
-7. **AI vocabulary.** avoid terms such as: additionally, crucial, delve, enduring, enhance, fostering, garner, interplay, intricate, landscape (abstract), pivotal, showcase, tapestry (abstract), testament, underscore, vibrant. Replace with plain words.
-8. **software development slang.** avoid terms such as: chrome, fixture. Replace with plain words.
+7. **AI vocabulary.** Additionally, crucial, delve, enduring, enhance, fostering, garner, interplay, intricate, landscape (abstract), pivotal, showcase, tapestry (abstract), testament, underscore, vibrant. Replace with plain words.
+8. **software development slang.** chrome, fixture. Replace with plain words.
 9. **Fancy ways to say "is".** "serves as", "stands as", "boasts", "features". Just say "is" or "has".
 10.  **"Not just X, but Y."** State the point directly instead.
 11. **Rule of three.** Forcing ideas into groups of three. Use the natural number.
