@@ -6,8 +6,20 @@
 // field (if provided) or falls back to environment variable defaults.
 
 import { Router, type Request, type Response, type NextFunction } from "express";
-import { copilotRuntimeNodeHttpEndpoint } from "@copilotkit/runtime";
-import { Action2Error, defaultMetaModelEnvironment, type ApplicationDeploymentMap, type DomainControllerInterface } from "miroir-core";
+import { CopilotRuntime, copilotRuntimeNodeHttpEndpoint } from "@copilotkit/runtime";
+import type { AbstractAgent } from "@ag-ui/client";
+import type { Action, Parameter } from "@copilotkit/shared";
+import {
+  Action2Error,
+  assertProcessCapability,
+  defaultMetaModelEnvironment,
+  FAIL_CLOSED_PROCESS_CAPABILITIES,
+  isCursorBackendAllowed,
+  type ApplicationDeploymentMap,
+  type DomainControllerInterface,
+  type ProcessCapabilities,
+  type ProcessCapabilityName,
+} from "miroir-core";
 import {
   buildCopilotRuntime,
   buildMinimalCopilotRuntime,
@@ -15,6 +27,63 @@ import {
   type AiRuntimeConfig,
 } from "../runtime/copilotRuntimeFactory.js";
 import { createMiroirCopilotKitActions, createLendDocumentExecutor } from "../tools/miroirCopilotKitActions.js";
+
+const CURSOR_RUNTIME_EXCLUDED_ACTION_NAMES = new Set([
+  "generateMiroirReport",
+  "getMiroirContext",
+]);
+
+export type CreateCopilotKitRouterOptions = {
+  capabilities?: ProcessCapabilities;
+  getCapabilities?: () => ProcessCapabilities;
+  createCursorAbstractAgent?: () => AbstractAgent;
+  createCopilotRuntime?: (options: {
+    agents: { cursor: AbstractAgent };
+    actions: Action<Parameter[]>[];
+  }) => unknown;
+  buildCopilotRuntime?: typeof buildCopilotRuntime;
+  copilotRuntimeNodeHttpEndpoint?: typeof copilotRuntimeNodeHttpEndpoint;
+};
+
+/**
+ * Resolve the CopilotKit backend pick from a 1.59 request envelope.
+ * 1. forwardedProps on the nested body (properties sent by the client)
+ * 2. top-level request aiConfig backend (fallback)
+ */
+export function resolveBackendPick(req: Request): "cursor" | undefined {
+  const forwardedBackend = (req as any).body?.body?.forwardedProps?.aiConfig?.backend;
+  if (forwardedBackend === "cursor") {
+    return "cursor";
+  }
+  const topLevelBackend = (req as any).body?.aiConfig?.backend;
+  if (topLevelBackend === "cursor") {
+    return "cursor";
+  }
+  return undefined;
+}
+
+function resolveInjectedCapabilities(
+  options?: CreateCopilotKitRouterOptions,
+): ProcessCapabilities {
+  if (options?.getCapabilities) {
+    return options.getCapabilities();
+  }
+  return options?.capabilities ?? FAIL_CLOSED_PROCESS_CAPABILITIES;
+}
+
+function cursorRefuseCapability(snapshot: ProcessCapabilities): ProcessCapabilityName {
+  if (snapshot.cursor !== true) {
+    return "cursor";
+  }
+  if (snapshot.mcp !== true) {
+    return "mcp";
+  }
+  return "cursor";
+}
+
+function filterCursorRuntimeActions(actions: Action<Parameter[]>[]): Action<Parameter[]>[] {
+  return actions.filter((action) => !CURSOR_RUNTIME_EXCLUDED_ACTION_NAMES.has(action.name));
+}
 
 const ENDPOINT_PATH = "/api/copilotkit";
 
@@ -44,9 +113,16 @@ function resolveConfig(req: Request): AiRuntimeConfig | null {
 export function createCopilotKitRouter(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
+  options?: CreateCopilotKitRouterOptions,
 ): Router {
   const actions = createMiroirCopilotKitActions(domainController, applicationDeploymentMap);
   const lendDocumentExecutor = createLendDocumentExecutor(domainController, applicationDeploymentMap);
+  const buildTokenRuntime = options?.buildCopilotRuntime ?? buildCopilotRuntime;
+  const nodeHttpEndpoint =
+    options?.copilotRuntimeNodeHttpEndpoint ?? copilotRuntimeNodeHttpEndpoint;
+  const createRuntime =
+    options?.createCopilotRuntime ??
+    ((runtimeOptions) => new CopilotRuntime(runtimeOptions));
 
   const router = Router();
 
@@ -219,7 +295,7 @@ export function createCopilotKitRouter(
     // without requiring an AI provider to be configured at startup.
     if (req.body?.method === "info") {
       const { runtime, serviceAdapter } = buildMinimalCopilotRuntime(actions);
-      const handler = copilotRuntimeNodeHttpEndpoint({ endpoint: "/", runtime, serviceAdapter });
+      const handler = nodeHttpEndpoint({ endpoint: "/", runtime, serviceAdapter });
       try {
         return await handler(req as any, res as any);
       } catch (err) {
@@ -227,6 +303,48 @@ export function createCopilotKitRouter(
         if (!res.headersSent) res.status(500).json({ error: `AI runtime error: ${message}` });
         return;
       }
+    }
+
+    if (resolveBackendPick(req) === "cursor") {
+      const snapshot = resolveInjectedCapabilities(options);
+      if (!isCursorBackendAllowed(snapshot)) {
+        const refused = assertProcessCapability(cursorRefuseCapability(snapshot), snapshot);
+        if (refused) {
+          res.status(403).json(refused);
+          return;
+        }
+      }
+
+      const createCursorAbstractAgent = options?.createCursorAbstractAgent;
+      if (!createCursorAbstractAgent) {
+        res.status(503).json({ error: "Cursor agent is not configured" });
+        return;
+      }
+
+      let runtime: ReturnType<typeof createRuntime>;
+      try {
+        runtime = createRuntime({
+          agents: { cursor: createCursorAbstractAgent() },
+          actions: filterCursorRuntimeActions(actions),
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        res.status(503).json({ error: `AI configuration error: ${message}` });
+        return;
+      }
+
+      const handler = nodeHttpEndpoint({
+        endpoint: "/",
+        runtime: runtime as any,
+      });
+
+      try {
+        return await handler(req as any, res as any);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (!res.headersSent) res.status(500).json({ error: `AI runtime error: ${message}` });
+      }
+      return;
     }
 
     const config = resolveConfig(req);
@@ -242,18 +360,18 @@ export function createCopilotKitRouter(
       return;
     }
 
-    let runtime: ReturnType<typeof buildCopilotRuntime>["runtime"];
-    let serviceAdapter: ReturnType<typeof buildCopilotRuntime>["serviceAdapter"];
+    let runtime: ReturnType<typeof buildTokenRuntime>["runtime"];
+    let serviceAdapter: ReturnType<typeof buildTokenRuntime>["serviceAdapter"];
 
     try {
-      ({ runtime, serviceAdapter } = buildCopilotRuntime(config, actions));
+      ({ runtime, serviceAdapter } = buildTokenRuntime(config, actions));
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       res.status(503).json({ error: `AI configuration error: ${message}` });
       return;
     }
 
-    const handler = copilotRuntimeNodeHttpEndpoint({
+    const handler = nodeHttpEndpoint({
       endpoint: "/",
       runtime,
       serviceAdapter,

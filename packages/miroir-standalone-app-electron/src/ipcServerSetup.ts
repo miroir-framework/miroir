@@ -241,7 +241,7 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
     if (shouldMountCopilotKitRoute(capabilities.ai)) {
       loopbackApp.use(
         "/api/copilotkit",
-        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap),
+        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities }),
       );
     }
 

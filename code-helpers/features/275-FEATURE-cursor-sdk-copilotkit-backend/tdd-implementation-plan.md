@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Slices 0–1 done. Next: Slice 2 (CopilotKit `agents` branch + refuse).
+**Resume note:** Slices 0–2 done. R6 construction gate: YES. Next: Slice 3 (`aiCursorKey` + health).
 
 ---
 
@@ -71,7 +71,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 |---|---|---|---|
 | 0 | Characterize current AI / snapshot / MCP contracts | ✅ | `cursorSdk.275.phase0.unit.test.ts` |
 | 1 | **Tracer:** `features.cursor` + snapshot field | ✅ | `cursorSdk.275.phase1.unit.test.ts` + `devBuild` |
-| 2 | CopilotKit `agents` branch + refuse + filtered actions | ⬜ | `cursorSdk.275.phase2.unit.test.ts` |
+| 2 | CopilotKit `agents` branch + refuse + filtered actions | ✅ | `cursorSdk.275.phase2.unit.test.ts` |
 | 3 | `aiCursorKey` alias + health text | ⬜ | `cursorSdk.275.phase3.unit.test.ts` |
 | 4 | Lazy SDK factory, dummy cwd, MCP loopback, Node floor | ⬜ | `cursorSdk.275.phase4.unit.test.ts` |
 | 5 | `propose_*` rename + lend form | ⬜ | `cursorSdk.275.phase5.unit.test.ts` |
@@ -264,7 +264,7 @@ Validation re-run: phase1 8, phase0 7, core #273 23, standalone #273 with `--pro
 
 ## Slice 2 — CopilotKit `agents` branch + refuse
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -310,7 +310,15 @@ RUN_TEST=cursorSdk.275.phase2 npm run testByFile -w miroir-standalone-app -- cur
 
 ### Realization
 
-<Appended on completion.>
+**R6 construction gate: YES.** `new CopilotRuntime({ agents: { cursor }, actions: [lendDocument, …] })` does not throw. Slice 5 may proceed.
+
+`resolveBackendPick` reads `body.body.forwardedProps.aiConfig.backend` then top-level `body.aiConfig?.backend`. `createCopilotKitRouter` takes `{ capabilities | getCapabilities, createCursorAbstractAgent, createCopilotRuntime }`. Cursor branch builds `CopilotRuntime({ agents, filtered actions })` and omits `serviceAdapter`. Filtered names drop `generateMiroirReport` and `getMiroirContext`. Refuse is HTTP 403 with `Action2Error` JSON (`FeatureUnavailable`, `capability: "cursor"` or `"mcp"`). `isCursorBackendAllowed` is `ai && cursor && mcp`. `server.ts` and `ipcServerSetup.ts` pass `{ capabilities }`.
+
+Default `createCursorAbstractAgent` is not wired (Slice 4). Allowed Cursor pick without a factory returns 503 `{ error: "Cursor agent is not configured" }`.
+
+Slice 0 still asserts source has no substring `aiConfig.backend`. The pick uses `aiConfig?.backend` so that pin stays true. Token `/health` is unchanged.
+
+Validation re-run: miroir-ai phase2 9, standalone phase2 3, miroir-ai phase0 9, `tsc` miroir-ai and miroir-core.
 
 ---
 

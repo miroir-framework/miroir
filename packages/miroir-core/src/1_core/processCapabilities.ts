@@ -97,6 +97,10 @@ export function getProcessCapabilities({
   };
 }
 
+export function isCursorBackendAllowed(snapshot: ProcessCapabilities): boolean {
+  return snapshot.ai === true && snapshot.cursor === true && snapshot.mcp === true;
+}
+
 export function assertProcessCapability(
   name: ProcessCapabilityName,
   snapshot: ProcessCapabilities,

@@ -865,7 +865,7 @@ if (shouldMountCopilotKitRoute(capabilities.ai)) {
     }
     next();
   });
-  app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap));
+  app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap, { capabilities }));
 }
 
 // ##############################################################################################
