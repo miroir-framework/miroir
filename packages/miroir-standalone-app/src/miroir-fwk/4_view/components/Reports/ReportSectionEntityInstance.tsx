@@ -239,7 +239,9 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
 
   const currentReportTargetEntity: Entity | undefined = targetEntityUuid
     ? entities.find((entity) => entity.uuid === targetEntityUuid) ??
-      currentDeploymentModel.entities.find((entity) => entity.uuid === targetEntityUuid)
+      (reportDefinitionFromFormik?.type === "multistep"
+        ? currentDeploymentModel.entities.find((entity) => entity.uuid === targetEntityUuid)
+        : undefined)
     : undefined;
 
   const displayedInstance = useMemo(() => {

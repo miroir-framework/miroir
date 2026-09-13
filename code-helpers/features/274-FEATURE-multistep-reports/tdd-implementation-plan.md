@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/274
 Working branch: `274-FEATURE-multistep-reports`
 
-**Resume note:** Slices 0–5 ✅. Implementing remaining slices in order.
+**Resume note:** all slices ✅.
 
 ---
 
@@ -71,7 +71,7 @@ This plan does **not** add a Form / FormRun Entity, persist drafts, wrap the wal
 | 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ✅ | `multistepProcess.274` (added cases) |
 | 4 | Object-instance hoist; query-failure keeps the bag | ✅ | `multistepProcess.274` (added cases) |
 | 5 | `openReportSection` + list `openReport` + pageParams | ✅ | `multistepLaunch.274.phase5.integ.test.tsx` |
-| 6 | Nonreg, docs, cleanup, AC | ⬜ | `unit-274-` + `integ-action-274-` + `appstack-274-multistep-reports` |
+| 6 | Nonreg, docs, cleanup, AC | ✅ | `unit-274-` + `integ-action-274-` + `appstack-274-multistep-reports` |
 
 ---
 
@@ -566,7 +566,7 @@ No stop-the-world product contradiction. AG Grid mounted in the harness; Open to
 
 ## Slice 6 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 6.1 Nonreg
 
@@ -606,19 +606,19 @@ Automated equivalent: `multistepProcess.274` (required) + `multistepFinish.274` 
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| `type: "multistep"`; list children are steps; existing list Reports unchanged | Slice 0 inventory (consumed) + `multistepProcess.274`; 11 `type: "list"` still show-all | ⬜ |
-| One step at a time; Back / Next / Finish / Cancel; `section.label` | `multistepProcess.274` (`happy-path-three-steps`, `back-keeps-bag`, `cancel-confirm`) | ⬜ |
-| Next Jzod on input / object-instance | `multistepProcess.274` (`next-invalid-required` + Slice 4 cases) | ⬜ |
-| Finish last step; sequence + step bag; `getFromParameters` | `multistepProcess.274` (`happy-path-three-steps`) + `multistepFinish.274` | ⬜ |
-| Next merges bag into in-memory query `pageParams` | `multistepProcess.274` (Slice 3 cases) | ⬜ |
-| Cancel confirm; no undo of D9 writes | `multistepProcess.274` (`cancel-confirm`) | ⬜ |
-| UI suite walks 2–3 steps through real editors + main error cases (analysis §8) | `multistepProcess.274` — **required; issue not complete without it** | ⬜ |
-| Memory only; no `step` URL | `multistepLaunch.274` (`reportUrl` has no `step`) | ⬜ |
-| Success closes modal / leaves route | `multistepLaunch.274` | ⬜ |
-| Menu report link still routes | `applicationModelScopeMenu.unit.test.ts` (existing) | ⬜ |
-| `openReportSection` + list `openReport` + row `instanceUuid` | `multistepLaunch.274` | ⬜ |
-| Object-instance edits visible to Finish | `multistepProcess.274` (Slice 4 cases) | ⬜ |
-| Runner / list Add unchanged | Slice 0 + no product change in those files except list `openReport` | ⬜ |
+| `type: "multistep"`; list children are steps; existing list Reports unchanged | Slice 0 inventory (consumed) + `multistepProcess.274`; 11 `type: "list"` still show-all | ✅ |
+| One step at a time; Back / Next / Finish / Cancel; `section.label` | `multistepProcess.274` (`happy-path-three-steps`, `back-keeps-bag`, `cancel-confirm`) | ✅ |
+| Next Jzod on input / object-instance | `multistepProcess.274` (`next-invalid-required` + Slice 4 cases) | ✅ |
+| Finish last step; sequence + step bag; `getFromParameters` | `multistepProcess.274` (`happy-path-three-steps`) + `multistepFinish.274` | ✅ |
+| Next merges bag into in-memory query `pageParams` | `multistepProcess.274` (Slice 3 cases) | ✅ |
+| Cancel confirm; no undo of D9 writes | `multistepProcess.274` (`cancel-confirm`) | ✅ |
+| UI suite walks 2–3 steps through real editors + main error cases (analysis §8) | `multistepProcess.274` — **required; issue not complete without it** | ✅ |
+| Memory only; no `step` URL | `multistepLaunch.274` (`reportUrl` has no `step`) | ✅ |
+| Success closes modal / leaves route | `multistepLaunch.274` | ✅ |
+| Menu report link still routes | `applicationModelScopeMenu.unit.test.ts` (existing) | ✅ |
+| `openReportSection` + list `openReport` + row `instanceUuid` | `multistepLaunch.274` | ✅ |
+| Object-instance edits visible to Finish | `multistepProcess.274` (Slice 4 cases) | ✅ |
+| Runner / list Add unchanged | Slice 0 + no product change in those files except list `openReport` | ✅ |
 
 ### Validation
 
@@ -631,4 +631,30 @@ RUN_TEST=multistep npm run testByFile -w miroir-standalone-app -- --profile emul
 
 ### Realization
 
-<Appended on completion.>
+Nonreg, docs, cleanup decision, AC. Completeness gate met: `multistepProcess.274` is in `appstack-274-multistep-reports`, that step is green, full `npm run nonreg` passed.
+
+**Manifest** (`scripts/nonreg-manifest.json`, `requires: none`):
+- `unit-274-multistep-reports` (unit) — `testByFile` `multistep.274.phase0` (no MiroirTest)
+- `integ-action-274-multistep-reports` (default) — `testMiroir --profile {profile} --suites multistepReports.274 --mode integ`
+- `appstack-274-multistep-reports` (default) — `bash -c` both `multistepProcess.274` and `multistepLaunch.274` with `--profile {profile}`
+
+**Docs:** `analysis.md` status → implemented (after the gate). `docs/reference/api/reports.md` and `docs/guides/core-concepts.md` replace the fictional Form section with `type: "multistep"` + `compositeActionSequence` + `openReportSection` / list `openReport`. No Form entity.
+
+**Cleanup (#238):** deferred. Tests stay under `tests/4_view/issues/274-multistep-reports/` with feature filenames. Other open issues still use `tests/**/issues/` (#71, #253, #262, #264, #270). Did not delete tests.
+
+**Files:** `scripts/nonreg-manifest.json`, `docs/reference/api/reports.md`, `docs/guides/core-concepts.md`, `analysis.md`, this plan. Follow-up fixes so default-tier nonreg stays green with the new Library Reports: `remapApplicationModelAtPaths.ts` (joker paths skip missing optional `compositeActionSequence`), `remapApplicationModelAtPaths.unit.test.ts` (imports + optional-sequence case), `ReportSectionListDisplay.tsx` (`React.lazy` `ReportDisplay` so list/grid suites do not collect `svg-toolbelt`), `ReportSectionEntityInstance.tsx` (`useCurrentModel` entity fallback only when the viewed Report is `type: "multistep"`).
+
+**tsc:** `miroir-core`, `miroir-standalone-app`, `miroir-test-app_deployment-library` — all pass.
+
+**Slice validation (filesystem):** `multistep.274.phase0` 7/7; `multistepReports.274` / `multistepFinish.274` 1/1; `multistepProcess.274` 16/16; `multistepLaunch.274.phase5` 5/5.
+
+**Full nonreg:** pass. `test-results/nonreg/20260913T180213Z` — default / `emulatedServer-sql` / run-all, **59 passed / 0 failed**. All three #274 steps green (`unit-274` 22.7s, `integ-action-274` 31.4s, `appstack-274` 86.3s including `multistepProcess.274`).
+
+**First default-tier run** (`20260913T172217Z`, 53/6) failed on #274 fallout, then fixed and re-run:
+- `integ-runner-runner_freeze_application_version` / `integ-runner-runner_drop_entity` — `RemapApplicationModelAtPathsError` on `reports.*.definition.compositeActionSequence…` (passed 2026-09-11). Joker skip + `npm run build -w miroir-core`.
+- `integ-listDisplayByTransformer` / `integ-gridPagination` / `unit-gridPagination` — `svg-toolbelt` CJS collect via Slice 5 static `ListDisplay → ReportDisplay`. Lazy `ReportDisplay`.
+- `externalServices-spotify` — playlist `typeError` / missing “Rock Classics” because Slice 4’s global `useCurrentModel` entity fallback type-checked Spotify without a seeded mapping. Fallback is multistep-only.
+
+**Deviations:** Cleanup deferred (above). Remapper unit test imports pointed at `model/cloneApplication/` (stale path). Canonical-Library no-op assertion is `toEqual` (resolved MetaModel, not identity). No product features beyond those three nonreg-blocking import/remap/lookup gates. Did not spy on `runMultistepFinish`. Graphify update not required for this slice.
+
+No stop-the-world product contradiction.

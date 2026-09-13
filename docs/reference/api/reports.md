@@ -68,9 +68,42 @@ Display a list of entity instances:
 
 **Coming Soon**
 
-### 3. Form Section
+### 3. Multistep Report
 
-**Coming Soon**
+A Report with `"type": "multistep"` pages its `list` children one step at a time (Back / Next / Finish / Cancel). There is no Form entity. A step is any `ReportSection`.
+
+Finish on the last step runs `definition.compositeActionSequence` (`CompositeActionSequenceTemplate`) through `handleCompositeActionTemplate`. The payload is the **step bag** (`inputPrefix` buckets plus hoisted `objectInstanceReportSection` path keys), not the raw Formik tree. The walk is memory-only; the URL has no `step` key.
+
+```json
+{
+  "type": "multistep",
+  "definition": {
+    "compositeActionSequence": { "actionType": "compositeActionSequence", "payload": { "actionSequence": [] } },
+    "section": {
+      "type": "list",
+      "definition": [
+        { "type": "inputReportSection", "definition": { "label": "Country", "inputPrefix": "stepOne" } }
+      ]
+    }
+  }
+}
+```
+
+Launchers (they do not collect Finish parameters):
+
+- `openReportSection` — page-level button (`openAs`: `"modal"` or `"route"`).
+- `objectListReportSection.definition.openReport` — per-row tools button; the row PK is passed as `pageParams.instanceUuid`.
+
+```json
+{
+  "type": "openReportSection",
+  "definition": {
+    "label": "Create country",
+    "reportUuid": "d2b2fbbd-6844-4422-8412-4e3c303296bc",
+    "openAs": "modal"
+  }
+}
+```
 
 ### 4. Composite Section
 

@@ -9,7 +9,7 @@ Related: [#169](https://github.com/miroir-framework/miroir/issues/169) MLS form 
 Key sources: [`Report.ts` types](../../../packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts), [`ReportViewWithEditor.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx), [`ReportSectionViewWithEditor.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx), [`ReportTools.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportTools.ts), [`RunnerView.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/RunnerView.tsx), [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed with the user (design grilling, 2026-09-12/13). Revised after [adversarial review](./adversarial-review.md) (R1–R12 applied). TDD plan revised after [plan adversarial review](./plan-adversarial-review.md) (P1–P16 applied) and after the UI-suite completeness gate (this revision). Implementation starts after the user confirms slice order.
+**Status:** implemented (slices 1–6 done; `multistepProcess.274` is in `appstack-274-multistep-reports` and green; full `npm run nonreg` passed, 59/0).
 
 **Document history:** first commit stated Finish uses “the whole Report Formik tree” and Next merges `{ ...launchPageParams, ...formikValues }`. Review R1 showed that tree includes `reportData`, `pageParams`, and the Report definition under the report `name`, so the merge is circular. D5/D8 below now name an extracted **step bag**. Other review repairs: section-type switches (R2), disable URL writes in multistep (R3), per-row list launcher (R4), bag above query-failure unmount (R5), `runStoredQueries` unsupported (R6), seed `type` counts (R7), dual-write paths (R8), `CompositeActionSequenceTemplate` (R9), citation fixes (R10), Finish `modelEnvironment` (R11), launcher `pageParams` (R12). 2026-09-13: §8 / Goal 7 — validation is incomplete without a `prepareAndRunTestSuites` UI walk of a 2–3 step process (same harness as `JzodElementEditor.test.tsx`) plus the main error cases.
 
@@ -352,4 +352,4 @@ The TDD plan’s Slice 2 owns the suite file; later slices add cases to that sam
 
 ## Next step
 
-Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (vertical TDD slices, `miroir-analysis-to-tdd-plan` skill).
+Implemented. See [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) Slice 6 Realization.

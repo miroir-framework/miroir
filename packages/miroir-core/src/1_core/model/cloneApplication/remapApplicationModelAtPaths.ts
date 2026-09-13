@@ -165,6 +165,11 @@ function remapAtPattern(
   }
   const next = current[segment];
   if (next === undefined) {
+    // Joker-expanded paths (e.g. reports.*.definition.compositeActionSequence)
+    // may exist only on some siblings. Concrete paths still throw.
+    if (pattern.includes(RELATIVE_PATH_JOKER)) {
+      return;
+    }
     throw new RemapApplicationModelAtPathsError(
       `Path not found: ${formatRelativePath(pattern)}`,
       pattern,
