@@ -1,6 +1,6 @@
 /**
  * #273 Slice 0 — characterize today's process-capability / feature-switch contracts.
- * Not reachable as MiroirTest: no getProcessCapabilities or FeatureUnavailable yet.
+ * Slice 1 consumed the FeatureUnavailable pin; remaining characterizes still-current contracts.
  * authentication.71.phase0 still pins monoUserAutentification unread.
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -53,10 +53,10 @@ function schemaBlock(src: string, key: string, nextKey: string): string {
 }
 
 if (runThis) {
-  describe("processCapabilities.273.phase0 — no FeatureUnavailable yet", () => {
-    it("DomainElement.ts source does not contain FeatureUnavailable", () => {
+  describe("processCapabilities.273.phase0 — FeatureUnavailable is on ActionErrorType", () => {
+    it("DomainElement.ts source contains FeatureUnavailable", () => {
       const src = readSource("0_interfaces/2_domain/DomainElement.ts");
-      expect(src).not.toContain("FeatureUnavailable");
+      expect(src).toContain("FeatureUnavailable");
     });
   });
 

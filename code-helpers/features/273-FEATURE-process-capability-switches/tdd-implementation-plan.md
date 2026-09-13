@@ -20,7 +20,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/273
 Working branch: `273-FEATURE-process-capability-switches`
 
-**Resume note:** Slice 0 DONE. Implementing remaining slices.
+**Resume note:** Slices 0 to 1 DONE. Implementing remaining slices.
 
 ---
 
@@ -65,7 +65,7 @@ This plan does **not** add undo/redo/commit capabilities, debug overlays as flag
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize current gates / inventories | ✅ | `processCapabilities.273.phase0.unit.test.ts` |
-| 1 | **Tracer:** `getProcessCapabilities` + `FeatureUnavailable` | ⬜ | `processCapabilities.273.phase1.unit.test.ts` |
+| 1 | **Tracer:** `getProcessCapabilities` + `FeatureUnavailable` | ✅ | `processCapabilities.273.phase1.unit.test.ts` |
 | 2 | `GET /capabilities` + UI context + shipped server flags | ⬜ | `processCapabilitiesHttp.273.phase2.integ.test.ts` + context unit |
 | 3 | Store create/admin refuse in `handleActionInternal` | ⬜ | `processCapabilitiesStore.273.phase3.integ.test.ts` |
 | 4 | Create Application picker follows `creatableStoreTypes` | ⬜ | `processCapabilitiesPicker.273.phase4.unit.test.ts` |
@@ -189,7 +189,7 @@ Characterization test at `packages/miroir-core/tests/1_core/issues/273-process-c
 
 ## Slice 1. Tracer: snapshot function + FeatureUnavailable
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -231,7 +231,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+`getProcessCapabilities` / `assertProcessCapability` in `packages/miroir-core/src/1_core/processCapabilities.ts`. Maps are arguments (`ReadonlyMap` or factory-register types). `availableStoreTypes` on `assertProcessCapability` is treated as always allowed this slice. Phase0 now asserts `FeatureUnavailable` is present. `npm run build -w miroir-core` so tests can import from the package. phase0 11/11, phase1 9/9, tsc clean.
 
 ---
 

@@ -738,6 +738,11 @@ export {
 } from "./0_interfaces/4-views/ViewParams";
 export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_core/constants.js";
 export {
+  assertProcessCapability,
+  getProcessCapabilities,
+} from "./1_core/processCapabilities";
+export type { ProcessCapabilities } from "./1_core/processCapabilities";
+export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
   // createApplicationCompositeAction,
