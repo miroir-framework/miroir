@@ -101,6 +101,8 @@ export const reportSectionsFormSchema = (
         [reportSectionPath.join("_")]: resolvedEntityMLSchema
       };
     }
+    case "openReportSection":
+      return {};
     case "objectListReportSection":
     case "markdownReportSection":
     case "modelDiagramReportSection":
@@ -255,7 +257,8 @@ export const reportSectionsFormValue = (
     case "accordionReportSection":
     case "jsonReportSection":
     case "storedReportDisplay":
-    case "runnerReportSection":  
+    case "runnerReportSection":
+    case "openReportSection":
     default:
       return {};
   }

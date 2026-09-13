@@ -26,6 +26,7 @@ const shouldRun =
 const REPORT_ENTITY_UUID = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
 const TABLE_DETAILS_UUID = "7c80d9ec-35b2-4cb8-8164-c5fe4e20687f";
 const SCHEMA_DETAILS_UUID = "a72bb361-3126-4aa1-85cc-0be4d6838c84";
+const MULTISTEP_COUNTRY_CREATE_UUID = "d2b2fbbd-6844-4422-8412-4e3c303296bc";
 
 const REPO_ROOT = resolveRepoRoot();
 
@@ -107,51 +108,54 @@ function minimalValidReport(overrides: Partial<Report> = {}): Report {
 }
 
 describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts", () => {
-  it('generated Report.type is optional "list" | "grid" only (no multistep)', () => {
+  it('generated Report.type is optional "list" | "grid" | "multistep"', () => {
     const source = readFileSync(FUNDAMENTAL_TYPES_PATH, "utf8");
     const reportTypeBlock = extractExportTypeBlock(source, "Report");
     const reportVersionTypeBlock = extractExportTypeBlock(source, "ReportVersion");
 
-    expect(reportTypeBlock).toContain('type?: ("list" | "grid")');
-    expect(reportTypeBlock).not.toContain('"multistep"');
-    expect(reportVersionTypeBlock).toContain('type?: ("list" | "grid")');
-    expect(reportVersionTypeBlock).not.toContain('"multistep"');
+    expect(reportTypeBlock).toContain('type?: ("list" | "grid" | "multistep")');
+    expect(reportVersionTypeBlock).toContain('type?: ("list" | "grid" | "multistep")');
 
     const listReport = minimalValidReport({ type: "list" });
     const gridReport = minimalValidReport({ type: "grid" });
-    const multistepReport = minimalValidReport({ type: "multistep" as Report["type"] });
+    const multistepReport = minimalValidReport({ type: "multistep" });
 
     expect(report.safeParse(listReport).success).toBe(true);
     expect(report.safeParse(gridReport).success).toBe(true);
-    expect(report.safeParse(multistepReport).success).toBe(false);
+    expect(report.safeParse(multistepReport).success).toBe(true);
   });
 
-  it("seed inventory: 84 Reports with expected type distribution", () => {
+  it("seed inventory: 85 Reports including MultistepCountryCreate", () => {
     const reports = ASSET_TREES.flatMap((tree) =>
       collectReportInstances(join(REPO_ROOT, tree)),
     );
 
     const listReports = reports.filter((entry) => entry.type === "list");
     const gridReports = reports.filter((entry) => entry.type === "grid");
+    const multistepReports = reports.filter((entry) => entry.type === "multistep");
     const omittedTypeReports = reports.filter((entry) => entry.type === undefined);
     const nullTypeReports = reports.filter((entry) => entry.type === null);
 
-    expect(reports).toHaveLength(84);
+    expect(reports).toHaveLength(85);
     expect(listReports).toHaveLength(11);
     expect(gridReports).toHaveLength(0);
+    expect(multistepReports).toHaveLength(1);
     expect(omittedTypeReports).toHaveLength(71);
     expect(nullTypeReports).toHaveLength(2);
     expect(nullTypeReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual([
       { name: "TableDetails", uuid: TABLE_DETAILS_UUID },
       { name: "SchemaDetails", uuid: SCHEMA_DETAILS_UUID },
     ]);
+    expect(multistepReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual([
+      { name: "MultistepCountryCreate", uuid: MULTISTEP_COUNTRY_CREATE_UUID },
+    ]);
   });
 
-  it("RootReport has no compositeActionSequence in generated types or zod schema", () => {
+  it("RootReport has optional compositeActionSequence in generated types and zod schema", () => {
     const source = readFileSync(FUNDAMENTAL_TYPES_PATH, "utf8");
     const rootReportTypeBlock = extractExportTypeBlock(source, "RootReport");
 
-    expect(rootReportTypeBlock).not.toContain("compositeActionSequence");
+    expect(rootReportTypeBlock).toContain("compositeActionSequence?");
 
     const validRootReport: RootReport = {
       section: {
@@ -168,7 +172,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     ).toBe(false);
   });
 
-  it("reportSectionsFormSchema throws for unsupported section types", () => {
+  it("reportSectionsFormSchema throws for inputReportSection and returns {} for openReportSection", () => {
     const invoke = (reportSection: ReportSection) =>
       reportSectionsFormSchema(
         reportSection,
@@ -189,9 +193,16 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
       }),
     ).toThrow(/reportSectionsFormSchema: report section type inputReportSection is not supported/);
 
-    expect(() =>
-      invoke({ type: "openReportSection", definition: {} } as unknown as ReportSection),
-    ).toThrow(/reportSectionsFormSchema: report section type openReportSection is not supported/);
+    expect(
+      invoke({
+        type: "openReportSection",
+        definition: {
+          label: "Open",
+          reportUuid: "00000000-0000-4000-8000-000000000004",
+          openAs: "modal",
+        },
+      }),
+    ).toEqual({});
   });
 
   it("reportSectionsFormValue default returns {} for runnerReportSection", () => {

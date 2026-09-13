@@ -381,6 +381,8 @@ export {
   objectInstanceReportSection,
   ObjectListReportSection,
   objectListReportSection,
+  OpenReportSection,
+  openReportSection,
   PersistenceAction,
   Query,
   query,

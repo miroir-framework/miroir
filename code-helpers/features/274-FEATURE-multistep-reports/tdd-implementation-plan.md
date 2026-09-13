@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/274
 Working branch: `274-FEATURE-multistep-reports`
 
-**Resume note:** Slice 0 ✅. Implementing remaining slices in order.
+**Resume note:** Slices 0–1 ✅. Implementing remaining slices in order.
 
 ---
 
@@ -66,7 +66,7 @@ This plan does **not** add a Form / FormRun Entity, persist drafts, wrap the wal
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize Report.type, Formik dump, schema switch, nested Formik | ✅ | `multistep.274.phase0.unit.test.ts` |
-| 1 | **Tracer:** schema + Finish template + step bag creates Country | ⬜ | MiroirTest `multistepFinish.274` (integ) + modelValidation |
+| 1 | **Tracer:** schema + Finish template + step bag creates Country | ✅ | MiroirTest `multistepFinish.274` (integ) + modelValidation |
 | 2 | Pager host + UI process walk (completeness suite) | ⬜ | `multistepProcess.274.integ.test.tsx` (`prepareAndRunTestSuites`) |
 | 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ⬜ | `multistepProcess.274` (added cases) |
 | 4 | Object-instance hoist; query-failure keeps the bag | ⬜ | `multistepProcess.274` (added cases) |
@@ -202,7 +202,7 @@ Characterization-only. Added `packages/miroir-standalone-app/tests/4_view/issues
 
 ## Slice 1 — Tracer: schema + Finish with step bag creates a Country
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -268,7 +268,11 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+Schema + Finish tracer. Dual-wrote Report Entity / EntityVersion (`3f2baa83-…`, `952d2c65-…`) and ReportVersion Entity / EntityVersion (`f1a2b3c4-…`, `d3e4f5a6-…`) so freeze/phase0 stay consistent: `type` enum += `"multistep"`, `rootReport.compositeActionSequence` optional `CompositeActionSequenceTemplate`, `openReportSection` stub, list `openReport` optional. Regenerated `miroirFundamentalType.ts` / `miroirFundamentalJzodSchema.ts`; exported `OpenReportSection` / `openReportSection` from `miroir-core` `index.ts`. `reportSectionsFormSchema` / renderer treat `openReportSection` as `{}` / no-op.
+
+Frozen tracer Report `d2b2fbbd-…` `MultistepCountryCreate` (three steps + `stepOneEcho` + Finish `createInstance` Country `63c96487-…` from `stepOne`); registered on `defaultLibraryAppModel.reports`. MiroirTest suite `multistepReports.274` (`9931f827-…`) with **inline** leaf `multistepFinish.274` (nested Finish template, suite `testParams.stepOne`, `afterTestCleanupAction` delete). Deviation from the Vehicle path: no separate `42751630-….json` — the leaf lives in the suite file. Host helper `runMultistepFinish` in `MultistepReportHost.tsx` calls `handleCompositeActionTemplate` only (pager later). Phase0 consumed in place (enum, optional sequence, inventory 85 including `d2b2fbbd-…`, `openReportSection → {}`).
+
+Validation: library `modelValidation.unit` 182 passed; `multistep.274.phase0` 7/7; `testMiroir --suites multistepReports.274 --mode integ` (`multistepFinish.274`) passed; `tsc --noEmit --skipLibCheck` on miroir-core and miroir-standalone-app passed.
 
 ---
 

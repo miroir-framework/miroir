@@ -9445,7 +9445,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "enum",
             "definition": [
               "list",
-              "grid"
+              "grid",
+              "multistep"
             ],
             "optional": true,
             "tag": {
@@ -12657,6 +12658,83 @@ export const miroirFundamentalJzodSchema = {
                   "asc",
                   "desc"
                 ]
+              },
+              "openReport": {
+                "type": "object",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 5,
+                    "defaultLabel": "Open Report"
+                  }
+                },
+                "definition": {
+                  "label": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Label"
+                      }
+                    }
+                  },
+                  "reportUuid": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Report",
+                        "foreignKeyParams": {
+                          "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "openAs": {
+                    "type": "enum",
+                    "definition": [
+                      "modal",
+                      "route"
+                    ],
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Open As"
+                      }
+                    }
+                  },
+                  "application": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application"
+                      }
+                    }
+                  },
+                  "applicationSection": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "data",
+                      "model",
+                      "modelVersion"
+                    ],
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application Section"
+                      }
+                    }
+                  },
+                  "deploymentUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Deployment"
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -13106,6 +13184,14 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "miroirTestReportSection"
             },
             "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "openReportSection"
+            },
+            "context": {}
           }
         ]
       },
@@ -13246,6 +13332,20 @@ export const miroirFundamentalJzodSchema = {
               "relativePath": "reportSection"
             },
             "context": {}
+          },
+          "compositeActionSequence": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "compositeActionSequenceTemplate"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Finish Composite Action Sequence"
+              }
+            },
+            "context": {}
           }
         }
       },
@@ -13379,6 +13479,94 @@ export const miroirFundamentalJzodSchema = {
       "parameterTransformer": {
         "type": "string"
       },
+      "openReportSection": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "openReportSection"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "label": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Label"
+                  }
+                }
+              },
+              "reportUuid": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "id": 2,
+                    "defaultLabel": "Report",
+                    "foreignKeyParams": {
+                      "targetEntity": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                      "targetEntityOrderInstancesBy": "name"
+                    }
+                  }
+                }
+              },
+              "openAs": {
+                "type": "enum",
+                "definition": [
+                  "modal",
+                  "route"
+                ],
+                "tag": {
+                  "value": {
+                    "id": 3,
+                    "defaultLabel": "Open As"
+                  }
+                }
+              },
+              "application": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Application"
+                  }
+                }
+              },
+              "applicationSection": {
+                "type": "enum",
+                "optional": true,
+                "definition": [
+                  "data",
+                  "model",
+                  "modelVersion"
+                ],
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Application Section"
+                  }
+                }
+              },
+              "deploymentUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Deployment"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "report": {
         "type": "object",
         "extend": {
@@ -13418,7 +13606,8 @@ export const miroirFundamentalJzodSchema = {
             "type": "enum",
             "definition": [
               "list",
-              "grid"
+              "grid",
+              "multistep"
             ],
             "optional": true,
             "tag": {

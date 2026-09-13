@@ -598,6 +598,9 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           //   ]}
           // />
         )}
+        {reportSectionDefinitionFromFormik?.type == "openReportSection" && (
+          <></>
+        )}
         {reportSectionDefinitionFromFormik?.type == "inputReportSection" && (
           <ReportInputSection
             label={reportSectionDefinitionFromFormik.definition.label ?? "Report Input"}
