@@ -945,6 +945,17 @@
       ]
     },
     {
+      "id": "unit-275-cursor-sdk",
+      "tier": "unit",
+      "title": "#275 — Cursor SDK as CopilotKit backend (core + ai + standalone unit)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- 275-cursor-sdk-copilotkit-backend && npm run testByFile -w miroir-ai -- 275-cursor-sdk-copilotkit-backend && npm run testByFile -w miroir-standalone-app -- 4_view/issues/275-cursor-sdk-copilotkit-backend"
+      ]
+    },
+    {
       "id": "appstack-273-process-capabilities",
       "tier": "default",
       "title": "#273 — store create/admin refuse follows snapshot",

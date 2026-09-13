@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Slices 0–7 done. Next: Slice 8 (nonreg, docs, AC).
+**Resume note:** Slices 0–8 done. Next: compile touched packages and full `npm run nonreg`.
 
 ---
 
@@ -77,7 +77,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 | 5 | `propose_*` rename + lend form | ✅ | `cursorSdk.275.phase5.unit.test.ts` |
 | 6 | sessionStorage picker sets CopilotKit `properties` | ✅ | `cursorSdk.275.phase6.unit.test.ts` |
 | 7 | Electron dummy cwd + packaging pin | ✅ | `cursorSdk.275.phase7.unit.test.ts` |
-| 8 | Nonreg, docs, cleanup, AC | ⬜ | `unit-275-cursor-sdk` |
+| 8 | Nonreg, docs, cleanup, AC | ✅ | `unit-275-cursor-sdk` |
 
 ---
 
@@ -566,7 +566,7 @@ Validation: phase7 standalone 9, phase7 miroir-ai 3, phase0 standalone 5, phase0
 
 ## Slice 8 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -607,22 +607,22 @@ Automated equivalent: phase1 snapshot + phase2 router envelope + phase5 names + 
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| CopilotKit stays the shell; sandbox `ai` false | phase0 + #273 | ⬜ |
-| `features.cursor` missing = false; persistence-side only | phase1 | ⬜ |
-| Not a fifth `AiProviderType` | phase2 + phase3 | ⬜ |
-| `aiCursorKey` | phase3 | ⬜ |
-| Lazy SDK, no browser import | phase4 source-text | ⬜ |
-| Local, `tools: ["mcp"]`, dummy cwd | phase4 | ⬜ |
-| Loopback `/mcp`, no new Bearer | phase4 + phase0 ungated pin | ⬜ |
-| No cloud | out of scope / no cloud API in factory | ⬜ |
-| MCP names execute | phase4 mcpServers url | ⬜ |
-| `propose_*` forms; no CopilotKit `lendDocument` name | phase5 | ⬜ |
-| Pick in sessionStorage + CopilotKit `properties` | phase6 | ⬜ |
-| Picker hidden when `ai` is false, even if `cursor` is true | phase6 | ⬜ |
-| Refuse uses `capability: "cursor"` or `"mcp"` on `/api/copilotkit` | phase2 | ⬜ |
-| Node ≥ 22.13.0 when Cursor path is used | phase4 | ⬜ |
-| Electron ships natives **or** fail-loud (Realization names which) | phase7 | ⬜ |
-| Do not delete runtime execute list | phase0/2 filtered Cursor actions only | ⬜ |
+| CopilotKit stays the shell; sandbox `ai` false | phase0 + #273 | ✅ |
+| `features.cursor` missing = false; persistence-side only | phase1 | ✅ |
+| Not a fifth `AiProviderType` | phase2 + phase3 | ✅ |
+| `aiCursorKey` | phase3 | ✅ |
+| Lazy SDK, no browser import | phase4 source-text | ✅ |
+| Local, `tools: ["mcp"]`, dummy cwd | phase4 | ✅ |
+| Loopback `/mcp`, no new Bearer | phase4 + phase0 ungated pin | ✅ |
+| No cloud | out of scope / no cloud API in factory | ✅ |
+| MCP names execute | phase4 mcpServers url | ✅ |
+| `propose_*` forms; no CopilotKit `lendDocument` name | phase5 | ✅ |
+| Pick in sessionStorage + CopilotKit `properties` | phase6 | ✅ |
+| Picker hidden when `ai` is false, even if `cursor` is true | phase6 | ✅ |
+| Refuse uses `capability: "cursor"` or `"mcp"` on `/api/copilotkit` | phase2 | ✅ |
+| Node ≥ 22.13.0 when Cursor path is used | phase4 | ✅ |
+| Electron ships natives **or** fail-loud (Realization names which) | phase7 fail-loud | ✅ |
+| Do not delete runtime execute list | phase0/2 filtered Cursor actions only | ✅ |
 
 ### Validation
 
@@ -632,4 +632,8 @@ npm run nonreg -- --only unit-275-cursor-sdk
 
 ### Realization
 
-<Appended on completion.>
+`unit-275-cursor-sdk` is a tier `unit` step after `unit-273-process-capabilities`. It runs the `issues/275-cursor-sdk-copilotkit-backend` vitest dirs in miroir-core, miroir-ai, and standalone-app. Tests stay in the issue dirs (#238 later).
+
+`docs/reference/process-capabilities.md` names `features.cursor` (missing = false), the Node ≥ 22.13.0 floor, refuse `capability: "cursor"` or `"mcp"`, and that shipped Electron main keeps cursor off (fail-loud if someone turns it on without a resolvable `@cursor/sdk`). Shipped `miroirConfig.server.json` / `.docker.json` still omit `cursor`. `analysis.md` status is Implemented. `shouldMountCopilotKitRoute` / CopilotKit auth gate and ungated `/mcp` unchanged.
+
+Validation: phase8 2, `npm run nonreg -- --only unit-275-cursor-sdk` pass (~41s). AC rows ticked. Full compile + repo `npm run nonreg` follow this slice.
