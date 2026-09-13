@@ -7,7 +7,7 @@ import {
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
 import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
-import type { MouseEvent, ReactNode } from 'react';
+import { useSyncExternalStore, type MouseEvent, type ReactNode } from 'react';
 
 import { defaultSelfApplicationDeploymentMap, isVersioningAppBarItemVisible, LoggerInterface, MiroirLoggerFactory, type MiroirMenuItem, type MiroirMenuPageLink, type VersioningModeInput } from 'miroir-core';
 
@@ -26,6 +26,11 @@ import { ThemedIcon } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { entitySelfApplication, reportMiroirRunners, reportVersioning } from 'miroir-test-app_deployment-miroir';
 import { resolveAppBarReportLinkApplication } from './appBarReportNavigation.js';
+import {
+  readMiroirAiBackend,
+  subscribeMiroirAiBackend,
+  writeMiroirAiBackend,
+} from '../../routes/ai/miroirAiBackend.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -142,6 +147,11 @@ export function AppBar(props:AppBarProps) {
   const { fetchConfigurations } = usePageConfiguration();
   const agentsEnabled = props.agentsEnabled === true;
   const showAgentUi = agentsEnabled;
+  const miroirAiBackend = useSyncExternalStore(
+    subscribeMiroirAiBackend,
+    readMiroirAiBackend,
+    readMiroirAiBackend,
+  );
   const { designerToolsVisible, showModelTools } = useDesignerToolsVisibility();
   const applicationSelector = context.toolsPageState?.applicationSelector;
   const applicationDeploymentMap =
@@ -319,6 +329,49 @@ export function AppBar(props:AppBarProps) {
               : {
                   iconType: "mui",
                   name: "auto_awesome",
+                }
+          }
+        />
+      </AppBarIconButton>
+    ) : (
+      <> </>
+    ),
+    showAgentUi && context.processCapabilities.cursor === true ? (
+      <AppBarIconButton
+        key="ai-backend-cursor"
+        aria-label="Cursor"
+        title={
+          miroirAiBackend === "cursor"
+            ? "Cursor: ON (click to use token AI)"
+            : "Cursor: OFF (click to use Cursor)"
+        }
+        onClick={() => {
+          if (miroirAiBackend === "cursor") {
+            writeMiroirAiBackend();
+          } else {
+            writeMiroirAiBackend("cursor");
+          }
+        }}
+        color={
+          miroirAiBackend === "cursor"
+            ? miroirTheme.currentTheme.colors.warningLight || "orange"
+            : undefined
+        }
+      >
+        <ThemedIcon
+          icon={
+            miroirAiBackend === "cursor"
+              ? {
+                  iconType: "mui",
+                  name: "smart_toy",
+                  color: {
+                    colorType: "themeColor",
+                    currentThemeColorPath: "colors.warning",
+                  },
+                }
+              : {
+                  iconType: "mui",
+                  name: "smart_toy",
                 }
           }
         />

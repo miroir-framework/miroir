@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Slices 0–5 done. Next: Slice 6 (sessionStorage picker + CopilotKit `properties`).
+**Resume note:** Slices 0–6 done. Next: Slice 7 (Electron dummy cwd + packaging).
 
 ---
 
@@ -75,7 +75,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 | 3 | `aiCursorKey` alias + health text | ✅ | `cursorSdk.275.phase3.unit.test.ts` |
 | 4 | Lazy SDK factory, dummy cwd, MCP loopback, Node floor | ✅ | `cursorSdk.275.phase4.unit.test.ts` |
 | 5 | `propose_*` rename + lend form | ✅ | `cursorSdk.275.phase5.unit.test.ts` |
-| 6 | sessionStorage picker sets CopilotKit `properties` | ⬜ | `cursorSdk.275.phase6.unit.test.ts` |
+| 6 | sessionStorage picker sets CopilotKit `properties` | ✅ | `cursorSdk.275.phase6.unit.test.ts` |
 | 7 | Electron dummy cwd + packaging pin | ⬜ | `cursorSdk.275.phase7.unit.test.ts` |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | `unit-275-cursor-sdk` |
 
@@ -468,7 +468,7 @@ Validation re-run: phase5 7, phase0 5, phase2 standalone 3.
 
 ## Slice 6 — Picker sets CopilotKit `properties`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -503,7 +503,13 @@ RUN_TEST=cursorSdk.275.phase6 npm run testByFile -w miroir-standalone-app -- cur
 
 ### Realization
 
-<Appended on completion.>
+sessionStorage key is `miroirAiBackend` (`"cursor"` or absent). Helpers live in `miroirAiBackend.ts`. `AgentsCopilotKit` passes `properties={{ aiConfig: { backend: "cursor" } }}` only when the pick is `"cursor"` and `processCapabilities.cursor === true`. Omitted pick leaves `properties` undefined (token `AI_PROVIDER_TYPE` path).
+
+AppBar picker sits next to AI Assistant, gated by `showAgentUi && processCapabilities.cursor`. `showAgentUi` is snapshot `ai`, so the picker is hidden when `ai` is false even if `cursor` is true. No `4_view` file imports `getProcessCapabilities`. Stale `ViewParams.agents` comment is gone.
+
+Added `subscribeMiroirAiBackend` plus `useSyncExternalStore` so AppBar and CopilotKit re-render when the pick changes. `writeMiroirAiBackend()` with no argument clears the key. Slice 0 pin now requires `runtimeUrl` only; `properties` is allowed.
+
+Validation: phase6 6, phase0 5, `processCapabilitiesContext.273.phase2` 3.
 
 ---
 

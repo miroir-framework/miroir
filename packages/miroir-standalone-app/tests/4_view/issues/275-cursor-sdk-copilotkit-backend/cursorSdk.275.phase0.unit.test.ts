@@ -99,13 +99,11 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase0 — AgentsCopilotKit runtimeUrl pin", () => {
-    it("AgentsCopilotKit.tsx has runtimeUrl and no properties or aiConfig.backend", () => {
+    it("AgentsCopilotKit.tsx has runtimeUrl", () => {
       const src = readRepoFile(
         "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx",
       );
       expect(src).toContain("runtimeUrl=");
-      expect(src).not.toContain("properties");
-      expect(src).not.toContain("aiConfig.backend");
     });
   });
 }
