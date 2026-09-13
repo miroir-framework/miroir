@@ -20,7 +20,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/273
 Working branch: `273-FEATURE-process-capability-switches`
 
-**Resume note:** Slices 0 to 3 DONE. Implementing remaining slices.
+**Resume note:** Slices 0 to 4 DONE. Implementing remaining slices.
 
 ---
 
@@ -68,7 +68,7 @@ This plan does **not** add undo/redo/commit capabilities, debug overlays as flag
 | 1 | **Tracer:** `getProcessCapabilities` + `FeatureUnavailable` | ✅ | `processCapabilities.273.phase1.unit.test.ts` |
 | 2 | `GET /capabilities` + UI context + shipped server flags | ✅ | `processCapabilitiesHttp.273.phase2.integ.test.ts` + context unit |
 | 3 | Store create/admin refuse in `handleActionInternal` | ✅ | `processCapabilitiesStore.273.phase3.integ.test.ts` |
-| 4 | Create Application picker follows `creatableStoreTypes` | ⬜ | `processCapabilitiesPicker.273.phase4.unit.test.ts` |
+| 4 | Create Application picker follows `creatableStoreTypes` | ✅ | `processCapabilitiesPicker.273.phase4.unit.test.ts` |
 | 5 | AI hide + no CopilotKit mount + drop `ViewParams.agents` | ⬜ | `processCapabilitiesAi.273.phase5.unit.test.ts` + Admin `modelValidation` |
 | 6 | MCP refuse in `runMcpToolRunner` + both server mounts | ⬜ | `processCapabilitiesMcp.273.phase6.unit.test.ts` |
 | 7 | Designer bulb + Alice Admin grant + Transformer Builder | ⬜ | `processCapabilitiesDesigner.273.phase7.unit.test.ts` |
@@ -353,7 +353,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ## Slice 4. Create Application picker
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -387,7 +387,7 @@ RUN_TEST=processCapabilitiesPicker.273.phase4 npm run testByFile -w miroir-stand
 
 ### Realization
 
-<Appended on completion.>
+`buildCreateApplicationStorageSchema` in a sibling `.ts` next to the runner. Context keys follow `creatableStoreTypes`; `bundled` is dropped. Live form schema is rebuilt from `context.processCapabilities.creatableStoreTypes`. Empty list yields empty context / empty concatLists. SQL/mongo connection-string gates stay only for types that remain. 3/3 unit tests.
 
 ---
 

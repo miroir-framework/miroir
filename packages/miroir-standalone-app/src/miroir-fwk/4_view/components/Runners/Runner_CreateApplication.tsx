@@ -40,13 +40,19 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, useMiroirContextService, u
 import {
   entityDeployment
 } from "miroir-test-app_deployment-admin";
+import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import {
+  ALL_NON_BUNDLED_CREATABLE_STORE_TYPES,
+  getRunner_CreateApplication_formMLSchema,
+  type CreateApplicationStoreType,
+} from "./buildCreateApplicationStorageSchema.js";
 import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
 
-import { selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
+export { buildCreateApplicationStorageSchema } from "./buildCreateApplicationStorageSchema.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateApplication");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
@@ -56,176 +62,8 @@ export interface CreateApplicationToolProps {
   applicationDeploymentMap: ApplicationDeploymentMap;
 }
 
-export const Runner_CreateApplication_formMLSchema: FormMLSchema = {
-  formMLSchemaType: "transformer",
-  transformer: {
-    type: "object",
-    definition: {
-      createApplicationAndDeployment: {
-        type: "object",
-        definition: {
-          applicationStorage: {
-            type: "schemaReference",
-            context: {
-              indexedDbStoreSectionConfiguration: {
-                type: "object",
-                definition: {
-                  emulatedServerType: { type: "literal", definition: "indexedDb" },
-                },
-              },
-              filesystemDbStoreSectionConfiguration: {
-                type: "object",
-                definition: {
-                  emulatedServerType: { type: "literal", definition: "filesystem" },
-                },
-              },
-              sqlDbStoreSectionConfiguration: {
-                type: "object",
-                definition: {
-                  emulatedServerType: { type: "literal", definition: "sql" },
-                  connectionString: {
-                    type: "string",
-                    tag: {
-                      value: {
-                        defaultLabel: "SQL Connection String",
-                        display: { editable: false },
-                        initializeTo: {
-                          initializeToType: "transformer",
-                          transformer: {
-                            transformerType: "getFromParameters",
-                            interpolation: "runtime",
-                            referencePath: ["viewParams", "postgresConnectionString"],
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              mongoDbStoreSectionConfiguration: {
-                type: "object",
-                definition: {
-                  emulatedServerType: { type: "literal", definition: "mongodb" },
-                  connectionString: {
-                    type: "string",
-                    tag: {
-                      value: {
-                        defaultLabel: "MongoDB Connection String",
-                        display: { editable: false },
-                        initializeTo: {
-                          initializeToType: "transformer",
-                          transformer: {
-                            transformerType: "getFromParameters",
-                            interpolation: "runtime",
-                            referencePath: ["viewParams", "mongoConnectionString"],
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-              storeSectionConfiguration: {
-                type: "union",
-                discriminator: "emulatedServerType",
-                definition: {
-                  transformerType: "concatLists",
-                  lists: [
-                    [
-                      {
-                        type: "schemaReference",
-                        definition: { relativePath: "indexedDbStoreSectionConfiguration" },
-                      },
-                      {
-                        type: "schemaReference",
-                        definition: {
-                          relativePath: "filesystemDbStoreSectionConfiguration",
-                        },
-                      },
-                    ],
-                    {
-                      transformerType: "ifThenElse",
-                      if: {
-                        transformerType: "boolExpr",
-                        operator: "==",
-                        left: {
-                          transformerType: "getFromParameters",
-                          referencePath: ["viewParams", "postgresConnectionString"],
-                        },
-                        right: {
-                          transformerType: "returnValue",
-                          value: null,
-                        },
-                      },
-                      then: [],
-                      else: [
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "sqlDbStoreSectionConfiguration" },
-                        },
-                      ],
-                    },
-                    {
-                      transformerType: "ifThenElse",
-                      if: {
-                        transformerType: "boolExpr",
-                        operator: "==",
-                        left: {
-                          transformerType: "getFromParameters",
-                          referencePath: ["viewParams", "mongoConnectionString"],
-                        },
-                        right: {
-                          transformerType: "returnValue",
-                          value: null,
-                        },
-                      },
-                      then: [],
-                      else: [
-                        {
-                          type: "schemaReference",
-                          definition: { relativePath: "mongoDbStoreSectionConfiguration" },
-                        },
-                      ],
-                    },
-                  ],
-                } as any,
-              },
-            },
-            definition: {
-              relativePath: "storeSectionConfiguration",
-            },
-          },
-          deploymentUuid: {
-            type: "uuid",
-            tag: {
-              value: {
-                defaultLabel: "Deployment UUID",
-                display: { editable: false },
-              },
-            },
-          },
-          newApplicationUuid: {
-            type: "uuid",
-            tag: {
-              value: {
-                defaultLabel: "New Application UUID",
-                display: { editable: false },
-              },
-            },
-          },
-          applicationName: {
-            type: "string",
-            tag: {
-              value: {
-                defaultLabel: "Application Name or Folder Path",
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-};
+export const Runner_CreateApplication_formMLSchema: FormMLSchema =
+  getRunner_CreateApplication_formMLSchema(ALL_NON_BUNDLED_CREATABLE_STORE_TYPES);
 
 // ################################################################################################
 function getCreateApplicationActionTemplate(
@@ -1494,6 +1332,7 @@ export function getRunner_CreateApplication(
   testDeploymentUuid: Uuid,
   testApplicationName: string,
   initialMetaModel: MetaModel | undefined = undefined,
+  creatableStoreTypes: CreateApplicationStoreType[] = ALL_NON_BUNDLED_CREATABLE_STORE_TYPES,
 ): Runner {
   return {
     uuid: uuidv4(),
@@ -1503,7 +1342,7 @@ export function getRunner_CreateApplication(
     application: testSelfApplicationUuid,
     definition: {
       runnerType: "customRunner",
-      formMLSchema: Runner_CreateApplication_formMLSchema,
+      formMLSchema: getRunner_CreateApplication_formMLSchema(creatableStoreTypes),
       compositeActionSequence: getCreateApplicationActionTemplate(
         testSelfApplicationUuid,
         testDeploymentUuid,
@@ -1524,6 +1363,7 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   // State for MetaModel file upload
   // const [selectedMetaModel, setSelectedMetaModel] = useState<MetaModel | undefined>(undefined);
   const context = useMiroirContextService();
+  const creatableStoreTypes = context.processCapabilities.creatableStoreTypes;
 
   // ##############################################################################################
   const runnerDeploymentUuid = useMemo(() => {
@@ -1554,8 +1394,15 @@ export const Runner_CreateApplication: React.FC<CreateApplicationToolProps> = ({
   const testDeploymentUuid = uuidv4();
 
   const runner = useMemo(
-    () => getRunner_CreateApplication(testSelfApplicationUuid, testDeploymentUuid, "shouldGetApplicationNameFromFormik"),
-    [testSelfApplicationUuid, testDeploymentUuid],
+    () =>
+      getRunner_CreateApplication(
+        testSelfApplicationUuid,
+        testDeploymentUuid,
+        "shouldGetApplicationNameFromFormik",
+        undefined,
+        creatableStoreTypes,
+      ),
+    [testSelfApplicationUuid, testDeploymentUuid, creatableStoreTypes],
   );
 
   const defaultViewParamsFromAdminStorageFetchQueryResults: Record<
