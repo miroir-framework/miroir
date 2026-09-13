@@ -34,7 +34,7 @@ const VIEW_PARAMS_ENTITY_UUID = "b9765b7c-b614-4126-a0e2-634463f99937";
 const VIEW_PARAMS_SEED_UUID = "441cb6fd-2728-4a16-b170-ebceec1ce6c2";
 const MIROIR_RIGHT_ENTITY_UUID = "a6136fc7-949b-4d64-9f13-dd3afce1ab3c";
 const ALICE_UUID = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";
-const FORBIDDEN_RIGHT_UUID = "86a73f7e-17f8-462d-8203-af1f323a7cdc";
+const ALICE_ADMIN_RIGHT_UUID = "86a73f7e-17f8-462d-8203-af1f323a7cdc";
 
 function readJson(path: string): Record<string, unknown> {
   return JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>;
@@ -133,17 +133,18 @@ if (runThis) {
   });
 
   describe("processCapabilities.273.phase0 — Admin MiroirRight seed inventory", () => {
-    it("no row grants Alice access to the Admin application target", () => {
+    it("Alice has an explicit Admin application grant 86a73f7e-…", () => {
       const rightDir = join(ADMIN_DATA, MIROIR_RIGHT_ENTITY_UUID);
       const rows = readdirSync(rightDir)
         .filter((name) => name.endsWith(".json"))
         .map((name) => readJson(join(rightDir, name)));
-      const forbidden = rows.filter(
+      const aliceAdmin = rows.filter(
         (row) =>
           row.miroirUser === ALICE_UUID && row.targetUuid === ADMIN_APPLICATION_UUID,
       );
-      expect(forbidden).toHaveLength(0);
-      expect(existsSync(join(rightDir, `${FORBIDDEN_RIGHT_UUID}.json`))).toBe(false);
+      expect(existsSync(join(rightDir, `${ALICE_ADMIN_RIGHT_UUID}.json`))).toBe(true);
+      expect(aliceAdmin).toHaveLength(1);
+      expect(aliceAdmin[0].uuid).toBe(ALICE_ADMIN_RIGHT_UUID);
     });
   });
 

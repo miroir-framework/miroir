@@ -1,0 +1,11 @@
+{
+  "uuid": "86a73f7e-17f8-462d-8203-af1f323a7cdc",
+  "parentName": "MiroirRight",
+  "parentUuid": "a6136fc7-949b-4d64-9f13-dd3afce1ab3c",
+  "name": "Alice — Admin application",
+  "miroirUser": "1c39328c-7de4-44ae-bcf1-5bbc38d8e267",
+  "targetType": "application",
+  "targetUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "capability": "admin",
+  "description": "Alice Admin — explicit admin capability on the Admin application (designer tools)."
+}

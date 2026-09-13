@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { pageUrl, reportUrl } from '../../navigation.js';
 import { cleanLevel } from '../../constants.js';
+import { useDesignerToolsVisibility } from '../../auth/useDesignerToolsVisibility.js';
 import { UserAccountMenu } from '../../auth/UserAccountMenu.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../../services/index.js';
@@ -141,6 +142,7 @@ export function AppBar(props:AppBarProps) {
   const { fetchConfigurations } = usePageConfiguration();
   const agentsEnabled = props.agentsEnabled === true;
   const showAgentUi = agentsEnabled;
+  const { designerToolsVisible, showModelTools } = useDesignerToolsVisibility();
 
 
   const goToLabelPage = (event: any, l: string) => {
@@ -208,20 +210,20 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    context.setShowModelTools ? (
+    designerToolsVisible && context.setShowModelTools ? (
       <AppBarIconButton
         key="model-tools"
         title={
-          context.showModelTools
+          showModelTools
             ? "Model Tools: ON (click to disable)"
             : "Model Tools: OFF (click to enable)"
         }
-        onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
+        onClick={() => context.setShowModelTools?.(!showModelTools) as any}
         aria-label="Model Tools"
       >
         <ThemedIcon
           icon={
-            context.showModelTools
+            showModelTools
               ? {
                   iconType: "mui",
                   name: "wbIncandescent",
@@ -343,7 +345,7 @@ export function AppBar(props:AppBarProps) {
         name: "search",
       },
     },
-    ...(showAgentUi ? [transformerBuilderMenuItem] : []),
+    ...(designerToolsVisible ? [transformerBuilderMenuItem] : []),
     // {
     //   "label": "runners",
     //   "section": "model",

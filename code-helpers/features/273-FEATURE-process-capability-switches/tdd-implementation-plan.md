@@ -485,7 +485,7 @@ RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- pro
 
 ## Slice 7. Designer tools
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -532,7 +532,7 @@ RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- pro
 
 ### Realization
 
-<Appended on completion.>
+`isDesignerToolsVisible` / `effectiveShowModelTools` live next to `hasAccess`. Auth-on visibility is `hasAccess` on the Admin application with `alwaysAllow: []`. Standalone hook `useDesignerToolsVisibility` feeds AppBar (hide bulb, Builder) and Sidebar / SidebarSection (effective `showModelTools`). No `useEffect`; provider does not import auth hooks. Alice Admin seed `86a73f7e-…` exported as `miroirRight_AliceAdminApplication`. Slice 0 now requires that grant. Leftover sessionStorage cannot show tools. AI icons stay on `showAgentUi`. 9/9 phase7, 53/53 modelValidation, 11/11 phase0.
 
 ---
 

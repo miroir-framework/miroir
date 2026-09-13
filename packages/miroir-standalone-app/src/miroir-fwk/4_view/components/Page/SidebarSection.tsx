@@ -39,6 +39,7 @@ import { useMiroirContextService } from 'miroir-react';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { JsonDisplayHelper } from 'miroir-react';
+import { useDesignerToolsVisibility } from '../../auth/useDesignerToolsVisibility.js';
 import { pageUrl, reportUrl } from '../../navigation.js';
 
 import {
@@ -167,6 +168,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   count++;
   const theme = useTheme();
   const context = useMiroirContextService();
+  const { showModelTools } = useDesignerToolsVisibility();
 
   const currentModel: MetaModel = useCurrentModel(
     props.applicationUuid,
@@ -234,7 +236,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
   const menuItemFilterCtx = useMemo(
     () => ({
       generalEditMode: context.viewParams.generalEditMode,
-      showModelTools: context.showModelTools,
+      showModelTools,
       sectionApplicationUuid: props.applicationUuid,
       injectionActive,
       adminSelfApplicationUuid: adminSelfApplication.uuid,
@@ -242,7 +244,7 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
     }),
     [
       context.viewParams.generalEditMode,
-      context.showModelTools,
+      showModelTools,
       props.applicationUuid,
       injectionActive,
     ],
