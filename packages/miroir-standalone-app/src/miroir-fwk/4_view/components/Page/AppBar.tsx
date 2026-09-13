@@ -9,9 +9,9 @@ import { styled } from '@mui/material/styles';
 import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
 import type { MouseEvent, ReactNode } from 'react';
 
-import { defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, type MiroirMenuItem, type MiroirMenuPageLink } from 'miroir-core';
+import { defaultSelfApplicationDeploymentMap, isVersioningAppBarItemVisible, LoggerInterface, MiroirLoggerFactory, type MiroirMenuItem, type MiroirMenuPageLink, type VersioningModeInput } from 'miroir-core';
 
-import { useMiroirContextService } from 'miroir-react';
+import { selectInstanceArrayForDeploymentSectionEntity, useMiroirContextService, useSelector, type ReduxStateWithUndoRedo } from 'miroir-react';
 import { useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { pageUrl, reportUrl } from '../../navigation.js';
@@ -24,7 +24,7 @@ import { applyPerformanceDisplayGate } from '../../tools/performanceDisplayGate.
 import { applyLocalCacheMonitorGate } from '../../tools/localCacheMonitorGate.js';
 import { ThemedIcon } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
-import { reportMiroirRunners, reportVersioning } from 'miroir-test-app_deployment-miroir';
+import { entitySelfApplication, reportMiroirRunners, reportVersioning } from 'miroir-test-app_deployment-miroir';
 import { resolveAppBarReportLinkApplication } from './appBarReportNavigation.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar");
@@ -143,12 +143,54 @@ export function AppBar(props:AppBarProps) {
   const agentsEnabled = props.agentsEnabled === true;
   const showAgentUi = agentsEnabled;
   const { designerToolsVisible, showModelTools } = useDesignerToolsVisibility();
+  const applicationSelector = context.toolsPageState?.applicationSelector;
+  const applicationDeploymentMap =
+    context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+  const browsedSelfApplicationInstances =
+    useSelector((state: ReduxStateWithUndoRedo) => {
+      if (!applicationSelector) {
+        return [];
+      }
+      return selectInstanceArrayForDeploymentSectionEntity(
+        state,
+        applicationDeploymentMap,
+        {
+          queryType: "localCacheEntityInstancesExtractor",
+          definition: {
+            application: applicationSelector,
+            applicationSection: "model",
+            entityUuid: entitySelfApplication.uuid,
+          },
+        },
+      );
+    }) ?? [];
+  const browsedSelfApplication = (
+    applicationSelector
+      ? browsedSelfApplicationInstances.find((row) => row.uuid === applicationSelector)
+      : undefined
+  ) as VersioningModeInput | undefined;
+  const versioningAppBarItemVisible = isVersioningAppBarItemVisible({
+    browsedSelfApplication,
+  });
 
 
   const goToLabelPage = (event: any, l: string) => {
     log.info("goToLabelPage: ", l, " event: ", event);
     navigate(pageUrl(l))
   }
+  const versioningMenuItem: MiroirMenuItem = {
+    miroirMenuItemType: "miroirMenuReportLink",
+    label: "Versioning",
+    // Miroir scaffolding report — open under Miroir data section; in-report
+    // inputReportSection steers which application's versions are listed (#225).
+    section: "data",
+    selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    reportUuid: reportVersioning.uuid,
+    icon: {
+      iconType: "svg",
+      name: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="160" cy="96" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="160" cy="416" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><line x1="160" y1="368" x2="160" y2="144" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="352" cy="160" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M352,208c0,128-192,48-192,160" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>',
+    },
+  };
   const transformerBuilderMenuItem: MiroirMenuPageLink = {
     miroirMenuItemType: "miroirMenuPageLink",
     label: "Transformer Builder",
@@ -372,20 +414,7 @@ export function AppBar(props:AppBarProps) {
       // targetRoot: "runners",
       icon: "directions_run"
     },
-    {
-      miroirMenuItemType: "miroirMenuReportLink",
-      label: "Versioning",
-      // Miroir scaffolding report — open under Miroir data section; in-report
-      // inputReportSection steers which application's versions are listed (#225).
-      section: "data",
-      selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      reportUuid: reportVersioning.uuid,
-      // icon: "commit",
-      icon: {
-        iconType: "svg",
-        name: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="160" cy="96" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="160" cy="416" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><line x1="160" y1="368" x2="160" y2="144" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="352" cy="160" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M352,208c0,128-192,48-192,160" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>',
-      },
-    },
+    ...(versioningAppBarItemVisible ? [versioningMenuItem] : []),
     {
       miroirMenuItemType: "miroirMenuPageLink",
       label: "events",
