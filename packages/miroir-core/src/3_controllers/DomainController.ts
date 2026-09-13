@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { getEndpointActions, getExternalService } from '../0_interfaces/1_core/endpointDefinition.js';
 import { Uuid } from '../0_interfaces/1_core/EntityVersion.js';
+import type { StorageType } from "../0_interfaces/1_core/StorageConfiguration.js";
 import {
   DomainControllerInterface,
   DomainState,
@@ -111,6 +112,11 @@ import {
   miroirModelEntities,
 } from "../1_core/Model";
 import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partialMutationGuard.js";
+import {
+  assertProcessCapability,
+  getProcessCapabilities,
+  type ProcessCapabilities,
+} from "../1_core/processCapabilities.js";
 import {
   assertCredentialInstanceMutationAllowed,
   assertSecretInstanceMutationAllowed,
@@ -281,8 +287,35 @@ export async function resetAndInitApplicationDeployment(
  * selfApplication: entities, reports, reducers, users, etc.
  * example: get the list of reports accessible by a given user.
  */
+function collectEmulatedServerTypes(configuration: unknown): StorageType[] {
+  const types: StorageType[] = [];
+  const visit = (value: unknown) => {
+    if (!value || typeof value !== "object") {
+      return;
+    }
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        visit(item);
+      }
+      return;
+    }
+    const record = value as Record<string, unknown>;
+    if (typeof record.emulatedServerType === "string") {
+      types.push(record.emulatedServerType as StorageType);
+    }
+    for (const child of Object.values(record)) {
+      if (child && typeof child === "object") {
+        visit(child);
+      }
+    }
+  };
+  visit(configuration);
+  return types;
+}
+
 export class DomainController implements DomainControllerInterface {
   private callUtil: CallUtils;
+  private processCapabilities: ProcessCapabilities | undefined;
   // private actionHandler: ActionHandler;
   // ##############################################################################################
   constructor(
@@ -302,6 +335,25 @@ export class DomainController implements DomainControllerInterface {
 
   getPersistenceStoreAccessMode(): "local" | "remote" {
     return this.persistenceStoreAccessMode;
+  }
+
+  setProcessCapabilities(snapshot: ProcessCapabilities): void {
+    this.processCapabilities = snapshot;
+  }
+
+  private resolveProcessCapabilities(): ProcessCapabilities {
+    if (this.processCapabilities) {
+      return this.processCapabilities;
+    }
+    this.processCapabilities = getProcessCapabilities({
+      config: this.miroirContext.extendMiroirConfigWithExtraDeploymentConfiguration() ?? {},
+      environment: getClientEnvironment(),
+      storeSectionFactoryRegister:
+        ConfigurationService.configurationService.StoreSectionFactoryRegister,
+      adminStoreFactoryRegister:
+        ConfigurationService.configurationService.adminStoreFactoryRegister,
+    });
+    return this.processCapabilities;
   }
   // ##############################################################################################
   // TODO: remove? only used in commented code in index.tsx
@@ -3398,6 +3450,37 @@ export class DomainController implements DomainControllerInterface {
         case "storeManagementAction_resetAndInitApplicationDeployment":
         case "storeManagementAction_openStore":
         case "storeManagementAction_closeStore": {
+          const processCapabilities = this.resolveProcessCapabilities();
+          const isStoreAdministrationAction =
+            domainAction.actionType === "storeManagementAction_createStore" ||
+            domainAction.actionType === "storeManagementAction_deleteStore" ||
+            domainAction.actionType === "storeManagementAction_resetAndInitApplicationDeployment";
+          if (isStoreAdministrationAction) {
+            const storeAdministrationError = assertProcessCapability(
+              "storeAdministration",
+              processCapabilities,
+            );
+            if (storeAdministrationError) {
+              return storeAdministrationError;
+            }
+          }
+          if (domainAction.actionType === "storeManagementAction_createStore") {
+            const requestedTypes = collectEmulatedServerTypes(domainAction.payload.configuration);
+            const hasIllegalCreateType = requestedTypes.some(
+              (storageType) =>
+                storageType === "bundled" ||
+                !processCapabilities.creatableStoreTypes.includes(storageType),
+            );
+            if (hasIllegalCreateType) {
+              return new Action2Error(
+                "FeatureUnavailable",
+                'Process capability "availableStoreTypes" is not available',
+                undefined,
+                undefined,
+                { capability: "availableStoreTypes" },
+              );
+            }
+          }
           if (
             domainAction.actionType == "storeManagementAction_resetAndInitApplicationDeployment"
           ) {

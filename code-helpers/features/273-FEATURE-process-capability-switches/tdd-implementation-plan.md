@@ -20,7 +20,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/273
 Working branch: `273-FEATURE-process-capability-switches`
 
-**Resume note:** Slices 0 to 2 DONE. Implementing remaining slices.
+**Resume note:** Slices 0 to 3 DONE. Implementing remaining slices.
 
 ---
 
@@ -67,7 +67,7 @@ This plan does **not** add undo/redo/commit capabilities, debug overlays as flag
 | 0 | Characterize current gates / inventories | ✅ | `processCapabilities.273.phase0.unit.test.ts` |
 | 1 | **Tracer:** `getProcessCapabilities` + `FeatureUnavailable` | ✅ | `processCapabilities.273.phase1.unit.test.ts` |
 | 2 | `GET /capabilities` + UI context + shipped server flags | ✅ | `processCapabilitiesHttp.273.phase2.integ.test.ts` + context unit |
-| 3 | Store create/admin refuse in `handleActionInternal` | ⬜ | `processCapabilitiesStore.273.phase3.integ.test.ts` |
+| 3 | Store create/admin refuse in `handleActionInternal` | ✅ | `processCapabilitiesStore.273.phase3.integ.test.ts` |
 | 4 | Create Application picker follows `creatableStoreTypes` | ⬜ | `processCapabilitiesPicker.273.phase4.unit.test.ts` |
 | 5 | AI hide + no CopilotKit mount + drop `ViewParams.agents` | ⬜ | `processCapabilitiesAi.273.phase5.unit.test.ts` + Admin `modelValidation` |
 | 6 | MCP refuse in `runMcpToolRunner` + both server mounts | ⬜ | `processCapabilitiesMcp.273.phase6.unit.test.ts` |
@@ -305,7 +305,7 @@ Ungated `GET /capabilities` on `RestClientStub` (before auth gate) and Express. 
 
 ## Slice 3. Store create / admin refuse
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -347,7 +347,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
-<Appended on completion.>
+`DomainControllerInterface.setProcessCapabilities` plus check at the store-management case. create/delete/reset require `storeAdministration`. createStore walks `emulatedServerType` and refuses missing types or `bundled` (`availableStoreTypes`). open/close skip both checks. Tests inject on `domainControllerForServer` (`setupMiroirTest`, filesystem profile). Unset field lazy-computes from config + maps. Type refusal builds `Action2Error` directly because Slice 1's `assertProcessCapability("availableStoreTypes")` is still always-allowed. 4/4 integ, tsc clean.
 
 ---
 
