@@ -18,7 +18,7 @@
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/274
 Working branch: `274-FEATURE-multistep-reports`
 
-**Resume note:** Plan revised after adversarial review (P1–P16 applied) and the UI-suite completeness gate (analysis §8). Slices pending. Confirm slice order with the user before writing code.
+**Resume note:** Slice 0 ✅. Implementing remaining slices in order.
 
 ---
 
@@ -65,7 +65,7 @@ This plan does **not** add a Form / FormRun Entity, persist drafts, wrap the wal
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize Report.type, Formik dump, schema switch, nested Formik | ⬜ | `multistep.274.phase0.unit.test.ts` |
+| 0 | Characterize Report.type, Formik dump, schema switch, nested Formik | ✅ | `multistep.274.phase0.unit.test.ts` |
 | 1 | **Tracer:** schema + Finish template + step bag creates Country | ⬜ | MiroirTest `multistepFinish.274` (integ) + modelValidation |
 | 2 | Pager host + UI process walk (completeness suite) | ⬜ | `multistepProcess.274.integ.test.tsx` (`prepareAndRunTestSuites`) |
 | 3 | Later-step query sees step bag; URL writes off; `runStoredQueries` skipped | ⬜ | `multistepProcess.274` (added cases) |
@@ -164,7 +164,7 @@ Inline query (no new Query entity): `runtimeTransformers` or extractor/combiner 
 
 ## Slice 0 — Characterize current contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -196,7 +196,7 @@ RUN_TEST=multistep.274.phase0 npm run testByFile -w miroir-standalone-app -- --p
 
 ### Realization
 
-<Appended on completion.>
+Characterization-only. Added `packages/miroir-standalone-app/tests/4_view/issues/274-multistep-reports/multistep.274.phase0.unit.test.ts` (7 tests). Inventory walk confirmed 84 / 11 list / 0 grid / 71 omitted / 2 null (`TableDetails`, `SchemaDetails`). No product change. Validation: `RUN_TEST=multistep.274.phase0 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistep.274.phase0` — 7 passed.
 
 ---
 
