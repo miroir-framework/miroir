@@ -466,8 +466,18 @@ export function StoredRunnerView(props: {
                               runnerDefinitionFromLocalCache,
                               args,
                               browserMcpServerUrl(),
+                              context.processCapabilities,
                             );
                             if (envelope.status === "error") {
+                              if (envelope.error?.type === "FeatureUnavailable") {
+                                return new Action2Error(
+                                  "FeatureUnavailable",
+                                  envelope.error?.message ?? "Unknown error",
+                                  undefined,
+                                  undefined,
+                                  { capability: "mcp" },
+                                );
+                              }
                               return new Action2Error(
                                 "FailedToHandleAction",
                                 envelope.error?.message ?? "Unknown error",

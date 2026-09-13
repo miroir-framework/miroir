@@ -155,6 +155,7 @@ if (runThis) {
       );
       expect(src).toContain('app.use("/api/copilotkit"');
       expect(src).toContain("shouldMountCopilotKitRoute");
+      expect(src).toContain("shouldMountMcpHttp");
       expect(src).toContain("mountHttpRoutes");
       expect(src).toContain("mcpServer.run");
     });

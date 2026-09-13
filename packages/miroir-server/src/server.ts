@@ -21,6 +21,7 @@ import {
   getMiroirEnvironmentMode,
   getProcessCapabilities,
   shouldMountCopilotKitRoute,
+  shouldMountMcpHttp,
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
@@ -815,6 +816,14 @@ app.post("/auth/change-password", async (request: CustomRequest, response: any) 
   response.json({ changed: true });
 });
 
+const capabilities = getProcessCapabilities({
+  config: miroirConfig,
+  environment: getClientEnvironment(),
+  storeSectionFactoryRegister:
+    ConfigurationService.configurationService.StoreSectionFactoryRegister,
+  adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
+});
+
 const endpointToolRegistry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
 myLogger.info("Setting up MCP server with dynamic EndpointToolRegistry");
 const mcpApp = express();
@@ -834,16 +843,11 @@ const mcpServer = await setupMcpServer(
   endpointToolRegistry,
   domainController,
 );
-mcpServer.mountHttpRoutes(app);
+if (shouldMountMcpHttp(capabilities.mcp)) {
+  mcpServer.mountHttpRoutes(app);
+}
 
 // AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
-const capabilities = getProcessCapabilities({
-  config: miroirConfig,
-  environment: getClientEnvironment(),
-  storeSectionFactoryRegister:
-    ConfigurationService.configurationService.StoreSectionFactoryRegister,
-  adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
-});
 if (shouldMountCopilotKitRoute(capabilities.ai)) {
   app.use("/api/copilotkit", async (request: any, response: any, next: any) => {
     const principal = authenticationEnabled
@@ -946,7 +950,9 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   });
 }
 if ( mcpPortFromConfig) {
-  mcpServer.run(mcpPortFromConfig);
+  if (shouldMountMcpHttp(capabilities.mcp)) {
+    mcpServer.run(mcpPortFromConfig);
+  }
 } else {
   myLogger.warn(`MCP port not configured, skipping MCP server startup`);
 }

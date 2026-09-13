@@ -384,10 +384,10 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
         );
         this.mcpHttpClose = ephemeral.close;
         this.runnerTestContext.executeMcpToolRunner = async (runner, args) =>
-          runMcpToolRunner(runner, args, ephemeral.url);
+          runMcpToolRunner(runner, args, ephemeral.url, { mcp: true });
       } else {
         this.runnerTestContext.executeMcpToolRunner = async (runner, args) =>
-          runMcpToolRunner(runner, args, browserMcpServerUrl());
+          runMcpToolRunner(runner, args, browserMcpServerUrl(), { mcp: true });
       }
     }
 

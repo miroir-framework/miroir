@@ -439,7 +439,7 @@ RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- pro
 
 ## Slice 6. MCP refuse and mounts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -479,7 +479,7 @@ RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- pro
 
 ### Realization
 
-<Appended on completion.>
+`shouldMountMcpHttp(mcp)` is `mcp === true`. Startup `getProcessCapabilities` is computed once before the MCP block and reused for CopilotKit. Both `mountHttpRoutes` and `mcpServer.run` are gated; `setupMcpServer` still runs. `runMcpToolRunner` takes `capabilities` before `fetchImpl` and returns `FeatureUnavailable` / `capability: "mcp"` without fetching. RunnerView maps that to `Action2Error`. Test sessions pass `{ mcp: true }`. Slice 0 and #253 phase0 now require the gate. Vite proxy `/mcp` stays; #253 exact proxy list also includes `/auth` (already on HEAD). 3/3 phase6, 8/8 #253 phase0, 11/11 phase0.
 
 ---
 
