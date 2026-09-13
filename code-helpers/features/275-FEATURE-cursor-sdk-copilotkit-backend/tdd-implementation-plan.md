@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Plan drafted. Slices 0–N pending.
+**Resume note:** Slice 0 done. Next: Slice 1 (`features.cursor` + snapshot).
 
 ---
 
@@ -69,7 +69,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize current AI / snapshot / MCP contracts | ⬜ | `cursorSdk.275.phase0.unit.test.ts` |
+| 0 | Characterize current AI / snapshot / MCP contracts | ✅ | `cursorSdk.275.phase0.unit.test.ts` |
 | 1 | **Tracer:** `features.cursor` + snapshot field | ⬜ | `cursorSdk.275.phase1.unit.test.ts` + `devBuild` |
 | 2 | CopilotKit `agents` branch + refuse + filtered actions | ⬜ | `cursorSdk.275.phase2.unit.test.ts` |
 | 3 | `aiCursorKey` alias + health text | ⬜ | `cursorSdk.275.phase3.unit.test.ts` |
@@ -151,7 +151,7 @@ Vitest exceptions. Slice 0 locks source contracts that are not ML. Slices 1–4 
 
 ## Slice 0 — Characterize current contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -200,7 +200,11 @@ RUN_TEST=cursorSdk.275.phase0 npm run testByFile -w miroir-standalone-app -- cur
 
 ### Realization
 
-<Appended on completion.>
+Characterization only. No production edits. Three vitest files, 22 tests. Re-ran Validation: core 7, miroir-ai 9, standalone 6, all green.
+
+Pins match the tree: no `cursor` on snapshot / Jzod / FAIL_CLOSED; four secret aliases; live runtime actions `lendDocument` / `generateMiroirReport` / `getMiroirContext`; nine frontend names; only `generateMiroirEntity` uses `renderAndWaitForResponse`; `/mcp` ungated; no `@cursor/sdk`; `AgentsCopilotKit` has `runtimeUrl` only.
+
+Slice 1 must consume the "no `cursor` field" pins in place (expect `cursor: false`), not leave phase0 asserting absence.
 
 ---
 
