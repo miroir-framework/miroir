@@ -12,13 +12,15 @@
 > returned by `GET /capabilities` through `RestClientStub` before login, then stored on
 > React context for later hide/refuse slices.
 >
-> **Execution model:** human-in-the-loop. No slice contains a commit step. Each slice ends
-> with Validation commands; on success Realization is appended and Status flips to ✅ DONE.
+> **Execution model:** implement immediately; commit after each slice once Validation is
+> green and Realization is appended. Stop only on unforeseen gaps that need external
+> input. Not finished until compilation and `npm run nonreg` pass. Slices themselves
+> contain no commit checklist lines.
 
 Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-review.md`](./adversarial-review.md) · Plan review: [`./plan-adversarial-review.md`](./plan-adversarial-review.md) · Issue: https://github.com/miroir-framework/miroir/issues/273
 Working branch: `273-FEATURE-process-capability-switches`
 
-**Resume note:** Plan revised after adversarial review (P1 to P13 applied). Slices pending.
+**Resume note:** Slice 0 DONE. Implementing remaining slices.
 
 ---
 
@@ -62,7 +64,7 @@ This plan does **not** add undo/redo/commit capabilities, debug overlays as flag
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize current gates / inventories | ⬜ | `processCapabilities.273.phase0.unit.test.ts` |
+| 0 | Characterize current gates / inventories | ✅ | `processCapabilities.273.phase0.unit.test.ts` |
 | 1 | **Tracer:** `getProcessCapabilities` + `FeatureUnavailable` | ⬜ | `processCapabilities.273.phase1.unit.test.ts` |
 | 2 | `GET /capabilities` + UI context + shipped server flags | ⬜ | `processCapabilitiesHttp.273.phase2.integ.test.ts` + context unit |
 | 3 | Store create/admin refuse in `handleActionInternal` | ⬜ | `processCapabilitiesStore.273.phase3.integ.test.ts` |
@@ -146,7 +148,7 @@ Vitest exceptions (one sentence each). Slice 0 locks source contracts that are n
 
 ## Slice 0. Characterize current gates
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -181,7 +183,7 @@ RUN_TEST=processCapabilities.273.phase0 npm run testByFile -w miroir-core -- pro
 
 ### Realization
 
-<Appended on completion.>
+Characterization test at `packages/miroir-core/tests/1_core/issues/273-process-capability-switches/processCapabilities.273.phase0.unit.test.ts`. 11 tests green. ViewParams seed is under `admin_data/b9765b7c-…/` (same uuid as the Entity). `miroirConfigServer` schema block is sliced until the next `miroirConfig:` key. No production code changed.
 
 ---
 
