@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Slices 0–4 done. R6 construction gate still YES. Next: Slice 5 (`propose_*`).
+**Resume note:** Slices 0–5 done. Next: Slice 6 (sessionStorage picker + CopilotKit `properties`).
 
 ---
 
@@ -74,7 +74,7 @@ This plan does **not** retire `miroirCopilotKitActions` (#193), add cloud Cursor
 | 2 | CopilotKit `agents` branch + refuse + filtered actions | ✅ | `cursorSdk.275.phase2.unit.test.ts` |
 | 3 | `aiCursorKey` alias + health text | ✅ | `cursorSdk.275.phase3.unit.test.ts` |
 | 4 | Lazy SDK factory, dummy cwd, MCP loopback, Node floor | ✅ | `cursorSdk.275.phase4.unit.test.ts` |
-| 5 | `propose_*` rename + lend form | ⬜ | `cursorSdk.275.phase5.unit.test.ts` |
+| 5 | `propose_*` rename + lend form | ✅ | `cursorSdk.275.phase5.unit.test.ts` |
 | 6 | sessionStorage picker sets CopilotKit `properties` | ⬜ | `cursorSdk.275.phase6.unit.test.ts` |
 | 7 | Electron dummy cwd + packaging pin | ⬜ | `cursorSdk.275.phase7.unit.test.ts` |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | `unit-275-cursor-sdk` |
@@ -419,7 +419,7 @@ Validation re-run: phase4 7, phase2 9, phase0 9, standalone phase2 3, `tsc` miro
 
 ## Slice 5 — `propose_*` rename + lend form
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -458,7 +458,11 @@ RUN_TEST=cursorSdk.275.phase2 npm run testByFile -w miroir-ai -- cursorSdk.275.p
 
 ### Realization
 
-<Appended on completion.>
+Frontend names are `propose_generateMiroirEntity` and `propose_lendDocument`, both `renderAndWaitForResponse`. Fire-and-forget CopilotKit `lendDocument` is gone. Accept on the lend form POSTs `/lendDocument`. Reject responds without posting. Lookups and date helpers unchanged. MCP `Library_lendDocument` and runtime `createLendDocumentExecutor` unchanged.
+
+Added sibling `AiLendProposalForm` instead of sharing chrome with `AiEntityProposalForm`. Slice 0 / Slice 2 name pins updated in place.
+
+Validation re-run: phase5 7, phase0 5, phase2 standalone 3.
 
 ---
 

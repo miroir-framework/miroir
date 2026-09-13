@@ -17,13 +17,13 @@ const runThis =
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../..");
 
 const EXPECTED_USE_COPILOT_ACTION_NAMES = [
-  "generateMiroirEntity",
+  "propose_generateMiroirEntity",
   "getMiroirContext",
   "lookupApplicationByName",
   "lookupDeploymentByApplicationUuid",
   "lookupEntityByName",
   "findInstanceByName",
-  "lendDocument",
+  "propose_lendDocument",
   "getCurrentDate",
   "getCurrentTimestamp",
 ];
@@ -60,21 +60,14 @@ if (runThis) {
       );
     });
 
-    it("only generateMiroirEntity uses renderAndWaitForResponse", () => {
+    it("only propose_generateMiroirEntity and propose_lendDocument use renderAndWaitForResponse", () => {
       const src = readRepoFile(
         "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AiActionsProvider.tsx",
       );
       const namesWithRender = EXPECTED_USE_COPILOT_ACTION_NAMES.filter((name) =>
         actionBlock(src, name).includes("renderAndWaitForResponse"),
       );
-      expect(namesWithRender).toEqual(["generateMiroirEntity"]);
-    });
-
-    it("lendDocument contains a handler", () => {
-      const src = readRepoFile(
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AiActionsProvider.tsx",
-      );
-      expect(actionBlock(src, "lendDocument")).toMatch(/\bhandler\s*:/);
+      expect(namesWithRender).toEqual(["propose_generateMiroirEntity", "propose_lendDocument"]);
     });
   });
 

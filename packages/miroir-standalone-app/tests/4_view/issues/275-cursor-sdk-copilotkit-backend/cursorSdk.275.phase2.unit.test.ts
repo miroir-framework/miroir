@@ -1,5 +1,5 @@
 /**
- * #275 Slice 2 — source-text pins for generateMiroirEntity (R6) and production snapshot wiring.
+ * #275 Slice 2 — source-text pins for propose_generateMiroirEntity (R6) and production snapshot wiring.
  * Do not register in FunctionCallTestRegistry.
  */
 import { readFileSync } from "node:fs";
@@ -29,13 +29,13 @@ function actionBlock(src: string, actionName: string): string {
 }
 
 if (runThis) {
-  describe("cursorSdk.275.phase2 — generateMiroirEntity still uses renderAndWaitForResponse", () => {
-    it("AiActionsProvider.tsx generateMiroirEntity block contains renderAndWaitForResponse", () => {
+  describe("cursorSdk.275.phase2 — propose_generateMiroirEntity still uses renderAndWaitForResponse", () => {
+    it("AiActionsProvider.tsx propose_generateMiroirEntity block contains renderAndWaitForResponse", () => {
       const src = readRepoFile(
         "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AiActionsProvider.tsx",
       );
-      expect(src).toContain('name: "generateMiroirEntity"');
-      expect(actionBlock(src, "generateMiroirEntity")).toContain("renderAndWaitForResponse");
+      expect(src).toContain('name: "propose_generateMiroirEntity"');
+      expect(actionBlock(src, "propose_generateMiroirEntity")).toContain("renderAndWaitForResponse");
     });
   });
 

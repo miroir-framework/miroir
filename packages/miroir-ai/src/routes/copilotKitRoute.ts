@@ -134,9 +134,9 @@ export function createCopilotKitRouter(
 
   const router = Router();
 
-  // REST endpoint called by the frontend useCopilotAction("lendDocument") handler.
+  // REST endpoint called by the frontend propose_lendDocument accept path.
   // CopilotKit in agent/run mode forwards ALL tool calls to the frontend; this endpoint
-  // is what the frontend's useCopilotAction handler calls to actually execute the action.
+  // is what the frontend review form posts to actually execute the lend.
   router.post("/lendDocument", async (req: Request, res: Response) => {
     try {
       const result = await lendDocumentExecutor(req.body);
