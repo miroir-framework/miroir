@@ -40,6 +40,8 @@ import * as os from "os";
 import * as path from "path";
 import {
   ConfigurationService,
+  getClientEnvironment,
+  getProcessCapabilities,
   MiroirActivityTracker,
   MiroirConfigServer,
   MiroirContext,
@@ -197,6 +199,16 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
   const restClientStub = new RestClientStub("https://localhost:3080");
   restClientStub.setServerDomainController(domainController);
   restClientStub.setPersistenceStoreControllerManager(persistenceStoreControllerManager);
+  restClientStub.setProcessCapabilities(
+    getProcessCapabilities({
+      config: electronServerConfig,
+      environment: getClientEnvironment(),
+      storeSectionFactoryRegister:
+        ConfigurationService.configurationService.StoreSectionFactoryRegister,
+      adminStoreFactoryRegister:
+        ConfigurationService.configurationService.adminStoreFactoryRegister,
+    }),
+  );
 
   // Expose the assets base path so the renderer (or other callers) can read it for
   // diagnostic purposes.  Path normalization of openStore actions is done transparently

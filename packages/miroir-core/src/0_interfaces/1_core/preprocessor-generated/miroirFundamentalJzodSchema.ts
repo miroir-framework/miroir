@@ -13726,6 +13726,24 @@ export const miroirFundamentalJzodSchema = {
                 }
               }
             ]
+          },
+          "features": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "ai": {
+                "type": "boolean",
+                "optional": true
+              },
+              "mcp": {
+                "type": "boolean",
+                "optional": true
+              },
+              "designerTools": {
+                "type": "boolean",
+                "optional": true
+              }
+            }
           }
         }
       },
@@ -13762,6 +13780,24 @@ export const miroirFundamentalJzodSchema = {
                     "optional": true
                   }
                 }
+              }
+            }
+          },
+          "features": {
+            "type": "object",
+            "optional": true,
+            "definition": {
+              "ai": {
+                "type": "boolean",
+                "optional": true
+              },
+              "mcp": {
+                "type": "boolean",
+                "optional": true
+              },
+              "designerTools": {
+                "type": "boolean",
+                "optional": true
               }
             }
           }

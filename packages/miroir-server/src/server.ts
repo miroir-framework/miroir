@@ -17,7 +17,9 @@ import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   type Deployment,
+  getClientEnvironment,
   getMiroirEnvironmentMode,
+  getProcessCapabilities,
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
@@ -262,6 +264,17 @@ if (serverAuthentication?.tokenSecret) {
 
 app.get("/auth/status", (_req: any, res: any) => {
   res.json(buildAuthStatusBody(authenticationEnabled));
+});
+
+app.get("/capabilities", (_req: any, res: any) => {
+  const capabilities = getProcessCapabilities({
+    config: miroirConfig,
+    environment: getClientEnvironment(),
+    storeSectionFactoryRegister:
+      ConfigurationService.configurationService.StoreSectionFactoryRegister,
+    adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
+  });
+  res.status(200).json({ status: "ok", capabilities });
 });
 
 myLogger.info(`Server being set-up, going to execute on the port::${restPortFromConfig}`);

@@ -1,4 +1,8 @@
 {
+  "features": {
+    "ai": true,
+    "mcp": true
+  },
   "server": {
     "rootApiUrl": "https://localhost:3080",
     "filesystemDeploymentRootDirectory": "/data",

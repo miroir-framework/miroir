@@ -21,7 +21,10 @@ import {
   defaultSelfApplicationDeploymentMap,
   deploymentsFromInstances,
   expect,
+  fetchProcessCapabilities,
+  getClientEnvironment,
   getMiroirEnvironmentMode,
+  getProcessCapabilities,
   identityDirectoryFromInstances,
   LoggerInterface,
   MiroirActivityTracker,
@@ -327,7 +330,19 @@ export async function setupMiroirPlatform(
         // deployment_Designer,
       ]),
     });
+    (restClient as RestClientStub).setProcessCapabilities(
+      getProcessCapabilities({
+        config: miroirConfig,
+        environment: getClientEnvironment(),
+        storeSectionFactoryRegister:
+          ConfigurationService.configurationService.StoreSectionFactoryRegister,
+        adminStoreFactoryRegister:
+          ConfigurationService.configurationService.adminStoreFactoryRegister,
+      }),
+    );
   }
+
+  const processCapabilities = await fetchProcessCapabilities(restClient);
 
   return {
     // persistenceStoreControllerManagerForClient: persistenceStoreControllerManagerForClient,
@@ -336,6 +351,8 @@ export async function setupMiroirPlatform(
     domainControllerForServer,
     // localCache: domainControllerForClient.getLocalCache(),
     miroirContext,
+    restClient,
+    processCapabilities,
   };
 }
 
@@ -356,6 +373,8 @@ async function setupClient(
     domainControllerForServer,
     // localCache,
     miroirContext,
+    restClient,
+    processCapabilities,
   } = await setupMiroirPlatform(
     currentMiroirConfig,
     miroirActivityTracker,
@@ -364,7 +383,7 @@ async function setupClient(
     options,
   );
 
-  return { domainControllerForClient, domainControllerForServer, miroirContext };
+  return { domainControllerForClient, domainControllerForServer, miroirContext, restClient, processCapabilities };
 }
 
 // ###################################################################################
@@ -437,6 +456,7 @@ async function startWebApp(root: Root) {
     domainControllerForClient,
     domainControllerForServer: rawDomainControllerForServer,
     miroirContext,
+    processCapabilities,
   } = await setupClient(
     miroirConfigToUse,
     miroirActivityTracker,
@@ -568,6 +588,7 @@ async function startWebApp(root: Root) {
               <MiroirContextReactProvider
                 miroirContext={miroirContext}
                 domainController={domainControllerForClient}
+                processCapabilities={processCapabilities}
               >
                 <RouterProvider router={router} />
               </MiroirContextReactProvider>

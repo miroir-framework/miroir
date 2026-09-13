@@ -743,6 +743,11 @@ export {
 } from "./1_core/processCapabilities";
 export type { ProcessCapabilities } from "./1_core/processCapabilities";
 export {
+  FAIL_CLOSED_PROCESS_CAPABILITIES,
+  fetchProcessCapabilities,
+  handleProcessCapabilitiesHttpRoute,
+} from "./4_services/ProcessCapabilitiesHttp";
+export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
   // createApplicationCompositeAction,

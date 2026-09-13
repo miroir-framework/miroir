@@ -60,26 +60,26 @@ if (runThis) {
     });
   });
 
-  describe("processCapabilities.273.phase0 — config schemas have no features key", () => {
-    it("miroirConfigClient and miroirConfigServer Jzod schema blocks have no features property", () => {
+  describe("processCapabilities.273.phase0 — config schemas have a features key", () => {
+    it("miroirConfigClient and miroirConfigServer Jzod schema blocks have a features property", () => {
       const src = readSource(
         "0_interfaces/1_core/bootstrapJzodSchemas/getMiroirFundamentalJzodSchema.ts",
       );
       const clientBlock = schemaBlock(src, "miroirConfigClient", "miroirConfigServer");
       const serverBlock = schemaBlock(src, "miroirConfigServer", "miroirConfig");
-      expect(clientBlock).not.toMatch(/^\s+features\s*:/m);
-      expect(serverBlock).not.toMatch(/^\s+features\s*:/m);
+      expect(clientBlock).toMatch(/^\s+features\s*:/m);
+      expect(serverBlock).toMatch(/^\s+features\s*:/m);
     });
 
-    it("miroirConfig.server.json and miroirConfig.server.docker.json have no top-level features key", () => {
+    it("miroirConfig.server.json and miroirConfig.server.docker.json have a top-level features key", () => {
       const localConfig = readJson(
         join(REPO_ROOT, "packages/miroir-server/config/miroirConfig.server.json"),
       );
       const dockerConfig = readJson(
         join(REPO_ROOT, "packages/miroir-server/config/miroirConfig.server.docker.json"),
       );
-      expect(localConfig).not.toHaveProperty("features");
-      expect(dockerConfig).not.toHaveProperty("features");
+      expect(localConfig).toHaveProperty("features");
+      expect(dockerConfig).toHaveProperty("features");
     });
   });
 

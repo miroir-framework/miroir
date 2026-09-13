@@ -1880,6 +1880,15 @@ export function getMiroirFundamentalJzodSchema(
                 },
               ],
             },
+            features: {
+              type: "object",
+              optional: true,
+              definition: {
+                ai: { type: "boolean", optional: true },
+                mcp: { type: "boolean", optional: true },
+                designerTools: { type: "boolean", optional: true },
+              },
+            },
           },
         },
         miroirConfigServer: {
@@ -1916,6 +1925,15 @@ export function getMiroirFundamentalJzodSchema(
                     },
                   },
                 },
+              },
+            },
+            features: {
+              type: "object",
+              optional: true,
+              definition: {
+                ai: { type: "boolean", optional: true },
+                mcp: { type: "boolean", optional: true },
+                designerTools: { type: "boolean", optional: true },
               },
             },
           },
