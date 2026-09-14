@@ -147,7 +147,7 @@ if (runThis) {
       const agent = new TestCursorAgent();
       expect(() =>
         new CopilotRuntime({
-          agents: { cursor: agent },
+          agents: { default: agent, cursor: agent },
           actions: [
             {
               name: "lendDocument",
@@ -178,6 +178,7 @@ if (runThis) {
       expect(result.status).toBe(200);
       expect(seams.tokenBuilds).toHaveLength(0);
       expect(seams.runtimeOptions).toHaveLength(1);
+      expect(seams.runtimeOptions[0].agents.default).toBe(testAgent);
       expect(seams.runtimeOptions[0].agents.cursor).toBe(testAgent);
       expect(Array.isArray(seams.runtimeOptions[0].actions)).toBe(true);
       expect(seams.runtimeOptions[0].actions.length).toBeGreaterThan(0);
@@ -279,6 +280,21 @@ if (runThis) {
 
       delete process.env.AI_PROVIDER_TYPE;
       delete process.env.AI_MODEL;
+    });
+  });
+
+  describe("cursorSdk.275.phase2 — info advertises default agent", () => {
+    it("POST method info JSON includes agents.default so CopilotKit shares one chat agent", async () => {
+      const router = createCopilotKitRouter(undefined as any, {}, {
+        capabilities: snapshot(),
+      });
+
+      const result = await postJson(router, { method: "info" });
+
+      expect(result.status).toBe(200);
+      expect(result.body?.agents?.default).toEqual(
+        expect.objectContaining({ name: "default" }),
+      );
     });
   });
 }

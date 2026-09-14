@@ -46,7 +46,7 @@ export type CreateCopilotKitRouterOptions = {
   nodeVersion?: string;
   importSdk?: ImportCursorSdk;
   createCopilotRuntime?: (options: {
-    agents: { cursor: AbstractAgent };
+    agents: { default: AbstractAgent; cursor: AbstractAgent };
     actions: Action<Parameter[]>[];
   }) => unknown;
   buildCopilotRuntime?: typeof buildCopilotRuntime;
@@ -68,6 +68,18 @@ export function resolveBackendPick(req: Request): "cursor" | undefined {
     return "cursor";
   }
   return undefined;
+}
+
+/**
+ * CopilotKit 1.59 CopilotSidebar POSTs `params.agentId: "default"`.
+ * Runtime lookup is `agents[agentId]` (404 Agent not found otherwise).
+ * Keep `cursor` as an alias for an explicit pick.
+ */
+export function cursorRuntimeAgents(agent: AbstractAgent): {
+  default: AbstractAgent;
+  cursor: AbstractAgent;
+} {
+  return { default: agent, cursor: agent };
 }
 
 function resolveInjectedCapabilities(
@@ -336,7 +348,7 @@ export function createCopilotKitRouter(
       let runtime: ReturnType<typeof createRuntime>;
       try {
         runtime = createRuntime({
-          agents: { cursor: await createCursorAbstractAgent() },
+          agents: cursorRuntimeAgents(await createCursorAbstractAgent()),
           actions: filterCursorRuntimeActions(actions),
         });
       } catch (err) {

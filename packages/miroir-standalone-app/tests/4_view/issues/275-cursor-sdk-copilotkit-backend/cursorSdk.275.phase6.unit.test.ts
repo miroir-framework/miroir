@@ -87,6 +87,24 @@ if (runThis) {
       expect(src).toContain("readMiroirAiBackend");
       expect(src).toMatch(/processCapabilities\.cursor\s*===\s*true/);
     });
+
+    it("memoizes CopilotKit properties so the provider does not reset on every render", () => {
+      const src = readRepoFile(
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx",
+      );
+      expect(src).toMatch(/useMemo\s*\(/);
+      expect(src).toMatch(/properties=\{copilotProperties\}|properties=\{properties\}/);
+    });
+
+    it("registers one shared default ProxiedCopilotRuntimeAgent for CopilotSidebar", () => {
+      const src = readRepoFile(
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx",
+      );
+      expect(src).toContain("ProxiedCopilotRuntimeAgent");
+      expect(src).toContain("selfManagedAgents");
+      expect(src).toMatch(/agentId:\s*"default"/);
+      expect(src).toMatch(/transport:\s*"single"/);
+    });
   });
 
   describe("cursorSdk.275.phase6 — AppBar Cursor picker gate", () => {

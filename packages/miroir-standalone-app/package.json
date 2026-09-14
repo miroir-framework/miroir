@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
+    "@copilotkit/core": "^1.59.2",
     "@copilotkit/react-core": "^1.59.2",
     "@copilotkit/react-textarea": "^1.59.2",
     "@copilotkit/react-ui": "^1.59.2",

@@ -118,4 +118,19 @@ if (runThis) {
       }
     });
   });
+
+  describe("processCapabilitiesContext.273.phase2 Vite proxies GET /capabilities", () => {
+    it("vite.config.js server.proxy includes /capabilities", () => {
+      const viteConfig = readFileSync(
+        join(REPO_ROOT, "packages/miroir-standalone-app/vite.config.js"),
+        "utf8",
+      );
+      const proxyBlock = viteConfig.match(/proxy:\s*\{([\s\S]*?)\n\s*\}/);
+      expect(proxyBlock).not.toBeNull();
+      const proxyKeys = [...(proxyBlock?.[1] ?? "").matchAll(/['"](\/[^'"]+)['"]/g)].map(
+        (match) => match[1],
+      );
+      expect(proxyKeys).toContain("/capabilities");
+    });
+  });
 }

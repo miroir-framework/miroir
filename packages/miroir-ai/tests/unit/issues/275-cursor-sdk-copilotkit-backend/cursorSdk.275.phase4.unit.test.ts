@@ -4,12 +4,14 @@
  */
 import { existsSync, readFileSync } from "node:fs";
 import { createServer } from "node:http";
+import { createRequire } from "node:module";
 import type { AddressInfo } from "node:net";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import express, { type Router } from "express";
 import { afterEach, describe, expect, it } from "vitest";
 import { AbstractAgent } from "@ag-ui/client";
+import { EventType, type RunAgentInput } from "@ag-ui/core";
 import { clearSecrets, registerSecrets, type ProcessCapabilities } from "miroir-core";
 
 import { createCopilotKitRouter } from "../../../../src/routes/copilotKitRoute.js";
@@ -228,6 +230,51 @@ if (runThis) {
       await (first as any)[Symbol.asyncDispose]?.();
       await (second as any)[Symbol.asyncDispose]?.();
     });
+
+    it("clone().run() is an Observable with pipe and emits stub assistant text", async () => {
+      registerSecrets({ aiCursorKey: TEST_CURSOR_KEY });
+      const createCalls: Record<string, any>[] = [];
+      const { importSdk } = createRecordingImportSdk(createCalls);
+      const agent = await createCursorAbstractAgent({
+        importSdk,
+        mcpHttpUrl: TEST_MCP_HTTP_URL,
+        nodeVersion: "22.13.0",
+      });
+
+      const cloned = agent.clone();
+      const events$ = cloned.run({
+        threadId: "thread-1",
+        runId: "run-1",
+        messages: [{ id: "m1", role: "user", content: "hello" }],
+        tools: [],
+        context: [],
+        state: {},
+        forwardedProps: {},
+      } as RunAgentInput);
+
+      expect(typeof (events$ as { pipe?: unknown }).pipe).toBe("function");
+
+      const events: { type?: string; delta?: string }[] = [];
+      await new Promise<void>((resolve, reject) => {
+        events$.subscribe({
+          next: (event) => events.push(event as { type?: string; delta?: string }),
+          error: reject,
+          complete: resolve,
+        });
+      });
+
+      expect(events.some((event) => event.type === EventType.RUN_STARTED)).toBe(true);
+      expect(
+        events.some(
+          (event) =>
+            event.type === EventType.TEXT_MESSAGE_CONTENT &&
+            String(event.delta).includes("hello from stub"),
+        ),
+      ).toBe(true);
+      expect(events.some((event) => event.type === EventType.RUN_FINISHED)).toBe(true);
+
+      await (agent as any)[Symbol.asyncDispose]?.();
+    });
   });
 
   describe("cursorSdk.275.phase4 — Node floor", () => {
@@ -313,7 +360,9 @@ if (runThis) {
       expect(result.status).toBe(200);
       expect(createCalls).toHaveLength(1);
       expect(seams.runtimeOptions).toHaveLength(1);
+      expect(seams.runtimeOptions[0].agents.default).toBeInstanceOf(AbstractAgent);
       expect(seams.runtimeOptions[0].agents.cursor).toBeInstanceOf(AbstractAgent);
+      expect(seams.runtimeOptions[0].agents.default).toBe(seams.runtimeOptions[0].agents.cursor);
       expect(seams.tokenBuilds).toHaveLength(0);
     });
   });
@@ -345,6 +394,45 @@ if (runThis) {
       for (const path of otherPackages) {
         expect(packageHasCursorSdkDependency(readPackageJson(path))).toBe(false);
       }
+    });
+  });
+
+  describe("cursorSdk.275.phase4 — @cursor/sdk nested runtime deps are installed", () => {
+    const sdkPackageJsonPath = join(
+      REPO_ROOT,
+      "packages/miroir-ai/node_modules/@cursor/sdk/package.json",
+    );
+
+    it("createRequire from the SDK package resolves each declared dependency", () => {
+      expect(existsSync(sdkPackageJsonPath)).toBe(true);
+      const sdkPkg = JSON.parse(readFileSync(sdkPackageJsonPath, "utf8")) as {
+        dependencies?: Record<string, string>;
+      };
+      const requireFromSdk = createRequire(sdkPackageJsonPath);
+      const names = Object.keys(sdkPkg.dependencies ?? {});
+      expect(names.length).toBeGreaterThan(0);
+      for (const name of names) {
+        expect(() => requireFromSdk.resolve(name), name).not.toThrow();
+      }
+    });
+
+    it("dynamic import('@cursor/sdk') loads from miroir-ai", async () => {
+      await expect(import("@cursor/sdk")).resolves.toBeTruthy();
+    });
+  });
+
+  describe("cursorSdk.275.phase4 — miroir-ai dist does not shadow protobuf v2 wire", () => {
+    it("tsup leaves node_modules external", () => {
+      const tsup = readRepoFile("packages/miroir-ai/tsup.config.ts");
+      expect(tsup).toMatch(/skipNodeModulesBundle\s*:\s*true/);
+    });
+
+    it("dist/index.js does not import @bufbuild/protobuf/wire", () => {
+      const dist = readRepoFile("packages/miroir-ai/dist/index.js");
+      expect(
+        dist.includes("@bufbuild/protobuf/wire"),
+        "bundled dist must not import protobuf/wire; nested SDK protobuf 1.10 has no that export",
+      ).toBe(false);
     });
   });
 }

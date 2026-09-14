@@ -10,6 +10,7 @@ import { AbstractAgent } from "@ag-ui/client";
 import type { BaseEvent, RunAgentInput } from "@ag-ui/core";
 import { EventType } from "@ag-ui/core";
 import { resolveSecret } from "miroir-core";
+import { Observable } from "rxjs";
 
 const CURSOR_DUMMY_CWD_DIRNAME = ".miroir-cursor-cwd";
 const CURSOR_NODE_MAJOR = 22;
@@ -21,7 +22,12 @@ const MIROIR_MCP_SERVER_NAME = "miroir";
 export type CursorSdkAgentHandle = {
   send?: (prompt: string) => Promise<{
     stream?: () => AsyncIterable<unknown>;
-    wait?: () => Promise<unknown>;
+    wait?: () => Promise<{
+      status?: string;
+      result?: string;
+      error?: { message?: string };
+    }>;
+    result?: string;
   }>;
   [Symbol.asyncDispose]?: () => Promise<void>;
 };
@@ -149,44 +155,36 @@ function assistantTextFromSdkEvent(event: unknown): string {
   return "";
 }
 
-function observableFromAsync(run: (emit: (event: BaseEvent) => void) => Promise<void>) {
-  return {
-    subscribe(observerOrNext?: any, error?: any, complete?: any) {
-      const observer =
-        typeof observerOrNext === "function"
-          ? { next: observerOrNext, error, complete }
-          : observerOrNext ?? {};
-      let closed = false;
-      void run((event) => {
+function observableFromAsync(run: (emit: (event: BaseEvent) => void) => Promise<void>): Observable<BaseEvent> {
+  return new Observable<BaseEvent>((subscriber) => {
+    let closed = false;
+    void run((event) => {
+      if (!closed) {
+        subscriber.next(event);
+      }
+    })
+      .then(() => {
         if (!closed) {
-          observer.next?.(event);
+          subscriber.complete();
         }
       })
-        .then(() => {
-          if (!closed) {
-            observer.complete?.();
-          }
-        })
-        .catch((err) => {
-          if (!closed) {
-            observer.error?.(err);
-          }
-        });
-      return {
-        unsubscribe() {
-          closed = true;
-        },
-      };
-    },
-  };
+      .catch((err) => {
+        if (!closed) {
+          subscriber.error(err);
+        }
+      });
+    return () => {
+      closed = true;
+    };
+  });
 }
 
 class CursorSdkAbstractAgent extends AbstractAgent {
-  constructor(private readonly sdkAgent: CursorSdkAgentHandle) {
-    super({ agentId: "cursor" });
+  constructor(private sdkAgent: CursorSdkAgentHandle) {
+    super({ agentId: "default" });
   }
 
-  run(input: RunAgentInput) {
+  run(input: RunAgentInput): Observable<BaseEvent> {
     return observableFromAsync(async (emit) => {
       emit({
         type: EventType.RUN_STARTED,
@@ -230,12 +228,35 @@ class CursorSdkAbstractAgent extends AbstractAgent {
 
       await sdkRun?.wait?.();
 
+      if (!started && typeof sdkRun?.result === "string" && sdkRun.result.length > 0) {
+        emit({
+          type: EventType.TEXT_MESSAGE_START,
+          messageId,
+          role: "assistant",
+        } as BaseEvent);
+        emit({
+          type: EventType.TEXT_MESSAGE_CONTENT,
+          messageId,
+          delta: sdkRun.result,
+        } as BaseEvent);
+        emit({
+          type: EventType.TEXT_MESSAGE_END,
+          messageId,
+        } as BaseEvent);
+      }
+
       emit({
         type: EventType.RUN_FINISHED,
         threadId: input.threadId,
         runId: input.runId,
       } as BaseEvent);
-    }) as ReturnType<AbstractAgent["run"]>;
+    });
+  }
+
+  override clone(): this {
+    const cloned = super.clone() as this;
+    cloned.sdkAgent = this.sdkAgent;
+    return cloned;
   }
 
   async [Symbol.asyncDispose](): Promise<void> {
