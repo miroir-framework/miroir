@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Analysis review: [`./adversarial-r
 Prerequisite: [`../273-FEATURE-process-capability-switches/`](../273-FEATURE-process-capability-switches/) ✅
 Working branch: `275-FEATURE-cursor-sdk-copilotkit-backend`
 
-**Resume note:** Slices 0–8 done. Next: compile touched packages and full `npm run nonreg`.
+**Resume note:** Slices 0–8 done. Compile and default-tier `npm run nonreg` passed (59/0, 20260913T222041Z).
 
 ---
 
@@ -636,4 +636,4 @@ npm run nonreg -- --only unit-275-cursor-sdk
 
 `docs/reference/process-capabilities.md` names `features.cursor` (missing = false), the Node ≥ 22.13.0 floor, refuse `capability: "cursor"` or `"mcp"`, and that shipped Electron main keeps cursor off (fail-loud if someone turns it on without a resolvable `@cursor/sdk`). Shipped `miroirConfig.server.json` / `.docker.json` still omit `cursor`. `analysis.md` status is Implemented. `shouldMountCopilotKitRoute` / CopilotKit auth gate and ungated `/mcp` unchanged.
 
-Validation: phase8 2, `npm run nonreg -- --only unit-275-cursor-sdk` pass (~41s). AC rows ticked. Full compile + repo `npm run nonreg` follow this slice.
+Validation: phase8 2, `npm run nonreg -- --only unit-275-cursor-sdk` pass (~41s). AC rows ticked. Compile passed on miroir-core, miroir-ai, standalone-app, electron, and miroir-server. Default-tier `npm run nonreg` passed: 59 passed, 0 failed (snapshot `test-results/nonreg/20260913T222041Z`).
