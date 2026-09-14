@@ -249,8 +249,9 @@ const listOfBooksReport: Report = {
 
 ### 🤖 For AI Integration
 
-1. **[MCP Integration Guide](docs/guides/mcp-integration.md)** - Connect with Claude, ChatGPT, and other AI agents
-2. **[Natural Language Development](docs/tutorials/natural-language-interface.md)** - **Coming Soon**
+1. **[Using AI in Miroir](docs/guides/using-ai.md)** - In-app assistant with OpenAI / Anthropic / Google / GitHub / OpenAI-compatible keys, or Cursor
+2. **[MCP Integration Guide](docs/guides/mcp-integration.md)** - Connect external MCP clients (Claude Desktop, ChatGPT, and other agents)
+3. **[Natural Language Development](docs/tutorials/natural-language-interface.md)** - **Coming Soon**
 
 ### 📚 Full Documentation
 

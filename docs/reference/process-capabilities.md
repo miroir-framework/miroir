@@ -83,6 +83,7 @@ Error shape: `Action2Error` with `errorType: "FeatureUnavailable"` and `errorCon
 
 ## Related
 
+- [Using AI in Miroir](../guides/using-ai.md): token providers, OpenAI-compatible gateways, Cursor pick
 - [Data architecture: deployments](data-architecture-deployments.md): store backends, `emulateServer`, product scenarios
 - [Code splitting](../internals/code-splitting.md): CopilotKit chunk waits for snapshot `ai` and first open
 - Issue [#273](https://github.com/miroir-framework/miroir/issues/273) and [`code-helpers/features/273-FEATURE-process-capability-switches/analysis.md`](../../code-helpers/features/273-FEATURE-process-capability-switches/analysis.md)

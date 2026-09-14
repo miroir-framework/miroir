@@ -59,11 +59,12 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 ### 🤖 AI/LLM Integrators
 **Goal**: Integrate Miroir with AI agents and LLM tools
 
-1. [Process capabilities](reference/process-capabilities.md) - Turn AI and MCP on or off; what each flag enables
-2. [MCP Integration Guide](guides/mcp-integration.md) - Model Context Protocol support
-3. [Natural Language Interface](tutorials/natural-language-interface.md) - **Coming Soon**
-4. [API Reference](reference/api/) - Complete API for programmatic access
-5. [Transformer Reference](reference/api/transformers.md) - Data transformation API
+1. [Using AI in Miroir](guides/using-ai.md) - In-app assistant: OpenAI / Anthropic / Google / GitHub / OpenAI-compatible keys, or a Cursor subscription
+2. [Process capabilities](reference/process-capabilities.md) - Turn AI, MCP, and Cursor on or off; what each flag enables
+3. [MCP Integration Guide](guides/mcp-integration.md) - Model Context Protocol for external clients
+4. [Natural Language Interface](tutorials/natural-language-interface.md) - **Coming Soon**
+5. [API Reference](reference/api/) - Complete API for programmatic access
+6. [Transformer Reference](reference/api/transformers.md) - Data transformation API
 
 ### 🛠️ Contributors & Framework Developers
 **Goal**: Contribute to Miroir development
@@ -115,7 +116,8 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 - [Creating Simple Apps](guides/user/creating-simple-apps.md) - No-code app building
 
 ### Configuration & Deployment
-- [Process capabilities](reference/process-capabilities.md) - Feature switches: AI, MCP, designer tools, store types
+- [Using AI in Miroir](guides/using-ai.md) - In-app CopilotKit assistant (token providers or Cursor)
+- [Process capabilities](reference/process-capabilities.md) - Feature switches: AI, MCP, Cursor, designer tools, store types
 - [Data architecture: deployments](reference/data-architecture-deployments.md) - Store backends, `emulateServer`, product scenarios
 - [Configuration Reference](reference/configuration.md) - Environment variables and settings
 - [Data Stores](reference/data-stores.md) - Postgres, IndexedDB, Filesystem
