@@ -141,24 +141,34 @@ function recordedTools(createOptions: Record<string, any>): unknown {
   return createOptions.tools ?? createOptions.local?.tools;
 }
 
-function createRecordingImportSdk(createCalls: Record<string, any>[]) {
+function createRecordingImportSdk(
+  createCalls: Record<string, any>[],
+  options: { sendPrompts?: string[]; streamEvents?: unknown[] } = {},
+) {
   let importCount = 0;
   const importSdk = async () => {
     importCount += 1;
     return {
       Agent: {
-        create: async (options: Record<string, any>) => {
-          createCalls.push(options);
+        create: async (createOptions: Record<string, any>) => {
+          createCalls.push(createOptions);
           return {
-            send: async () => ({
-              stream: async function* () {
-                yield {
-                  type: "assistant",
-                  message: { content: [{ type: "text", text: "hello from stub" }] },
-                };
-              },
-              wait: async () => ({ status: "finished" }),
-            }),
+            send: async (prompt: string) => {
+              options.sendPrompts?.push(prompt);
+              return {
+                stream: async function* () {
+                  if (options.streamEvents) {
+                    yield* options.streamEvents;
+                    return;
+                  }
+                  yield {
+                    type: "assistant",
+                    message: { content: [{ type: "text", text: "hello from stub" }] },
+                  };
+                },
+                wait: async () => ({ status: "finished" }),
+              };
+            },
             async [Symbol.asyncDispose]() {
               return undefined;
             },
@@ -272,6 +282,228 @@ if (runThis) {
         ),
       ).toBe(true);
       expect(events.some((event) => event.type === EventType.RUN_FINISHED)).toBe(true);
+
+      await (agent as any)[Symbol.asyncDispose]?.();
+    });
+
+    it("send() receives conversation history, CopilotKit tools, and additional instructions", async () => {
+      registerSecrets({ aiCursorKey: TEST_CURSOR_KEY });
+      const createCalls: Record<string, any>[] = [];
+      const sendPrompts: string[] = [];
+      const { importSdk } = createRecordingImportSdk(createCalls, { sendPrompts });
+      const agent = await createCursorAbstractAgent({
+        importSdk,
+        mcpHttpUrl: TEST_MCP_HTTP_URL,
+        nodeVersion: "22.13.0",
+      });
+
+      const events$ = agent.run({
+        threadId: "thread-history",
+        runId: "run-history",
+        messages: [
+          { id: "m0", role: "user", content: "first question about lending" },
+          { id: "m1", role: "assistant", content: "first answer from earlier turn" },
+          { id: "m2", role: "user", content: "propose a lend for that book" },
+        ],
+        tools: [
+          {
+            name: "propose_lendDocument",
+            description: "Show a lending review form",
+            parameters: { type: "object" },
+          },
+          {
+            name: "propose_generateMiroirEntity",
+            description: "Show an entity review form",
+            parameters: { type: "object" },
+          },
+        ],
+        context: [
+          {
+            description: "Library",
+            value: "Prefer propose_* review forms over MCP writes",
+          },
+        ],
+        state: {},
+        forwardedProps: {},
+      } as RunAgentInput);
+
+      await new Promise<void>((resolve, reject) => {
+        events$.subscribe({ next: () => undefined, error: reject, complete: resolve });
+      });
+
+      expect(sendPrompts).toHaveLength(1);
+      const prompt = sendPrompts[0];
+      expect(prompt).toContain("first question about lending");
+      expect(prompt).toContain("first answer from earlier turn");
+      expect(prompt).toContain("propose a lend for that book");
+      expect(prompt).toContain("propose_lendDocument");
+      expect(prompt).toContain("propose_generateMiroirEntity");
+      expect(prompt).toContain("Prefer propose_* review forms over MCP writes");
+      expect(prompt).toContain("copilotkit-tool");
+
+      await (agent as any)[Symbol.asyncDispose]?.();
+    });
+
+    it("maps CopilotKit-named SDK tool_call events to AG-UI TOOL_CALL_*", async () => {
+      registerSecrets({ aiCursorKey: TEST_CURSOR_KEY });
+      const createCalls: Record<string, any>[] = [];
+      const { importSdk } = createRecordingImportSdk(createCalls, {
+        streamEvents: [
+          {
+            type: "tool_call",
+            call_id: "call-propose-lend",
+            name: "propose_lendDocument",
+            status: "running",
+            args: { documentUuid: "doc-1", userUuid: "user-1" },
+          },
+        ],
+      });
+      const agent = await createCursorAbstractAgent({
+        importSdk,
+        mcpHttpUrl: TEST_MCP_HTTP_URL,
+        nodeVersion: "22.13.0",
+      });
+
+      const events$ = agent.run({
+        threadId: "thread-tools",
+        runId: "run-tools",
+        messages: [{ id: "m1", role: "user", content: "propose a lend" }],
+        tools: [
+          {
+            name: "propose_lendDocument",
+            description: "Show a lending review form",
+            parameters: { type: "object" },
+          },
+        ],
+        context: [],
+        state: {},
+        forwardedProps: {},
+      } as RunAgentInput);
+
+      const events: { type?: string; toolCallName?: string; toolCallId?: string; delta?: string }[] =
+        [];
+      await new Promise<void>((resolve, reject) => {
+        events$.subscribe({
+          next: (event) =>
+            events.push(
+              event as {
+                type?: string;
+                toolCallName?: string;
+                toolCallId?: string;
+                delta?: string;
+              },
+            ),
+          error: reject,
+          complete: resolve,
+        });
+      });
+
+      expect(
+        events.some(
+          (event) =>
+            event.type === EventType.TOOL_CALL_START &&
+            event.toolCallName === "propose_lendDocument" &&
+            event.toolCallId === "call-propose-lend",
+        ),
+      ).toBe(true);
+      expect(
+        events.some(
+          (event) =>
+            event.type === EventType.TOOL_CALL_ARGS &&
+            event.toolCallId === "call-propose-lend" &&
+            String(event.delta).includes("doc-1"),
+        ),
+      ).toBe(true);
+      expect(
+        events.some(
+          (event) =>
+            event.type === EventType.TOOL_CALL_END && event.toolCallId === "call-propose-lend",
+        ),
+      ).toBe(true);
+
+      await (agent as any)[Symbol.asyncDispose]?.();
+    });
+
+    it("turns copilotkit-tool fences in assistant text into AG-UI TOOL_CALL_*", async () => {
+      registerSecrets({ aiCursorKey: TEST_CURSOR_KEY });
+      const createCalls: Record<string, any>[] = [];
+      const { importSdk } = createRecordingImportSdk(createCalls, {
+        streamEvents: [
+          {
+            type: "assistant",
+            message: {
+              content: [
+                {
+                  type: "text",
+                  text:
+                    "Here is a lending proposal.\n```copilotkit-tool\n" +
+                    '{"name":"propose_lendDocument","arguments":{"documentUuid":"doc-1"}}\n' +
+                    "```\n",
+                },
+              ],
+            },
+          },
+        ],
+      });
+      const agent = await createCursorAbstractAgent({
+        importSdk,
+        mcpHttpUrl: TEST_MCP_HTTP_URL,
+        nodeVersion: "22.13.0",
+      });
+
+      const events$ = agent.run({
+        threadId: "thread-fence",
+        runId: "run-fence",
+        messages: [{ id: "m1", role: "user", content: "propose a lend" }],
+        tools: [
+          {
+            name: "propose_lendDocument",
+            description: "Show a lending review form",
+            parameters: { type: "object" },
+          },
+        ],
+        context: [],
+        state: {},
+        forwardedProps: {},
+      } as RunAgentInput);
+
+      const events: { type?: string; toolCallName?: string; toolCallId?: string; delta?: string }[] =
+        [];
+      await new Promise<void>((resolve, reject) => {
+        events$.subscribe({
+          next: (event) =>
+            events.push(
+              event as {
+                type?: string;
+                toolCallName?: string;
+                toolCallId?: string;
+                delta?: string;
+              },
+            ),
+          error: reject,
+          complete: resolve,
+        });
+      });
+
+      const text = events
+        .filter((event) => event.type === EventType.TEXT_MESSAGE_CONTENT)
+        .map((event) => String(event.delta ?? ""))
+        .join("");
+      expect(text).toContain("Here is a lending proposal.");
+      expect(text).not.toContain("copilotkit-tool");
+      expect(
+        events.some(
+          (event) =>
+            event.type === EventType.TOOL_CALL_START &&
+            event.toolCallName === "propose_lendDocument",
+        ),
+      ).toBe(true);
+      expect(
+        events.some(
+          (event) =>
+            event.type === EventType.TOOL_CALL_ARGS && String(event.delta).includes("doc-1"),
+        ),
+      ).toBe(true);
 
       await (agent as any)[Symbol.asyncDispose]?.();
     });

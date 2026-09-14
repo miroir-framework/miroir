@@ -7,6 +7,7 @@ export {
   createCursorDummyCwd,
   isNodeVersionAtLeast,
   loopbackMcpHttpUrl,
+  promptFromRunInput,
 } from "./runtime/cursorAgent.js";
 export { buildCopilotRuntime, getApiKey, getDefaultRuntimeConfig } from "./runtime/copilotRuntimeFactory.js";
 export { createMiroirCopilotKitActions } from "./tools/miroirCopilotKitActions.js";

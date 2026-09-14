@@ -35,11 +35,11 @@ Sibling of `client` / `server`, not nested inside `emulateServer`:
 }
 ```
 
-You may omit `cursor`; missing means false. Write this on the **persistence-side** config only:
+You may omit `cursor`; missing means false. Shipped `miroirConfig.server.json` / `.docker.json` omit `cursor`. Write this on the **persistence-side** config only:
 
 | Process | File or object | Typical flags |
 |---|---|---|
-| `miroir-server` | `packages/miroir-server/config/miroirConfig.server.json` (and `.docker.json`) | `ai` and `mcp` true; `cursor` may be set true on Node ≥ 22.13.0 with `CURSOR_API_KEY` imported as `aiCursorKey`; designer omitted (defaults on) |
+| `miroir-server` | `packages/miroir-server/config/miroirConfig.server.json` (and `.docker.json`) | `ai` and `mcp` true; shipped JSON omits `cursor` (missing = false). Add `cursor: true` locally on Node ≥ 22.13.0 with `CURSOR_API_KEY` imported as `aiCursorKey`. Designer omitted (defaults on) |
 | Electron **main** | Hardcoded `electronServerConfig` in `ipcServerSetup.ts` | `ai`, `mcp`, `designerTools` all true; `cursor` stays off in shipped Electron main. Packaged builds call `assertCursorSdkPackaged` if `features.cursor` is on and `@cursor/sdk` cannot be resolved. When `ai` or `mcp` is true, main also listens on loopback HTTP (`http://127.0.0.1:3080`) so CopilotKit and MCP are not `app://`. If 3080 is already taken, main logs that and IPC still works. |
 | Sandbox page | Bundled emulateServer client in `miroir-sandbox` | `ai` stays false (environment veto). `mcp` false unless you set it. Designer on. |
 | Emulated-server tests | The test `miroirConfig*.json` you pass in | Omit AI/MCP unless that profile needs them. |

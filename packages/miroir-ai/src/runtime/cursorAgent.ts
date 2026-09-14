@@ -106,31 +106,178 @@ function resolveMcpHttpUrl(options?: CreateCursorAbstractAgentOptions): string {
   throw new Error("Cursor agent requires mcpHttpUrl or apiPort");
 }
 
-function lastUserText(input: RunAgentInput): string {
-  for (let index = input.messages.length - 1; index >= 0; index -= 1) {
-    const message = input.messages[index] as { role?: string; content?: unknown };
-    if (message.role !== "user") {
-      continue;
-    }
-    const content = message.content;
-    if (typeof content === "string") {
-      return content;
-    }
-    if (Array.isArray(content)) {
-      return content
-        .map((part) => {
-          if (typeof part === "string") {
-            return part;
-          }
-          if (part && typeof part === "object" && "text" in part) {
-            return String((part as { text?: unknown }).text ?? "");
-          }
-          return "";
-        })
-        .join("");
+function messageContentToText(content: unknown): string {
+  if (typeof content === "string") {
+    return content;
+  }
+  if (!Array.isArray(content)) {
+    return "";
+  }
+  return content
+    .map((part) => {
+      if (typeof part === "string") {
+        return part;
+      }
+      if (part && typeof part === "object" && "text" in part) {
+        return String((part as { text?: unknown }).text ?? "");
+      }
+      return "";
+    })
+    .join("");
+}
+
+function copilotKitToolNames(input: RunAgentInput): Set<string> {
+  return new Set(
+    (input.tools ?? [])
+      .map((tool) => tool?.name)
+      .filter((name): name is string => typeof name === "string" && name.length > 0),
+  );
+}
+
+export function promptFromRunInput(input: RunAgentInput): string {
+  const parts: string[] = [];
+  const context = input.context ?? [];
+  if (context.length > 0) {
+    parts.push("Additional instructions:");
+    for (const item of context) {
+      const description = item?.description?.trim() ?? "";
+      const value = item?.value?.trim() ?? "";
+      if (description && value) {
+        parts.push(`${description}: ${value}`);
+      } else if (description || value) {
+        parts.push(description || value);
+      }
     }
   }
-  return "";
+
+  const tools = input.tools ?? [];
+  if (tools.length > 0) {
+    parts.push(
+      "CopilotKit frontend tools (review forms, not MCP). Invoke these by name; Miroir shows a form. Do not treat them as Cursor custom tools.",
+    );
+    parts.push(
+      'To invoke one, emit a fenced JSON block tagged copilotkit-tool with {"name":"<tool>","arguments":{...}}.',
+    );
+    for (const tool of tools) {
+      if (!tool?.name) {
+        continue;
+      }
+      const description = tool.description ? `: ${tool.description}` : "";
+      parts.push(`- ${tool.name}${description}`);
+    }
+  }
+
+  const messages = input.messages ?? [];
+  if (messages.length > 0) {
+    parts.push("Conversation:");
+    for (const message of messages) {
+      const role = typeof message?.role === "string" ? message.role : "user";
+      const text = messageContentToText(message?.content);
+      if (!text) {
+        continue;
+      }
+      parts.push(`${role}: ${text}`);
+    }
+  }
+
+  return parts.join("\n");
+}
+
+function splitCopilotKitToolFences(
+  text: string,
+  toolNames: Set<string>,
+): { visibleText: string; calls: Array<{ id: string; name: string; args: unknown }> } {
+  const calls: Array<{ id: string; name: string; args: unknown }> = [];
+  const visibleText = text.replace(/```copilotkit-tool\s*([\s\S]*?)```/g, (match, jsonText) => {
+    try {
+      const parsed = JSON.parse(String(jsonText).trim()) as {
+        id?: unknown;
+        name?: unknown;
+        arguments?: unknown;
+        args?: unknown;
+      };
+      const name = parsed?.name;
+      if (typeof name !== "string" || !toolNames.has(name)) {
+        return match;
+      }
+      const id =
+        typeof parsed.id === "string" && parsed.id.length > 0
+          ? parsed.id
+          : `cursor-tool-${name}-${calls.length}`;
+      calls.push({
+        id,
+        name,
+        args: parsed.arguments ?? parsed.args ?? {},
+      });
+      return "";
+    } catch {
+      return match;
+    }
+  });
+  return { visibleText: visibleText.trim(), calls };
+}
+
+function stringifyToolArgs(args: unknown): string {
+  if (typeof args === "string") {
+    return args;
+  }
+  if (args == null) {
+    return "{}";
+  }
+  try {
+    return JSON.stringify(args);
+  } catch {
+    return "{}";
+  }
+}
+
+function copilotKitToolCallsFromSdkEvent(
+  event: unknown,
+  toolNames: Set<string>,
+): Array<{ id: string; name: string; args: unknown }> {
+  if (!event || typeof event !== "object" || toolNames.size === 0) {
+    return [];
+  }
+  const typed = event as {
+    type?: string;
+    call_id?: string;
+    name?: string;
+    args?: unknown;
+    status?: string;
+    message?: {
+      content?: Array<{ type?: string; id?: string; name?: string; input?: unknown }>;
+    };
+  };
+  const found: Array<{ id: string; name: string; args: unknown }> = [];
+
+  if (
+    typed.type === "tool_call" &&
+    typed.name &&
+    toolNames.has(typed.name) &&
+    typed.status !== "completed" &&
+    typed.status !== "error"
+  ) {
+    found.push({
+      id: typed.call_id ?? `cursor-tool-${typed.name}`,
+      name: typed.name,
+      args: typed.args,
+    });
+  }
+
+  if (typed.type === "assistant") {
+    for (const block of typed.message?.content ?? []) {
+      if (block.type !== "tool_use" || !block.name || !toolNames.has(block.name)) {
+        continue;
+      }
+      found.push({
+        id: block.id ?? `cursor-tool-${block.name}`,
+        name: block.name,
+        args: block.input,
+      });
+    }
+  }
+
+  return found;
 }
 
 function assistantTextFromSdkEvent(event: unknown): string {
@@ -192,30 +339,72 @@ class CursorSdkAbstractAgent extends AbstractAgent {
         runId: input.runId,
       } as BaseEvent);
 
-      const prompt = lastUserText(input);
+      const prompt = promptFromRunInput(input);
       const sdkRun = await this.sdkAgent.send?.(prompt);
       const messageId = `cursor-${input.runId}`;
+      const toolNames = copilotKitToolNames(input);
+      const emittedToolCallIds = new Set<string>();
       let started = false;
+
+      const closeTextIfOpen = () => {
+        if (!started) {
+          return;
+        }
+        emit({
+          type: EventType.TEXT_MESSAGE_END,
+          messageId,
+        } as BaseEvent);
+        started = false;
+      };
+
+      const emitCopilotKitToolCall = (call: { id: string; name: string; args: unknown }) => {
+        if (emittedToolCallIds.has(call.id)) {
+          return;
+        }
+        emittedToolCallIds.add(call.id);
+        closeTextIfOpen();
+        emit({
+          type: EventType.TOOL_CALL_START,
+          toolCallId: call.id,
+          toolCallName: call.name,
+          parentMessageId: messageId,
+        } as BaseEvent);
+        emit({
+          type: EventType.TOOL_CALL_ARGS,
+          toolCallId: call.id,
+          delta: stringifyToolArgs(call.args),
+        } as BaseEvent);
+        emit({
+          type: EventType.TOOL_CALL_END,
+          toolCallId: call.id,
+        } as BaseEvent);
+      };
 
       if (sdkRun?.stream) {
         for await (const event of sdkRun.stream()) {
-          const text = assistantTextFromSdkEvent(event);
-          if (!text) {
-            continue;
+          for (const call of copilotKitToolCallsFromSdkEvent(event, toolNames)) {
+            emitCopilotKitToolCall(call);
           }
-          if (!started) {
+          const rawText = assistantTextFromSdkEvent(event);
+          const { visibleText, calls: fencedCalls } = splitCopilotKitToolFences(rawText, toolNames);
+          if (visibleText) {
+            if (!started) {
+              emit({
+                type: EventType.TEXT_MESSAGE_START,
+                messageId,
+                role: "assistant",
+              } as BaseEvent);
+              started = true;
+            }
             emit({
-              type: EventType.TEXT_MESSAGE_START,
+              type: EventType.TEXT_MESSAGE_CONTENT,
               messageId,
-              role: "assistant",
+              delta: visibleText,
             } as BaseEvent);
-            started = true;
           }
-          emit({
-            type: EventType.TEXT_MESSAGE_CONTENT,
-            messageId,
-            delta: text,
-          } as BaseEvent);
+          for (const call of fencedCalls) {
+            emitCopilotKitToolCall(call);
+          }
         }
       }
 

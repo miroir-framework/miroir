@@ -169,11 +169,15 @@ if (runThis) {
       const localConfig = readJson(
         join(REPO_ROOT, "packages/miroir-server/config/miroirConfig.server.json"),
       );
+      const dockerConfig = readJson(
+        join(REPO_ROOT, "packages/miroir-server/config/miroirConfig.server.docker.json"),
+      );
       const features = localConfig.features as Record<string, unknown>;
       expect(features).toBeDefined();
       expect(features.ai).toBe(true);
       expect(features.mcp).toBe(true);
       expect(localConfig.features).not.toHaveProperty("cursor");
+      expect(dockerConfig.features).not.toHaveProperty("cursor");
     });
   });
 }

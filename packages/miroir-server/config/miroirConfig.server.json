@@ -1,8 +1,7 @@
 {
   "features": {
     "ai": true,
-    "mcp": true,
-    "cursor": true
+    "mcp": true
   },
   "server": {
     "rootApiUrl": "https://localhost:3080",
