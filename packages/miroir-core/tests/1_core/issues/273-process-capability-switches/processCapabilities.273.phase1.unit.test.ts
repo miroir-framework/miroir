@@ -22,6 +22,7 @@ const emptyMap = new Map<string, unknown>();
 const disabledSnapshot = {
   ai: false,
   mcp: false,
+  cursor: false,
   designerTools: true,
   availableStoreTypes: [] as string[],
   creatableStoreTypes: [] as string[],
@@ -41,6 +42,7 @@ if (runThis) {
       ).toEqual({
         ai: false,
         mcp: false,
+        cursor: false,
         designerTools: true,
         availableStoreTypes: [],
         creatableStoreTypes: [],
@@ -59,6 +61,7 @@ if (runThis) {
       ).toEqual({
         ai: false,
         mcp: false,
+        cursor: false,
         designerTools: true,
         availableStoreTypes: [],
         creatableStoreTypes: [],

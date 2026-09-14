@@ -42,6 +42,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { MIROIR_SYSTEM_PROMPT } from "./miroirSystemPrompt.js";
 import { AiEntityProposalForm, type EntityProposal } from "./AiEntityProposalForm.js";
+import { AiLendProposalForm } from "./AiLendProposalForm.js";
 
 // ── Selector params (module-level, constant) ──────────────────────────────────
 const APPLICATIONS_SELECTOR_PARAMS = {
@@ -197,9 +198,9 @@ function AiActionsProviderInner(): React.JSX.Element {
     value: effectiveDeploymentUuid || "(none — the user has not selected a target application yet)",
   });
 
-  // ── generateMiroirEntity ────────────────────────────────────────────────────
+  // ── propose_generateMiroirEntity ────────────────────────────────────────────
   useCopilotAction({
-    name: "generateMiroirEntity",
+    name: "propose_generateMiroirEntity",
     description:
       "Generate a new Miroir Entity and its EntityVersion based on a description. " +
       "Present the proposal to the user for review before applying.",
@@ -518,10 +519,12 @@ function AiActionsProviderInner(): React.JSX.Element {
     },
   });
 
-  // ── lendDocument ────────────────────────────────────────────────────────────
+  // ── propose_lendDocument ────────────────────────────────────────────────────
   useCopilotAction({
-    name: "lendDocument",
-    description: "Lend a library document (book) to a user.",
+    name: "propose_lendDocument",
+    description:
+      "Propose lending a library document (book) to a user. " +
+      "Present the proposal to the user for review before applying.",
     parameters: [
       {
         name: "user",
@@ -548,17 +551,33 @@ function AiActionsProviderInner(): React.JSX.Element {
         required: false,
       },
     ],
-    handler: async ({ user, book, startDate, note }: Record<string, any>) => {
-      const response = await fetch(copilotKitHttpUrl("/lendDocument"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user, book, startDate, note }),
-      });
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({ message: "Request failed" }));
-        return { status: "error", message: (err as any).message ?? "Request failed" };
-      }
-      return response.json();
+    renderAndWaitForResponse(props) {
+      const { user, book, startDate, note } = props.args as Record<string, any>;
+      return (
+        <AiLendProposalForm
+          proposal={{ user, book, startDate, note }}
+          onAccept={async () => {
+            const response = await fetch(copilotKitHttpUrl("/lendDocument"), {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ user, book, startDate, note }),
+            });
+            if (!response.ok) {
+              const err = await response.json().catch(() => ({ message: "Request failed" }));
+              props.respond?.({
+                status: "error",
+                message: (err as any).message ?? "Request failed",
+              });
+              return;
+            }
+            const result = await response.json();
+            props.respond?.(result);
+          }}
+          onReject={() => {
+            props.respond?.({ message: "Proposal rejected by user." });
+          }}
+        />
+      );
     },
   });
 
@@ -567,7 +586,7 @@ function AiActionsProviderInner(): React.JSX.Element {
     name: "getCurrentDate",
     description:
       "Return today's date as an ISO date string (YYYY-MM-DD, e.g. '2026-05-28'). " +
-      "Use this to get the real current date before calling lendDocument or any other " +
+      "Use this to get the real current date before calling propose_lendDocument or any other " +
       "action that needs a date — do NOT guess or invent a date.",
     parameters: [],
     handler: async () => {

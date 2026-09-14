@@ -39,7 +39,7 @@ import { app, ipcMain } from "electron";
 import express from "express";
 import * as os from "os";
 import * as path from "path";
-import { createCopilotKitRouter } from "miroir-ai";
+import { assertCursorSdkPackaged, createCopilotKitRouter } from "miroir-ai";
 import {
   ConfigurationService,
   defaultSelfApplicationDeploymentMap,
@@ -220,6 +220,10 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
   });
   restClientStub.setProcessCapabilities(capabilities);
 
+  if (app.isPackaged && capabilities.cursor) {
+    assertCursorSdkPackaged();
+  }
+
   if (shouldListenLoopbackHttp({ ai: capabilities.ai, mcp: capabilities.mcp })) {
     const loopbackApp = express();
     loopbackApp.use(express.json({ limit: "50mb" }));
@@ -239,9 +243,11 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
     });
 
     if (shouldMountCopilotKitRoute(capabilities.ai)) {
+      const listenUrl = new URL(ELECTRON_LOOPBACK_ROOT_API_URL);
+      const mcpHttpUrl = `http://127.0.0.1:${Number(listenUrl.port) || 3080}/mcp`;
       loopbackApp.use(
         "/api/copilotkit",
-        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap),
+        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities, mcpHttpUrl }),
       );
     }
 

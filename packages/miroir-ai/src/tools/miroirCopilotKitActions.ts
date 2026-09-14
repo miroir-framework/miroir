@@ -86,7 +86,7 @@ const lendDocumentActionJsonSchema = jzodToJsonSchema(
 /**
  * Returns an async executor function for the lendDocument action.
  * Used both by createLendDocumentTool (as the CopilotKit handler) and by the
- * /api/copilotkit/lendDocument REST endpoint (called from the frontend useCopilotAction).
+ * /api/copilotkit/lendDocument REST endpoint (called from the frontend propose_lendDocument accept path).
  */
 export function createLendDocumentExecutor(
   domainController: DomainControllerInterface,

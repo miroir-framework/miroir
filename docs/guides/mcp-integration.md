@@ -1,6 +1,8 @@
 # Model Context Protocol (MCP) Integration
 
-> ⚠️⚠️⚠️ This document is a placeholder and needs to be completed.
+The **in-app** CopilotKit assistant (OpenAI-compatible keys or a Cursor subscription) is documented in [Using AI in Miroir](using-ai.md). This page is for **external** MCP clients (Claude Desktop, ChatGPT, other agents) talking to Miroir's MCP HTTP server.
+
+> ⚠️⚠️⚠️ Connecting those external clients is still a stub. Flag and URL facts below are current.
 
 ## Overview
 

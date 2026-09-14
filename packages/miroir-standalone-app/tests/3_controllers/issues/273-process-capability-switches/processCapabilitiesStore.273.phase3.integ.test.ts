@@ -73,6 +73,7 @@ const bundledConfiguration: StoreUnitConfiguration = {
 const noStoreAdministrationSnapshot: ProcessCapabilities = {
   ai: false,
   mcp: false,
+  cursor: false,
   designerTools: true,
   availableStoreTypes: ["indexedDb"],
   creatableStoreTypes: ["indexedDb"],

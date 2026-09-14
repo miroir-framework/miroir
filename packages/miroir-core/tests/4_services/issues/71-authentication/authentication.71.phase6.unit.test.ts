@@ -48,5 +48,18 @@ if (runThis) {
       expect(byFile).toContain('MIROIR_AUTH_ENABLED: env.MIROIR_AUTH_ENABLED ?? "0"');
       expect(testMiroir).toContain('MIROIR_AUTH_ENABLED: env.MIROIR_AUTH_ENABLED ?? "0"');
     });
+
+    it("AgentsCopilotKit sends the session Bearer on CopilotKit headers", () => {
+      const src = readFileSync(
+        join(
+          REPO_ROOT,
+          "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx",
+        ),
+        "utf8",
+      );
+      expect(src).toContain("headers=");
+      expect(src).toContain("authorizationHeaders");
+      expect(src).toContain("useAuthSession");
+    });
   });
 }

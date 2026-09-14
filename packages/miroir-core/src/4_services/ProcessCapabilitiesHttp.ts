@@ -8,6 +8,7 @@ import type { ProcessCapabilities } from "../1_core/processCapabilities.js";
 export const FAIL_CLOSED_PROCESS_CAPABILITIES: ProcessCapabilities = {
   ai: false,
   mcp: false,
+  cursor: false,
   designerTools: true,
   availableStoreTypes: [],
   creatableStoreTypes: [],

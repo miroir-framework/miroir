@@ -1886,6 +1886,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 ai: { type: "boolean", optional: true },
                 mcp: { type: "boolean", optional: true },
+                cursor: { type: "boolean", optional: true },
                 designerTools: { type: "boolean", optional: true },
               },
             },
@@ -1933,6 +1934,7 @@ export function getMiroirFundamentalJzodSchema(
               definition: {
                 ai: { type: "boolean", optional: true },
                 mcp: { type: "boolean", optional: true },
+                cursor: { type: "boolean", optional: true },
                 designerTools: { type: "boolean", optional: true },
               },
             },

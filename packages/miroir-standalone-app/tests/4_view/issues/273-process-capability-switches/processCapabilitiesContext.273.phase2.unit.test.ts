@@ -31,6 +31,7 @@ const ELECTRON_SRC = join(REPO_ROOT, "packages/miroir-standalone-app-electron/sr
 const snapshot: ProcessCapabilities = {
   ai: true,
   mcp: true,
+  cursor: false,
   designerTools: true,
   availableStoreTypes: ["indexedDb"],
   creatableStoreTypes: ["indexedDb"],
@@ -115,6 +116,21 @@ if (runThis) {
       for (const file of electronFiles) {
         expect(readFileSync(file, "utf8"), file).not.toContain("getProcessCapabilities");
       }
+    });
+  });
+
+  describe("processCapabilitiesContext.273.phase2 Vite proxies GET /capabilities", () => {
+    it("vite.config.js server.proxy includes /capabilities", () => {
+      const viteConfig = readFileSync(
+        join(REPO_ROOT, "packages/miroir-standalone-app/vite.config.js"),
+        "utf8",
+      );
+      const proxyBlock = viteConfig.match(/proxy:\s*\{([\s\S]*?)\n\s*\}/);
+      expect(proxyBlock).not.toBeNull();
+      const proxyKeys = [...(proxyBlock?.[1] ?? "").matchAll(/['"](\/[^'"]+)['"]/g)].map(
+        (match) => match[1],
+      );
+      expect(proxyKeys).toContain("/capabilities");
     });
   });
 }

@@ -9,6 +9,7 @@ import type {
 export type ProcessCapabilities = {
   ai: boolean;
   mcp: boolean;
+  cursor: boolean;
   availableStoreTypes: StorageType[];
   creatableStoreTypes: StorageType[];
   storeAdministration: boolean;
@@ -18,6 +19,7 @@ export type ProcessCapabilities = {
 export type ProcessCapabilityName =
   | "ai"
   | "mcp"
+  | "cursor"
   | "storeAdministration"
   | "availableStoreTypes"
   | "designerTools";
@@ -26,6 +28,7 @@ type ProcessCapabilitiesConfig = {
   features?: {
     ai?: boolean;
     mcp?: boolean;
+    cursor?: boolean;
     designerTools?: boolean;
   };
 };
@@ -86,11 +89,16 @@ export function getProcessCapabilities({
   return {
     ai: features?.ai === true && environment !== "sandbox",
     mcp: features?.mcp === true,
+    cursor: features?.cursor === true,
     designerTools: features?.designerTools !== false,
     availableStoreTypes,
     creatableStoreTypes: availableStoreTypes.filter((storageType) => storageType !== "bundled"),
     storeAdministration: hasNonBundledAdminStorageType(adminStoreFactoryRegister),
   };
+}
+
+export function isCursorBackendAllowed(snapshot: ProcessCapabilities): boolean {
+  return snapshot.ai === true && snapshot.cursor === true && snapshot.mcp === true;
 }
 
 export function assertProcessCapability(

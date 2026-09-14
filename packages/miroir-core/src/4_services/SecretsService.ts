@@ -53,14 +53,16 @@ export const AI_SECRET_IMPORT_ALIASES = {
   anthropic: { env: "AI_ANTHROPIC_KEY", name: "aiAnthropicKey" },
   google: { env: "AI_GOOGLE_KEY", name: "aiGoogleKey" },
   github: { env: "AI_GITHUB_TOKEN", name: "aiGithubToken" },
+  cursor: { env: "CURSOR_API_KEY", name: "aiCursorKey" },
 } as const;
 
 export type AiSecretProvider = keyof typeof AI_SECRET_IMPORT_ALIASES;
 
 /**
- * Import set = `--secret` / `MIROIR_SECRET_*` (already in `parsed.secrets`) plus the four
- * D6 AI key env aliases. `AI_PROVIDER_TYPE` / `AI_MODEL` / `LIVE_SPOTIFY_*` are not aliases.
- * Existing parsed names win over an AI env alias for the same secret name.
+ * Import set = `--secret` / `MIROIR_SECRET_*` (already in `parsed.secrets`) plus the five
+ * D6 AI key env aliases (four token providers + Cursor import-only). `AI_PROVIDER_TYPE` /
+ * `AI_MODEL` / `LIVE_SPOTIFY_*` are not aliases. Existing parsed names win over an AI env
+ * alias for the same secret name.
  */
 export function assembleSecretImportSet(
   parsedSecrets: Record<string, string>,

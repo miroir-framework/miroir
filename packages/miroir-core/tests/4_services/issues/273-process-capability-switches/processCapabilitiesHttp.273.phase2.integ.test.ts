@@ -16,6 +16,7 @@ const runThis =
 const snapshot: ProcessCapabilities = {
   ai: true,
   mcp: true,
+  cursor: false,
   designerTools: true,
   availableStoreTypes: ["indexedDb"],
   creatableStoreTypes: ["indexedDb"],

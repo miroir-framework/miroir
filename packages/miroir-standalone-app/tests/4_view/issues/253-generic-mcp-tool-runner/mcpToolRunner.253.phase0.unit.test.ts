@@ -327,8 +327,10 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       "/api/copilotkit",
       "/mcp",
       "/auth",
+      "/capabilities",
     ]);
     expect(proxyKeys).toContain("/mcp");
+    expect(proxyKeys).toContain("/capabilities");
   });
 
   it("server.ts MCP HTTP mount is gated by shouldMountMcpHttp", () => {
