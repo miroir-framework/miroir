@@ -62,6 +62,7 @@ const launchPageParams = {
   deploymentUuid: deployment_Library.uuid,
   instanceUuid: undefined,
   reportUuid: LAUNCH_PAD_REPORT_UUID,
+  playlistId: "pl-274",
 };
 
 const currentUseParams = {
@@ -70,6 +71,7 @@ const currentUseParams = {
   instanceUuid: undefined as string | undefined,
   reportUuid: LAUNCH_PAD_REPORT_UUID,
   application: LIBRARY_APPLICATION_UUID,
+  playlistId: "pl-274",
 };
 
 const { navigateMock } = vi.hoisted(() => ({
@@ -199,6 +201,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 expect(pageParams.deploymentUuid).toEqual(LIBRARY_DEPLOYMENT_UUID);
                 expect(pageParams.applicationSection).toEqual("data");
                 expect(pageParams.reportUuid).toEqual(MULTISTEP_REPORT_UUID);
+                expect(pageParams.playlistId).toEqual("pl-274");
               },
             },
             "open-as-route": {
@@ -210,7 +213,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 await waitAfterUserInteraction();
                 expect(navigateMock).toHaveBeenCalled();
                 const navigatedTo = String(navigateMock.mock.calls[0]?.[0] ?? "");
-                expect(navigatedTo).toEqual(expectedTracerReportUrl());
+                expect(navigatedTo).toEqual(`${expectedTracerReportUrl()}&playlistId=pl-274`);
                 const search = navigatedTo.includes("?")
                   ? new URLSearchParams(navigatedTo.slice(navigatedTo.indexOf("?") + 1))
                   : new URLSearchParams();
@@ -239,6 +242,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 expect(pageParams.applicationSection).toEqual("data");
                 expect(pageParams.reportUuid).toEqual(MULTISTEP_REPORT_UUID);
                 expect(pageParams.instanceUuid).toEqual(FRANCE_COUNTRY_UUID);
+                expect(pageParams.playlistId).toEqual("pl-274");
               },
             },
             "reportUrl-has-no-step": {
@@ -281,6 +285,42 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                   expect((country as any)?.["iso3166-1Alpha-2"]).toEqual("TL");
                   expect(country?.uuid).toEqual(LIBRARY_TEST_TRACER_COUNTRY_UUID);
                 });
+                expect(navigateMock.mock.calls.some((call) => call[0] === -1)).toBe(false);
+              },
+            },
+            "modal-escape-confirms-cancel": {
+              props: launchPadProps,
+              tests: async (_expect: ExpectStatic, container: Container) => {
+                await waitForLaunchPad();
+                fireEvent.click(screen.getByRole("button", { name: "Open tracer as modal" }));
+                await waitAfterUserInteraction();
+                const dialog = await waitFor(() => screen.getByRole("dialog"));
+                expect(within(dialog).getByTestId("multistep-report-host")).toBeTruthy();
+                await typeStepOneIn(container, "Testland", "TL");
+
+                fireEvent.keyDown(dialog, { key: "Escape", code: "Escape" });
+                await waitAfterUserInteraction();
+                const confirm = await waitFor(() => screen.getByTestId("open-report-cancel-confirm"));
+                expect(within(confirm).getByText("Cancel this process?")).toBeTruthy();
+                fireEvent.click(within(confirm).getByRole("button", { name: "Keep editing" }));
+                await waitAfterUserInteraction();
+                expect(screen.queryByTestId("open-report-cancel-confirm")).toBeNull();
+                expect(within(screen.getByTestId("open-report-dialog")).getByTestId("multistep-report-host")).toBeTruthy();
+
+                fireEvent.keyDown(screen.getByTestId("open-report-dialog"), {
+                  key: "Escape",
+                  code: "Escape",
+                });
+                await waitAfterUserInteraction();
+                const confirmAgain = await waitFor(() =>
+                  screen.getByTestId("open-report-cancel-confirm"),
+                );
+                fireEvent.click(within(confirmAgain).getByRole("button", { name: "Confirm cancel" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  expect(screen.queryByTestId("open-report-dialog")).toBeNull();
+                });
+                expect(getLibraryCountryFromJzodEditorTestCache()).toBeUndefined();
               },
             },
           },

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from "react";
-import type { Params } from "react-router-dom";
+import { useNavigate, type Params } from "react-router-dom";
 
 import {
   Action2Error,
@@ -126,8 +126,7 @@ export function collectStepBagKeys(
     );
   }
   if (section.type === "inputReportSection") {
-    const prefix = section.definition?.inputPrefix;
-    return typeof prefix === "string" && prefix.length > 0 ? [prefix] : [];
+    return [inputReportSectionBagKey(section, path)];
   }
   if (section.type === "objectInstanceReportSection") {
     return [path.join("_")];
@@ -137,6 +136,58 @@ export function collectStepBagKeys(
 
 export function collectInputPrefixes(section: ReportSection | undefined): string[] {
   return collectStepBagKeys(section);
+}
+
+export function inputReportSectionBagKey(
+  section: ReportSection,
+  path: (string | number)[],
+): string {
+  const prefix = section.type === "inputReportSection" ? section.definition?.inputPrefix : undefined;
+  if (typeof prefix === "string" && prefix.length > 0) {
+    return prefix;
+  }
+  return `${path.join("_")}_inputMLSchema`;
+}
+
+export function isMultistepListRoot(section: ReportSection | undefined): boolean {
+  return section?.type === "list" && Array.isArray(section.definition);
+}
+
+export function multistepViewerReportSectionPath(
+  rootSection: ReportSection | undefined,
+  stepIndex: number,
+  isViewerPaging: boolean,
+): (string | number)[] {
+  if (!isViewerPaging) {
+    return ["definition", "section"];
+  }
+  if (isMultistepListRoot(rootSection)) {
+    return ["definition", "section", "definition", stepIndex];
+  }
+  return ["definition", "section"];
+}
+
+export function allGatedStepsAllowFinish(
+  steps: ReportSection[],
+  stepBag: Record<string, any>,
+  modelEnvironment: MiroirModelEnvironment,
+  listRoot: boolean,
+): boolean {
+  if (steps.length === 0) {
+    return false;
+  }
+  return steps.every((section, index) => {
+    const path = listRoot
+      ? (["definition", "section", "definition", index] as (string | number)[])
+      : (["definition", "section"] as (string | number)[]);
+    return currentStepAllowsNext(
+      section,
+      stepBag,
+      modelEnvironment,
+      path.join("_"),
+      inputReportSectionBagKey(section, path),
+    );
+  });
 }
 
 export function extractStepBagFromFormikValues(
@@ -195,6 +246,7 @@ export function currentStepAllowsNext(
   stepBag: Record<string, any>,
   modelEnvironment: MiroirModelEnvironment,
   instanceBagKey?: string,
+  inputBagKey?: string,
 ): boolean {
   if (!section) {
     return false;
@@ -202,8 +254,10 @@ export function currentStepAllowsNext(
   if (section.type === "inputReportSection") {
     const prefix = section.definition?.inputPrefix;
     const schema = section.definition?.inputMLSchema as JzodObject | undefined;
-    const value =
-      (typeof prefix === "string" ? stepBag[prefix] : undefined) ?? {};
+    const key =
+      inputBagKey ??
+      (typeof prefix === "string" && prefix.length > 0 ? prefix : undefined);
+    const value = (typeof key === "string" ? stepBag[key] : undefined) ?? {};
     return objectSchemaAllowsNext(schema, value as Record<string, unknown>, modelEnvironment);
   }
   if (section.type === "objectInstanceReportSection") {
@@ -233,20 +287,25 @@ export type MultistepReportHostProps = {
 export function MultistepReportHost(props: MultistepReportHostProps) {
   const context = useMiroirContextService();
   const domainController = useDomainControllerService();
+  const navigate = useNavigate();
   const modelEnvironment = useCurrentModelEnvironment(
     props.application,
     props.applicationDeploymentMap,
   );
   const generalEditMode = context.viewParams.generalEditMode;
   const steps = useMemo(() => getMultistepChildSections(props.report), [props.report]);
+  const rootSection = props.report.definition?.section;
+  const listRoot = isMultistepListRoot(rootSection);
   const stepBagKeys = useMemo(
-    () => collectStepBagKeys(props.report.definition?.section),
-    [props.report],
+    () => collectStepBagKeys(rootSection),
+    [rootSection],
   );
 
   const [stepIndex, setStepIndex] = useState(0);
   const [stepBag, setStepBag] = useState<Record<string, any>>({});
   const stepBagRef = useRef<Record<string, any>>(stepBag);
+  const finishInFlightRef = useRef(false);
+  const [finishInFlight, setFinishInFlight] = useState(false);
   const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [finishError, setFinishError] = useState<string | undefined>(undefined);
@@ -267,11 +326,8 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     props.report.name;
 
   const reportSectionPath = useMemo<(string | number)[]>(
-    () =>
-      isViewerPaging
-        ? ["definition", "section", "definition", stepIndex]
-        : ["definition", "section"],
-    [isViewerPaging, stepIndex],
+    () => multistepViewerReportSectionPath(rootSection, stepIndex, isViewerPaging),
+    [isViewerPaging, rootSection, stepIndex],
   );
 
   const mergeStepBagFromFormikValues = useCallback(
@@ -309,7 +365,15 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
 
   const handleNext = useCallback(() => {
     const liveBag = stepBagRef.current;
-    if (!currentStepAllowsNext(currentStep, liveBag, modelEnvironment, reportSectionPath.join("_"))) {
+    if (
+      !currentStepAllowsNext(
+        currentStep,
+        liveBag,
+        modelEnvironment,
+        reportSectionPath.join("_"),
+        currentStep ? inputReportSectionBagKey(currentStep, reportSectionPath) : undefined,
+      )
+    ) {
       return;
     }
     setStepBag(liveBag);
@@ -317,7 +381,19 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     setStepIndex((current) => Math.min(lastIndex, current + 1));
   }, [currentStep, lastIndex, modelEnvironment, reportSectionPath]);
 
+  const leaveProcess = useCallback(() => {
+    setDismissed(true);
+    if (props.onDismissed) {
+      props.onDismissed();
+      return;
+    }
+    navigate(-1);
+  }, [navigate, props.onDismissed]);
+
   const handleFinish = useCallback(async () => {
+    if (finishInFlightRef.current) {
+      return;
+    }
     const sequence = props.report.definition?.compositeActionSequence;
     if (!sequence) {
       setFinishError("This report has no Finish sequence.");
@@ -325,35 +401,51 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     }
     const liveBag = stepBagRef.current;
     setStepBag(liveBag);
-    const result = await runMultistepFinish({
-      sequence,
-      stepBag: liveBag,
-      application: props.application,
-      applicationDeploymentMap: props.applicationDeploymentMap,
-      modelEnvironment,
-      domainController,
-    });
-    if (result instanceof Action2Error) {
-      setFinishError(result.errorMessage ?? "Finish failed.");
+    if (!allGatedStepsAllowFinish(steps, liveBag, modelEnvironment, listRoot)) {
+      setFinishError("Required fields are missing or invalid.");
       return;
     }
-    setDismissed(true);
-    props.onDismissed?.();
+    finishInFlightRef.current = true;
+    setFinishInFlight(true);
+    setFinishError(undefined);
+    let left = false;
+    try {
+      const result = await runMultistepFinish({
+        sequence,
+        stepBag: liveBag,
+        application: props.application,
+        applicationDeploymentMap: props.applicationDeploymentMap,
+        modelEnvironment,
+        domainController,
+      });
+      if (result instanceof Action2Error) {
+        setFinishError(result.errorMessage ?? "Finish failed.");
+        return;
+      }
+      left = true;
+      leaveProcess();
+    } finally {
+      finishInFlightRef.current = false;
+      if (!left) {
+        setFinishInFlight(false);
+      }
+    }
   }, [
     domainController,
+    leaveProcess,
+    listRoot,
     modelEnvironment,
     props.application,
     props.applicationDeploymentMap,
-    props.onDismissed,
     props.report.definition?.compositeActionSequence,
+    steps,
   ]);
 
   const handleConfirmCancel = useCallback(() => {
     setCancelConfirmOpen(false);
     setStepBag({});
-    setDismissed(true);
-    props.onDismissed?.();
-  }, [props.onDismissed]);
+    leaveProcess();
+  }, [leaveProcess]);
 
   if (dismissed) {
     return null;
@@ -391,7 +483,12 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
                 Next
               </ThemedStyledButton>
             ) : (
-              <ThemedStyledButton type="button" variant="contained" onClick={handleFinish}>
+              <ThemedStyledButton
+                type="button"
+                variant="contained"
+                disabled={finishInFlight}
+                onClick={handleFinish}
+              >
                 Finish
               </ThemedStyledButton>
             )}

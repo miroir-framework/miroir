@@ -297,12 +297,13 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
         applicationSection: props.chosenApplicationSection,
         deploymentUuid: props.deploymentUuid,
       };
+      const callerPageParams = props.paramsAsdomainElements as Record<string, unknown>;
       if (rowOpenReport.openAs === "route") {
-        navigate(openReportHref(rowOpenReport, pageContext, instanceUuid));
+        navigate(openReportHref(rowOpenReport, pageContext, instanceUuid, callerPageParams));
         return;
       }
       setOpenReportModalParams(
-        resolveOpenReportPageParams(rowOpenReport, pageContext, instanceUuid),
+        resolveOpenReportPageParams(rowOpenReport, pageContext, instanceUuid, callerPageParams),
       );
     },
     [
@@ -310,6 +311,7 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
       props.application,
       props.chosenApplicationSection,
       props.deploymentUuid,
+      props.paramsAsdomainElements,
       rowOpenReport,
     ],
   );

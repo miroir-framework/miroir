@@ -99,6 +99,7 @@ function OpenReportSectionView(props: {
   application: Uuid;
   applicationSection: ApplicationSection;
   deploymentUuid: Uuid;
+  callerPageParams?: Params<ReportUrlParamKeys>;
 }) {
   const navigate = useNavigate();
   const [modalOpen, setModalOpen] = useState(false);
@@ -107,7 +108,12 @@ function OpenReportSectionView(props: {
     applicationSection: props.applicationSection,
     deploymentUuid: props.deploymentUuid,
   };
-  const pageParams = resolveOpenReportPageParams(props.spec, pageContext);
+  const pageParams = resolveOpenReportPageParams(
+    props.spec,
+    pageContext,
+    undefined,
+    props.callerPageParams,
+  );
 
   return (
     <>
@@ -117,7 +123,7 @@ function OpenReportSectionView(props: {
         data-testid={`open-report-section-${props.spec.openAs}`}
         onClick={() => {
           if (props.spec.openAs === "route") {
-            navigate(openReportHref(props.spec, pageContext));
+            navigate(openReportHref(props.spec, pageContext, undefined, props.callerPageParams));
             return;
           }
           setModalOpen(true);
@@ -664,6 +670,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
             application={props.application}
             applicationSection={props.applicationSection}
             deploymentUuid={props.deploymentUuid}
+            callerPageParams={props.paramsAsdomainElements as Params<ReportUrlParamKeys>}
           />
         )}
         {reportSectionDefinitionFromFormik?.type == "inputReportSection" && (

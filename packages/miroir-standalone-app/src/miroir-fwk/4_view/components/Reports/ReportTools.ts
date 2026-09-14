@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import {
   entityMLSchema,
   getApplicationSection,
@@ -182,7 +183,7 @@ export const reportSectionsFormValue = (
         ? reportData?.[fetchedDataReference]
         : reportSection.type === "objectInstanceReportSection"
           ? {
-              uuid: "c9e2a4b1-7d5f-4e8c-a1b3-6f0d8e4c2a91",
+              uuid: uuidv4(),
               parentUuid: reportSection.definition.parentUuid,
               name: "",
             }

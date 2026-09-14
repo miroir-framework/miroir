@@ -273,6 +273,11 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 expect(screen.queryByRole("button", { name: "Next" })).toBeNull();
 
                 fireEvent.click(screen.getByRole("button", { name: "Finish" }));
+                fireEvent.click(screen.getByRole("button", { name: "Finish" }));
+                const finishButton = screen.queryByRole("button", { name: "Finish" });
+                if (finishButton) {
+                  expect(finishButton).toBeDisabled();
+                }
                 await waitAfterUserInteraction();
                 await waitFor(() => {
                   const country = getLibraryCountryFromJzodEditorTestCache();
@@ -281,6 +286,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                   expect((country as any)?.["iso3166-1Alpha-2"]).toEqual("TL");
                   expect(country?.uuid).toEqual(LIBRARY_TEST_TRACER_COUNTRY_UUID);
                 });
+                expect(navigateMock).toHaveBeenCalledWith(-1);
               },
             },
             "next-invalid-required": {
@@ -649,6 +655,44 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                   expect(country?.name).toEqual("Hoistland");
                   expect(country?.uuid).toEqual(LIBRARY_TEST_INSTANCE_COUNTRY_UUID);
                 });
+              },
+            },
+            "leaf-finish-validates-required": {
+              props: {
+                application: selfApplicationLibrary.uuid,
+                applicationSection: "data",
+                deploymentUuid: deployment_Library.uuid,
+                pageParams: tracerPageParams,
+                reportDefinition: reportMultistepCountryCreate as any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              },
+              tests: async (expect: ExpectStatic, container: Container) => {
+                await waitForHost();
+                const leaf = cloneFrozenTracer();
+                leaf.definition.section = leaf.definition.section.definition[0];
+                upsertLibraryReportInJzodEditorTestCache(leaf);
+                await waitFor(() => {
+                  expect(screen.getByRole("button", { name: "Finish" })).toBeTruthy();
+                  expect(screen.queryByRole("button", { name: "Next" })).toBeNull();
+                });
+                expectStepOneInputs(container, true);
+                fireEvent.click(screen.getByRole("button", { name: "Finish" }));
+                await waitAfterUserInteraction();
+                expect(screen.getByTestId("multistep-finish-error")).toBeTruthy();
+                expect(screen.getByRole("button", { name: "Finish" })).toBeTruthy();
+                expect(getLibraryCountryFromJzodEditorTestCache()).toBeUndefined();
+                expect(navigateMock).not.toHaveBeenCalledWith(-1);
+
+                await typeStepOne(container, "Testland", "TL");
+                fireEvent.click(screen.getByRole("button", { name: "Finish" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  const country = getLibraryCountryFromJzodEditorTestCache();
+                  expect(country).toBeTruthy();
+                  expect(country?.name).toEqual("Testland");
+                  expect(country?.uuid).toEqual(LIBRARY_TEST_TRACER_COUNTRY_UUID);
+                });
+                expect(navigateMock).toHaveBeenCalledWith(-1);
               },
             },
             "query-failure-keeps-bag": {

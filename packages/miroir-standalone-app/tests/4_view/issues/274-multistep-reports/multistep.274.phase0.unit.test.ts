@@ -15,6 +15,17 @@ import {
   reportSectionsFormSchema,
   reportSectionsFormValue,
 } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportTools.js";
+import {
+  allGatedStepsAllowFinish,
+  collectStepBagKeys,
+  currentStepAllowsNext,
+  inputReportSectionBagKey,
+  multistepViewerReportSectionPath,
+} from "../../../../src/miroir-fwk/4_view/components/Reports/MultistepReportHost.js";
+import {
+  openReportHref,
+  resolveOpenReportPageParams,
+} from "../../../../src/miroir-fwk/4_view/components/Reports/OpenReportLaunch.js";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -261,5 +272,131 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     );
 
     expect(source).toMatch(/<Formik[\s\S]*?onSubmit=\{\(\) => \{\}\}/);
+  });
+
+  const requiredNameInputSection: ReportSection = {
+    type: "inputReportSection",
+    definition: {
+      inputMLSchema: {
+        type: "object",
+        definition: {
+          name: { type: "string" },
+        },
+      },
+    },
+  };
+
+  it("collectStepBagKeys uses the generated input path when inputPrefix is omitted", () => {
+    expect(collectStepBagKeys(requiredNameInputSection)).toEqual([
+      "definition_section_inputMLSchema",
+    ]);
+    expect(inputReportSectionBagKey(requiredNameInputSection, ["definition", "section"])).toEqual(
+      "definition_section_inputMLSchema",
+    );
+    expect(
+      collectStepBagKeys({
+        type: "inputReportSection",
+        definition: {
+          inputPrefix: "stepOne",
+          inputMLSchema: { type: "object", definition: {} },
+        },
+      }),
+    ).toEqual(["stepOne"]);
+  });
+
+  it("multistepViewerReportSectionPath uses the section itself for a leaf root", () => {
+    expect(multistepViewerReportSectionPath(requiredNameInputSection, 0, true)).toEqual([
+      "definition",
+      "section",
+    ]);
+    expect(
+      multistepViewerReportSectionPath(
+        { type: "list", definition: [requiredNameInputSection, requiredNameInputSection] },
+        1,
+        true,
+      ),
+    ).toEqual(["definition", "section", "definition", 1]);
+  });
+
+  it("allGatedStepsAllowFinish rejects an empty required input bag key", () => {
+    const fallbackKey = inputReportSectionBagKey(requiredNameInputSection, ["definition", "section"]);
+    expect(
+      currentStepAllowsNext(
+        requiredNameInputSection,
+        {},
+        defaultMiroirModelEnvironment,
+        undefined,
+        fallbackKey,
+      ),
+    ).toBe(false);
+    expect(
+      allGatedStepsAllowFinish(
+        [requiredNameInputSection],
+        {},
+        defaultMiroirModelEnvironment,
+        false,
+      ),
+    ).toBe(false);
+    expect(
+      allGatedStepsAllowFinish(
+        [requiredNameInputSection],
+        { [fallbackKey]: { name: "Testland" } },
+        defaultMiroirModelEnvironment,
+        false,
+      ),
+    ).toBe(true);
+  });
+
+  it("resolveOpenReportPageParams keeps caller extras such as playlistId", () => {
+    const spec = {
+      label: "Open",
+      reportUuid: "00000000-0000-4000-8000-000000000010",
+      openAs: "route" as const,
+    };
+    const pageContext = {
+      application: "00000000-0000-4000-8000-000000000011",
+      applicationSection: "data" as const,
+      deploymentUuid: "00000000-0000-4000-8000-000000000012",
+    };
+    const resolved = resolveOpenReportPageParams(spec, pageContext, undefined, {
+      application: "ignored-caller-application",
+      playlistId: "pl-274",
+    });
+    expect(resolved.playlistId).toEqual("pl-274");
+    expect(resolved.application).toEqual(pageContext.application);
+    expect(resolved.reportUuid).toEqual(spec.reportUuid);
+    expect(
+      openReportHref(spec, pageContext, undefined, { playlistId: "pl-274" }),
+    ).toContain("playlistId=pl-274");
+  });
+
+  it("reportSectionsFormValue mints a unique uuid per draft object-instance section", () => {
+    const parentUuid = "00000000-0000-4000-8000-000000000013";
+    const result = reportSectionsFormValue(
+      {},
+      {
+        type: "list",
+        definition: [
+          { type: "objectInstanceReportSection", definition: { parentUuid } },
+          { type: "objectInstanceReportSection", definition: { parentUuid } },
+        ],
+      },
+      ["definition", "section"],
+      undefined,
+      undefined,
+      undefined,
+      defaultMiroirModelEnvironment,
+    );
+    const first = result.definition_section_definition_0;
+    const second = result.definition_section_definition_1;
+    expect(first.uuid).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
+    expect(second.uuid).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+    );
+    expect(first.uuid).not.toEqual("c9e2a4b1-7d5f-4e8c-a1b3-6f0d8e4c2a91");
+    expect(second.uuid).not.toEqual("c9e2a4b1-7d5f-4e8c-a1b3-6f0d8e4c2a91");
+    expect(first.uuid).not.toEqual(second.uuid);
   });
 });
