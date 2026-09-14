@@ -87,6 +87,7 @@ interface GlideDataGridComponentProps {
   onRowEdit?: (row: TableComponentRow, event?: any) => void;
   onRowDelete?: (row: TableComponentRow, event?: any) => void;
   onRowDuplicate?: (row: TableComponentRow, event?: any) => void;
+  onRowOpenReport?: (row: TableComponentRow, event?: any) => void;
   onDisplayedPageRowsChange?: (rows: TableComponentRow[]) => void;
 }
 
@@ -108,6 +109,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
   onRowEdit,
   onRowDelete,
   onRowDuplicate,
+  onRowOpenReport,
   onDisplayedPageRowsChange,
 }) => {
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -567,6 +569,12 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
     }
   }, [onRowDelete]);
 
+  const handleToolsOpen = useCallback((row: TableComponentRow, event?: any) => {
+    if (onRowOpenReport) {
+      onRowOpenReport(row, event);
+    }
+  }, [onRowOpenReport]);
+
   // Get cell content
   const getCellContent = useCallback(
     ([col, row]: Item): GridCell => {
@@ -591,6 +599,7 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
           onEdit: handleToolsEdit,
           onDuplicate: handleToolsDuplicate,
           onDelete: handleToolsDelete,
+          onOpen: onRowOpenReport ? handleToolsOpen : undefined,
         } as ToolsCellData;
 
         return {
@@ -680,6 +689,8 @@ export const GlideDataGridComponent: React.FC<GlideDataGridComponentProps> = ({
       handleToolsEdit,
       handleToolsDuplicate,
       handleToolsDelete,
+      handleToolsOpen,
+      onRowOpenReport,
       toolsColumnDefinition,
     ],
   );

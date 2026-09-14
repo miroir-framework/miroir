@@ -1,4 +1,4 @@
-import { ContentCopyIcon, CreateIcon, DeleteIcon } from '../Themes/MaterialSymbolWrappers';
+import { ContentCopyIcon, CreateIcon, DeleteIcon, OpenInNew } from '../Themes/MaterialSymbolWrappers';
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import React from 'react';
 
@@ -19,6 +19,56 @@ export interface BaseActionButtonProps {
   size?: 'small' | 'medium';
   onClick?: (row: TableComponentRow, event?: any) => void;
 }
+
+export const OpenActionButton: React.FC<BaseActionButtonProps & { instanceUuid?: string }> = ({
+  row,
+  variant = 'glide',
+  size = 'small',
+  onClick,
+  instanceUuid,
+}) => {
+  const { currentTheme } = useMiroirTheme();
+  const resolvedInstanceUuid = instanceUuid ?? (row.rawValue as any)?.uuid;
+
+  const handleClick = (event?: any) => {
+    event?.stopPropagation?.();
+    if (onClick) {
+      onClick(row, event);
+    }
+  };
+
+  if (variant === 'ag-grid') {
+    return (
+      <button
+        onClick={handleClick}
+        style={{
+          border: 'none',
+          background: 'transparent',
+          cursor: 'pointer',
+          padding: '2px',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+        title="Open"
+        data-testid="row-open-report"
+        data-instance-uuid={resolvedInstanceUuid}
+      >
+        <OpenInNew style={{ fontSize: '16px', color: currentTheme.colors.text }} />
+      </button>
+    );
+  }
+
+  return (
+    <ThemedSmallIconButton
+      onClick={handleClick}
+      title="Open"
+      data-testid="row-open-report"
+      data-instance-uuid={resolvedInstanceUuid}
+    >
+      <OpenInNew />
+    </ThemedSmallIconButton>
+  );
+};
 
 // Edit Button Component
 export const EditActionButton: React.FC<BaseActionButtonProps> = ({

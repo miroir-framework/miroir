@@ -65,7 +65,8 @@
         "type": "enum",
         "definition": [
           "list",
-          "grid"
+          "grid",
+          "multistep"
         ],
         "optional": true,
         "tag": {

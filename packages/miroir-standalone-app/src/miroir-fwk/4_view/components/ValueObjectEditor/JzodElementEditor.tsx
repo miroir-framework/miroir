@@ -1470,8 +1470,13 @@ export function JzodElementEditor(props: JzodElementEditorProps): JSX.Element {
                             boxSizing: "border-box",
                           }}
                           {...formik.getFieldProps(formikRootLessListKey)}
-                          // value={currentValue} // TODO: get other formik.getFieldProps: name, value, onChange, onBlur
-                          // name={formikRootLessListKey}
+                          onChange={(e) => {
+                            formik.setFieldValue(formikRootLessListKey, e.target.value);
+                            const callback = props.onChangeVector?.[props.rootLessListKey];
+                            if (callback) {
+                              callback(e.target.value, props.rootLessListKey);
+                            }
+                          }}
                           error={hasPathError}
                         />
                       )

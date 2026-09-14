@@ -33,6 +33,9 @@ export { default as reportUserDetails } from "./assets/library_model/3f2baa83-3e
 export { default as reportLibraryHome } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/9c0cdb97-9537-4ee2-8053-a6ece3e0afe8.json" with { type: "json" };
 export { default as reportLendingHistoryItemDetails } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c.json" with { type: "json" };
 export { default as reportLendingHistoryItemList } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/cee26a1e-be58-497c-9d15-fa6832787907.json" with { type: "json" };
+export { default as reportMultistepCountryCreate } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/d2b2fbbd-6844-4422-8412-4e3c303296bc.json" with { type: "json" };
+export { default as reportMultistepCountryInstance } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61.json" with { type: "json" };
+export { default as reportMultistepLaunchPad } from "./assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/b6d9e2a1-4c58-4f70-8a13-9e2f0c5d7b44.json" with { type: "json" };
 
 // Library Model - Endpoints
 export { default as lendingEndpoint } from "./assets/library_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/212f2784-5b68-43b2-8ee0-89b1c6fdd0de.json" with { type: "json" };
@@ -90,6 +93,7 @@ export { default as miroirTest_runner_lend_document } from "./assets/library_mod
 export { default as miroirTest_runner_return_document } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/a1b2c3d4-e5f6-4789-a012-3456789abcde.json" with { type: "json" };
 export { default as testConfiguration_libraryDocumentSeed } from "./assets/library_model/675ccd46-7dd3-400b-a2bd-1319c39e11da/d669558c-7cda-4037-81bf-0b9a71fbcb94.json" with { type: "json" };
 export { default as miroirTest_runner_mcp_lend_document } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/a6fc85c8-83ad-4c8f-a6e0-6f9d17713159.json" with { type: "json" };
+export { default as miroirTest_multistepReports_274 } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/9931f827-a3ce-435f-bf07-4dac430d81d1.json" with { type: "json" };
 
 export {
   lendDocumentRunner,

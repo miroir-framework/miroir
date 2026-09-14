@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 // import { SubmitHandler } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from "zod";
@@ -78,9 +79,20 @@ import { ThemedBox, ThemedButton, ThemedSpan } from "../Themes/index.js";
 import { ListTransformerPanel } from "./ListTransformerPanel.js";
 import { ListTransformerToggle } from "./ListSectionTransformerControls.js";
 import {
+  OpenReportModal,
+  openReportHref,
+  resolveOpenReportPageParams,
+  type OpenReportSpec,
+} from "./OpenReportLaunch.js";
+import {
   LIST_TRANSFORMER_PAGE_SIZE,
   sliceInstancesToPage,
 } from "./listDisplayByTransformer.js";
+
+const ReportDisplay = lazy(async () => {
+  const module = await import("../../routes/ReportDisplay.js");
+  return { default: module.ReportDisplay };
+});
 
 type ListGridSizingSnapshot = {
   pageSize?: number;
@@ -265,7 +277,44 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
     props.chosenApplicationSection,
   ]);
     
-  const currentReportTargetEntity: Entity | undefined = entities.find((e) => e.uuid === objectListReportSection?.definition.parentUuid);
+  const currentReportTargetEntity: Entity | undefined =
+    entities.find((e) => e.uuid === objectListReportSection?.definition.parentUuid) ??
+    currentModel.entities.find((e) => e.uuid === objectListReportSection?.definition.parentUuid);
+
+  const navigate = useNavigate();
+  const rowOpenReport = objectListReportSection?.definition?.openReport as OpenReportSpec | undefined;
+  const [openReportModalParams, setOpenReportModalParams] = useState<
+    ReturnType<typeof resolveOpenReportPageParams> | undefined
+  >(undefined);
+
+  const handleRowOpenReport = useCallback(
+    (_row: { rawValue: EntityInstance }, instanceUuid: string) => {
+      if (!rowOpenReport) {
+        return;
+      }
+      const pageContext = {
+        application: props.application,
+        applicationSection: props.chosenApplicationSection,
+        deploymentUuid: props.deploymentUuid,
+      };
+      const callerPageParams = props.paramsAsdomainElements as Record<string, unknown>;
+      if (rowOpenReport.openAs === "route") {
+        navigate(openReportHref(rowOpenReport, pageContext, instanceUuid, callerPageParams));
+        return;
+      }
+      setOpenReportModalParams(
+        resolveOpenReportPageParams(rowOpenReport, pageContext, instanceUuid, callerPageParams),
+      );
+    },
+    [
+      navigate,
+      props.application,
+      props.chosenApplicationSection,
+      props.deploymentUuid,
+      props.paramsAsdomainElements,
+      rowOpenReport,
+    ],
+  );
 
   const displayedInstances: EntityInstancesUuidIndex = useMemo(() => {
     if (!currentReportTargetEntity || !instancesToDisplay) {
@@ -906,12 +955,28 @@ export const ReportSectionListDisplay: React.FC<ReportComponentProps> = (
                   }
                   onRowEdit={onEditFormObject}
                   onRowDelete={onDeleteFormObject}
+                  rowOpenReport={rowOpenReport}
+                  onRowOpenReport={rowOpenReport ? handleRowOpenReport : undefined}
                   sortByAttribute={objectListReportSection.definition?.sortByAttribute}
                   paramsAsdomainElements={props.paramsAsdomainElements as any} // TODO: which is right? DomainElementObject or record<string, any>?
                   //
                   addObjectdialogFormIsOpen={addObjectdialogFormIsOpen}
                   setAddObjectdialogFormIsOpen={setAddObjectdialogFormIsOpenCallback}
                 ></EntityInstanceGrid>
+                <OpenReportModal
+                  open={!!openReportModalParams}
+                  onClose={() => setOpenReportModalParams(undefined)}
+                  title={rowOpenReport?.label}
+                >
+                  {openReportModalParams ? (
+                    <Suspense fallback={null}>
+                      <ReportDisplay
+                        pageParams={openReportModalParams}
+                        onDismissed={() => setOpenReportModalParams(undefined)}
+                      />
+                    </Suspense>
+                  ) : null}
+                </OpenReportModal>
                 {transformerPanelEnabled ? (
                   <ListTransformerPanel
                     instancesToDisplay={instancesForTransformerPanel}

@@ -8,7 +8,8 @@ import { TableComponentRow } from './EntityInstanceGridInterface.js';
 import {
   DeleteActionButton,
   DuplicateActionButton,
-  EditActionButton
+  EditActionButton,
+  OpenActionButton,
 } from './TableActionButtonComponents.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtons");
@@ -29,6 +30,8 @@ export interface TableActionButtonsProps {
   onEdit?: (row: TableComponentRow) => void;
   onDuplicate?: (row: TableComponentRow) => void;
   onDelete?: (row: TableComponentRow) => void;
+  onOpen?: (row: TableComponentRow) => void;
+  instanceUuid?: string;
   size?: 'small' | 'medium';
   variant?: 'ag-grid' | 'glide';
 }
@@ -38,6 +41,8 @@ export const TableActionButtons: React.FC<TableActionButtonsProps> = memo(({
   onEdit,
   onDuplicate,
   onDelete,
+  onOpen,
+  instanceUuid,
   size = 'small',
   variant = 'glide',
 }) => {
@@ -45,6 +50,15 @@ export const TableActionButtons: React.FC<TableActionButtonsProps> = memo(({
     // For AG-Grid, use simple container
     return (
       <span style={{ display: 'flex', gap: '4px', alignItems: 'center', justifyContent: 'center' }}>
+        {onOpen && (
+          <OpenActionButton
+            row={row}
+            onClick={onOpen}
+            instanceUuid={instanceUuid}
+            variant="ag-grid"
+            size={size}
+          />
+        )}
         {onEdit && (
           <EditActionButton
             row={row}
@@ -76,6 +90,15 @@ export const TableActionButtons: React.FC<TableActionButtonsProps> = memo(({
   // For Glide and other cases, use styled MUI components
   return (
     <ActionButtonsContainer>
+      {onOpen && (
+        <OpenActionButton
+          row={row}
+          onClick={onOpen}
+          instanceUuid={instanceUuid}
+          variant="glide"
+          size={size}
+        />
+      )}
       {onEdit && (
         <EditActionButton
           row={row}
