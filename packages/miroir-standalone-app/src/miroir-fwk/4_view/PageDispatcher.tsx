@@ -45,20 +45,12 @@ const LoginPage            = React.lazy(() => import("./routes/LoginPage.js").th
 const TransformerBuilderPage = React.lazy(() => import("./routes/TransformerBuilderPage.js").then(m => ({ default: m.TransformerBuilderPage })));
 const MiroirEventsPage     = React.lazy(() => import("./pages/MiroirEventsPage.js").then(m => ({ default: m.MiroirEventsPage })));
 const ErrorLogsPageDEFUNCT = React.lazy(() => import("./ErrorLogsPageDEFUNCT.js").then(m => ({ default: m.ErrorLogsPageDEFUNCT })));
-import type { ReportUrlParamKeys } from "../../constants.js";
+import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "../../constants.js";
 import { usePageConfiguration } from "./services/index.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PageDispatcher");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger: LoggerInterface) => { log = logger; });
-
-const REPORT_URL_KNOWN_PARAM_KEYS = new Set([
-  "application",
-  "deploymentUuid",
-  "applicationSection",
-  "reportUuid",
-  "instanceUuid",
-]);
 
 /** Maps report-page search params to typed report page params; unknown keys are forwarded (D8). */
 export function reportPageParamsFromSearchParams(

@@ -10,13 +10,13 @@ import {
   listSelfApplicationUuidPaths,
   RELATIVE_PATH_JOKER,
   type RelativePath,
-} from "../../src/1_core/listSelfApplicationUuidPaths";
+} from "../../src/1_core/model/cloneApplication/listSelfApplicationUuidPaths";
 import {
   remapApplicationModelAtPaths,
   RemapApplicationModelAtPathsError,
   remapLibraryAppModelForRunTarget,
   remapSelfApplicationUuidModel,
-} from "../../src/1_core/remapApplicationModelAtPaths";
+} from "../../src/1_core/model/cloneApplication/remapApplicationModelAtPaths";
 import type { TestbedUuids } from "../../src/5_tests/TestbedUuids";
 
 const LIBRARY_APP_UUID = selfApplicationLibrary.uuid as string;
@@ -205,6 +205,37 @@ describe("remapApplicationModelAtPaths (T2)", () => {
       expect(strings.some((s) => s === LIBRARY_APP_UUID)).toBe(false);
       expect(strings.some((s) => s.includes(LIBRARY_APP_UUID))).toBe(false);
     });
+
+    it("remaps optional Report compositeActionSequence without requiring it on every report", () => {
+      const remapped = remapSelfApplicationUuidModel(
+        defaultLibraryAppModel as MetaModel,
+        {
+          oldApplicationUuid: LIBRARY_APP_UUID,
+          newApplicationUuid: NEW_APP_UUID,
+        },
+      );
+
+      const tracer = remapped.reports.find(
+        (report) => report.uuid === "d2b2fbbd-6844-4422-8412-4e3c303296bc",
+      );
+      const listOnly = remapped.reports.find(
+        (report) => report.uuid === "b6d9e2a1-4c58-4f70-8a13-9e2f0c5d7b44",
+      );
+      expect(listOnly?.definition && "compositeActionSequence" in listOnly.definition).toBe(
+        false,
+      );
+
+      const finishApplication = (
+        tracer?.definition as {
+          compositeActionSequence?: {
+            payload?: {
+              actionSequence?: Array<{ payload?: { application?: string } }>;
+            };
+          };
+        }
+      )?.compositeActionSequence?.payload?.actionSequence?.[0]?.payload?.application;
+      expect(finishApplication).toBe(NEW_APP_UUID);
+    });
   });
 
   describe("T2-d — fixes duplicateApplicationModel gaps", () => {
@@ -340,7 +371,8 @@ describe("remapApplicationModelAtPaths (T2)", () => {
         LIBRARY_DEPLOYMENT_UUID,
         canonicalTarget,
       );
-      expect(result).toBe(defaultLibraryAppModel);
+      expect(result).toEqual(defaultLibraryAppModel);
+      expect(result.applicationUuid).toBe(LIBRARY_APP_UUID);
     });
 
     it("remaps when runTarget is ephemeral", () => {

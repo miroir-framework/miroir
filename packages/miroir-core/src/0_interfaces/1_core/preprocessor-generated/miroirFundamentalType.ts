@@ -2845,7 +2845,7 @@ export type ReportVersion = {
     name: string;
     reportUuid: string;
     defaultLabel?: string | undefined;
-    type?: ("list" | "grid") | undefined;
+    type?: ("list" | "grid" | "multistep") | undefined;
     definition?: any;
 };
 export type MenuVersion = {
@@ -3329,6 +3329,14 @@ export type ObjectListReportSection = {
         query?: ExtractorReturningObject | undefined;
         sortByAttribute?: string | undefined;
         sortOrder?: ("asc" | "desc") | undefined;
+        openReport?: {
+            label?: string | undefined;
+            reportUuid: string;
+            openAs: "modal" | "route";
+            application?: string | undefined;
+            applicationSection?: ("data" | "model" | "modelVersion") | undefined;
+            deploymentUuid?: string | undefined;
+        } | undefined;
     };
 };
 export type RunnerReportSection = {
@@ -3372,7 +3380,7 @@ export type StoredReportDisplay = {
         instanceUuid: string | CoreTransformerForBuildPlusRuntime;
     } | CoreTransformerForBuildPlusRuntime;
 };
-export type ReportSection = AccordionReportSection | GraphReportSection | GridReportSection | JsonReportSection | InputReportSection | ListReportSection | MarkdownReportSection | ModelDiagramReportSection | ObjectListReportSection | ObjectInstanceReportSection | StoredReportDisplay | RunnerReportSection | TransformerRunnerReportSection | MiroirTestReportSection;
+export type ReportSection = AccordionReportSection | GraphReportSection | GridReportSection | JsonReportSection | InputReportSection | ListReportSection | MarkdownReportSection | ModelDiagramReportSection | ObjectListReportSection | ObjectInstanceReportSection | StoredReportDisplay | RunnerReportSection | TransformerRunnerReportSection | MiroirTestReportSection | OpenReportSection;
 export type GridReportSection = {
     type: "grid";
     combinerTemplates?: ExtractorOrCombinerTemplateRecord | undefined;
@@ -3398,6 +3406,7 @@ export type RootReport = {
         [x: string]: CoreTransformerForBuildPlusRuntime;
     } | undefined;
     section: ReportSection;
+    compositeActionSequence?: CompositeActionSequenceTemplate | undefined;
 };
 export type JzodObjectOrReference = JzodReference | JzodObject;
 export type MlSchema = {
@@ -3412,6 +3421,17 @@ export type MlSchema = {
     definition?: JzodObjectOrReference | undefined;
 };
 export type ParameterTransformer = string;
+export type OpenReportSection = {
+    type: "openReportSection";
+    definition: {
+        label: string;
+        reportUuid: string;
+        openAs: "modal" | "route";
+        application?: string | undefined;
+        applicationSection?: ("data" | "model" | "modelVersion") | undefined;
+        deploymentUuid?: string | undefined;
+    };
+};
 export type Report = {
     uuid: string;
     parentName?: string | undefined;
@@ -3420,7 +3440,7 @@ export type Report = {
     conceptLevel?: ("MetaModel" | "Model" | "Data" | "External") | undefined;
     name: string;
     defaultLabel: string;
-    type?: ("list" | "grid") | undefined;
+    type?: ("list" | "grid" | "multistep") | undefined;
     selfApplication?: string | undefined;
     definition: RootReport;
 };
@@ -10130,7 +10150,7 @@ export const deployment: z.ZodType<Deployment> = z.object({uuid:z.string().uuid(
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), storageAccess:z.enum(["none","localStorage","persistentStorage"]).optional(), selfApplication:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional(), defaultInstanceDetailsReportUuid:z.string().uuid().optional(), viewAttributes:z.array(z.string()).optional(), icon:z.lazy(() =>miroirIcon).optional(), display:z.object({foldSubLevels:z.record(z.string(),z.boolean()).optional()}).strict().optional(), cache:z.object({cacheAllInstancesOnRefresh:z.boolean().optional()}).strict().optional(), idAttribute:z.union([z.string(), z.array(z.string())]).optional(), externalDataSource:z.object({kind:z.enum(["sql","http"]).optional(), endpoint:z.string().uuid().optional(), schema:z.string().optional(), tableName:z.string().optional()}).strict().optional(), scope:z.enum(["versioning","modeling"]).optional(), logicalDataModel:z.enum(["manyToMany","entity"]).optional(), mlSchema:z.lazy(() =>jzodObject)}).strict();
 export const entityVersion: z.ZodType<EntityVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), entityUuid:z.string().uuid(), description:z.string().optional(), defaultInstanceDetailsReportUuid:z.string().uuid().optional(), viewAttributes:z.array(z.string()).optional(), icon:z.lazy(() =>miroirIcon).optional(), display:z.object({foldSubLevels:z.record(z.string(),z.boolean()).optional()}).strict().optional(), cache:z.object({cacheAllInstancesOnRefresh:z.boolean().optional()}).strict().optional(), idAttribute:z.union([z.string(), z.array(z.string())]).optional(), externalDataSource:z.object({kind:z.enum(["sql","http"]).optional(), endpoint:z.string().uuid().optional(), schema:z.string().optional(), tableName:z.string().optional()}).strict().optional(), mlSchema:z.lazy(() =>jzodObject)}).strict();
 export const queryVersion: z.ZodType<QueryVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), queryUuid:z.string().uuid(), description:z.string().optional(), defaultLabel:z.string().optional(), definition:z.any()}).strict();
-export const reportVersion: z.ZodType<ReportVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), reportUuid:z.string().uuid(), defaultLabel:z.string().optional(), type:z.enum(["list","grid"]).optional(), definition:z.any()}).strict();
+export const reportVersion: z.ZodType<ReportVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), reportUuid:z.string().uuid(), defaultLabel:z.string().optional(), type:z.enum(["list","grid","multistep"]).optional(), definition:z.any()}).strict();
 export const menuVersion: z.ZodType<MenuVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), menuUuid:z.string().uuid(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.any()}).strict();
 export const endpointVersion: z.ZodType<EndpointVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), endpointUuid:z.string().uuid(), version:z.string(), application:z.string().uuid().optional(), description:z.string().optional(), transactionalEndpoint:z.boolean().optional(), definition:z.any()}).strict();
 export const runnerVersion: z.ZodType<RunnerVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), runnerUuid:z.string().uuid(), application:z.string().uuid().optional(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.any()}).strict();
@@ -10168,18 +10188,19 @@ export const jsonReportSection: z.ZodType<JsonReportSection> = z.object({type:z.
 export const miroirTestReportSection: z.ZodType<MiroirTestReportSection> = z.object({type:z.literal("miroirTestReportSection"), definition:z.object({label:z.string().optional(), fetchedDataReference:z.string()}).strict()}).strict();
 export const inputReportSection: z.ZodType<InputReportSection> = z.object({type:z.literal("inputReportSection"), definition:z.object({label:z.string().optional(), inputPrefix:z.string().optional(), inputMLSchema:z.lazy(() =>jzodElement).optional(), urlParamFields:z.array(z.string()).optional()}).strict()}).strict();
 export const objectInstanceReportSection: z.ZodType<ObjectInstanceReportSection> = z.object({type:z.literal("objectInstanceReportSection"), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>coreTransformerForBuildPlusRuntime)).optional(), definition:z.object({label:z.string().optional(), parentUuid:z.string(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>extractorReturningObject).optional()}).strict()}).strict();
-export const objectListReportSection: z.ZodType<ObjectListReportSection> = z.object({type:z.literal("objectListReportSection"), definition:z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>extractorReturningObject).optional(), sortByAttribute:z.string().optional(), sortOrder:z.enum(["asc","desc"]).optional()}).strict()}).strict();
+export const objectListReportSection: z.ZodType<ObjectListReportSection> = z.object({type:z.literal("objectListReportSection"), definition:z.object({label:z.string().optional(), parentName:z.string().optional(), parentUuid:z.string().uuid(), fetchedDataReference:z.string().optional(), query:z.lazy(() =>extractorReturningObject).optional(), sortByAttribute:z.string().optional(), sortOrder:z.enum(["asc","desc"]).optional(), openReport:z.object({label:z.string().optional(), reportUuid:z.string().uuid(), openAs:z.enum(["modal","route"]), application:z.string().uuid().optional(), applicationSection:z.enum(["data","model","modelVersion"]).optional(), deploymentUuid:z.string().uuid().optional()}).strict().optional()}).strict()}).strict();
 export const runnerReportSection: z.ZodType<RunnerReportSection> = z.object({type:z.literal("runnerReportSection"), definition:z.union([z.object({runnerReportSectionType:z.literal("embeddedRunner"), label:z.string().optional()}).strict(), z.object({runnerReportSectionType:z.literal("storedRunner"), label:z.string().optional(), runner:z.string().uuid()}).strict()])}).strict();
 export const transformerRunnerReportSection: z.ZodType<TransformerRunnerReportSection> = z.object({type:z.literal("transformerRunnerReportSection"), definition:z.union([z.object({transformerRunnerReportSectionType:z.literal("embeddedTransformer"), label:z.string().optional(), definition:z.lazy(() =>coreTransformerForBuildPlusRuntime)}).strict(), z.object({transformerRunnerReportSectionType:z.literal("storedTransformer"), label:z.string().optional(), transformer:z.string().uuid()}).strict()])}).strict();
 export const runStoredQuery: z.ZodType<RunStoredQuery> = z.object({storedQuery:z.string().uuid().nullable(), label:z.string(), args:z.record(z.string(),z.lazy(() =>coreTransformerForBuildPlusRuntime)).optional()}).strict();
 export const storedReportDisplay: z.ZodType<StoredReportDisplay> = z.object({type:z.literal("storedReportDisplay"), label:z.string().optional(), definition:z.union([z.object({application:z.union([z.string().uuid(), z.lazy(() =>coreTransformerForBuildPlusRuntime)]), deploymentUuid:z.union([z.string().uuid(), z.lazy(() =>coreTransformerForBuildPlusRuntime)]), applicationSection:z.union([z.enum(["data","model"]), z.lazy(() =>coreTransformerForBuildPlusRuntime)]), reportUuid:z.union([z.string().uuid(), z.lazy(() =>coreTransformerForBuildPlusRuntime)]), instanceUuid:z.union([z.string().uuid(), z.lazy(() =>coreTransformerForBuildPlusRuntime)])}).strict(), z.lazy(() =>coreTransformerForBuildPlusRuntime)])}).strict();
-export const reportSection: z.ZodType<ReportSection> = z.union([z.lazy(() =>accordionReportSection), z.lazy(() =>graphReportSection), z.lazy(() =>gridReportSection), z.lazy(() =>jsonReportSection), z.lazy(() =>inputReportSection), z.lazy(() =>listReportSection), z.lazy(() =>markdownReportSection), z.lazy(() =>modelDiagramReportSection), z.lazy(() =>objectListReportSection), z.lazy(() =>objectInstanceReportSection), z.lazy(() =>storedReportDisplay), z.lazy(() =>runnerReportSection), z.lazy(() =>transformerRunnerReportSection), z.lazy(() =>miroirTestReportSection)]);
+export const reportSection: z.ZodType<ReportSection> = z.union([z.lazy(() =>accordionReportSection), z.lazy(() =>graphReportSection), z.lazy(() =>gridReportSection), z.lazy(() =>jsonReportSection), z.lazy(() =>inputReportSection), z.lazy(() =>listReportSection), z.lazy(() =>markdownReportSection), z.lazy(() =>modelDiagramReportSection), z.lazy(() =>objectListReportSection), z.lazy(() =>objectInstanceReportSection), z.lazy(() =>storedReportDisplay), z.lazy(() =>runnerReportSection), z.lazy(() =>transformerRunnerReportSection), z.lazy(() =>miroirTestReportSection), z.lazy(() =>openReportSection)]);
 export const gridReportSection: z.ZodType<GridReportSection> = z.object({type:z.literal("grid"), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>coreTransformerForBuildPlusRuntime)).optional(), selectData:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), definition:z.array(z.array(z.lazy(() =>reportSection)))}).strict();
-export const rootReport: z.ZodType<RootReport> = z.object({reportParametersToFetchQueryParametersTransformer:z.record(z.string(),z.any()).optional(), reportParameters:z.record(z.string(),z.any()).optional(), runStoredQueries:z.array(z.lazy(() =>runStoredQuery)).optional(), extractorTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), extractors:z.lazy(() =>extractorOrCombinerRecord).optional(), combiners:z.lazy(() =>extractorOrCombinerRecord).optional(), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>coreTransformerForBuildPlusRuntime)).optional(), section:z.lazy(() =>reportSection)}).strict();
+export const rootReport: z.ZodType<RootReport> = z.object({reportParametersToFetchQueryParametersTransformer:z.record(z.string(),z.any()).optional(), reportParameters:z.record(z.string(),z.any()).optional(), runStoredQueries:z.array(z.lazy(() =>runStoredQuery)).optional(), extractorTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), extractors:z.lazy(() =>extractorOrCombinerRecord).optional(), combiners:z.lazy(() =>extractorOrCombinerRecord).optional(), combinerTemplates:z.lazy(() =>extractorOrCombinerTemplateRecord).optional(), runtimeTransformers:z.record(z.string(),z.lazy(() =>coreTransformerForBuildPlusRuntime)).optional(), section:z.lazy(() =>reportSection), compositeActionSequence:z.lazy(() =>compositeActionSequenceTemplate).optional()}).strict();
 export const jzodObjectOrReference: z.ZodType<JzodObjectOrReference> = z.union([z.lazy(() =>jzodReference), z.lazy(() =>jzodObject)]);
 export const mlSchema: z.ZodType<MlSchema> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data"]).optional(), name:z.string(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.lazy(() =>jzodObjectOrReference).optional()}).strict();
 export const parameterTransformer: z.ZodType<ParameterTransformer> = z.string();
-export const report: z.ZodType<Report> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), defaultLabel:z.string(), type:z.enum(["list","grid"]).optional(), selfApplication:z.string().uuid().optional(), definition:z.lazy(() =>rootReport)}).strict();
+export const openReportSection: z.ZodType<OpenReportSection> = z.object({type:z.literal("openReportSection"), definition:z.object({label:z.string(), reportUuid:z.string().uuid(), openAs:z.enum(["modal","route"]), application:z.string().uuid().optional(), applicationSection:z.enum(["data","model","modelVersion"]).optional(), deploymentUuid:z.string().uuid().optional()}).strict()}).strict();
+export const report: z.ZodType<Report> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), defaultLabel:z.string(), type:z.enum(["list","grid","multistep"]).optional(), selfApplication:z.string().uuid().optional(), definition:z.lazy(() =>rootReport)}).strict();
 export const dataSet: z.ZodType<DataSet> = z.object({applicationUuid:z.string().uuid(), instances:z.array(z.lazy(() =>entityInstance))}).strict();
 export const _________________________________configuration_and_bundles_________________________________: z.ZodType<_________________________________configuration_and_bundles_________________________________> = z.never();
 export const indexedDbStoreSectionConfiguration: z.ZodType<IndexedDbStoreSectionConfiguration> = z.object({emulatedServerType:z.literal("indexedDb"), indexedDbName:z.string()}).strict();

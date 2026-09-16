@@ -238,7 +238,10 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
     objectInstanceReportSection?.definition?.parentUuid;
 
   const currentReportTargetEntity: Entity | undefined = targetEntityUuid
-    ? entities.find((entity) => entity.uuid === targetEntityUuid)
+    ? entities.find((entity) => entity.uuid === targetEntityUuid) ??
+      (reportDefinitionFromFormik?.type === "multistep"
+        ? currentDeploymentModel.entities.find((entity) => entity.uuid === targetEntityUuid)
+        : undefined)
     : undefined;
 
   const displayedInstance = useMemo(() => {
@@ -602,11 +605,7 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
               // },
             ]}
           />
-          <Formik
-            initialValues={{ [formikValuePathAsString]: displayedInstance }}
-            enableReinitialize
-            onSubmit={() => {}}
-          >
+          {reportDefinitionFromFormik?.type === "multistep" ? (
           <TypedValueObjectEditor
             formValueMLSchema={currentFlattenedReportSectionTargetEntityMlSchema}
             formikValuePathAsString={formikValuePathAsString}
@@ -624,7 +623,33 @@ export const ReportSectionEntityInstance = (props: ReportSectionEntityInstancePr
             //
             setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
           />
+          ) : (
+          <Formik
+            initialValues={{ [formikValuePathAsString]: displayedInstance }}
+            enableReinitialize
+            onSubmit={() => {}}
+          >
+          <div data-testid="report-section-entity-instance-nested-formik">
+          <TypedValueObjectEditor
+            formValueMLSchema={currentFlattenedReportSectionTargetEntityMlSchema}
+            formikValuePathAsString={formikValuePathAsString}
+            // 
+            valueObjectEditMode={props.valueObjectEditMode}
+            labelElement={labelElement}
+            application={props.application}
+            applicationDeploymentMap={props.applicationDeploymentMap}
+            deploymentUuid={props.deploymentUuid}
+            applicationSection={props.applicationSection}
+            //
+            formLabel={formLabel}
+            zoomInPath={props.zoomInPath}
+            maxRenderDepth={Infinity} // Always render fully for editor
+            //
+            setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
+          />
+          </div>
           </Formik>
+          )}
           </>
         ) : (
           <div>

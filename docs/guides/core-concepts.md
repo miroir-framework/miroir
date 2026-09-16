@@ -653,20 +653,25 @@ Display in grid/table format:
 }
 ```
 
-#### 3. Form Section
+#### 3. Multistep Report
 
-Display/edit a single instance:
+A Report with `"type": "multistep"` pages its `list` children one step at a time (Back / Next / Finish / Cancel). There is no Form section or Form entity. A step is any `ReportSection`.
+
+Finish on the last step runs `definition.compositeActionSequence` through `handleCompositeActionTemplate` with the **step bag** (`inputPrefix` buckets plus hoisted object-instance keys). The walk is memory-only; the URL has no `step` key.
+
+Open another Report with `openReportSection` (`openAs`: `"modal"` or `"route"`) or a list-row `objectListReportSection.definition.openReport` (row PK → `pageParams.instanceUuid`).
 
 ```json
 {
-  "type": "form",
+  "type": "multistep",
   "definition": {
-    "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
-    "fetchedDataReference": "currentBook",
-    "fields": [
-      {"attribute": "title", "label": "Title", "type": "text"},
-      {"attribute": "isbn", "label": "ISBN", "type": "text"}
-    ]
+    "compositeActionSequence": { "actionType": "compositeActionSequence", "payload": { "actionSequence": [] } },
+    "section": {
+      "type": "list",
+      "definition": [
+        { "type": "inputReportSection", "definition": { "label": "Country", "inputPrefix": "stepOne" } }
+      ]
+    }
   }
 }
 ```

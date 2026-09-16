@@ -919,7 +919,7 @@
     {
       "id": "appstack-270-persistent-secrets",
       "tier": "default",
-      "title": "#270 — persist named secrets (hydrate, import)",
+      "title": "#270 — persist named secrets (hydrate, HTTP, principal, rotation, import)",
       "requires": "none",
       "argv": [
         "npm",
@@ -970,6 +970,52 @@
         "--profile",
         "{profile}",
         "processCapabilitiesStore.273.phase3"
+      ]
+    },
+    {
+      "id": "unit-274-multistep-reports",
+      "tier": "unit",
+      "title": "#274 — multistep Reports (phase0 contracts)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "multistep.274.phase0"
+      ]
+    },
+    {
+      "id": "integ-action-274-multistep-reports",
+      "tier": "default",
+      "title": "#274 — multistep Reports (MiroirTest Finish integ)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "multistepReports.274",
+        "--mode",
+        "integ"
+      ]
+    },
+    {
+      "id": "appstack-274-multistep-reports",
+      "tier": "default",
+      "title": "#274 — multistep Reports (process walk + launchers)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-standalone-app -- --profile {profile} multistepProcess.274 && npm run testByFile -w miroir-standalone-app -- --profile {profile} multistepLaunch.274"
       ]
     },
     {

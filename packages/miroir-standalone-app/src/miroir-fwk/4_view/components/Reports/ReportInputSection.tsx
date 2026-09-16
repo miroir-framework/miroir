@@ -11,6 +11,7 @@ import {
 } from "miroir-core";
 
 import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
+import { useOptionalMultistepReportHost } from "./MultistepReportHost.js";
 import {
   buildReportApplicationSwitchUrl,
 } from "./reportInputApplication.js";
@@ -44,6 +45,7 @@ export function ReportInputSection(props: {
   const [searchParams] = useSearchParams();
   const formik = useFormikContext<Record<string, any>>();
   const applicationDeploymentMap = props.applicationDeploymentMap ?? {};
+  const skipUrlNavigation = !!useOptionalMultistepReportHost();
 
   const onChangeVector = useMemo(() => {
     const schemaDef = props.inputMLSchema?.definition as
@@ -54,6 +56,9 @@ export function ReportInputSection(props: {
     }
     return {
       application: (value: any) => {
+        if (skipUrlNavigation) {
+          return;
+        }
         if (!value || value === noValue.uuid || value === props.application) {
           return;
         }
@@ -76,9 +81,13 @@ export function ReportInputSection(props: {
     props.pageParams?.instanceUuid,
     applicationDeploymentMap,
     navigate,
+    skipUrlNavigation,
   ]);
 
   const onApplyUrlParams = () => {
+    if (skipUrlNavigation) {
+      return;
+    }
     const bucket = formik.values?.[props.inputPrefix] ?? {};
     const next = new URLSearchParams(searchParams);
     for (const field of props.urlParamFields ?? []) {

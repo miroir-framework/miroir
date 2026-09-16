@@ -12,6 +12,13 @@ export type ReportUrlKnownParamKeys =
   | "reportUuid"
   | "instanceUuid";
 export type ReportUrlParamKeys = ReportUrlKnownParamKeys | (string & {});
+export const REPORT_URL_KNOWN_PARAM_KEYS: ReadonlySet<string> = new Set([
+  "application",
+  "deploymentUuid",
+  "applicationSection",
+  "reportUuid",
+  "instanceUuid",
+]);
 
 // ################################################################################################
 // to place in admin_data/7959d814-400c-4e80-988f-a00fe582ab98/

@@ -71,6 +71,17 @@ export const tableComponentEntityInstancePropsSchema = extendCoreProps({
   currentEntity: entity.nullable(),
   onRowEdit: z.function().args(z.any()).returns(z.void()).optional(),
   onRowDelete: z.function().args(z.any()).returns(z.void()).optional(),
+  rowOpenReport: z
+    .object({
+      label: z.string().optional(),
+      reportUuid: z.string().uuid(),
+      openAs: z.enum(["modal", "route"]),
+      application: z.string().uuid().optional(),
+      applicationSection: z.enum(["data", "model", "modelVersion"]).optional(),
+      deploymentUuid: z.string().uuid().optional(),
+    })
+    .optional(),
+  onRowOpenReport: z.function().args(z.any(), z.string()).returns(z.void()).optional(),
 });
 export type TableComponentEntityInstanceProps = z.infer<typeof tableComponentEntityInstancePropsSchema>;
 
