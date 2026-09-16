@@ -85,5 +85,13 @@ if (runThis) {
       );
       expect(seed).not.toHaveProperty("agents");
     });
+
+    it("AiActionsProvider no longer documents ViewParams.agents as the AI gate", () => {
+      const src = readRepoFile(
+        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AiActionsProvider.tsx",
+      );
+      expect(src).not.toContain("ViewParams.agents");
+      expect(src).not.toContain("Settings → Appearance");
+    });
   });
 }
