@@ -355,6 +355,13 @@ export function StoredRunnerView(props: {
     [storedRunner]
   );
 
+  if (
+    storedRunner?.definition.runnerType === "mcpToolRunner" &&
+    context.processCapabilities.mcp !== true
+  ) {
+    return null;
+  }
+
   return (
     <>
       <JsonDisplayHelper debug={true}

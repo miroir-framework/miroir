@@ -62,4 +62,20 @@ if (runThis) {
       expect(src).toContain("mcpServer.run");
     });
   });
+
+  describe("processCapabilitiesMcp.273.phase6 — mcpToolRunner UI is hidden when mcp is false", () => {
+    it("StoredRunnerView returns null for mcpToolRunner when snapshot mcp is not true", () => {
+      const src = readFileSync(
+        join(
+          REPO_ROOT,
+          "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/RunnerView.tsx",
+        ),
+        "utf8",
+      );
+      expect(src).toContain('runnerType === "mcpToolRunner"');
+      expect(src).toMatch(
+        /runnerType === "mcpToolRunner"[\s\S]{0,500}processCapabilities\.mcp !== true[\s\S]{0,200}return null/,
+      );
+    });
+  });
 }
