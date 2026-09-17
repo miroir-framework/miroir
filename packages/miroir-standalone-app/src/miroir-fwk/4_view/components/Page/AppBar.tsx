@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
 import { useSyncExternalStore, type MouseEvent, type ReactNode } from 'react';
 
-import { defaultSelfApplicationDeploymentMap, isVersioningAppBarItemVisible, LoggerInterface, MiroirLoggerFactory, type MiroirMenuItem, type MiroirMenuPageLink, type VersioningModeInput } from 'miroir-core';
+import { defaultSelfApplicationDeploymentMap, isVersioningAppBarItemVisible, LoggerInterface, MiroirLoggerFactory, noValue, type MiroirMenuItem, type MiroirMenuPageLink, type ReportLink, type VersioningModeInput } from 'miroir-core';
 
 import { selectInstanceArrayForDeploymentSectionEntity, useMiroirContextService, useSelector, type ReduxStateWithUndoRedo } from 'miroir-react';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +25,7 @@ import { applyLocalCacheMonitorGate } from '../../tools/localCacheMonitorGate.js
 import { ThemedIcon } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
 import { entitySelfApplication, reportMiroirRunners, reportVersioning } from 'miroir-test-app_deployment-miroir';
-import { resolveAppBarReportLinkApplication } from './appBarReportNavigation.js';
+import { resolveAppBarHomeNavigationUrl, resolveAppBarReportLinkApplication } from './appBarReportNavigation.js';
 import {
   readMiroirAiBackend,
   subscribeMiroirAiBackend,
@@ -174,11 +174,14 @@ export function AppBar(props:AppBarProps) {
         },
       );
     }) ?? [];
+  type BrowsedSelfApplication = VersioningModeInput & {
+    homePageUrl?: string | ReportLink;
+  };
   const browsedSelfApplication = (
     applicationSelector
       ? browsedSelfApplicationInstances.find((row) => row.uuid === applicationSelector)
       : undefined
-  ) as VersioningModeInput | undefined;
+  ) as BrowsedSelfApplication | undefined;
   const versioningAppBarItemVisible = isVersioningAppBarItemVisible({
     browsedSelfApplication,
   });
@@ -220,7 +223,16 @@ export function AppBar(props:AppBarProps) {
     <AppBarIconButton
       key="home"
       title="Home"
-      onClick={() => navigate(pageUrl("home"))}
+      onClick={() =>
+        navigate(
+          resolveAppBarHomeNavigationUrl({
+            applicationSelector,
+            noValueUuid: noValue.uuid,
+            homePageUrl: browsedSelfApplication?.homePageUrl,
+            applicationDeploymentMap,
+          }),
+        )
+      }
       aria-label="Home"
     >
       <ThemedIcon
