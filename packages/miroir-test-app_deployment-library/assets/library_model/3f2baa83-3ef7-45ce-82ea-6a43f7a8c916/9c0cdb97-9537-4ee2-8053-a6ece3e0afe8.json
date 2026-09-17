@@ -10,7 +10,7 @@
         {
           "type": "markdownReportSection",
           "definition": {
-            "content": "# Welcome to the Library Application\n\nYou can browse the library or run the following actions:"
+            "content": "# Welcome to the Library Application\n\nYou can browse the library, run lending actions, or walk the multistep country processes:"
           }
         },
         {
@@ -35,6 +35,22 @@
             "runnerReportSectionType": "storedRunner",
             "label": "MCP: lendDocument",
             "runner": "dbb39e31-5c7d-4473-9adb-5286e2972e46"
+          }
+        },
+        {
+          "type": "openReportSection",
+          "definition": {
+            "label": "Create Country (multistep)",
+            "reportUuid": "d2b2fbbd-6844-4422-8412-4e3c303296bc",
+            "openAs": "route"
+          }
+        },
+        {
+          "type": "openReportSection",
+          "definition": {
+            "label": "Country instance (multistep)",
+            "reportUuid": "8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61",
+            "openAs": "route"
           }
         },
         {
