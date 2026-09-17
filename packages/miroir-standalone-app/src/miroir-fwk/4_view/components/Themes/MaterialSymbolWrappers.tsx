@@ -70,3 +70,4 @@ export const FolderOpen: React.FC<any> = (props) => <ThemedIcon icon="folder_ope
 export const MenuOpen: React.FC<any> = (props) => <ThemedIcon icon="menu_open" {...props} />;
 export const Settings: React.FC<any> = (props) => <ThemedIcon icon="settings" {...props} />;
 export const ViewList: React.FC<any> = (props) => <ThemedIcon icon="view_list" {...props} />;
+export const OpenInNew: React.FC<any> = (props) => <ThemedIcon icon="open_in_new" {...props} />;

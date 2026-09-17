@@ -29,6 +29,7 @@ import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js"
 import { RenderInsightSummary } from "../components/RenderInsightSummary.js";
 import { LocalCacheMonitorSummary } from "../components/LocalCacheMonitorSummary.js";
 import { useStoredQueriesResults } from "../components/Reports/ReportHooks.js";
+import { MultistepReportHost } from "../components/Reports/MultistepReportHost.js";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
 import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
 import { cleanLevel } from "../constants.js";
@@ -50,14 +51,24 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 // ################################################################################################
 export const ReportDisplay: React.FC<{
   pageParams: Params<ReportUrlParamKeys>;
-}> = ({ pageParams }) => {
+  onDismissed?: () => void;
+}> = ({ pageParams, onDismissed }) => {
   const context = useMiroirContextService();
   const theme = useMiroirTheme();
 
   // Use application from pageParams if available, otherwise fall back to context
   const application = pageParams.application ?? context.application;
 
-  const currentApplicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+  const currentApplicationDeploymentMap = useMemo(() => {
+    const base = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+    if (pageParams.application && pageParams.deploymentUuid) {
+      return {
+        ...base,
+        [pageParams.application]: pageParams.deploymentUuid,
+      };
+    }
+    return base;
+  }, [context.applicationDeploymentMap, pageParams.application, pageParams.deploymentUuid]);
   const currentModel: MetaModel = useCurrentModel(application, currentApplicationDeploymentMap);
 
 
@@ -80,13 +91,25 @@ export const ReportDisplay: React.FC<{
   ]);
   
   const currentMiroirReport: Report =
-    availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ?? defaultReport;
+    availableReports?.find((r: Report) => r.uuid == pageParams.reportUuid) ??
+    currentModel.reports?.find((r: Report) => r.uuid == pageParams.reportUuid) ??
+    defaultReport;
 
-  
+  const isMultistepReport = currentMiroirReport.type === "multistep";
+  if (
+    isMultistepReport &&
+    (currentMiroirReport.definition.runStoredQueries?.length ?? 0) > 0
+  ) {
+    log.warn(
+      "runStoredQueries is unsupported on multistep reports; skipping",
+      currentMiroirReport.uuid,
+    );
+  }
+
   const currentStoredQueryResults: Domain2QueryReturnType<
     Domain2QueryReturnType<Record<string, any>>
   > = useStoredQueriesResults(
-    currentMiroirReport.definition.runStoredQueries,
+    isMultistepReport ? undefined : currentMiroirReport.definition.runStoredQueries,
     currentModel,
     pageParams,
     application,
@@ -105,6 +128,9 @@ export const ReportDisplay: React.FC<{
 
   return (
     <>
+      <pre data-testid="report-stored-query-data" hidden>
+        {JSON.stringify(currentStoredQueryData ?? {})}
+      </pre>
       <JsonDisplayHelper debug={true}
         componentName="ReportDisplay"
         elements={[
@@ -160,16 +186,33 @@ export const ReportDisplay: React.FC<{
             >
               <RenderInsightSummary />
               <LocalCacheMonitorSummary />
-              <ReportViewWithEditor
-                applicationSection={pageParams.applicationSection as ApplicationSection}
-                application={application}
-                applicationDeploymentMap={currentApplicationDeploymentMap}
-                deploymentUuid={pageParams.deploymentUuid}
-                instanceUuid={pageParams.instanceUuid}
-                pageParams={pageParams}
-                storedQueryData={currentStoredQueryData}
-                reportDefinition={currentMiroirReport}
-              />
+              {(() => {
+                const reportView = (
+                  <ReportViewWithEditor
+                    applicationSection={pageParams.applicationSection as ApplicationSection}
+                    application={application}
+                    applicationDeploymentMap={currentApplicationDeploymentMap}
+                    deploymentUuid={pageParams.deploymentUuid}
+                    instanceUuid={pageParams.instanceUuid}
+                    pageParams={pageParams}
+                    storedQueryData={currentStoredQueryData}
+                    reportDefinition={currentMiroirReport}
+                  />
+                );
+                return currentMiroirReport.type === "multistep" ? (
+                  <MultistepReportHost
+                    report={currentMiroirReport}
+                    pageParams={pageParams}
+                    application={application}
+                    applicationDeploymentMap={currentApplicationDeploymentMap}
+                    onDismissed={onDismissed}
+                  >
+                    {reportView}
+                  </MultistepReportHost>
+                ) : (
+                  reportView
+                );
+              })()}
             </ErrorBoundary>
           </>
         )}

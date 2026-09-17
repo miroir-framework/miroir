@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import {
   entityMLSchema,
   getApplicationSection,
@@ -101,6 +102,8 @@ export const reportSectionsFormSchema = (
         [reportSectionPath.join("_")]: resolvedEntityMLSchema
       };
     }
+    case "openReportSection":
+      return {};
     case "objectListReportSection":
     case "markdownReportSection":
     case "modelDiagramReportSection":
@@ -175,7 +178,16 @@ export const reportSectionsFormValue = (
       );
     case "objectListReportSection":
     case "objectInstanceReportSection": {
-      const targetData = reportData[reportSection.definition.fetchedDataReference ?? ""];
+      const fetchedDataReference = reportSection.definition.fetchedDataReference;
+      const targetData = fetchedDataReference
+        ? reportData?.[fetchedDataReference]
+        : reportSection.type === "objectInstanceReportSection"
+          ? {
+              uuid: uuidv4(),
+              parentUuid: reportSection.definition.parentUuid,
+              name: "",
+            }
+          : reportData?.[""];
       const queryParametersSchema: JzodObject =
         typeof targetData === "object" &&
         targetData !== null &&
@@ -255,7 +267,8 @@ export const reportSectionsFormValue = (
     case "accordionReportSection":
     case "jsonReportSection":
     case "storedReportDisplay":
-    case "runnerReportSection":  
+    case "runnerReportSection":
+    case "openReportSection":
     default:
       return {};
   }

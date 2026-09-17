@@ -1,0 +1,168 @@
+{
+  "uuid": "9931f827-a3ce-435f-bf07-4dac430d81d1",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "multistepReports.274",
+  "description": "Issue #274 Slice 1 — Finish template with suite step bag creates Country Testland.",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "multistepReports.274",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "testConfiguration": "d669558c-7cda-4037-81bf-0b9a71fbcb94",
+    "testParams": {
+      "stepOne": {
+        "name": "Testland",
+        "iso3166-1Alpha-2": "TL"
+      }
+    },
+    "miroirTests": [
+      {
+        "miroirTestType": "actionTest",
+        "miroirTestLabel": "multistepFinish.274",
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "multistepFinish.274",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "MultistepCountryCreateFinish",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createCountryFromStepOne",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "applicationSection": "data",
+                        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                        "objects": [
+                          {
+                            "transformerType": "createObject",
+                            "definition": {
+                              "uuid": "63c96487-713f-4d5b-a424-bf7e8f70e147",
+                              "parentName": "Country",
+                              "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                              "name": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": [
+                                  "stepOne",
+                                  "name"
+                                ]
+                              },
+                              "iso3166-1Alpha-2": {
+                                "transformerType": "getFromParameters",
+                                "safe": true,
+                                "referencePath": [
+                                  "stepOne",
+                                  "iso3166-1Alpha-2"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunBoxedQueryAction",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "queryCreatedCountry",
+            "nameGivenToResult": "countryAfterFinish",
+            "payload": {
+              "actionType": "runBoxedQueryAction",
+              "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              "payload": {
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "applicationSection": "data",
+                "query": {
+                  "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "pageParams": {
+                    "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                  },
+                  "extractors": {
+                    "createdCountry": {
+                      "extractorOrCombinerType": "extractorByPrimaryKey",
+                      "applicationSection": "data",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "instanceUuid": "63c96487-713f-4d5b-a424-bf7e8f70e147"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "actionLabel": "assertCreatedCountry",
+            "nameGivenToResult": "assertCreatedCountry",
+            "testAssertion": {
+              "testType": "testAssertion",
+              "testLabel": "assertCreatedCountry",
+              "definition": {
+                "resultAccessPath": [
+                  "countryAfterFinish",
+                  "createdCountry"
+                ],
+                "ignoreAttributes": [
+                  "conceptLevel"
+                ],
+                "expectedValue": {
+                  "uuid": "63c96487-713f-4d5b-a424-bf7e8f70e147",
+                  "parentName": "Country",
+                  "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "name": "Testland",
+                  "iso3166-1Alpha-2": "TL"
+                }
+              }
+            }
+          }
+        ],
+        "afterTestCleanupAction": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "deleteCreatedCountry",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "deleteInstance",
+                "actionLabel": "deleteCountryTestland",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "objects": [
+                    {
+                      "uuid": "63c96487-713f-4d5b-a424-bf7e8f70e147",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "testbedInitApplicationParameters": "libraryTestbedInitParams"
+  }
+}
