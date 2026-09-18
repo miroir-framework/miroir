@@ -38,6 +38,11 @@ const LIBRARY_APPLICATION_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
 const MULTISTEP_REPORT_UUID = "d2b2fbbd-6844-4422-8412-4e3c303296bc";
 const COUNTRY_ENTITY_UUID = "d3139a6d-0486-4ec8-bded-2a83a3c3cee4";
+const INSTANCE_WALK_REPORT_UUID = "8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61";
+const INSTANCE_WALK_FINISH_COUNTRY_UUID = "e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71";
+const INSTANCE_STEP_BAG_KEY = "definition_section_definition_1";
+const PRE_EXISTING_COUNTRY_UUID = "b62fc20b-dcf5-4e3b-a247-62d0475cf60f";
+const LEND_BOOK_RUNNER_UUID = "cc853632-f158-43fa-b9ed-437c9c25f539";
 
 const deployment_Library: Deployment = {
   uuid: LIBRARY_DEPLOYMENT_UUID,
@@ -163,6 +168,158 @@ function expectMarkdownConfirm(present: boolean) {
 
 function cloneFrozenTracer(): any {
   return structuredClone(reportMultistepCountryCreate);
+}
+
+/** Inline clone of the removed MultistepCountryUpdate asset (object-instance + failing query). */
+function buildInstanceWalkClone(): any {
+  const clone = cloneFrozenTracer();
+  clone.uuid = INSTANCE_WALK_REPORT_UUID;
+  clone.name = "MultistepCountryInstanceWalk";
+  clone.definition = {
+    extractorTemplates: {
+      failingCountries: {
+        extractorOrCombinerType: "extractorInstancesByEntity",
+        parentName: "Country",
+        parentUuid: {
+          transformerType: "getFromParameters",
+          safe: true,
+          referencePath: ["absentParam"],
+        },
+      },
+    },
+    compositeActionSequence: {
+      actionType: "compositeActionSequence",
+      actionLabel: "MultistepCountryInstanceFinish",
+      endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      payload: {
+        actionSequence: [
+          {
+            actionType: "createInstance",
+            actionLabel: "createCountryFromHoistedInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: {
+              application: LIBRARY_APPLICATION_UUID,
+              applicationSection: "data",
+              parentUuid: COUNTRY_ENTITY_UUID,
+              objects: [
+                {
+                  transformerType: "createObject",
+                  definition: {
+                    uuid: INSTANCE_WALK_FINISH_COUNTRY_UUID,
+                    parentName: "Country",
+                    parentUuid: COUNTRY_ENTITY_UUID,
+                    name: {
+                      transformerType: "getFromParameters",
+                      referencePath: [INSTANCE_STEP_BAG_KEY, "name"],
+                    },
+                    "iso3166-1Alpha-2": {
+                      transformerType: "getFromParameters",
+                      safe: true,
+                      referencePath: [INSTANCE_STEP_BAG_KEY, "iso3166-1Alpha-2"],
+                    },
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    section: {
+      type: "list",
+      definition: [
+        clone.definition.section.definition[0],
+        {
+          type: "objectInstanceReportSection",
+          definition: {
+            label: "Country instance",
+            parentUuid: COUNTRY_ENTITY_UUID,
+          },
+        },
+        {
+          type: "jsonReportSection",
+          definition: {
+            label: "Failing query",
+            fetchedDataReference: "failingCountries",
+          },
+        },
+      ],
+    },
+  };
+  return clone;
+}
+
+function buildRunnerMiddleStepClone(): any {
+  const clone = cloneFrozenTracer();
+  const steps = [...clone.definition.section.definition];
+  steps.splice(1, 0, {
+    type: "runnerReportSection",
+    definition: {
+      runnerReportSectionType: "storedRunner",
+      label: "lendBook",
+      runner: LEND_BOOK_RUNNER_UUID,
+    },
+  });
+  clone.definition.section.definition = steps;
+  return clone;
+}
+
+function readStepBag(): Record<string, unknown> {
+  return readJsonTestId("multistep-step-bag");
+}
+
+async function typeInstanceCountryName(container: Container, name: string, iso?: string) {
+  const nameInput = await waitFor(() => {
+    const input = inputByName(container, `${INSTANCE_STEP_BAG_KEY}.name`);
+    expect(input).toBeTruthy();
+    return input as HTMLInputElement;
+  });
+  await act(async () => {
+    fireEvent.change(nameInput, { target: { value: name } });
+  });
+  if (iso !== undefined) {
+    const isoInput = inputByName(container, `${INSTANCE_STEP_BAG_KEY}.iso3166-1Alpha-2`);
+    if (isoInput) {
+      await act(async () => {
+        fireEvent.change(isoInput, { target: { value: iso } });
+      });
+    }
+  }
+  await waitAfterUserInteraction();
+}
+
+async function goToInstanceStep(container: Container) {
+  await typeStepOne(container, "StepZero", "SZ");
+  fireEvent.click(screen.getByRole("button", { name: "Next" }));
+  await waitAfterUserInteraction();
+  await waitFor(() => {
+    expect(inputByName(container, `${INSTANCE_STEP_BAG_KEY}.name`)).toBeTruthy();
+  });
+}
+
+async function mountInstanceWalkClone(container: Container) {
+  await waitForHost();
+  await goToInstanceStep(container);
+}
+
+function prepareInstanceWalkCase(): ReportViewProps {
+  currentUseParams.reportUuid = INSTANCE_WALK_REPORT_UUID;
+  upsertLibraryReportInJzodEditorTestCache(buildInstanceWalkClone());
+  return instanceWalkTestProps();
+}
+
+function instanceWalkTestProps(): ReportViewProps {
+  return {
+    application: selfApplicationLibrary.uuid,
+    applicationSection: "data",
+    deploymentUuid: deployment_Library.uuid,
+    pageParams: {
+      ...tracerPageParams,
+      reportUuid: INSTANCE_WALK_REPORT_UUID,
+    },
+    reportDefinition: buildInstanceWalkClone() as any,
+    applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+  };
 }
 
 function readJsonTestId(testId: string): any {
@@ -576,6 +733,109 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 expect(storedJson).not.toMatch(/publisherName/);
               },
             },
+            "cancel-keeps-prior-cache-writes": {
+              props: {
+                application: selfApplicationLibrary.uuid,
+                applicationSection: "data",
+                deploymentUuid: deployment_Library.uuid,
+                pageParams: tracerPageParams,
+                reportDefinition: reportMultistepCountryCreate as any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              },
+              tests: async (_expect: ExpectStatic, container: Container) => {
+                upsertLibraryCountryInJzodEditorTestCache({
+                  uuid: PRE_EXISTING_COUNTRY_UUID,
+                  parentName: "Country",
+                  parentUuid: COUNTRY_ENTITY_UUID,
+                  name: "France",
+                  "iso3166-1Alpha-2": "FR",
+                } as any);
+                await waitForHost();
+                await typeStepOne(container, "Testland", "TL");
+                fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+                await waitAfterUserInteraction();
+                fireEvent.click(screen.getByRole("button", { name: "Confirm cancel" }));
+                await waitAfterUserInteraction();
+                expect(screen.queryByTestId("multistep-report-host")).toBeNull();
+                expect(getLibraryCountryFromJzodEditorTestCache(PRE_EXISTING_COUNTRY_UUID)?.name).toEqual(
+                  "France",
+                );
+                expect(getLibraryCountryFromJzodEditorTestCache()).toBeUndefined();
+              },
+            },
+            "instance-no-child-formik": {
+              props: prepareInstanceWalkCase,
+              tests: async (_expect: ExpectStatic, container: Container) => {
+                await mountInstanceWalkClone(container);
+                expect(screen.queryByTestId("report-section-entity-instance-nested-formik")).toBeNull();
+              },
+            },
+            "instance-edit-updates-bag": {
+              props: prepareInstanceWalkCase,
+              tests: async (_expect: ExpectStatic, container: Container) => {
+                await mountInstanceWalkClone(container);
+                await typeInstanceCountryName(container, "BagLand", "BL");
+                await waitFor(() => {
+                  const bag = readStepBag();
+                  expect((bag[INSTANCE_STEP_BAG_KEY] as { name?: string })?.name).toEqual("BagLand");
+                });
+              },
+            },
+            "instance-finish-sees-hoisted-key": {
+              props: prepareInstanceWalkCase,
+              tests: async (_expect: ExpectStatic, container: Container) => {
+                await mountInstanceWalkClone(container);
+                await typeInstanceCountryName(container, "HoistedFinish", "HF");
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                fireEvent.click(screen.getByRole("button", { name: "Finish" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  const country = getLibraryCountryFromJzodEditorTestCache(INSTANCE_WALK_FINISH_COUNTRY_UUID);
+                  expect(country?.name).toEqual("HoistedFinish");
+                });
+                expect(navigateMock).toHaveBeenCalledWith(-1);
+              },
+            },
+            "query-failure-keeps-bag": {
+              props: prepareInstanceWalkCase,
+              tests: async (_expect: ExpectStatic, container: Container) => {
+                await mountInstanceWalkClone(container);
+                await typeInstanceCountryName(container, "KeepBag", "KB");
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                expect(screen.getByTestId("multistep-step-query-failure")).toBeTruthy();
+                fireEvent.click(screen.getByRole("button", { name: "Back" }));
+                await waitAfterUserInteraction();
+                fireEvent.click(screen.getByRole("button", { name: "Back" }));
+                await waitAfterUserInteraction();
+                expectStepOneInputs(container, true);
+                const bag = readStepBag();
+                expect((bag.stepOne as { name?: string })?.name).toEqual("StepZero");
+              },
+            },
+            "runner-step-allows-next-without-submit": {
+              props: {
+                application: selfApplicationLibrary.uuid,
+                applicationSection: "data",
+                deploymentUuid: deployment_Library.uuid,
+                pageParams: tracerPageParams,
+                reportDefinition: reportMultistepCountryCreate as any,
+                applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
+              },
+              tests: async (_expect: ExpectStatic, container: Container) => {
+                upsertLibraryReportInJzodEditorTestCache(buildRunnerMiddleStepClone());
+                await waitForHost();
+                await typeStepOne(container, "Testland", "TL");
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                expect(screen.getByTestId("multistep-report-host")).toBeTruthy();
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                expectMarkdownConfirm(true);
+                expect(container).toBeTruthy();
+              },
+            },
             "leaf-finish-validates-required": {
               props: {
                 application: selfApplicationLibrary.uuid,
@@ -624,6 +884,8 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
 describe("multistepProcess.274", () => {
   afterEach(() => {
     deleteLibraryCountryFromJzodEditorTestCache();
+    deleteLibraryCountryFromJzodEditorTestCache(INSTANCE_WALK_FINISH_COUNTRY_UUID);
+    deleteLibraryCountryFromJzodEditorTestCache(PRE_EXISTING_COUNTRY_UUID);
     restoreLibraryMultistepTracerReportInJzodEditorTestCache();
     currentUseParams.reportUuid = MULTISTEP_REPORT_UUID;
     navigateMock.mockClear();

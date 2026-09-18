@@ -26,6 +26,7 @@ import {
   openReportHref,
   resolveOpenReportPageParams,
 } from "../../../../src/miroir-fwk/4_view/components/Reports/OpenReportLaunch.js";
+import { reportMultistepCountryCreate } from "miroir-test-app_deployment-library";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -282,6 +283,14 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     },
   };
 
+  it("collectStepBagKeys on MultistepCountryCreate lists inputPrefix keys only (D5 step bag)", () => {
+    const section = reportMultistepCountryCreate.definition?.section;
+    expect(section).toBeTruthy();
+    const keys = collectStepBagKeys(section);
+    expect(keys).toEqual(["stepOne"]);
+    expect(keys).not.toContain(reportMultistepCountryCreate.name);
+  });
+
   it("collectStepBagKeys uses the generated input path when inputPrefix is omitted", () => {
     expect(collectStepBagKeys(requiredNameInputSection)).toEqual([
       "definition_section_inputMLSchema",
@@ -323,6 +332,46 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
       "definition",
       "section",
     ]);
+  });
+
+  it("allGatedStepsAllowFinish rejects when any list step bag key is invalid (D7 Finish gate)", () => {
+    const nameSchema = {
+      type: "object" as const,
+      definition: {
+        name: { type: "string" as const },
+      },
+    };
+    const stepOne = {
+      type: "inputReportSection" as const,
+      definition: {
+        inputPrefix: "stepOne",
+        inputMLSchema: nameSchema,
+      },
+    };
+    const stepTwo = {
+      type: "inputReportSection" as const,
+      definition: {
+        inputPrefix: "stepTwo",
+        inputMLSchema: nameSchema,
+      },
+    };
+    const steps = [stepOne, stepTwo];
+    expect(
+      allGatedStepsAllowFinish(
+        steps,
+        { stepOne: { name: "First" } },
+        defaultMiroirModelEnvironment,
+        true,
+      ),
+    ).toBe(false);
+    expect(
+      allGatedStepsAllowFinish(
+        steps,
+        { stepOne: { name: "First" }, stepTwo: { name: "Second" } },
+        defaultMiroirModelEnvironment,
+        true,
+      ),
+    ).toBe(true);
   });
 
   it("allGatedStepsAllowFinish rejects an empty required input bag key", () => {
