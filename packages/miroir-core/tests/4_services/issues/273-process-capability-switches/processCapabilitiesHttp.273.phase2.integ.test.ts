@@ -1,10 +1,15 @@
 /**
  * #273 Slice 2 — GET /capabilities on RestClientStub before login.
  */
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { RestClientStub } from "miroir-core";
 import type { ProcessCapabilities } from "miroir-core";
+
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../..");
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =
@@ -64,6 +69,16 @@ if (runThis) {
       expect(result).toMatchObject({
         status: 401,
       });
+    });
+  });
+
+  describe("processCapabilitiesHttp.273.phase2 server DomainController snapshot", () => {
+    it("server.ts installs getProcessCapabilities on the DomainController", () => {
+      const src = readFileSync(
+        join(REPO_ROOT, "packages/miroir-server/src/server.ts"),
+        "utf8",
+      );
+      expect(src).toContain("domainController.setProcessCapabilities(capabilities)");
     });
   });
 }

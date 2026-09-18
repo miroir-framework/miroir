@@ -183,10 +183,12 @@ type ExtractorForExternalServiceResolved = {
 };
 
 function isExtractorForExternalServiceResolved(value: unknown): value is ExtractorForExternalServiceResolved {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const extractorType = (value as { extractorOrCombinerType?: unknown }).extractorOrCombinerType;
   return (
-    !!value &&
-    typeof value === "object" &&
-    (value as { extractorOrCombinerType?: unknown }).extractorOrCombinerType === "extractorForExternalService"
+    extractorType === "extractorForExternalService" || extractorType === "extractorFromAction"
   );
 }
 

@@ -98,6 +98,14 @@ if (runThis) {
       expect(block).toMatch(/JSON\.stringify\(\s*\{\s*user,\s*book,\s*startDate,\s*note\s*\}/);
     });
 
+    it("direct CopilotKit helper fetches reuse session authorizationHeaders", () => {
+      expect(providerSrc).toContain("authorizationHeaders");
+      expect(providerSrc).toContain("useAuthSession");
+      expect(providerSrc).not.toMatch(
+        /headers:\s*\{\s*["']Content-Type["']\s*:\s*["']application\/json["']\s*\}/,
+      );
+    });
+
     it("reuses AiEntityProposalForm for the entity proposal", () => {
       expect(formSrc).toContain("export function AiEntityProposalForm");
       expect(providerSrc).toContain("AiEntityProposalForm");

@@ -47,6 +47,7 @@ import {
   electronRuntimeBaseUrl,
   getClientEnvironment,
   getProcessCapabilities,
+  isAllowedElectronLoopbackOrigin,
   MiroirActivityTracker,
   MiroirConfigServer,
   MiroirContext,
@@ -219,6 +220,7 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
       ConfigurationService.configurationService.adminStoreFactoryRegister,
   });
   restClientStub.setProcessCapabilities(capabilities);
+  domainController.setProcessCapabilities(capabilities);
 
   if (app.isPackaged && capabilities.cursor) {
     assertCursorSdkPackaged();
@@ -228,13 +230,23 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
     const loopbackApp = express();
     loopbackApp.use(express.json({ limit: "50mb" }));
     loopbackApp.use((request, response, next) => {
-      const origin = typeof request.headers.origin === "string" ? request.headers.origin : "*";
-      response.setHeader("Access-Control-Allow-Origin", origin);
-      response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-      response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-      if (origin !== "*") {
+      const origin = typeof request.headers.origin === "string" ? request.headers.origin : undefined;
+      if (origin && !isAllowedElectronLoopbackOrigin(origin)) {
+        if (request.method === "OPTIONS") {
+          response.status(403).end();
+          return;
+        }
+        next();
+        return;
+      }
+      const allowedOrigin =
+        origin && isAllowedElectronLoopbackOrigin(origin) ? origin : undefined;
+      if (allowedOrigin) {
+        response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
         response.setHeader("Access-Control-Allow-Credentials", "true");
       }
+      response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+      response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
       if (request.method === "OPTIONS") {
         response.status(204).end();
         return;

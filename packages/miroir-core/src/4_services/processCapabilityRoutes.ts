@@ -12,6 +12,35 @@ export function shouldListenLoopbackHttp(flags: { ai: boolean; mcp: boolean }): 
   return flags.ai === true || flags.mcp === true;
 }
 
+const ELECTRON_LOOPBACK_CORS_PORTS = new Set(["5173", "3000", "3080"]);
+
+/**
+ * Electron loopback HTTP (CopilotKit / MCP) must not reflect arbitrary Origin
+ * values. Allow packaged `file:` / `app:` / `null`, Vite, and the loopback
+ * runtime itself.
+ */
+export function isAllowedElectronLoopbackOrigin(origin: string): boolean {
+  if (origin === "null") {
+    return true;
+  }
+  try {
+    const url = new URL(origin);
+    if (url.protocol === "file:" || url.protocol === "app:") {
+      return true;
+    }
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return false;
+    }
+    if (url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
+      return false;
+    }
+    const port = url.port || (url.protocol === "https:" ? "443" : "80");
+    return ELECTRON_LOOPBACK_CORS_PORTS.has(port);
+  } catch {
+    return false;
+  }
+}
+
 function trimSlash(value: string): string {
   return value.replace(/\/+$/, "");
 }

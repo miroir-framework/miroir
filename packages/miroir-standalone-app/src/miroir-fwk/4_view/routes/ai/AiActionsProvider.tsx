@@ -18,6 +18,7 @@ import "@copilotkit/react-ui/styles.css";
 import "./aiSidebar.css";
 
 import {
+  authorizationHeaders,
   copilotRuntimeUrl,
   defaultSelfApplicationDeploymentMap,
   ELECTRON_LOOPBACK_ROOT_API_URL,
@@ -39,6 +40,7 @@ import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployme
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
+import { useAuthSession } from "../../auth/authSession.js";
 import { MIROIR_SYSTEM_PROMPT } from "./miroirSystemPrompt.js";
 import { AiEntityProposalForm, type EntityProposal } from "./AiEntityProposalForm.js";
 import { AiLendProposalForm } from "./AiLendProposalForm.js";
@@ -70,6 +72,13 @@ function copilotKitHttpUrl(path: string): string {
     electronRuntimeBaseUrl({ rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL }),
   );
   return `${runtime}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+function copilotKitJsonHeaders(token: string | undefined): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    ...authorizationHeaders(token),
+  };
 }
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AiActionsProvider");
@@ -160,6 +169,7 @@ function useApplyEntityProposal() {
 // (i.e. not in sandbox / static-demo mode).
 function AiActionsProviderInner(): React.JSX.Element {
   const context = useMiroirContextService();
+  const { token } = useAuthSession();
   log.info("Rendering AiActionsProvider", "context.showAiSidebar=", context.showAiSidebar);
   const applyEntityProposal = useApplyEntityProposal();
   const applicationDeploymentMap = context.applicationDeploymentMap ?? {};
@@ -449,7 +459,7 @@ function AiActionsProviderInner(): React.JSX.Element {
     handler: async ({ applicationUuid, deploymentUuid, entityName }: Record<string, any>) => {
       const response = await fetch(copilotKitHttpUrl("/findInstanceByName"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: copilotKitJsonHeaders(token),
         body: JSON.stringify({
           entityUuid: ENTITY_ENTITY_UUID,
           entityParentName: "Entity",
@@ -501,7 +511,7 @@ function AiActionsProviderInner(): React.JSX.Element {
     }: Record<string, any>) => {
       const response = await fetch(copilotKitHttpUrl("/findInstanceByName"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: copilotKitJsonHeaders(token),
         body: JSON.stringify({
           entityUuid,
           namePattern,
@@ -558,7 +568,7 @@ function AiActionsProviderInner(): React.JSX.Element {
           onAccept={async () => {
             const response = await fetch(copilotKitHttpUrl("/lendDocument"), {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: copilotKitJsonHeaders(token),
               body: JSON.stringify({ user, book, startDate, note }),
             });
             if (!response.ok) {

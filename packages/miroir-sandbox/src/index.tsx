@@ -186,6 +186,8 @@ async function startDemoApp() {
   );
 
   const processCapabilities = await fetchProcessCapabilities(restClient);
+  domainControllerForClient.setProcessCapabilities(processCapabilities);
+  domainControllerForServer.setProcessCapabilities(processCapabilities);
 
   log.info("startDemoApp: domain controllers ready; running admin→IndexedDB migration check");
 

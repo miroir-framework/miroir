@@ -823,6 +823,7 @@ const capabilities = getProcessCapabilities({
     ConfigurationService.configurationService.StoreSectionFactoryRegister,
   adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
 });
+domainController.setProcessCapabilities(capabilities);
 
 const endpointToolRegistry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
 myLogger.info("Setting up MCP server with dynamic EndpointToolRegistry");

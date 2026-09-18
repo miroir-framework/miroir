@@ -755,6 +755,7 @@ export {
   browserMcpServerUrl,
   copilotRuntimeUrl,
   electronRuntimeBaseUrl,
+  isAllowedElectronLoopbackOrigin,
   shouldListenLoopbackHttp,
   shouldMountCopilotKitRoute,
   shouldMountMcpHttp,

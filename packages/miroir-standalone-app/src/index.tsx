@@ -344,6 +344,8 @@ export async function setupMiroirPlatform(
   }
 
   const processCapabilities = await fetchProcessCapabilities(restClient);
+  domainControllerForClient.setProcessCapabilities(processCapabilities);
+  domainControllerForServer?.setProcessCapabilities(processCapabilities);
 
   return {
     // persistenceStoreControllerManagerForClient: persistenceStoreControllerManagerForClient,

@@ -7,6 +7,9 @@
 const EXTERNAL_EXTRACTOR_TYPES = new Set([
   "extractorForExternalService",
   "extractorTemplateForExternalService",
+  // #272 pre-rename discriminators: still route persisted reports.
+  "extractorFromAction",
+  "extractorTemplateFromAction",
 ]);
 
 function extractorsFromQuery(query: unknown): Record<string, unknown> | undefined {

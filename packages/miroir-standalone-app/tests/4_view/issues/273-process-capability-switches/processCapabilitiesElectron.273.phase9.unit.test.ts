@@ -10,6 +10,7 @@ import {
   browserMcpServerUrl,
   copilotRuntimeUrl,
   electronRuntimeBaseUrl,
+  isAllowedElectronLoopbackOrigin,
   shouldListenLoopbackHttp,
 } from "miroir-core";
 
@@ -130,6 +131,29 @@ if (runThis) {
       expect(localFeatures.mcp).toBe(true);
       expect(dockerFeatures.ai).toBe(true);
       expect(dockerFeatures.mcp).toBe(true);
+    });
+  });
+
+  describe("processCapabilitiesElectron.273.phase9 — loopback CORS allowlist", () => {
+    it("allows packaged, Vite, and loopback origins and rejects arbitrary sites", () => {
+      expect(isAllowedElectronLoopbackOrigin("null")).toBe(true);
+      expect(isAllowedElectronLoopbackOrigin("file://")).toBe(true);
+      expect(isAllowedElectronLoopbackOrigin("app://.")).toBe(true);
+      expect(isAllowedElectronLoopbackOrigin("http://localhost:5173")).toBe(true);
+      expect(isAllowedElectronLoopbackOrigin("https://127.0.0.1:3080")).toBe(true);
+      expect(isAllowedElectronLoopbackOrigin("https://evil.example")).toBe(false);
+      expect(isAllowedElectronLoopbackOrigin("http://192.168.1.10:3080")).toBe(false);
+    });
+
+    it("ipcServerSetup uses the allowlist and does not reflect every Origin", () => {
+      const src = readRepoFile(
+        "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts",
+      );
+      expect(src).toContain("isAllowedElectronLoopbackOrigin");
+      expect(src).toContain("domainController.setProcessCapabilities(capabilities)");
+      expect(src).not.toMatch(
+        /setHeader\(\s*["']Access-Control-Allow-Origin["']\s*,\s*origin\s*\)/,
+      );
     });
   });
 
