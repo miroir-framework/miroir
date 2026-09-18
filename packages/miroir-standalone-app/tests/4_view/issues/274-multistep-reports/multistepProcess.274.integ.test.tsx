@@ -370,6 +370,9 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
               },
               tests: async (expect: ExpectStatic, container: Container) => {
                 await waitForHost();
+                expect(screen.getByTestId("multistep-report-description").textContent).toEqual(
+                  reportMultistepCountryCreate.description,
+                );
                 expectStepOneInputs(container, true);
                 expectMarkdownConfirm(false);
                 expect(screen.queryByRole("button", { name: "Finish" })).toBeNull();
