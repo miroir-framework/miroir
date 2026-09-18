@@ -17,7 +17,7 @@ import {
   type ReportSection,
   type Uuid,
 } from "miroir-core";
-import { useDomainControllerService, useMiroirContextService } from "miroir-react";
+import { useDomainControllerService } from "miroir-react";
 
 import { packageName } from "../../../../constants.js";
 import type { ReportUrlParamKeys } from "../../../../constants.js";
@@ -285,14 +285,12 @@ export type MultistepReportHostProps = {
 };
 
 export function MultistepReportHost(props: MultistepReportHostProps) {
-  const context = useMiroirContextService();
   const domainController = useDomainControllerService();
   const navigate = useNavigate();
   const modelEnvironment = useCurrentModelEnvironment(
     props.application,
     props.applicationDeploymentMap,
   );
-  const generalEditMode = context.viewParams.generalEditMode;
   const steps = useMemo(() => getMultistepChildSections(props.report), [props.report]);
   const rootSection = props.report.definition?.section;
   const listRoot = isMultistepListRoot(rootSection);
@@ -317,7 +315,8 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     [stepBagKeys],
   );
 
-  const isViewerPaging = !generalEditMode;
+  /** Always page in the host; Report definition editing uses InlineReportEditor above the preview. */
+  const isViewerPaging = true;
   const lastIndex = Math.max(0, steps.length - 1);
   const currentStep = steps[stepIndex];
   const currentLabel =

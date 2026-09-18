@@ -314,6 +314,17 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     ).toEqual(["definition", "section", "definition", 1]);
   });
 
+  it("multistepViewerReportSectionPath with paging off widens to the list root (not used by MultistepReportHost)", () => {
+    const listRoot = {
+      type: "list" as const,
+      definition: [requiredNameInputSection, requiredNameInputSection],
+    };
+    expect(multistepViewerReportSectionPath(listRoot, 1, false)).toEqual([
+      "definition",
+      "section",
+    ]);
+  });
+
   it("allGatedStepsAllowFinish rejects an empty required input bag key", () => {
     const fallbackKey = inputReportSectionBagKey(requiredNameInputSection, ["definition", "section"]);
     expect(
