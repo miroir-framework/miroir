@@ -74,6 +74,8 @@ A Report with `"type": "multistep"` pages its `list` children one step at a time
 
 Finish on the last step runs `definition.compositeActionSequence` (`CompositeActionSequenceTemplate`) through `handleCompositeActionTemplate`. The payload is the **step bag** (`inputPrefix` buckets plus hoisted `objectInstanceReportSection` path keys), not the raw Formik tree. The walk is memory-only; the URL has no `step` key.
 
+Optional Report `description` (multiline string on the Report entity) is shown on **step 0** above the step label in `MultistepReportHost` (`data-testid="multistep-report-description"`).
+
 ```json
 {
   "type": "multistep",

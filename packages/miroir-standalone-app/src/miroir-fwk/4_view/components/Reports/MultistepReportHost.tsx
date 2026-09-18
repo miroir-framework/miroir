@@ -446,6 +446,11 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
     leaveProcess();
   }, [leaveProcess]);
 
+  const reportDescription =
+    typeof props.report.description === "string" && props.report.description.trim().length > 0
+      ? props.report.description.trim()
+      : undefined;
+
   if (dismissed) {
     return null;
   }
@@ -456,6 +461,11 @@ export function MultistepReportHost(props: MultistepReportHostProps) {
         <pre data-testid="multistep-step-bag" hidden>
           {JSON.stringify(stepBag)}
         </pre>
+        {isViewerPaging && stepIndex === 0 && reportDescription ? (
+          <ThemedBox data-testid="multistep-report-description">
+            <ThemedSpan>{reportDescription}</ThemedSpan>
+          </ThemedBox>
+        ) : null}
         {isViewerPaging ? (
           <ThemedBox data-testid="multistep-step-label">
             <ThemedSpan>{currentLabel}</ThemedSpan>
