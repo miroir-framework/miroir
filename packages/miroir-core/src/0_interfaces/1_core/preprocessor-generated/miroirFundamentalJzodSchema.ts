@@ -9455,6 +9455,15 @@ export const miroirFundamentalJzodSchema = {
               }
             }
           },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
           "definition": {
             "type": "any",
             "tag": {
@@ -13616,6 +13625,24 @@ export const miroirFundamentalJzodSchema = {
                 "defaultLabel": "Type of Report",
                 "display": {
                   "editable": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Description",
+                "description": "Optional introductory text shown on multistep reports.",
+                "display": {
+                  "editable": true,
+                  "string": {
+                    "multiline": true,
+                    "rows": 4
+                  }
                 }
               }
             }

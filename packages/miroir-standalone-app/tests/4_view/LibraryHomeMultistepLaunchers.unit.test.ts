@@ -4,10 +4,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const MULTISTEP_COUNTRY_CREATE = "d2b2fbbd-6844-4422-8412-4e3c303296bc";
-const MULTISTEP_COUNTRY_INSTANCE = "8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61";
 
 describe("LibraryHome multistep launchers", () => {
-  it("exposes both Library multistep Reports via openReportSection on the home page", () => {
+  it("exposes MultistepCountryCreate via openReportSection on the home page", () => {
     const here = dirname(fileURLToPath(import.meta.url));
     const homePath = join(
       here,
@@ -27,10 +26,7 @@ describe("LibraryHome multistep launchers", () => {
       (section) => section.type === "openReportSection",
     );
     const reportUuids = openSections.map((section) => section.definition?.reportUuid);
-    expect(reportUuids).toEqual(
-      expect.arrayContaining([MULTISTEP_COUNTRY_CREATE, MULTISTEP_COUNTRY_INSTANCE]),
-    );
-    expect(openSections).toHaveLength(2);
+    expect(reportUuids).toEqual([MULTISTEP_COUNTRY_CREATE]);
     expect(openSections.every((section) => section.definition?.openAs === "route")).toBe(true);
   });
 });

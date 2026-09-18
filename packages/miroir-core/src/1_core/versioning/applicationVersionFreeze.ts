@@ -184,6 +184,7 @@ export type StoredReportForFreeze = {
   definition: RootReport;
   defaultLabel?: string;
   type?: Report["type"];
+  description?: string;
   parentUuid?: string;
   parentName?: string;
 };
@@ -198,6 +199,7 @@ export type ReportVersionSnapshot = {
   definition: RootReport;
   defaultLabel?: string;
   type?: Report["type"];
+  description?: string;
 };
 
 /**
@@ -226,6 +228,7 @@ export function snapshotReportsAsHistoricalReportVersions(
       definition: structuredClone(report.definition),
       ...(report.defaultLabel !== undefined ? { defaultLabel: report.defaultLabel } : {}),
       ...(report.type !== undefined ? { type: report.type } : {}),
+      ...(report.description !== undefined ? { description: report.description } : {}),
     };
 
     return snapshot;

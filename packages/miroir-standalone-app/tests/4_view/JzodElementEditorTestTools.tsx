@@ -48,7 +48,6 @@ import {
   reportBookList,
   reportCountryList,
   reportMultistepCountryCreate,
-  reportMultistepCountryInstance,
   reportMultistepLaunchPad,
   reportPublisherList,
   selfApplicationLibrary,
@@ -259,8 +258,6 @@ export interface ReactComponentTestSuitePrep<PropType extends Record<string, any
 
 export const LIBRARY_TEST_COUNTRY_ENTITY_UUID = "d3139a6d-0486-4ec8-bded-2a83a3c3cee4";
 export const LIBRARY_TEST_TRACER_COUNTRY_UUID = "63c96487-713f-4d5b-a424-bf7e8f70e147";
-export const LIBRARY_TEST_INSTANCE_COUNTRY_UUID = "e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71";
-
 const libraryApplicationDeploymentMapForTests: ApplicationDeploymentMap = {
   ...defaultSelfApplicationDeploymentMap,
   [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
@@ -400,7 +397,6 @@ export function restoreLibraryMultistepTracerReportInJzodEditorTestCache(): void
     return;
   }
   upsertLibraryReportInJzodEditorTestCache(reportMultistepCountryCreate as EntityInstance);
-  upsertLibraryReportInJzodEditorTestCache(reportMultistepCountryInstance as EntityInstance);
   upsertLibraryReportInJzodEditorTestCache(reportMultistepLaunchPad as EntityInstance);
 }
 
@@ -888,7 +884,6 @@ export function getWrapperLoadingLocalCache(
               reportCountryList as EntityInstance,
               reportPublisherList as EntityInstance,
               reportMultistepCountryCreate as EntityInstance,
-              reportMultistepCountryInstance as EntityInstance,
               reportMultistepLaunchPad as EntityInstance,
           ],
         },

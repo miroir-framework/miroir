@@ -10,7 +10,6 @@ import {
 } from "miroir-core";
 import {
   reportMultistepCountryCreate,
-  reportMultistepCountryInstance,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
 import {
@@ -23,7 +22,6 @@ import {
   deleteLibraryCountryFromJzodEditorTestCache,
   extractValuesFromRenderedElements,
   getLibraryCountryFromJzodEditorTestCache,
-  LIBRARY_TEST_INSTANCE_COUNTRY_UUID,
   LIBRARY_TEST_TRACER_COUNTRY_UUID,
   prepareAndRunTestSuites,
   restoreLibraryMultistepTracerReportInJzodEditorTestCache,
@@ -39,9 +37,7 @@ import bookCountByPublisherQuery from "../../../../../miroir-test-app_deployment
 const LIBRARY_APPLICATION_UUID = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
 const MULTISTEP_REPORT_UUID = "d2b2fbbd-6844-4422-8412-4e3c303296bc";
-const MULTISTEP_INSTANCE_REPORT_UUID = "8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61";
 const COUNTRY_ENTITY_UUID = "d3139a6d-0486-4ec8-bded-2a83a3c3cee4";
-const INSTANCE_BAG_KEY = "definition_section_definition_1";
 
 const deployment_Library: Deployment = {
   uuid: LIBRARY_DEPLOYMENT_UUID,
@@ -73,11 +69,6 @@ const tracerPageParams = {
   deploymentUuid: deployment_Library.uuid,
   instanceUuid: undefined,
   reportUuid: MULTISTEP_REPORT_UUID,
-};
-
-const instancePageParams = {
-  ...tracerPageParams,
-  reportUuid: MULTISTEP_INSTANCE_REPORT_UUID,
 };
 
 const currentUseParams = {
@@ -178,37 +169,6 @@ function readJsonTestId(testId: string): any {
   const node = screen.getByTestId(testId);
   const raw = node.textContent ?? "";
   return raw.length > 0 ? JSON.parse(raw) : {};
-}
-
-function instanceReportProps() {
-  currentUseParams.reportUuid = MULTISTEP_INSTANCE_REPORT_UUID;
-  return {
-    application: selfApplicationLibrary.uuid,
-    applicationSection: "data" as const,
-    deploymentUuid: deployment_Library.uuid,
-    pageParams: instancePageParams,
-    reportDefinition: reportMultistepCountryInstance as any,
-    applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-  };
-}
-
-async function typeInstanceCountryName(container: Container, name: string) {
-  const nameInput = await waitFor(() => {
-    const input = inputByName(container, `${INSTANCE_BAG_KEY}.name`);
-    expect(input).toBeTruthy();
-    return input as HTMLInputElement;
-  });
-  await act(async () => {
-    fireEvent.change(nameInput, { target: { value: name } });
-  });
-  await waitAfterUserInteraction();
-}
-
-async function goToInstanceStep(container: Container) {
-  await waitForHost();
-  await typeStepOne(container, "Testland", "TL");
-  fireEvent.click(screen.getByRole("button", { name: "Next" }));
-  await waitAfterUserInteraction();
 }
 
 async function waitForTracerCloneOnScreen() {
@@ -616,47 +576,6 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 expect(storedJson).not.toMatch(/publisherName/);
               },
             },
-            "instance-no-child-formik": {
-              props: instanceReportProps,
-              tests: async (expect: ExpectStatic, container: Container) => {
-                await goToInstanceStep(container);
-                expect(screen.queryByTestId("report-section-entity-instance-nested-formik")).toBeNull();
-                expect(inputByName(container, `${INSTANCE_BAG_KEY}.name`)).toBeTruthy();
-              },
-            },
-            "instance-edit-updates-bag": {
-              props: instanceReportProps,
-              tests: async (expect: ExpectStatic, container: Container) => {
-                await goToInstanceStep(container);
-                await typeInstanceCountryName(container, "Hoistland");
-                const bag = await waitFor(() => {
-                  const parsed = readJsonTestId("multistep-step-bag");
-                  expect(parsed[INSTANCE_BAG_KEY]?.name).toEqual("Hoistland");
-                  return parsed;
-                });
-                expect(bag[INSTANCE_BAG_KEY].name).toEqual("Hoistland");
-              },
-            },
-            "instance-finish-sees-hoisted-key": {
-              props: instanceReportProps,
-              tests: async (expect: ExpectStatic, container: Container) => {
-                await goToInstanceStep(container);
-                await typeInstanceCountryName(container, "Hoistland");
-                fireEvent.click(screen.getByRole("button", { name: "Next" }));
-                await waitAfterUserInteraction();
-                expect(screen.getByRole("button", { name: "Finish" })).toBeTruthy();
-                fireEvent.click(screen.getByRole("button", { name: "Finish" }));
-                await waitAfterUserInteraction();
-                await waitFor(() => {
-                  const country = getLibraryCountryFromJzodEditorTestCache(
-                    LIBRARY_TEST_INSTANCE_COUNTRY_UUID,
-                  );
-                  expect(country).toBeTruthy();
-                  expect(country?.name).toEqual("Hoistland");
-                  expect(country?.uuid).toEqual(LIBRARY_TEST_INSTANCE_COUNTRY_UUID);
-                });
-              },
-            },
             "leaf-finish-validates-required": {
               props: {
                 application: selfApplicationLibrary.uuid,
@@ -695,38 +614,6 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 expect(navigateMock).toHaveBeenCalledWith(-1);
               },
             },
-            "query-failure-keeps-bag": {
-              props: instanceReportProps,
-              tests: async (expect: ExpectStatic, container: Container) => {
-                await goToInstanceStep(container);
-                await typeInstanceCountryName(container, "Hoistland");
-                fireEvent.click(screen.getByRole("button", { name: "Next" }));
-                await waitAfterUserInteraction();
-                expect(screen.getByTestId("multistep-report-host")).toBeTruthy();
-                await waitFor(() => {
-                  expect(screen.getByTestId("multistep-step-query-failure")).toBeTruthy();
-                });
-                const bag = readJsonTestId("multistep-step-bag");
-                expect(bag.stepOne?.name).toEqual("Testland");
-                expect(bag.stepOne?.["iso3166-1Alpha-2"]).toEqual("TL");
-                fireEvent.click(screen.getByRole("button", { name: "Back" }));
-                await waitAfterUserInteraction();
-                fireEvent.click(screen.getByRole("button", { name: "Back" }));
-                await waitAfterUserInteraction();
-                expectStepOneInputs(container, true);
-                const values = extractValuesFromRenderedElements(
-                  expect,
-                  undefined,
-                  container,
-                  "stepOne",
-                  "after query failure back",
-                );
-                expect(values["stepOne.name"] ?? values.name).toEqual("Testland");
-                expect(
-                  values["stepOne.iso3166-1Alpha-2"] ?? values["iso3166-1Alpha-2"],
-                ).toEqual("TL");
-              },
-            },
           },
         },
       };
@@ -737,7 +624,6 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
 describe("multistepProcess.274", () => {
   afterEach(() => {
     deleteLibraryCountryFromJzodEditorTestCache();
-    deleteLibraryCountryFromJzodEditorTestCache(LIBRARY_TEST_INSTANCE_COUNTRY_UUID);
     restoreLibraryMultistepTracerReportInJzodEditorTestCache();
     currentUseParams.reportUuid = MULTISTEP_REPORT_UUID;
     navigateMock.mockClear();

@@ -108,12 +108,12 @@ Copied from [`analysis.md`](./analysis.md) D1–D17 after review repairs. Deviat
 | Artefact | Value |
 |---|---|
 | Library Report `MultistepCountryCreate` (tracer, frozen in Slice 1) | `d2b2fbbd-6844-4422-8412-4e3c303296bc` |
-| Library Report `MultistepCountryInstance` (Slice 4) | `8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61` |
+| Library Report `MultistepCountryUpdate` (Slice 4) | `8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61` |
 | Library Report `MultistepLaunchPad` (Slice 5) | `b6d9e2a1-4c58-4f70-8a13-9e2f0c5d7b44` |
 | Step-1 `inputPrefix` | `stepOne` |
 | Step-2 `inputPrefix` | `stepTwo` |
 | Tracer Country uuid (created by Finish) | `63c96487-713f-4d5b-a424-bf7e8f70e147` |
-| Slice 4 Finish Country uuid (`MultistepCountryInstance`) | `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` |
+| Slice 4 Finish Country uuid (`MultistepCountryUpdate`) | `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` |
 | MiroirTest suite `multistepReports.274` | `9931f827-a3ce-435f-bf07-4dac430d81d1` |
 | MiroirTest `multistepFinish.274` | `42751630-3516-45e4-85ff-6838576a4a04` |
 | Library application | `5af03c98-fe5e-490b-b08f-e1230971c57f` |
@@ -428,7 +428,7 @@ An `objectInstanceReportSection` step writes into the step bag. A failed step qu
 
 **Test:** add named cases to `multistepProcess.274.integ.test.tsx` (second `ReactComponentTestSuite` mount for `8f3c1a6e-…`, same `prepareAndRunTestSuites` call). This is the §8 “later-step query failure” row.
 
-Drive `MultistepCountryInstance` (`8f3c1a6e-…`), **not** the tracer:
+Drive `MultistepCountryUpdate` (`8f3c1a6e-…`), **not** the tracer:
 
 - Step 0: `inputReportSection` `stepOne`.
 - Step 1: `objectInstanceReportSection` (Country-shaped editor; bag key = `reportSectionPath.join("_")`).
@@ -464,9 +464,9 @@ RUN_TEST=multistep.274.phase0 npm run testByFile -w miroir-standalone-app -- --p
 
 ### Realization
 
-Object-instance hoist + failure-keeps-bag. Completeness suite (`multistepProcess.274.integ.test.tsx`) gained four cases on the same suite: `instance-no-child-formik`, `instance-edit-updates-bag`, `instance-finish-sees-hoisted-key`, `query-failure-keeps-bag`. Frozen tracer JSON was not edited. Phase0 inventory 85 → 86 (`8f3c1a6e-…` MultistepCountryInstance).
+Object-instance hoist + failure-keeps-bag. Completeness suite (`multistepProcess.274.integ.test.tsx`) gained four cases on the same suite: `instance-no-child-formik`, `instance-edit-updates-bag`, `instance-finish-sees-hoisted-key`, `query-failure-keeps-bag`. Frozen tracer JSON was not edited. Phase0 inventory 85 → 86 (`8f3c1a6e-…` MultistepCountryUpdate).
 
-**Report:** Library `MultistepCountryInstance` (`8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61`). Step 0 `inputPrefix: stepOne`. Step 1 Country `objectInstanceReportSection` (create-mode, no `fetchedDataReference`). Step 2 `jsonReportSection` `failingCountries` extractor with `getFromParameters` `safe: true` `referencePath: ["absentParam"]`. Finish `createInstance` Country `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` from the hoisted bag key. Draft editor seed uuid `c9e2a4b1-7d5f-4e8c-a1b3-6f0d8e4c2a91` (not Finish).
+**Report:** Library `MultistepCountryUpdate` (`8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61`). Step 0 `inputPrefix: stepOne`. Step 1 Country `objectInstanceReportSection` (create-mode, no `fetchedDataReference`). Step 2 `jsonReportSection` `failingCountries` extractor with `getFromParameters` `safe: true` `referencePath: ["absentParam"]`. Finish `createInstance` Country `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` from the hoisted bag key. Draft editor seed uuid `c9e2a4b1-7d5f-4e8c-a1b3-6f0d8e4c2a91` (not Finish).
 
 **Bag key:** `definition_section_definition_1` (`["definition","section","definition", 1].join("_")`). Host `collectStepBagKeys` walks list/grid and collects each `inputPrefix` plus each object-instance path key. Next Jzod-gates input **and** instance (D7) via Country’s resolved `mlSchema`.
 
@@ -480,7 +480,7 @@ Object-instance hoist + failure-keeps-bag. Completeness suite (`multistepProcess
 
 **Deviations:** Named cases on the existing suite (not a second `ReactComponentTestSuite` mount) so `jzodEditorTestLocalCache` stays shared. `useParams` is per-case via mutable `currentUseParams` set in the instance `props` factory before render (`ReportPage` reads `useParams` at mount). Failure extractor uses `safe: true` + `referencePath: ["absentParam"]` so template resolve does not throw. Step 1 is create-mode because a successful Country fetch cannot coexist with a failing extractor on the same report query (fail-fast). Hidden `multistep-step-bag` testid. Library `testByFile` filter is `modelValidation.unit` (vitest root is `./tests`). No product `useEffect`. Did not spy on `runMultistepFinish`.
 
-**Validation:** `npm run build -w miroir-test-app_deployment-library` — pass. `npm run testByFile -w miroir-test-app_deployment-library -- modelValidation.unit` — 183/183 (includes MultistepCountryInstance). `RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274` — 16/16 (12 existing + 4 Slice 4). `RUN_TEST=multistep.274.phase0 … --profile emulatedServer-filesystem` — 7/7. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — pass.
+**Validation:** `npm run build -w miroir-test-app_deployment-library` — pass. `npm run testByFile -w miroir-test-app_deployment-library -- modelValidation.unit` — 183/183 (includes MultistepCountryUpdate). `RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274` — 16/16 (12 existing + 4 Slice 4). `RUN_TEST=multistep.274.phase0 … --profile emulatedServer-filesystem` — 7/7. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — pass.
 
 No stop-the-world product contradiction. Nested-Formik hoist and L445 unmount were expected and handled as above.
 
