@@ -24,6 +24,9 @@ import {
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   defaultViewParamsFromAdminStorageFetchQueryParams,
+  ELECTRON_LOOPBACK_ROOT_API_URL,
+  electronRuntimeBaseUrl,
+  getClientEnvironment,
   Domain2ElementFailed,
   getEndpointActions,
   getDefaultValueForJzodSchemaWithResolutionNonHook,
@@ -352,6 +355,13 @@ export function StoredRunnerView(props: {
     [storedRunner]
   );
 
+  if (
+    storedRunner?.definition.runnerType === "mcpToolRunner" &&
+    context.processCapabilities.mcp !== true
+  ) {
+    return null;
+  }
+
   return (
     <>
       <JsonDisplayHelper debug={true}
@@ -465,9 +475,24 @@ export function StoredRunnerView(props: {
                             const envelope = await runMcpToolRunner(
                               runnerDefinitionFromLocalCache,
                               args,
-                              browserMcpServerUrl(),
+                              browserMcpServerUrl(
+                                getClientEnvironment(),
+                                electronRuntimeBaseUrl({
+                                  rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL,
+                                }),
+                              ),
+                              context.processCapabilities,
                             );
                             if (envelope.status === "error") {
+                              if (envelope.error?.type === "FeatureUnavailable") {
+                                return new Action2Error(
+                                  "FeatureUnavailable",
+                                  envelope.error?.message ?? "Unknown error",
+                                  undefined,
+                                  undefined,
+                                  { capability: "mcp" },
+                                );
+                              }
                               return new Action2Error(
                                 "FailedToHandleAction",
                                 envelope.error?.message ?? "Unknown error",

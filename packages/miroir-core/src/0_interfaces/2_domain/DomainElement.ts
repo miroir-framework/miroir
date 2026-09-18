@@ -202,6 +202,7 @@ export type ActionErrorType =
 | "ExternalServiceNotFound"
 | "ExternalServiceRateLimited"
 | "ExternalServiceUpstreamFailure"
+| "FeatureUnavailable"
 ;
 
 // export class Action2Error extends Error {

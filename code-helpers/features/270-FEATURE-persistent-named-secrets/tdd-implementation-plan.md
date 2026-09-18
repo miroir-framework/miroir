@@ -7,7 +7,7 @@
 > `miroir-core` because `miroir-server` has no test suite (same exception as #267
 > `parseServerArgs` / `SecretStore`).
 > Tracer (Slice 1): a process-scoped secret stored as ciphertext on Admin `MiroirSecret` is
-> decrypted with the wrapping key and used by `extractorFromAction` against the fake Spotify
+> decrypted with the wrapping key and used by `extractorForExternalService` against the fake Spotify
 > server — **without** `registerSecrets` in the test body.
 >
 > **Execution model (this conversation):** implement immediately after this reviewed plan;
@@ -99,7 +99,7 @@ From the analysis decision record (binding; deviations go into the slice's Reali
 | R1 | OAuth cache keys include `principal?.miroirUserUuid ?? "process"` |
 | R5 | Principal threaded through composite boxed-query path (full hop list in Slice 4) |
 | R6 | Orchestration lives in `miroir-core` `SecretsService`; `server.ts` is wiring |
-| R9 | Only `POST /query` needs principal on the REST query path; `/queryTemplate` fails closed for `extractorFromAction` |
+| R9 | Only `POST /query` needs principal on the REST query path; `/queryTemplate` fails closed for `extractorForExternalService` |
 
 `source` on the resolve result: `"row"` (hydrated / imported ciphertext) or `"hatch"` (`registerSecrets`). Required by P6 so rotation persist does not fire for hatch-only secrets.
 
@@ -210,7 +210,7 @@ Not reachable as MiroirTest: no secrets ML concept yet (same as #71 phase0).
 **Survives (do not flip)**
 - Admin menu has **8** items; no Credentials; no Secrets.
 - `parseServerArgs(["--secret", "a=b"])` returns `{ secrets: { a: "b" } }` (`ParsedServerArgs.secrets` remains the import set — P3).
-- `/queryTemplate` store runners hard-error on `extractorFromAction`; that path stays principal-less (R9).
+- `/queryTemplate` store runners hard-error on `extractorForExternalService`; that path stays principal-less (R9).
 
 ### Validation
 
@@ -233,7 +233,7 @@ RUN_TEST=secrets.270.phase0 npm run testByFile -w miroir-core -- secrets.270.pha
 
 ### Goal
 
-As a test operator / application maintainer, I can store a process-scoped named secret as ciphertext on Admin `MiroirSecret`, decrypt it with wrapping key `test-secrets-master`, and have `extractorFromAction` succeed against the fake Spotify server **without** calling `registerSecrets` in the test body.
+As a test operator / application maintainer, I can store a process-scoped named secret as ciphertext on Admin `MiroirSecret`, decrypt it with wrapping key `test-secrets-master`, and have `extractorForExternalService` succeed against the fake Spotify server **without** calling `registerSecrets` in the test body.
 
 **Layers cut:** Admin Entity JSON (real package **and** emulated test-asset copy) → `SecretsService` (encrypt/decrypt/hydrate) → `SecretStore` process map → `parseServerArgs --secrets-master-key` → `ExternalServiceClient` reads `.value` → redaction of `ciphertext` → existing fake-Spotify query path.
 
@@ -261,7 +261,7 @@ Reuse the #267 fake server + filesystem emulated profile. **Persist/hydrate wiri
 6. **Teardown (P14):** `deleteInstance` the created row(s) in `afterEach`/`afterAll`.
 
 Behavior asserted:
-- Boxed `extractorFromAction` get-playlist against the fake server succeeds; `Authorization: Bearer <hydrated value>`.
+- Boxed `extractorForExternalService` get-playlist against the fake server succeeds; `Authorization: Bearer <hydrated value>`.
 - A control without hydrate / without wrapping key fails closed (`Unknown or empty secret`).
 
 ### 1.2 GREEN
@@ -305,7 +305,7 @@ Phase0 is re-run **after** its Consumed-by-Slice-1 assertions have been updated 
 
 - **Tests:** `packages/miroir-core/tests/4_services/issues/270-persistent-named-secrets/secretsService.270.phase1.unit.test.ts` (7 tests); `packages/miroir-standalone-app/tests/3_controllers/issues/270-persistent-named-secrets/secretsHydrate.270.phase1.integ.test.ts` (2 tests). Phase0 Consumed-by Slice 1 assertions updated in place (P1): 10 real / 6 emulated entities including `a96856df-…` named MiroirSecret; `--secrets-master-key` parses; `resolveSecret` returns `{ value, scope, source }`; `secretsMasterKey` is present when flag/env is set.
 - **Entity:** present-model only `MiroirSecret` at real Admin `admin_model/16dbfe28-…/a96856df-….json` and the standalone-app emulated copy. Exported as `entityMiroirSecret` from admin `index.ts` + `index.d.ts`. No EntityVersion, no reports, no menu item. `ENTITY_MIROIR_SECRET_UUID` lives next to `ENTITY_MIROIR_USER_CREDENTIAL_UUID` in `AuthenticationPolicy.ts`.
-- **Persist/hydrate wiring that worked:** `AppStackIntegrationTestSession` with `openAdminAndMiroirStoresOnServer: true` and `miroirDeploymentStorageConfiguration` from `miroirConfig` (same pattern as Admin). Write = server-DC `createInstance` on Admin application `55af124e-…`, section `data`, INSTANCE_ENDPOINT. Read = server-DC boxed `extractorInstancesByEntity` / `queryExecutionStrategy: "storage"` / `parentUuid` MiroirSecret. Then `setSecretsMasterKey("test-secrets-master")` + `hydrateSecrets({ wrappingKey, rows })`. Playlist query uses client DC `extractorFromAction`; `Authorization: Bearer hydrated-from-row`. Teardown = server-DC `deleteInstance` in `afterEach`/`afterAll` (no leftover `*.json`).
+- **Persist/hydrate wiring that worked:** `AppStackIntegrationTestSession` with `openAdminAndMiroirStoresOnServer: true` and `miroirDeploymentStorageConfiguration` from `miroirConfig` (same pattern as Admin). Write = server-DC `createInstance` on Admin application `55af124e-…`, section `data`, INSTANCE_ENDPOINT. Read = server-DC boxed `extractorInstancesByEntity` / `queryExecutionStrategy: "storage"` / `parentUuid` MiroirSecret. Then `setSecretsMasterKey("test-secrets-master")` + `hydrateSecrets({ wrappingKey, rows })`. Playlist query uses client DC `extractorForExternalService`; `Authorization: Bearer hydrated-from-row`. Teardown = server-DC `deleteInstance` in `afterEach`/`afterAll` (no leftover `*.json`).
 - **Filesystem data-section inventory:** copying the entity into `admin_model` is not enough for `upsertInstance` on `data`. Filesystem `getEntityUuids()` is `readdir` of `admin_data`. Empty collection dirs with `.gitkeep` (no instance rows) were added under real and emulated `admin_data/a96856df-…/`.
 - **Core:** `SecretsService` (`set`/`get`/`clearSecretsMasterKey`, `encryptSecret`/`decryptSecret`, `hydrateSecrets`); `SecretStore` `resolveSecret` → `{ value, scope, source }` (`registerSecrets` stays hatch); `parseServerArgs.secrets` unchanged (P3) + `secretsMasterKey?: string`; live redactor strips `ciphertext` when `parentUuid === ENTITY_MIROIR_SECRET_UUID`; `ExternalServiceClient` uses `.value` (no principal yet). `server.ts`: usage + wrapping-key presence log + hydrate-only after first open-store loop; `registerSecrets(parsed.secrets)` left standing; no import upsert (P11). Rows + no key → throw; no rows + no key → continue.
 - **Validation:**
@@ -472,7 +472,7 @@ Behavior asserted:
 - Two principals, same endpoint names, distinct refresh tokens: after Alice's call warms the cache, Carol's call hits the fake token URL with **Carol's** refresh token (or her cached access token), never Alice's. Access-token cache keys differ by `miroirUserUuid`.
 - `POST /query` with Alice's Bearer: `resolveSecret("fakeRefresh", alice)` returns `{ scope: "user", miroirUserUuid: alice, source: "row" }`.
 - Hatch off / no principal: only process-scoped rows resolve (existing `externalServiceQuery` still green via `registerSecrets` hatch **or** process hydrate).
-- A composite boxed query that includes `extractorFromAction` receives the same principal as the outer `handleAction` (no silent process fallback when a user row exists). This is the catch for a missed `handleActionInternal` hop (P5).
+- A composite boxed query that includes `extractorForExternalService` receives the same principal as the outer `handleAction` (no silent process fallback when a user row exists). This is the catch for a missed `handleActionInternal` hop (P5).
 
 ### 4.2 GREEN
 
@@ -482,7 +482,7 @@ Thread `principal?: AuthPrincipal` through the **full** hop list (P5):
 → (`handleApplicationAction` **and** `handleActionInternal`)
 → `handleCompositeAction` / `handleCompositeActionTemplate` / `handleCompositeRunBoxedQueryAction` / `handleCompositeRunBoxedQueryTemplateAction`
 → `executeCompositeRunBoxedQueryAction`
-→ `handleBoxedExtractorOrQueryAction` (`DomainController.ts:823`) / `executeBoxedExtractorOrQueryAction` (`:846`) / `resolveExtractorFromActionInBoxedQuery` (`:3221`)
+→ `handleBoxedExtractorOrQueryAction` (`DomainController.ts:823`) / `executeBoxedExtractorOrQueryAction` (`:846`) / `resolveExtractorForExternalServiceInBoxedQuery` (`:3221`)
 → `executeExternalServiceOperation` (`:3037`, `:3260`)
 
 Also: `queryActionHandler` passes `params.authPrincipal`. `/queryTemplate` unchanged (fails closed for external extractors — R9). Do **not** thread principal into `/queryTemplate`.
@@ -509,7 +509,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 ### Realization
 
 - **Test:** `packages/miroir-standalone-app/tests/3_controllers/issues/270-persistent-named-secrets/secretsPrincipal.270.phase4.integ.test.ts` (5 tests). Slice 1 session (`openAdminAndMiroirStoresOnServer: true`, wrapping key `test-secrets-master`, fake Spotify server) + Slice 2 auth fixture (`RestClientStub` + real Admin identity directory + `issueBearerToken` for Alice `1c39328c-…` / Carol `30634877-…`). oauth2AuthorizationCode endpoint pattern from `externalServiceQuery.integ.test.ts`. Teardown via `secrets.delete`; no leftover `admin_data/a96856df-…/*.json`.
-- **Hops threaded (P5):** `handleAction` → `handleApplicationAction` **and** `handleActionInternal` → `handleCompositeAction` / `handleCompositeActionInternal` / `handleCompositeActionTemplate` / `handleCompositeRunBoxedQueryAction` / `executeCompositeRunBoxedQueryAction` / `handleCompositeRunBoxedQueryTemplateAction` (receives principal, does **not** pass it into `handleQueryTemplateActionForServerONLY`) → `handleBoxedExtractorOrQueryAction` / `executeBoxedExtractorOrQueryAction` / `resolveExtractorFromActionInBoxedQuery` → `executeExternalServiceOperation`. `queryActionHandler` passes `params.authPrincipal`. `/queryTemplate` unchanged (R9). Nested `handleAction` calls inside composite handlers also forward principal.
+- **Hops threaded (P5):** `handleAction` → `handleApplicationAction` **and** `handleActionInternal` → `handleCompositeAction` / `handleCompositeActionInternal` / `handleCompositeActionTemplate` / `handleCompositeRunBoxedQueryAction` / `executeCompositeRunBoxedQueryAction` / `handleCompositeRunBoxedQueryTemplateAction` (receives principal, does **not** pass it into `handleQueryTemplateActionForServerONLY`) → `handleBoxedExtractorOrQueryAction` / `executeBoxedExtractorOrQueryAction` / `resolveExtractorForExternalServiceInBoxedQuery` → `executeExternalServiceOperation`. `queryActionHandler` passes `params.authPrincipal`. `/queryTemplate` unchanged (R9). Nested `handleAction` calls inside composite handlers also forward principal.
 - **SecretStore / hydrate:** user map keyed `userUuid:name`. `resolveSecret(name, principal?)` prefers a user row when `principal.miroirUserUuid` matches, else process. `hydrateSecrets` decrypts user rows into that map. `redactRegisteredSecretValuesInString` walks both maps.
 - **Cache-key helper:** `oauth2PrincipalCacheScope(principal)` → `principal?.miroirUserUuid ?? "process"`. Appended to `oauth2AuthorizationCodeCacheKey`, client-credentials cache key, and `rotatedRefreshTokens` keys. 401 retry uses the same principal.
 - **MiroirUser emulated asset:** **not copied**. User-scoped `createInstance` of `MiroirSecret` succeeded against the existing 6-entity emulated `admin_model` (FK target entity was not required).

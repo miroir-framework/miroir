@@ -258,7 +258,7 @@ function boxedGetPlaylistQuery(playlistId: string, actionType = "get-playlist") 
         application: selfApplicationLibrary.uuid,
         extractors: {
           playlist: {
-            extractorOrCombinerType: "extractorFromAction",
+            extractorOrCombinerType: "extractorForExternalService",
             endpointUuid: TEST_ENDPOINT_UUID,
             actionType,
             parameterBindings: { playlist_id: playlistId },

@@ -419,7 +419,7 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           );
       break;
     }
-    case "extractorFromAction":
+    case "extractorForExternalService":
     default: {
       const extractorType =
         (extractorOrCombiner as { extractorOrCombinerType?: string })?.extractorOrCombinerType ??
@@ -429,8 +429,8 @@ export async function asyncInnerSelectElementFromQuery /*BoxedExtractorTemplateR
           queryFailure: "QueryNotExecutable",
           failureOrigin: ["AsyncQuerySelectors", "asyncInnerSelectElementFromQuery"],
           failureMessage:
-            extractorType === "extractorFromAction"
-              ? "extractorFromAction cannot be executed on the AsyncQuerySelectors path"
+            extractorType === "extractorForExternalService"
+              ? "extractorForExternalService cannot be executed on the AsyncQuerySelectors path"
               : "could not find extractorOrCombinerType for extractor: " + extractorType,
           query: JSON.stringify(extractorOrCombiner),
         })

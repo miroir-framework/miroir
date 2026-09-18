@@ -1,11 +1,10 @@
 /**
  * AiActionsProvider
  *
- * Lazy-loaded from RootComponent when ViewParams.agents is enabled and
- * AgentsCopilotKit mounts this when ViewParams.agents is enabled and
- * context.showAiSidebar is true (#244). Registers CopilotKit useCopilotAction
- * hooks and renders CopilotSidebar (toggled from the AppBar when agents are
- * enabled via Settings → Appearance).
+ * Mounted inside AgentsCopilotKit when snapshot processCapabilities.ai is true
+ * and the user opens the assistant or CopilotKit dev console from the AppBar
+ * (#244 latch). Registers CopilotKit useCopilotAction hooks and renders
+ * CopilotSidebar.
  *
  * The effective deployment UUID is derived from
  *   context.toolsPageState.applicationSelector → context.applicationDeploymentMap
@@ -19,7 +18,12 @@ import "@copilotkit/react-ui/styles.css";
 import "./aiSidebar.css";
 
 import {
+  authorizationHeaders,
+  copilotRuntimeUrl,
   defaultSelfApplicationDeploymentMap,
+  ELECTRON_LOOPBACK_ROOT_API_URL,
+  electronRuntimeBaseUrl,
+  getClientEnvironment,
   LoggerInterface,
   MiroirLoggerFactory,
 } from "miroir-core";
@@ -36,8 +40,10 @@ import { adminSelfApplication, entityDeployment } from "miroir-test-app_deployme
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
+import { useAuthSession } from "../../auth/authSession.js";
 import { MIROIR_SYSTEM_PROMPT } from "./miroirSystemPrompt.js";
 import { AiEntityProposalForm, type EntityProposal } from "./AiEntityProposalForm.js";
+import { AiLendProposalForm } from "./AiLendProposalForm.js";
 
 // ── Selector params (module-level, constant) ──────────────────────────────────
 const APPLICATIONS_SELECTOR_PARAMS = {
@@ -59,6 +65,21 @@ const DEPLOYMENTS_SELECTOR_PARAMS = {
 };
 
 const ENTITY_ENTITY_UUID = entityEntity.uuid;
+
+function copilotKitHttpUrl(path: string): string {
+  const runtime = copilotRuntimeUrl(
+    getClientEnvironment(),
+    electronRuntimeBaseUrl({ rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL }),
+  );
+  return `${runtime}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+function copilotKitJsonHeaders(token: string | undefined): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    ...authorizationHeaders(token),
+  };
+}
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "AiActionsProvider");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -148,6 +169,7 @@ function useApplyEntityProposal() {
 // (i.e. not in sandbox / static-demo mode).
 function AiActionsProviderInner(): React.JSX.Element {
   const context = useMiroirContextService();
+  const { token } = useAuthSession();
   log.info("Rendering AiActionsProvider", "context.showAiSidebar=", context.showAiSidebar);
   const applyEntityProposal = useApplyEntityProposal();
   const applicationDeploymentMap = context.applicationDeploymentMap ?? {};
@@ -185,9 +207,9 @@ function AiActionsProviderInner(): React.JSX.Element {
     value: effectiveDeploymentUuid || "(none — the user has not selected a target application yet)",
   });
 
-  // ── generateMiroirEntity ────────────────────────────────────────────────────
+  // ── propose_generateMiroirEntity ────────────────────────────────────────────
   useCopilotAction({
-    name: "generateMiroirEntity",
+    name: "propose_generateMiroirEntity",
     description:
       "Generate a new Miroir Entity and its EntityVersion based on a description. " +
       "Present the proposal to the user for review before applying.",
@@ -435,9 +457,9 @@ function AiActionsProviderInner(): React.JSX.Element {
       },
     ],
     handler: async ({ applicationUuid, deploymentUuid, entityName }: Record<string, any>) => {
-      const response = await fetch("/api/copilotkit/findInstanceByName", {
+      const response = await fetch(copilotKitHttpUrl("/findInstanceByName"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: copilotKitJsonHeaders(token),
         body: JSON.stringify({
           entityUuid: ENTITY_ENTITY_UUID,
           entityParentName: "Entity",
@@ -487,9 +509,9 @@ function AiActionsProviderInner(): React.JSX.Element {
       entityUuid,
       namePattern,
     }: Record<string, any>) => {
-      const response = await fetch("/api/copilotkit/findInstanceByName", {
+      const response = await fetch(copilotKitHttpUrl("/findInstanceByName"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: copilotKitJsonHeaders(token),
         body: JSON.stringify({
           entityUuid,
           namePattern,
@@ -506,10 +528,12 @@ function AiActionsProviderInner(): React.JSX.Element {
     },
   });
 
-  // ── lendDocument ────────────────────────────────────────────────────────────
+  // ── propose_lendDocument ────────────────────────────────────────────────────
   useCopilotAction({
-    name: "lendDocument",
-    description: "Lend a library document (book) to a user.",
+    name: "propose_lendDocument",
+    description:
+      "Propose lending a library document (book) to a user. " +
+      "Present the proposal to the user for review before applying.",
     parameters: [
       {
         name: "user",
@@ -536,17 +560,33 @@ function AiActionsProviderInner(): React.JSX.Element {
         required: false,
       },
     ],
-    handler: async ({ user, book, startDate, note }: Record<string, any>) => {
-      const response = await fetch("/api/copilotkit/lendDocument", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user, book, startDate, note }),
-      });
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({ message: "Request failed" }));
-        return { status: "error", message: (err as any).message ?? "Request failed" };
-      }
-      return response.json();
+    renderAndWaitForResponse(props) {
+      const { user, book, startDate, note } = props.args as Record<string, any>;
+      return (
+        <AiLendProposalForm
+          proposal={{ user, book, startDate, note }}
+          onAccept={async () => {
+            const response = await fetch(copilotKitHttpUrl("/lendDocument"), {
+              method: "POST",
+              headers: copilotKitJsonHeaders(token),
+              body: JSON.stringify({ user, book, startDate, note }),
+            });
+            if (!response.ok) {
+              const err = await response.json().catch(() => ({ message: "Request failed" }));
+              props.respond?.({
+                status: "error",
+                message: (err as any).message ?? "Request failed",
+              });
+              return;
+            }
+            const result = await response.json();
+            props.respond?.(result);
+          }}
+          onReject={() => {
+            props.respond?.({ message: "Proposal rejected by user." });
+          }}
+        />
+      );
     },
   });
 
@@ -555,7 +595,7 @@ function AiActionsProviderInner(): React.JSX.Element {
     name: "getCurrentDate",
     description:
       "Return today's date as an ISO date string (YYYY-MM-DD, e.g. '2026-05-28'). " +
-      "Use this to get the real current date before calling lendDocument or any other " +
+      "Use this to get the real current date before calling propose_lendDocument or any other " +
       "action that needs a date — do NOT guess or invent a date.",
     parameters: [],
     handler: async () => {

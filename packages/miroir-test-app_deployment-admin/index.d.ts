@@ -65,6 +65,7 @@ export declare const miroirUser_AliceAdmin: any;
 export declare const miroirUser_BobInactive: any;
 export declare const miroirUser_Carol: any;
 export declare const miroirUser_Dave: any;
+export declare const miroirRight_AliceAdminApplication: any;
 export declare const miroirRight_AliceLibraryAppAdmin: any;
 export declare const miroirRight_AliceLibraryDeploymentRead: any;
 export declare const miroirRight_DaveLibraryDeployment: any;

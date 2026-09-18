@@ -1,5 +1,5 @@
 /**
- * External service report path — Report path: extractorTemplateFromAction + param forwarding
+ * External service report path — Report path: extractorTemplateForExternalService + param forwarding
  * + async report-load routing (D5 client, D8).
  *
  * Vitest integ (.tsx + MemoryRouter): React report rendering and URL dispatch
@@ -446,7 +446,7 @@ afterAll(async () => {
 });
 
 describe.skipIf(!shouldRun).sequential(
-  "externalServiceReport — report path + extractorTemplateFromAction",
+  "externalServiceReport — report path + extractorTemplateForExternalService",
   () => {
     it("reportPageParamsFromSearchParams forwards unknown keys such as playlistId", () => {
       const searchParams = new URLSearchParams(
@@ -467,7 +467,7 @@ describe.skipIf(!shouldRun).sequential(
       expect(reportPageParamsFromSearchParams(searchParams)).toBeUndefined();
     });
 
-    it("report with extractorTemplateFromAction renders the fake-server playlist name and first track", async () => {
+    it("report with extractorTemplateForExternalService renders the fake-server playlist name and first track", async () => {
       expect(PLAYLIST_OK.name).toBe(PLAYLIST_NAME_LITERAL);
       expect(PLAYLIST_OK.tracks.items[0]?.track.name).toBe(FIRST_TRACK_NAME_LITERAL);
 

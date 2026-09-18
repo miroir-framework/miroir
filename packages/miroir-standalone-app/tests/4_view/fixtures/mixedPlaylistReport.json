@@ -15,7 +15,7 @@
         "instanceUuid": "b62fc20b-dcf5-4e3b-a247-62d0475cf60f"
       },
       "playlist": {
-        "extractorOrCombinerType": "extractorTemplateFromAction",
+        "extractorOrCombinerType": "extractorTemplateForExternalService",
         "endpointUuid": "c8f2a1b4-6d3e-4a91-9b07-2e5c8d1f4a63",
         "actionType": "get-playlist",
         "parameterBindings": {

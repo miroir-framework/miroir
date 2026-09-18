@@ -69,3 +69,13 @@ export function assertApplicationVersioningEnabled(selfApplication: VersioningMo
 export function isApplicationVersioningEnabled(selfApplication: VersioningModeInput): boolean {
   return isApplicationVersioningCapable(selfApplication);
 }
+
+/** AppBar Versioning item: only when the browsed SelfApplication is versioned-internal. */
+export function isVersioningAppBarItemVisible(args: {
+  browsedSelfApplication?: VersioningModeInput;
+}): boolean {
+  if (!args.browsedSelfApplication) {
+    return false;
+  }
+  return resolveVersioningMode(args.browsedSelfApplication) === "versioned-internal";
+}

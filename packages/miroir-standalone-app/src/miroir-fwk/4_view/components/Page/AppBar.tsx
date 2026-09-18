@@ -7,15 +7,16 @@ import {
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
 import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from '../Themes/MaterialSymbolWrappers';
-import type { MouseEvent, ReactNode } from 'react';
+import { useSyncExternalStore, type MouseEvent, type ReactNode } from 'react';
 
-import { defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, type MiroirMenuItem, type MiroirMenuPageLink } from 'miroir-core';
+import { defaultSelfApplicationDeploymentMap, isVersioningAppBarItemVisible, LoggerInterface, MiroirLoggerFactory, noValue, type MiroirMenuItem, type MiroirMenuPageLink, type ReportLink, type VersioningModeInput } from 'miroir-core';
 
-import { useMiroirContextService } from 'miroir-react';
+import { selectInstanceArrayForDeploymentSectionEntity, useMiroirContextService, useSelector, type ReduxStateWithUndoRedo } from 'miroir-react';
 import { useNavigate } from 'react-router-dom';
 import { packageName } from '../../../../constants.js';
 import { pageUrl, reportUrl } from '../../navigation.js';
 import { cleanLevel } from '../../constants.js';
+import { useDesignerToolsVisibility } from '../../auth/useDesignerToolsVisibility.js';
 import { UserAccountMenu } from '../../auth/UserAccountMenu.js';
 import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
 import { usePageConfiguration } from '../../services/index.js';
@@ -23,8 +24,13 @@ import { applyPerformanceDisplayGate } from '../../tools/performanceDisplayGate.
 import { applyLocalCacheMonitorGate } from '../../tools/localCacheMonitorGate.js';
 import { ThemedIcon } from '../Themes/IconComponents.js';
 import { SidebarWidth } from './SidebarSection.js';
-import { reportMiroirRunners, reportVersioning } from 'miroir-test-app_deployment-miroir';
-import { resolveAppBarReportLinkApplication } from './appBarReportNavigation.js';
+import { entitySelfApplication, reportMiroirRunners, reportVersioning } from 'miroir-test-app_deployment-miroir';
+import { resolveAppBarHomeNavigationUrl, resolveAppBarReportLinkApplication } from './appBarReportNavigation.js';
+import {
+  readMiroirAiBackend,
+  subscribeMiroirAiBackend,
+  writeMiroirAiBackend,
+} from '../../routes/ai/miroirAiBackend.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ResponsiveAppBar");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -96,7 +102,7 @@ export interface AppBarProps extends MuiAppBarProps {
   // Grid type display and toggle
   gridType?: string,
   onGridTypeToggle?: () => void,
-  /** ViewParams.agents — AI AppBar icons and CopilotKit sidebar (#244). */
+  /** Snapshot processCapabilities.ai — AI AppBar icons and CopilotKit sidebar (#244). */
   agentsEnabled?: boolean,
   // Edit mode display and toggle
   generalEditMode?: boolean,
@@ -140,13 +146,64 @@ export function AppBar(props:AppBarProps) {
   const context = useMiroirContextService();
   const { fetchConfigurations } = usePageConfiguration();
   const agentsEnabled = props.agentsEnabled === true;
-  const showAgentUi = agentsEnabled && !(import.meta as any).env?.MIROIR_IS_SANDBOX;
+  const showAgentUi = agentsEnabled;
+  const miroirAiBackend = useSyncExternalStore(
+    subscribeMiroirAiBackend,
+    readMiroirAiBackend,
+    readMiroirAiBackend,
+  );
+  const { designerToolsVisible, showModelTools } = useDesignerToolsVisibility();
+  const applicationSelector = context.toolsPageState?.applicationSelector;
+  const applicationDeploymentMap =
+    context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+  const browsedSelfApplicationInstances =
+    useSelector((state: ReduxStateWithUndoRedo) => {
+      if (!applicationSelector) {
+        return [];
+      }
+      return selectInstanceArrayForDeploymentSectionEntity(
+        state,
+        applicationDeploymentMap,
+        {
+          queryType: "localCacheEntityInstancesExtractor",
+          definition: {
+            application: applicationSelector,
+            applicationSection: "model",
+            entityUuid: entitySelfApplication.uuid,
+          },
+        },
+      );
+    }) ?? [];
+  type BrowsedSelfApplication = VersioningModeInput & {
+    homePageUrl?: string | ReportLink;
+  };
+  const browsedSelfApplication = (
+    applicationSelector
+      ? browsedSelfApplicationInstances.find((row) => row.uuid === applicationSelector)
+      : undefined
+  ) as BrowsedSelfApplication | undefined;
+  const versioningAppBarItemVisible = isVersioningAppBarItemVisible({
+    browsedSelfApplication,
+  });
 
 
   const goToLabelPage = (event: any, l: string) => {
     log.info("goToLabelPage: ", l, " event: ", event);
     navigate(pageUrl(l))
   }
+  const versioningMenuItem: MiroirMenuItem = {
+    miroirMenuItemType: "miroirMenuReportLink",
+    label: "Versioning",
+    // Miroir scaffolding report — open under Miroir data section; in-report
+    // inputReportSection steers which application's versions are listed (#225).
+    section: "data",
+    selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    reportUuid: reportVersioning.uuid,
+    icon: {
+      iconType: "svg",
+      name: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="160" cy="96" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="160" cy="416" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><line x1="160" y1="368" x2="160" y2="144" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="352" cy="160" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M352,208c0,128-192,48-192,160" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>',
+    },
+  };
   const transformerBuilderMenuItem: MiroirMenuPageLink = {
     miroirMenuItemType: "miroirMenuPageLink",
     label: "Transformer Builder",
@@ -166,7 +223,16 @@ export function AppBar(props:AppBarProps) {
     <AppBarIconButton
       key="home"
       title="Home"
-      onClick={() => navigate(pageUrl("home"))}
+      onClick={() =>
+        navigate(
+          resolveAppBarHomeNavigationUrl({
+            applicationSelector,
+            noValueUuid: noValue.uuid,
+            homePageUrl: browsedSelfApplication?.homePageUrl,
+            applicationDeploymentMap,
+          }),
+        )
+      }
       aria-label="Home"
     >
       <ThemedIcon
@@ -208,20 +274,20 @@ export function AppBar(props:AppBarProps) {
     ) : (
       <> </>
     ),
-    context.setShowModelTools ? (
+    designerToolsVisible && context.setShowModelTools ? (
       <AppBarIconButton
         key="model-tools"
         title={
-          context.showModelTools
+          showModelTools
             ? "Model Tools: ON (click to disable)"
             : "Model Tools: OFF (click to enable)"
         }
-        onClick={() => context.setShowModelTools?.(!context.showModelTools) as any}
+        onClick={() => context.setShowModelTools?.(!showModelTools) as any}
         aria-label="Model Tools"
       >
         <ThemedIcon
           icon={
-            context.showModelTools
+            showModelTools
               ? {
                   iconType: "mui",
                   name: "wbIncandescent",
@@ -275,6 +341,49 @@ export function AppBar(props:AppBarProps) {
               : {
                   iconType: "mui",
                   name: "auto_awesome",
+                }
+          }
+        />
+      </AppBarIconButton>
+    ) : (
+      <> </>
+    ),
+    showAgentUi && context.processCapabilities.cursor === true ? (
+      <AppBarIconButton
+        key="ai-backend-cursor"
+        aria-label="Cursor"
+        title={
+          miroirAiBackend === "cursor"
+            ? "Cursor: ON (click to use token AI)"
+            : "Cursor: OFF (click to use Cursor)"
+        }
+        onClick={() => {
+          if (miroirAiBackend === "cursor") {
+            writeMiroirAiBackend();
+          } else {
+            writeMiroirAiBackend("cursor");
+          }
+        }}
+        color={
+          miroirAiBackend === "cursor"
+            ? miroirTheme.currentTheme.colors.warningLight || "orange"
+            : undefined
+        }
+      >
+        <ThemedIcon
+          icon={
+            miroirAiBackend === "cursor"
+              ? {
+                  iconType: "mui",
+                  name: "smart_toy",
+                  color: {
+                    colorType: "themeColor",
+                    currentThemeColorPath: "colors.warning",
+                  },
+                }
+              : {
+                  iconType: "mui",
+                  name: "smart_toy",
                 }
           }
         />
@@ -343,7 +452,7 @@ export function AppBar(props:AppBarProps) {
         name: "search",
       },
     },
-    ...(showAgentUi ? [transformerBuilderMenuItem] : []),
+    ...(designerToolsVisible ? [transformerBuilderMenuItem] : []),
     // {
     //   "label": "runners",
     //   "section": "model",
@@ -370,20 +479,7 @@ export function AppBar(props:AppBarProps) {
       // targetRoot: "runners",
       icon: "directions_run"
     },
-    {
-      miroirMenuItemType: "miroirMenuReportLink",
-      label: "Versioning",
-      // Miroir scaffolding report — open under Miroir data section; in-report
-      // inputReportSection steers which application's versions are listed (#225).
-      section: "data",
-      selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-      reportUuid: reportVersioning.uuid,
-      // icon: "commit",
-      icon: {
-        iconType: "svg",
-        name: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="160" cy="96" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="160" cy="416" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><line x1="160" y1="368" x2="160" y2="144" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="352" cy="160" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M352,208c0,128-192,48-192,160" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>',
-      },
-    },
+    ...(versioningAppBarItemVisible ? [versioningMenuItem] : []),
     {
       miroirMenuItemType: "miroirMenuPageLink",
       label: "events",

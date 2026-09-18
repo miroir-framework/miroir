@@ -1,19 +1,13 @@
 /**
- * #270 Slice 2 — /secrets route policy + MiroirSecret CRUD guard.
- * Persist proofs live in the standalone-app integ file.
+ * #270 Slice 2 — MiroirSecret CRUD guard (labeled secrets.set / secrets.delete).
  */
-import { afterEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import type { DomainControllerInterface, EntityInstance } from "miroir-core";
 import {
   ENTITY_MIROIR_SECRET_UUID,
   SECRETS_DELETE_ACTION_LABEL,
   SECRETS_SET_ACTION_LABEL,
   assertSecretInstanceMutationAllowed,
-  clearSecretsMasterKey,
-  handleSecretsHttpRoute,
-  miroirSecretInstanceUuid,
-  setSecretsMasterKey,
 } from "miroir-core";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -23,23 +17,7 @@ const runThis =
   RUN_TEST.startsWith("secretsHttp.270") ||
   RUN_TEST === "secretsHttp.270.phase2";
 
-const ALICE = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";
-const CAROL = "30634877-08ae-44f3-a230-d899e22333d5";
 const SECRET_PARENT = { parentUuid: ENTITY_MIROIR_SECRET_UUID };
-
-function unusedDomainController(): DomainControllerInterface {
-  const fail = async () => {
-    throw new Error("serverDomainController must not be called for route-policy rejection");
-  };
-  return {
-    handleAction: fail,
-    handleBoxedExtractorOrQueryAction: fail,
-  } as unknown as DomainControllerInterface;
-}
-
-afterEach(() => {
-  clearSecretsMasterKey();
-});
 
 if (runThis) {
   describe("secretsHttp.270.phase2 guard", () => {
@@ -103,88 +81,6 @@ if (runThis) {
           payload: { parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", objects: [] },
         }),
       ).toEqual({ allowed: true });
-    });
-  });
-
-  describe("secretsHttp.270.phase2 route policy", () => {
-    it("unauthenticated POST /secrets returns 401", async () => {
-      const result = await handleSecretsHttpRoute({
-        url: "/secrets",
-        method: "post",
-        body: { name: "n", value: "v", scope: "process" },
-        principal: undefined,
-        serverDomainController: unusedDomainController(),
-      });
-      expect(result).toEqual(
-        expect.objectContaining({
-          status: 401,
-          data: expect.objectContaining({ errorType: "AuthenticationRequired" }),
-        }),
-      );
-    });
-
-    it("concurrent process POSTs for the same name share one uuid", async () => {
-      setSecretsMasterKey("test-secrets-master");
-      const rows: Record<string, unknown>[] = [];
-      const writes: { actionType: string; uuid: string }[] = [];
-      const serverDomainController = {
-        handleBoxedExtractorOrQueryAction: async () => {
-          const snapshot = [...rows];
-          await new Promise((resolve) => setTimeout(resolve, 20));
-          return { returnedDomainElement: { secrets: snapshot } };
-        },
-        handleAction: async (action: {
-          actionType: string;
-          payload?: { objects?: EntityInstance[] };
-        }) => {
-          const instance = action.payload?.objects?.[0] as Record<string, unknown> | undefined;
-          const uuid = String(instance?.uuid ?? "");
-          writes.push({ actionType: action.actionType, uuid });
-          if (action.actionType === "createInstance" && instance) {
-            rows.push(instance);
-          }
-          if (action.actionType === "updateInstance" && instance) {
-            const index = rows.findIndex((row) => String(row.uuid ?? "") === uuid);
-            if (index >= 0) {
-              rows[index] = instance;
-            } else {
-              rows.push(instance);
-            }
-          }
-          return { status: "ok" };
-        },
-      } as unknown as DomainControllerInterface;
-
-      const post = () =>
-        handleSecretsHttpRoute({
-          url: "/secrets",
-          method: "post",
-          body: { name: "sharedName", value: "v", scope: "process" },
-          principal: { miroirUserUuid: ALICE, username: "alice" },
-          serverDomainController,
-        });
-      const [first, second] = await Promise.all([post(), post()]);
-      expect(first?.status).toBe(200);
-      expect(second?.status).toBe(200);
-      const uuids = [...new Set(writes.map((write) => write.uuid))];
-      expect(uuids).toEqual([miroirSecretInstanceUuid("sharedName", "process")]);
-      expect(rows).toHaveLength(1);
-    });
-
-    it("user-scope POST as Alice targeting Carol returns 403", async () => {
-      const result = await handleSecretsHttpRoute({
-        url: "/secrets",
-        method: "post",
-        body: { name: "n", value: "v", scope: "user", miroirUser: CAROL },
-        principal: { miroirUserUuid: ALICE, username: "alice" },
-        serverDomainController: unusedDomainController(),
-      });
-      expect(result).toEqual(
-        expect.objectContaining({
-          status: 403,
-          data: expect.objectContaining({ status: "error" }),
-        }),
-      );
     });
   });
 }

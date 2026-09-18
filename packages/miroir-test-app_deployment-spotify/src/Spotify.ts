@@ -17,6 +17,7 @@ import querySpotifyGetPlaylistJson from "../assets/spotify_model/e4320b9e-ab45-4
 import selfApplicationSpotifyJson from "../assets/spotify_model/a659d350-dd97-4da9-91de-524fa01745dc/00514586-bf72-4de3-beea-0a627c821404.json" with { type: "json" };
 import menuDefaultSpotifyJson from "../assets/spotify_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/1b4b181d-4616-4391-a41f-33bbee4fd356.json" with { type: "json" };
 import selfApplicationModelBranchSpotifyMasterBranchJson from "../assets/spotify_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/cddedb5a-2789-45b2-be93-d6f52ae3f6eb.json" with { type: "json" };
+import type { QueryWithExtractorCombinerTransformer } from "../../miroir-core/dist/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 export const selfApplicationSpotify = selfApplicationSpotifyJson as SelfApplication;
 export const selfApplicationModelBranchSpotifyMasterBranch =
@@ -69,7 +70,7 @@ export const defaultSpotifyAppModel: MetaModel = {
   themeVersions: [],
   applicationVersionCrossTransformerDefinitionVersion: [],
   transformerDefinitionVersions: [],
-  storedQueries: [querySpotifyGetPlaylist as EntityInstance],
+  storedQueries: [querySpotifyGetPlaylist as QueryWithExtractorCombinerTransformer],
   jzodSchemas: [],
   applicationVersions: [],
 };

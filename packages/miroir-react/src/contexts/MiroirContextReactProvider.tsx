@@ -15,7 +15,12 @@ import {
 import { Alert, Snackbar } from "@mui/material";
 
 import { selectCurrentTransaction, useSelector, type ReduxStateChanges } from "../miroir-localcache-imports.js";
-import { MiroirLoggerFactory, ViewParams, getClientEnvironment } from "miroir-core";
+import {
+  FAIL_CLOSED_PROCESS_CAPABILITIES,
+  MiroirLoggerFactory,
+  ViewParams,
+  getClientEnvironment,
+} from "miroir-core";
 import type { 
   LoggerInterface, 
   Uuid, 
@@ -30,6 +35,7 @@ import type {
   DeploymentUuidToReportsEntitiesMapping,
   GridType, 
   MiroirEvent,
+  ProcessCapabilities,
 } from "miroir-core";
 
 import {
@@ -117,6 +123,7 @@ export interface MiroirReactContext {
   domainController: DomainControllerInterface;
   // ###################################################################################################
   clientEnvironment: ClientEnvironment;
+  processCapabilities: ProcessCapabilities;
   // ###################################################################################################
   // server configuration
   serverBaseUrl: string; // Base URL for the REST API server (e.g., http://localhost:3080)
@@ -232,6 +239,7 @@ const miroirReactContext = createContext<MiroirReactContext | undefined>(undefin
 export function MiroirContextReactProvider(props: {
   miroirContext: MiroirContextInterface;
   domainController: DomainControllerInterface;
+  processCapabilities?: ProcessCapabilities;
   testingApplication?: Uuid; // for tests only! Yuck!
   testingDeploymentUuid?: Uuid; // for tests only! Yuck!
   children: ReactNode;
@@ -621,6 +629,7 @@ export function MiroirContextReactProvider(props: {
       domainController: props.domainController,
       serverBaseUrl,
       clientEnvironment: getClientEnvironment(),
+      processCapabilities: props.processCapabilities ?? FAIL_CLOSED_PROCESS_CAPABILITIES,
       application,
       setApplication,
       applicationDeploymentMap,
@@ -732,6 +741,7 @@ export function MiroirContextReactProvider(props: {
       innerFormOutput,
       props.miroirContext,
       props.domainController,
+      props.processCapabilities,
       viewParams,
       setFoldedObjectAttributeOrArrayItems,
       setSetFoldedObjectAttributeOrArrayItems,

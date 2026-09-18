@@ -289,7 +289,7 @@ export class FileSystemExtractorRunner implements ExtractorOrQueryPersistenceSto
         throw new Error(
           "FileSystemExtractorRunner extractEntityInstance cannot handle extractorOrCombinerType=" +
             extractorType +
-            (extractorType === "extractorFromAction" ? " (extractorFromAction is server-only)" : ""),
+            (extractorType === "extractorForExternalService" ? " (extractorForExternalService is server-only)" : ""),
         );
       }
     }

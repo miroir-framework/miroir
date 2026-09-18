@@ -740,6 +740,27 @@ export {
 } from "./0_interfaces/4-views/ViewParams";
 export { ACTION_OK, BLOB_SIZE_WARNING_THRESHOLD, MAX_BLOB_FILE_SIZE } from "./1_core/constants.js";
 export {
+  assertProcessCapability,
+  getProcessCapabilities,
+  isCursorBackendAllowed,
+} from "./1_core/processCapabilities";
+export type { ProcessCapabilities, ProcessCapabilityName } from "./1_core/processCapabilities";
+export {
+  FAIL_CLOSED_PROCESS_CAPABILITIES,
+  fetchProcessCapabilities,
+  handleProcessCapabilitiesHttpRoute,
+} from "./4_services/ProcessCapabilitiesHttp";
+export {
+  ELECTRON_LOOPBACK_ROOT_API_URL,
+  browserMcpServerUrl,
+  copilotRuntimeUrl,
+  electronRuntimeBaseUrl,
+  isAllowedElectronLoopbackOrigin,
+  shouldListenLoopbackHttp,
+  shouldMountCopilotKitRoute,
+  shouldMountMcpHttp,
+} from "./4_services/processCapabilityRoutes";
+export {
   ApplicationDeploymentMap,
   ApplicationEntitiesAndInstances,
   // createApplicationCompositeAction,
@@ -806,6 +827,7 @@ export {
   APPLICATION_VERSION_PLACEHOLDER_NAMES,
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
   assertApplicationVersioningEnabled,
+  isVersioningAppBarItemVisible,
   resolveVersioningMode,
   buildFreezeApplicationVersionPlan,
   diffEntityVersionSnapshots,
@@ -849,6 +871,7 @@ export type {
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
   VersioningMode,
+  VersioningModeInput,
   FreezeApplicationVersionPlan,
   FreezeMetaModelSlice,
   ModelCudMigrationCandidate,
@@ -1416,8 +1439,10 @@ export {
   assertAccess,
   assertAccessForDeployment,
   deploymentsFromInstances,
+  effectiveShowModelTools,
   hasAccess,
   isAccessDeniedActionResult,
+  isDesignerToolsVisible,
   partitionOpenStoreResults,
   type AccessDecision,
   type AccessDeniedBody,
@@ -1433,10 +1458,6 @@ export {
   handleAuthHttpRoute,
   type AuthHttpResult,
 } from "./1_core/authentication/AuthenticationHttp.js";
-export {
-  handleSecretsHttpRoute,
-  type SecretsHttpResult,
-} from "./4_services/SecretsHttp.js";
 export {
   applicationIsReachable,
   authorizationHeaders,

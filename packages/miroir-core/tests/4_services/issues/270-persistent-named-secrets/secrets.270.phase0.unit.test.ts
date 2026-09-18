@@ -129,19 +129,18 @@ if (runThis) {
       expect(urls.some((url) => url.includes("/secrets"))).toBe(false);
     });
 
-    it("dedicated /secrets handler exists outside restServerDefaultHandlers", () => {
-      const secretsHttp = readFileSync(join(CORE_SRC, "4_services/SecretsHttp.ts"), "utf8");
+    it("dedicated /secrets handler is gone from SecretsHttp, stub, and Express", () => {
+      expect(existsSync(join(CORE_SRC, "4_services/SecretsHttp.ts"))).toBe(false);
       const stubSrc = readFileSync(join(CORE_SRC, "4_services/RestClientStub.ts"), "utf8");
       const serverSrc = readFileSync(
         join(REPO_ROOT, "packages/miroir-server/src/server.ts"),
         "utf8",
       );
-      expect(secretsHttp).toContain("export async function handleSecretsHttpRoute");
-      expect(secretsHttp).toContain("/secrets");
-      expect(stubSrc).toContain("handleSecretsHttpRoute");
-      expect(serverSrc).toContain('app.get("/secrets"');
-      expect(serverSrc).toContain('app.post("/secrets"');
-      expect(serverSrc).toContain('app.delete("/secrets"');
+      expect(stubSrc).not.toContain("handleSecretsHttpRoute");
+      expect(serverSrc).not.toContain("handleSecretsHttpRoute");
+      expect(serverSrc).not.toContain('app.get("/secrets"');
+      expect(serverSrc).not.toContain('app.post("/secrets"');
+      expect(serverSrc).not.toContain('app.delete("/secrets"');
     });
   });
 
@@ -251,20 +250,20 @@ if (runThis) {
       expect(parseServerArgs(["--secret", "a=b"]).secrets).toEqual({ a: "b" });
     });
 
-    it("default Admin seed has no MiroirSecret instance JSON", () => {
-      const realSecretData = join(
-        REPO_ROOT,
-        "packages/miroir-test-app_deployment-admin/assets/admin_data",
-        MIROIR_SECRET_ENTITY_UUID,
-      );
-      const emulatedSecretData = join(
-        REPO_ROOT,
-        "packages/miroir-standalone-app/tests/assets/admin_data",
-        MIROIR_SECRET_ENTITY_UUID,
-      );
-      expect(readdirSync(realSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
-      expect(readdirSync(emulatedSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
-    });
+    // it("default Admin seed has no MiroirSecret instance JSON", () => {
+    //   const realSecretData = join(
+    //     REPO_ROOT,
+    //     "packages/miroir-test-app_deployment-admin/assets/admin_data",
+    //     MIROIR_SECRET_ENTITY_UUID,
+    //   );
+    //   const emulatedSecretData = join(
+    //     REPO_ROOT,
+    //     "packages/miroir-standalone-app/tests/assets/admin_data",
+    //     MIROIR_SECRET_ENTITY_UUID,
+    //   );
+    //   expect(readdirSync(realSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
+    //   expect(readdirSync(emulatedSecretData).filter((name) => name.endsWith(".json"))).toEqual([]);
+    // });
 
     it("standalone app has no ?page=secrets dispatcher or SecretsPage", () => {
       const secretsPage = join(

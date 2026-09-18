@@ -20,8 +20,12 @@ import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   deploymentsFromInstances,
+  ELECTRON_LOOPBACK_ROOT_API_URL,
   expect,
+  fetchProcessCapabilities,
+  getClientEnvironment,
   getMiroirEnvironmentMode,
+  getProcessCapabilities,
   identityDirectoryFromInstances,
   LoggerInterface,
   MiroirActivityTracker,
@@ -327,7 +331,21 @@ export async function setupMiroirPlatform(
         // deployment_Designer,
       ]),
     });
+    (restClient as RestClientStub).setProcessCapabilities(
+      getProcessCapabilities({
+        config: miroirConfig,
+        environment: getClientEnvironment(),
+        storeSectionFactoryRegister:
+          ConfigurationService.configurationService.StoreSectionFactoryRegister,
+        adminStoreFactoryRegister:
+          ConfigurationService.configurationService.adminStoreFactoryRegister,
+      }),
+    );
   }
+
+  const processCapabilities = await fetchProcessCapabilities(restClient);
+  domainControllerForClient.setProcessCapabilities(processCapabilities);
+  domainControllerForServer?.setProcessCapabilities(processCapabilities);
 
   return {
     // persistenceStoreControllerManagerForClient: persistenceStoreControllerManagerForClient,
@@ -336,6 +354,8 @@ export async function setupMiroirPlatform(
     domainControllerForServer,
     // localCache: domainControllerForClient.getLocalCache(),
     miroirContext,
+    restClient,
+    processCapabilities,
   };
 }
 
@@ -356,6 +376,8 @@ async function setupClient(
     domainControllerForServer,
     // localCache,
     miroirContext,
+    restClient,
+    processCapabilities,
   } = await setupMiroirPlatform(
     currentMiroirConfig,
     miroirActivityTracker,
@@ -364,7 +386,7 @@ async function setupClient(
     options,
   );
 
-  return { domainControllerForClient, domainControllerForServer, miroirContext };
+  return { domainControllerForClient, domainControllerForServer, miroirContext, restClient, processCapabilities };
 }
 
 // ###################################################################################
@@ -410,7 +432,7 @@ async function startWebApp(root: Root) {
     miroirConfigType: "client",
     client: {
       emulateServer: true,
-      rootApiUrl: "http://localhost:3080",
+      rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL,
       filesystemDeploymentRootDirectory,
       deploymentStorageConfig: {
         "18db21bf-f8d3-4f6a-8296-84b69f6dc48b": {
@@ -437,6 +459,7 @@ async function startWebApp(root: Root) {
     domainControllerForClient,
     domainControllerForServer: rawDomainControllerForServer,
     miroirContext,
+    processCapabilities,
   } = await setupClient(
     miroirConfigToUse,
     miroirActivityTracker,
@@ -568,6 +591,7 @@ async function startWebApp(root: Root) {
               <MiroirContextReactProvider
                 miroirContext={miroirContext}
                 domainController={domainControllerForClient}
+                processCapabilities={processCapabilities}
               >
                 <RouterProvider router={router} />
               </MiroirContextReactProvider>

@@ -88,6 +88,30 @@ export function hasAccess(args: {
   );
 }
 
+export function isDesignerToolsVisible(args: {
+  designerTools: boolean;
+  authEnabled: boolean;
+  principal: { miroirUserUuid: string } | undefined;
+  grants: AccessGrant[];
+}): boolean {
+  if (args.designerTools !== true) {
+    return false;
+  }
+  if (!args.authEnabled) {
+    return true;
+  }
+  return hasAccess({
+    principal: args.principal,
+    target: { targetType: "application", targetUuid: ADMIN_APPLICATION_UUID },
+    grants: args.grants,
+    alwaysAllow: [],
+  });
+}
+
+export function effectiveShowModelTools(visible: boolean, stored: boolean): boolean {
+  return visible && stored;
+}
+
 export function assertAccess(args: {
   principal: { miroirUserUuid: string } | undefined;
   target: AccessTarget;

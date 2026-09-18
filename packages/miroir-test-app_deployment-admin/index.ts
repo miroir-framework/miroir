@@ -83,6 +83,7 @@ export { default as miroirUser_Carol } from "./assets/admin_data/d20d09e5-0685-4
 export { default as miroirUser_Dave } from "./assets/admin_data/d20d09e5-0685-4fc7-b9bd-fcfa3845127a/e2343a39-f5d9-4898-83b4-74e2ccc33125.json" with { type: "json" };
 
 // Admin Data - MiroirRight
+export { default as miroirRight_AliceAdminApplication } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/86a73f7e-17f8-462d-8203-af1f323a7cdc.json" with { type: "json" };
 export { default as miroirRight_AliceLibraryAppAdmin } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/48b2048f-507f-40ee-a890-b6eca83596f5.json" with { type: "json" };
 export { default as miroirRight_AliceLibraryDeploymentRead } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/587f92f8-7140-434b-b9ff-f7f5d2e461b2.json" with { type: "json" };
 export { default as miroirRight_DaveLibraryDeployment } from "./assets/admin_data/a6136fc7-949b-4d64-9f13-dd3afce1ab3c/0509f559-2a1f-4bf2-ae2d-732aa6cc3202.json" with { type: "json" };

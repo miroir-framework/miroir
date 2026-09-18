@@ -17,7 +17,11 @@ import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   type Deployment,
+  getClientEnvironment,
   getMiroirEnvironmentMode,
+  getProcessCapabilities,
+  shouldMountCopilotKitRoute,
+  shouldMountMcpHttp,
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
@@ -51,7 +55,6 @@ import {
   persistChangedPasswordHash,
   ParseServerArgsError,
   assembleSecretImportSet,
-  handleSecretsHttpRoute,
   hydrateSecrets,
   importProcessSecrets,
   parseServerArgs,
@@ -154,7 +157,7 @@ function printUsageAndExit(exitCode = 1): never {
   console.error(`                      Overrides --certsdir. Also reads from env: MIROIR_TLS_KEY`);
   myLogger.error(`                      (default: <certsdir>/localhost-key.pem)`);
   console.error(`  --secret   <name>=<value>  Bootstrap import only (repeatable). Env: MIROIR_SECRET_<NAME>`);
-  myLogger.error(`                      plus AI_OPENAI_KEY / AI_ANTHROPIC_KEY / AI_GOOGLE_KEY / AI_GITHUB_TOKEN.`);
+  myLogger.error(`                      plus AI_OPENAI_KEY / AI_ANTHROPIC_KEY / AI_GOOGLE_KEY / AI_GITHUB_TOKEN / CURSOR_API_KEY.`);
   myLogger.error(`                      Requires a wrapping key. Steady-state is --secrets-master-key only.`);
   console.error(`  --secrets-master-key <value>  Wrapping key for persisted secrets. Env: MIROIR_SECRETS_MASTER_KEY`);
   console.error(`  --disable-auth      Disable user authentication (today's open API)`);
@@ -263,6 +266,17 @@ if (serverAuthentication?.tokenSecret) {
 
 app.get("/auth/status", (_req: any, res: any) => {
   res.json(buildAuthStatusBody(authenticationEnabled));
+});
+
+app.get("/capabilities", (_req: any, res: any) => {
+  const capabilities = getProcessCapabilities({
+    config: miroirConfig,
+    environment: getClientEnvironment(),
+    storeSectionFactoryRegister:
+      ConfigurationService.configurationService.StoreSectionFactoryRegister,
+    adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
+  });
+  res.status(200).json({ status: "ok", capabilities });
 });
 
 myLogger.info(`Server being set-up, going to execute on the port::${restPortFromConfig}`);
@@ -802,27 +816,14 @@ app.post("/auth/change-password", async (request: CustomRequest, response: any) 
   response.json({ changed: true });
 });
 
-const secretsExpressHandler = async (request: CustomRequest, response: any) => {
-  const principal = await resolveGatedPrincipal(
-    typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-  );
-  const result = await handleSecretsHttpRoute({
-    url: "/secrets",
-    method: request.method,
-    body: request.body,
-    principal: principal ?? undefined,
-    serverDomainController: domainController,
-    applicationDeploymentMap,
-  });
-  if (!result) {
-    response.status(404).json({ status: "error", errorType: "NotFound" });
-    return;
-  }
-  response.status(result.status).json(result.data);
-};
-app.get("/secrets", secretsExpressHandler);
-app.post("/secrets", secretsExpressHandler);
-app.delete("/secrets", secretsExpressHandler);
+const capabilities = getProcessCapabilities({
+  config: miroirConfig,
+  environment: getClientEnvironment(),
+  storeSectionFactoryRegister:
+    ConfigurationService.configurationService.StoreSectionFactoryRegister,
+  adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
+});
+domainController.setProcessCapabilities(capabilities);
 
 const endpointToolRegistry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
 myLogger.info("Setting up MCP server with dynamic EndpointToolRegistry");
@@ -843,26 +844,31 @@ const mcpServer = await setupMcpServer(
   endpointToolRegistry,
   domainController,
 );
-mcpServer.mountHttpRoutes(app);
+if (shouldMountMcpHttp(capabilities.mcp)) {
+  mcpServer.mountHttpRoutes(app);
+}
 
 // AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
-app.use("/api/copilotkit", async (request: any, response: any, next: any) => {
-  const principal = authenticationEnabled
-    ? await resolveGatedPrincipal(
-        typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-      )
-    : undefined;
-  const gate = assertRequestAllowed({
-    enabled: authenticationEnabled,
-    principal,
+if (shouldMountCopilotKitRoute(capabilities.ai)) {
+  app.use("/api/copilotkit", async (request: any, response: any, next: any) => {
+    const principal = authenticationEnabled
+      ? await resolveGatedPrincipal(
+          typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
+        )
+      : undefined;
+    const gate = assertRequestAllowed({
+      enabled: authenticationEnabled,
+      principal,
+    });
+    if (!gate.allowed) {
+      response.status(gate.status).json(gate.body);
+      return;
+    }
+    next();
   });
-  if (!gate.allowed) {
-    response.status(gate.status).json(gate.body);
-    return;
-  }
-  next();
-});
-app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap));
+  const mcpHttpUrl = `http://127.0.0.1:${restPortFromConfig}/mcp`;
+  app.use('/api/copilotkit', createCopilotKitRouter(domainController, applicationDeploymentMap, { capabilities, mcpHttpUrl }));
+}
 
 // ##############################################################################################
 // ##############################################################################################
@@ -946,7 +952,9 @@ if (existsSync(certFile) && existsSync(keyFile)) {
   });
 }
 if ( mcpPortFromConfig) {
-  mcpServer.run(mcpPortFromConfig);
+  if (shouldMountMcpHttp(capabilities.mcp)) {
+    mcpServer.run(mcpPortFromConfig);
+  }
 } else {
   myLogger.warn(`MCP port not configured, skipping MCP server startup`);
 }

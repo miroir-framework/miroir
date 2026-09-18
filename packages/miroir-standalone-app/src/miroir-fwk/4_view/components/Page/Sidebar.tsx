@@ -11,6 +11,7 @@ import {
 
 import { JsonDisplayHelper, useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
+import { useDesignerToolsVisibility } from '../../auth/useDesignerToolsVisibility.js';
 import { cleanLevel } from '../../constants.js';
 import { useMenusOfApplications } from '../../ReduxHooks.js';
 import { ApplicationSelector } from '../interactive/ApplicationSelector.js';
@@ -79,6 +80,7 @@ export const Sidebar: FC<{
   }, [isResizing, handleMouseMove, handleMouseUp]);
 
   const context = useMiroirContextService();
+  const { showModelTools } = useDesignerToolsVisibility();
   const currentApplicationDeploymentMap = context.applicationDeploymentMap;
   const currentApplication = context.toolsPageState.applicationSelector;
   const setCurrentApplication = useCallback((applicationUuid: string) => {
@@ -104,7 +106,7 @@ export const Sidebar: FC<{
     ]
     .filter(
       (section) =>
-        context.showModelTools || section.applicationUuid === adminSelfApplication.uuid,
+        showModelTools || section.applicationUuid === adminSelfApplication.uuid,
     )
     .map((section, index) => (
       <>
@@ -120,7 +122,7 @@ export const Sidebar: FC<{
         />
       </>
     ))
-  ), [props.open, context.showModelTools, props.setOpen]);
+  ), [props.open, showModelTools, props.setOpen]);
 
   const applicationMenus = useMenusOfApplications(
     Object.keys(currentApplicationDeploymentMap ?? {}),

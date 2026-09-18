@@ -51,7 +51,9 @@ Only **`miroir-test-app_deployment-miroir`** currently ships a `{prefix}_modelVe
 
 ## MiroirConfig Structure
 
-Every application instance reads a `MiroirConfigClient` at startup. There are two variants:
+Every application instance reads a `MiroirConfigClient` at startup. There are two variants (`emulateServer` true or false). That flag is **transport only**: HTTP to `miroir-server` versus an in-process stub. It does not turn AI, MCP, or designer tools on.
+
+What the process can do is a separate snapshot. See [Process capabilities](process-capabilities.md) for the synoptic (what each flag enables, where to set it, product-shape defaults).
 
 ### 1. Remote Server (`emulateServer: false`)
 
@@ -210,166 +212,118 @@ The `bundledData.ts` file in `miroir-sandbox` uses two separate sets (`MIROIR_MO
 
 ### External-service endpoints (HTTP)
 
-An application can declare an **external HTTP service** as an `Endpoint` instance whose `definition` uses the `externalService` branch (key-union with the legacy `actions` branch — never both). The block holds provenance (`openApiDocument`), runtime `baseUrl`, a `securityScheme` discriminated union (`type: "http"` bearer with optional `credentialKey`; `type: "oauth2ClientCredentials"` with `tokenUrl` + `clientIdKey`/`clientSecretKey`; or `type: "oauth2AuthorizationCode"` with `tokenUrl` + `clientIdKey`/`clientSecretKey`/`refreshTokenKey` and optional `scopes` — all secret **names** only, exchanged for a token at runtime), `enabledOperations`, and materialized `operations[]` (GET only at sync time). For `oauth2AuthorizationCode` the framework performs only the OAuth2 refresh-token grant: user consent is out-of-band; the refresh token is the secret named by `refreshTokenKey`; when that name was hydrated from an Admin `MiroirSecret` row, a rotated refresh token is written back to the same row (in-process `registerSecrets` hatch values stay in memory only). Queries use `extractorFromAction` / `extractorTemplateFromAction`; execution is **server-process-only** (`POST /query` intercept when the boxed query contains an external extractor). Sync is a pure transformer (`syncExternalServiceSchema`) producing a reviewable `compositeActionSequence` that upserts `operations[]` and companion Entities.
+An application can declare an **external HTTP service** as an `Endpoint` instance whose `definition` uses the `externalService` branch (key-union with the legacy `actions` branch — never both). The block holds provenance (`openApiDocument`), runtime `baseUrl`, a `securityScheme` discriminated union (`type: "http"` bearer with optional `credentialKey`; `type: "oauth2ClientCredentials"` with `tokenUrl` + `clientIdKey`/`clientSecretKey`; or `type: "oauth2AuthorizationCode"` with `tokenUrl` + `clientIdKey`/`clientSecretKey`/`refreshTokenKey` and optional `scopes` — all secret **names** only, exchanged for a token at runtime), `enabledOperations`, and materialized `operations[]` (GET only at sync time). For `oauth2AuthorizationCode` the framework performs only the OAuth2 refresh-token grant: user consent is out-of-band; the refresh token is the secret named by `refreshTokenKey`; when that name was hydrated from an Admin `MiroirSecret` row, a rotated refresh token is written back to the same row (in-process `registerSecrets` hatch values stay in memory only). Queries use `extractorForExternalService` / `extractorTemplateForExternalService`; execution is **server-process-only** (`POST /query` intercept when the boxed query contains an external extractor). Sync is a pure transformer (`syncExternalServiceSchema`) producing a reviewable `compositeActionSequence` that upserts `operations[]` and companion Entities.
 
-Entities backed by HTTP responses use `externalDataSource: { kind: "http", endpoint: <endpointUuid> }` (absent `kind` means SQL catalog external). All store backends **skip bootstrap** for `kind: "http"` — no data-section folder, no Sequelize model. Named secrets live as Admin `MiroirSecret` rows (entity uuid `a96856df-2b38-494a-8027-82617e2d64ad`), encrypted at rest with AES-256-GCM under a process wrapping key (`MIROIR_SECRETS_MASTER_KEY` or `--secrets-master-key` — [how to generate it](../reference/authentication.md#generate-the-wrapping-key)). `--secret <name>=<value>`, `MIROIR_SECRET_<NAME>`, and AI key env vars (`AI_OPENAI_KEY`, `AI_ANTHROPIC_KEY`, `AI_GOOGLE_KEY`, `AI_GITHUB_TOKEN`) are **bootstrap import only**; a later launch needs only the wrapping key. Endpoint instances still store secret **names** only. Values are never serialized into model JSON, generic REST/MCP responses, or the client cache (`ciphertext` is stripped like `passwordHash`). Dedicated `GET`/`POST`/`DELETE` `/secrets` is the write/list surface. See [`code-helpers/features/270-FEATURE-persistent-named-secrets/analysis.md`](../../code-helpers/features/270-FEATURE-persistent-named-secrets/analysis.md), [`code-helpers/features/267-FEATURE-openapi-external-services/analysis.md`](../../code-helpers/features/267-FEATURE-openapi-external-services/analysis.md), and the `miroir-test-app_deployment-spotify` example package.
+Entities backed by HTTP responses use `externalDataSource: { kind: "http", endpoint: <endpointUuid> }` (absent `kind` means SQL catalog external). All store backends **skip bootstrap** for `kind: "http"` — no data-section folder, no Sequelize model. Named secrets live as Admin `MiroirSecret` rows (entity uuid `a96856df-2b38-494a-8027-82617e2d64ad`), encrypted at rest with AES-256-GCM under a process wrapping key (`MIROIR_SECRETS_MASTER_KEY` or `--secrets-master-key` — [how to generate it](../reference/authentication.md#generate-the-wrapping-key)). `--secret <name>=<value>`, `MIROIR_SECRET_<NAME>`, and AI key env vars (`AI_OPENAI_KEY`, `AI_ANTHROPIC_KEY`, `AI_GOOGLE_KEY`, `AI_GITHUB_TOKEN`) are **bootstrap import only**; a later launch needs only the wrapping key. Endpoint instances still store secret **names** only. Values are never serialized into model JSON, generic REST/MCP responses, or the client cache (`ciphertext` is stripped like `passwordHash`). Writes go through CLI `--secret` import or labeled `secrets.set` / `secrets.delete` actions. See [`code-helpers/features/270-FEATURE-persistent-named-secrets/analysis.md`](../../code-helpers/features/270-FEATURE-persistent-named-secrets/analysis.md), [`code-helpers/features/267-FEATURE-openapi-external-services/analysis.md`](../../code-helpers/features/267-FEATURE-openapi-external-services/analysis.md), and the `miroir-test-app_deployment-spotify` example package.
 
 ---
 
-## Application Startup Sequence
+## Application startup sequence
 
-### Domain Controller Pair
+You do not set `persistenceStoreAccessMode` in `miroirConfig`. It is how each DomainController is constructed. Pick the product shape (`emulateServer`, which process you start); the constructors follow.
 
-When `emulateServer: true`, two domain controllers are instantiated:
-
-| Controller | `persistenceStoreAccessMode` | Role |
+| Mode | Meaning | Typical process |
 |---|---|---|
-| CLIENT | `"remote"` | Manages Redux local cache (CLIENT-side state). Routes persistence calls to the server via `RestClientStub` or HTTP. |
-| SERVER | `"local"` | Owns the persistence store backends (filesystem, indexedDb, bundled, sql). Handles all reads/writes. |
+| `"remote"` | This controller keeps the UI cache and sends store work out (HTTP, IPC, or `RestClientStub`). | Browser, Electron renderer, CLI client side |
+| `"local"` | This controller opens store factories and reads/writes files, SQL, IndexedDB, Mongo, or bundled data. | `miroir-server`, Electron main, emulated in-process server |
 
-### `fetchMiroirAndAppConfigurations` Flow
+How to choose:
 
-Called from `DemoInitializer` (sandbox) or `usePageConfiguration({ autoFetchOnMount: true })` (standalone):
+- **Remote client + separate server:** `emulateServer: false` on the browser config. Start `miroir-server`. The browser DomainController is `"remote"`; the server process is `"local"`. Feature flags are on the **server** JSON.
+- **Both in one process:** `emulateServer: true`. You still get a `"remote"` client and a `"local"` in-process server. Feature flags are on that emulateServer / Electron-main config, not on a remote-only client file.
+- **When `"local"` matters to you:** work that must see real stores or secrets in-process (MCP tools, external HTTP extractors, store create/delete) runs on the `"local"` controller. The remote client only forwards.
 
-```
-Step 1 — Rollback Admin
-  CLIENT.handleAction("rollback", application=adminSelfApplication)
-  → loadConfigurationFromPersistenceStore(admin, ADMIN_DEPLOYMENT_UUID)
-    → Read MODEL section for all metaModelEntities
-       (Entity, EntityVersion, Report, Menu, SelfApplication, SelfApplicationVersion,
-        SelfApplicationModelBranch, EndpointVersion, QueryVersion, Runner, Theme)
-    → Read DATA section for all application-specific entities
-       (Application, Deployment, ViewParams, StoreBasedConfiguration, Import, …)
-    → loadNewInstancesInLocalCache → CLIENT Redux populated
+Startup then rolls back Admin, lists Deployment rows, opens each other deployment, and rolls those back into the client cache. The step-by-step fill is implementation detail: [Application startup (cache load)](../internals/application-startup.md).
 
-Step 2 — Query deployments
-  CLIENT.handleQueryTemplateActionForServerONLY(query for Deployment instances, section="data")
-  → Returns [deployment_Admin, deployment_Miroir, deployment_Library, …]
-    each with a `configuration` field (StoreUnitConfiguration per section)
-
-Step 3 — For each non-admin deployment:
-  For each deployment (e.g. Miroir, Library):
-    a. CLIENT.handleAction("storeManagementAction_openStore", configuration=deployment.configuration)
-       → SERVER opens the store (idempotent if already open)
-    b. CLIENT.handleAction("rollback", application=deployment.selfApplication)
-       → loadConfigurationFromPersistenceStore(miroir/app, deploymentUuid)
-         → For Miroir: read miroirModelEntities (Entity MetaModel peers) from MODEL
-                        read non–Version History concepts from DATA
-                        read Version History from MODELVERSION when section is configured
-         → For App: read metaModelEntities from MODEL, read app entities from DATA
-       → CLIENT Redux further populated
-```
-
-After all three steps, CLIENT Redux contains:
-- All admin entities/reports/menus/configurations
-- All miroir meta-model instances
-- All application domain instances
-
-### `loadConfigurationFromPersistenceStore` Detail
-
-```typescript
-// In DomainController.ts
-function loadConfigurationFromPersistenceStore(applicationUuid, deploymentUuid, deploymentMap):
-  // 1. Read Entity instances from model section
-  entities = callPersistenceAction("RestPersistenceAction_read", { section: "model", parentUuid: entityEntity.uuid })
-
-  if (deploymentUuid == MIROIR_DEPLOYMENT_UUID):
-    modelEntitiesToFetch = miroirModelEntities  // Entity MetaModel peers (not EntityVersion)
-  else:
-    modelEntitiesToFetch = metaModelEntities    // all framework-level entities
-
-  // 2. Read model section for each modelEntity
-  for entity in modelEntitiesToFetch:
-    instances = callPersistenceAction("RestPersistenceAction_read", { section: "model", parentUuid: entity.uuid })
-
-  // 3. Read data section for each app entity (from step 1)
-  dataEntitiesToFetch = entities found in step 1
-  for entity in dataEntitiesToFetch:
-    instances = callPersistenceAction("RestPersistenceAction_read", { section: "data", parentUuid: entity.uuid })
-
-  // 4. Load all into CLIENT local cache (Redux)
-  callLocalCacheAction("loadNewInstancesInLocalCache", allInstances)
-  callLocalCacheAction("rollback")
-```
+Process feature flags (`ai`, `mcp`, designer tools, store types) are a snapshot fetched once. See [Process capabilities](process-capabilities.md).
 
 ---
 
-## Configuration Scenarios Reference
+## Configuration scenarios
 
-### A. Production: Real Server + PostgreSQL
+What each shipped shape lets you do, and which knobs to turn. Feature flags: [Process capabilities](process-capabilities.md).
 
-```
-Browser (CLIENT) ──HTTP──► miroir-server process (SERVER)
-                               └── PostgreSQL (sql backend)
-                                   ├── schema "miroirAdmin" (admin sections)
-                                   ├── schema "miroir"  (miroir model+data)
-                                   └── schema "library" (app model+data)
-```
+| Scenario | Stores | `ai` / `mcp` | Designer tools | How you set it |
+|---|---|---|---|---|
+| A. Web + `miroir-server` + SQL | postgres (and whatever the server registered) | on in shipped server JSON | on (default) | `emulateServer: false`. Edit `packages/miroir-server/config/miroirConfig.server.json` `features`. Restart the server. |
+| B. Emulated + filesystem | filesystem directories | off unless that test JSON sets `features` | on | `emulateServer: true`, `emulatedServerType: "filesystem"`. Add `features` only if the profile needs AI/MCP. |
+| C. Emulated + IndexedDB | IndexedDB (+ often filesystem admin) | usually off | on | `emulateServer: true`. Omit `features` to keep AI/MCP off. |
+| D. Sandbox bundled | bundled + IndexedDB; `bundled` not creatable | `ai` forced off | on | Cannot enable AI. `mcp` stays off unless you set it on the sandbox persistence config. |
+| E. Electron desktop | filesystem on main (all writable factories) | on (main `electronServerConfig`) | on | Do not put `features` on the renderer object. Restart the desktop app. Loopback HTTP on `http://127.0.0.1:3080` when `ai` or `mcp` is on. |
 
-Config: `emulateServer: false`, `serverConfig.storeSectionConfiguration` with `emulatedServerType: "sql"`.
-
-### B. Development / Test: Emulated Server + Filesystem
+### A. Production: real server + PostgreSQL
 
 ```
-Browser (CLIENT)
-  └── RestClientStub ──in-process──► SERVER DomainController
-                                        └── filesystem backend
-                                            ├── tests/assets/admin_model/
-                                            ├── tests/assets/admin_data/
-                                            ├── tests/tmp/miroir_model/
-                                            ├── tests/tmp/miroir_modelVersion/   ← Miroir version history
-                                            ├── tests/tmp/library_data/
-                                            └── tests/tmp/library_modelVersion/   ← app version history
+Browser (CLIENT, remote)
+  --HTTP--> miroir-server (SERVER, local)
+              └── PostgreSQL
+                    ├── schema "miroirAdmin"
+                    ├── schema "miroir"
+                    └── schema "library"
 ```
 
-Config: `emulateServer: true`, `emulatedServerType: "filesystem"`. Versioned app deployments add a fourth `modelVersion` directory.
+`emulateServer: false`, `serverConfig.storeSectionConfiguration` with `emulatedServerType: "sql"`. Turn AI/MCP off by setting `features.ai` / `features.mcp` false on the **server** JSON and restarting.
 
-### C. Browser Tests: Emulated Server + IndexedDB
-
-```
-Browser (CLIENT)
-  └── RestClientStub ──in-process──► SERVER DomainController
-                                        └── IndexedDB backend
-                                            ├── indexedDb-admin (admin section, filesystem)
-                                            └── indexedDb-miroir / indexedDb-app
-```
-
-Config: `emulateServer: true`, admin section uses `filesystem`, miroir and app sections use `indexedDb`.
-
-### D. Demo / Sandbox: Emulated Server + Bundled (read-only)
+### B. Development / test: emulated server + filesystem
 
 ```
-Browser (CLIENT)
-  └── RestClientStub ──in-process──► SERVER DomainController
-                                        └── BundledStore (in-memory, read-only)
-                                            ├── ADMIN_DEPLOYMENT_UUID → demoBundledData.admin
-                                            └── MIROIR_DEPLOYMENT_UUID → demoBundledData.miroir
+Browser (CLIENT, remote)
+  └── RestClientStub --> in-process SERVER (local)
+                            └── filesystem
+                                  ├── tests/assets/admin_model/
+                                  ├── tests/assets/admin_data/
+                                  ├── tests/tmp/miroir_model/
+                                  ├── tests/tmp/miroir_modelVersion/
+                                  ├── tests/tmp/library_data/
+                                  └── tests/tmp/library_modelVersion/
 ```
 
-Config: `emulateServer: true`, `emulatedServerType: "bundled"`. All data is a star-import of deployment packages, pre-split into model/data sections at build time by `bundledData.ts`. Bundled deployments are not suitable for `versioned-internal` freeze history.
+`emulateServer: true`, `emulatedServerType: "filesystem"`. Versioned apps add a `modelVersion` directory. Test profiles that never use AI/MCP omit `features` (both false).
 
-### E. Desktop: Electron + Filesystem
+### C. Browser tests: emulated server + IndexedDB
 
 ```
-Electron renderer (CLIENT)
-  └── IPC / RestClientStub ──in-process──► SERVER DomainController
-                                              └── filesystem backend
-                                                  (paths resolved relative to app bundle)
+Browser (CLIENT, remote)
+  └── RestClientStub --> in-process SERVER (local)
+                            └── IndexedDB
+                                  ├── indexedDb-admin (admin often filesystem)
+                                  └── indexedDb-miroir / indexedDb-app
 ```
 
-Config: `emulateServer: true`, `emulatedServerType: "filesystem"`. Store configurations are stored as JSON assets (`assets/<deploymentUuid>.json`) inside the electron app bundle.
+`emulateServer: true`. Admin section often `filesystem`; Miroir and app sections `indexedDb`.
+
+### D. Demo / sandbox: emulated server + bundled (read-only)
+
+```
+Browser (CLIENT, remote)
+  └── RestClientStub --> in-process SERVER (local)
+                            └── BundledStore (read-only)
+                                  ├── ADMIN_DEPLOYMENT_UUID → demoBundledData.admin
+                                  └── MIROIR_DEPLOYMENT_UUID → demoBundledData.miroir
+```
+
+`emulateServer: true`, `emulatedServerType: "bundled"`. Star-import of deployment packages. Not suitable for `versioned-internal` freeze history. Sandbox environment forces `ai` false.
+
+### E. Desktop: Electron + filesystem
+
+```
+Electron renderer (CLIENT, remote)
+  └── IPC --> Electron main (SERVER, local)
+                └── filesystem (paths relative to the app bundle)
+```
+
+`emulateServer: true` on the renderer stub. Store JSON under Electron `assets/<deploymentUuid>.json`. Flags live on **main** `electronServerConfig`. When `ai` or `mcp` is true, main listens on loopback HTTP; the renderer uses that absolute base, not `app://`. Snapshot GET still uses IPC.
 
 ---
 
-## Key Source Files
+## Key source files
+
+Store backends and bundled demo data. Cache-load call sites: [Application startup](../internals/application-startup.md).
 
 | File | Role |
 |---|---|
-| [packages/miroir-core/src/3_controllers/DomainController.ts](../packages/miroir-core/src/3_controllers/DomainController.ts) | `loadConfigurationFromPersistenceStore`, `handleModelAction("rollback")` |
-| [packages/miroir-core/src/1_core/Model.ts](../packages/miroir-core/src/1_core/Model.ts) | `metaModelEntities`, `miroirModelEntities` |
-| [packages/miroir-core/src/4_services/RestClientStub.ts](../packages/miroir-core/src/4_services/RestClientStub.ts) | In-process HTTP stub (emulated server mode) |
-| [packages/miroir-core/src/4_services/PersistenceStoreControllerManager.ts](../packages/miroir-core/src/4_services/PersistenceStoreControllerManager.ts) | Opens/closes deployment stores; routes to correct backend factory |
-| [packages/miroir-store-bundled/src/startup.ts](../packages/miroir-store-bundled/src/startup.ts) | `miroirBundledStoreSectionStartup`, `BundledDeploymentData` type, registry |
+| [packages/miroir-core/src/4_services/RestClientStub.ts](../packages/miroir-core/src/4_services/RestClientStub.ts) | In-process HTTP stub (emulated server) |
+| [packages/miroir-core/src/4_services/PersistenceStoreControllerManager.ts](../packages/miroir-core/src/4_services/PersistenceStoreControllerManager.ts) | Opens and closes deployment stores; routes to the backend factory |
+| [packages/miroir-store-bundled/src/startup.ts](../packages/miroir-store-bundled/src/startup.ts) | `miroirBundledStoreSectionStartup`, `BundledDeploymentData`, registry |
 | [packages/miroir-store-bundled/src/4_services/BundledModelStoreSection.ts](../packages/miroir-store-bundled/src/4_services/BundledModelStoreSection.ts) | Read-only model section backed by static JSON |
 | [packages/miroir-sandbox/src/bundledData.ts](../packages/miroir-sandbox/src/bundledData.ts) | `demoBundledData`: classifies star-imported instances into model/data per deployment |
-| [packages/miroir-standalone-app/src/miroir-fwk/4_view/services/ConfigurationService.ts](../packages/miroir-standalone-app/src/miroir-fwk/4_view/services/ConfigurationService.ts) | `fetchMiroirAndAppConfigurations`: orchestrates the 3-step load sequence |

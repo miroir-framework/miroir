@@ -129,19 +129,6 @@
           }
         }
       },
-      "agents": {
-        "type": "boolean",
-        "optional": true,
-        "tag": {
-          "value": {
-            "id": 12,
-            "defaultLabel": "Agents",
-            "display": {
-              "editable": true
-            }
-          }
-        }
-      },
       "mlSchemaTransformerCompatibility": {
         "type": "boolean",
         "optional": true,

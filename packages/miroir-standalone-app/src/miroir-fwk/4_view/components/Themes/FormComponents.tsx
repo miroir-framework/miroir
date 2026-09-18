@@ -811,6 +811,8 @@ export const ThemedEditableInput: React.FC<ThemedComponentProps & {
   'aria-label'?: string;
   minWidth?: number;
   dynamicWidth?: boolean;
+  type?: React.HTMLInputTypeAttribute;
+  autoComplete?: string;
 }> = ({ 
   value = '',
   onChange,
@@ -822,6 +824,8 @@ export const ThemedEditableInput: React.FC<ThemedComponentProps & {
   'aria-label': ariaLabel,
   minWidth = 60,
   dynamicWidth = true,
+  type = 'text',
+  autoComplete,
   className,
   style
 }) => {
@@ -859,6 +863,8 @@ export const ThemedEditableInput: React.FC<ThemedComponentProps & {
       name={name}
       title={title}
       aria-label={ariaLabel}
+      type={type}
+      autoComplete={autoComplete}
       value={value}
       onChange={onChange}
       onFocus={onFocus}

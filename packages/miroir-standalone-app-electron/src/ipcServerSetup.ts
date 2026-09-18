@@ -36,18 +36,30 @@
  */
 
 import { app, ipcMain } from "electron";
+import express from "express";
 import * as os from "os";
 import * as path from "path";
+import { assertCursorSdkPackaged, createCopilotKitRouter } from "miroir-ai";
 import {
   ConfigurationService,
+  defaultSelfApplicationDeploymentMap,
+  ELECTRON_LOOPBACK_ROOT_API_URL,
+  electronRuntimeBaseUrl,
+  getClientEnvironment,
+  getProcessCapabilities,
+  isAllowedElectronLoopbackOrigin,
   MiroirActivityTracker,
   MiroirConfigServer,
   MiroirContext,
   MiroirEventService,
   PersistenceStoreControllerManager,
   RestClientStub,
+  shouldListenLoopbackHttp,
+  shouldMountCopilotKitRoute,
+  shouldMountMcpHttp,
   miroirCoreStartup
 } from "miroir-core";
+import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
 import { setupMiroirDomainController } from "miroir-localcache-redux";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -171,9 +183,11 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
 
   const electronServerConfig: MiroirConfigServer = {
     miroirConfigType: "server",
-    server: { 
+    server: {
       filesystemDeploymentRootDirectory: await getDefaultFilesystemFolder(),
-      rootApiUrl: "https://localhost:3080" },
+      rootApiUrl: ELECTRON_LOOPBACK_ROOT_API_URL,
+    },
+    features: { ai: true, mcp: true, designerTools: true },
   };
 
   const miroirContext = new MiroirContext(
@@ -194,9 +208,85 @@ export async function setupIpcServer(mainDirname: string): Promise<void> {
   });
 
   // RestClientStub routes REST-shaped calls through restServerDefaultHandlers using the real stores.
-  const restClientStub = new RestClientStub("https://localhost:3080");
+  const restClientStub = new RestClientStub(ELECTRON_LOOPBACK_ROOT_API_URL);
   restClientStub.setServerDomainController(domainController);
   restClientStub.setPersistenceStoreControllerManager(persistenceStoreControllerManager);
+  const capabilities = getProcessCapabilities({
+    config: electronServerConfig,
+    environment: getClientEnvironment(),
+    storeSectionFactoryRegister:
+      ConfigurationService.configurationService.StoreSectionFactoryRegister,
+    adminStoreFactoryRegister:
+      ConfigurationService.configurationService.adminStoreFactoryRegister,
+  });
+  restClientStub.setProcessCapabilities(capabilities);
+  domainController.setProcessCapabilities(capabilities);
+
+  if (app.isPackaged && capabilities.cursor) {
+    assertCursorSdkPackaged();
+  }
+
+  if (shouldListenLoopbackHttp({ ai: capabilities.ai, mcp: capabilities.mcp })) {
+    const loopbackApp = express();
+    loopbackApp.use(express.json({ limit: "50mb" }));
+    loopbackApp.use((request, response, next) => {
+      const origin = typeof request.headers.origin === "string" ? request.headers.origin : undefined;
+      if (origin && !isAllowedElectronLoopbackOrigin(origin)) {
+        if (request.method === "OPTIONS") {
+          response.status(403).end();
+          return;
+        }
+        next();
+        return;
+      }
+      const allowedOrigin =
+        origin && isAllowedElectronLoopbackOrigin(origin) ? origin : undefined;
+      if (allowedOrigin) {
+        response.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+      }
+      response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+      response.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      if (request.method === "OPTIONS") {
+        response.status(204).end();
+        return;
+      }
+      next();
+    });
+
+    if (shouldMountCopilotKitRoute(capabilities.ai)) {
+      const listenUrl = new URL(ELECTRON_LOOPBACK_ROOT_API_URL);
+      const mcpHttpUrl = `http://127.0.0.1:${Number(listenUrl.port) || 3080}/mcp`;
+      loopbackApp.use(
+        "/api/copilotkit",
+        createCopilotKitRouter(domainController, defaultSelfApplicationDeploymentMap, { capabilities, mcpHttpUrl }),
+      );
+    }
+
+    if (shouldMountMcpHttp(capabilities.mcp)) {
+      const endpointToolRegistry = new EndpointToolRegistry(
+        domainController,
+        defaultSelfApplicationDeploymentMap,
+      );
+      const mcpServer = await setupMcpServer(
+        express(),
+        defaultSelfApplicationDeploymentMap,
+        endpointToolRegistry,
+        domainController,
+      );
+      mcpServer.mountHttpRoutes(loopbackApp);
+    }
+
+    const runtimeBase = electronRuntimeBaseUrl(electronServerConfig.server);
+    const listenUrl = new URL(runtimeBase);
+    const port = Number(listenUrl.port) || 3080;
+    const server = loopbackApp.listen(port, "127.0.0.1", () => {
+      log(`Electron loopback HTTP listening on 127.0.0.1:${port}`);
+    });
+    server.on("error", (error: Error) => {
+      log("Electron loopback HTTP listen failed", error);
+    });
+  }
 
   // Expose the assets base path so the renderer (or other callers) can read it for
   // diagnostic purposes.  Path normalization of openStore actions is done transparently

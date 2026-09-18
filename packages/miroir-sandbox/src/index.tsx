@@ -12,6 +12,9 @@ import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   expect,
+  fetchProcessCapabilities,
+  getClientEnvironment,
+  getProcessCapabilities,
   LoggerInterface,
   MiroirActivityTracker,
   MiroirConfigClient,
@@ -171,6 +174,20 @@ async function startDemoApp() {
 
   restClient.setServerDomainController(domainControllerForServer);
   restClient.setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
+  restClient.setProcessCapabilities(
+    getProcessCapabilities({
+      config: demoMiroirConfig,
+      environment: getClientEnvironment(),
+      storeSectionFactoryRegister:
+        ConfigurationService.configurationService.StoreSectionFactoryRegister,
+      adminStoreFactoryRegister:
+        ConfigurationService.configurationService.adminStoreFactoryRegister,
+    }),
+  );
+
+  const processCapabilities = await fetchProcessCapabilities(restClient);
+  domainControllerForClient.setProcessCapabilities(processCapabilities);
+  domainControllerForServer.setProcessCapabilities(processCapabilities);
 
   log.info("startDemoApp: domain controllers ready; running admin→IndexedDB migration check");
 
@@ -224,6 +241,7 @@ async function startDemoApp() {
             <MiroirContextReactProvider
               miroirContext={miroirContext}
               domainController={domainControllerForClient}
+              processCapabilities={processCapabilities}
             >
               {/* Auto-fetch Miroir & App configurations on startup */}
               <DemoInitializer />

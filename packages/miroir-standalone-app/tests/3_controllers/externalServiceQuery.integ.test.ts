@@ -1,5 +1,5 @@
 /**
- * extractorFromAction end-to-end — extractorFromAction end-to-end against a local fake Spotify server.
+ * extractorForExternalService end-to-end — extractorForExternalService end-to-end against a local fake Spotify server.
  *
  * Vitest integ: live HTTP server + in-process secrets are not MiroirTest-reachable.
  *
@@ -300,7 +300,7 @@ function boxedGetPlaylistQuery(playlistId: string, endpointUuid: string = TEST_E
         application: selfApplicationLibrary.uuid,
         extractors: {
           playlist: {
-            extractorOrCombinerType: "extractorFromAction",
+            extractorOrCombinerType: "extractorForExternalService",
             endpointUuid,
             actionType: "get-playlist",
             parameterBindings: { playlist_id: playlistId },
@@ -405,8 +405,8 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("externalServiceQuery — extractorFromAction vs fake Spotify", () => {
-  it("boxed extractorFromAction returns the fixture playlist through the emulated-server path", async () => {
+describe.skipIf(!shouldRun).sequential("externalServiceQuery — extractorForExternalService vs fake Spotify", () => {
+  it("boxed extractorForExternalService returns the fixture playlist through the emulated-server path", async () => {
     expect(PLAYLIST_OK.name).toBe(PLAYLIST_NAME_LITERAL);
 
     const queryResult = await domainController.handleBoxedExtractorOrQueryAction(

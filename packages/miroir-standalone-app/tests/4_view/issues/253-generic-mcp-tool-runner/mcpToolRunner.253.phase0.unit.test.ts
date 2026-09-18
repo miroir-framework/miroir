@@ -326,7 +326,17 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       "/CRUD",
       "/api/copilotkit",
       "/mcp",
+      "/auth",
+      "/capabilities",
     ]);
     expect(proxyKeys).toContain("/mcp");
+    expect(proxyKeys).toContain("/capabilities");
+  });
+
+  it("server.ts MCP HTTP mount is gated by shouldMountMcpHttp", () => {
+    const server = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/server.ts"), "utf8");
+    expect(server).toContain("shouldMountMcpHttp");
+    expect(server).toContain("mountHttpRoutes");
+    expect(server).toContain("mcpServer.run");
   });
 });
