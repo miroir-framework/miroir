@@ -9,6 +9,7 @@ import {
   type Deployment,
 } from "miroir-core";
 import {
+  reportMultistepCountryCreate,
   reportMultistepLaunchPad,
   selfApplicationLibrary,
 } from "miroir-test-app_deployment-library";
@@ -72,6 +73,23 @@ const currentUseParams = {
   reportUuid: LAUNCH_PAD_REPORT_UUID,
   application: LIBRARY_APPLICATION_UUID,
   playlistId: "pl-274",
+};
+
+const tracerPageParams = {
+  applicationSection: "data" as const,
+  application: LIBRARY_APPLICATION_UUID,
+  deploymentUuid: deployment_Library.uuid,
+  instanceUuid: undefined,
+  reportUuid: MULTISTEP_REPORT_UUID,
+};
+
+const routeHostTracerProps = {
+  application: selfApplicationLibrary.uuid,
+  applicationSection: "data" as const,
+  deploymentUuid: deployment_Library.uuid,
+  pageParams: tracerPageParams,
+  reportDefinition: reportMultistepCountryCreate as any,
+  applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
 };
 
 const { navigateMock } = vi.hoisted(() => ({
@@ -288,6 +306,30 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
                 expect(navigateMock.mock.calls.some((call) => call[0] === -1)).toBe(false);
               },
             },
+            "route-host-finish-navigates-back": {
+              props: () => {
+                currentUseParams.reportUuid = MULTISTEP_REPORT_UUID;
+                return routeHostTracerProps;
+              },
+              tests: async (_expect: ExpectStatic, container: Container) => {
+                navigateMock.mockClear();
+                await waitFor(() => {
+                  expect(screen.getByTestId("multistep-report-host")).toBeTruthy();
+                });
+                await typeStepOneIn(container, "RouteFinish", "RF");
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                fireEvent.click(screen.getByRole("button", { name: "Next" }));
+                await waitAfterUserInteraction();
+                fireEvent.click(screen.getByRole("button", { name: "Finish" }));
+                await waitAfterUserInteraction();
+                await waitFor(() => {
+                  const country = getLibraryCountryFromJzodEditorTestCache();
+                  expect(country?.name).toEqual("RouteFinish");
+                });
+                expect(navigateMock).toHaveBeenCalledWith(-1);
+              },
+            },
             "modal-escape-confirms-cancel": {
               props: launchPadProps,
               tests: async (_expect: ExpectStatic, container: Container) => {
@@ -333,6 +375,7 @@ const jzodElementEditorTests: Record<string, ReactComponentTestSuitePrep<any>> =
 describe.skipIf(!shouldRun)("multistep reports #274 phase5 — launchers", () => {
   afterEach(() => {
     deleteLibraryCountryFromJzodEditorTestCache();
+    currentUseParams.reportUuid = LAUNCH_PAD_REPORT_UUID;
     navigateMock.mockClear();
   });
 

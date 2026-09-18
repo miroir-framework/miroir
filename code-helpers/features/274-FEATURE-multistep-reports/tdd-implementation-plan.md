@@ -108,12 +108,12 @@ Copied from [`analysis.md`](./analysis.md) D1–D17 after review repairs. Deviat
 | Artefact | Value |
 |---|---|
 | Library Report `MultistepCountryCreate` (tracer, frozen in Slice 1) | `d2b2fbbd-6844-4422-8412-4e3c303296bc` |
-| Library Report `MultistepCountryInstance` (Slice 4) | `8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61` |
+| Slice 4 instance-walk Report uuid (**test cache only**, no Library JSON asset; PR #280 removed the checked-in report) | `8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61` |
 | Library Report `MultistepLaunchPad` (Slice 5) | `b6d9e2a1-4c58-4f70-8a13-9e2f0c5d7b44` |
 | Step-1 `inputPrefix` | `stepOne` |
 | Step-2 `inputPrefix` | `stepTwo` |
 | Tracer Country uuid (created by Finish) | `63c96487-713f-4d5b-a424-bf7e8f70e147` |
-| Slice 4 Finish Country uuid (`MultistepCountryInstance`) | `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` |
+| Slice 4 Finish Country uuid (instance-walk clone Finish action) | `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` |
 | MiroirTest suite `multistepReports.274` | `9931f827-a3ce-435f-bf07-4dac430d81d1` |
 | MiroirTest `multistepFinish.274` | `42751630-3516-45e4-85ff-6838576a4a04` |
 | Library application | `5af03c98-fe5e-490b-b08f-e1230971c57f` |
@@ -426,9 +426,9 @@ An `objectInstanceReportSection` step writes into the step bag. A failed step qu
 
 ### 4.1 RED
 
-**Test:** add named cases to `multistepProcess.274.integ.test.tsx` (second `ReactComponentTestSuite` mount for `8f3c1a6e-…`, same `prepareAndRunTestSuites` call). This is the §8 “later-step query failure” row.
+**Test:** add named cases to `multistepProcess.274.integ.test.tsx` on the same `prepareAndRunTestSuites` mount. This is the §8 “later-step query failure” row.
 
-Drive `MultistepCountryInstance` (`8f3c1a6e-…`), **not** the tracer:
+Drive an **in-cache clone** at uuid `8f3c1a6e-…` (`buildInstanceWalkClone()` in the suite; `prepareInstanceWalkCase()` sets `useParams` before mount). There is **no** checked-in Library report JSON for that uuid after PR #280 — do not import or register it in `Library.ts`.
 
 - Step 0: `inputReportSection` `stepOne`.
 - Step 1: `objectInstanceReportSection` (Country-shaped editor; bag key = `reportSectionPath.join("_")`).
@@ -444,9 +444,8 @@ Behavior asserted:
 
 ### 4.2 GREEN
 
-- Add Report JSON `8f3c1a6e-…`; import + register in `Library.ts`; `npm run build -w miroir-test-app_deployment-library`; library `modelValidation`.
-- Consume phase0 inventory **85 → 86** in place (name `8f3c1a6e-…`).
 - Hoist only when the viewed Report is `type: "multistep"`.
+- *(Historical Slice 4 originally added checked-in report `8f3c1a6e-…`; PR #280 removed it and kept the same scenarios via `upsertLibraryReportInJzodEditorTestCache(buildInstanceWalkClone())`. Phase0 inventory stays **86** reports, **1** multistep.)*
 - Failure UI inside the host, not the L428–435 branch that unmounts Formik.
 
 ### 4.3 Refactor checkpoint
@@ -464,9 +463,9 @@ RUN_TEST=multistep.274.phase0 npm run testByFile -w miroir-standalone-app -- --p
 
 ### Realization
 
-Object-instance hoist + failure-keeps-bag. Completeness suite (`multistepProcess.274.integ.test.tsx`) gained four cases on the same suite: `instance-no-child-formik`, `instance-edit-updates-bag`, `instance-finish-sees-hoisted-key`, `query-failure-keeps-bag`. Frozen tracer JSON was not edited. Phase0 inventory 85 → 86 (`8f3c1a6e-…` MultistepCountryInstance).
+Object-instance hoist + failure-keeps-bag. Completeness suite (`multistepProcess.274.integ.test.tsx`) gained four cases on the same suite: `instance-no-child-formik`, `instance-edit-updates-bag`, `instance-finish-sees-hoisted-key`, `query-failure-keeps-bag`. Frozen tracer JSON was not edited.
 
-**Report:** Library `MultistepCountryInstance` (`8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61`). Step 0 `inputPrefix: stepOne`. Step 1 Country `objectInstanceReportSection` (create-mode, no `fetchedDataReference`). Step 2 `jsonReportSection` `failingCountries` extractor with `getFromParameters` `safe: true` `referencePath: ["absentParam"]`. Finish `createInstance` Country `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` from the hoisted bag key. Draft editor seed uuid `c9e2a4b1-7d5f-4e8c-a1b3-6f0d8e4c2a91` (not Finish).
+**Instance-walk clone (test cache only, uuid `8f3c1a6e-…`):** Step 0 `inputPrefix: stepOne`. Step 1 Country `objectInstanceReportSection` (create-mode, no `fetchedDataReference`). Step 2 `jsonReportSection` `failingCountries` extractor with `getFromParameters` `safe: true` `referencePath: ["absentParam"]`. Finish `createInstance` Country `e8a1c4b2-7d3f-4a91-9e05-b6c84d0f2e71` from the hoisted bag key. *(PR #280 deleted the former checked-in Library asset `MultistepCountryUpdate` at the same uuid.)*
 
 **Bag key:** `definition_section_definition_1` (`["definition","section","definition", 1].join("_")`). Host `collectStepBagKeys` walks list/grid and collects each `inputPrefix` plus each object-instance path key. Next Jzod-gates input **and** instance (D7) via Country’s resolved `mlSchema`.
 
@@ -476,11 +475,11 @@ Object-instance hoist + failure-keeps-bag. Completeness suite (`multistepProcess
 
 **Entity lookup:** `ReportSectionEntityInstance` falls back to `useCurrentModel` entities when `deploymentUuidToReportsEntitiesMapping` is absent (this harness).
 
-**Files:** `packages/miroir-test-app_deployment-library/assets/library_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/8f3c1a6e-2d47-4b91-9e05-c7a84b0d2e61.json`, `Library.ts`, `index.ts`, `index.d.ts`, `MultistepReportHost.tsx`, `ReportSectionEntityInstance.tsx`, `ReportTools.ts`, `ReportViewWithEditor.tsx`, `JzodElementEditorTestTools.tsx`, `multistepProcess.274.integ.test.tsx`, `multistep.274.phase0.unit.test.ts`.
+**Files:** `MultistepReportHost.tsx`, `ReportSectionEntityInstance.tsx`, `ReportTools.ts`, `ReportViewWithEditor.tsx`, `JzodElementEditorTestTools.tsx`, `multistepProcess.274.integ.test.tsx`, `multistep.274.phase0.unit.test.ts`. *(No `8f3c1a6e-….json` in deployment-library after PR #280.)*
 
 **Deviations:** Named cases on the existing suite (not a second `ReactComponentTestSuite` mount) so `jzodEditorTestLocalCache` stays shared. `useParams` is per-case via mutable `currentUseParams` set in the instance `props` factory before render (`ReportPage` reads `useParams` at mount). Failure extractor uses `safe: true` + `referencePath: ["absentParam"]` so template resolve does not throw. Step 1 is create-mode because a successful Country fetch cannot coexist with a failing extractor on the same report query (fail-fast). Hidden `multistep-step-bag` testid. Library `testByFile` filter is `modelValidation.unit` (vitest root is `./tests`). No product `useEffect`. Did not spy on `runMultistepFinish`.
 
-**Validation:** `npm run build -w miroir-test-app_deployment-library` — pass. `npm run testByFile -w miroir-test-app_deployment-library -- modelValidation.unit` — 183/183 (includes MultistepCountryInstance). `RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274` — 16/16 (12 existing + 4 Slice 4). `RUN_TEST=multistep.274.phase0 … --profile emulatedServer-filesystem` — 7/7. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — pass.
+**Validation:** `RUN_TEST=multistepProcess.274 npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem multistepProcess.274` — includes Slice 4 instance-walk cases (19/19 after PR #280 AC tests). `RUN_TEST=multistep.274.phase0 … --profile emulatedServer-filesystem` — 15/15. `npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json` — pass.
 
 No stop-the-world product contradiction. Nested-Formik hoist and L445 unmount were expected and handled as above.
 
@@ -542,7 +541,7 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation
 
 ### Realization
 
-Launchers (P9, P16). New suite `multistepLaunch.274.phase5.integ.test.tsx` (`prepareAndRunTestSuites`, `wireLocalCacheCompositeAction: true`, same router / `ModelDiagramReportSectionView` mocks as the process suite). Frozen tracer `d2b2fbbd-…` and Slice 4 report `8f3c1a6e-…` were not edited. Completeness suite was not given Slice 5 cases. Phase0 inventory 86 → 87 (`b6d9e2a1-…` MultistepLaunchPad); list Reports 11 → 12 (`type: "list"` so all children show).
+Launchers (P9, P16). New suite `multistepLaunch.274.phase5.integ.test.tsx` (`prepareAndRunTestSuites`, `wireLocalCacheCompositeAction: true`, same router / `ModelDiagramReportSectionView` mocks as the process suite). Frozen tracer `d2b2fbbd-…` was not edited. Completeness suite was not given Slice 5 cases. Phase0 inventory 86 → 87 (`b6d9e2a1-…` MultistepLaunchPad); list Reports 11 → 12 (`type: "list"` so all children show).
 
 **Report:** Library `MultistepLaunchPad` (`b6d9e2a1-4c58-4f70-8a13-9e2f0c5d7b44`). Two `openReportSection`s (modal / route) targeting the tracer; one Country `objectListReportSection` with `definition.openReport` (`openAs: "modal"`). Application / section / deployment come from page context.
 
@@ -617,7 +616,7 @@ Automated equivalent: `multistepProcess.274` (required) + `multistepFinish.274` 
 | Success closes modal / leaves route | `multistepLaunch.274` | ✅ |
 | Menu report link still routes | `applicationModelScopeMenu.unit.test.ts` (existing) | ✅ |
 | `openReportSection` + list `openReport` + row `instanceUuid` | `multistepLaunch.274` | ✅ |
-| Object-instance edits visible to Finish | `multistepProcess.274` (Slice 4 cases) | ✅ |
+| Object-instance edits visible to Finish | `multistepProcess.274` (`instance-*`, `query-failure-keeps-bag`; in-cache clone at `8f3c1a6e-…`) | ✅ |
 | Runner / list Add unchanged | Slice 0 + no product change in those files except list `openReport` | ✅ |
 
 ### Validation
@@ -646,7 +645,7 @@ Nonreg, docs, cleanup decision, AC. Completeness gate met: `multistepProcess.274
 
 **tsc:** `miroir-core`, `miroir-standalone-app`, `miroir-test-app_deployment-library` — all pass.
 
-**Slice validation (filesystem):** `multistep.274.phase0` 7/7; `multistepReports.274` / `multistepFinish.274` 1/1; `multistepProcess.274` 16/16; `multistepLaunch.274.phase5` 5/5.
+**Slice validation (filesystem):** `multistep.274.phase0` 15/15; `multistepReports.274` / `multistepFinish.274` 1/1; `multistepProcess.274` 19/19; `multistepLaunch.274.phase5` 7/7.
 
 **Full nonreg:** pass. `test-results/nonreg/20260913T180213Z` — default / `emulatedServer-sql` / run-all, **59 passed / 0 failed**. All three #274 steps green (`unit-274` 22.7s, `integ-action-274` 31.4s, `appstack-274` 86.3s including `multistepProcess.274`).
 

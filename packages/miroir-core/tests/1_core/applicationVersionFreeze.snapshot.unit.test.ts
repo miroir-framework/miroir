@@ -233,6 +233,8 @@ const reportSnapshotCase = defineCase<StoredReportForFreeze, ReportVersionSnapsh
     uuid,
     name,
     defaultLabel: `${name} Label`,
+    type: "multistep",
+    description: `${name} multistep description`,
     definition: {
       reportParameters: {},
       section: {
@@ -251,6 +253,8 @@ const reportSnapshotCase = defineCase<StoredReportForFreeze, ReportVersionSnapsh
     expect(snapshot.name).toBe(live.name);
     expect(snapshot.definition).toEqual(live.definition);
     expect(snapshot.defaultLabel).toBe(live.defaultLabel);
+    expect(snapshot.type).toBe(live.type);
+    expect(snapshot.description).toBe(live.description);
   },
   mutateLive: (live) => {
     (live.definition as any).reportParameters.afterFreeze = true;
