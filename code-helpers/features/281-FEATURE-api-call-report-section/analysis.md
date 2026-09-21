@@ -11,7 +11,9 @@ Related: [#208 cache policy](https://github.com/miroir-framework/miroir/issues/2
 Key sources: [`syncExternalServiceSchema.ts`](../../../packages/miroir-core/src/2_domain/syncExternalServiceSchema.ts) · [`endpointDefinition.ts`](../../../packages/miroir-core/src/0_interfaces/1_core/endpointDefinition.ts) · [`createReportQueryLoadExecutor.ts`](../../../packages/miroir-core/src/2_domain/createReportQueryLoadExecutor.ts) · [`ReportSectionViewWithEditor.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx) · [`ReportSectionEntityInstance.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx) · [`ReportTools.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportTools.ts) · [`ReportInputSection.tsx`](../../../packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportInputSection.tsx) · [`SpotifyPlaylistReport`](../../../packages/miroir-test-app_deployment-spotify/assets/spotify_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/10ce3252-7840-4041-a769-9a0e2d5ee10b.json) · [`SpotifyPlaylist` Entity](../../../packages/miroir-test-app_deployment-spotify/assets/spotify_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/56166585-b6fd-42c6-95d3-32a80c3304f7.json) · [`SpotifyService` Endpoint](../../../packages/miroir-test-app_deployment-spotify/assets/spotify_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0e5cb172-12ea-4467-8598-5889338ae454.json)
 
 **Document role:** analysis and architectural decision record.
-**Status:** decisions confirmed with the user (2026-09-21 grilling). Implementation plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (to be written after this analysis).
+**Status:** decisions confirmed with the user (2026-09-21 grilling). Revised after adversarial review ([`./adversarial-review.md`](./adversarial-review.md), R1–R14 applied). Implementation plan: [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (to be written after this analysis).
+
+**Document history:** first draft committed on `281-FEATURE-api-call-report-section`. Review found two structural holes (browser Endpoint lookup via the reports-entities mapping; D3 mismatch against stored Query `371aed0c` instead of the report’s inline extractors) plus `readonly` on `TypedValueObjectEditor`, D15 `createEntity` upsert vs `updateInstance`, D9 scope defaulting as new behavior, `operationSync` sequencing, closed form-schema switches, multistep gating, and Entity-deletion blast radius. Product choices D1–D16 are unchanged; mechanisms below are tightened.
 
 ---
 
@@ -44,13 +46,13 @@ Confirmed with the user (2026-09-21). Defaults accepted except Q3 (repeat ids) a
 | D6 | Sync shape | **One transformer** (`syncExternalServiceSchema`). Entity only when `operationSync.<operationId>.entity` is set. Remove Spotify-specific constants. |
 | D7 | Does the section fetch? | **Display only.** Extractor still runs server-side (#267 D5). |
 | D8 | OpenAPI bound subset | **`operationSync.<id>.boundPaths` required.** No bound → fail closed (`oneOf`/`anyOf` still rejected without a unique bound match). |
-| D9 | Sync selection vs runtime allowlist | **Keep `scope`.** Require `endpointUuid`. Default `scope` to `enabledOperations` when that list is non-empty. Sync does not rewrite `enabledOperations`. |
+| D9 | Sync selection vs runtime allowlist | **Keep `scope`.** Require `endpointUuid`. **New behavior:** default `scope` to `enabledOperations` when that list is non-empty (today the handler **fails** if `scope` is missing — `syncExternalServiceSchema.ts` L459–461). Sync does not rewrite `enabledOperations`. |
 | D10 | Designer control surface | **`externalService.operationSync` on the Endpoint**, edited with the generic instance editor. Transformer runner supplies `endpointUuid` (+ `appModel`); everything else is read from that Endpoint. Tests may still pass overrides in `transformerParams`. |
 | D11 | Read-only? | **Always.** No submit, no instance write. Writes would be a different section/action later. |
 | D12 | Root object vs arrays | **One object section.** Nested arrays render inside the object editor. Spotify’s extra tracks `jsonReportSection` goes. |
 | D13 | Mismatch / lookup failure | **Hard fail.** Message names Endpoint, operation, and extractor. No silent JSON dump. |
 | D14 | Example app | **Delete `SpotifyPlaylist`.** Report uses `apiCallReportSection`. Keep an Entity-backed HTTP report as a **CI fixture** (no regression). |
-| D15 | Re-sync when `entity` is set | **Per keyed operation:** `createEntity` if uuid absent, `updateInstance` (refresh `mlSchema`) if present. Several keys → several actions, not `createdEntities[0]`. |
+| D15 | Re-sync when `entity` is set | **One `createEntity` model action per `operationSync.*.entity` key** (not `createdEntities[0]`). Filesystem `createEntity` **upserts** the Entity row if the uuid already exists (`FileSystemEntityStoreSectionMixin.ts` L77–93). Do not emit `updateInstance` for this. TDD plan must prove mlSchema refresh on postgres/indexedDb as well. |
 | D16 | Extra `operationSync` keys | **Ignored** if not in `scope`. Presence in `operationSync` does not enable the call. |
 
 **Rationale:** the Entity is a display costume for HTTP data, not a store identity. The report query already fetches without it. A new section type names that difference (no cache, schema from the Endpoint). Sync intent has to live on the Endpoint **before** `operations[]` exists, because bound paths are an input to conversion.
@@ -100,7 +102,9 @@ Confirmed with the user (2026-09-21). Defaults accepted except Q3 (repeat ids) a
 
 **Status:** Accepted — boilerplate for a check.
 
-The extractor at `fetchedDataReference` must be `extractorTemplateForExternalService` or `extractorForExternalService` with the same `endpointUuid` and `actionType === operationId`. Then load that Endpoint from the current application model, find `operations[]` by `operationId`, use `responseSchema`.
+The extractor at `fetchedDataReference` must be `extractorTemplateForExternalService` or `extractorForExternalService` with the same `endpointUuid` and `actionType === operationId`. Compare against **`reportDefinition.definition.extractorTemplates`** (what `ReportViewWithEditor` actually runs, L118–127) after template resolution / `resolvedQuery.extractors`. Stored Query `371aed0c-…` is a **parallel** `storedQueries` asset (`Spotify.ts` L73); it is **not** the report runner input and can drift without affecting display.
+
+Then load that Endpoint from **`useCurrentModelEnvironment(application, applicationDeploymentMap).endpointsByUuid[endpointUuid]`** (or `currentModel.endpoints.find`). **Forbidden:** `deploymentUuidToReportsEntitiesMapping` — `getReportsAndEntitiesForDeploymentUuid` (`Model.ts` L226–276) returns only queries/reports/entities/entityVersions, **no endpoints**. Endpoints are model-section instances (`useEndpointsOfApplications`, `ReduxHooks.ts` L394+). Do not copy `ReportViewWithEditor`’s `defaultMiroirModelEnvironment` seeding (`ReportViewWithEditor.tsx` L278) for schema lookup.
 
 Hard fail (no typed editor, no JSON fallback) when:
 
@@ -117,7 +121,7 @@ Hard fail (no typed editor, no JSON fallback) when:
 
 Today, with or without `SpotifyPlaylist`:
 
-- Server: `resolveExtractorForExternalServiceInBoxedQuery` writes `contextResults[extractorName]` (`DomainController.ts` L3291–3294). It does not call `loadNewInstancesInLocalCache`.
+- Server: `resolveExtractorForExternalServiceInBoxedQuery` seeds `contextResults[extractorName]` (comment `DomainController.ts` L3291–3294; assignment L3343–3345). It does not call `loadNewInstancesInLocalCache`.
 - Report load: `queryContainsExternalExtractor` → whole-query `queryExecutionStrategy: "storage"` → return `returnedDomainElement` (`createReportQueryLoadExecutor.ts` L186–220). The store-backed branch (L223+) is the one that `loadNewInstancesInLocalCache`s.
 - Client stash: `ReportQueryLoadService.resultByKey` (`ReportQueryLoadService.ts` L72, L95–97, L138–141).
 
@@ -145,10 +149,11 @@ This issue **does not add** an HTTP instance cache. Docs and a characterization 
 
 `entity` omitted → no Entity action. Spotify example omits it.
 
-5. **Scope:** `transformerParams.scope` if provided; else `enabledOperations` when non-empty; else fail as today (“requires scope”). Sync does **not** write `enabledOperations`.
-6. **Re-sync:** Endpoint `updateInstance` must keep `operationSync` (spread existing `externalService`, replace `operations[]` only). Per `operationSync` entity key: create or update; **all** keys, not `createdEntities[0]` (L577–581).
-7. **Keys not in scope:** ignored.
-8. **Invocation:** transformer runner (existing `transformerRunnerReportSection` / builder). Params: `endpointUuid`, `appModel` from `localCache.currentModelEnvironment(app, map)`, `openApiDocument` from the Endpoint instance (or params override). No new Sync button. No sync-on-save.
+5. **Scope (new vs today):** today missing `scope` **fails** (L459–461) even when `enabledOperations` is `["get-playlist"]`. After this issue: `transformerParams.scope` if provided; else Endpoint `enabledOperations` when non-empty; else fail. Extend TransformerDefinition `c615ff0e-…` `transformerParameterSchema` with required `endpointUuid`. Sync does **not** write `enabledOperations`.
+6. **Re-sync:** Endpoint `updateInstance` must keep `operationSync` (today `buildCompositeAction` already spreads `existingExternal` then replaces `operations[]`, L403–411 — once `operationSync` is on that object it survives). Per `operationSync.*.entity` key emit **`createEntity`** (all keys, not `createdEntities[0]`, L577–581). Filesystem upserts an existing Entity uuid (see D15). Do not emit Entity `updateInstance`.
+7. **Order:** land Endpoint schema + Spotify `operationSync.get-playlist.boundPaths` **before** deleting `DEFAULT_BOUNDED_PATHS`. Removing the constant first makes `get-playlist` sync fail closed (D8, intended only after the asset exists).
+8. **Keys not in scope:** ignored.
+9. **Invocation:** transformer runner (existing `transformerRunnerReportSection` / builder). Params: `endpointUuid`, `appModel` from `localCache.currentModelEnvironment(app, map)`, `openApiDocument` from the Endpoint instance (or params override). No new Sync button. No sync-on-save.
 
 `openApiDocument` stays inert provenance at runtime (#267 D2).
 
@@ -162,7 +167,7 @@ A section that fetched would bypass #267 D5 (token on the server only). Paramete
 
 **Status:** Accepted — read-only object editor; nested arrays inside it.
 
-Precedent: `ReportInputSection` uses `TypedValueObjectEditor` with `formValueMLSchema` (no Entity), `valueObjectEditMode="create"`, `displaySubmitButton="noDisplay"`, `useActionButton={false}` (`ReportInputSection.tsx` L106–118). `ValueObjectEditMode` is only `"create" | "update"` (`ReportSectionEntityInstance.tsx` L108) — there is no `"view"` flag. Read-only is **no submit / no instance action**, not a new edit-mode enum (unless implementation finds a disable-inputs prop already on the editor; do not add a third mode in this issue unless the editor already has one).
+`TypedValueObjectEditor` already has `readonly?: boolean` (“no submit button, no editing”, `TypedValueObjectEditor.tsx` L90–91) and passes `readOnly={true}` into `JzodElementEditor`. **`apiCallReportSection` must set `readonly={true}`.** Do not copy `ReportInputSection`, which only hides submit (`displaySubmitButton="noDisplay"`, `useActionButton={false}`, L117–118) and **leaves fields editable** (URL-param OK button). `ValueObjectEditMode` stays `"create" | "update"` (`ReportSectionEntityInstance.tsx` L108); do not add a `"view"` enum. Formik may still hold in-memory edits; D11 forbids persistence / instance actions, and `readonly` forbids editing the UI.
 
 `objectInstanceReportSection` goes through `ReportSectionEntityInstance`, which resolves `parentUuid` to an Entity `mlSchema` and fails with “report target entity not found!” when missing (L654–666). **Do not** route `apiCallReportSection` through that component. Mount `TypedValueObjectEditor` (or a thin wrapper) from `ReportSectionViewWithEditor`, schema from the Endpoint.
 
@@ -176,11 +181,15 @@ Spotify report sections today (enumerated): `inputReportSection`, `objectInstanc
 |---|---|---|
 | Entity `SpotifyPlaylist` | `56166585-b6fd-42c6-95d3-32a80c3304f7` | **Deleted** from `miroir-test-app_deployment-spotify` |
 | Report `SpotifyPlaylistReport` | `10ce3252-7840-4041-a769-9a0e2d5ee10b` | `apiCallReportSection`; keep uuid (menu + `homePageUrl`) |
-| Query `spotifyGetPlaylist` | `371aed0c-05bb-4b77-8cf1-2c82407555c1` | Extractor unchanged; drop `tracks` transformer if unused |
+| Query `spotifyGetPlaylist` | `371aed0c-05bb-4b77-8cf1-2c82407555c1` | **Not** what the report runs. Keep in sync with the report’s inline `extractorTemplates` or drop `tracks` if unused. Drift does not change display until copied onto the Report. |
 | Endpoint `SpotifyService` | `0e5cb172-12ea-4467-8598-5889338ae454` | Add `operationSync.get-playlist.boundPaths`; no `entity` |
 | Entity-backed HTTP report | new CI fixture (standalone-app tests, not the example package) | Proves D4 “no regression” |
 
-`defaultSpotifyAppModel.entities` is `[entitySpotifyPlaylist]` today (`Spotify.ts` L49). After: `[]`. `entitySpotifyPlaylist` export goes.
+`defaultSpotifyAppModel.entities` is `[entitySpotifyPlaylist]` today (`Spotify.ts` L49). After: `[]`. `entitySpotifyPlaylist` export goes from `Spotify.ts` / `index.ts` / `index.d.ts`.
+
+**Must rewrite or fixture-replace (blast radius):** `spotifyApp.integ.test.tsx` (imports `entitySpotifyPlaylist`, schema asserts ~L564–703), `packages/miroir-core/tests/4_services/externalServiceHttpStoreSkip.unit.test.ts` (`HTTP_ENTITY_UUID = 56166585-…` — keep a kind:http Entity **fixture**, not the example app), `packages/miroir-test-app_deployment-spotify/scripts/dogfood-sync-spotify-schema.ts` (writes the Entity JSON), MiroirTest `f4e5dde0-…` / `394242e7-…` (`createSpotifyPlaylist` / entity uuid in expected composite). Deleting the package Entity without those edits breaks CI.
+
+**Multistep:** `collectStepBagKeys` / `currentStepAllowsNext` only special-case `inputReportSection` and `objectInstanceReportSection` (`MultistepReportHost.tsx` L254–275); other types allow Next and contribute no bag keys. `apiCallReportSection` in a multistep list is **display-only, always-Next** — acceptable; not a Goal. Do not add a bag arm in this issue.
 
 ---
 
@@ -215,7 +224,7 @@ Programmatic inventory (2026-09-21): `spotify_model` has **7** JSON files (Entit
 
 `SpotifyPlaylist` (`56166585-…`): `idAttribute: "id"`, `externalDataSource: { kind: "http", endpoint: "0e5cb172-…" }`, `defaultInstanceDetailsReportUuid: "10ce3252-…"`. No `spotify_data/56166585-…` instances. Stores skip bootstrap for `kind: "http"` (#267).
 
-Who references the Entity: Report `objectInstanceReportSection.definition.parentUuid`; package export / `defaultSpotifyAppModel.entities`; sync defaults for `get-playlist`. The Query does not. Menu and SelfApplication `homePageUrl` reference the **Report** uuid, not the Entity.
+Who references the Entity: Report `objectInstanceReportSection.definition.parentUuid`; package export / `defaultSpotifyAppModel.entities`; sync defaults for `get-playlist`; tests listed under D14. The **Query does not**. The Report **embeds** the same extractor JSON as Query `371aed0c-…`; `ReportViewWithEditor` runs the embed. Menu and SelfApplication `homePageUrl` reference the **Report** uuid, not the Entity.
 
 ### 3.2 Fetch path never cache-fills HTTP rows (aligned with D5)
 
@@ -225,7 +234,7 @@ See D5 citations. Slice 5 integ reports (`externalServiceReport.integ.test.tsx` 
 
 `objectInstanceReportSection.definition.parentUuid` is a required uuid string (no `optional`) on both Report present-model Entity `3f2baa83-…` and EntityVersion `952d2c65-…`. `ReportSectionEntityInstance` looks up that uuid in the deployment entity mapping, then `entityWithResolvedMLSchema(entity).mlSchema`. Missing Entity → “report target entity not found!”.
 
-`reportSectionsFormSchema` for `objectInstanceReportSection` also resolves the Entity and **throws** if missing (`ReportTools.ts` L79–98). `jsonReportSection` is not handled in that switch (falls through to default throw). Form-schema generation is used by `JsonObjectEditFormDialog`, not the happy-path Spotify report render (`reportSectionsFormValue` returns `{}` for `jsonReportSection`, L268–273).
+`reportSectionsFormSchema` for `objectInstanceReportSection` also resolves the Entity and **throws** if missing (`ReportTools.ts` L79–98). **`inputReportSection` also throws** in that switch (default L111–116). `jsonReportSection` is not listed (falls through to throw). Form-schema generation is used by `JsonObjectEditFormDialog.tsx` L300–311, not the happy-path Spotify report render (`reportSectionsFormValue` returns `{}` for `jsonReportSection`, L268–273). **`apiCallReportSection` must be an explicit arm in both switches** (see §5.1).
 
 `ReportSectionViewWithEditor` switches on 15 `type` values including `grid` / `list` literals (L370, L413) matching `gridReportSection` / `listReportSection`. There is no `apiCallReportSection` arm.
 
@@ -280,10 +289,11 @@ Typed Jzod **without** an Entity already exists: `inputReportSection.definition.
 
 ### 5.1 Render path
 
-1. Report query unchanged: `extractorTemplateForExternalService` → POST `/query` → `contextResults.playlist`.
-2. `reportSectionsFormValue` for `apiCallReportSection`: seed Formik at the section path from `reportData[fetchedDataReference]` (same as instance sections with a reference; `ReportTools.ts` L180–184).
-3. `ReportSectionViewWithEditor` new arm: resolve schema (D3/D13); on success `TypedValueObjectEditor` with that Jzod; on failure error banner (full message, no dump of the payload as a substitute UI).
+1. Report query unchanged: **inline** `reportDefinition.definition.extractorTemplates` (`ReportViewWithEditor.tsx` L118–127) → POST `/query` → `contextResults.playlist`. Not Query `371aed0c-…`.
+2. `reportSectionsFormValue` for `apiCallReportSection`: seed Formik at the section path from `reportData[fetchedDataReference]` (same pattern as `objectInstanceReportSection` when a reference is set; `ReportTools.ts` L179–226). Also add an arm to **`reportSectionsFormSchema`** (today `default` **throws**, L111–116 — `inputReportSection` already throws; `JsonObjectEditFormDialog.tsx` L300–311 calls this). Returning `{}` is acceptable if the dialog is not a Goal; throwing on the new type is not.
+3. `ReportSectionViewWithEditor` new arm: resolve schema (D3/D13) via `useCurrentModelEnvironment(props.application, props.applicationDeploymentMap).endpointsByUuid` (**not** `deploymentUuidToReportsEntitiesMapping`). On success `TypedValueObjectEditor` with that Jzod and **`readonly={true}`**. On failure error banner (full message, no JSON dump as substitute UI).
 4. Do not call `ReportSectionEntityInstance`.
+5. Characterization: fetch-disabled (`enabledOperations` omit) vs binding mismatch are separate failures (D3 vs `ExternalServiceClient.ts` L680–686).
 
 ### 5.2 Schema dual-write
 
@@ -295,19 +305,20 @@ Typed Jzod **without** an Entity already exists: `inputReportSection.definition.
 | Endpoint Entity `3d8da4d4-…` `externalService` | add `operationSync` (optional record) |
 | Endpoint EntityVersion `e3c1cc69-…` | same |
 | `EndpointExternalService` TS type | add `operationSync?` |
-| TransformerDefinition `c615ff0e-…` | document `endpointUuid` required; `scope` optional when `enabledOperations` non-empty; read `operationSync` from Endpoint |
+| TransformerDefinition `c615ff0e-…` | add `endpointUuid` to `transformerParameterSchema` (MCP/designer discoverability). Handler already reads `transformerParams.endpointUuid` (L475); Zod `.strict()` on the transformer **node** does not block the params bag. `scope` optional once D9 defaulting lands. `operationSync` is read from the Endpoint instance, not transformer params. |
 
 Then `npm run build -w miroir-test-app_deployment-miroir && npm run devBuild -w miroir-core`.
 
 ### 5.3 Mismatch check (normative)
 
-Inputs: section `{ endpointUuid, operationId, fetchedDataReference }`, report query templates/extractors, current model endpoints.
+Inputs: section `{ endpointUuid, operationId, fetchedDataReference }`, **`reportDefinition.definition.extractorTemplates`** (or `resolvedQuery.extractors` after `Templates.ts`), `useCurrentModelEnvironment(…).endpointsByUuid`.
 
-1. Let `ex = extractors[fetchedDataReference] ?? extractorTemplates[fetchedDataReference]`.
-2. If missing or type not external-service extractor → fail `ApiCallReportSectionBindingMismatch` (name TBD; stable `errorType` or UI string is enough if not an `Action2Error`).
+1. Let `ex = report.extractorTemplates[fetchedDataReference]` (resolved: `resolvedQuery.extractors[fetchedDataReference]`). Do **not** read Query `371aed0c-…`.
+2. If missing or type not `extractorTemplateForExternalService` / `extractorForExternalService` (or #272 aliases `extractorTemplateFromAction` / `extractorFromAction`) → fail, message names the key.
 3. If `ex.endpointUuid !== endpointUuid` or `ex.actionType !== operationId` → fail, message includes both pairs.
-4. If Endpoint missing or `operations` has no `operationId` → fail `ApiCallReportSectionSchemaNotFound`.
-5. Else schema = that `responseSchema`.
+4. Let `endpoint = endpointsByUuid[endpointUuid]`. If missing, or `getExternalService(endpoint)` has no `operations` entry for `operationId` → fail. **Do not** use `deploymentUuidToReportsEntitiesMapping`.
+5. Else schema = that operation’s `responseSchema`.
+6. UI string is enough (not necessarily a new `Action2Error` `errorType`).
 
 ### 5.4 Docs
 
