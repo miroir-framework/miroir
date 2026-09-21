@@ -1,6 +1,5 @@
 import type {
   EndpointDefinition,
-  Entity,
   EntityInstance,
   Menu,
   MetaModel,
@@ -13,7 +12,6 @@ export declare const deployment_Spotify_DO_NO_USE: any;
 export declare const selfApplicationSpotify: SelfApplication;
 export declare const selfApplicationModelBranchSpotifyMasterBranch: any;
 export declare const spotifyInitApplicationVersion: EntityInstance;
-export declare const entitySpotifyPlaylist: Entity;
 export declare const reportSpotifyPlaylist: Report;
 export declare const querySpotifyGetPlaylist: any;
 export declare const spotifyServiceEndpoint: EndpointDefinition;

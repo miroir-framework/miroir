@@ -3,10 +3,8 @@ import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import {
-  entitySpotifyPlaylist,
   querySpotifyGetPlaylist,
   reportSpotifyPlaylist,
-  spotifyServiceEndpoint,
 } from "miroir-test-app_deployment-spotify";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
@@ -31,12 +29,6 @@ const EXPECTED_SPOTIFY_MODEL_FILES: {
   uuid: string;
   name: string;
 }[] = [
-  {
-    relativePath:
-      "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/56166585-b6fd-42c6-95d3-32a80c3304f7.json",
-    uuid: "56166585-b6fd-42c6-95d3-32a80c3304f7",
-    name: "SpotifyPlaylist",
-  },
   {
     relativePath:
       "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/10ce3252-7840-4041-a769-9a0e2d5ee10b.json",
@@ -107,9 +99,9 @@ function extractExportTypeBlock(source: string, typeName: string): string {
 }
 
 describe.skipIf(!shouldRun)("apiCallReport #281 phase0 — current contracts", () => {
-  it("spotify_model has exactly 7 JSON files with expected uuids and names", () => {
+  it("spotify_model has exactly 6 JSON files with expected uuids and names", () => {
     const files = collectJsonFilesUnder(SPOTIFY_MODEL_ROOT);
-    expect(files).toHaveLength(7);
+    expect(files).toHaveLength(6);
 
     const inventory = files.map((absolute) => {
       const relFromModel = relative(SPOTIFY_MODEL_ROOT, absolute).replaceAll("\\", "/");
@@ -125,12 +117,6 @@ describe.skipIf(!shouldRun)("apiCallReport #281 phase0 — current contracts", (
         left.relativePath.localeCompare(right.relativePath),
       ),
     );
-  });
-
-  it("SpotifyPlaylist.mlSchema deep-equals get-playlist operations[0].responseSchema", () => {
-    const operations = spotifyServiceEndpoint.definition.externalService?.operations ?? [];
-    expect(operations[0]?.operationId).toBe("get-playlist");
-    expect(entitySpotifyPlaylist.mlSchema).toEqual(operations[0]?.responseSchema);
   });
 
   it("report inline extractorTemplates.playlist is extractorTemplateForExternalService get-playlist", () => {

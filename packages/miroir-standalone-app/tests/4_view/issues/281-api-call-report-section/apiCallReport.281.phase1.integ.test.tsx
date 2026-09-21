@@ -66,7 +66,6 @@ import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-test-ap
 import {
   defaultSpotifyAppModel,
   deployment_Spotify_DO_NO_USE,
-  entitySpotifyPlaylist,
   getDefaultSpotifyModelEnvironment,
   reportSpotifyPlaylist,
   selfApplicationModelBranchSpotifyMasterBranch,
@@ -518,15 +517,13 @@ afterAll(async () => {
 });
 
 describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase1 — typed playlist without parentUuid", () => {
-  it("SpotifyPlaylist Entity may exist in the model but has no filesystem instance cache", () => {
+  it("HTTP playlist has no filesystem instance cache; Entity need not be in the example model", () => {
     const model = domainController.currentModelEnvironment(
       selfApplicationSpotify.uuid,
       applicationDeploymentMap,
     ).currentModel;
     const playlistEntity = model.entities.find((entity) => entity.uuid === SPOTIFY_PLAYLIST_ENTITY_UUID);
-    expect(playlistEntity, "SpotifyPlaylist must be present in the booted model").toBeDefined();
-    expect(playlistEntity?.name).toBe("SpotifyPlaylist");
-    expect(entitySpotifyPlaylist.externalDataSource?.kind).toBe("http");
+    expect(playlistEntity, "example model must not require SpotifyPlaylist Entity").toBeUndefined();
 
     const spotifyEndpoint = model.endpoints.find((endpoint) => endpoint.uuid === SPOTIFY_ENDPOINT_UUID);
     expect(spotifyEndpoint, "SpotifyService endpoint must land in the booted model").toBeDefined();

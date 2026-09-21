@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Review: [`./adversarial-review.md`
 Prerequisite: [`../267-FEATURE-openapi-external-services/`](../267-FEATURE-openapi-external-services/) ✅
 Working branch: `281-FEATURE-api-call-report-section`
 
-**Resume note:** Slice 3 ✅ DONE. Slice 4 (delete example Entity `56166585-…`) not started.
+**Resume note:** Slice 4 ✅ DONE. Slice 5 (docs/nonreg/GitHub AC) not started.
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** add HTTP instance cache, Entity `mlSchema` schemaReferenc
 | 1 | **First behavioral slice (tracer):** typed playlist UI from Endpoint schema, no `parentUuid` | ✅ | cloned report + `apiCallReport.281.phase1.integ.test.tsx`; GREEN updates committed asset + `spotifyApp` |
 | 2 | Binding / schema lookup hard fail | ✅ | `apiCallReport.281.phase2.integ.test.tsx` |
 | 3 | Sync: `operationSync`, no Spotify defaults, Entity opt-in | ✅ | `externalServiceSync` + `syncExternalServiceSchema.281.phase3.unit.test.ts` + `externalServiceSyncExecute` (filesystem **and** sql) |
-| 4 | Delete example Entity; rewrite blast radius; HTTP Entity fixture | ⬜ | `spotifyApp` + `externalServiceHttpStoreSkip` + modelValidation spotify |
+| 4 | Delete example Entity; rewrite blast radius; HTTP Entity fixture | ✅ | `spotifyApp` + phase4 unit/integ + `externalServiceHttpStoreSkip` + modelValidation spotify |
 | 5 | Docs, nonreg, cleanup, AC | ⬜ | nonreg step + tracer narrative |
 
 ---
@@ -422,7 +422,7 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
 
 ## Slice 4 — Delete example Entity; blast radius; CI fixture
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -472,7 +472,34 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-test-app_deployment-spotify/t
 
 ### Realization
 
-<Appended on completion.>
+- **Files created:** `packages/miroir-standalone-app/tests/4_view/issues/281-api-call-report-section/apiCallReport.281.phase4.unit.test.ts` (RED: 5 asserts that fail while the Entity file exists); `apiCallReport.281.phase4.integ.test.tsx` (GREEN companion: `objectInstanceReportSection` + inline fixture HTTP Entity in that test’s seed model).
+- **Files modified:** `Spotify.ts` (`entities: []`; drop `entitySpotifyPlaylist`); `index.ts` / `index.d.ts` (drop export); `dogfood-sync-spotify-schema.ts` (Endpoint `operations[]` only; `endpointUuid`; Entity write gated on `operationSync.entity`); Query `371aed0c-…` (drop unused `tracks` runtimeTransformer); `spotifyApp.integ.test.tsx` (no Entity import; `jzodTypeCheck` vs Endpoint `responseSchema`; Entity absent from model is OK; still no data dir); phase0 (6 files; drop `mlSchema===entity`); phase1 (stop requiring Entity in booted model; keep no-data-dir + typed playlist name); this plan.
+- **Files deleted:** `packages/miroir-test-app_deployment-spotify/assets/spotify_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/56166585-b6fd-42c6-95d3-32a80c3304f7.json` (empty Entity directory removed).
+- **Blast radius (D14):** package Entity gone; `defaultSpotifyAppModel.entities === []`; dogfood no longer hardcodes Entity path; `externalServiceHttpStoreSkip` stays on inline `httpEntity` (same uuid); MiroirTest `394242e7-…` `createSpotifyPlaylistFirst` / `Resync` kept (Slice 3 opt-in).
+- **RED failure observed (5/5, Entity file still present):**
+  - `defaultSpotifyAppModel.entities is empty` → `expected [ { …(12) } ] to deeply equal []`
+  - `spotify_model has exactly 6 JSON files and no SpotifyPlaylist Entity` → `expected true to be false` (`existsSync` of `56166585-….json`)
+  - `index.ts does not export entitySpotifyPlaylist` → `expected '…export {…' not to match /\bentitySpotifyPlaylist\b/`
+  - `spotifyApp.integ.test.tsx does not import entitySpotifyPlaylist` → `expected '/**…Spotify example app…' not to match /\bentitySpotifyPlaylist\b/`
+  - `dogfood-sync-spotify-schema.ts does not write Entity JSON unless operationSync.entity is set` → `dogfood must not hardcode a write of 56166585-….json…: expected false to be true`
+- **GREEN:** Deleted Entity JSON; `entities: []`; drop export; dogfood writes Endpoint only unless `operationSync.entity` is set; Query extractors match report embed; `spotifyApp` / phase1 typed UI without package Entity; phase4 integ proves Entity-backed `objectInstance` still works with a test-only seed Entity.
+- **Validation:**
+  - spotify `tests/modelValidation.unit.test.ts` → **6/6 pass** (Entity case gone)
+  - miroir `modelValidation.unit.test.ts` (filter without `tests/` prefix) → **152/152 pass**
+  - `RUN_TEST=spotifyApp --profile emulatedServer-filesystem` → **7/7 pass**
+  - `RUN_TEST=externalServiceHttpStoreSkip` → **2/2 pass**
+  - `RUN_TEST=apiCallReport.281.phase0` → **5/5 pass**
+  - `RUN_TEST=apiCallReport.281.phase1 --profile emulatedServer-filesystem` → **3/3 pass**
+  - `RUN_TEST=apiCallReport.281.phase4 --profile emulatedServer-filesystem` → **7/7 pass** (5 unit + 2 integ)
+  - `RUN_TEST=apiCallReport.281.phase2 --profile emulatedServer-filesystem` → **4/4 pass**
+  - `testMiroir --suites externalServiceSync --mode unit` → **4/4 pass**
+  - `testMiroir --profile emulatedServer-filesystem --suites externalServiceSyncExecute --mode integ` → **2/2 pass**
+  - `tsc` spotify → **pass**
+  - `tsc` miroir-standalone-app → **pass**
+- **Deviations:**
+  - RED lives in `apiCallReport.281.phase4.unit.test.ts` so phase0 stayed green mid-slice (plan allowed this).
+  - Did **not** rewrite MiroirTest `createSpotifyPlaylistFirst` / `Resync` (Slice 3 opt-in, not the example package).
+  - Did **not** touch dirty admin JSON; did **not** commit; did **not** start Slice 5.
 
 ---
 
@@ -512,17 +539,17 @@ Automated equivalent: phase1 + phase2 + `externalServiceSync` + `spotifyApp`.
 | Criterion | Proven by | Status |
 |---|---|---|
 | Typed playlist UI **without** `objectInstanceReportSection` / `parentUuid` (Entity file may still exist in the package) | Slice 1 phase1 | ✅ |
-| Example package no longer ships Entity `56166585-…`; typed UI still works | Slice 4 `spotifyApp` | ⬜ |
-| `objectInstanceReportSection` + HTTP Entity still works | Slice 4 phase4 fixture | ⬜ |
+| Example package no longer ships Entity `56166585-…`; typed UI still works | Slice 4 `spotifyApp` | ✅ |
+| `objectInstanceReportSection` + HTTP Entity still works | Slice 4 phase4 fixture | ✅ |
 | Section vs extractor mismatch hard fail | Slice 2 | ✅ |
 | Unknown Endpoint / missing operation / missing extractor hard fail | Slice 2 | ✅ |
-| HTTP payload not persisted as Entity instances (no data-section files) | Slice 1 P5 assert (`spotifyApp` L556–581 pattern) | ⬜ |
+| HTTP payload not persisted as Entity instances (no data-section files) | Slice 1 P5 assert (`spotifyApp` / phase1 no-data-dir; Entity absent OK) | ✅ |
 | Sync without `operationSync.entity` emits no `createEntity`; no Spotify constants | Slice 3 | ✅ |
 | Missing `boundPaths` fail closed | Slice 3 | ✅ |
 | Re-sync via `createEntity` upsert (filesystem **and** postgres); several entity keys | Slice 3 execute integ (both profiles) + unit two-`createEntity` | ✅ |
 | `operationSync` survives Endpoint upsert | Slice 3 | ✅ |
-| Menu/home still the playlist report | Slice 4 `spotifyApp` | ⬜ |
-| `modelValidation` miroir + spotify | Slices 1, 3, 4 | ⬜ |
+| Menu/home still the playlist report | Slice 4 `spotifyApp` | ✅ |
+| `modelValidation` miroir + spotify | Slices 1, 3, 4 | ✅ |
 | GitHub issue AC #8 rewritten to D15 (`createEntity` upsert, not `updateInstance`) | Slice 5 | ⬜ |
 
 ### Realization
