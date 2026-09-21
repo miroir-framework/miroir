@@ -4776,7 +4776,12 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "type": "string"
             },
-            "description": "operationId values to sync. Non-GET operations in scope are skipped."
+            "description": "operationId values to sync. Non-GET operations in scope are skipped. When omitted, defaults to the Endpoint enabledOperations list if it is non-empty."
+          },
+          "endpointUuid": {
+            "type": "uuid",
+            "optional": true,
+            "description": "Uuid of the externalService Endpoint to sync. Required at runtime via transformerParams.endpointUuid."
           }
         }
       },
@@ -12384,6 +12389,61 @@ export const miroirFundamentalJzodSchema = {
           }
         }
       },
+      "apiCallReportSection": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "definition.label"
+            }
+          }
+        },
+        "definition": {
+          "type": {
+            "type": "literal",
+            "definition": "apiCallReportSection"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "label": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "id": 1,
+                    "defaultLabel": "Label"
+                  }
+                }
+              },
+              "fetchedDataReference": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Fetched Data Reference"
+                  }
+                }
+              },
+              "endpointUuid": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Endpoint UUID"
+                  }
+                }
+              },
+              "operationId": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Operation ID"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "miroirTestReportSection": {
         "type": "object",
         "tag": {
@@ -13111,6 +13171,14 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "jsonReportSection"
+            },
+            "context": {}
+          },
+          {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "apiCallReportSection"
             },
             "context": {}
           },
@@ -22906,6 +22974,68 @@ export const miroirFundamentalJzodSchema = {
                               "tag": {
                                 "value": {
                                   "defaultLabel": "Security"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "operationSync": {
+                        "type": "record",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Operation Sync"
+                          }
+                        },
+                        "definition": {
+                          "type": "object",
+                          "definition": {
+                            "boundPaths": {
+                              "type": "array",
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Bound Paths"
+                                }
+                              },
+                              "definition": {
+                                "type": "string"
+                              }
+                            },
+                            "entity": {
+                              "type": "object",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Entity"
+                                }
+                              },
+                              "definition": {
+                                "uuid": {
+                                  "type": "uuid",
+                                  "tag": {
+                                    "value": {
+                                      "defaultLabel": "Uuid"
+                                    }
+                                  }
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "optional": true,
+                                  "tag": {
+                                    "value": {
+                                      "defaultLabel": "Name"
+                                    }
+                                  }
+                                },
+                                "entityVersionUuid": {
+                                  "type": "uuid",
+                                  "optional": true,
+                                  "tag": {
+                                    "value": {
+                                      "defaultLabel": "Entity Version Uuid"
+                                    }
+                                  }
                                 }
                               }
                             }
@@ -33760,7 +33890,12 @@ export const miroirFundamentalJzodSchema = {
             "definition": {
               "type": "string"
             },
-            "description": "operationId values to sync. Non-GET operations in scope are skipped."
+            "description": "operationId values to sync. Non-GET operations in scope are skipped. When omitted, defaults to the Endpoint enabledOperations list if it is non-empty."
+          },
+          "endpointUuid": {
+            "type": "uuid",
+            "optional": true,
+            "description": "Uuid of the externalService Endpoint to sync. Required at runtime via transformerParams.endpointUuid."
           }
         }
       },

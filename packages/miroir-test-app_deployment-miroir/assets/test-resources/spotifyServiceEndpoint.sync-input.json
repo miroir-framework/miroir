@@ -17,7 +17,26 @@
       },
       "credentialKey": "spotifyUser",
       "enabledOperations": ["get-playlist"],
-      "operations": []
+      "operations": [],
+      "operationSync": {
+        "get-playlist": {
+          "boundPaths": [
+            "id",
+            "name",
+            "owner.id",
+            "owner.display_name",
+            "images.url",
+            "images.height",
+            "images.width",
+            "tracks.total",
+            "tracks.items.track.id",
+            "tracks.items.track.name",
+            "tracks.items.track.artists.id",
+            "tracks.items.track.artists.name",
+            "tracks.items.track.duration_ms"
+          ]
+        }
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 /**
- * Design-time sync: OpenAPI document + app model + operation scope
- * → compositeActionSequence (upsert endpoint operations[] + createEntity).
+ * Design-time sync: OpenAPI document + app model + endpointUuid
+ * → compositeActionSequence (upsert endpoint operations[]; createEntity only
+ * when operationSync.<operationId>.entity is set).
  *
  * Deep module: only `handleTransformer_syncExternalServiceSchema` is imported
  * by TransformersForRuntime. The yaml parser lives here (sync-time only).
@@ -10,7 +11,11 @@
 import { parse as parseYaml } from "yaml";
 
 import type { CoreTransformerForBuildPlusRuntime } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { getExternalService } from "../0_interfaces/1_core/endpointDefinition";
+import {
+  getExternalService,
+  type EndpointExternalService,
+  type EndpointOperationSyncEntry,
+} from "../0_interfaces/1_core/endpointDefinition";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { TransformerFailure, type TransformerReturnType } from "../0_interfaces/2_domain/DomainElement";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
@@ -35,29 +40,7 @@ const COMPOSITE_ACTION_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
 const INSTANCE_ACTION_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const MODEL_ACTION_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 
-const DEFAULT_GET_PLAYLIST_ENTITY_UUID = "56166585-b6fd-42c6-95d3-32a80c3304f7";
-const DEFAULT_GET_PLAYLIST_ENTITY_VERSION_UUID = "1a34fdf2-67c8-411d-9be4-a9265089ac51";
-const DEFAULT_SPOTIFY_ENDPOINT_UUID = "0e5cb172-12ea-4467-8598-5889338ae454";
-
 const HTTP_METHODS = ["get", "put", "post", "patch", "delete", "head", "options"] as const;
-
-const DEFAULT_BOUNDED_PATHS: Record<string, string[]> = {
-  "get-playlist": [
-    "id",
-    "name",
-    "owner.id",
-    "owner.display_name",
-    "images.url",
-    "images.height",
-    "images.width",
-    "tracks.total",
-    "tracks.items.track.id",
-    "tracks.items.track.name",
-    "tracks.items.track.artists.id",
-    "tracks.items.track.artists.name",
-    "tracks.items.track.duration_ms",
-  ],
-};
 
 type BoundTree = {
   children: Record<string, BoundTree>;
@@ -363,41 +346,25 @@ function findEndpoints(appModel: unknown): any[] {
   return [];
 }
 
-function pickEndpoint(appModel: unknown, preferredUuid?: string): any {
-  const endpoints = findEndpoints(appModel);
-  if (preferredUuid) {
-    const match = endpoints.find((e) => e?.uuid === preferredUuid);
-    if (match) {
-      return match;
-    }
-  }
-  const external = endpoints.find((e) => getExternalService(e) !== undefined);
-  return external ?? endpoints[0];
+function pickEndpoint(appModel: unknown, preferredUuid: string): any {
+  return findEndpoints(appModel).find((e) => e?.uuid === preferredUuid);
 }
 
-function entityDefaultsForOperation(
-  operationId: string,
+function resolveOperationSync(
   transformerParams: Record<string, any>,
-): { entityUuid: string; entityVersionUuid: string; entityName: string } {
-  if (operationId === "get-playlist") {
-    return {
-      entityUuid: transformerParams.entityUuid ?? DEFAULT_GET_PLAYLIST_ENTITY_UUID,
-      entityVersionUuid:
-        transformerParams.entityVersionUuid ?? DEFAULT_GET_PLAYLIST_ENTITY_VERSION_UUID,
-      entityName: transformerParams.entityName ?? "SpotifyPlaylist",
-    };
+  existingExternal: EndpointExternalService,
+): Record<string, EndpointOperationSyncEntry> {
+  const fromParams = transformerParams.operationSync;
+  if (fromParams !== null && typeof fromParams === "object" && !Array.isArray(fromParams)) {
+    return fromParams as Record<string, EndpointOperationSyncEntry>;
   }
-  return {
-    entityUuid: transformerParams.entityUuid,
-    entityVersionUuid: transformerParams.entityVersionUuid,
-    entityName: transformerParams.entityName ?? operationId,
-  };
+  return existingExternal.operationSync ?? {};
 }
 
 function buildCompositeAction(params: {
   endpointInstance: any;
   operations: any[];
-  entity: Record<string, unknown> | undefined;
+  entities: Record<string, unknown>[];
 }): Record<string, unknown> {
   const application = params.endpointInstance.application;
   const updatedEndpoint = {
@@ -422,14 +389,14 @@ function buildCompositeAction(params: {
       },
     },
   ];
-  if (params.entity) {
+  for (const entity of params.entities) {
     actionSequence.push({
       actionType: "createEntity",
-      actionLabel: `create${params.entity.name}`,
+      actionLabel: `create${entity.name}`,
       endpoint: MODEL_ACTION_ENDPOINT,
       payload: {
         application,
-        entities: [params.entity],
+        entities: [entity],
       },
     });
   }
@@ -451,13 +418,13 @@ function syncExternalServiceSchemaValue(
   const openApiDocumentInput =
     transformerParams.openApiDocument ?? transformer.openApiDocument;
   const appModel = transformerParams.appModel ?? transformer.appModel;
-  const scope = transformerParams.scope ?? transformer.scope;
+  const endpointUuid = transformerParams.endpointUuid ?? transformer.endpointUuid;
 
   if (openApiDocumentInput === undefined) {
     return fail(transformerPath, "syncExternalServiceSchema requires transformerParams.openApiDocument");
   }
-  if (!Array.isArray(scope) || scope.length === 0) {
-    return fail(transformerPath, "syncExternalServiceSchema requires transformerParams.scope (operationIds)");
+  if (typeof endpointUuid !== "string" || endpointUuid.length === 0) {
+    return fail(transformerPath, "syncExternalServiceSchema requires transformerParams.endpointUuid");
   }
 
   let doc: Record<string, unknown>;
@@ -470,14 +437,11 @@ function syncExternalServiceSchemaValue(
     );
   }
 
-  const endpointInstance = pickEndpoint(
-    appModel,
-    transformerParams.endpointUuid ?? DEFAULT_SPOTIFY_ENDPOINT_UUID,
-  );
+  const endpointInstance = pickEndpoint(appModel, endpointUuid);
   if (!endpointInstance) {
     return fail(
       transformerPath,
-      "syncExternalServiceSchema requires transformerParams.appModel with an externalService endpoint",
+      "syncExternalServiceSchema requires transformerParams.appModel with an externalService endpoint matching endpointUuid",
     );
   }
   const existingExternal = getExternalService(endpointInstance);
@@ -488,6 +452,20 @@ function syncExternalServiceSchemaValue(
     );
   }
 
+  let scope = transformerParams.scope ?? transformer.scope;
+  if (!Array.isArray(scope) || scope.length === 0) {
+    const enabled = existingExternal.enabledOperations;
+    if (Array.isArray(enabled) && enabled.length > 0) {
+      scope = enabled;
+    } else {
+      return fail(
+        transformerPath,
+        "syncExternalServiceSchema requires transformerParams.scope (operationIds)",
+      );
+    }
+  }
+
+  const operationSync = resolveOperationSync(transformerParams, existingExternal);
   const existingOperations = Array.isArray(existingExternal.operations)
     ? [...existingExternal.operations]
     : [];
@@ -521,13 +499,19 @@ function syncExternalServiceSchemaValue(
           continue;
         }
 
+        const syncEntry = operationSync[operationId];
+        const boundPaths = syncEntry?.boundPaths;
+        if (!Array.isArray(boundPaths) || boundPaths.length === 0) {
+          throw new Error(
+            `syncExternalServiceSchema: operationSync.${operationId}.boundPaths is required`,
+          );
+        }
+
         const parameterMappings = collectParameters(doc, pathItem, operation);
-        const boundPaths = DEFAULT_BOUNDED_PATHS[operationId];
-        const bound = boundPaths ? pathsToTree(boundPaths) : undefined;
         const responseSchema = convertSchema(
           doc,
           responseSchemaForOperation(doc, operation),
-          bound,
+          pathsToTree(boundPaths),
           transformerPath,
         );
 
@@ -547,18 +531,18 @@ function syncExternalServiceSchemaValue(
           existingOperations.push(materialized);
         }
 
-        const defaults = entityDefaultsForOperation(operationId, transformerParams);
-        if (!defaults.entityUuid) {
+        const entitySpec = syncEntry?.entity;
+        if (!entitySpec?.uuid) {
           continue;
         }
         createdEntities.push({
-          uuid: defaults.entityUuid,
+          uuid: entitySpec.uuid,
           parentName: "Entity",
           parentUuid: ENTITY_ENTITY_UUID,
           parentDefinitionVersionUuid:
-            defaults.entityVersionUuid ?? ENTITY_VERSION_OF_ENTITY_UUID,
+            entitySpec.entityVersionUuid ?? ENTITY_VERSION_OF_ENTITY_UUID,
           selfApplication: endpointInstance.application,
-          name: defaults.entityName,
+          name: entitySpec.name ?? operationId,
           conceptLevel: "Model",
           description: `External HTTP entity for ${operationId}`,
           idAttribute: "id",
@@ -577,7 +561,7 @@ function syncExternalServiceSchemaValue(
   return buildCompositeAction({
     endpointInstance,
     operations: existingOperations,
-    entity: createdEntities[0],
+    entities: createdEntities,
   });
 }
 

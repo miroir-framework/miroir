@@ -2,7 +2,7 @@
   "uuid": "c615ff0e-140a-4d16-b3d4-d7e04081d65b",
   "name": "syncExternalServiceSchema",
   "defaultLabel": "syncExternalServiceSchema",
-  "description": "Design-time sync: (openApiDocument, appModel, scope) → compositeActionSequence that upserts externalService.operations[] and creates the bounded HTTP entity. Production invocation supplies appModel from localCache.currentModelEnvironment(app, map) — not defaultMiroirModelEnvironment / POST /query.",
+  "description": "Design-time sync: (openApiDocument, appModel, endpointUuid, optional scope) → compositeActionSequence that upserts externalService.operations[] from OpenAPI. createEntity only when operationSync.<id>.entity is set. Production invocation supplies appModel from localCache.currentModelEnvironment(app, map) — not defaultMiroirModelEnvironment / POST /query.",
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
@@ -36,7 +36,12 @@
             "definition": {
               "type": "string"
             },
-            "description": "operationId values to sync. Non-GET operations in scope are skipped."
+            "description": "operationId values to sync. Non-GET operations in scope are skipped. When omitted, defaults to the Endpoint enabledOperations list if it is non-empty."
+          },
+          "endpointUuid": {
+            "type": "uuid",
+            "optional": true,
+            "description": "Uuid of the externalService Endpoint to sync. Required at runtime via transformerParams.endpointUuid."
           }
         }
       }

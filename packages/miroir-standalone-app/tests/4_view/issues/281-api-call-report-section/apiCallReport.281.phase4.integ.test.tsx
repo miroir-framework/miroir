@@ -1,16 +1,15 @@
 /**
- * Spotify example app — Spotify example app package (D7, D3 assets, D10).
+ * #281 Slice 4 GREEN companion — Entity-backed objectInstanceReportSection still works.
  *
- * Vitest integ: full deployment boot + report rendering are not MiroirTest-reachable.
- * Follows the Slice 5 report-path pattern (MemoryRouter + ReportViewWithEditor).
- * Fake server is the sanctioned HTTP fake; package assets keep production baseUrl.
+ * Fixture HTTP Entity is seeded in this test only (not the example package).
+ * Vitest integ: MemoryRouter + ReportViewWithEditor + fake Spotify server are not MiroirTest-reachable.
  *
  * Run:
  * ```bash
- * RUN_TEST=spotifyApp npm run testByFile -w miroir-standalone-app -- spotifyApp --profile emulatedServer-filesystem
+ * RUN_TEST=apiCallReport.281.phase4 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase4 --profile emulatedServer-filesystem
  * ```
  */
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -24,9 +23,11 @@ import type {
   ApplicationDeploymentMap,
   Deployment,
   EndpointDefinition,
+  Entity,
   EntityInstance,
-  JzodObject,
+  MetaModel,
   Report,
+  ReportSection,
   StoreUnitConfiguration,
 } from "miroir-core";
 import {
@@ -41,7 +42,6 @@ import {
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
   getReportsAndEntitiesForDeploymentUuid,
-  jzodTypeCheck,
   LoggerInterface,
   LoggerOptions,
   type MiroirConfigForClientStub,
@@ -76,20 +76,20 @@ import {
   spotifyServiceEndpoint,
 } from "miroir-test-app_deployment-spotify";
 
-import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
-import { ReportViewWithEditor } from "../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
-import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
-import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
-import { miroirAppStartup } from "../../src/startup.js";
-import { ReportUrlParamKeys } from "../../src/constants.js";
-import { cleanLevel, packageName } from "../3_controllers/constants.js";
-import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
-import { loadTestConfigFiles } from "../utils/fileTools.js";
+import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
+import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
+import { ReportViewWithEditor } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
+import { DocumentOutlineContextProvider } from "../../../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
+import { MiroirThemeProvider } from "../../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { miroirAppStartup } from "../../../../src/startup.js";
+import { ReportUrlParamKeys } from "../../../../src/constants.js";
+import { cleanLevel, packageName } from "../../../3_controllers/constants.js";
+import { AppStackIntegrationTestSession } from "../../../helpers/IntegrationTestSession.js";
+import { loadTestConfigFiles } from "../../../utils/fileTools.js";
 import {
   startFakeExternalServiceServer,
   type FakeExternalServiceServer,
-} from "../utils/fakeExternalServiceServer.js";
+} from "../../../utils/fakeExternalServiceServer.js";
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
@@ -108,17 +108,17 @@ vi.mock("miroir-react", async (importOriginal) => {
   };
 });
 
-vi.mock("../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
+vi.mock("../../../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
   ModelDiagramReportSectionView: () => null,
 }));
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =
   !RUN_TEST ||
-  RUN_TEST === "spotifyApp" ||
-  RUN_TEST === "spotifyApp.integ.test";
+  RUN_TEST === "apiCallReport.281.phase4" ||
+  RUN_TEST === "apiCallReport.281.phase4.integ.test";
 
-const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), "fixtures");
+const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), "../../fixtures");
 const PLAYLIST_OK = JSON.parse(
   readFileSync(join(FIXTURES_DIR, "playlist-ok.json"), "utf8"),
 ) as {
@@ -129,72 +129,51 @@ const PLAYLIST_OK = JSON.parse(
 
 const PLAYLIST_NAME_LITERAL = "Rock Classics";
 const FIRST_TRACK_NAME_LITERAL = "Born to Run";
-const OWNER_DISPLAY_NAME_LITERAL = "Fixture Owner";
-const TRACKS_TOTAL_LITERAL = 17;
 const PLAYLIST_ID_OK = "test-playlist-001";
-const PLAYLIST_ID_NEWSHAPE = "test-playlist-newshape";
-const PLAYLIST_ID_METADATA_ONLY = "test-playlist-metadata-only";
-
-/** Spotify Feb-2026 shape: `tracks` renamed to `items`, entries wrap `item` (not `track`). */
-const PLAYLIST_NEW_SHAPE = {
-  id: PLAYLIST_ID_NEWSHAPE,
-  name: "New Shape Mix",
-  owner: { id: "newshape-owner", display_name: "New Shape Owner" },
-  images: [],
-  items: {
-    total: 2,
-    items: [
-      {
-        item: {
-          id: "newtrack-1",
-          name: "Fresh Track One",
-          artists: [{ id: "artist-1", name: "Fresh Artist" }],
-          duration_ms: 123000,
-        },
-      },
-      {
-        item: {
-          id: "newtrack-2",
-          name: "Fresh Track Two",
-          artists: [],
-          duration_ms: 234000,
-        },
-      },
-    ],
-  },
-};
-const NEW_SHAPE_FIRST_TRACK_LITERAL = "Fresh Track One";
-
-/** Client-credentials / non-owned playlists: Spotify returns metadata only (no tracks/items). */
-const PLAYLIST_METADATA_ONLY = {
-  id: PLAYLIST_ID_METADATA_ONLY,
-  name: "Metadata Only Playlist",
-  owner: { id: "metadata-owner", display_name: "Metadata Owner" },
-  images: [],
-};
-const METADATA_ONLY_NAME_LITERAL = "Metadata Only Playlist";
+const TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR = /typeError:/;
 
 const SPOTIFY_DEPLOYMENT_UUID = "fd47d115-67e2-4870-8339-1c26665d1d15";
 const SPOTIFY_APPLICATION_UUID = "00514586-bf72-4de3-beea-0a627c821404";
 const SPOTIFY_PLAYLIST_ENTITY_UUID = "56166585-b6fd-42c6-95d3-32a80c3304f7";
 const SPOTIFY_ENDPOINT_UUID = "0e5cb172-12ea-4467-8598-5889338ae454";
-const SPOTIFY_REPORT_UUID = "10ce3252-7840-4041-a769-9a0e2d5ee10b";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 
-/** TypedValueObjectEditor dumps this prefix in a plain <span> when jzodTypeCheck fails (no testid). */
-const TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR = /typeError:/;
-/** Innermost jzodTypeCheck error for an unknown object key (stringified into CodeBlock_ReadOnly). */
-const JZOD_UNKNOWN_ATTRIBUTE_ERROR = /not found in schema definition/;
-
-function tracksOnlySpotifyPlaylistMlSchema(liveSchema: JzodObject): JzodObject {
-  const { items: _omittedNewShapeItems, ...definitionWithoutItems } = liveSchema.definition;
-  return { type: "object", definition: definitionWithoutItems };
+function fixtureHttpPlaylistEntity(): Entity {
+  const operations = spotifyServiceEndpoint.definition.externalService?.operations ?? [];
+  const getPlaylist = operations.find((operation) => operation.operationId === "get-playlist");
+  if (!getPlaylist?.responseSchema) {
+    throw new Error("SpotifyService get-playlist responseSchema is required for the HTTP Entity fixture");
+  }
+  return {
+    uuid: SPOTIFY_PLAYLIST_ENTITY_UUID,
+    parentName: "Entity",
+    parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+    parentDefinitionVersionUuid: "1a34fdf2-67c8-411d-9be4-a9265089ac51",
+    selfApplication: SPOTIFY_APPLICATION_UUID,
+    name: "SpotifyPlaylist",
+    conceptLevel: "Model",
+    description: "CI fixture HTTP entity for objectInstanceReportSection (not the example package)",
+    defaultInstanceDetailsReportUuid: "10ce3252-7840-4041-a769-9a0e2d5ee10b",
+    idAttribute: "id",
+    externalDataSource: {
+      kind: "http",
+      endpoint: SPOTIFY_ENDPOINT_UUID,
+    },
+    mlSchema: getPlaylist.responseSchema,
+  } as Entity;
 }
+
+const fixtureHttpEntity = fixtureHttpPlaylistEntity();
+
+const seedSpotifyAppModel: MetaModel = {
+  ...defaultSpotifyAppModel,
+  entities: [fixtureHttpEntity],
+};
 
 const PHASE7_PLAYLIST = {
   ...PLAYLIST_OK,
-  owner: { id: "spotify-user-001", display_name: OWNER_DISPLAY_NAME_LITERAL },
+  owner: { id: "spotify-user-001", display_name: "Fixture Owner" },
 };
 
 const env: any = process.env;
@@ -206,11 +185,11 @@ if (!importedLoggerOptions) {
   throw new Error("importedLoggerOptions is undefined");
 }
 if (!miroirConfig.client.emulateServer) {
-  throw new Error("spotifyApp requires emulateServer: true (in-process server path).");
+  throw new Error("apiCallReport.281.phase4 requires emulateServer: true (in-process server path).");
 }
 const emulatedClient: MiroirConfigForClientStub = miroirConfig.client;
 const loggerOptions: LoggerOptions = importedLoggerOptions;
-const fileName = "spotifyApp.integ.test";
+const fileName = "apiCallReport.281.phase4.integ.test";
 const myConsoleLog = (...args: any[]) => console.log(fileName, ...args);
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, fileName);
@@ -270,7 +249,7 @@ const testThemeOptions = [
   {
     id: "default",
     name: "Default Theme",
-    description: "Slice 7 test theme",
+    description: "Slice 4 fixture test theme",
     theme: defaultStoredMiroirTheme.definition,
   },
 ];
@@ -281,6 +260,32 @@ let fakeServer: FakeExternalServiceServer;
 
 function resolveFilesystemDirectory(relativeDirectory: string): string {
   return join(emulatedClient.filesystemDeploymentRootDirectory, relativeDirectory);
+}
+
+/** In-test clone — objectInstance + fixture parentUuid, not the committed apiCall report. */
+function cloneObjectInstancePlaylistReport(): Report {
+  const clone = structuredClone(reportSpotifyPlaylist) as Report;
+  const section = clone.definition.section as {
+    type: "list";
+    definition: ReportSection[];
+  };
+  const inputSection = section.definition[0];
+  clone.definition.section = {
+    type: "list",
+    definition: [
+      inputSection,
+      {
+        type: "objectInstanceReportSection",
+        definition: {
+          label: "Playlist",
+          parentUuid: SPOTIFY_PLAYLIST_ENTITY_UUID,
+          fetchedDataReference: "playlist",
+        },
+      } as ReportSection,
+    ],
+  };
+  delete clone.definition.runtimeTransformers;
+  return clone;
 }
 
 async function overrideEndpointBaseUrl(baseUrl: string): Promise<void> {
@@ -296,7 +301,6 @@ async function overrideEndpointBaseUrl(baseUrl: string): Promise<void> {
       externalService: {
         ...existing.externalService,
         baseUrl,
-        // Point the OAuth2 token exchange at the fake server too (production: accounts.spotify.com).
         ...(securityScheme?.type === "oauth2ClientCredentials" ||
         securityScheme?.type === "oauth2AuthorizationCode"
           ? { securityScheme: { ...securityScheme, tokenUrl: `${baseUrl}/api/token` } }
@@ -337,7 +341,7 @@ async function overrideEndpointBaseUrl(baseUrl: string): Promise<void> {
 }
 
 /** RootComponent normally seeds this mapping; ReportViewWithEditor tests must do the same. */
-function SeedSpotifyDeploymentMapping({ children }: { children: React.ReactNode }) {
+function SeedFixtureEntityMapping({ children }: { children: React.ReactNode }) {
   const { setDeploymentUuidToReportsEntitiesMapping } = useMiroirContextService();
   useEffect(() => {
     setDeploymentUuidToReportsEntitiesMapping((previous) => ({
@@ -345,7 +349,7 @@ function SeedSpotifyDeploymentMapping({ children }: { children: React.ReactNode 
       [deployment_Spotify_DO_NO_USE.uuid]: getReportsAndEntitiesForDeploymentUuid(
         selfApplicationSpotify.uuid,
         defaultMiroirMetaModel,
-        defaultSpotifyAppModel,
+        seedSpotifyAppModel,
       ),
     }));
   }, [setDeploymentUuidToReportsEntitiesMapping]);
@@ -363,11 +367,7 @@ function playlistPageParams(reportUuid: string, playlistId?: string): Params<Rep
   };
 }
 
-function renderSpotifyReport(
-  reportDefinition: Report,
-  playlistId?: string,
-  options?: { seedEntityMapping?: boolean },
-) {
+function renderObjectInstancePlaylistReport(reportDefinition: Report, playlistId?: string) {
   const pageParams = playlistPageParams(reportDefinition.uuid, playlistId);
   vi.spyOn(RRDom, "useParams").mockReturnValue(pageParams);
   const search = new URLSearchParams({
@@ -411,16 +411,24 @@ function renderSpotifyReport(
             testingApplication={selfApplicationSpotify.uuid}
             testingDeploymentUuid={deployment_Spotify_DO_NO_USE.uuid}
           >
-            {options?.seedEntityMapping ? (
-              <SeedSpotifyDeploymentMapping>{reportTree}</SeedSpotifyDeploymentMapping>
-            ) : (
-              reportTree
-            )}
+            <SeedFixtureEntityMapping>{reportTree}</SeedFixtureEntityMapping>
           </MiroirContextReactProvider>
         </LocalCacheProvider>
       </MiroirThemeProvider>
     </MemoryRouter>,
   );
+}
+
+function playlistIsDumpedAsPre(): boolean {
+  return Array.from(document.querySelectorAll("pre")).some((el) => {
+    const text = el.textContent ?? "";
+    try {
+      const parsed = JSON.parse(text);
+      return parsed && typeof parsed === "object" && parsed.name === PLAYLIST_NAME_LITERAL;
+    } catch {
+      return text.includes(`"name"`) && text.includes(PLAYLIST_NAME_LITERAL) && text.trim().startsWith("{");
+    }
+  });
 }
 
 beforeAll(async () => {
@@ -493,15 +501,13 @@ beforeAll(async () => {
     );
   }
 
-  myConsoleLog("session ready", defaultSpotifyAppModel.entities?.length ?? 0);
+  myConsoleLog("session ready", seedSpotifyAppModel.entities?.length ?? 0);
 }, 60000);
 
 beforeEach(async () => {
   fakeServer.receivedRequests.length = 0;
   clearExternalServiceTokenCacheForTests();
   fakeServer.setFixture("GET", `/playlists/${PLAYLIST_ID_OK}`, { body: PHASE7_PLAYLIST });
-  fakeServer.setFixture("GET", `/playlists/${PLAYLIST_ID_NEWSHAPE}`, { body: PLAYLIST_NEW_SHAPE });
-  fakeServer.setFixture("GET", `/playlists/${PLAYLIST_ID_METADATA_ONLY}`, { body: PLAYLIST_METADATA_ONLY });
   fakeServer.setFixture("POST", "/api/token", {
     body: { access_token: "test-access-token", token_type: "Bearer", expires_in: 3600 },
   });
@@ -512,7 +518,7 @@ beforeEach(async () => {
       deployment_Spotify_DO_NO_USE.uuid,
       spotifyTestbedInitParams,
       [],
-      defaultSpotifyAppModel,
+      seedSpotifyAppModel,
     ),
     applicationDeploymentMap,
     defaultMiroirModelEnvironment,
@@ -536,30 +542,20 @@ afterAll(async () => {
   }
 });
 
-describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot + report", () => {
-  it("registers the Spotify deployment in admin assets, test config, and the testbed map", () => {
-    expect(deployment_Spotify_DO_NO_USE.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
-    expect(deployment_Spotify_DO_NO_USE.uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
-    expect(selfApplicationSpotify.uuid).toBe(SPOTIFY_APPLICATION_UUID);
-    expect(applicationDeploymentMap[SPOTIFY_APPLICATION_UUID]).toBe(SPOTIFY_DEPLOYMENT_UUID);
-    expect(emulatedClient.deploymentStorageConfig[SPOTIFY_DEPLOYMENT_UUID]).toBeDefined();
+describe.skipIf(!shouldRun).sequential("apiCallReport #281 phase4 — Entity-backed objectInstance fixture", () => {
+  it("test seed includes the fixture HTTP Entity and creates no filesystem instance cache", () => {
+    expect(defaultSpotifyAppModel.entities, "example package model must stay entity-free").toEqual([]);
+    expect(fixtureHttpEntity.externalDataSource?.kind).toBe("http");
+    expect(fixtureHttpEntity.uuid).toBe(SPOTIFY_PLAYLIST_ENTITY_UUID);
 
-    const adminDeploymentPath = join(
-      resolveFilesystemDirectory("miroir-standalone-app/tests/assets/admin_data"),
-      "7959d814-400c-4e80-988f-a00fe582ab98",
-      `${SPOTIFY_DEPLOYMENT_UUID}.json`,
-    );
-    expect(existsSync(adminDeploymentPath), adminDeploymentPath).toBe(true);
-    expect(JSON.parse(readFileSync(adminDeploymentPath, "utf8")).uuid).toBe(SPOTIFY_DEPLOYMENT_UUID);
-  });
-
-  it("HTTP playlist has no filesystem instance cache; Entity need not be in the example model", () => {
     const model = domainController.currentModelEnvironment(
       selfApplicationSpotify.uuid,
       applicationDeploymentMap,
     ).currentModel;
     const playlistEntity = model.entities.find((entity) => entity.uuid === SPOTIFY_PLAYLIST_ENTITY_UUID);
-    expect(playlistEntity, "example model must not ship SpotifyPlaylist Entity").toBeUndefined();
+    expect(playlistEntity, "fixture HTTP Entity must be present in this test's seed model").toBeDefined();
+    expect(playlistEntity?.name).toBe("SpotifyPlaylist");
+    expect(playlistEntity?.externalDataSource?.kind).toBe("http");
 
     const dataConfig = spotifyDeploymentStorageConfiguration?.data as
       | { directory?: string }
@@ -579,158 +575,34 @@ describe.skipIf(!shouldRun).sequential("spotifyApp — Spotify deployment boot +
     expect(existsSync(packagePlaylistDir), packagePlaylistDir).toBe(false);
   });
 
-  it("playlist report renders name, owner, first-page tracks, and tracks.total via playlistId", async () => {
+  it("objectInstanceReportSection + fixture parentUuid renders typed playlist name", async () => {
     expect(PLAYLIST_OK.name).toBe(PLAYLIST_NAME_LITERAL);
     expect(PLAYLIST_OK.tracks.items[0]?.track.name).toBe(FIRST_TRACK_NAME_LITERAL);
-    expect(PLAYLIST_OK.tracks.total).toBe(TRACKS_TOTAL_LITERAL);
-    expect(reportSpotifyPlaylist.uuid).toBe(SPOTIFY_REPORT_UUID);
 
-    renderSpotifyReport(reportSpotifyPlaylist as Report, PLAYLIST_ID_OK);
+    const clone = cloneObjectInstancePlaylistReport();
+    renderObjectInstancePlaylistReport(clone, PLAYLIST_ID_OK);
 
     await waitFor(
       () => {
+        expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
+        expect(screen.queryByText(/report target entity not found/i)).toBeNull();
         expect(
           screen.queryByDisplayValue(PLAYLIST_NAME_LITERAL) ||
-            screen.getAllByText(PLAYLIST_NAME_LITERAL, { exact: false }).length > 0,
-        ).toBeTruthy();
-        expect(
-          screen.queryByDisplayValue(OWNER_DISPLAY_NAME_LITERAL) ||
-            screen.getAllByText(OWNER_DISPLAY_NAME_LITERAL, { exact: false }).length > 0,
-        ).toBeTruthy();
-        expect(
-          screen.queryByDisplayValue(FIRST_TRACK_NAME_LITERAL) ||
-            screen.getAllByText(FIRST_TRACK_NAME_LITERAL, { exact: false }).length > 0,
-        ).toBeTruthy();
-        expect(
-          screen.queryByDisplayValue(String(TRACKS_TOTAL_LITERAL)) ||
-            screen.getAllByText(String(TRACKS_TOTAL_LITERAL), { exact: false }).length > 0,
+            screen.queryAllByText(PLAYLIST_NAME_LITERAL, { exact: false }).length > 0,
+          `expected playlist name ${PLAYLIST_NAME_LITERAL} in typed Entity-backed UI`,
         ).toBeTruthy();
       },
       { timeout: 15000 },
     );
 
-    // The playlistId input section seeds its field from the URL page params.
-    // (input id is the bare attribute name on the success path, the full
-    // "playlistInput.playlistId" path when the query failed — match by suffix.)
-    const playlistIdInput = document.querySelector<HTMLInputElement>(
-      'input[data-testid="miroirInput"][id$="playlistId"]',
-    );
-    expect(playlistIdInput, "playlistId input field must be rendered").not.toBeNull();
-    expect(playlistIdInput?.value).toBe(PLAYLIST_ID_OK);
-  });
-
-  it("playlist report without playlistId renders an input whose OK button writes playlistId into the report URL", async () => {
-    const mockNavigate = vi.fn();
-    vi.mocked(RRDom.useNavigate).mockReturnValue(mockNavigate as any);
-
-    renderSpotifyReport(reportSpotifyPlaylist as Report);
-
-    // The input section renders even though the query cannot resolve playlistId.
-    await waitFor(
-      () => {
-        expect(screen.getAllByText("Playlist ID", { exact: false }).length).toBeGreaterThan(0);
-      },
-      { timeout: 15000 },
-    );
-    const playlistIdInput = document.querySelector<HTMLInputElement>(
-      'input[data-testid="miroirInput"][id$="playlistId"]',
-    );
-    expect(playlistIdInput, "playlistId input field must be rendered").not.toBeNull();
-    expect(playlistIdInput?.value).toBe("");
-    expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
-    expect(screen.queryByText(/jzodTypeCheck expected a value but got undefined/i)).toBeNull();
-    expect(screen.getByText(/No API response yet/i)).toBeTruthy();
-
-    fireEvent.change(playlistIdInput as HTMLInputElement, { target: { value: PLAYLIST_ID_OK } });
-    fireEvent.click(screen.getByRole("button", { name: "OK" }));
-
-    expect(mockNavigate).toHaveBeenCalledTimes(1);
-    const url = mockNavigate.mock.calls[0]?.[0] as string;
-    const params = new URLSearchParams(url.slice(url.indexOf("?") + 1));
-    expect(params.get("page")).toBe("report");
-    expect(params.get("application")).toBe(selfApplicationSpotify.uuid);
-    expect(params.get("deploymentUuid")).toBe(deployment_Spotify_DO_NO_USE.uuid);
-    expect(params.get("applicationSection")).toBe("data");
-    expect(params.get("reportUuid")).toBe(SPOTIFY_REPORT_UUID);
-    expect(params.get("playlistId")).toBe(PLAYLIST_ID_OK);
-  });
-
-  it("new-shape playlist fails display-time jzodTypeCheck against a tracks-only get-playlist responseSchema", () => {
-    const operations = spotifyServiceEndpoint.definition.externalService?.operations ?? [];
-    const getPlaylist = operations.find((operation) => operation.operationId === "get-playlist");
-    const liveSchema = getPlaylist?.responseSchema as JzodObject;
-    expect(liveSchema, "get-playlist operations[].responseSchema").toBeDefined();
     expect(
-      liveSchema.definition.items,
-      "live get-playlist responseSchema must include optional items (the entity-schema fix)",
-    ).toBeDefined();
-
-    const staleResult = jzodTypeCheck(
-      tracksOnlySpotifyPlaylistMlSchema(liveSchema),
-      PLAYLIST_NEW_SHAPE,
-      [],
-      [],
-      defaultSpotifyModelEnvironment,
-      {},
-    );
-    expect(staleResult.status).toBe("error");
-    expect(JSON.stringify(staleResult)).toMatch(JZOD_UNKNOWN_ATTRIBUTE_ERROR);
-    expect(JSON.stringify(staleResult)).toMatch(/'items'/);
-
-    const liveResult = jzodTypeCheck(
-      liveSchema,
-      PLAYLIST_NEW_SHAPE,
-      [],
-      [],
-      defaultSpotifyModelEnvironment,
-      {},
-    );
-    expect(liveResult.status).toBe("ok");
-  });
-
-  it("playlist report renders tracks from the Feb-2026 `items.items[].item` response shape", async () => {
-    renderSpotifyReport(reportSpotifyPlaylist as Report, PLAYLIST_ID_NEWSHAPE, {
-      seedEntityMapping: true,
-    });
-
-    await waitFor(
-      () => {
-        expect(
-          screen.queryByDisplayValue(PLAYLIST_NEW_SHAPE.name) ||
-            screen.queryAllByText(PLAYLIST_NEW_SHAPE.name, { exact: false }).length > 0,
-        ).toBeTruthy();
-        expect(
-          screen.queryByDisplayValue(NEW_SHAPE_FIRST_TRACK_LITERAL) ||
-            screen.queryAllByText(NEW_SHAPE_FIRST_TRACK_LITERAL, { exact: false }).length > 0,
-        ).toBeTruthy();
-      },
-      { timeout: 15000 },
-    );
-
-    // apiCallReportSection → readonly TypedValueObjectEditor. On jzodTypeCheck
-    // error it renders a <span>"typeError: "…</span> plus CodeBlock_ReadOnly.
-    expect(screen.queryByText(TYPED_VALUE_OBJECT_EDITOR_TYPE_ERROR)).toBeNull();
-    expect(screen.queryByText(JZOD_UNKNOWN_ATTRIBUTE_ERROR)).toBeNull();
-    expect(screen.queryByText(/Could not resolve jzod schema/)).toBeNull();
-    expect(document.body.textContent).not.toMatch(JZOD_UNKNOWN_ATTRIBUTE_ERROR);
-    expect(screen.queryByText(/Oops, ReportSectionEntityInstance could not be displayed/)).toBeNull();
-  });
-
-  it("playlist report tolerates a metadata-only response (no tracks/items) without a query failure", async () => {
-    renderSpotifyReport(reportSpotifyPlaylist as Report, PLAYLIST_ID_METADATA_ONLY);
-
-    await waitFor(
-      () => {
-        expect(
-          screen.queryByDisplayValue(METADATA_ONLY_NAME_LITERAL) ||
-            screen.getAllByText(METADATA_ONLY_NAME_LITERAL, { exact: false }).length > 0,
-        ).toBeTruthy();
-      },
-      { timeout: 15000 },
-    );
-    expect(screen.queryByText(/found query failure/)).toBeNull();
-    expect(screen.queryByText(/Report query failed/)).toBeNull();
-    const preTexts = Array.from(document.querySelectorAll("pre")).map((e) => e.textContent);
-    expect(preTexts.join("\n")).not.toContain("FailedTransformer");
+      screen.queryByDisplayValue(FIRST_TRACK_NAME_LITERAL) ||
+        screen.queryAllByText(FIRST_TRACK_NAME_LITERAL, { exact: false }).length > 0,
+      `expected nested track name ${FIRST_TRACK_NAME_LITERAL} as object/array fields`,
+    ).toBeTruthy();
+    expect(
+      playlistIsDumpedAsPre(),
+      "playlist must not be shown only as a <pre> JSON dump",
+    ).toBe(false);
   });
 });

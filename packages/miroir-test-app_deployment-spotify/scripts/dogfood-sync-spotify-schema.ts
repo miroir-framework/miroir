@@ -1,12 +1,12 @@
 /**
- * Slice 7 dogfood: run syncExternalServiceSchema on the committed Spotify
- * OpenAPI excerpt (and optionally the live Spotify YAML) and write the reviewed
- * operations[] + SpotifyPlaylist Entity into package assets.
+ * Dogfood: run syncExternalServiceSchema on the committed Spotify
+ * OpenAPI excerpt and write reviewed operations[] onto the Endpoint asset.
+ * Writes Entity JSON only when operationSync.<id>.entity is set.
  *
  * Usage (from repo root):
  *   npm run dogfood-sync -w miroir-test-app_deployment-spotify
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -25,20 +25,20 @@ const endpointPath = join(
   packageRoot,
   "assets/spotify_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0e5cb172-12ea-4467-8598-5889338ae454.json",
 );
-const entityPath = join(
+const entityDir = join(
   packageRoot,
-  "assets/spotify_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/56166585-b6fd-42c6-95d3-32a80c3304f7.json",
+  "assets/spotify_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
 );
 
 const ENDPOINT_UUID = "0e5cb172-12ea-4467-8598-5889338ae454";
-const ENTITY_UUID = "56166585-b6fd-42c6-95d3-32a80c3304f7";
-const ENTITY_VERSION_UUID = "1a34fdf2-67c8-411d-9be4-a9265089ac51";
 const APPLICATION_UUID = "00514586-bf72-4de3-beea-0a627c821404";
 
 const excerpt = JSON.parse(readFileSync(excerptPath, "utf8"));
 const endpointSkeleton = JSON.parse(readFileSync(endpointPath, "utf8"));
 
 const openApiDocumentString = JSON.stringify(excerpt);
+const operationSync =
+  endpointSkeleton.definition?.externalService?.operationSync ?? {};
 
 const syncInputEndpoint = {
   ...endpointSkeleton,
@@ -64,8 +64,6 @@ const composite = transformer_extended_apply(
     appModel: { endpoints: [syncInputEndpoint] },
     scope: ["get-playlist"],
     endpointUuid: ENDPOINT_UUID,
-    entityUuid: ENTITY_UUID,
-    entityVersionUuid: ENTITY_VERSION_UUID,
   },
 );
 
@@ -86,15 +84,10 @@ const actionSequence = (composite as {
 }).payload.actionSequence;
 
 const updateAction = actionSequence.find((step) => step.actionType === "updateInstance");
-const createAction = actionSequence.find((step) => step.actionType === "createEntity");
 const operations = updateAction?.payload?.objects?.[0]?.definition?.externalService?.operations;
-const entity = createAction?.payload?.entities?.[0];
 
 if (!Array.isArray(operations) || operations.length === 0) {
   throw new Error("syncExternalServiceSchema produced no operations[]");
-}
-if (!entity || entity.uuid !== ENTITY_UUID) {
-  throw new Error("syncExternalServiceSchema did not produce SpotifyPlaylist entity");
 }
 
 const reviewedEndpoint = {
@@ -110,7 +103,27 @@ const reviewedEndpoint = {
 };
 
 writeFileSync(endpointPath, `${JSON.stringify(reviewedEndpoint, null, 2)}\n`, "utf8");
-writeFileSync(entityPath, `${JSON.stringify(entity, null, 2)}\n`, "utf8");
+
+const optedInEntityUuids = new Set(
+  Object.values(operationSync as Record<string, { entity?: { uuid?: string } }>)
+    .map((entry) => entry?.entity?.uuid)
+    .filter((uuid): uuid is string => typeof uuid === "string" && uuid.length > 0),
+);
+
+const createdEntities = actionSequence
+  .filter((step) => step.actionType === "createEntity")
+  .flatMap((step) => step.payload?.entities ?? []);
+
+for (const entity of createdEntities) {
+  const uuid = typeof entity.uuid === "string" ? entity.uuid : undefined;
+  if (!uuid || !optedInEntityUuids.has(uuid)) {
+    continue;
+  }
+  mkdirSync(entityDir, { recursive: true });
+  const entityPath = join(entityDir, `${uuid}.json`);
+  writeFileSync(entityPath, `${JSON.stringify(entity, null, 2)}\n`, "utf8");
+  console.log(`  entity   → ${entityPath}`);
+}
 
 const firstOp = operations[0] as { operationId?: string; responseSchema?: unknown };
 console.log("dogfood-sync-spotify-schema: wrote reviewed assets");
@@ -120,8 +133,7 @@ console.log(`  operations[0].operationId: ${firstOp.operationId}`);
 console.log(
   `  operations[0]: ${Buffer.byteLength(JSON.stringify(firstOp))} B compact`,
 );
-console.log(
-  `  entity.mlSchema: ${Buffer.byteLength(JSON.stringify(entity.mlSchema))} B compact`,
-);
 console.log(`  endpoint → ${endpointPath}`);
-console.log(`  entity   → ${entityPath}`);
+if (optedInEntityUuids.size === 0) {
+  console.log("  entity   → skipped (operationSync.entity not set)");
+}

@@ -1,7 +1,6 @@
 import {
   getMiroirFundamentalSchemaForDeployment,
   type EndpointDefinition,
-  type Entity,
   type EntityInstance,
   type Menu,
   type MetaModel,
@@ -10,7 +9,6 @@ import {
   type SelfApplication,
 } from "miroir-core";
 
-import entitySpotifyPlaylistJson from "../assets/spotify_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/56166585-b6fd-42c6-95d3-32a80c3304f7.json" with { type: "json" };
 import reportSpotifyPlaylistJson from "../assets/spotify_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/10ce3252-7840-4041-a769-9a0e2d5ee10b.json" with { type: "json" };
 import spotifyServiceEndpointJson from "../assets/spotify_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0e5cb172-12ea-4467-8598-5889338ae454.json" with { type: "json" };
 import querySpotifyGetPlaylistJson from "../assets/spotify_model/e4320b9e-ab45-4abe-85d8-359604b3c62f/371aed0c-05bb-4b77-8cf1-2c82407555c1.json" with { type: "json" };
@@ -22,7 +20,6 @@ import type { QueryWithExtractorCombinerTransformer } from "../../miroir-core/di
 export const selfApplicationSpotify = selfApplicationSpotifyJson as SelfApplication;
 export const selfApplicationModelBranchSpotifyMasterBranch =
   selfApplicationModelBranchSpotifyMasterBranchJson;
-export const entitySpotifyPlaylist = entitySpotifyPlaylistJson as Entity;
 export const reportSpotifyPlaylist = reportSpotifyPlaylistJson as Report;
 export const querySpotifyGetPlaylist = querySpotifyGetPlaylistJson;
 export const spotifyServiceEndpoint = spotifyServiceEndpointJson as EndpointDefinition;
@@ -46,7 +43,7 @@ export const defaultSpotifyAppModel: MetaModel = {
   applicationUuid: selfApplicationSpotify.uuid,
   applicationName: selfApplicationSpotify.name,
   applications: [selfApplicationSpotify],
-  entities: [entitySpotifyPlaylist],
+  entities: [],
   entityVersions: [],
   endpoints: [spotifyServiceEndpoint],
   menus: [menuDefaultSpotify],

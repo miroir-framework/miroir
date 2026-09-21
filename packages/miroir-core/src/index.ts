@@ -483,6 +483,7 @@ export {
   ExtractorTemplateExtractorByPrimaryKey,
   ExtractorTemplateCombinerOneToOne,
   MiroirMenuReportLink,
+  ReportLink,
   MiroirMenuItemDivider,
   MiroirMenuPageLink,
   RunStoredQuery,

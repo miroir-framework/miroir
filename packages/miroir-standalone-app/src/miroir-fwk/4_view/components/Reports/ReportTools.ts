@@ -104,6 +104,8 @@ export const reportSectionsFormSchema = (
     }
     case "openReportSection":
       return {};
+    case "apiCallReportSection":
+      return {};
     case "objectListReportSection":
     case "markdownReportSection":
     case "modelDiagramReportSection":
@@ -223,6 +225,12 @@ export const reportSectionsFormValue = (
       return {
         [reportSectionPath.join("_")]: targetData,
         ...queryParametersDefaultValue,
+      };
+    }
+    case "apiCallReportSection": {
+      const fetchedDataReference = reportSection.definition.fetchedDataReference;
+      return {
+        [reportSectionPath.join("_")]: reportData?.[fetchedDataReference],
       };
     }
     case "inputReportSection":  {
