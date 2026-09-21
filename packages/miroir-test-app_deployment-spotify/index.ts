@@ -1,7 +1,6 @@
 
 export {
   defaultSpotifyAppModel,
-  entitySpotifyPlaylist,
   getDefaultSpotifyModelEnvironment,
   menuDefaultSpotify,
   querySpotifyGetPlaylist,

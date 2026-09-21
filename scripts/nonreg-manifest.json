@@ -906,6 +906,17 @@
       ]
     },
     {
+      "id": "apiCallReport-281",
+      "tier": "default",
+      "title": "#281 \u2014 typed API-call report section (issue-directory nonreg)",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "RUN_TEST=apiCallReport.281.phase0 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase0 && RUN_TEST=apiCallReport.281.phase1 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase1 --profile emulatedServer-filesystem && RUN_TEST=apiCallReport.281.phase2 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase2 --profile emulatedServer-filesystem && RUN_TEST=apiCallReport.281.phase4 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase4 --profile emulatedServer-filesystem && RUN_TEST=syncExternalServiceSchema.281.phase3 npm run testByFile -w miroir-core -- syncExternalServiceSchema.281.phase3 && RUN_TEST=resolveApiCallReportSectionSchema npm run testByFile -w miroir-standalone-app -- resolveApiCallReportSectionSchema"
+      ]
+    },
+    {
       "id": "unit-270-persistent-secrets",
       "tier": "unit",
       "title": "#270 — persist named secrets (core + MCP unit)",

@@ -24,7 +24,7 @@ import type { Params } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { useCurrentModel } from '../../ReduxHooks.js';
+import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks.js';
 import { reportUrl } from '../../navigation.js';
 import { ReportDisplay } from '../../routes/ReportDisplay';
 import {
@@ -46,6 +46,7 @@ import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
 import { ReportInputSection } from './ReportInputSection.js';
+import { resolveApiCallReportSectionSchema } from './resolveApiCallReportSectionSchema.js';
 
 import {
   entityEntity,
@@ -183,6 +184,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const { navigationCount, totalCount } = useRenderTracker("ReportSectionViewWithEditor", currentNavigationKey);
 
   const currentModel = useCurrentModel(props.application, props.applicationDeploymentMap);
+  const env = useCurrentModelEnvironment(props.application, props.applicationDeploymentMap);
 
   const entities = useMemo(() => {
     const result = props.deploymentUuid &&
@@ -200,6 +202,30 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
       ? entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"])
         ?? currentModel.entities?.find((e:Entity) => e?.uuid === (reportSectionDefinitionFromFormik?.definition as any)["parentUuid"])
       : undefined;
+
+  const reportDefinitionForBinding = props.formikReportDefinitionPathString
+    ? formik.values?.[props.formikReportDefinitionPathString]
+    : undefined;
+  const apiCallSectionDefinition =
+    reportSectionDefinitionFromFormik?.type === "apiCallReportSection"
+      ? reportSectionDefinitionFromFormik.definition
+      : undefined;
+  const apiCallSchemaOrError = apiCallSectionDefinition
+    ? resolveApiCallReportSectionSchema({
+        section: apiCallSectionDefinition,
+        extractorTemplates: reportDefinitionForBinding?.definition?.extractorTemplates,
+        extractors: reportDefinitionForBinding?.definition?.extractors,
+        endpointsByUuid: env.endpointsByUuid,
+        endpointsFallback: currentModel.endpoints,
+      })
+    : undefined;
+  const apiCallResponseSchema =
+    apiCallSchemaOrError?.ok === true ? apiCallSchemaOrError.schema : undefined;
+  const apiCallBindingError =
+    apiCallSchemaOrError?.ok === false ? apiCallSchemaOrError.error : undefined;
+  const apiCallPayload = apiCallSectionDefinition
+    ? formik.values?.[props.reportSectionPath.join("_")]
+    : undefined;
 
   /**
    * Entities to render in a modelDiagramReportSection.
@@ -517,6 +543,42 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
               setAddObjectdialogFormIsOpen={props.setAddObjectdialogFormIsOpen}
             />
           </>
+        )}
+        {reportSectionDefinitionFromFormik?.type == "apiCallReportSection" && (
+          apiCallBindingError ? (
+            <div>{apiCallBindingError}</div>
+          ) : apiCallResponseSchema && apiCallPayload != null ? (
+            <TypedValueObjectEditor
+              labelElement={
+                reportSectionDefinitionFromFormik.definition.label ? (
+                  <h2>{reportSectionDefinitionFromFormik.definition.label}</h2>
+                ) : undefined
+              }
+              formValueMLSchema={apiCallResponseSchema}
+              formikValuePathAsString={props.reportSectionPath.join("_")}
+              application={props.application}
+              applicationDeploymentMap={props.applicationDeploymentMap}
+              deploymentUuid={props.deploymentUuid}
+              applicationSection={props.applicationSection}
+              formLabel={reportSectionDefinitionFromFormik.definition.label ?? "API call"}
+              zoomInPath=""
+              maxRenderDepth={Infinity}
+              displaySubmitButton="noDisplay"
+              useActionButton={false}
+              valueObjectEditMode={valueObjectEditMode}
+              readonly={true}
+            />
+          ) : apiCallResponseSchema ? (
+            <ThemedText>
+              {reportSectionDefinitionFromFormik.definition.label
+                ? `${reportSectionDefinitionFromFormik.definition.label}: no API response yet.`
+                : "No API response yet."}
+            </ThemedText>
+          ) : (
+            <div>
+              {`Could not resolve Endpoint operation responseSchema for endpoint ${reportSectionDefinitionFromFormik.definition.endpointUuid} operation ${reportSectionDefinitionFromFormik.definition.operationId}`}
+            </div>
+          )
         )}
         {reportSectionDefinitionFromFormik?.type == "storedReportDisplay" && (
           <div>

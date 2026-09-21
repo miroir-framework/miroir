@@ -652,6 +652,68 @@
                         }
                       }
                     }
+                  },
+                  "operationSync": {
+                    "type": "record",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Operation Sync"
+                      }
+                    },
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "boundPaths": {
+                          "type": "array",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Bound Paths"
+                            }
+                          },
+                          "definition": {
+                            "type": "string"
+                          }
+                        },
+                        "entity": {
+                          "type": "object",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Entity"
+                            }
+                          },
+                          "definition": {
+                            "uuid": {
+                              "type": "uuid",
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Uuid"
+                                }
+                              }
+                            },
+                            "name": {
+                              "type": "string",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Name"
+                                }
+                              }
+                            },
+                            "entityVersionUuid": {
+                              "type": "uuid",
+                              "optional": true,
+                              "tag": {
+                                "value": {
+                                  "defaultLabel": "Entity Version Uuid"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }

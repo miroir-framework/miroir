@@ -1581,6 +1581,7 @@ export function getMiroirFundamentalJzodSchema(
             [
               // TODO: remove this filter, this introduces unnecessary coupling
               "accordionReportSection",
+              "apiCallReportSection",
               "graphReportSection",
               "gridReportSection",
               "inputReportSection",

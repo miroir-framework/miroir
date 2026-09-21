@@ -36,6 +36,17 @@ export type EndpointSecurityScheme =
       scopes?: string;
     };
 
+export type EndpointOperationSyncEntity = {
+  uuid: string;
+  name?: string;
+  entityVersionUuid?: string;
+};
+
+export type EndpointOperationSyncEntry = {
+  boundPaths: string[];
+  entity?: EndpointOperationSyncEntity;
+};
+
 export type EndpointExternalService = {
   openApiDocument: string;
   baseUrl: string;
@@ -55,6 +66,7 @@ export type EndpointExternalService = {
     responseSchema: unknown;
     security?: string[];
   }>;
+  operationSync?: Record<string, EndpointOperationSyncEntry>;
 };
 
 export type EndpointActionsBranch = {
