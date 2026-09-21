@@ -14,7 +14,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Review: [`./adversarial-review.md`
 Prerequisite: [`../267-FEATURE-openapi-external-services/`](../267-FEATURE-openapi-external-services/) ✅
 Working branch: `281-FEATURE-api-call-report-section`
 
-**Resume note:** Slices not started. Plan revised after [`./plan-adversarial-review.md`](./plan-adversarial-review.md) (P1–P21 applied).
+**Resume note:** Slice 0 ✅ DONE. Slice 1 (tracer integ) not started.
 
 ---
 
@@ -34,7 +34,7 @@ This plan does **not** add HTTP instance cache, Entity `mlSchema` schemaReferenc
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize current Spotify + sync + section contracts | ⬜ | `apiCallReport.281.phase0.unit.test.ts` (stable asserts only) |
+| 0 | Characterize current Spotify + sync + section contracts | ✅ | `apiCallReport.281.phase0.unit.test.ts` (stable asserts only) |
 | 1 | **First behavioral slice (tracer):** typed playlist UI from Endpoint schema, no `parentUuid` | ⬜ | cloned report + `apiCallReport.281.phase1.integ.test.tsx`; GREEN updates committed asset + `spotifyApp` |
 | 2 | Binding / schema lookup hard fail | ⬜ | `apiCallReport.281.phase2.integ.test.tsx` |
 | 3 | Sync: `operationSync`, no Spotify defaults, Entity opt-in | ⬜ | `externalServiceSync` + `apiCallReport.281.phase3.unit.test.ts` |
@@ -119,7 +119,7 @@ No new production Report/Endpoint uuids.
 
 ## Slice 0 — Characterize current contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -157,7 +157,10 @@ npm run testByFile -w miroir-test-app_deployment-miroir -- tests/modelValidation
 
 ### Realization
 
-<Appended on completion.>
+- **Created:** `packages/miroir-standalone-app/tests/4_view/issues/281-api-call-report-section/apiCallReport.281.phase0.unit.test.ts` (8 tests, `RUN_TEST` gate matching #274/#253 phase0).
+- **Locked:** recursive inventory of 7 `spotify_model` JSON files (uuids/names per D14); `entitySpotifyPlaylist.mlSchema` === `get-playlist` `operations[0].responseSchema`; report `extractorTemplates.playlist`; query/report extractor parity; `syncExternalServiceSchema.ts` text for Spotify defaults + `createdEntities[0]`; `DeploymentUuidToReportsEntities` / `getReportsAndEntitiesForDeploymentUuid` body without `endpoints`; `describe("pre-281 inventory")` for report section triple + 15-member `reportSection` union (Entity + EntityVersion) excluding `apiCallReportSection`.
+- **Validation (2026-09-21):** `RUN_TEST=apiCallReport.281.phase0 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase0` → **8/8 pass**; spotify `modelValidation.unit.test.ts` → **7/7 pass**; miroir `modelValidation.unit.test.ts` → **152/152 pass**.
+- **Deviations:** none. Union members read from `mlSchema.definition.definition.context.reportSection` (schemaReference arms), not top-level `definition.definition`.
 
 ---
 
