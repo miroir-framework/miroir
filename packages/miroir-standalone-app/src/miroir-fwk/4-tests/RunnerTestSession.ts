@@ -7,6 +7,7 @@ import {
   extendMiroirConfigWithExtraDeploymentConfiguration,
   getBootstrapPhasesForSessionKind,
   remapLibraryAppModelForRunTarget,
+  testbedApplicationAccessGrantUuid,
   type ApplicationDeploymentMap,
   type Deployment,
   type DomainControllerInterface,
@@ -38,7 +39,9 @@ import {
 import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-test-app_deployment-miroir";
 import { browserMcpServerUrl, runMcpToolRunner } from "../4_view/components/Runners/runMcpToolRunner.js";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
-import { buildTeardownTestApplicationStoresAction } from "./testApplicationStoreTeardown.js";
+import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";
+import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";
+import { resolveCanonicalTestDeploymentUuid } from "./resolveCanonicalTestDeploymentUuid.js";
 import {
   beforeEachTest,
   getTestConfig,
@@ -131,10 +134,15 @@ export function getTestSessionConfig(
     runTarget.applicationUuid,
   );
 
+  const canonicalDeploymentUuid = resolveCanonicalTestDeploymentUuid(runTarget.applicationName);
+  const isolationKey =
+    runTarget.deploymentUuid !== canonicalDeploymentUuid ? runTarget.deploymentUuid : undefined;
+
   const testDeploymentStorageConfiguration: StoreUnitConfiguration =
     testApplicationStorageConfiguration(
       libraryDeploymentStorageConfiguration,
       runTarget.applicationName,
+      isolationKey,
     );
 
   const internalMiroirConfig = extendMiroirConfigWithExtraDeploymentConfiguration(
@@ -162,6 +170,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     | PersistenceStoreControllerManagerInterface
     | undefined;
   private mcpHttpClose: (() => Promise<void>) | undefined;
+  private testbedAccessGrantUuid: string | undefined;
 
   constructor(private readonly options: RunnerTestSessionOptions) {}
 
@@ -291,9 +300,9 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     // else crossFetch for Node/vitest.
     const customFetch = resolveRuntimeFetch(this.options.customFetch);
 
-    const { domainController, persistenceStoreControllerManager } =
-      !internalMiroirConfig.client.emulateServer
-        ? await runRealServerClientBootstrap({
+    const emulateServer = internalMiroirConfig.client.emulateServer === true;
+    const bootstrap = !emulateServer
+      ? await runRealServerClientBootstrap({
             applicationDeploymentMap,
             adminDeployment,
             miroirDeploymentStorageConfiguration,
@@ -305,7 +314,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
             // D9: shared miroir-server already has Miroir platform (after host options)
             platformEnsureMode: this.options.platformEnsureMode ?? "skip",
           })
-        : await runAppStackIntegrationBootstrap({
+      : await runAppStackIntegrationBootstrap({
             applicationDeploymentMap,
             adminDeployment,
             miroirDeploymentStorageConfiguration,
@@ -319,36 +328,14 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
             ...this.options,
           });
 
+    const domainController = bootstrap.domainController;
+    const persistenceStoreControllerManager = bootstrap.persistenceStoreControllerManager;
+    const domainControllerForServer = bootstrap.domainControllerForServer;
+
     const testApplicationDeploymentMap = {
       ...applicationDeploymentMap,
       [runTarget.applicationUuid]: runTarget.deploymentUuid,
     };
-
-    // The ephemeral run-target deployment must have a store on the persistence
-    // backend before the per-leaf `beforeEach` reset (resetIntegTestbed)
-    // touches it. In the emulated stack `wireEmulatedStack` already opens every
-    // configured deployment locally (including this ephemeral one). Against a real
-    // miroir-server nothing has opened/created it yet, so we send the createDeployment
-    // composite action over REST here — mirroring the vitest suite's `beforeAll`
-    // createDeployment. Admin is already open on the shared server, so skip its openStore.
-    // Action Data.CRUD suites also need ensure on emulated when seeding (playfield create).
-    // Create/drop-entity runner suites skip playfield reset and manage deployment in-test.
-    if (
-      !internalMiroirConfig.client.emulateServer ||
-      (this.options.integTestbedResetParams && !this.options.skipRunTargetPlayfieldReset)
-    ) {
-      await ensureLibraryPlayfield({
-        domainController,
-        applicationDeploymentMap: testApplicationDeploymentMap,
-        adminDeployment,
-        libraryDeploymentStorageConfiguration: testDeploymentStorageConfiguration,
-        libraryDeploymentUuid: runTarget.deploymentUuid,
-        librarySelfApplicationUuid: runTarget.applicationUuid,
-        mode: "createIfAbsent",
-        skipOpenAdminStore: true,
-        persistenceStoreControllerManager,
-      });
-    }
 
     const testAppModelForSession = this.resolveSessionModelForRunTarget(runTarget);
     this.libraryModelForSession = testAppModelForSession;
@@ -359,6 +346,8 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       this.buildSessionParamBankSeed(runTarget),
     );
 
+    // Bind session fields before playfield create so teardown can delete
+    // leftover Admin Application / Deployment / MiroirRight rows if create fails.
     this.domainController = domainController;
     this.persistenceStoreControllerManager = persistenceStoreControllerManager;
     this.applicationDeploymentMap = testApplicationDeploymentMap;
@@ -375,6 +364,49 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       testParams: sessionTestParams,
       runtimeContext: {},
     };
+
+    // Isolated emulated stub has no identity directory; grant only for real-server
+    // hatch-on sessions where the SPA principal is known.
+    const grantAccessTo = emulateServer ? undefined : testbedAccessGrantFromAuthSession();
+    this.testbedAccessGrantUuid = grantAccessTo
+      ? testbedApplicationAccessGrantUuid(
+          grantAccessTo.miroirUserUuid,
+          runTarget.applicationUuid,
+        )
+      : undefined;
+
+    // The ephemeral run-target deployment must have a store on the persistence
+    // backend before the per-leaf `beforeEach` reset (resetIntegTestbed)
+    // touches it. In the emulated stack `wireEmulatedStack` already opens every
+    // configured deployment locally (including this ephemeral one). Against a real
+    // miroir-server nothing has opened/created it yet, so we send the createDeployment
+    // composite action over REST here — mirroring the vitest suite's `beforeAll`
+    // createDeployment. Admin is already open on the shared server, so skip its openStore.
+    // Action Data.CRUD suites also need ensure on emulated when seeding (playfield create).
+    // Create/drop-entity runner suites skip playfield reset and manage deployment in-test.
+    // Emulated playfield uses the local server DC (same as deployMiroir) so it
+    // does not depend on the isolated RestClientStub auth gate.
+    if (
+      !emulateServer ||
+      (this.options.integTestbedResetParams && !this.options.skipRunTargetPlayfieldReset)
+    ) {
+      const playfieldDomainController =
+        emulateServer && domainControllerForServer
+          ? domainControllerForServer
+          : domainController;
+      await ensureLibraryPlayfield({
+        domainController: playfieldDomainController,
+        applicationDeploymentMap: testApplicationDeploymentMap,
+        adminDeployment,
+        libraryDeploymentStorageConfiguration: testDeploymentStorageConfiguration,
+        libraryDeploymentUuid: runTarget.deploymentUuid,
+        librarySelfApplicationUuid: runTarget.applicationUuid,
+        mode: "createIfAbsent",
+        skipOpenAdminStore: true,
+        persistenceStoreControllerManager,
+        grantAccessTo,
+      });
+    }
 
     if (resolvedRunner?.definition.runnerType === "mcpToolRunner") {
       if (this.options.startMcpHttpServer) {
@@ -473,6 +505,7 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       this.domainController = undefined;
       this.applicationDeploymentMap = undefined;
       this.runnerTestContext = undefined;
+      this.testbedAccessGrantUuid = undefined;
       return;
     }
 
@@ -492,33 +525,34 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
       currentModel,
     );
 
-    await this.domainController.handleCompositeAction(
-      buildTeardownTestApplicationStoresAction(
-        runTarget.deploymentUuid,
-        runTarget.applicationUuid,
-        testDeploymentStorageConfiguration,
-      ),
-      this.applicationDeploymentMap,
+    await runTeardownTestApplicationStores({
+      domainController: this.domainController,
+      applicationDeploymentMap: this.applicationDeploymentMap,
+        { accessGrantUuid: this.testbedAccessGrantUuid },
       modelEnvironment,
-      {},
-    );
+      deploymentUuid: runTarget.deploymentUuid,
+      applicationUuid: runTarget.applicationUuid,
+      storeConfig: testDeploymentStorageConfiguration,
+      options: { accessGrantUuid: this.testbedAccessGrantUuid },
+    });
 
     if (this.runnerTestContext.internalMiroirConfig.client.emulateServer === true) {
       const { miroirDeploymentStorageConfiguration } = getTestSessionConfig(
         this.options.miroirConfig,
         runTarget,
       );
-      await this.domainController.handleCompositeAction(
-        buildTeardownTestApplicationStoresAction(
+      await runTeardownTestApplicationStores({
+        domainController: this.domainController,
+        applicationDeploymentMap: this.applicationDeploymentMap,
+        modelEnvironment: buildTestSessionModelEnvironment(
           deployment_Miroir.uuid,
-          selfApplicationMiroir.uuid,
-          miroirDeploymentStorageConfiguration,
-          { deleteAdminInstances: false },
+          defaultMiroirMetaModel,
         ),
-        this.applicationDeploymentMap,
-        buildTestSessionModelEnvironment(deployment_Miroir.uuid, defaultMiroirMetaModel),
-        {},
-      );
+        deploymentUuid: deployment_Miroir.uuid,
+        applicationUuid: selfApplicationMiroir.uuid,
+        storeConfig: miroirDeploymentStorageConfiguration,
+        options: { deleteAdminInstances: false },
+      });
     }
 
     // Release emulated-server persistence backends (Postgres pools, etc.) so the
@@ -538,5 +572,6 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
     this.runnerTestContext = undefined;
     this.libraryModelForSession = undefined;
     this.persistenceStoreControllerManager = undefined;
+    this.testbedAccessGrantUuid = undefined;
   }
 }

@@ -61,6 +61,47 @@ describe("transformerTestApplicationPlayfield builders", () => {
     expect(derived.admin).toEqual(template.admin);
   });
 
+  it("deriveEphemeralTestApplicationStorageConfiguration suffixes sql schemas with isolation key", () => {
+    const template: StoreUnitConfiguration = {
+      admin: {
+        emulatedServerType: "sql",
+        connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+        schema: "miroirAdmin",
+      },
+      model: {
+        emulatedServerType: "sql",
+        connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+        schema: "library",
+        forceNullOptionalAttributeToUndefined: true,
+      },
+      data: {
+        emulatedServerType: "sql",
+        connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
+        schema: "library",
+        forceNullOptionalAttributeToUndefined: true,
+      },
+    };
+
+    const derived = deriveEphemeralTestApplicationStorageConfiguration(
+      template,
+      "Library",
+      "0e776954-723b-4718-b320-49a83a1d2b08",
+    );
+
+    expect(derived.model).toMatchObject({
+      emulatedServerType: "sql",
+      schema: "Library_0e776954723b4718b32049a83a1d2b08",
+    });
+    expect(derived.data).toMatchObject({
+      emulatedServerType: "sql",
+      schema: "Library_0e776954723b4718b32049a83a1d2b08",
+    });
+    expect(derived.modelVersion).toMatchObject({
+      emulatedServerType: "sql",
+      schema: "Library_0e776954723b4718b32049a83a1d2b08_modelVersion",
+    });
+  });
+
   it("deriveEphemeralTestApplicationStorageConfiguration clones indexedDb names", () => {
     const template: StoreUnitConfiguration = {
       admin: { emulatedServerType: "indexedDb", indexedDbName: "admin" },

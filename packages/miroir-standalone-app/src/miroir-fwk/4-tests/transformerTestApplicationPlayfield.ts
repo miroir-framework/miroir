@@ -24,6 +24,7 @@ import {
 } from "./IntegrationTestSession.js";
 
 import { defaultMiroirMetaModel } from "miroir-test-app_deployment-miroir";
+import { ephemeralStoreIdentifier } from "./runnerIntegTestSupport.js";
 /** Postgres / identifier-safe name derived from applicationName. */
 export function sanitizeStoreIdentifier(name: string): string {
   const cleaned = name.replace(/[^a-zA-Z0-9_]/g, "_");
@@ -37,8 +38,11 @@ export function sanitizeStoreIdentifier(name: string): string {
 export function deriveEphemeralTestApplicationStorageConfiguration(
   template: StoreUnitConfiguration,
   applicationName: string,
+  isolationKey?: string,
 ): StoreUnitConfiguration {
-  const id = sanitizeStoreIdentifier(applicationName);
+  const id = isolationKey
+    ? ephemeralStoreIdentifier(applicationName, isolationKey)
+    : sanitizeStoreIdentifier(applicationName);
   switch (template.model.emulatedServerType) {
     case "indexedDb":
       return {

@@ -89,16 +89,46 @@ function usesStandaloneAppTestsTmpLayout(
   return false;
 }
 
+const POSTGRES_IDENTIFIER_MAX = 63;
+const MODEL_VERSION_SUFFIX_LENGTH = "_modelVersion".length;
+
+/**
+ * Postgres-safe identifier for an ephemeral testbed store. Isolation key is
+ * typically the deployment UUID so concurrent / leftover "Library" schemas are
+ * not reused or dropped. Truncates only the application-name prefix so the
+ * UUID and a reserved `_modelVersion` suffix still fit in 63 characters.
+ */
+export function ephemeralStoreIdentifier(
+  testApplicationName: string,
+  isolationKey: string,
+  reservedSuffixLength: number = MODEL_VERSION_SUFFIX_LENGTH,
+): string {
+  const key = isolationKey.replace(/-/g, "");
+  const isolationSuffix = `_${key}`;
+  const budget = POSTGRES_IDENTIFIER_MAX - reservedSuffixLength;
+  const maxPrefixLength = Math.max(1, budget - isolationSuffix.length);
+  const base = testApplicationName.replace(/[^a-zA-Z0-9_]/g, "_");
+  let prefixed = /^[a-zA-Z_]/.test(base) ? base : `app_${base}`;
+  if (prefixed.length > maxPrefixLength) {
+    prefixed = prefixed.slice(0, maxPrefixLength);
+  }
+  return `${prefixed}${isolationSuffix}`;
+}
+
 export function testApplicationStorageConfiguration(
   libraryDeploymentStorageConfiguration: StoreUnitConfiguration,
   testApplicationName: string,
+  isolationKey?: string,
 ): StoreUnitConfiguration {
+  const storeName = isolationKey
+    ? ephemeralStoreIdentifier(testApplicationName, isolationKey)
+    : testApplicationName;
   let testDeploymentStorageConfiguration: StoreUnitConfiguration;
   switch (libraryDeploymentStorageConfiguration.model.emulatedServerType) {
     case "indexedDb": {
       const indexedDbBaseName = resolveEphemeralIndexedDbBaseName(
         libraryDeploymentStorageConfiguration,
-        testApplicationName,
+        storeName,
       );
       testDeploymentStorageConfiguration = {
         admin: libraryDeploymentStorageConfiguration.admin,
@@ -123,15 +153,15 @@ export function testApplicationStorageConfiguration(
           admin: libraryDeploymentStorageConfiguration.admin,
           model: {
             emulatedServerType: "filesystem",
-            directory: `${STANDALONE_APP_TESTS_TMP}/${testApplicationName}_model`,
+            directory: `${STANDALONE_APP_TESTS_TMP}/${storeName}_model`,
           },
           data: {
             emulatedServerType: "filesystem",
-            directory: `${STANDALONE_APP_TESTS_TMP}/${testApplicationName}_data`,
+            directory: `${STANDALONE_APP_TESTS_TMP}/${storeName}_data`,
           },
           modelVersion: {
             emulatedServerType: "filesystem",
-            directory: `${STANDALONE_APP_TESTS_TMP}/${testApplicationName}_modelVersion`,
+            directory: `${STANDALONE_APP_TESTS_TMP}/${storeName}_modelVersion`,
           },
         };
         break;
@@ -140,15 +170,15 @@ export function testApplicationStorageConfiguration(
         admin: libraryDeploymentStorageConfiguration.admin,
         model: {
           emulatedServerType: "filesystem",
-          directory: "./test_data/" + testApplicationName,
+          directory: "./test_data/" + storeName,
         },
         data: {
           emulatedServerType: "filesystem",
-          directory: "./test_data/" + testApplicationName,
+          directory: "./test_data/" + storeName,
         },
         modelVersion: {
           emulatedServerType: "filesystem",
-          directory: `./test_data/${testApplicationName}_modelVersion`,
+          directory: `./test_data/${storeName}_modelVersion`,
         },
       };
       break;
@@ -159,17 +189,17 @@ export function testApplicationStorageConfiguration(
         model: {
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: testApplicationName,
+          schema: storeName,
         },
         data: {
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: testApplicationName,
+          schema: storeName,
         },
         modelVersion: {
           emulatedServerType: "sql",
           connectionString: "postgres://postgres:postgres@localhost:5432/postgres",
-          schema: `${testApplicationName}_modelVersion`,
+          schema: `${storeName}_modelVersion`,
         },
       };
       break;
@@ -180,17 +210,17 @@ export function testApplicationStorageConfiguration(
         model: {
           emulatedServerType: "mongodb",
           connectionString: "mongodb://localhost:27017",
-          database: testApplicationName,
+          database: storeName,
         },
         data: {
           emulatedServerType: "mongodb",
           connectionString: "mongodb://localhost:27017",
-          database: testApplicationName,
+          database: storeName,
         },
         modelVersion: {
           emulatedServerType: "mongodb",
           connectionString: "mongodb://localhost:27017",
-          database: `${testApplicationName}_modelVersion`,
+          database: `${storeName}_modelVersion`,
         },
       };
       break;

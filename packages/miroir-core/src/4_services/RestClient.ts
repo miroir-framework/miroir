@@ -20,6 +20,10 @@ export function setRestClientAuthorizationTokenGetter(
   authorizationTokenGetter = getter;
 }
 
+export function getRestClientAuthorizationToken(): string | undefined {
+  return authorizationTokenGetter?.();
+}
+
 export function setRestClientAuthorizationInvalidationHandler(
   handler: (() => void) | undefined,
 ): void {

@@ -37,6 +37,7 @@ const runAppStackIntegrationBootstrapMock = vi.fn();
 const runRealServerClientBootstrapMock = vi.fn();
 const beforeEachTestMock = vi.fn();
 const ensureLibraryPlayfieldMock = vi.fn();
+const testbedAccessGrantFromAuthSessionMock = vi.fn();
 
 vi.mock("miroir-core", async (importOriginal) => {
   const actual = await importOriginal<typeof import("miroir-core")>();
@@ -73,6 +74,11 @@ vi.mock("../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js", async (importO
     beforeEachTest: (...args: unknown[]) => beforeEachTestMock(...args),
   };
 });
+
+vi.mock("../../src/miroir-fwk/4-tests/testbedAccessGrantFromAuthSession.js", () => ({
+  testbedAccessGrantFromAuthSession: (...args: unknown[]) =>
+    testbedAccessGrantFromAuthSessionMock(...args),
+}));
 
 import { getTestSessionConfig, RunnerTestSession } from "./RunnerTestSession.js";
 import {
@@ -147,6 +153,7 @@ describe("RunnerTestSession (Gap E R)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     ensureLibraryPlayfieldMock.mockResolvedValue({ created: false });
+    testbedAccessGrantFromAuthSessionMock.mockReturnValue(undefined);
     const domainController = {
       // Real-server initSession calls ensureLibraryPlayfield, which awaits this
       // to create the ephemeral run-target deployment on the server (B6-c).
@@ -293,6 +300,49 @@ describe("RunnerTestSession (Gap E R)", () => {
     expect(runAppStackIntegrationBootstrapMock).not.toHaveBeenCalled();
   });
 
+  it("initSession passes grantAccessTo into ensureLibraryPlayfield when a principal is known", async () => {
+    const aliceUuid = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";
+    testbedAccessGrantFromAuthSessionMock.mockReturnValue({ miroirUserUuid: aliceUuid });
+    const runTarget = runnerLibraryRunTarget();
+    const realServerConfig = {
+      miroirConfigType: "client",
+      client: {
+        emulateServer: false,
+        serverConfig: {
+          rootApiUrl: "https://localhost:3080",
+          storeSectionConfiguration: {
+            [runTarget.deploymentUuid]: {
+              admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+            },
+            "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
+              admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+            },
+            "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
+              admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+            },
+          },
+        },
+      },
+    } as MiroirConfigClient;
+
+    const session = new RunnerTestSession(
+      runnerSessionOptions(runTarget, { miroirConfig: realServerConfig }),
+    );
+    await session.initSession();
+
+    expect(ensureLibraryPlayfieldMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        grantAccessTo: { miroirUserUuid: aliceUuid },
+      }),
+    );
+  });
+
   it("beforeEach delegates to beforeEachTest", async () => {
     const runTarget = runnerLibraryRunTarget();
     const session = new RunnerTestSession(runnerSessionOptions(runTarget));
@@ -433,25 +483,29 @@ describe("RunnerTestSession (Gap E R)", () => {
 
     await session.teardown();
 
-    expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(2);
-    const [action, applicationDeploymentMapArg, modelEnvironmentArg, optionsArg] = vi.mocked(
+    expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(3);
+    const [storeCleanup, applicationDeploymentMapArg, modelEnvironmentArg, optionsArg] = vi.mocked(
       domainController.handleCompositeAction,
     ).mock.calls[0]!;
-    expect(action.actionLabel).toBe("teardownTestApplicationStores");
-    expect(action.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
+    expect(storeCleanup.actionLabel).toBe("teardownTestApplicationStores");
+    expect(storeCleanup.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
       "storeManagementAction_deleteStore",
       "storeManagementAction_closeStore",
-      "deleteInstance",
-      "deleteInstance",
     ]);
-    expect(action.payload.actionSequence[0]?.payload).toMatchObject({
+    expect(storeCleanup.payload.actionSequence[0]?.payload).toMatchObject({
       deploymentUuid: runTarget.deploymentUuid,
       application: runTarget.applicationUuid,
     });
-    expect(action.payload.actionSequence[2]?.payload).toMatchObject({
+    const [adminCleanup] = vi.mocked(domainController.handleCompositeAction).mock.calls[1]!;
+    expect(adminCleanup.actionLabel).toBe("teardownTestApplicationAdminInstances");
+    expect(adminCleanup.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
+      "deleteInstance",
+      "deleteInstance",
+    ]);
+    expect(adminCleanup.payload.actionSequence[0]?.payload).toMatchObject({
       objects: [{ uuid: runTarget.deploymentUuid }],
     });
-    expect(action.payload.actionSequence[3]?.payload).toMatchObject({
+    expect(adminCleanup.payload.actionSequence[1]?.payload).toMatchObject({
       objects: [{ uuid: runTarget.applicationUuid }],
     });
     expect(applicationDeploymentMapArg[runTarget.applicationUuid]).toBe(runTarget.deploymentUuid);
@@ -464,7 +518,7 @@ describe("RunnerTestSession (Gap E R)", () => {
     expect(optionsArg).toEqual({});
 
     const [miroirTeardownAction] = vi.mocked(domainController.handleCompositeAction).mock
-      .calls[1]!;
+      .calls[2]!;
     expect(miroirTeardownAction.actionLabel).toBe("teardownTestApplicationStores");
     expect(miroirTeardownAction.payload.actionSequence.map((step: { actionType: string }) => step.actionType)).toEqual([
       "storeManagementAction_deleteStore",
@@ -478,5 +532,97 @@ describe("RunnerTestSession (Gap E R)", () => {
     expect(deletePersistenceStoreController).toHaveBeenCalledTimes(2);
     expect(deletePersistenceStoreController).toHaveBeenCalledWith("admin-deployment");
     expect(deletePersistenceStoreController).toHaveBeenCalledWith("miroir-deployment");
+  });
+
+  it("teardown still deletes Admin rows when ensureLibraryPlayfield fails mid-create", async () => {
+    const aliceUuid = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";
+    testbedAccessGrantFromAuthSessionMock.mockReturnValue({ miroirUserUuid: aliceUuid });
+    ensureLibraryPlayfieldMock.mockRejectedValueOnce(
+      new Error("ensureLibraryPlayfield: library deployment failed"),
+    );
+    const runTarget = runnerLibraryRunTarget();
+    const domainController = {
+      handleCompositeAction: vi.fn().mockResolvedValue({ status: "ok" }),
+    } as unknown as DomainControllerInterface;
+    runRealServerClientBootstrapMock.mockResolvedValueOnce({
+      domainController,
+      applicationDeploymentMap: {} as ApplicationDeploymentMap,
+      testApplicationUuid: runTarget.applicationUuid,
+      persistenceStoreControllerManager: {
+        getPersistenceStoreControllers: () => [],
+        deletePersistenceStoreController: vi.fn(),
+      },
+    });
+    const realServerConfig = {
+      miroirConfigType: "client",
+      client: {
+        emulateServer: false,
+        serverConfig: {
+          rootApiUrl: "https://localhost:3080",
+          storeSectionConfiguration: {
+            [runTarget.deploymentUuid]: {
+              admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+            },
+            "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
+              admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+            },
+            "10ff36f2-50a3-48d8-b80f-e48e5d13af8e": {
+              admin: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              model: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+              data: { emulatedServerType: "sql", connectionString: "connectionString", schema: "schema" },
+            },
+          },
+        },
+      },
+    } as MiroirConfigClient;
+
+    const session = new RunnerTestSession(
+      runnerSessionOptions(runTarget, { miroirConfig: realServerConfig }),
+    );
+
+    await expect(session.initSession()).rejects.toThrow("library deployment failed");
+    vi.mocked(domainController.handleCompositeAction).mockClear();
+
+    await session.teardown();
+
+    expect(domainController.handleCompositeAction).toHaveBeenCalledTimes(2);
+    const [storeCleanup] = vi.mocked(domainController.handleCompositeAction).mock.calls[0]!;
+    expect(storeCleanup.actionLabel).toBe("teardownTestApplicationStores");
+    expect(
+      storeCleanup.payload.actionSequence.map((step: { actionType: string }) => step.actionType),
+    ).toEqual(["storeManagementAction_deleteStore", "storeManagementAction_closeStore"]);
+    const [adminCleanup] = vi.mocked(domainController.handleCompositeAction).mock.calls[1]!;
+    expect(adminCleanup.actionLabel).toBe("teardownTestApplicationAdminInstances");
+    expect(
+      adminCleanup.payload.actionSequence.map((step: { actionType: string }) => step.actionType),
+    ).toEqual(["deleteInstance", "deleteInstance", "deleteInstance"]);
+    expect(adminCleanup.payload.actionSequence[0]?.payload).toMatchObject({
+      objects: [{ parentUuid: "a6136fc7-949b-4d64-9f13-dd3afce1ab3c" }],
+    });
+    expect(adminCleanup.payload.actionSequence[1]?.payload).toMatchObject({
+      objects: [{ uuid: runTarget.deploymentUuid }],
+    });
+    expect(adminCleanup.payload.actionSequence[2]?.payload).toMatchObject({
+      objects: [{ uuid: runTarget.applicationUuid }],
+    });
+  });
+
+  it("does not create a testbed grant for isolated emulated sessions", async () => {
+    testbedAccessGrantFromAuthSessionMock.mockReturnValue({
+      miroirUserUuid: "1c39328c-7de4-44ae-bcf1-5bbc38d8e267",
+    });
+    const runTarget = runnerLibraryRunTarget();
+    const session = new RunnerTestSession(runnerSessionOptions(runTarget));
+    await session.initSession();
+    expect(ensureLibraryPlayfieldMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        grantAccessTo: undefined,
+      }),
+    );
+    );
   });
 });
